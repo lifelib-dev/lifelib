@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>projection &#8212; lifelib 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="economic" href="simplelife.economic.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          lifelib</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#create-a-project">Create a Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#building-the-model">Building the model</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../simplelife.html">Project Template: simplelife</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../simplelife.html#how-to-use-the-template">How to use the template</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../simplelife.html#model-structure">Model structure</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="simplelife.build.html">build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simplelife.build_input.html">build_input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simplelife.lifetable.html">lifetable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simplelife.policy.html">policy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simplelife.assumptions.html">assumptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simplelife.economic.html">economic</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">projection</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../simplelife.html#indexes">Indexes</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">projection</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="simplelife.economic.html" title="Previous Chapter: economic"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; economic</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary">
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#create-a-project">Create a Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#building-the-model">Building the model</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../simplelife.html">Project Template: simplelife</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../simplelife.html#how-to-use-the-template">How to use the template</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../simplelife.html#model-structure">Model structure</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="simplelife.build.html">build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simplelife.build_input.html">build_input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simplelife.lifetable.html">lifetable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simplelife.policy.html">policy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simplelife.assumptions.html">assumptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simplelife.economic.html">economic</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">projection</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../simplelife.html#indexes">Indexes</a></li>
+</ul>
+</li>
+</ul>
+
+<form action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        </div>
+      </div>
+    <div class="col-md-9 content">
+      
+  <div class="section" id="module-simplelife.projection">
+<span id="projection"></span><h1>projection<a class="headerlink" href="#module-simplelife.projection" title="Permalink to this headline">¶</a></h1>
+<p>Source module to create “Projection” space from.</p>
+<p><strong>References</strong></p>
+<dl class="attribute">
+<dt id="simplelife.projection.pol">
+<code class="descclassname">simplelife.projection.</code><code class="descname">pol</code><a class="headerlink" href="#simplelife.projection.pol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reference to <a class="reference internal" href="simplelife.policy.html#module-simplelife.policy" title="simplelife.policy"><code class="xref py py-mod docutils literal"><span class="pre">Policy</span></code></a> space</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="simplelife.projection.asmp">
+<code class="descclassname">simplelife.projection.</code><code class="descname">asmp</code><a class="headerlink" href="#simplelife.projection.asmp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reference to <a class="reference internal" href="simplelife.assumptions.html#module-simplelife.assumptions" title="simplelife.assumptions"><code class="xref py py-mod docutils literal"><span class="pre">Assumption</span></code></a> space</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="simplelife.projection.scen">
+<code class="descclassname">simplelife.projection.</code><code class="descname">scen</code><a class="headerlink" href="#simplelife.projection.scen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reference to <a class="reference internal" href="simplelife.economic.html#module-simplelife.economic" title="simplelife.economic"><code class="xref py py-mod docutils literal"><span class="pre">Economic</span></code></a> space</p>
+</dd></dl>
+
+<p class="rubric">Cells</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.nop_AccDeath" title="simplelife.projection.nop_AccDeath"><code class="xref py py-obj docutils literal"><span class="pre">nop_AccDeath</span></code></a>(t)</td>
+<td>Number of policies: Accidental death</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.nop_AccHosp" title="simplelife.projection.nop_AccHosp"><code class="xref py py-obj docutils literal"><span class="pre">nop_AccHosp</span></code></a>(t)</td>
+<td>Number of policies: Accidental Hospitalization</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.nop_AfterMat" title="simplelife.projection.nop_AfterMat"><code class="xref py py-obj docutils literal"><span class="pre">nop_AfterMat</span></code></a>(t)</td>
+<td>Number of policies: Maturity</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.nop_Annuity" title="simplelife.projection.nop_Annuity"><code class="xref py py-obj docutils literal"><span class="pre">nop_Annuity</span></code></a>(t)</td>
+<td>Number of policies: Annuity</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.nop_BoP" title="simplelife.projection.nop_BoP"><code class="xref py py-obj docutils literal"><span class="pre">nop_BoP</span></code></a>(t)</td>
+<td>Number of policies: Beginning of period</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.nop_BoP1" title="simplelife.projection.nop_BoP1"><code class="xref py py-obj docutils literal"><span class="pre">nop_BoP1</span></code></a>(t)</td>
+<td>Number of policies: Beginning of period 1</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.nop_Death" title="simplelife.projection.nop_Death"><code class="xref py py-obj docutils literal"><span class="pre">nop_Death</span></code></a>(t)</td>
+<td>Number of policies: Death</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.nop_EoP" title="simplelife.projection.nop_EoP"><code class="xref py py-obj docutils literal"><span class="pre">nop_EoP</span></code></a>(t)</td>
+<td>Number of policies: End of period</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.nop_Living" title="simplelife.projection.nop_Living"><code class="xref py py-obj docutils literal"><span class="pre">nop_Living</span></code></a>(t)</td>
+<td>Number of policies: Living benefits</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.nop_Maturity" title="simplelife.projection.nop_Maturity"><code class="xref py py-obj docutils literal"><span class="pre">nop_Maturity</span></code></a>(t)</td>
+<td>Number of policies: Maturity</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.nop_NewBiz" title="simplelife.projection.nop_NewBiz"><code class="xref py py-obj docutils literal"><span class="pre">nop_NewBiz</span></code></a>(t)</td>
+<td>Number of policies: New business</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.nop_Other" title="simplelife.projection.nop_Other"><code class="xref py py-obj docutils literal"><span class="pre">nop_Other</span></code></a>(t)</td>
+<td>Number of policies: Other benefits</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.nop_Renewal" title="simplelife.projection.nop_Renewal"><code class="xref py py-obj docutils literal"><span class="pre">nop_Renewal</span></code></a>(t)</td>
+<td>Number of policies: Renewal policies</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.nop_SickHosp" title="simplelife.projection.nop_SickHosp"><code class="xref py py-obj docutils literal"><span class="pre">nop_SickHosp</span></code></a>(t)</td>
+<td>Number of policies: Sickness Hospitalization</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.nop_Surgery" title="simplelife.projection.nop_Surgery"><code class="xref py py-obj docutils literal"><span class="pre">nop_Surgery</span></code></a>(t)</td>
+<td>Number of policies: Surgery</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.nop_Surrender" title="simplelife.projection.nop_Surrender"><code class="xref py py-obj docutils literal"><span class="pre">nop_Surrender</span></code></a>(t)</td>
+<td>Number of policies: Surrender</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.ppl_Age" title="simplelife.projection.ppl_Age"><code class="xref py py-obj docutils literal"><span class="pre">ppl_Age</span></code></a>(t)</td>
+<td>Attained age at time <code class="docutils literal"><span class="pre">t</span></code></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.ppl_AnnualizedPrem" title="simplelife.projection.ppl_AnnualizedPrem"><code class="xref py py-obj docutils literal"><span class="pre">ppl_AnnualizedPrem</span></code></a>(t)</td>
+<td>Annualized premium per policy at time <code class="docutils literal"><span class="pre">t</span></code></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.ppl_SumAssured" title="simplelife.projection.ppl_SumAssured"><code class="xref py py-obj docutils literal"><span class="pre">ppl_SumAssured</span></code></a>(t)</td>
+<td>Sum assured per policy at time <code class="docutils literal"><span class="pre">t</span></code></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.ppl_bnft_AccDeath" title="simplelife.projection.ppl_bnft_AccDeath"><code class="xref py py-obj docutils literal"><span class="pre">ppl_bnft_AccDeath</span></code></a>(t)</td>
+<td>Accidental death benefit per policy</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.ppl_bnft_AccHosp" title="simplelife.projection.ppl_bnft_AccHosp"><code class="xref py py-obj docutils literal"><span class="pre">ppl_bnft_AccHosp</span></code></a>(t)</td>
+<td>Accidental hospitalization benefit per policy</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.ppl_bnft_Annuity" title="simplelife.projection.ppl_bnft_Annuity"><code class="xref py py-obj docutils literal"><span class="pre">ppl_bnft_Annuity</span></code></a>(t)</td>
+<td>Annuity benefit per policy</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.ppl_bnft_Death" title="simplelife.projection.ppl_bnft_Death"><code class="xref py py-obj docutils literal"><span class="pre">ppl_bnft_Death</span></code></a>(t)</td>
+<td>Death benefit per policy</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.ppl_bnft_Living" title="simplelife.projection.ppl_bnft_Living"><code class="xref py py-obj docutils literal"><span class="pre">ppl_bnft_Living</span></code></a>(t)</td>
+<td>Living benefit per policy</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.ppl_bnft_Maturity" title="simplelife.projection.ppl_bnft_Maturity"><code class="xref py py-obj docutils literal"><span class="pre">ppl_bnft_Maturity</span></code></a>(t)</td>
+<td>Maturity benefit per policy</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.ppl_bnft_Other" title="simplelife.projection.ppl_bnft_Other"><code class="xref py py-obj docutils literal"><span class="pre">ppl_bnft_Other</span></code></a>(t)</td>
+<td>Other benefit per policy</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.ppl_bnft_SickHosp" title="simplelife.projection.ppl_bnft_SickHosp"><code class="xref py py-obj docutils literal"><span class="pre">ppl_bnft_SickHosp</span></code></a>(t)</td>
+<td>Sickness hospitalization benefit per policy</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.ppl_bnft_Surgery" title="simplelife.projection.ppl_bnft_Surgery"><code class="xref py py-obj docutils literal"><span class="pre">ppl_bnft_Surgery</span></code></a>(t)</td>
+<td>Surgery benefit per policy</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.ppl_bnft_Surrender" title="simplelife.projection.ppl_bnft_Surrender"><code class="xref py py-obj docutils literal"><span class="pre">ppl_bnft_Surrender</span></code></a>(t)</td>
+<td>Surrender benefit per policy</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.ppl_exps_Acq" title="simplelife.projection.ppl_exps_Acq"><code class="xref py py-obj docutils literal"><span class="pre">ppl_exps_Acq</span></code></a>(t)</td>
+<td>Acquisition expense per policy at time t</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.ppl_exps_CommInit" title="simplelife.projection.ppl_exps_CommInit"><code class="xref py py-obj docutils literal"><span class="pre">ppl_exps_CommInit</span></code></a>(t)</td>
+<td>Initial commission per policy at time t</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.ppl_exps_CommRen" title="simplelife.projection.ppl_exps_CommRen"><code class="xref py py-obj docutils literal"><span class="pre">ppl_exps_CommRen</span></code></a>(t)</td>
+<td>Renewal commission per policy at time t</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.ppl_exps_Maint" title="simplelife.projection.ppl_exps_Maint"><code class="xref py py-obj docutils literal"><span class="pre">ppl_exps_Maint</span></code></a>(t)</td>
+<td>Maintenance expense per policy at time t</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.ppl_exps_Other" title="simplelife.projection.ppl_exps_Other"><code class="xref py py-obj docutils literal"><span class="pre">ppl_exps_Other</span></code></a>(t)</td>
+<td>Other expenses per policy at time t</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.ppl_incm_Investment" title="simplelife.projection.ppl_incm_Investment"><code class="xref py py-obj docutils literal"><span class="pre">ppl_incm_Investment</span></code></a>(t)</td>
+<td>Investment Income per policy from t to t+1</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.ppl_incm_Premium" title="simplelife.projection.ppl_incm_Premium"><code class="xref py py-obj docutils literal"><span class="pre">ppl_incm_Premium</span></code></a>(t)</td>
+<td>Premium income per policy from t to t+1</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.ppl_incm_Total" title="simplelife.projection.ppl_incm_Total"><code class="xref py py-obj docutils literal"><span class="pre">ppl_incm_Total</span></code></a>(t)</td>
+<td>Income Total per policy</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.ppl_rsv_HospReserve_EoP" title="simplelife.projection.ppl_rsv_HospReserve_EoP"><code class="xref py py-obj docutils literal"><span class="pre">ppl_rsv_HospReserve_EoP</span></code></a>(t)</td>
+<td>Hospitalization reserve per policy: End of period</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.ppl_rsv_PremReserve_AfterMat" title="simplelife.projection.ppl_rsv_PremReserve_AfterMat"><code class="xref py py-obj docutils literal"><span class="pre">ppl_rsv_PremReserve_AfterMat</span></code></a>(t)</td>
+<td>Premium reserve per policy: After maturity</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.ppl_rsv_PremReserve_EoP" title="simplelife.projection.ppl_rsv_PremReserve_EoP"><code class="xref py py-obj docutils literal"><span class="pre">ppl_rsv_PremReserve_EoP</span></code></a>(t)</td>
+<td>Premium reserve per policy: End of period</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.ppl_rsv_Total_AfterMat" title="simplelife.projection.ppl_rsv_Total_AfterMat"><code class="xref py py-obj docutils literal"><span class="pre">ppl_rsv_Total_AfterMat</span></code></a>(t)</td>
+<td>Total reserve per policy: After maturity</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.ppl_rsv_UnearnedPrem_AfterMat" title="simplelife.projection.ppl_rsv_UnearnedPrem_AfterMat"><code class="xref py py-obj docutils literal"><span class="pre">ppl_rsv_UnearnedPrem_AfterMat</span></code></a>(t)</td>
+<td>Unearned premium: After maturity</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.ppl_rsv_UnearnedPrem_EoP" title="simplelife.projection.ppl_rsv_UnearnedPrem_EoP"><code class="xref py py-obj docutils literal"><span class="pre">ppl_rsv_UnearnedPrem_EoP</span></code></a>(t)</td>
+<td>Unearned reserve per policy: End of period</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_ChangeInReserve" title="simplelife.projection.prj_ChangeInReserve"><code class="xref py py-obj docutils literal"><span class="pre">prj_ChangeInReserve</span></code></a>(t)</td>
+<td>Change in reserve</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_ProfitBeforeTax" title="simplelife.projection.prj_ProfitBeforeTax"><code class="xref py py-obj docutils literal"><span class="pre">prj_ProfitBeforeTax</span></code></a>(t)</td>
+<td>Profit before Tax</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_AccDeath" title="simplelife.projection.prj_bnft_AccDeath"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_AccDeath</span></code></a>(t)</td>
+<td>Accidental death benefits</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_AccHosp" title="simplelife.projection.prj_bnft_AccHosp"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_AccHosp</span></code></a>(t)</td>
+<td>Accidental hospitalization benefits</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_Annuity" title="simplelife.projection.prj_bnft_Annuity"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_Annuity</span></code></a>(t)</td>
+<td>Annuity benefits</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_Death" title="simplelife.projection.prj_bnft_Death"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_Death</span></code></a>(t)</td>
+<td>Death benefits</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_Living" title="simplelife.projection.prj_bnft_Living"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_Living</span></code></a>(t)</td>
+<td>Living benefits</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_Maturity" title="simplelife.projection.prj_bnft_Maturity"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_Maturity</span></code></a>(t)</td>
+<td>Matuirty benefits</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_Other" title="simplelife.projection.prj_bnft_Other"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_Other</span></code></a>(t)</td>
+<td>Other benefits</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_SickHosp" title="simplelife.projection.prj_bnft_SickHosp"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_SickHosp</span></code></a>(t)</td>
+<td>Sickness hospitalization benefits</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_Surgery" title="simplelife.projection.prj_bnft_Surgery"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_Surgery</span></code></a>(t)</td>
+<td>Surgery benefits</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_Surrender" title="simplelife.projection.prj_bnft_Surrender"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_Surrender</span></code></a>(t)</td>
+<td>Surrender benefits</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_Total" title="simplelife.projection.prj_bnft_Total"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_Total</span></code></a>(t)</td>
+<td>Benefit Total</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_exps_Acq" title="simplelife.projection.prj_exps_Acq"><code class="xref py py-obj docutils literal"><span class="pre">prj_exps_Acq</span></code></a>(t)</td>
+<td>Acquisition expenses</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_exps_CommInit" title="simplelife.projection.prj_exps_CommInit"><code class="xref py py-obj docutils literal"><span class="pre">prj_exps_CommInit</span></code></a>(t)</td>
+<td>Initial commissions</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_exps_CommRen" title="simplelife.projection.prj_exps_CommRen"><code class="xref py py-obj docutils literal"><span class="pre">prj_exps_CommRen</span></code></a>(t)</td>
+<td>Renewal commissions</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_exps_CommTotal" title="simplelife.projection.prj_exps_CommTotal"><code class="xref py py-obj docutils literal"><span class="pre">prj_exps_CommTotal</span></code></a>(t)</td>
+<td>Commissions Total</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_exps_Maint" title="simplelife.projection.prj_exps_Maint"><code class="xref py py-obj docutils literal"><span class="pre">prj_exps_Maint</span></code></a>(t)</td>
+<td>Maintenance expenses</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_exps_Other" title="simplelife.projection.prj_exps_Other"><code class="xref py py-obj docutils literal"><span class="pre">prj_exps_Other</span></code></a>(t)</td>
+<td>Other expenses</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_exps_Total" title="simplelife.projection.prj_exps_Total"><code class="xref py py-obj docutils literal"><span class="pre">prj_exps_Total</span></code></a>(t)</td>
+<td>Total expenses</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_incm_Investment" title="simplelife.projection.prj_incm_Investment"><code class="xref py py-obj docutils literal"><span class="pre">prj_incm_Investment</span></code></a>(t)</td>
+<td>Investment income</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_incm_Premium" title="simplelife.projection.prj_incm_Premium"><code class="xref py py-obj docutils literal"><span class="pre">prj_incm_Premium</span></code></a>(t)</td>
+<td>Premium income</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_incm_Total" title="simplelife.projection.prj_incm_Total"><code class="xref py py-obj docutils literal"><span class="pre">prj_incm_Total</span></code></a>(t)</td>
+<td>Income Total</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_rsv_HospReserve_EoP" title="simplelife.projection.prj_rsv_HospReserve_EoP"><code class="xref py py-obj docutils literal"><span class="pre">prj_rsv_HospReserve_EoP</span></code></a>(t)</td>
+<td>Hospitalization reserve: End of period</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_rsv_PremReserve_EoP" title="simplelife.projection.prj_rsv_PremReserve_EoP"><code class="xref py py-obj docutils literal"><span class="pre">prj_rsv_PremReserve_EoP</span></code></a>(t)</td>
+<td>Premium reserve: End of period</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_rsv_Total_EoP" title="simplelife.projection.prj_rsv_Total_EoP"><code class="xref py py-obj docutils literal"><span class="pre">prj_rsv_Total_EoP</span></code></a>(t)</td>
+<td>Total reserve: End of period</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_rsv_UnearnedPrem_EoP" title="simplelife.projection.prj_rsv_UnearnedPrem_EoP"><code class="xref py py-obj docutils literal"><span class="pre">prj_rsv_UnearnedPrem_EoP</span></code></a>(t)</td>
+<td>Unearned Premium: End of period</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="simplelife.projection.ppl_Age">
+<code class="descclassname">simplelife.projection.</code><code class="descname">ppl_Age</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#ppl_Age"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.ppl_Age" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attained age at time <code class="docutils literal"><span class="pre">t</span></code></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.ppl_SumAssured">
+<code class="descclassname">simplelife.projection.</code><code class="descname">ppl_SumAssured</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#ppl_SumAssured"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.ppl_SumAssured" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sum assured per policy at time <code class="docutils literal"><span class="pre">t</span></code></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.ppl_AnnualizedPrem">
+<code class="descclassname">simplelife.projection.</code><code class="descname">ppl_AnnualizedPrem</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#ppl_AnnualizedPrem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.ppl_AnnualizedPrem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Annualized premium per policy at time <code class="docutils literal"><span class="pre">t</span></code></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.ppl_incm_Premium">
+<code class="descclassname">simplelife.projection.</code><code class="descname">ppl_incm_Premium</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#ppl_incm_Premium"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.ppl_incm_Premium" title="Permalink to this definition">¶</a></dt>
+<dd><p>Premium income per policy from t to t+1</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.ppl_incm_Investment">
+<code class="descclassname">simplelife.projection.</code><code class="descname">ppl_incm_Investment</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#ppl_incm_Investment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.ppl_incm_Investment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Investment Income per policy from t to t+1</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.ppl_incm_Total">
+<code class="descclassname">simplelife.projection.</code><code class="descname">ppl_incm_Total</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#ppl_incm_Total"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.ppl_incm_Total" title="Permalink to this definition">¶</a></dt>
+<dd><p>Income Total per policy</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.ppl_exps_CommInit">
+<code class="descclassname">simplelife.projection.</code><code class="descname">ppl_exps_CommInit</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#ppl_exps_CommInit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.ppl_exps_CommInit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initial commission per policy at time t</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.ppl_exps_CommRen">
+<code class="descclassname">simplelife.projection.</code><code class="descname">ppl_exps_CommRen</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#ppl_exps_CommRen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.ppl_exps_CommRen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renewal commission per policy at time t</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.ppl_exps_Acq">
+<code class="descclassname">simplelife.projection.</code><code class="descname">ppl_exps_Acq</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#ppl_exps_Acq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.ppl_exps_Acq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Acquisition expense per policy at time t</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.ppl_exps_Maint">
+<code class="descclassname">simplelife.projection.</code><code class="descname">ppl_exps_Maint</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#ppl_exps_Maint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.ppl_exps_Maint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maintenance expense per policy at time t</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.ppl_exps_Other">
+<code class="descclassname">simplelife.projection.</code><code class="descname">ppl_exps_Other</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#ppl_exps_Other"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.ppl_exps_Other" title="Permalink to this definition">¶</a></dt>
+<dd><p>Other expenses per policy at time t</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.ppl_bnft_Death">
+<code class="descclassname">simplelife.projection.</code><code class="descname">ppl_bnft_Death</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#ppl_bnft_Death"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.ppl_bnft_Death" title="Permalink to this definition">¶</a></dt>
+<dd><p>Death benefit per policy</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.ppl_bnft_AccDeath">
+<code class="descclassname">simplelife.projection.</code><code class="descname">ppl_bnft_AccDeath</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#ppl_bnft_AccDeath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.ppl_bnft_AccDeath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accidental death benefit per policy</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.ppl_bnft_Surrender">
+<code class="descclassname">simplelife.projection.</code><code class="descname">ppl_bnft_Surrender</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#ppl_bnft_Surrender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.ppl_bnft_Surrender" title="Permalink to this definition">¶</a></dt>
+<dd><p>Surrender benefit per policy</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.ppl_bnft_Annuity">
+<code class="descclassname">simplelife.projection.</code><code class="descname">ppl_bnft_Annuity</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#ppl_bnft_Annuity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.ppl_bnft_Annuity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Annuity benefit per policy</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.ppl_bnft_Maturity">
+<code class="descclassname">simplelife.projection.</code><code class="descname">ppl_bnft_Maturity</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#ppl_bnft_Maturity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.ppl_bnft_Maturity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maturity benefit per policy</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.ppl_bnft_AccHosp">
+<code class="descclassname">simplelife.projection.</code><code class="descname">ppl_bnft_AccHosp</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#ppl_bnft_AccHosp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.ppl_bnft_AccHosp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accidental hospitalization benefit per policy</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.ppl_bnft_SickHosp">
+<code class="descclassname">simplelife.projection.</code><code class="descname">ppl_bnft_SickHosp</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#ppl_bnft_SickHosp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.ppl_bnft_SickHosp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sickness hospitalization benefit per policy</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.ppl_bnft_Surgery">
+<code class="descclassname">simplelife.projection.</code><code class="descname">ppl_bnft_Surgery</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#ppl_bnft_Surgery"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.ppl_bnft_Surgery" title="Permalink to this definition">¶</a></dt>
+<dd><p>Surgery benefit per policy</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.ppl_bnft_Living">
+<code class="descclassname">simplelife.projection.</code><code class="descname">ppl_bnft_Living</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#ppl_bnft_Living"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.ppl_bnft_Living" title="Permalink to this definition">¶</a></dt>
+<dd><p>Living benefit per policy</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.ppl_bnft_Other">
+<code class="descclassname">simplelife.projection.</code><code class="descname">ppl_bnft_Other</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#ppl_bnft_Other"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.ppl_bnft_Other" title="Permalink to this definition">¶</a></dt>
+<dd><p>Other benefit per policy</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.ppl_rsv_PremReserve_AfterMat">
+<code class="descclassname">simplelife.projection.</code><code class="descname">ppl_rsv_PremReserve_AfterMat</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#ppl_rsv_PremReserve_AfterMat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.ppl_rsv_PremReserve_AfterMat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Premium reserve per policy: After maturity</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.ppl_rsv_UnearnedPrem_AfterMat">
+<code class="descclassname">simplelife.projection.</code><code class="descname">ppl_rsv_UnearnedPrem_AfterMat</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#ppl_rsv_UnearnedPrem_AfterMat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.ppl_rsv_UnearnedPrem_AfterMat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unearned premium: After maturity</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.ppl_rsv_Total_AfterMat">
+<code class="descclassname">simplelife.projection.</code><code class="descname">ppl_rsv_Total_AfterMat</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#ppl_rsv_Total_AfterMat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.ppl_rsv_Total_AfterMat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Total reserve per policy: After maturity</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.ppl_rsv_PremReserve_EoP">
+<code class="descclassname">simplelife.projection.</code><code class="descname">ppl_rsv_PremReserve_EoP</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#ppl_rsv_PremReserve_EoP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.ppl_rsv_PremReserve_EoP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Premium reserve per policy: End of period</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.ppl_rsv_UnearnedPrem_EoP">
+<code class="descclassname">simplelife.projection.</code><code class="descname">ppl_rsv_UnearnedPrem_EoP</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#ppl_rsv_UnearnedPrem_EoP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.ppl_rsv_UnearnedPrem_EoP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unearned reserve per policy: End of period</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.ppl_rsv_HospReserve_EoP">
+<code class="descclassname">simplelife.projection.</code><code class="descname">ppl_rsv_HospReserve_EoP</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#ppl_rsv_HospReserve_EoP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.ppl_rsv_HospReserve_EoP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hospitalization reserve per policy: End of period</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.nop_BoP">
+<code class="descclassname">simplelife.projection.</code><code class="descname">nop_BoP</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#nop_BoP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.nop_BoP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of policies: Beginning of period</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.nop_Renewal">
+<code class="descclassname">simplelife.projection.</code><code class="descname">nop_Renewal</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#nop_Renewal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.nop_Renewal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of policies: Renewal policies</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.nop_NewBiz">
+<code class="descclassname">simplelife.projection.</code><code class="descname">nop_NewBiz</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#nop_NewBiz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.nop_NewBiz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of policies: New business</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.nop_BoP1">
+<code class="descclassname">simplelife.projection.</code><code class="descname">nop_BoP1</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#nop_BoP1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.nop_BoP1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of policies: Beginning of period 1</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.nop_Death">
+<code class="descclassname">simplelife.projection.</code><code class="descname">nop_Death</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#nop_Death"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.nop_Death" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of policies: Death</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.nop_AccDeath">
+<code class="descclassname">simplelife.projection.</code><code class="descname">nop_AccDeath</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#nop_AccDeath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.nop_AccDeath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of policies: Accidental death</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.nop_Surrender">
+<code class="descclassname">simplelife.projection.</code><code class="descname">nop_Surrender</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#nop_Surrender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.nop_Surrender" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of policies: Surrender</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.nop_Annuity">
+<code class="descclassname">simplelife.projection.</code><code class="descname">nop_Annuity</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#nop_Annuity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.nop_Annuity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of policies: Annuity</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.nop_AccHosp">
+<code class="descclassname">simplelife.projection.</code><code class="descname">nop_AccHosp</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#nop_AccHosp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.nop_AccHosp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of policies: Accidental Hospitalization</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.nop_SickHosp">
+<code class="descclassname">simplelife.projection.</code><code class="descname">nop_SickHosp</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#nop_SickHosp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.nop_SickHosp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of policies: Sickness Hospitalization</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.nop_Surgery">
+<code class="descclassname">simplelife.projection.</code><code class="descname">nop_Surgery</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#nop_Surgery"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.nop_Surgery" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of policies: Surgery</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.nop_Living">
+<code class="descclassname">simplelife.projection.</code><code class="descname">nop_Living</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#nop_Living"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.nop_Living" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of policies: Living benefits</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.nop_Other">
+<code class="descclassname">simplelife.projection.</code><code class="descname">nop_Other</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#nop_Other"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.nop_Other" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of policies: Other benefits</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.nop_EoP">
+<code class="descclassname">simplelife.projection.</code><code class="descname">nop_EoP</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#nop_EoP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.nop_EoP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of policies: End of period</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.nop_Maturity">
+<code class="descclassname">simplelife.projection.</code><code class="descname">nop_Maturity</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#nop_Maturity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.nop_Maturity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of policies: Maturity</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.nop_AfterMat">
+<code class="descclassname">simplelife.projection.</code><code class="descname">nop_AfterMat</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#nop_AfterMat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.nop_AfterMat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of policies: Maturity</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.prj_incm_Premium">
+<code class="descclassname">simplelife.projection.</code><code class="descname">prj_incm_Premium</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#prj_incm_Premium"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.prj_incm_Premium" title="Permalink to this definition">¶</a></dt>
+<dd><p>Premium income</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.prj_incm_Investment">
+<code class="descclassname">simplelife.projection.</code><code class="descname">prj_incm_Investment</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#prj_incm_Investment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.prj_incm_Investment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Investment income</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.prj_incm_Total">
+<code class="descclassname">simplelife.projection.</code><code class="descname">prj_incm_Total</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#prj_incm_Total"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.prj_incm_Total" title="Permalink to this definition">¶</a></dt>
+<dd><p>Income Total</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.prj_exps_CommInit">
+<code class="descclassname">simplelife.projection.</code><code class="descname">prj_exps_CommInit</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#prj_exps_CommInit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.prj_exps_CommInit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initial commissions</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.prj_exps_CommRen">
+<code class="descclassname">simplelife.projection.</code><code class="descname">prj_exps_CommRen</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#prj_exps_CommRen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.prj_exps_CommRen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renewal commissions</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.prj_exps_CommTotal">
+<code class="descclassname">simplelife.projection.</code><code class="descname">prj_exps_CommTotal</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#prj_exps_CommTotal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.prj_exps_CommTotal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Commissions Total</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.prj_exps_Acq">
+<code class="descclassname">simplelife.projection.</code><code class="descname">prj_exps_Acq</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#prj_exps_Acq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.prj_exps_Acq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Acquisition expenses</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.prj_exps_Maint">
+<code class="descclassname">simplelife.projection.</code><code class="descname">prj_exps_Maint</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#prj_exps_Maint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.prj_exps_Maint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maintenance expenses</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.prj_exps_Other">
+<code class="descclassname">simplelife.projection.</code><code class="descname">prj_exps_Other</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#prj_exps_Other"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.prj_exps_Other" title="Permalink to this definition">¶</a></dt>
+<dd><p>Other expenses</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.prj_exps_Total">
+<code class="descclassname">simplelife.projection.</code><code class="descname">prj_exps_Total</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#prj_exps_Total"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.prj_exps_Total" title="Permalink to this definition">¶</a></dt>
+<dd><p>Total expenses</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.prj_bnft_Death">
+<code class="descclassname">simplelife.projection.</code><code class="descname">prj_bnft_Death</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#prj_bnft_Death"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.prj_bnft_Death" title="Permalink to this definition">¶</a></dt>
+<dd><p>Death benefits</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.prj_bnft_AccDeath">
+<code class="descclassname">simplelife.projection.</code><code class="descname">prj_bnft_AccDeath</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#prj_bnft_AccDeath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.prj_bnft_AccDeath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accidental death benefits</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.prj_bnft_Surrender">
+<code class="descclassname">simplelife.projection.</code><code class="descname">prj_bnft_Surrender</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#prj_bnft_Surrender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.prj_bnft_Surrender" title="Permalink to this definition">¶</a></dt>
+<dd><p>Surrender benefits</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.prj_bnft_Annuity">
+<code class="descclassname">simplelife.projection.</code><code class="descname">prj_bnft_Annuity</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#prj_bnft_Annuity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.prj_bnft_Annuity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Annuity benefits</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.prj_bnft_Maturity">
+<code class="descclassname">simplelife.projection.</code><code class="descname">prj_bnft_Maturity</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#prj_bnft_Maturity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.prj_bnft_Maturity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Matuirty benefits</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.prj_bnft_AccHosp">
+<code class="descclassname">simplelife.projection.</code><code class="descname">prj_bnft_AccHosp</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#prj_bnft_AccHosp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.prj_bnft_AccHosp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accidental hospitalization benefits</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.prj_bnft_SickHosp">
+<code class="descclassname">simplelife.projection.</code><code class="descname">prj_bnft_SickHosp</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#prj_bnft_SickHosp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.prj_bnft_SickHosp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sickness hospitalization benefits</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.prj_bnft_Surgery">
+<code class="descclassname">simplelife.projection.</code><code class="descname">prj_bnft_Surgery</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#prj_bnft_Surgery"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.prj_bnft_Surgery" title="Permalink to this definition">¶</a></dt>
+<dd><p>Surgery benefits</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.prj_bnft_Living">
+<code class="descclassname">simplelife.projection.</code><code class="descname">prj_bnft_Living</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#prj_bnft_Living"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.prj_bnft_Living" title="Permalink to this definition">¶</a></dt>
+<dd><p>Living benefits</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.prj_bnft_Other">
+<code class="descclassname">simplelife.projection.</code><code class="descname">prj_bnft_Other</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#prj_bnft_Other"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.prj_bnft_Other" title="Permalink to this definition">¶</a></dt>
+<dd><p>Other benefits</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.prj_bnft_Total">
+<code class="descclassname">simplelife.projection.</code><code class="descname">prj_bnft_Total</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#prj_bnft_Total"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.prj_bnft_Total" title="Permalink to this definition">¶</a></dt>
+<dd><p>Benefit Total</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.prj_ChangeInReserve">
+<code class="descclassname">simplelife.projection.</code><code class="descname">prj_ChangeInReserve</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#prj_ChangeInReserve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.prj_ChangeInReserve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change in reserve</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.prj_ProfitBeforeTax">
+<code class="descclassname">simplelife.projection.</code><code class="descname">prj_ProfitBeforeTax</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#prj_ProfitBeforeTax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.prj_ProfitBeforeTax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Profit before Tax</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.prj_rsv_PremReserve_EoP">
+<code class="descclassname">simplelife.projection.</code><code class="descname">prj_rsv_PremReserve_EoP</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#prj_rsv_PremReserve_EoP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.prj_rsv_PremReserve_EoP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Premium reserve: End of period</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.prj_rsv_UnearnedPrem_EoP">
+<code class="descclassname">simplelife.projection.</code><code class="descname">prj_rsv_UnearnedPrem_EoP</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#prj_rsv_UnearnedPrem_EoP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.prj_rsv_UnearnedPrem_EoP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unearned Premium: End of period</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.prj_rsv_HospReserve_EoP">
+<code class="descclassname">simplelife.projection.</code><code class="descname">prj_rsv_HospReserve_EoP</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#prj_rsv_HospReserve_EoP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.prj_rsv_HospReserve_EoP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hospitalization reserve: End of period</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.projection.prj_rsv_Total_EoP">
+<code class="descclassname">simplelife.projection.</code><code class="descname">prj_rsv_Total_EoP</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/projection.html#prj_rsv_Total_EoP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.projection.prj_rsv_Total_EoP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Total reserve: End of period</p>
+</dd></dl>
+
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017, Fumito Hamamura.<br/>
+      Last updated on Jan 01, 2018.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

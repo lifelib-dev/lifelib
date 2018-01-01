@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>simplelife.projection &#8212; lifelib 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          lifelib</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#create-a-project">Create a Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#building-the-model">Building the model</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../projects/simplelife.html">Project Template: simplelife</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../projects/simplelife.html#how-to-use-the-template">How to use the template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../projects/simplelife.html#model-structure">Model structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../projects/generated/simplelife.build.html">build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../projects/generated/simplelife.build_input.html">build_input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../projects/generated/simplelife.lifetable.html">lifetable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../projects/generated/simplelife.policy.html">policy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../projects/generated/simplelife.assumptions.html">assumptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../projects/generated/simplelife.economic.html">economic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../projects/generated/simplelife.projection.html">projection</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../projects/simplelife.html#indexes">Indexes</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <h1>Source code for simplelife.projection</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Source module to create &quot;Projection&quot; space from.</span>
+
+<span class="sd">**References**</span>
+
+<span class="sd">Attributes:</span>
+<span class="sd">    pol:</span>
+<span class="sd">        Reference to :py:mod:`Policy&lt;.policy&gt;` space</span>
+<span class="sd">    asmp:</span>
+<span class="sd">        Reference to :py:mod:`Assumption&lt;.assumptions&gt;` space</span>
+<span class="sd">    scen:</span>
+<span class="sd">        Reference to :py:mod:`Economic&lt;.economic&gt;` space</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ppl_Age"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_Age">[docs]</a><span class="k">def</span> <span class="nf">ppl_Age</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Attained age at time ``t``&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">pol</span><span class="o">.</span><span class="n">IssueAge</span> <span class="o">+</span> <span class="n">t</span></div>
+
+<div class="viewcode-block" id="ppl_SumAssured"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_SumAssured">[docs]</a><span class="k">def</span> <span class="nf">ppl_SumAssured</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sum assured per policy at time ``t``&quot;&quot;&quot;</span>
+    <span class="k">return</span>  <span class="n">pol</span><span class="o">.</span><span class="n">SumAssured</span></div>
+
+<div class="viewcode-block" id="ppl_AnnualizedPrem"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_AnnualizedPrem">[docs]</a><span class="k">def</span> <span class="nf">ppl_AnnualizedPrem</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Annualized premium per policy at time ``t``&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ppl_SumAssured</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">pol</span><span class="o">.</span><span class="n">AnnualizedPremRate</span></div>
+
+<span class="c1"># --- Income ---</span>
+<div class="viewcode-block" id="ppl_incm_Premium"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_incm_Premium">[docs]</a><span class="k">def</span> <span class="nf">ppl_incm_Premium</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Premium income per policy from t to t+1&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ppl_SumAssured</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">pol</span><span class="o">.</span><span class="n">GrossPremRate</span></div>
+
+<div class="viewcode-block" id="ppl_incm_Investment"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_incm_Investment">[docs]</a><span class="k">def</span> <span class="nf">ppl_incm_Investment</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Investment Income per policy from t to t+1&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">ppl_rsv_Total_AfterMat</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">ppl_incm_Premium</span><span class="p">(</span><span class="n">t</span><span class="p">))</span> <span class="o">*</span> <span class="n">scen</span><span class="o">.</span><span class="n">InvRetRate</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ppl_incm_Total"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_incm_Total">[docs]</a><span class="k">def</span> <span class="nf">ppl_incm_Total</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Income Total per policy&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">prj_incm_Premium</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">prj_incm_Investment</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+<span class="c1"># --- Comissions ---</span>
+<div class="viewcode-block" id="ppl_exps_CommInit"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_exps_CommInit">[docs]</a><span class="k">def</span> <span class="nf">ppl_exps_CommInit</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Initial commission per policy at time t&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ppl_incm_Premium</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">asmp</span><span class="o">.</span><span class="n">CmsnInitPrem</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">asmp</span><span class="o">.</span><span class="n">CnsmpTax</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="ppl_exps_CommRen"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_exps_CommRen">[docs]</a><span class="k">def</span> <span class="nf">ppl_exps_CommRen</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Renewal commission per policy at time t&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">elif</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="n">asmp</span><span class="o">.</span><span class="n">CmsnRenTerm</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ppl_incm_Premium</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">asmp</span><span class="o">.</span><span class="n">CmsnRenPrem</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">asmp</span><span class="o">.</span><span class="n">CnsmpTax</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span></div>
+
+
+<span class="c1"># --- Expenses ---</span>
+<div class="viewcode-block" id="ppl_exps_Acq"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_exps_Acq">[docs]</a><span class="k">def</span> <span class="nf">ppl_exps_Acq</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Acquisition expense per policy at time t&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ppl_AnnualizedPrem</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">asmp</span><span class="o">.</span><span class="n">ExpsAcqAP</span> \
+            <span class="o">+</span> <span class="p">(</span><span class="n">ppl_SumAssured</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">asmp</span><span class="o">.</span><span class="n">ExpsAcqSA</span> <span class="o">+</span> <span class="n">asmp</span><span class="o">.</span><span class="n">ExpsAcqPol</span><span class="p">)</span> \
+            <span class="o">*</span> <span class="n">scen</span><span class="o">.</span><span class="n">InflFac</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">/</span> <span class="n">scen</span><span class="o">.</span><span class="n">InflFac</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="ppl_exps_Maint"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_exps_Maint">[docs]</a><span class="k">def</span> <span class="nf">ppl_exps_Maint</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Maintenance expense per policy at time t&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ppl_AnnualizedPrem</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">asmp</span><span class="o">.</span><span class="n">ExpsMaintAP</span>  \
+      <span class="o">+</span> <span class="p">(</span><span class="n">ppl_SumAssured</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">asmp</span><span class="o">.</span><span class="n">ExpsMaintSA</span> <span class="o">+</span> <span class="n">asmp</span><span class="o">.</span><span class="n">ExpsMaintPol</span><span class="p">)</span> \
+      <span class="o">*</span> <span class="n">scen</span><span class="o">.</span><span class="n">InflFac</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ppl_exps_Other"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_exps_Other">[docs]</a><span class="k">def</span> <span class="nf">ppl_exps_Other</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Other expenses per policy at time t&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">0</span></div>
+
+
+<span class="c1"># --- Benfeits ---</span>
+<div class="viewcode-block" id="ppl_bnft_Death"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_bnft_Death">[docs]</a><span class="k">def</span> <span class="nf">ppl_bnft_Death</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Death benefit per policy&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ppl_SumAssured</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ppl_bnft_AccDeath"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_bnft_AccDeath">[docs]</a><span class="k">def</span> <span class="nf">ppl_bnft_AccDeath</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Accidental death benefit per policy&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="ppl_bnft_Surrender"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_bnft_Surrender">[docs]</a><span class="k">def</span> <span class="nf">ppl_bnft_Surrender</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Surrender benefit per policy&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ppl_SumAssured</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">pol</span><span class="o">.</span><span class="n">CashValueRate</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">pol</span><span class="o">.</span><span class="n">CashValueRate</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span></div>
+
+<div class="viewcode-block" id="ppl_bnft_Annuity"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_bnft_Annuity">[docs]</a><span class="k">def</span> <span class="nf">ppl_bnft_Annuity</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Annuity benefit per policy&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="ppl_bnft_Maturity"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_bnft_Maturity">[docs]</a><span class="k">def</span> <span class="nf">ppl_bnft_Maturity</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Maturity benefit per policy&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="ppl_bnft_AccHosp"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_bnft_AccHosp">[docs]</a><span class="k">def</span> <span class="nf">ppl_bnft_AccHosp</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Accidental hospitalization benefit per policy&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="ppl_bnft_SickHosp"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_bnft_SickHosp">[docs]</a><span class="k">def</span> <span class="nf">ppl_bnft_SickHosp</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sickness hospitalization benefit per policy&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="ppl_bnft_Surgery"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_bnft_Surgery">[docs]</a><span class="k">def</span> <span class="nf">ppl_bnft_Surgery</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Surgery benefit per policy&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="ppl_bnft_Living"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_bnft_Living">[docs]</a><span class="k">def</span> <span class="nf">ppl_bnft_Living</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Living benefit per policy&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="ppl_bnft_Other"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_bnft_Other">[docs]</a><span class="k">def</span> <span class="nf">ppl_bnft_Other</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Other benefit per policy&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">0</span></div>
+
+
+<span class="c1"># --- Reserve ---</span>
+<div class="viewcode-block" id="ppl_rsv_PremReserve_AfterMat"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_rsv_PremReserve_AfterMat">[docs]</a><span class="k">def</span> <span class="nf">ppl_rsv_PremReserve_AfterMat</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Premium reserve per policy: After maturity&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ppl_SumAssured</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">pol</span><span class="o">.</span><span class="n">NLPReserveRate</span><span class="p">(</span><span class="s1">&#39;VAL&#39;</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ppl_rsv_UnearnedPrem_AfterMat"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_rsv_UnearnedPrem_AfterMat">[docs]</a><span class="k">def</span> <span class="nf">ppl_rsv_UnearnedPrem_AfterMat</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Unearned premium: After maturity&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">0</span> <span class="c1"># ppl_SumAssured(t) * polset.UnernPremRate(polset, tt, True)</span></div>
+
+<div class="viewcode-block" id="ppl_rsv_Total_AfterMat"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_rsv_Total_AfterMat">[docs]</a><span class="k">def</span> <span class="nf">ppl_rsv_Total_AfterMat</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Total reserve per policy: After maturity&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ppl_rsv_PremReserve_AfterMat</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> \
+           <span class="o">+</span> <span class="n">ppl_rsv_UnearnedPrem_AfterMat</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ppl_rsv_PremReserve_EoP"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_rsv_PremReserve_EoP">[docs]</a><span class="k">def</span> <span class="nf">ppl_rsv_PremReserve_EoP</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Premium reserve per policy: End of period&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ppl_SumAssured</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">pol</span><span class="o">.</span><span class="n">NLPReserveRate</span><span class="p">(</span><span class="s1">&#39;VAL&#39;</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ppl_rsv_UnearnedPrem_EoP"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_rsv_UnearnedPrem_EoP">[docs]</a><span class="k">def</span> <span class="nf">ppl_rsv_UnearnedPrem_EoP</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Unearned reserve per policy: End of period&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">0</span> <span class="c1"># ppl_SumAssured(t) * pol.UnernPremRate(polset, tt)</span></div>
+
+<div class="viewcode-block" id="ppl_rsv_HospReserve_EoP"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_rsv_HospReserve_EoP">[docs]</a><span class="k">def</span> <span class="nf">ppl_rsv_HospReserve_EoP</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Hospitalization reserve per policy: End of period&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">0</span></div>
+
+<span class="c1"># --------------------------------------------------------------------------</span>
+<span class="c1"># Number of Policies</span>
+
+<div class="viewcode-block" id="nop_BoP"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.nop_BoP">[docs]</a><span class="k">def</span> <span class="nf">nop_BoP</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Number of policies: Beginning of period&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">nop_AfterMat</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="nop_Renewal"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.nop_Renewal">[docs]</a><span class="k">def</span> <span class="nf">nop_Renewal</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Number of policies: Renewal policies&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="nop_NewBiz"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.nop_NewBiz">[docs]</a><span class="k">def</span> <span class="nf">nop_NewBiz</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Number of policies: New business&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">pol</span><span class="o">.</span><span class="n">PolicyCount</span> <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="nop_BoP1"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.nop_BoP1">[docs]</a><span class="k">def</span> <span class="nf">nop_BoP1</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Number of policies: Beginning of period 1&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">nop_BoP</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">nop_Renewal</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">nop_NewBiz</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="nop_Death"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.nop_Death">[docs]</a><span class="k">def</span> <span class="nf">nop_Death</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Number of policies: Death&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">nop_BoP1</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">asmp</span><span class="o">.</span><span class="n">BaseMortRate</span><span class="p">(</span><span class="n">ppl_Age</span><span class="p">(</span><span class="n">t</span><span class="p">))</span> <span class="o">*</span> <span class="n">asmp</span><span class="o">.</span><span class="n">MortFactor</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="nop_AccDeath"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.nop_AccDeath">[docs]</a><span class="k">def</span> <span class="nf">nop_AccDeath</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Number of policies: Accidental death&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="nop_Surrender"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.nop_Surrender">[docs]</a><span class="k">def</span> <span class="nf">nop_Surrender</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Number of policies: Surrender&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">nop_BoP1</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">asmp</span><span class="o">.</span><span class="n">SurrRate</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="nop_Annuity"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.nop_Annuity">[docs]</a><span class="k">def</span> <span class="nf">nop_Annuity</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Number of policies: Annuity&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="nop_AccHosp"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.nop_AccHosp">[docs]</a><span class="k">def</span> <span class="nf">nop_AccHosp</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Number of policies: Accidental Hospitalization&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="nop_SickHosp"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.nop_SickHosp">[docs]</a><span class="k">def</span> <span class="nf">nop_SickHosp</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Number of policies: Sickness Hospitalization&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="nop_Surgery"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.nop_Surgery">[docs]</a><span class="k">def</span> <span class="nf">nop_Surgery</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Number of policies: Surgery&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="nop_Living"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.nop_Living">[docs]</a><span class="k">def</span> <span class="nf">nop_Living</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Number of policies: Living benefits&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="nop_Other"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.nop_Other">[docs]</a><span class="k">def</span> <span class="nf">nop_Other</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Number of policies: Other benefits&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="nop_EoP"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.nop_EoP">[docs]</a><span class="k">def</span> <span class="nf">nop_EoP</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Number of policies: End of period&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span> <span class="c1"># pol.PolicyCount</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">nop_BoP1</span><span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">nop_Death</span><span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">nop_Surrender</span><span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="nop_Maturity"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.nop_Maturity">[docs]</a><span class="k">def</span> <span class="nf">nop_Maturity</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Number of policies: Maturity&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="n">pol</span><span class="o">.</span><span class="n">PolicyTerm</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">nop_EoP</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="nop_AfterMat"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.nop_AfterMat">[docs]</a><span class="k">def</span> <span class="nf">nop_AfterMat</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Number of policies: Maturity&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">nop_EoP</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">-</span> <span class="n">nop_Maturity</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+
+<span class="c1">#--- Per Policy * Policy Counts ---</span>
+<div class="viewcode-block" id="prj_incm_Premium"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_incm_Premium">[docs]</a><span class="k">def</span> <span class="nf">prj_incm_Premium</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Premium income&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ppl_incm_Premium</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">nop_BoP1</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="prj_incm_Investment"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_incm_Investment">[docs]</a><span class="k">def</span> <span class="nf">prj_incm_Investment</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Investment income&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ppl_incm_Investment</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">nop_BoP1</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="prj_incm_Total"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_incm_Total">[docs]</a><span class="k">def</span> <span class="nf">prj_incm_Total</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Income Total&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">prj_incm_Premium</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">prj_incm_Investment</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="prj_exps_CommInit"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_exps_CommInit">[docs]</a><span class="k">def</span> <span class="nf">prj_exps_CommInit</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Initial commissions&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ppl_exps_CommInit</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">nop_BoP1</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="prj_exps_CommRen"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_exps_CommRen">[docs]</a><span class="k">def</span> <span class="nf">prj_exps_CommRen</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Renewal commissions&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ppl_exps_CommRen</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">nop_BoP1</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="prj_exps_CommTotal"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_exps_CommTotal">[docs]</a><span class="k">def</span> <span class="nf">prj_exps_CommTotal</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Commissions Total&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">prj_exps_CommInit</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">prj_exps_CommRen</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="prj_exps_Acq"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_exps_Acq">[docs]</a><span class="k">def</span> <span class="nf">prj_exps_Acq</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Acquisition expenses&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ppl_exps_Acq</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">nop_NewBiz</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">nop_Renewal</span><span class="p">(</span><span class="n">t</span><span class="p">))</span></div>
+    
+<div class="viewcode-block" id="prj_exps_Maint"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_exps_Maint">[docs]</a><span class="k">def</span> <span class="nf">prj_exps_Maint</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Maintenance expenses&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ppl_exps_Maint</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">nop_BoP1</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="prj_exps_Other"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_exps_Other">[docs]</a><span class="k">def</span> <span class="nf">prj_exps_Other</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Other expenses&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">0</span></div>
+    
+<div class="viewcode-block" id="prj_exps_Total"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_exps_Total">[docs]</a><span class="k">def</span> <span class="nf">prj_exps_Total</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Total expenses&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">prj_exps_CommInit</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">prj_exps_CommRen</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> \
+            <span class="o">+</span> <span class="n">prj_exps_Acq</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">prj_exps_Maint</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">prj_exps_Other</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+            
+<div class="viewcode-block" id="prj_bnft_Death"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_bnft_Death">[docs]</a><span class="k">def</span> <span class="nf">prj_bnft_Death</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Death benefits&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ppl_bnft_Death</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">nop_Death</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="prj_bnft_AccDeath"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_bnft_AccDeath">[docs]</a><span class="k">def</span> <span class="nf">prj_bnft_AccDeath</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Accidental death benefits&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ppl_bnft_AccDeath</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">nop_AccDeath</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="prj_bnft_Surrender"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_bnft_Surrender">[docs]</a><span class="k">def</span> <span class="nf">prj_bnft_Surrender</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Surrender benefits&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ppl_bnft_Surrender</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">nop_Surrender</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="prj_bnft_Annuity"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_bnft_Annuity">[docs]</a><span class="k">def</span> <span class="nf">prj_bnft_Annuity</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Annuity benefits&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ppl_bnft_Annuity</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">nop_Annuity</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="prj_bnft_Maturity"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_bnft_Maturity">[docs]</a><span class="k">def</span> <span class="nf">prj_bnft_Maturity</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Matuirty benefits&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ppl_bnft_Maturity</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">nop_Maturity</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="prj_bnft_AccHosp"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_bnft_AccHosp">[docs]</a><span class="k">def</span> <span class="nf">prj_bnft_AccHosp</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Accidental hospitalization benefits&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ppl_bnft_AccHosp</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">nop_AccHosp</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="prj_bnft_SickHosp"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_bnft_SickHosp">[docs]</a><span class="k">def</span> <span class="nf">prj_bnft_SickHosp</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sickness hospitalization benefits&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ppl_bnft_SickHosp</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">nop_SickHosp</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="prj_bnft_Surgery"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_bnft_Surgery">[docs]</a><span class="k">def</span> <span class="nf">prj_bnft_Surgery</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Surgery benefits&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ppl_bnft_Surgery</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">nop_Surgery</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="prj_bnft_Living"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_bnft_Living">[docs]</a><span class="k">def</span> <span class="nf">prj_bnft_Living</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Living benefits&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ppl_bnft_Living</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">nop_Living</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="prj_bnft_Other"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_bnft_Other">[docs]</a><span class="k">def</span> <span class="nf">prj_bnft_Other</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Other benefits&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ppl_bnft_Other</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">nop_Other</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="prj_bnft_Total"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_bnft_Total">[docs]</a><span class="k">def</span> <span class="nf">prj_bnft_Total</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Benefit Total&quot;&quot;&quot;</span>
+
+    <span class="k">return</span> \
+        <span class="n">prj_bnft_Maturity</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> \
+        <span class="o">+</span> <span class="n">prj_bnft_Death</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> \
+        <span class="o">+</span> <span class="n">prj_bnft_AccDeath</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> \
+        <span class="o">+</span> <span class="n">prj_bnft_Surrender</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> \
+        <span class="o">+</span> <span class="n">prj_bnft_Annuity</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> \
+        <span class="o">+</span> <span class="n">prj_bnft_AccHosp</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> \
+        <span class="o">+</span> <span class="n">prj_bnft_SickHosp</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> \
+        <span class="o">+</span> <span class="n">prj_bnft_Surgery</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> \
+        <span class="o">+</span> <span class="n">prj_bnft_Living</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> \
+        <span class="o">+</span> <span class="n">prj_bnft_Other</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="prj_ChangeInReserve"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_ChangeInReserve">[docs]</a><span class="k">def</span> <span class="nf">prj_ChangeInReserve</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Change in reserve&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">prj_rsv_Total_EoP</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">prj_rsv_Total_EoP</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+                        
+<div class="viewcode-block" id="prj_ProfitBeforeTax"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_ProfitBeforeTax">[docs]</a><span class="k">def</span> <span class="nf">prj_ProfitBeforeTax</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Profit before Tax&quot;&quot;&quot;</span>
+
+    <span class="k">return</span> \
+          <span class="n">prj_incm_Premium</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> \
+        <span class="o">+</span> <span class="n">prj_incm_Investment</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> \
+        <span class="o">-</span> <span class="n">prj_bnft_Total</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> \
+        <span class="o">-</span> <span class="n">prj_exps_Total</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> \
+        <span class="o">-</span> <span class="n">prj_ChangeInReserve</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="prj_rsv_PremReserve_EoP"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_rsv_PremReserve_EoP">[docs]</a><span class="k">def</span> <span class="nf">prj_rsv_PremReserve_EoP</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Premium reserve: End of period&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ppl_rsv_PremReserve_EoP</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">nop_EoP</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="prj_rsv_UnearnedPrem_EoP"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_rsv_UnearnedPrem_EoP">[docs]</a><span class="k">def</span> <span class="nf">prj_rsv_UnearnedPrem_EoP</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Unearned Premium: End of period&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="prj_rsv_HospReserve_EoP"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_rsv_HospReserve_EoP">[docs]</a><span class="k">def</span> <span class="nf">prj_rsv_HospReserve_EoP</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Hospitalization reserve: End of period&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="prj_rsv_Total_EoP"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_rsv_Total_EoP">[docs]</a><span class="k">def</span> <span class="nf">prj_rsv_Total_EoP</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Total reserve: End of period&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">prj_rsv_PremReserve_EoP</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> \
+           <span class="o">+</span> <span class="n">prj_rsv_UnearnedPrem_EoP</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>\
+           <span class="o">+</span> <span class="n">prj_rsv_HospReserve_EoP</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017, Fumito Hamamura.<br/>
+      Last updated on Jan 01, 2018.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

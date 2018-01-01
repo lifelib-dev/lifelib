@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>assumptions &#8212; lifelib 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="economic" href="simplelife.economic.html" />
+    <link rel="prev" title="policy" href="simplelife.policy.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          lifelib</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#create-a-project">Create a Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#building-the-model">Building the model</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../simplelife.html">Project Template: simplelife</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../simplelife.html#how-to-use-the-template">How to use the template</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../simplelife.html#model-structure">Model structure</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="simplelife.build.html">build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simplelife.build_input.html">build_input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simplelife.lifetable.html">lifetable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simplelife.policy.html">policy</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">assumptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simplelife.economic.html">economic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simplelife.projection.html">projection</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../simplelife.html#indexes">Indexes</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">assumptions</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="simplelife.policy.html" title="Previous Chapter: policy"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; policy</span>
+    </a>
+  </li>
+  <li>
+    <a href="simplelife.economic.html" title="Next Chapter: economic"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">economic &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary">
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#create-a-project">Create a Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#building-the-model">Building the model</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../simplelife.html">Project Template: simplelife</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../simplelife.html#how-to-use-the-template">How to use the template</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../simplelife.html#model-structure">Model structure</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="simplelife.build.html">build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simplelife.build_input.html">build_input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simplelife.lifetable.html">lifetable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simplelife.policy.html">policy</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">assumptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simplelife.economic.html">economic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simplelife.projection.html">projection</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../simplelife.html#indexes">Indexes</a></li>
+</ul>
+</li>
+</ul>
+
+<form action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        </div>
+      </div>
+    <div class="col-md-9 content">
+      
+  <div class="section" id="module-simplelife.assumptions">
+<span id="assumptions"></span><h1>assumptions<a class="headerlink" href="#module-simplelife.assumptions" title="Permalink to this headline">¶</a></h1>
+<p>Source module to create “Assumptions” space from.</p>
+<dl class="docutils">
+<dt>Space Args:</dt>
+<dd>PolicyID</dd>
+</dl>
+<p class="rubric">References</p>
+<p>PolicyData: Input.PolicyData
+prdSpec: Input.prdSpec
+# MortalityTable: Input.MortalityTable
+LifeTable: LifeTable</p>
+<p class="rubric">Cells</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.assumptions.BaseMortRate" title="simplelife.assumptions.BaseMortRate"><code class="xref py py-obj docutils literal"><span class="pre">BaseMortRate</span></code></a>(x)</td>
+<td>Bae mortality rate</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.assumptions.CmsnInitPrem" title="simplelife.assumptions.CmsnInitPrem"><code class="xref py py-obj docutils literal"><span class="pre">CmsnInitPrem</span></code></a>()</td>
+<td>Initial commission per premium</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.assumptions.CmsnRenPrem" title="simplelife.assumptions.CmsnRenPrem"><code class="xref py py-obj docutils literal"><span class="pre">CmsnRenPrem</span></code></a>()</td>
+<td>Renewal commission per premium</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.assumptions.CmsnRenTerm" title="simplelife.assumptions.CmsnRenTerm"><code class="xref py py-obj docutils literal"><span class="pre">CmsnRenTerm</span></code></a>()</td>
+<td>Renewal commission term</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.assumptions.CnsmpTax" title="simplelife.assumptions.CnsmpTax"><code class="xref py py-obj docutils literal"><span class="pre">CnsmpTax</span></code></a>()</td>
+<td>Consumption tax rate</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.assumptions.ExpsAcqAP" title="simplelife.assumptions.ExpsAcqAP"><code class="xref py py-obj docutils literal"><span class="pre">ExpsAcqAP</span></code></a>()</td>
+<td>Acquisition expense per annualized premium</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.assumptions.ExpsAcqPol" title="simplelife.assumptions.ExpsAcqPol"><code class="xref py py-obj docutils literal"><span class="pre">ExpsAcqPol</span></code></a>()</td>
+<td>Acquisition expense per policy</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.assumptions.ExpsAcqSA" title="simplelife.assumptions.ExpsAcqSA"><code class="xref py py-obj docutils literal"><span class="pre">ExpsAcqSA</span></code></a>()</td>
+<td>Acquisition expense per sum assured</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.assumptions.ExpsMaintAP" title="simplelife.assumptions.ExpsMaintAP"><code class="xref py py-obj docutils literal"><span class="pre">ExpsMaintAP</span></code></a>()</td>
+<td>Maintenance expense per annualized premium</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.assumptions.ExpsMaintPol" title="simplelife.assumptions.ExpsMaintPol"><code class="xref py py-obj docutils literal"><span class="pre">ExpsMaintPol</span></code></a>()</td>
+<td>Maintenance expense per policy</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.assumptions.ExpsMaintSA" title="simplelife.assumptions.ExpsMaintSA"><code class="xref py py-obj docutils literal"><span class="pre">ExpsMaintSA</span></code></a>()</td>
+<td>Maintenance expense per sum assured</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.assumptions.InflRate" title="simplelife.assumptions.InflRate"><code class="xref py py-obj docutils literal"><span class="pre">InflRate</span></code></a>()</td>
+<td>Inflation rate</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.assumptions.MortFactor" title="simplelife.assumptions.MortFactor"><code class="xref py py-obj docutils literal"><span class="pre">MortFactor</span></code></a>(y)</td>
+<td>Mortality factor</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.assumptions.MortTable" title="simplelife.assumptions.MortTable"><code class="xref py py-obj docutils literal"><span class="pre">MortTable</span></code></a>()</td>
+<td>Mortality Table</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.assumptions.SurrRate" title="simplelife.assumptions.SurrRate"><code class="xref py py-obj docutils literal"><span class="pre">SurrRate</span></code></a>(y)</td>
+<td>Surrender Rate</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="simplelife.assumptions.MortTable">
+<code class="descclassname">simplelife.assumptions.</code><code class="descname">MortTable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/assumptions.html#MortTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.assumptions.MortTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mortality Table</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.assumptions.BaseMortRate">
+<code class="descclassname">simplelife.assumptions.</code><code class="descname">BaseMortRate</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/assumptions.html#BaseMortRate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.assumptions.BaseMortRate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bae mortality rate</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.assumptions.MortFactor">
+<code class="descclassname">simplelife.assumptions.</code><code class="descname">MortFactor</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/assumptions.html#MortFactor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.assumptions.MortFactor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mortality factor</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.assumptions.SurrRate">
+<code class="descclassname">simplelife.assumptions.</code><code class="descname">SurrRate</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/assumptions.html#SurrRate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.assumptions.SurrRate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Surrender Rate</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.assumptions.CmsnInitPrem">
+<code class="descclassname">simplelife.assumptions.</code><code class="descname">CmsnInitPrem</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/assumptions.html#CmsnInitPrem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.assumptions.CmsnInitPrem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initial commission per premium</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.assumptions.CmsnRenPrem">
+<code class="descclassname">simplelife.assumptions.</code><code class="descname">CmsnRenPrem</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/assumptions.html#CmsnRenPrem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.assumptions.CmsnRenPrem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renewal commission per premium</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.assumptions.CmsnRenTerm">
+<code class="descclassname">simplelife.assumptions.</code><code class="descname">CmsnRenTerm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/assumptions.html#CmsnRenTerm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.assumptions.CmsnRenTerm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renewal commission term</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.assumptions.ExpsAcqSA">
+<code class="descclassname">simplelife.assumptions.</code><code class="descname">ExpsAcqSA</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/assumptions.html#ExpsAcqSA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.assumptions.ExpsAcqSA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Acquisition expense per sum assured</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.assumptions.ExpsAcqAP">
+<code class="descclassname">simplelife.assumptions.</code><code class="descname">ExpsAcqAP</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/assumptions.html#ExpsAcqAP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.assumptions.ExpsAcqAP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Acquisition expense per annualized premium</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.assumptions.ExpsAcqPol">
+<code class="descclassname">simplelife.assumptions.</code><code class="descname">ExpsAcqPol</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/assumptions.html#ExpsAcqPol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.assumptions.ExpsAcqPol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Acquisition expense per policy</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.assumptions.ExpsMaintSA">
+<code class="descclassname">simplelife.assumptions.</code><code class="descname">ExpsMaintSA</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/assumptions.html#ExpsMaintSA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.assumptions.ExpsMaintSA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maintenance expense per sum assured</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.assumptions.ExpsMaintAP">
+<code class="descclassname">simplelife.assumptions.</code><code class="descname">ExpsMaintAP</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/assumptions.html#ExpsMaintAP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.assumptions.ExpsMaintAP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maintenance expense per annualized premium</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.assumptions.ExpsMaintPol">
+<code class="descclassname">simplelife.assumptions.</code><code class="descname">ExpsMaintPol</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/assumptions.html#ExpsMaintPol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.assumptions.ExpsMaintPol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maintenance expense per policy</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.assumptions.CnsmpTax">
+<code class="descclassname">simplelife.assumptions.</code><code class="descname">CnsmpTax</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/assumptions.html#CnsmpTax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.assumptions.CnsmpTax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Consumption tax rate</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simplelife.assumptions.InflRate">
+<code class="descclassname">simplelife.assumptions.</code><code class="descname">InflRate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/assumptions.html#InflRate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.assumptions.InflRate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inflation rate</p>
+</dd></dl>
+
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017, Fumito Hamamura.<br/>
+      Last updated on Jan 01, 2018.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

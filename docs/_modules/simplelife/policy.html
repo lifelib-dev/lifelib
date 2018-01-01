@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>simplelife.policy &#8212; lifelib 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          lifelib</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#create-a-project">Create a Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#building-the-model">Building the model</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../projects/simplelife.html">Project Template: simplelife</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../projects/simplelife.html#how-to-use-the-template">How to use the template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../projects/simplelife.html#model-structure">Model structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../projects/generated/simplelife.build.html">build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../projects/generated/simplelife.build_input.html">build_input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../projects/generated/simplelife.lifetable.html">lifetable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../projects/generated/simplelife.policy.html">policy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../projects/generated/simplelife.assumptions.html">assumptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../projects/generated/simplelife.economic.html">economic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../projects/generated/simplelife.projection.html">projection</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../projects/simplelife.html#indexes">Indexes</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <h1>Source code for simplelife.policy</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Source module to create &quot;Policy&quot; space from.</span>
+
+
+<span class="sd">.. rubric:: Space Params</span>
+<span class="sd">Attributes:</span>
+
+<span class="sd">    PolicyID: Policy ID</span>
+
+<span class="sd">.. rubric:: Refs</span>
+
+<span class="sd">Attributes:</span>
+<span class="sd">    PolicyData: Input.PolicyData</span>
+<span class="sd">    ProductSpec: Input.ProductSpec</span>
+<span class="sd">    # MortalityTable: Input.MortalityTable</span>
+<span class="sd">    LifeTable: LifeTable</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="c1"># Policy Attributes</span>
+
+<span class="n">policy_attrs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Product&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;PolicyType&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Gen&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Channel&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Sex&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Duration&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;IssueAge&#39;</span><span class="p">,</span>
+                <span class="c1"># &#39;WholeTermPaymentFlag&#39;,</span>
+                <span class="c1"># &#39;PremTerm&#39;,</span>
+                <span class="c1"># &#39;PremMode&#39;,</span>
+                <span class="s1">&#39;PremFreq&#39;</span><span class="p">,</span>
+                <span class="c1"># &#39;WholeLifeFlag&#39;,</span>
+                <span class="s1">&#39;PolicyTerm&#39;</span><span class="p">,</span>
+                <span class="c1"># &#39;MaxTerm&#39;,</span>
+                <span class="s1">&#39;PolicyCount&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;SumAssured&#39;</span><span class="p">]</span>
+                <span class="c1"># &#39;GrossPremMult&#39;]</span>
+
+
+<div class="viewcode-block" id="IntRate"><a class="viewcode-back" href="../../projects/generated/simplelife.policy.html#simplelife.policy.IntRate">[docs]</a><span class="k">def</span> <span class="nf">IntRate</span><span class="p">(</span><span class="n">RateBasis</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Interest Rate&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">RateBasis</span> <span class="o">==</span> <span class="s1">&#39;PREM&#39;</span><span class="p">:</span>
+        <span class="n">int_rate</span> <span class="o">=</span> <span class="n">ProductSpec</span><span class="o">.</span><span class="n">IntRatePrem</span>
+    <span class="k">elif</span> <span class="n">RateBasis</span> <span class="o">==</span> <span class="s1">&#39;VAL&#39;</span><span class="p">:</span>
+        <span class="n">int_rate</span> <span class="o">=</span> <span class="n">ProductSpec</span><span class="o">.</span><span class="n">IntRateVal</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;invalid RateBasis&#39;</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">int_rate</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">Product</span><span class="p">,</span> <span class="n">PolicyType</span><span class="p">,</span> <span class="n">Gen</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">result</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;invalid RateBais&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TableID"><a class="viewcode-back" href="../../projects/generated/simplelife.policy.html#simplelife.policy.TableID">[docs]</a><span class="k">def</span> <span class="nf">TableID</span><span class="p">(</span><span class="n">RateBasis</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Mortality Table ID&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">RateBasis</span> <span class="o">==</span> <span class="s1">&#39;PREM&#39;</span><span class="p">:</span>
+        <span class="n">mort_table</span> <span class="o">=</span> <span class="n">ProductSpec</span><span class="o">.</span><span class="n">MortTablePrem</span>
+    <span class="k">elif</span> <span class="n">RateBasis</span> <span class="o">==</span> <span class="s1">&#39;VAL&#39;</span><span class="p">:</span>
+        <span class="n">mort_table</span> <span class="o">=</span> <span class="n">ProductSpec</span><span class="o">.</span><span class="n">MortTableVal</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;invalid RateBasis&#39;</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">mort_table</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">Product</span><span class="p">,</span> <span class="n">PolicyType</span><span class="p">,</span> <span class="n">Gen</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">result</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;invalid RateBais&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LoadAcqSA"><a class="viewcode-back" href="../../projects/generated/simplelife.policy.html#simplelife.policy.LoadAcqSA">[docs]</a><span class="k">def</span> <span class="nf">LoadAcqSA</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Acquisition Loading per Sum Assured&quot;&quot;&quot;</span>
+    <span class="n">param1</span> <span class="o">=</span> <span class="n">ProductSpec</span><span class="o">.</span><span class="n">LoadAcqSAParam1</span><span class="p">(</span><span class="n">Product</span><span class="p">)</span> <span class="c1">#, PolicyType(), Gen)</span>
+    <span class="n">param2</span> <span class="o">=</span> <span class="n">ProductSpec</span><span class="o">.</span><span class="n">LoadAcqSAParam2</span><span class="p">(</span><span class="n">Product</span><span class="p">)</span> <span class="c1">#, PolicyType(), Gen)</span>
+
+    <span class="k">return</span> <span class="n">param1</span> <span class="o">+</span> <span class="n">param2</span> <span class="o">*</span> <span class="nb">min</span><span class="p">(</span><span class="n">PolicyTerm</span> <span class="o">/</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="LoadMaintGP"><a class="viewcode-back" href="../../projects/generated/simplelife.policy.html#simplelife.policy.LoadMaintGP">[docs]</a><span class="k">def</span> <span class="nf">LoadMaintGP</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Maintenance Loading per Gross Premium&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">ProductSpec</span><span class="o">.</span><span class="n">LoadMaintGPParam1</span><span class="p">(</span><span class="n">Product</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ProductSpec</span><span class="o">.</span><span class="n">LoadMaintGPParam1</span><span class="p">(</span><span class="n">Product</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">ProductSpec</span><span class="o">.</span><span class="n">LoadMaintGPParam2</span><span class="p">(</span><span class="n">Product</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">param</span> <span class="o">=</span> <span class="n">ProductSpec</span><span class="o">.</span><span class="n">LoadMaintGPParam2</span><span class="p">(</span><span class="n">Product</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">param</span> <span class="o">+</span> <span class="nb">min</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">PolicyTerm</span><span class="p">))</span> <span class="o">/</span> <span class="mi">100</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;LoadMaintGP parameters not found&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LoadMaintPremWaiverGP"><a class="viewcode-back" href="../../projects/generated/simplelife.policy.html#simplelife.policy.LoadMaintPremWaiverGP">[docs]</a><span class="k">def</span> <span class="nf">LoadMaintPremWaiverGP</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Maintenance Loading per Gross Premium for Premium Waiver&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">PremTerm</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">0.0005</span>
+    <span class="k">elif</span> <span class="n">PremTerm</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">0.001</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">0.002</span></div>
+
+<div class="viewcode-block" id="LoadMaintSA"><a class="viewcode-back" href="../../projects/generated/simplelife.policy.html#simplelife.policy.LoadMaintSA">[docs]</a><span class="k">def</span> <span class="nf">LoadMaintSA</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Maintenance Loading per Sum Assured during Premium Payment&quot;&quot;&quot;</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">ProductSpec</span><span class="o">.</span><span class="n">LoadMaintSA</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">Product</span><span class="p">,</span> <span class="n">PolicyType</span><span class="p">,</span> <span class="n">Gen</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">result</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;lookup failed&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="LoadMaintSA2"><a class="viewcode-back" href="../../projects/generated/simplelife.policy.html#simplelife.policy.LoadMaintSA2">[docs]</a><span class="k">def</span> <span class="nf">LoadMaintSA2</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Maintenance Loading per Sum Assured after Premium Payment&quot;&quot;&quot;</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">ProductSpec</span><span class="o">.</span><span class="n">LoadMaintSA2</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">Product</span><span class="p">,</span> <span class="n">PolicyType</span><span class="p">,</span> <span class="n">Gen</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">result</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;lookup failed&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="InitSurrCharge"><a class="viewcode-back" href="../../projects/generated/simplelife.policy.html#simplelife.policy.InitSurrCharge">[docs]</a><span class="k">def</span> <span class="nf">InitSurrCharge</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Initial Surrender Charge Rate&quot;&quot;&quot;</span>
+
+    <span class="n">param1</span> <span class="o">=</span> <span class="n">ProductSpec</span><span class="o">.</span><span class="n">SurrChargeParam1</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">Product</span><span class="p">,</span> <span class="n">PolicyType</span><span class="p">,</span> <span class="n">Gen</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">param2</span> <span class="o">=</span> <span class="n">ProductSpec</span><span class="o">.</span><span class="n">SurrChargeParam2</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">Product</span><span class="p">,</span> <span class="n">PolicyType</span><span class="p">,</span> <span class="n">Gen</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="k">if</span> <span class="n">param1</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">param2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;SurrChargeParam not found&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">param1</span> <span class="o">+</span> <span class="n">param2</span> <span class="o">*</span> <span class="nb">min</span><span class="p">(</span><span class="n">PolicyTerm</span> <span class="o">/</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="NetPremRate"><a class="viewcode-back" href="../../projects/generated/simplelife.policy.html#simplelife.policy.NetPremRate">[docs]</a><span class="k">def</span> <span class="nf">NetPremRate</span><span class="p">(</span><span class="n">basis</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Net Premium Rate&quot;&quot;&quot;</span>
+
+    <span class="n">gamma2</span> <span class="o">=</span> <span class="n">LoadMaintSA2</span>
+    <span class="n">comf</span> <span class="o">=</span> <span class="n">LifeTable</span><span class="p">[</span><span class="n">Sex</span><span class="p">,</span> <span class="n">IntRate</span><span class="p">(</span><span class="n">basis</span><span class="p">),</span> <span class="n">TableID</span><span class="p">(</span><span class="n">basis</span><span class="p">)]</span>
+
+    <span class="k">if</span> <span class="n">Product</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">Product</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">comf</span><span class="o">.</span><span class="n">Axn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="o">+</span> <span class="n">gamma2</span> <span class="o">*</span> <span class="n">comf</span><span class="o">.</span><span class="n">AnnDuenx</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="n">m</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span> <span class="o">/</span> <span class="n">comf</span><span class="o">.</span><span class="n">AnnDuenx</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">Product</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">comf</span><span class="o">.</span><span class="n">Axn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="o">+</span> <span class="n">gamma2</span> <span class="o">*</span> <span class="n">comf</span><span class="o">.</span><span class="n">AnnDuenx</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="n">m</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span> <span class="o">/</span> <span class="n">comf</span><span class="o">.</span><span class="n">AnnDuenx</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;invalid product&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GrossPremRate"><a class="viewcode-back" href="../../projects/generated/simplelife.policy.html#simplelife.policy.GrossPremRate">[docs]</a><span class="k">def</span> <span class="nf">GrossPremRate</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Gross Premium Rate  per Sum Assured&quot;&quot;&quot;</span>
+
+    <span class="n">alpha</span> <span class="o">=</span> <span class="n">LoadAcqSA</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="n">LoadMaintGP</span>
+    <span class="n">gamma</span> <span class="o">=</span> <span class="n">LoadMaintSA</span>
+    <span class="n">gamma2</span> <span class="o">=</span> <span class="n">LoadMaintSA2</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">LoadMaintPremWaiverGP</span>
+
+    <span class="n">comf</span> <span class="o">=</span> <span class="n">LifeTable</span><span class="p">[</span><span class="n">Sex</span><span class="p">,</span> <span class="n">IntRate</span><span class="p">(</span><span class="s1">&#39;PREM&#39;</span><span class="p">),</span> <span class="n">TableID</span><span class="p">(</span><span class="s1">&#39;PREM&#39;</span><span class="p">)]</span>
+
+    <span class="k">if</span> <span class="n">Product</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">Product</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">comf</span><span class="o">.</span><span class="n">Axn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">+</span> <span class="n">gamma</span> <span class="o">*</span> <span class="n">comf</span><span class="o">.</span><span class="n">AnnDuenx</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+                <span class="o">+</span> <span class="n">gamma2</span> <span class="o">*</span> <span class="n">comf</span><span class="o">.</span><span class="n">AnnDuenx</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="n">m</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">beta</span> <span class="o">-</span> <span class="n">delta</span><span class="p">)</span> <span class="o">/</span> <span class="mi">12</span> <span class="o">/</span> <span class="n">comf</span><span class="o">.</span><span class="n">AnnDuenx</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">Product</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">comf</span><span class="o">.</span><span class="n">Exn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="o">+</span> <span class="n">comf</span><span class="o">.</span><span class="n">Axn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">+</span> <span class="n">gamma</span> <span class="o">*</span> <span class="n">comf</span><span class="o">.</span><span class="n">AnnDuenx</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+                <span class="o">+</span> <span class="n">gamma2</span> <span class="o">*</span> <span class="n">comf</span><span class="o">.</span><span class="n">AnnDuenx</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="n">m</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">beta</span> <span class="o">-</span> <span class="n">delta</span><span class="p">)</span> <span class="o">/</span> <span class="mi">12</span> <span class="o">/</span> <span class="n">comf</span><span class="o">.</span><span class="n">AnnDuenx</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;invalid product&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AnnualizedPremRate"><a class="viewcode-back" href="../../projects/generated/simplelife.policy.html#simplelife.policy.AnnualizedPremRate">[docs]</a><span class="k">def</span> <span class="nf">AnnualizedPremRate</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Annualized Premium Rate per Sum Assured&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">GrossPremRate</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">10</span> <span class="k">if</span> <span class="n">PremFreq</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">PremFreq</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GrossPremTable"><a class="viewcode-back" href="../../projects/generated/simplelife.policy.html#simplelife.policy.GrossPremTable">[docs]</a><span class="k">def</span> <span class="nf">GrossPremTable</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Gross premium table&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="NLPReserveRate"><a class="viewcode-back" href="../../projects/generated/simplelife.policy.html#simplelife.policy.NLPReserveRate">[docs]</a><span class="k">def</span> <span class="nf">NLPReserveRate</span><span class="p">(</span><span class="n">basis</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Net level premium reserve rate&quot;&quot;&quot;</span>
+
+    <span class="n">gamma2</span> <span class="o">=</span> <span class="n">LoadMaintSA2</span>
+
+    <span class="n">lt</span> <span class="o">=</span> <span class="n">LifeTable</span><span class="p">[</span><span class="n">Sex</span><span class="p">,</span> <span class="n">IntRate</span><span class="p">(</span><span class="n">basis</span><span class="p">),</span> <span class="n">TableID</span><span class="p">(</span><span class="n">basis</span><span class="p">)]</span>
+
+    <span class="k">if</span> <span class="n">t</span> <span class="o">&lt;=</span> <span class="n">m</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">lt</span><span class="o">.</span><span class="n">Axn</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">t</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">gamma2</span> <span class="o">*</span> <span class="n">lt</span><span class="o">.</span><span class="n">AnnDuenx</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">t</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="n">m</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">m</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> \
+                <span class="o">-</span> <span class="n">NetPremRate</span><span class="p">(</span><span class="n">basis</span><span class="p">)</span> <span class="o">*</span> <span class="n">lt</span><span class="o">.</span><span class="n">AnnDuenx</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">t</span><span class="p">,</span> <span class="n">m</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">lt</span><span class="o">.</span><span class="n">Axn</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">t</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">gamma2</span> <span class="o">*</span> <span class="n">lt</span><span class="o">.</span><span class="n">AnnDuenx</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">t</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="n">m</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">m</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ReserveRate"><a class="viewcode-back" href="../../projects/generated/simplelife.policy.html#simplelife.policy.ReserveRate">[docs]</a><span class="k">def</span> <span class="nf">ReserveRate</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Valuation Reserve Rate per Sum Assured&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="SurrCharge"><a class="viewcode-back" href="../../projects/generated/simplelife.policy.html#simplelife.policy.SurrCharge">[docs]</a><span class="k">def</span> <span class="nf">SurrCharge</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Surrender Charge Rate per Sum Assured&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">InitSurrCharge</span> <span class="o">*</span> <span class="nb">max</span><span class="p">((</span><span class="nb">min</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> <span class="o">/</span> <span class="nb">min</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CashValueRate"><a class="viewcode-back" href="../../projects/generated/simplelife.policy.html#simplelife.policy.CashValueRate">[docs]</a><span class="k">def</span> <span class="nf">CashValueRate</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Cash Value Rate per Sum Assured&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">NLPReserveRate</span><span class="p">(</span><span class="s1">&#39;PREM&#39;</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="o">-</span> <span class="n">SurrCharge</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UnearnedPremRate"><a class="viewcode-back" href="../../projects/generated/simplelife.policy.html#simplelife.policy.UnearnedPremRate">[docs]</a><span class="k">def</span> <span class="nf">UnearnedPremRate</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Unearned Premium Rate&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017, Fumito Hamamura.<br/>
+      Last updated on Jan 01, 2018.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

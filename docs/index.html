@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>lifelib: Actuarial models in Python &#8212; lifelib 0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Quick Start" href="quickstart.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">
+          lifelib</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#create-a-project">Create a Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#building-the-model">Building the model</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="projects/simplelife.html">Project Template: simplelife</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="projects/simplelife.html#how-to-use-the-template">How to use the template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="projects/simplelife.html#model-structure">Model structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="projects/generated/simplelife.build.html">build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="projects/generated/simplelife.build_input.html">build_input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="projects/generated/simplelife.lifetable.html">lifetable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="projects/generated/simplelife.policy.html">policy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="projects/generated/simplelife.assumptions.html">assumptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="projects/generated/simplelife.economic.html">economic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="projects/generated/simplelife.projection.html">projection</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="projects/simplelife.html#indexes">Indexes</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">lifelib: Actuarial models in Python</a><ul>
+<li><a class="reference internal" href="#features">Features</a></li>
+<li><a class="reference internal" href="#links">Links</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="quickstart.html" title="Next Chapter: Quick Start"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Quick Start &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#create-a-project">Create a Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#building-the-model">Building the model</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="projects/simplelife.html">Project Template: simplelife</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="projects/simplelife.html#how-to-use-the-template">How to use the template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="projects/simplelife.html#model-structure">Model structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="projects/generated/simplelife.build.html">build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="projects/generated/simplelife.build_input.html">build_input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="projects/generated/simplelife.lifetable.html">lifetable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="projects/generated/simplelife.policy.html">policy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="projects/generated/simplelife.assumptions.html">assumptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="projects/generated/simplelife.economic.html">economic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="projects/generated/simplelife.projection.html">projection</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="projects/simplelife.html#indexes">Indexes</a></li>
+</ul>
+</li>
+</ul>
+
+<form action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        </div>
+      </div>
+    <div class="col-md-9 content">
+      
+  <div class="section" id="lifelib-actuarial-models-in-python">
+<h1>lifelib: Actuarial models in Python<a class="headerlink" href="#lifelib-actuarial-models-in-python" title="Permalink to this headline">¶</a></h1>
+<p><strong>lifelib</strong> is a collection of customizable
+life actuarial models written in Python.</p>
+<p>lifelib is built on top of <a class="reference external" href="http://docs.modelx.io">modelx</a>, a Python package for building
+complex models of formulas and data.
+Once lifelib models are built, they are avaialable as modelx <a class="reference external" href="http://docs.modelx.io/en/latest/reference/generated/modelx.core.model.Model.html">Model</a> objects.</p>
+<p>A model is composed of <a class="reference external" href="http://docs.modelx.io/en/latest/reference/generated/modelx.core.model.Space.html">Space</a> objects.
+Spaces are units for grouping relevant formulas and data in a model.
+Within each spaces, there are <a class="reference external" href="http://docs.modelx.io/en/latest/reference/generated/modelx.core.model.Cells.html">Cells</a> objects.
+<a class="reference external" href="http://docs.modelx.io/en/latest/reference/generated/modelx.core.model.Cells.html">Cells</a> are much like cells in spreadsheets. Formulas are associated with cells and
+values are stored in them.</p>
+<p>With lifelib, you can:</p>
+<ul class="simple">
+<li>Create a project folder from a lifelib project template,</li>
+<li>Build a model from Python modules input data in the project,</li>
+<li>Get calculated values by simply accessing model elements,</li>
+<li>Customize the model by changing input and writing formulas in Python,</li>
+<li>Output results to Pandas objects,</li>
+<li>Save the model, load it back again, and do much more.</li>
+</ul>
+<p>Start from <a class="reference internal" href="quickstart.html"><span class="doc">Quick Start</span></a> page.</p>
+<div class="section" id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Cells containing formulas and data</li>
+<li>Cells graph to track cells interdependency</li>
+<li>Spaces to organize cells by related calculations</li>
+<li>Sub-spacing (having nested spaces within spaces)</li>
+<li>Space inheritance</li>
+<li>Dynamic parametrized spaces created automatically</li>
+<li>Saving to / loading from files</li>
+<li>Conversion to Pandas objects</li>
+<li>Reading data from Excel files</li>
+</ul>
+</div>
+<div class="section" id="links">
+<h2>Links<a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><a class="reference external" href="http://docs.modelx.io">modelx</a></dt>
+<dd>A Python package for building complex models of formulas and data.</dd>
+<dt><a class="reference external" href="https://pypi.python.org/pypi/lifelib/">lifelib on PyPI</a></dt>
+<dd>lifelib’s Python Package Index page.</dd>
+<dt><a class="reference external" href="https://github.com/fumitoh/lifelib">Development site</a></dt>
+<dd>Github repository of lifelib.</dd>
+</dl>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017, Fumito Hamamura.<br/>
+      Last updated on Jan 01, 2018.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

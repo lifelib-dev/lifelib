@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>simplelife.lifetable &#8212; lifelib 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          lifelib</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#create-a-project">Create a Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#building-the-model">Building the model</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../projects/simplelife.html">Project Template: simplelife</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../projects/simplelife.html#how-to-use-the-template">How to use the template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../projects/simplelife.html#model-structure">Model structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../projects/generated/simplelife.build.html">build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../projects/generated/simplelife.build_input.html">build_input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../projects/generated/simplelife.lifetable.html">lifetable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../projects/generated/simplelife.policy.html">policy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../projects/generated/simplelife.assumptions.html">assumptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../projects/generated/simplelife.economic.html">economic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../projects/generated/simplelife.projection.html">projection</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../projects/simplelife.html#indexes">Indexes</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <h1>Source code for simplelife.lifetable</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Source module to create &quot;LifeTables&quot; space from.</span>
+
+<span class="sd">This is a source module to create a space for *Life Tables and Commutation</span>
+<span class="sd">Functions*</span>
+
+<span class="sd">This module is passed to ``new_space_from_module`` method to create</span>
+<span class="sd">a space that contains cells that defines life tables and commutation functions,</span>
+<span class="sd">for a selected combination of ``Sex``, ``IntRate`` and ``MortalityTable``.</span>
+
+<span class="sd">``MortalityTable`` and ``Sex`` are used in :py:func:`qx` below to identify</span>
+<span class="sd">the mortality rates to be applied.</span>
+
+<span class="sd">Example</span>
+<span class="sd">    Sample script::</span>
+
+<span class="sd">        from modelx import *</span>
+<span class="sd">        space = new_model().new_space_from_module(module_=lifetable)</span>
+<span class="sd">        space.Sex = &#39;M&#39;</span>
+<span class="sd">        space.IntRate = 0.03</span>
+<span class="sd">        space.MortalityTable = lambda sex, x: 0.001 if x &lt; 110 else 1</span>
+
+<span class="sd">References:</span>
+<span class="sd">    * `International actuarial notation by F.S.Perryman &lt;https://www.casact.org/pubs/proceed/proceed49/49123.pdf&gt;`_</span>
+
+
+<span class="sd">Attributes:</span>
+
+<span class="sd">    Sex: &#39;M&#39; or &#39;F&#39; to indicate male or female column in the mortality table.</span>
+<span class="sd">    IntRate: The constant interest rate for discounting.</span>
+<span class="sd">    MortalityTable: The ultimate mortality table by sex and age.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="disc"><a class="viewcode-back" href="../../projects/generated/simplelife.lifetable.html#simplelife.lifetable.disc">[docs]</a><span class="k">def</span> <span class="nf">disc</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;The discount factor :math:`v = 1/(1 + i)`.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">IntRate</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="lx"><a class="viewcode-back" href="../../projects/generated/simplelife.lifetable.html#simplelife.lifetable.lx">[docs]</a><span class="k">def</span> <span class="nf">lx</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The number of persons remaining at age ``x``. &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">100000</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">lx</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">dx</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="dx"><a class="viewcode-back" href="../../projects/generated/simplelife.lifetable.html#simplelife.lifetable.dx">[docs]</a><span class="k">def</span> <span class="nf">dx</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The number of persons who die between ages ``x`` and ``x+1``&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">lx</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">qx</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="qx"><a class="viewcode-back" href="../../projects/generated/simplelife.lifetable.html#simplelife.lifetable.qx">[docs]</a><span class="k">def</span> <span class="nf">qx</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Probability that a person at age ``x`` will die in one year.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">MortalityTable</span><span class="p">(</span><span class="n">Sex</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Dx"><a class="viewcode-back" href="../../projects/generated/simplelife.lifetable.html#simplelife.lifetable.Dx">[docs]</a><span class="k">def</span> <span class="nf">Dx</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The commutation column :math:`D_{x} = l_{x}v^{x}`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">lx</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">disc</span> <span class="o">**</span> <span class="n">x</span></div>
+
+
+<div class="viewcode-block" id="Cx"><a class="viewcode-back" href="../../projects/generated/simplelife.lifetable.html#simplelife.lifetable.Cx">[docs]</a><span class="k">def</span> <span class="nf">Cx</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The commutation column :math:`\\overline{C_x}`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">dx</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">disc</span> <span class="o">**</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Nx"><a class="viewcode-back" href="../../projects/generated/simplelife.lifetable.html#simplelife.lifetable.Nx">[docs]</a><span class="k">def</span> <span class="nf">Nx</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The commutation column :math:`N_x`.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="mi">110</span><span class="p">:</span>    <span class="c1"># TODO: Get the last age from the table</span>
+        <span class="k">return</span> <span class="n">Dx</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Nx</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">Dx</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Mx"><a class="viewcode-back" href="../../projects/generated/simplelife.lifetable.html#simplelife.lifetable.Mx">[docs]</a><span class="k">def</span> <span class="nf">Mx</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The commutation column :math:`M_x`.&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="mi">110</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Dx</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Mx</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">Cx</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Ax"><a class="viewcode-back" href="../../projects/generated/simplelife.lifetable.html#simplelife.lifetable.Ax">[docs]</a><span class="k">def</span> <span class="nf">Ax</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The present value of a lifetime assurance on a person at age ``x``</span>
+<span class="sd">    payable immediately upon death, optionally with an waiting period of ``f`` years.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \\require{enclose}{}_{f|}\\overline{A}_{x}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Mx</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">f</span><span class="p">)</span> <span class="o">/</span> <span class="n">Dx</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Axn"><a class="viewcode-back" href="../../projects/generated/simplelife.lifetable.html#simplelife.lifetable.Axn">[docs]</a><span class="k">def</span> <span class="nf">Axn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The present value of an assurance on a person at age ``x`` payable</span>
+<span class="sd">    immediately upon death, optionally with an waiting period of ``f`` years.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \\require{enclose}{}_{f|}\\overline{A}^{1}_{x:\\enclose{actuarial}{n}}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">Mx</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">f</span><span class="p">)</span> <span class="o">-</span> <span class="n">Mx</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">f</span> <span class="o">+</span> <span class="n">n</span><span class="p">))</span> <span class="o">/</span> <span class="n">Dx</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Exn"><a class="viewcode-back" href="../../projects/generated/simplelife.lifetable.html#simplelife.lifetable.Exn">[docs]</a><span class="k">def</span> <span class="nf">Exn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; The value of an endowment on a person at age ``x``</span>
+<span class="sd">    payable after n years</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        {}_{n}E_x</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">Dx</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">n</span><span class="p">)</span> <span class="o">/</span> <span class="n">Dx</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AnnDuenx"><a class="viewcode-back" href="../../projects/generated/simplelife.lifetable.html#simplelife.lifetable.AnnDuenx">[docs]</a><span class="k">def</span> <span class="nf">AnnDuenx</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; The present value of an annuity-due.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \\require{enclose}{}_{f|}\\ddot{a}_{x:\\enclose{actuarial}{n}}^{(k)}</span>
+
+
+<span class="sd">    Args:</span>
+<span class="sd">        x(int): age</span>
+<span class="sd">        n(int): length of annuity payments in years</span>
+<span class="sd">        k(int, optional): number of split payments in a year</span>
+<span class="sd">        f(int, optional): waiting period in years</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">Nx</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">f</span><span class="p">)</span> <span class="o">-</span> <span class="n">Nx</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">f</span> <span class="o">+</span> <span class="n">n</span><span class="p">))</span> <span class="o">/</span> <span class="n">Dx</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">k</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">result</span> <span class="o">-</span> <span class="p">(</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">k</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">Dx</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">f</span> <span class="o">+</span> <span class="n">n</span><span class="p">)</span> <span class="o">/</span> <span class="n">Dx</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="AnnDuex"><a class="viewcode-back" href="../../projects/generated/simplelife.lifetable.html#simplelife.lifetable.AnnDuex">[docs]</a><span class="k">def</span> <span class="nf">AnnDuex</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The present value of a lifetime annuity due.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x(int): age</span>
+<span class="sd">        k(int, optional): number of split payments in a year</span>
+<span class="sd">        f(int, optional): waiting period in years</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">Nx</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">f</span><span class="p">))</span> <span class="o">/</span> <span class="n">Dx</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">k</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">result</span> <span class="o">-</span> <span class="p">(</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">k</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017, Fumito Hamamura.<br/>
+      Last updated on Jan 01, 2018.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

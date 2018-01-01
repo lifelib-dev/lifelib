@@ -1,0 +1,22 @@
+build_input
+======================
+
+.. automodule:: simplelife.build_input
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      ~build_input
+   
+   
+
+   
+   
+   
+
+   
+   
+   
