@@ -313,7 +313,14 @@ def prj_bnft_Total(t):
         + prj_bnft_Surgery(t) \
         + prj_bnft_Living(t) \
         + prj_bnft_Other(t)
-    
+
+def prj_NetLiabilityCashflow(t):
+    """Net liability cashflow"""
+    return \
+        prj_incm_Premium(t) \
+        - prj_bnft_Total(t) \
+        - prj_exps_Total(t)
+
 def prj_ChangeInReserve(t):
     """Change in reserve"""
     return prj_rsv_Total_EoP(t + 1) - prj_rsv_Total_EoP(t)
