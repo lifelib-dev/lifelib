@@ -150,7 +150,7 @@ def NetPremRate(basis):
 
 
 def GrossPremRate():
-    """Gross Premium Rate  per Sum Assured"""
+    """Gross Premium Rate per Sum Assured per payment"""
 
     alpha = LoadAcqSA
     beta = LoadMaintGP
@@ -161,12 +161,12 @@ def GrossPremRate():
     comf = LifeTable[Sex, IntRate('PREM'), TableID('PREM')]
 
     if Product == 1 or Product == 2:
-        return (comf.Axn(x, n) + alpha + gamma * comf.AnnDuenx(x, n, 12)
-                + gamma2 * comf.AnnDuenx(x, n - m, 1, m)) / (1 - beta - delta) / 12 / comf.AnnDuenx(x, m, 12)
+        return (comf.Axn(x, n) + alpha + gamma * comf.AnnDuenx(x, n, PremFreq)
+                + gamma2 * comf.AnnDuenx(x, n - m, 1, m)) / (1 - beta - delta) / PremFreq / comf.AnnDuenx(x, m, PremFreq)
 
     elif Product == 3:
-        return (comf.Exn(x, n) + comf.Axn(x, n) + alpha + gamma * comf.AnnDuenx(x, n, 12)
-                + gamma2 * comf.AnnDuenx(x, n - m, 1, m)) / (1 - beta - delta) / 12 / comf.AnnDuenx(x, m, 12)
+        return (comf.Exn(x, n) + comf.Axn(x, n) + alpha + gamma * comf.AnnDuenx(x, n, PremFreq)
+                + gamma2 * comf.AnnDuenx(x, n - m, 1, m)) / (1 - beta - delta) / PremFreq / comf.AnnDuenx(x, m, PremFreq)
     else:
         raise ValueError('invalid product')
 

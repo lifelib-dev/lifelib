@@ -24,7 +24,7 @@ def ppl_AnnualizedPrem(t):
 # --- Income ---
 def ppl_incm_Premium(t):
     """Premium income per policy from t to t+1"""
-    return ppl_SumAssured(t) * pol.GrossPremRate
+    return ppl_SumAssured(t) * pol.GrossPremRate * pol.PremFreq
 
 def ppl_incm_Investment(t):
     """Investment Income per policy from t to t+1"""
