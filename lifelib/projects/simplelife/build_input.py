@@ -88,8 +88,20 @@ Scenarios
 
 """
 import os.path as path
+import time
 
 default_input = path.join(path.abspath(path.dirname(__file__)), 'input.xlsm')
+
+
+class PrintElapsedTime:
+
+    def __init__(self):
+        self.last_time = time.time()
+
+    def print_time(self, msg):
+        this_time = time.time()
+        print(msg, this_time - self.last_time)
+        self.last_time = this_time
 
 
 def build_input(model, input_file=default_input):
@@ -107,19 +119,13 @@ def build_input(model, input_file=default_input):
         model: Model object in which 'Input' space is created.
         input_file(str): Path to the Excel input file.
     """
-    import time
-    debug_dur = True
-    timestamp = time.time()
-
-    def print_duration(msg):
-        global timestamp
-        print(msg, time.time() - timestamp)
-        timestamp = time.time()
 
     inp = model.new_space(name='Input')
     inp.can_have_none = True
+    print_time = True
 
-    timestamp = time.time()
+    if print_time:
+        timestamp = PrintElapsedTime()
 
     policydata = inp.new_space_from_excel(
         book=input_file,
@@ -131,7 +137,8 @@ def build_input(model, input_file=default_input):
         space_param_order=[0],
         cells_param_order=[])
 
-    print_duration('policydata: ') if debug_dur else None
+    if print_time:
+        timestamp.print_time('policydata: ')
 
     mortbl = inp.new_space_from_excel(
         book=input_file,
@@ -145,7 +152,8 @@ def build_input(model, input_file=default_input):
         space_param_order=[1],
         cells_param_order=[2, 0])
 
-    print_duration('mortbl: ') if debug_dur else None
+    if print_time:
+        timestamp.print_time('mortbl: ')
 
     prodspec = inp.new_space(name='ProductSpec')
     prodspec.new_cells_from_excel(
@@ -156,7 +164,8 @@ def build_input(model, input_file=default_input):
         param_cols=[0, 1, 2],
         param_order=[0, 1, 2])
 
-    print_duration('prodspec: ') if debug_dur else None
+    if print_time:
+        timestamp.print_time('prodspec: ')
 
     inp.new_cells_from_excel(
         book=input_file,
@@ -166,7 +175,8 @@ def build_input(model, input_file=default_input):
         param_cols=[0],
         param_order=[0])
 
-    print_duration('OtherParams1: ') if debug_dur else None
+    if print_time:
+        timestamp.print_time('OtherParams1: ')
 
     inp.new_cells_from_excel(
         book=input_file,
@@ -176,7 +186,8 @@ def build_input(model, input_file=default_input):
         param_cols=[0],
         param_order=[0])
 
-    print_duration('OtherParams2: ') if debug_dur else None
+    if print_time:
+        timestamp.print_time('OtherParams2: ')
 
     asmp = inp.new_space(name='Assumptions')
     asmp.new_cells_from_excel(
@@ -187,7 +198,8 @@ def build_input(model, input_file=default_input):
         param_cols=[0, 1, 2],
         param_order=[0, 1, 2])
 
-    print_duration('Assumptions: ') if debug_dur else None
+    if print_time:
+        timestamp.print_time('Assumptions: ')
 
     asmptbls = inp.new_space(name='AssumptionTables')
     asmptbls.new_cells_from_excel(
@@ -198,7 +210,8 @@ def build_input(model, input_file=default_input):
         param_cols=[0],
         param_order=[0])
 
-    print_duration('AssumptionTables: ') if debug_dur else None
+    if print_time:
+        timestamp.print_time('AssumptionTables: ')
 
     scenarios = inp.new_space_from_excel(
         book=input_file,
@@ -210,6 +223,7 @@ def build_input(model, input_file=default_input):
         space_param_order=[0],
         cells_param_order=[1])
 
-    if debug_dur: print_duration('Scenarios: ')
+    if print_time:
+        timestamp.print_time('Scenarios: ')
 
     return inp
