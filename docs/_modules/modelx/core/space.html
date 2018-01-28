@@ -3,13 +3,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>modelx.core.space &#8212; lifelib 0.0.1 documentation</title>
+    <title>modelx.core.space &#8212; lifelib 0.0.3.dev documentation</title>
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '0.0.1',
+        VERSION:     '0.0.3.dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -58,7 +58,7 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           lifelib</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.3.dev</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -173,7 +173,7 @@
     <span class="n">ImplChainMap</span><span class="p">,</span>
     <span class="n">ImmutableMapWrapper</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">modelx.core.formula</span> <span class="k">import</span> <span class="n">Formula</span><span class="p">,</span> <span class="n">create_closure</span>
-<span class="kn">from</span> <span class="nn">modelx.core.cells</span> <span class="k">import</span> <span class="n">Cells</span><span class="p">,</span> <span class="n">CellsImpl</span><span class="p">,</span> <span class="n">cells_to_vals</span>
+<span class="kn">from</span> <span class="nn">modelx.core.cells</span> <span class="k">import</span> <span class="n">Cells</span><span class="p">,</span> <span class="n">CellsImpl</span><span class="p">,</span> <span class="n">cells_to_argvals</span>
 <span class="kn">from</span> <span class="nn">modelx.core.util</span> <span class="k">import</span> <span class="n">AutoNamer</span><span class="p">,</span> <span class="n">is_valid_name</span><span class="p">,</span> <span class="n">get_module</span>
 
 
@@ -182,7 +182,7 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
-        <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="n">cells_to_vals</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="n">cells_to_argvals</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
         <span class="n">ObjectArgs</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">space</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj_</span>
 
@@ -1634,7 +1634,7 @@
     </p>
     <p>
         &copy; Copyright 2017, Fumito Hamamura.<br/>
-      Last updated on Jan 02, 2018.<br/>
+      Last updated on Jan 28, 2018.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.<br/>
     </p>
   </div>

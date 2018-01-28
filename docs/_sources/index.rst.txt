@@ -6,6 +6,21 @@
 lifelib: Actuarial models in Python
 =====================================
 
+
+.. raw:: html
+
+   <!-- Modified from https://github.com/mwaskom/seaborn/blob/master/doc/index.rst -->
+
+    <div style="clear: both"></div>
+    <div class="container-fluid">
+      <!-- div class="row" -->
+        <a href="projects/simplelife.html">
+            <img src="_static/LiabilityCashflow.png">
+        </a>
+      <!-- /div -->
+    </div>
+    <br>
+
 **lifelib** is a collection of customizable
 life actuarial models written in Python.
 

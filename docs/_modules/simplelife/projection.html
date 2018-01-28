@@ -3,13 +3,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>simplelife.projection &#8212; lifelib 0.0.1 documentation</title>
+    <title>simplelife.projection &#8212; lifelib 0.0.3.dev documentation</title>
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.0.1',
+        VERSION:     '0.0.3.dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -58,7 +58,7 @@
         </button>
         <a class="navbar-brand" href="../../index.html">
           lifelib</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.3.dev</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -167,7 +167,7 @@
 <span class="c1"># --- Income ---</span>
 <div class="viewcode-block" id="ppl_incm_Premium"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_incm_Premium">[docs]</a><span class="k">def</span> <span class="nf">ppl_incm_Premium</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Premium income per policy from t to t+1&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">ppl_SumAssured</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">pol</span><span class="o">.</span><span class="n">GrossPremRate</span></div>
+    <span class="k">return</span> <span class="n">ppl_SumAssured</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">pol</span><span class="o">.</span><span class="n">GrossPremRate</span> <span class="o">*</span> <span class="n">pol</span><span class="o">.</span><span class="n">PremFreq</span></div>
 
 <div class="viewcode-block" id="ppl_incm_Investment"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.ppl_incm_Investment">[docs]</a><span class="k">def</span> <span class="nf">ppl_incm_Investment</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Investment Income per policy from t to t+1&quot;&quot;&quot;</span>
@@ -456,7 +456,14 @@
         <span class="o">+</span> <span class="n">prj_bnft_Surgery</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> \
         <span class="o">+</span> <span class="n">prj_bnft_Living</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> \
         <span class="o">+</span> <span class="n">prj_bnft_Other</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
-    
+
+<div class="viewcode-block" id="prj_NetLiabilityCashflow"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_NetLiabilityCashflow">[docs]</a><span class="k">def</span> <span class="nf">prj_NetLiabilityCashflow</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Net liability cashflow&quot;&quot;&quot;</span>
+    <span class="k">return</span> \
+        <span class="n">prj_incm_Premium</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> \
+        <span class="o">-</span> <span class="n">prj_bnft_Total</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> \
+        <span class="o">-</span> <span class="n">prj_exps_Total</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="prj_ChangeInReserve"><a class="viewcode-back" href="../../projects/generated/simplelife.projection.html#simplelife.projection.prj_ChangeInReserve">[docs]</a><span class="k">def</span> <span class="nf">prj_ChangeInReserve</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Change in reserve&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">prj_rsv_Total_EoP</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">prj_rsv_Total_EoP</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
@@ -506,7 +513,7 @@
     </p>
     <p>
         &copy; Copyright 2017, Fumito Hamamura.<br/>
-      Last updated on Jan 02, 2018.<br/>
+      Last updated on Jan 28, 2018.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.<br/>
     </p>
   </div>
