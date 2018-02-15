@@ -5,6 +5,9 @@ This module contains a function :py:func:`build_input`,
 which creates "Input" space and its subspaces by reading
 input data into them from an Excel file.
 
+.. figure:: /images/input_tree.png
+    :width: 50%
+
 By default, :py:func:`build_input` reads data from *input.xlsm* in the
 same folder as this module, and the structure of ``Input`` space is illustrated
 by the diagram below.
