@@ -22,6 +22,7 @@ cfs[vars[1:]] = cfs[vars[1:]].mul(-1)
 ncf = proj[polid].prj_NetLiabilityCashflow.frame.sort_index()
 
 import seaborn as sns
+sns.set()
 
 axes = ncf.plot.line(marker='o', color='r')
 cfs.plot(kind='bar', stacked=True, ax=axes)
