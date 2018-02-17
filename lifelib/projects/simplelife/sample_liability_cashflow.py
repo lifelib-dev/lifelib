@@ -1,6 +1,10 @@
 """Draw a graph of liability cashflows of a simple whole life policy"""
 
-from lifelib.projects.simplelife.build import *
+import build
+
+build.load_input = True
+
+proj = build.build().Projection
 
 vars = ['prj_incm_Premium',
         'prj_bnft_Surrender',
