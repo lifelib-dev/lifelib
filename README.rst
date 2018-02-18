@@ -8,7 +8,7 @@ lifelib is a collection of prototypes of life insurance models.
 
 License
 -------
-Copyright (c) 2017 Fumito Hamamura
+Copyright (c) 2017-2018 Fumito Hamamura
 
 lifelib is free software; you can redistribute it and/or
 modify it under the terms of
