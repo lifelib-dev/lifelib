@@ -1,18 +1,12 @@
-"""The main script to build a simplelife model.
+"""The main module to build a simplelife model.
 
-.. rubric:: Model
+This module contains only one function :py:func:`build`,
+which creates a model from source modules and return it.
 
-Attributes:
-    model: The model object that contains all the spaces.
-
-.. rubric:: Spaces
-
-Attributes:
-    lifetable: :py:mod:`LifeTable<simplelife.lifetable>` space
-    policy: :py:mod:`Policy<simplelife.policy>` space
-    asmp: :py:mod:`Assumptions<simplelife.assumptions>` space
-    proj: :py:mod:`Projection<simplelife.projection>` sapce
+If this module is run as a script, the :py:func:`build` function is called
+and the created model is available as ``model`` global variable.
 """
+
 import sys, os
 import modelx as mx
 
@@ -25,7 +19,17 @@ else:
 
 
 def build(load_saved=False):
-    """Build a model and return it"""
+    """Build a model and return it.
+
+    Read input data from `input.xlsm`, create `Input` space and its
+    subspace and cells and populate them with the data.
+
+    Args:
+        load_saved: If ``True``, input data is read from `lifelib.mx` file
+            instead of `input.xlsm`, which is saved when
+            :py:func:`build_input <simplelife.build_input.build_input>`
+            is executed last time. Defaults to ``False``
+    """
 
     # ------------------------------------------------------------------------
     # Build Input space

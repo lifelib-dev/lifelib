@@ -1,5 +1,5 @@
-"""A script called from :mod:`build.py <simplelife.build>`
-to create "Input" space and its subspaces from input data.
+"""Used from :mod:`simplelife <simplelife.simplelife>`
+to create ``Input`` space and its subspaces from input data.
 
 This module contains a function :py:func:`build_input`,
 which creates "Input" space and its subspaces by reading

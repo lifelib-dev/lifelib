@@ -1,7 +1,7 @@
 .. module:: simplelife
 
-Project Template: simplelife
-============================
+Project Template: **simplelife**
+================================
 
 **simplelife** is a project template to build an annual projection
 model of basic traditional life policies.
@@ -28,24 +28,24 @@ How to use the template
 -----------------------
 
 Create a project folder as explained in :ref:`create-a-project` section.
-To build the model, simply run :py:mod:`build.py <simplelife.build>`,
+To build the model, simply run :py:mod:`simplelife <simplelife.simplelife>`,
 then move to the interactive mode. In Spyder, you can do so by opening the
-:py:mod:`build.py <simplelife.build>` and simply run it.
+:py:mod:`simplelife <simplelife.simplelife>` and simply run it.
 After the script is run, the model is accessible
-as :py:data:`model<simplelife.build.model>` global variable
+as :py:data:`model<simplelife.simplelife.model>` global variable
 in the IPython console in `Spyder`_.
 
 
 You want to make sure the Python session will not terminate after the script is run,
 in order for you to do manipulate the model.
 
-The model is accessible through the global variable named :py:data:`model<simplelife.build.model>`.
+The model is accessible through the global variable named :py:data:`model<simplelife.simplelife.model>`.
 It is a Model object. Some components of the model are also accessible through global variables.
 These are Space objcets. Model and Space are classes defined in modelx package.
 For the complete list of model componets available as global variables,
-see :py:mod:`build <simplelife.build>` page.
+see :py:mod:`simplelife <simplelife.simplelife>` page.
 
-See :py:mod:`build <simplelife.build>` page for further details on the building process,
+See :py:mod:`simplelife <simplelife.simplelife>` page for further details on the building process,
 
 There is no explicit 'Run' command to run the model. The model calculates its values on the fly, when requested.
 
@@ -66,7 +66,7 @@ as they are quite a few. For details on the Input subspaces, see :py:mod:`simple
    :toctree: generated/
    :template: llmodule.rst
 
-   ~build
+   ~simplelife
    ~build_input
    ~lifetable
    ~policy

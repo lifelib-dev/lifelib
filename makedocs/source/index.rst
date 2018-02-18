@@ -3,8 +3,10 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-lifelib: Actuarial models in Python
-=====================================
+.. currentmodule:: lifelib
+
+**lifelib**: Actuarial models in Python
+=======================================
 
 
 .. raw:: html
@@ -21,25 +23,33 @@ lifelib: Actuarial models in Python
     </div>
     <br>
 
-**lifelib** is a collection of customizable
-life actuarial models written in Python.
 
-lifelib is built on top of `modelx`_, a Python package for building
-complex models of formulas and data.
-Once lifelib models are built, they are avaialable as modelx `Model`_ objects.
+**lifelib** is a collection of actuarial projection models.
+lifelib models are built as `modelx`_ models, ready to be used out of the box
+with sample formulas and input files, and they are
+fully customizable by users.
 
-A model is composed of `Space`_ objects.
-Spaces are units for grouping relevant formulas and data in a model.
-Within each spaces, there are `Cells`_ objects.
-`Cells`_ are much like cells in spreadsheets. Formulas are associated with cells and
-values are stored in them.
+How **lifelib** works
+---------------------
 
-With lifelib, you can:
+You can create an actuarial projection model as `modelx`_ `Model`_ object by:
 
-- Create a project folder from a lifelib project template,
-- Build a model from Python modules input data in the project,
+- Creating a project folder from a lifelib project template,
+- Build a `modelx`_ `Model`_ from source modules and
+  input data in the project, by running
+  :py:func:`build <simplelife.simplelife.build>` function.
+
+Once the model is built, they are available as a modelx `Model`_ object
+in Python console. The model is composed of `Space`_.
+Spaces contain `Cells`_ and other spaces.
+`Cells`_ are much like cells in spreadsheets, which in turn, can store
+formulas and associated values.
+
+With a lifelib model, you can:
+
 - Get calculated values by simply accessing model elements,
-- Customize the model by changing input and writing formulas in Python,
+- Change the model by changing input and writing formulas in Python,
+- View the tree of model elements in graphical user interface,
 - Output results to Pandas objects,
 - Save the model, load it back again, and do much more.
 
@@ -51,18 +61,39 @@ Start from :doc:`quickstart` page.
 .. _Space: http://docs.modelx.io/en/latest/reference/generated/modelx.core.model.Space.html
 .. _Cells: http://docs.modelx.io/en/latest/reference/generated/modelx.core.model.Cells.html
 
-Features
---------
 
-- Cells containing formulas and data
-- Cells graph to track cells interdependency
-- Spaces to organize cells by related calculations
-- Sub-spacing (having nested spaces within spaces)
+Feature highlights
+------------------
+
+- Formulas and their calculated values paired as `Cells`_,
+  just like spreadsheet cells
+- Relevant cells grouped together as a `Space`_, just like a spreadsheet
+- Spaces in other spaces (subspaces), forming trees of spaces
+- Object-oriented `Model`_ composed of spaces
 - Space inheritance
-- Dynamic parametrized spaces created automatically
+- Parametrized dynamic subspaces created automatically
 - Saving to / loading from files
 - Conversion to Pandas objects
 - Reading data from Excel files
+- Cells graph to track cells interdependency
+
+Why **lifelib**?
+----------------
+
+- Better model integrity and extensibility
+- For readable formula expressions
+- For eliminating spreadsheet errors
+- For better version control/model governance
+
+What for?
+---------
+
+- Pricing / Profit testing
+- Model validation / testing
+- Prototyping for production models
+- As corporate models
+- For simulations
+- As replacement for any spreadsheet models
 
 Links
 -----
@@ -75,9 +106,6 @@ Links
 
 `Development site <https://github.com/fumitoh/lifelib>`_
    Github repository of lifelib.
-
-
-.. currentmodule:: lifelib
 
 .. toctree::
    :hidden:
