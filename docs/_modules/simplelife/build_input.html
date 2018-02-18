@@ -81,10 +81,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#building-the-model">Building the model</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../projects/simplelife.html">Project Template: simplelife</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../projects/simplelife.html">Project Template: <strong>simplelife</strong></a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../projects/simplelife.html#how-to-use-the-template">How to use the template</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../projects/simplelife.html#model-structure">Model structure</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../projects/generated/simplelife.build.html">build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../projects/generated/simplelife.simplelife.html">simplelife</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../projects/generated/simplelife.build_input.html">build_input</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../projects/generated/simplelife.lifetable.html">lifetable</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../projects/generated/simplelife.policy.html">policy</a></li>
@@ -141,12 +141,15 @@
     <div class="col-md-12 content">
       
   <h1>Source code for simplelife.build_input</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;A script called from :mod:`build.py &lt;simplelife.build&gt;`</span>
-<span class="sd">to create &quot;Input&quot; space and its subspaces from input data.</span>
+<span></span><span class="sd">&quot;&quot;&quot;Used from :mod:`simplelife &lt;simplelife.simplelife&gt;`</span>
+<span class="sd">to create ``Input`` space and its subspaces from input data.</span>
 
 <span class="sd">This module contains a function :py:func:`build_input`,</span>
 <span class="sd">which creates &quot;Input&quot; space and its subspaces by reading</span>
 <span class="sd">input data into them from an Excel file.</span>
+
+<span class="sd">.. figure:: /images/input_tree.png</span>
+<span class="sd">    :width: 50%</span>
 
 <span class="sd">By default, :py:func:`build_input` reads data from *input.xlsm* in the</span>
 <span class="sd">same folder as this module, and the structure of ``Input`` space is illustrated</span>
@@ -232,6 +235,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">path</span>
 <span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">textwrap</span> <span class="k">import</span> <span class="n">dedent</span>
 
 <span class="n">default_input</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span> <span class="s1">&#39;input.xlsm&#39;</span><span class="p">)</span>
 
@@ -243,7 +247,7 @@
 
     <span class="k">def</span> <span class="nf">print_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="n">this_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">this_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_time</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="s2">&quot;(</span><span class="si">{:.2f}</span><span class="s2">secs)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">this_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_time</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">last_time</span> <span class="o">=</span> <span class="n">this_time</span>
 
 
@@ -270,6 +274,8 @@
     <span class="k">if</span> <span class="n">print_time</span><span class="p">:</span>
         <span class="n">timestamp</span> <span class="o">=</span> <span class="n">PrintElapsedTime</span><span class="p">()</span>
 
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Started loading data from &#39;input.xlsm&#39;.&quot;</span><span class="p">)</span>
+
     <span class="n">policydata</span> <span class="o">=</span> <span class="n">inp</span><span class="o">.</span><span class="n">new_space_from_excel</span><span class="p">(</span>
         <span class="n">book</span><span class="o">=</span><span class="n">input_file</span><span class="p">,</span>
         <span class="n">range_</span><span class="o">=</span><span class="s1">&#39;B7:O307&#39;</span><span class="p">,</span>
@@ -281,7 +287,7 @@
         <span class="n">cells_param_order</span><span class="o">=</span><span class="p">[])</span>
 
     <span class="k">if</span> <span class="n">print_time</span><span class="p">:</span>
-        <span class="n">timestamp</span><span class="o">.</span><span class="n">print_time</span><span class="p">(</span><span class="s1">&#39;policydata: &#39;</span><span class="p">)</span>
+        <span class="n">timestamp</span><span class="o">.</span><span class="n">print_time</span><span class="p">(</span><span class="s1">&#39;...Loaded PolicyData&#39;</span><span class="p">)</span>
 
     <span class="n">mortbl</span> <span class="o">=</span> <span class="n">inp</span><span class="o">.</span><span class="n">new_space_from_excel</span><span class="p">(</span>
         <span class="n">book</span><span class="o">=</span><span class="n">input_file</span><span class="p">,</span>
@@ -296,7 +302,7 @@
         <span class="n">cells_param_order</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="n">print_time</span><span class="p">:</span>
-        <span class="n">timestamp</span><span class="o">.</span><span class="n">print_time</span><span class="p">(</span><span class="s1">&#39;mortbl: &#39;</span><span class="p">)</span>
+        <span class="n">timestamp</span><span class="o">.</span><span class="n">print_time</span><span class="p">(</span><span class="s1">&#39;...Loaded MortalityTables&#39;</span><span class="p">)</span>
 
     <span class="n">prodspec</span> <span class="o">=</span> <span class="n">inp</span><span class="o">.</span><span class="n">new_space</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;ProductSpec&#39;</span><span class="p">)</span>
     <span class="n">prodspec</span><span class="o">.</span><span class="n">new_cells_from_excel</span><span class="p">(</span>
@@ -308,7 +314,7 @@
         <span class="n">param_order</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="n">print_time</span><span class="p">:</span>
-        <span class="n">timestamp</span><span class="o">.</span><span class="n">print_time</span><span class="p">(</span><span class="s1">&#39;prodspec: &#39;</span><span class="p">)</span>
+        <span class="n">timestamp</span><span class="o">.</span><span class="n">print_time</span><span class="p">(</span><span class="s1">&#39;...Loaded ProductSpec&#39;</span><span class="p">)</span>
 
     <span class="n">inp</span><span class="o">.</span><span class="n">new_cells_from_excel</span><span class="p">(</span>
         <span class="n">book</span><span class="o">=</span><span class="n">input_file</span><span class="p">,</span>
@@ -319,7 +325,7 @@
         <span class="n">param_order</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="n">print_time</span><span class="p">:</span>
-        <span class="n">timestamp</span><span class="o">.</span><span class="n">print_time</span><span class="p">(</span><span class="s1">&#39;OtherParams1: &#39;</span><span class="p">)</span>
+        <span class="n">timestamp</span><span class="o">.</span><span class="n">print_time</span><span class="p">(</span><span class="s1">&#39;...Loaded OtherParam1&#39;</span><span class="p">)</span>
 
     <span class="n">inp</span><span class="o">.</span><span class="n">new_cells_from_excel</span><span class="p">(</span>
         <span class="n">book</span><span class="o">=</span><span class="n">input_file</span><span class="p">,</span>
@@ -330,7 +336,7 @@
         <span class="n">param_order</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="n">print_time</span><span class="p">:</span>
-        <span class="n">timestamp</span><span class="o">.</span><span class="n">print_time</span><span class="p">(</span><span class="s1">&#39;OtherParams2: &#39;</span><span class="p">)</span>
+        <span class="n">timestamp</span><span class="o">.</span><span class="n">print_time</span><span class="p">(</span><span class="s1">&#39;...Loaded OtherParams2&#39;</span><span class="p">)</span>
 
     <span class="n">asmp</span> <span class="o">=</span> <span class="n">inp</span><span class="o">.</span><span class="n">new_space</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Assumptions&#39;</span><span class="p">)</span>
     <span class="n">asmp</span><span class="o">.</span><span class="n">new_cells_from_excel</span><span class="p">(</span>
@@ -342,7 +348,7 @@
         <span class="n">param_order</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="n">print_time</span><span class="p">:</span>
-        <span class="n">timestamp</span><span class="o">.</span><span class="n">print_time</span><span class="p">(</span><span class="s1">&#39;Assumptions: &#39;</span><span class="p">)</span>
+        <span class="n">timestamp</span><span class="o">.</span><span class="n">print_time</span><span class="p">(</span><span class="s1">&#39;...Loaded Assumptions&#39;</span><span class="p">)</span>
 
     <span class="n">asmptbls</span> <span class="o">=</span> <span class="n">inp</span><span class="o">.</span><span class="n">new_space</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;AssumptionTables&#39;</span><span class="p">)</span>
     <span class="n">asmptbls</span><span class="o">.</span><span class="n">new_cells_from_excel</span><span class="p">(</span>
@@ -354,7 +360,7 @@
         <span class="n">param_order</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="n">print_time</span><span class="p">:</span>
-        <span class="n">timestamp</span><span class="o">.</span><span class="n">print_time</span><span class="p">(</span><span class="s1">&#39;AssumptionTables: &#39;</span><span class="p">)</span>
+        <span class="n">timestamp</span><span class="o">.</span><span class="n">print_time</span><span class="p">(</span><span class="s1">&#39;...Loaded AssumptionTables&#39;</span><span class="p">)</span>
 
     <span class="n">scenarios</span> <span class="o">=</span> <span class="n">inp</span><span class="o">.</span><span class="n">new_space_from_excel</span><span class="p">(</span>
         <span class="n">book</span><span class="o">=</span><span class="n">input_file</span><span class="p">,</span>
@@ -367,7 +373,12 @@
         <span class="n">cells_param_order</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="n">print_time</span><span class="p">:</span>
-        <span class="n">timestamp</span><span class="o">.</span><span class="n">print_time</span><span class="p">(</span><span class="s1">&#39;Scenarios: &#39;</span><span class="p">)</span>
+        <span class="n">timestamp</span><span class="o">.</span><span class="n">print_time</span><span class="p">(</span><span class="s1">&#39;...Loaded Scenarios&#39;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">        Input space and its sub spaces are saved in &#39;lifelib.mx&#39;.</span>
+<span class="s2">        You can load input data from the saved file instead of &#39;input.xlsx&#39;</span>
+<span class="s2">        by passing &#39;load_saved=True&#39; to simplelife.build function.&quot;&quot;&quot;</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="n">inp</span></div>
 </pre></div>
@@ -384,7 +395,7 @@
     </p>
     <p>
         &copy; Copyright 2017, Fumito Hamamura.<br/>
-      Last updated on Jan 28, 2018.<br/>
+      Last updated on Feb 18, 2018.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.<br/>
     </p>
   </div>

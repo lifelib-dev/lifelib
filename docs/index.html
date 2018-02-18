@@ -82,10 +82,10 @@
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#building-the-model">Building the model</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="projects/simplelife.html">Project Template: simplelife</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="projects/simplelife.html">Project Template: <strong>simplelife</strong></a><ul>
 <li class="toctree-l2"><a class="reference internal" href="projects/simplelife.html#how-to-use-the-template">How to use the template</a></li>
 <li class="toctree-l2"><a class="reference internal" href="projects/simplelife.html#model-structure">Model structure</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="projects/generated/simplelife.build.html">build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="projects/generated/simplelife.simplelife.html">simplelife</a></li>
 <li class="toctree-l3"><a class="reference internal" href="projects/generated/simplelife.build_input.html">build_input</a></li>
 <li class="toctree-l3"><a class="reference internal" href="projects/generated/simplelife.lifetable.html">lifetable</a></li>
 <li class="toctree-l3"><a class="reference internal" href="projects/generated/simplelife.policy.html">policy</a></li>
@@ -110,8 +110,11 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">lifelib: Actuarial models in Python</a><ul>
-<li><a class="reference internal" href="#features">Features</a></li>
+<li><a class="reference internal" href="#"><strong>lifelib</strong>: Actuarial models in Python</a><ul>
+<li><a class="reference internal" href="#how-lifelib-works">How <strong>lifelib</strong> works</a></li>
+<li><a class="reference internal" href="#feature-highlights">Feature highlights</a></li>
+<li><a class="reference internal" href="#why-lifelib">Why <strong>lifelib</strong>?</a></li>
+<li><a class="reference internal" href="#what-for">What for?</a></li>
 <li><a class="reference internal" href="#links">Links</a></li>
 </ul>
 </li>
@@ -160,10 +163,10 @@
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#building-the-model">Building the model</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="projects/simplelife.html">Project Template: simplelife</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="projects/simplelife.html">Project Template: <strong>simplelife</strong></a><ul>
 <li class="toctree-l2"><a class="reference internal" href="projects/simplelife.html#how-to-use-the-template">How to use the template</a></li>
 <li class="toctree-l2"><a class="reference internal" href="projects/simplelife.html#model-structure">Model structure</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="projects/generated/simplelife.build.html">build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="projects/generated/simplelife.simplelife.html">simplelife</a></li>
 <li class="toctree-l3"><a class="reference internal" href="projects/generated/simplelife.build_input.html">build_input</a></li>
 <li class="toctree-l3"><a class="reference internal" href="projects/generated/simplelife.lifetable.html">lifetable</a></li>
 <li class="toctree-l3"><a class="reference internal" href="projects/generated/simplelife.policy.html">policy</a></li>
@@ -189,7 +192,7 @@
     <div class="col-md-9 content">
       
   <div class="section" id="lifelib-actuarial-models-in-python">
-<h1>lifelib: Actuarial models in Python<a class="headerlink" href="#lifelib-actuarial-models-in-python" title="Permalink to this headline">¶</a></h1>
+<h1><strong>lifelib</strong>: Actuarial models in Python<a class="headerlink" href="#lifelib-actuarial-models-in-python" title="Permalink to this headline">¶</a></h1>
 <!-- Modified from https://github.com/mwaskom/seaborn/blob/master/doc/index.rst -->
 
  <div style="clear: both"></div>
@@ -200,38 +203,68 @@
      </a>
    <!-- /div -->
  </div>
- <br><p><strong>lifelib</strong> is a collection of customizable
-life actuarial models written in Python.</p>
-<p>lifelib is built on top of <a class="reference external" href="http://docs.modelx.io">modelx</a>, a Python package for building
-complex models of formulas and data.
-Once lifelib models are built, they are avaialable as modelx <a class="reference external" href="http://docs.modelx.io/en/latest/reference/generated/modelx.core.model.Model.html">Model</a> objects.</p>
-<p>A model is composed of <a class="reference external" href="http://docs.modelx.io/en/latest/reference/generated/modelx.core.model.Space.html">Space</a> objects.
-Spaces are units for grouping relevant formulas and data in a model.
-Within each spaces, there are <a class="reference external" href="http://docs.modelx.io/en/latest/reference/generated/modelx.core.model.Cells.html">Cells</a> objects.
-<a class="reference external" href="http://docs.modelx.io/en/latest/reference/generated/modelx.core.model.Cells.html">Cells</a> are much like cells in spreadsheets. Formulas are associated with cells and
-values are stored in them.</p>
-<p>With lifelib, you can:</p>
+ <br><p><strong>lifelib</strong> is a collection of actuarial projection models.
+lifelib models are built as <a class="reference external" href="http://docs.modelx.io">modelx</a> models, ready to be used out of the box
+with sample formulas and input files, and they are
+fully customizable by users.</p>
+<div class="section" id="how-lifelib-works">
+<h2>How <strong>lifelib</strong> works<a class="headerlink" href="#how-lifelib-works" title="Permalink to this headline">¶</a></h2>
+<p>You can create an actuarial projection model as <a class="reference external" href="http://docs.modelx.io">modelx</a> <a class="reference external" href="http://docs.modelx.io/en/latest/reference/generated/modelx.core.model.Model.html">Model</a> object by:</p>
 <ul class="simple">
-<li>Create a project folder from a lifelib project template,</li>
-<li>Build a model from Python modules input data in the project,</li>
+<li>Creating a project folder from a lifelib project template,</li>
+<li>Build a <a class="reference external" href="http://docs.modelx.io">modelx</a> <a class="reference external" href="http://docs.modelx.io/en/latest/reference/generated/modelx.core.model.Model.html">Model</a> from source modules and
+input data in the project, by running
+<a class="reference internal" href="projects/generated/simplelife.simplelife.html#simplelife.simplelife.build" title="simplelife.simplelife.build"><code class="xref py py-func docutils literal"><span class="pre">build</span></code></a> function.</li>
+</ul>
+<p>Once the model is built, they are available as a modelx <a class="reference external" href="http://docs.modelx.io/en/latest/reference/generated/modelx.core.model.Model.html">Model</a> object
+in Python console. The model is composed of <a class="reference external" href="http://docs.modelx.io/en/latest/reference/generated/modelx.core.model.Space.html">Space</a>.
+Spaces contain <a class="reference external" href="http://docs.modelx.io/en/latest/reference/generated/modelx.core.model.Cells.html">Cells</a> and other spaces.
+<a class="reference external" href="http://docs.modelx.io/en/latest/reference/generated/modelx.core.model.Cells.html">Cells</a> are much like cells in spreadsheets, which in turn, can store
+formulas and associated values.</p>
+<p>With a lifelib model, you can:</p>
+<ul class="simple">
 <li>Get calculated values by simply accessing model elements,</li>
-<li>Customize the model by changing input and writing formulas in Python,</li>
+<li>Change the model by changing input and writing formulas in Python,</li>
+<li>View the tree of model elements in graphical user interface,</li>
 <li>Output results to Pandas objects,</li>
 <li>Save the model, load it back again, and do much more.</li>
 </ul>
 <p>Start from <a class="reference internal" href="quickstart.html"><span class="doc">Quick Start</span></a> page.</p>
-<div class="section" id="features">
-<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="feature-highlights">
+<h2>Feature highlights<a class="headerlink" href="#feature-highlights" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Cells containing formulas and data</li>
-<li>Cells graph to track cells interdependency</li>
-<li>Spaces to organize cells by related calculations</li>
-<li>Sub-spacing (having nested spaces within spaces)</li>
+<li>Formulas and their calculated values paired as <a class="reference external" href="http://docs.modelx.io/en/latest/reference/generated/modelx.core.model.Cells.html">Cells</a>,
+just like spreadsheet cells</li>
+<li>Relevant cells grouped together as a <a class="reference external" href="http://docs.modelx.io/en/latest/reference/generated/modelx.core.model.Space.html">Space</a>, just like a spreadsheet</li>
+<li>Spaces in other spaces (subspaces), forming trees of spaces</li>
+<li>Object-oriented <a class="reference external" href="http://docs.modelx.io/en/latest/reference/generated/modelx.core.model.Model.html">Model</a> composed of spaces</li>
 <li>Space inheritance</li>
-<li>Dynamic parametrized spaces created automatically</li>
+<li>Parametrized dynamic subspaces created automatically</li>
 <li>Saving to / loading from files</li>
 <li>Conversion to Pandas objects</li>
 <li>Reading data from Excel files</li>
+<li>Cells graph to track cells interdependency</li>
+</ul>
+</div>
+<div class="section" id="why-lifelib">
+<h2>Why <strong>lifelib</strong>?<a class="headerlink" href="#why-lifelib" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Better model integrity and extensibility</li>
+<li>For readable formula expressions</li>
+<li>For eliminating spreadsheet errors</li>
+<li>For better version control/model governance</li>
+</ul>
+</div>
+<div class="section" id="what-for">
+<h2>What for?<a class="headerlink" href="#what-for" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Pricing / Profit testing</li>
+<li>Model validation / testing</li>
+<li>Prototyping for production models</li>
+<li>As corporate models</li>
+<li>For simulations</li>
+<li>As replacement for any spreadsheet models</li>
 </ul>
 </div>
 <div class="section" id="links">
@@ -262,7 +295,7 @@ values are stored in them.</p>
     </p>
     <p>
         &copy; Copyright 2017, Fumito Hamamura.<br/>
-      Last updated on Jan 28, 2018.<br/>
+      Last updated on Feb 18, 2018.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.<br/>
     </p>
   </div>

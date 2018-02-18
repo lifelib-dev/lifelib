@@ -53,6 +53,7 @@ projection
       ~ppl_rsv_UnearnedPrem_AfterMat
       ~ppl_rsv_UnearnedPrem_EoP
       ~prj_ChangeInReserve
+      ~prj_NetLiabilityCashflow
       ~prj_ProfitBeforeTax
       ~prj_bnft_AccDeath
       ~prj_bnft_AccHosp

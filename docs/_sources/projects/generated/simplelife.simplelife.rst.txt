@@ -1,0 +1,22 @@
+simplelife
+=====================
+
+.. automodule:: simplelife.simplelife
+
+   
+   
+   .. rubric:: Cells
+
+   .. autosummary::
+   
+      ~build
+   
+   
+
+   
+   
+   
+
+   
+   
+   

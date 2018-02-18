@@ -82,10 +82,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#building-the-model">Building the model</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="reference internal" href="../simplelife.html">Project Template: simplelife</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../simplelife.html">Project Template: <strong>simplelife</strong></a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../simplelife.html#how-to-use-the-template">How to use the template</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../simplelife.html#model-structure">Model structure</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="simplelife.build.html">build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simplelife.simplelife.html">simplelife</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simplelife.build_input.html">build_input</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simplelife.lifetable.html">lifetable</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simplelife.policy.html">policy</a></li>
@@ -156,10 +156,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#building-the-model">Building the model</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="reference internal" href="../simplelife.html">Project Template: simplelife</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../simplelife.html">Project Template: <strong>simplelife</strong></a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../simplelife.html#how-to-use-the-template">How to use the template</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../simplelife.html#model-structure">Model structure</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="simplelife.build.html">build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simplelife.simplelife.html">simplelife</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simplelife.build_input.html">build_input</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simplelife.lifetable.html">lifetable</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simplelife.policy.html">policy</a></li>
@@ -345,82 +345,85 @@
 <tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_ChangeInReserve" title="simplelife.projection.prj_ChangeInReserve"><code class="xref py py-obj docutils literal"><span class="pre">prj_ChangeInReserve</span></code></a>(t)</td>
 <td>Change in reserve</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_ProfitBeforeTax" title="simplelife.projection.prj_ProfitBeforeTax"><code class="xref py py-obj docutils literal"><span class="pre">prj_ProfitBeforeTax</span></code></a>(t)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_NetLiabilityCashflow" title="simplelife.projection.prj_NetLiabilityCashflow"><code class="xref py py-obj docutils literal"><span class="pre">prj_NetLiabilityCashflow</span></code></a>(t)</td>
+<td>Net liability cashflow</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_ProfitBeforeTax" title="simplelife.projection.prj_ProfitBeforeTax"><code class="xref py py-obj docutils literal"><span class="pre">prj_ProfitBeforeTax</span></code></a>(t)</td>
 <td>Profit before Tax</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_AccDeath" title="simplelife.projection.prj_bnft_AccDeath"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_AccDeath</span></code></a>(t)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_AccDeath" title="simplelife.projection.prj_bnft_AccDeath"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_AccDeath</span></code></a>(t)</td>
 <td>Accidental death benefits</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_AccHosp" title="simplelife.projection.prj_bnft_AccHosp"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_AccHosp</span></code></a>(t)</td>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_AccHosp" title="simplelife.projection.prj_bnft_AccHosp"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_AccHosp</span></code></a>(t)</td>
 <td>Accidental hospitalization benefits</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_Annuity" title="simplelife.projection.prj_bnft_Annuity"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_Annuity</span></code></a>(t)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_Annuity" title="simplelife.projection.prj_bnft_Annuity"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_Annuity</span></code></a>(t)</td>
 <td>Annuity benefits</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_Death" title="simplelife.projection.prj_bnft_Death"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_Death</span></code></a>(t)</td>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_Death" title="simplelife.projection.prj_bnft_Death"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_Death</span></code></a>(t)</td>
 <td>Death benefits</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_Living" title="simplelife.projection.prj_bnft_Living"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_Living</span></code></a>(t)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_Living" title="simplelife.projection.prj_bnft_Living"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_Living</span></code></a>(t)</td>
 <td>Living benefits</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_Maturity" title="simplelife.projection.prj_bnft_Maturity"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_Maturity</span></code></a>(t)</td>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_Maturity" title="simplelife.projection.prj_bnft_Maturity"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_Maturity</span></code></a>(t)</td>
 <td>Matuirty benefits</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_Other" title="simplelife.projection.prj_bnft_Other"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_Other</span></code></a>(t)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_Other" title="simplelife.projection.prj_bnft_Other"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_Other</span></code></a>(t)</td>
 <td>Other benefits</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_SickHosp" title="simplelife.projection.prj_bnft_SickHosp"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_SickHosp</span></code></a>(t)</td>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_SickHosp" title="simplelife.projection.prj_bnft_SickHosp"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_SickHosp</span></code></a>(t)</td>
 <td>Sickness hospitalization benefits</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_Surgery" title="simplelife.projection.prj_bnft_Surgery"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_Surgery</span></code></a>(t)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_Surgery" title="simplelife.projection.prj_bnft_Surgery"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_Surgery</span></code></a>(t)</td>
 <td>Surgery benefits</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_Surrender" title="simplelife.projection.prj_bnft_Surrender"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_Surrender</span></code></a>(t)</td>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_Surrender" title="simplelife.projection.prj_bnft_Surrender"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_Surrender</span></code></a>(t)</td>
 <td>Surrender benefits</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_Total" title="simplelife.projection.prj_bnft_Total"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_Total</span></code></a>(t)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_bnft_Total" title="simplelife.projection.prj_bnft_Total"><code class="xref py py-obj docutils literal"><span class="pre">prj_bnft_Total</span></code></a>(t)</td>
 <td>Benefit Total</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_exps_Acq" title="simplelife.projection.prj_exps_Acq"><code class="xref py py-obj docutils literal"><span class="pre">prj_exps_Acq</span></code></a>(t)</td>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_exps_Acq" title="simplelife.projection.prj_exps_Acq"><code class="xref py py-obj docutils literal"><span class="pre">prj_exps_Acq</span></code></a>(t)</td>
 <td>Acquisition expenses</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_exps_CommInit" title="simplelife.projection.prj_exps_CommInit"><code class="xref py py-obj docutils literal"><span class="pre">prj_exps_CommInit</span></code></a>(t)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_exps_CommInit" title="simplelife.projection.prj_exps_CommInit"><code class="xref py py-obj docutils literal"><span class="pre">prj_exps_CommInit</span></code></a>(t)</td>
 <td>Initial commissions</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_exps_CommRen" title="simplelife.projection.prj_exps_CommRen"><code class="xref py py-obj docutils literal"><span class="pre">prj_exps_CommRen</span></code></a>(t)</td>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_exps_CommRen" title="simplelife.projection.prj_exps_CommRen"><code class="xref py py-obj docutils literal"><span class="pre">prj_exps_CommRen</span></code></a>(t)</td>
 <td>Renewal commissions</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_exps_CommTotal" title="simplelife.projection.prj_exps_CommTotal"><code class="xref py py-obj docutils literal"><span class="pre">prj_exps_CommTotal</span></code></a>(t)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_exps_CommTotal" title="simplelife.projection.prj_exps_CommTotal"><code class="xref py py-obj docutils literal"><span class="pre">prj_exps_CommTotal</span></code></a>(t)</td>
 <td>Commissions Total</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_exps_Maint" title="simplelife.projection.prj_exps_Maint"><code class="xref py py-obj docutils literal"><span class="pre">prj_exps_Maint</span></code></a>(t)</td>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_exps_Maint" title="simplelife.projection.prj_exps_Maint"><code class="xref py py-obj docutils literal"><span class="pre">prj_exps_Maint</span></code></a>(t)</td>
 <td>Maintenance expenses</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_exps_Other" title="simplelife.projection.prj_exps_Other"><code class="xref py py-obj docutils literal"><span class="pre">prj_exps_Other</span></code></a>(t)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_exps_Other" title="simplelife.projection.prj_exps_Other"><code class="xref py py-obj docutils literal"><span class="pre">prj_exps_Other</span></code></a>(t)</td>
 <td>Other expenses</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_exps_Total" title="simplelife.projection.prj_exps_Total"><code class="xref py py-obj docutils literal"><span class="pre">prj_exps_Total</span></code></a>(t)</td>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_exps_Total" title="simplelife.projection.prj_exps_Total"><code class="xref py py-obj docutils literal"><span class="pre">prj_exps_Total</span></code></a>(t)</td>
 <td>Total expenses</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_incm_Investment" title="simplelife.projection.prj_incm_Investment"><code class="xref py py-obj docutils literal"><span class="pre">prj_incm_Investment</span></code></a>(t)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_incm_Investment" title="simplelife.projection.prj_incm_Investment"><code class="xref py py-obj docutils literal"><span class="pre">prj_incm_Investment</span></code></a>(t)</td>
 <td>Investment income</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_incm_Premium" title="simplelife.projection.prj_incm_Premium"><code class="xref py py-obj docutils literal"><span class="pre">prj_incm_Premium</span></code></a>(t)</td>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_incm_Premium" title="simplelife.projection.prj_incm_Premium"><code class="xref py py-obj docutils literal"><span class="pre">prj_incm_Premium</span></code></a>(t)</td>
 <td>Premium income</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_incm_Total" title="simplelife.projection.prj_incm_Total"><code class="xref py py-obj docutils literal"><span class="pre">prj_incm_Total</span></code></a>(t)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_incm_Total" title="simplelife.projection.prj_incm_Total"><code class="xref py py-obj docutils literal"><span class="pre">prj_incm_Total</span></code></a>(t)</td>
 <td>Income Total</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_rsv_HospReserve_EoP" title="simplelife.projection.prj_rsv_HospReserve_EoP"><code class="xref py py-obj docutils literal"><span class="pre">prj_rsv_HospReserve_EoP</span></code></a>(t)</td>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_rsv_HospReserve_EoP" title="simplelife.projection.prj_rsv_HospReserve_EoP"><code class="xref py py-obj docutils literal"><span class="pre">prj_rsv_HospReserve_EoP</span></code></a>(t)</td>
 <td>Hospitalization reserve: End of period</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_rsv_PremReserve_EoP" title="simplelife.projection.prj_rsv_PremReserve_EoP"><code class="xref py py-obj docutils literal"><span class="pre">prj_rsv_PremReserve_EoP</span></code></a>(t)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_rsv_PremReserve_EoP" title="simplelife.projection.prj_rsv_PremReserve_EoP"><code class="xref py py-obj docutils literal"><span class="pre">prj_rsv_PremReserve_EoP</span></code></a>(t)</td>
 <td>Premium reserve: End of period</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_rsv_Total_EoP" title="simplelife.projection.prj_rsv_Total_EoP"><code class="xref py py-obj docutils literal"><span class="pre">prj_rsv_Total_EoP</span></code></a>(t)</td>
+<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_rsv_Total_EoP" title="simplelife.projection.prj_rsv_Total_EoP"><code class="xref py py-obj docutils literal"><span class="pre">prj_rsv_Total_EoP</span></code></a>(t)</td>
 <td>Total reserve: End of period</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#simplelife.projection.prj_rsv_UnearnedPrem_EoP" title="simplelife.projection.prj_rsv_UnearnedPrem_EoP"><code class="xref py py-obj docutils literal"><span class="pre">prj_rsv_UnearnedPrem_EoP</span></code></a>(t)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.projection.prj_rsv_UnearnedPrem_EoP" title="simplelife.projection.prj_rsv_UnearnedPrem_EoP"><code class="xref py py-obj docutils literal"><span class="pre">prj_rsv_UnearnedPrem_EoP</span></code></a>(t)</td>
 <td>Unearned Premium: End of period</td>
 </tr>
 </tbody>
@@ -866,7 +869,7 @@
     </p>
     <p>
         &copy; Copyright 2017, Fumito Hamamura.<br/>
-      Last updated on Jan 28, 2018.<br/>
+      Last updated on Feb 18, 2018.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.<br/>
     </p>
   </div>

@@ -117,15 +117,15 @@ copied from lifelib's default project.
 Building the model
 ------------------
 
-:py:mod:`build.py <simplelife.build>` file in the project folder is the script for bringing the
+:py:mod:`simplelife <simplelife.simplelife>` file in the project folder is the script for bringing the
 actuarial model to existence as a Python object.
 
-If you simply run :py:mod:`build.py <simplelife.build>` from a command prompt, Python will terminate
+If you simply run :py:mod:`simplelife <simplelife.simplelife>` from a command prompt, Python will terminate
 when the execution of the script finishes,
 To keep the session alive, you need have the session move to the interactive mode
-after it finishes the execution of :py:mod:`build.py <simplelife.build>`.
+after it finishes the execution of :py:mod:`simplelife <simplelife.simplelife>`.
 On `Spyder`_, this is the default behaviour.
-When you open :py:mod:`build.py <simplelife.build>` from *File* menu and *Run* it,
+When you open :py:mod:`simplelife <simplelife.simplelife>` from *File* menu and *Run* it,
 it is executed and the session will move to
 interactive mode. The session is available in an IPython console
 in `Spyder`_ for you to interface with the created model.

@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>economic &#8212; lifelib 0.0.3.dev documentation</title>
+    <title>simplelife &#8212; lifelib 0.0.3.dev documentation</title>
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -26,8 +26,8 @@
     <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="projection" href="simplelife.projection.html" />
-    <link rel="prev" title="assumptions" href="simplelife.assumptions.html" />
+    <link rel="next" title="build_input" href="simplelife.build_input.html" />
+    <link rel="prev" title="Project Template: simplelife" href="../simplelife.html" />
 
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -86,12 +86,12 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../simplelife.html">Project Template: <strong>simplelife</strong></a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../simplelife.html#how-to-use-the-template">How to use the template</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../simplelife.html#model-structure">Model structure</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="simplelife.simplelife.html">simplelife</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">simplelife</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simplelife.build_input.html">build_input</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simplelife.lifetable.html">lifetable</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simplelife.policy.html">policy</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simplelife.assumptions.html">assumptions</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">economic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simplelife.economic.html">economic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simplelife.projection.html">projection</a></li>
 </ul>
 </li>
@@ -111,7 +111,7 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">economic</a></li>
+<li><a class="reference internal" href="#">simplelife</a></li>
 </ul>
 </ul>
 </li>
@@ -121,11 +121,11 @@
               
                 
   <li>
-    <a href="simplelife.assumptions.html" title="Previous Chapter: assumptions"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; assumptions</span>
+    <a href="../simplelife.html" title="Previous Chapter: Project Template: simplelife"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Project Templ...</span>
     </a>
   </li>
   <li>
-    <a href="simplelife.projection.html" title="Next Chapter: projection"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">projection &raquo;</span>
+    <a href="simplelife.build_input.html" title="Next Chapter: build_input"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">build_input &raquo;</span>
     </a>
   </li>
               
@@ -164,12 +164,12 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../simplelife.html">Project Template: <strong>simplelife</strong></a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../simplelife.html#how-to-use-the-template">How to use the template</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../simplelife.html#model-structure">Model structure</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="simplelife.simplelife.html">simplelife</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">simplelife</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simplelife.build_input.html">build_input</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simplelife.lifetable.html">lifetable</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simplelife.policy.html">policy</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simplelife.assumptions.html">assumptions</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">economic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simplelife.economic.html">economic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simplelife.projection.html">projection</a></li>
 </ul>
 </li>
@@ -189,11 +189,13 @@
       </div>
     <div class="col-md-9 content">
       
-  <div class="section" id="module-simplelife.economic">
-<span id="economic"></span><h1>economic<a class="headerlink" href="#module-simplelife.economic" title="Permalink to this headline">¶</a></h1>
-<p>Source module to create “Economic” space from.</p>
-<p class="rubric">References</p>
-<p>Scenario</p>
+  <div class="section" id="module-simplelife.simplelife">
+<span id="simplelife"></span><h1>simplelife<a class="headerlink" href="#module-simplelife.simplelife" title="Permalink to this headline">¶</a></h1>
+<p>The main module to build a simplelife model.</p>
+<p>This module contains only one function <a class="reference internal" href="#simplelife.simplelife.build" title="simplelife.simplelife.build"><code class="xref py py-func docutils literal"><span class="pre">build()</span></code></a>,
+which creates a model from source modules and return it.</p>
+<p>If this module is run as a script, the <a class="reference internal" href="#simplelife.simplelife.build" title="simplelife.simplelife.build"><code class="xref py py-func docutils literal"><span class="pre">build()</span></code></a> function is called
+and the created model is available as <code class="docutils literal"><span class="pre">model</span></code> global variable.</p>
 <p class="rubric">Cells</p>
 <table border="1" class="longtable docutils">
 <colgroup>
@@ -201,17 +203,30 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">DiscRate</span></code>(t)</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">InflFac</span></code>(t)</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">InvRetRate</span></code>(t)</td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#simplelife.simplelife.build" title="simplelife.simplelife.build"><code class="xref py py-obj docutils literal"><span class="pre">build</span></code></a>([load_saved])</td>
+<td>Build a model and return it.</td>
 </tr>
 </tbody>
 </table>
+<dl class="function">
+<dt id="simplelife.simplelife.build">
+<code class="descclassname">simplelife.simplelife.</code><code class="descname">build</code><span class="sig-paren">(</span><em>load_saved=False</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/simplelife/simplelife.html#build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simplelife.simplelife.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build a model and return it.</p>
+<p>Read input data from <cite>input.xlsm</cite>, create <cite>Input</cite> space and its
+subspace and cells and populate them with the data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>load_saved</strong> – If <code class="docutils literal"><span class="pre">True</span></code>, input data is read from <cite>lifelib.mx</cite> file
+instead of <cite>input.xlsm</cite>, which is saved when
+<a class="reference internal" href="simplelife.build_input.html#simplelife.build_input.build_input" title="simplelife.build_input.build_input"><code class="xref py py-func docutils literal"><span class="pre">build_input</span></code></a>
+is executed last time. Defaults to <code class="docutils literal"><span class="pre">False</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 
 
