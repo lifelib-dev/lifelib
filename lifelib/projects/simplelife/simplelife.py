@@ -57,7 +57,7 @@ def build(load_saved=False):
     lifetable = model.new_space_from_module(
         module_='lifetable',
         name='LifeTable',
-        paramfunc=lifetable_params,
+        formula=lifetable_params,
         refs=lifetable_refs)
 
     # ------------------------------------------------------------------------
@@ -84,7 +84,7 @@ def build(load_saved=False):
     policy = model.new_space_from_module(
         module_='policy',
         name='Policy',
-        paramfunc=policy_params,
+        formula=policy_params,
         refs=policy_refs)
 
     # ------------------------------------------------------------------------
@@ -108,7 +108,7 @@ def build(load_saved=False):
     asmp = model.new_space_from_module(
         module_='assumptions',
         name='Assumptions',
-        paramfunc=asmp_params,
+        formula=asmp_params,
         refs=asmp_refs)
 
     asmp.allow_none = True
@@ -124,7 +124,7 @@ def build(load_saved=False):
     economic = model.new_space_from_module(
         module_='economic',
         name='Economic',
-        paramfunc=econ_params,
+        formula=econ_params,
         refs={'asmp': asmp,
               'Input': input})
 
@@ -145,7 +145,7 @@ def build(load_saved=False):
     proj = model.new_space_from_module(
         module_='projection',
         name='Projection',
-        paramfunc=proj_params,
+        formula=proj_params,
         refs=proj_refs)
 
     return model
