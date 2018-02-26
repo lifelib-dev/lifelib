@@ -125,7 +125,7 @@ def build_input(model, input_file=default_input):
     """
 
     inp = model.new_space(name='Input')
-    inp.can_have_none = True
+    inp.allow_none = True
     print_time = True
 
     if print_time:

@@ -111,7 +111,7 @@ def build(load_saved=False):
         paramfunc=asmp_params,
         refs=asmp_refs)
 
-    asmp.can_have_none = True
+    asmp.allow_none = True
 
     # ------------------------------------------------------------------------
     # Build Assumptions space
