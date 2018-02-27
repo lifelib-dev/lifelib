@@ -12,4 +12,4 @@ if __name__ == "__main__":
 
     view = get_modeltree(simplelife.build(load_saved=False))
     view.show()
-    app.exec_()     # Not needed for Spyder
+    app.exec_()
