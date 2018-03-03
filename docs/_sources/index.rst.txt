@@ -17,7 +17,7 @@
     <div class="container-fluid">
       <!-- div class="row" -->
         <a href="projects/simplelife.html">
-            <img src="_static/LiabilityCashflow.png">
+            <img src="_images/LiabilityCashflow.png">
         </a>
       <!-- /div -->
     </div>

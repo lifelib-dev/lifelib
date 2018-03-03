@@ -3,13 +3,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>simplelife.simplelife &#8212; lifelib 0.0.3.dev documentation</title>
+    <title>simplelife.simplelife &#8212; lifelib 0.0.5.dev documentation</title>
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.0.3.dev',
+        VERSION:     '0.0.5.dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -58,7 +58,7 @@
         </button>
         <a class="navbar-brand" href="../../index.html">
           lifelib</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.3.dev</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.5.dev</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -75,10 +75,10 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
 <li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quick Start</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#prerequisites">Prerequisites</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#prepare-python-environment">Prepare Python environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#install-lifelib">Install lifelib</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#create-a-project">Create a Project</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#building-the-model">Building the model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../quickstart.html#build-the-model">Build the model</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../projects/simplelife.html">Project Template: <strong>simplelife</strong></a><ul>
@@ -200,7 +200,7 @@
     <span class="n">lifetable</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">new_space_from_module</span><span class="p">(</span>
         <span class="n">module_</span><span class="o">=</span><span class="s1">&#39;lifetable&#39;</span><span class="p">,</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LifeTable&#39;</span><span class="p">,</span>
-        <span class="n">paramfunc</span><span class="o">=</span><span class="n">lifetable_params</span><span class="p">,</span>
+        <span class="n">formula</span><span class="o">=</span><span class="n">lifetable_params</span><span class="p">,</span>
         <span class="n">refs</span><span class="o">=</span><span class="n">lifetable_refs</span><span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------------</span>
@@ -227,7 +227,7 @@
     <span class="n">policy</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">new_space_from_module</span><span class="p">(</span>
         <span class="n">module_</span><span class="o">=</span><span class="s1">&#39;policy&#39;</span><span class="p">,</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Policy&#39;</span><span class="p">,</span>
-        <span class="n">paramfunc</span><span class="o">=</span><span class="n">policy_params</span><span class="p">,</span>
+        <span class="n">formula</span><span class="o">=</span><span class="n">policy_params</span><span class="p">,</span>
         <span class="n">refs</span><span class="o">=</span><span class="n">policy_refs</span><span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------------</span>
@@ -251,10 +251,10 @@
     <span class="n">asmp</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">new_space_from_module</span><span class="p">(</span>
         <span class="n">module_</span><span class="o">=</span><span class="s1">&#39;assumptions&#39;</span><span class="p">,</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Assumptions&#39;</span><span class="p">,</span>
-        <span class="n">paramfunc</span><span class="o">=</span><span class="n">asmp_params</span><span class="p">,</span>
+        <span class="n">formula</span><span class="o">=</span><span class="n">asmp_params</span><span class="p">,</span>
         <span class="n">refs</span><span class="o">=</span><span class="n">asmp_refs</span><span class="p">)</span>
 
-    <span class="n">asmp</span><span class="o">.</span><span class="n">can_have_none</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">asmp</span><span class="o">.</span><span class="n">allow_none</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="c1"># ------------------------------------------------------------------------</span>
     <span class="c1"># Build Assumptions space</span>
@@ -267,7 +267,7 @@
     <span class="n">economic</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">new_space_from_module</span><span class="p">(</span>
         <span class="n">module_</span><span class="o">=</span><span class="s1">&#39;economic&#39;</span><span class="p">,</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Economic&#39;</span><span class="p">,</span>
-        <span class="n">paramfunc</span><span class="o">=</span><span class="n">econ_params</span><span class="p">,</span>
+        <span class="n">formula</span><span class="o">=</span><span class="n">econ_params</span><span class="p">,</span>
         <span class="n">refs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;asmp&#39;</span><span class="p">:</span> <span class="n">asmp</span><span class="p">,</span>
               <span class="s1">&#39;Input&#39;</span><span class="p">:</span> <span class="nb">input</span><span class="p">})</span>
 
@@ -288,7 +288,7 @@
     <span class="n">proj</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">new_space_from_module</span><span class="p">(</span>
         <span class="n">module_</span><span class="o">=</span><span class="s1">&#39;projection&#39;</span><span class="p">,</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Projection&#39;</span><span class="p">,</span>
-        <span class="n">paramfunc</span><span class="o">=</span><span class="n">proj_params</span><span class="p">,</span>
+        <span class="n">formula</span><span class="o">=</span><span class="n">proj_params</span><span class="p">,</span>
         <span class="n">refs</span><span class="o">=</span><span class="n">proj_refs</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">model</span></div>
@@ -313,8 +313,8 @@
       
     </p>
     <p>
-        &copy; Copyright 2017, Fumito Hamamura.<br/>
-      Last updated on Feb 18, 2018.<br/>
+        &copy; Copyright 2017-2018, Fumito Hamamura.<br/>
+      Last updated on Mar 03, 2018.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.<br/>
     </p>
   </div>

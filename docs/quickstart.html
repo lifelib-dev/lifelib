@@ -3,13 +3,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Quick Start &#8212; lifelib 0.0.3.dev documentation</title>
+    <title>Quick Start &#8212; lifelib 0.0.5.dev documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.0.3.dev',
+        VERSION:     '0.0.5.dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -60,7 +60,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           lifelib</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.3.dev</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.5.dev</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -77,10 +77,10 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Start</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#prepare-python-environment">Prepare Python environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-lifelib">Install lifelib</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#create-a-project">Create a Project</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#building-the-model">Building the model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#build-the-model">Build the model</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="projects/simplelife.html">Project Template: <strong>simplelife</strong></a><ul>
@@ -112,10 +112,10 @@
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">Quick Start</a><ul>
-<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
-<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#prepare-python-environment">Prepare Python environment</a></li>
+<li><a class="reference internal" href="#install-lifelib">Install lifelib</a></li>
 <li><a class="reference internal" href="#create-a-project">Create a Project</a></li>
-<li><a class="reference internal" href="#building-the-model">Building the model</a></li>
+<li><a class="reference internal" href="#build-the-model">Build the model</a></li>
 </ul>
 </li>
 </ul>
@@ -161,10 +161,10 @@
         <div id="sidebar" class="bs-sidenav" role="complementary">
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Start</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#prepare-python-environment">Prepare Python environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-lifelib">Install lifelib</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#create-a-project">Create a Project</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#building-the-model">Building the model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#build-the-model">Build the model</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="projects/simplelife.html">Project Template: <strong>simplelife</strong></a><ul>
@@ -197,82 +197,66 @@
       
   <div class="section" id="quick-start">
 <h1>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h1>
-<p>Below is a step-by-step guide to introduce you to lifelib.
-This guide assumes readers know the basics of Python,
-so if you have never used Python, you may want to familiarize yourself
-with Python first, and then come back to this introduction to proceed
-with this guide. There are many good tutorials out there for learning Python,
-such as
-<a class="reference external" href="https://docs.python.org/3/tutorial/">the one on Python’s official web site</a>.</p>
-<p>lifelib models are built in the form of <a class="reference external" href="http://docs.modelx.io">modelx</a> objects.
-Refer to <a class="reference external" href="http://docs.modelx.io">modelx</a> documentation when you have
-questions about <a class="reference external" href="http://docs.modelx.io">modelx</a> as you proceed with this tutorial.</p>
-<p>By going through this guide, you will see how to:</p>
+<p>This is Quick Start guide walk you through steps from setting up a
+Python environment for lifelib to running a sample model.
+By end of this guide, you will see how to:</p>
 <ul class="simple">
 <li>Prepare Python environment for lifelib,</li>
 <li>Install lifelib,</li>
-<li>Create a project folder,</li>
-<li>Build a model by running a script</li>
+<li>Create your project using a command,</li>
+<li>Build a model by running a script in the project</li>
 </ul>
-<div class="section" id="prerequisites">
-<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
-<p>lifelib runs on Windows or Linux, It probably runs on Mac as well, although
-it’s not tested on Mac.
-Microsoft Excel is not required. You would only need Excel or its alternatives
-if you want to edit input data.</p>
-<p>lifelib is a Python package, so before building and running liflib models,
-you need to have Python environment set up.
-You need:</p>
-<ul class="simple">
-<li>Python itself,</li>
-<li>Required packages, and</li>
-<li>Python development environment</li>
-</ul>
-<p>lifelib supports Python 3.4 or newer versions, so if you are using
-Python 2 or a version of Python 3 earlier than 3.4, you should get the
-latest version of Python 3.</p>
-<p>lifelib depends on other Python packages. Those are:</p>
-<ul class="simple">
-<li><a class="reference external" href="http://docs.modelx.io">modelx</a></li>
-<li><a class="reference external" href="https://openpyxl.readthedocs.io">openpyxl</a></li>
-<li><a class="reference external" href="http://pandas.pydata.org/">pandas</a></li>
-</ul>
-<p>So you also need to get those packages installed with your Python.</p>
-<p>Lastly, for you to interface with lifelib models, you would need a Python development
-environment. You can still use lifelib through primitive Python consoles,
-but you are way better off if you use more sophisticated integrated development
-environment(IDE), such as <a class="reference external" href="https://pythonhosted.org/spyder/">Spyder</a>.</p>
-<p>If you want to avoid all the hustle of upgrading and installing Python,
-the packages, the IDE, I recommend installing <a class="reference external" href="https://www.anaconda.com/download/">Anaconda distribution</a>.
+<p>lifelib models are built in the form of <a class="reference external" href="http://docs.modelx.io">modelx</a> objects.
+Refer to <a class="reference external" href="http://docs.modelx.io">modelx</a> documentation when you have
+questions about <a class="reference external" href="http://docs.modelx.io">modelx</a> as you proceed with this tutorial.</p>
+<p>To learn Python itself, there are many good tutorials out there on the web,
+such as
+<a class="reference external" href="https://docs.python.org/3/tutorial/">the one on Python’s official web site</a>.</p>
+<p>This guide assumes users are on Windows platform, but lifelib runs on Linux,
+and probably on Mac as well although it’s not tested.</p>
+<div class="section" id="prepare-python-environment">
+<h2>Prepare Python environment<a class="headerlink" href="#prepare-python-environment" title="Permalink to this headline">¶</a></h2>
+<p>You need to set up a Python environment to use lifelib.
+Downlowd and install <a class="reference external" href="https://www.anaconda.com/download/">Anaconda distribution</a>.
+You must install Python 3.x version,
+not Python 2.7 version. lifelib does not work with Python 2.7.
+If you already have <a class="reference external" href="https://www.anaconda.com/">Anaconda</a> installed, make sure the Python version is
+3.4 or newer.
 <a class="reference external" href="https://www.anaconda.com/">Anaconda</a> is a bundle of Python, its major packages and IDEs including
-<a class="reference external" href="https://openpyxl.readthedocs.io">openpyxl</a>, <a class="reference external" href="http://pandas.pydata.org/">pandas</a>, <a class="reference external" href="https://pythonhosted.org/spyder/">Spyder</a>, and
-it provides a Python environment out-of-the-box,
-just by installing it with few clicks.
-From here in this page, we’ll assume using Anaconda, but most of the contents would
-be also valid for non-Aanaconda platform.</p>
+packages required or optionally used by for lifelib,
+such as <a class="reference external" href="https://openpyxl.readthedocs.io">openpyxl</a>, <a class="reference external" href="http://pandas.pydata.org/">pandas</a>, <a class="reference external" href="https://pythonhosted.org/spyder/">Spyder</a>, and provides a Python environment
+out-of-the-box, just by installing it with few clicks.</p>
+<p>Microsoft Excel is not required. You would only need Excel or its alternatives
+if you want to edit input data files.</p>
 </div>
-<div class="section" id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="install-lifelib">
+<h2>Install lifelib<a class="headerlink" href="#install-lifelib" title="Permalink to this headline">¶</a></h2>
 <p>lifelib is avalable on <a class="reference external" href="https://pypi.python.org/pypi">PyPI</a> - the Python Package Index.
-To install lifelib, use <code class="docutils literal"><span class="pre">pip</span></code> command from a command prompt.
-If you installed <a class="reference external" href="https://www.anaconda.com/">Anaconda</a> on Windows, go to Windows menu and
-start <em>Anaconda Promt</em> inside <em>Anaconda3</em> submenu to bring up a command prompt,
-then type:</p>
+To install lifelib, use <code class="docutils literal"><span class="pre">pip</span></code> command from a <em>Anaconda</em> command prompt.
+Go to Windows menu and
+start <em>Anaconda Prompt</em> inside <em>Anaconda3</em> submenu to bring up a command prompt.</p>
+<div class="figure">
+<img alt="_images/AnacondaPrompt.png" src="_images/AnacondaPrompt.png" />
+</div>
+<p>Then in the <em>Anaconda Prompt</em>, type:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">lifelib</span>
 </pre></div>
 </div>
 <p>The command also installs <a class="reference external" href="http://docs.modelx.io">modelx</a> the package lifelib depends on.
-All the other packages are included <a class="reference external" href="https://www.anaconda.com/">Anaconda</a>, so no need to install them
-separately.</p>
+All the other required or optionally used packages are included
+in <a class="reference external" href="https://www.anaconda.com/">Anaconda</a>, so no need to install them separately.</p>
 </div>
 <div class="section" id="create-a-project">
 <span id="id1"></span><h2>Create a Project<a class="headerlink" href="#create-a-project" title="Permalink to this headline">¶</a></h2>
-<p>A lifelib project is a folder(or directory) containing all the source files and data
+<p>Now that you have installed all the programs and packages needed, you can
+start using lifelib.</p>
+<p>First, you create your own project folder.
+A lifelib project is a folder containing all the source files and data
 for building life actuarial models.
-A console script <code class="docutils literal"><span class="pre">lifelib-create</span></code> helps you create a new project folder
+A command <code class="docutils literal"><span class="pre">lifelib-create</span></code> helps you create a new project folder
 by copying a template project from within the lifelib package to your desired
 folder path.</p>
-<p>For example, if you’re on Windows and want to create a project folder named
+<p>For example, to create a project folder named
 <code class="docutils literal"><span class="pre">mylife</span></code> under the path <code class="docutils literal"><span class="pre">C:\Users\fumito</span></code> by copying lifelib’s default project
 template <a class="reference internal" href="projects/simplelife.html#module-simplelife" title="simplelife"><code class="xref py py-mod docutils literal"><span class="pre">simplelife</span></code></a>,
 type the following command on the <em>Anaconda</em> prompt:</p>
@@ -287,22 +271,27 @@ so you can get away with <cite>–template</cite> option like this:</p>
 <p>You can check the created folder that are populated with Python scripts
 copied from lifelib’s default project.</p>
 </div>
-<div class="section" id="building-the-model">
-<h2>Building the model<a class="headerlink" href="#building-the-model" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="projects/generated/simplelife.simplelife.html#module-simplelife.simplelife" title="simplelife.simplelife"><code class="xref py py-mod docutils literal"><span class="pre">simplelife</span></code></a> file in the project folder is the script for bringing the
-actuarial model to existence as a Python object.</p>
-<p>If you simply run <a class="reference internal" href="projects/generated/simplelife.simplelife.html#module-simplelife.simplelife" title="simplelife.simplelife"><code class="xref py py-mod docutils literal"><span class="pre">simplelife</span></code></a> from a command prompt, Python will terminate
-when the execution of the script finishes,
-To keep the session alive, you need have the session move to the interactive mode
-after it finishes the execution of <a class="reference internal" href="projects/generated/simplelife.simplelife.html#module-simplelife.simplelife" title="simplelife.simplelife"><code class="xref py py-mod docutils literal"><span class="pre">simplelife</span></code></a>.
-On <a class="reference external" href="https://pythonhosted.org/spyder/">Spyder</a>, this is the default behaviour.
-When you open <a class="reference internal" href="projects/generated/simplelife.simplelife.html#module-simplelife.simplelife" title="simplelife.simplelife"><code class="xref py py-mod docutils literal"><span class="pre">simplelife</span></code></a> from <em>File</em> menu and <em>Run</em> it,
-it is executed and the session will move to
+<div class="section" id="build-the-model">
+<h2>Build the model<a class="headerlink" href="#build-the-model" title="Permalink to this headline">¶</a></h2>
+<p>Let’s run a sample script to draw a graph of liability cashflows.
+Go to Windows menu, launch <a class="reference external" href="https://pythonhosted.org/spyder/">Spyder</a> inside <em>Anaconda3</em> menu.</p>
+<div class="figure">
+<img alt="_images/SpyderMenu.png" src="_images/SpyderMenu.png" />
+</div>
+<p>In <a class="reference external" href="https://pythonhosted.org/spyder/">Spyder</a>, open <code class="docutils literal"><span class="pre">sample_liability_cashflow.py</span></code> file from <em>File</em> menu
+in the project folder you created, and <em>Run</em> it. The grpah below shows up.</p>
+<div class="figure">
+<img alt="_images/LiabilityCashflow.png" src="_images/LiabilityCashflow.png" />
+</div>
+<p>After execution of the script, the session will move to
 interactive mode. The session is available in an IPython console
 in <a class="reference external" href="https://pythonhosted.org/spyder/">Spyder</a> for you to interface with the created model.</p>
-<p>After the model is built, it becomes available as
-a global variable <code class="xref py py-data docutils literal"><span class="pre">model</span></code>
-in the Python console.</p>
+<p>The <a class="reference internal" href="projects/generated/simplelife.projection.html#module-simplelife.projection" title="simplelife.projection"><code class="xref py py-mod docutils literal"><span class="pre">Projection</span></code></a> space becomes available as
+a global variable <code class="docutils literal"><span class="pre">proj</span></code> in the Python console:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">proj</span>
+<span class="go">&lt;Space Projection in lifelib&gt;</span>
+</pre></div>
+</div>
 </div>
 </div>
 
@@ -318,8 +307,8 @@ in the Python console.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017, Fumito Hamamura.<br/>
-      Last updated on Feb 18, 2018.<br/>
+        &copy; Copyright 2017-2018, Fumito Hamamura.<br/>
+      Last updated on Mar 03, 2018.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.<br/>
     </p>
   </div>
