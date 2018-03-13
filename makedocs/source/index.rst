@@ -95,6 +95,17 @@ What for?
 - For simulations
 - As replacement for any spreadsheet models
 
+Got questions?
+--------------
+If you have troubles to shoot, questions to be answered,
+post them on `stackoverflow <https://stackoverflow.com/>`_
+and add ``lifelib`` tag to the posts.
+
+If you find bugs or want to request new features,
+submit issues on
+`lifelib development site <https://github.com/fumitoh/lifelib/issues>`_
+on github.
+
 Links
 -----
 
