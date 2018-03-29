@@ -92,7 +92,10 @@ def Ax(x, f=0):
 
         \\require{enclose}{}_{f|}\\overline{A}_{x}
     """
-    return Mx(x + f) / Dx(x)
+    if Dx(x) == 0:
+        return 0
+    else:
+        return Mx(x + f) / Dx(x)
 
 
 def Axn(x, n, f=0):
@@ -104,8 +107,10 @@ def Axn(x, n, f=0):
         \\require{enclose}{}_{f|}\\overline{A}^{1}_{x:\\enclose{actuarial}{n}}
 
     """
-
-    return (Mx(x + f) - Mx(x + f + n)) / Dx(x)
+    if Dx(x) == 0:
+        return 0
+    else:
+        return (Mx(x + f) - Mx(x + f + n)) / Dx(x)
 
 
 def Exn(x, n):
@@ -117,8 +122,10 @@ def Exn(x, n):
         {}_{n}E_x
 
     """
-
-    return Dx(x + n) / Dx(x)
+    if Dx(x) == 0:
+        return 0
+    else:
+        return Dx(x + n) / Dx(x)
 
 
 def AnnDuenx(x, n, k=1, f=0):
@@ -136,6 +143,9 @@ def AnnDuenx(x, n, k=1, f=0):
         f(int, optional): waiting period in years
 
     """
+    if Dx(x) == 0:
+        return 0
+    
     result = (Nx(x + f) - Nx(x + f + n)) / Dx(x)
 
     if k > 1:
@@ -152,6 +162,9 @@ def AnnDuex(x, k, f=0):
         k(int, optional): number of split payments in a year
         f(int, optional): waiting period in years
     """
+    if Dx(x) == 0:
+        return 0
+    
     result = (Nx(x + f)) / Dx(x)
 
     if k > 1:

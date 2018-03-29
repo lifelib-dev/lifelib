@@ -24,6 +24,15 @@ def MortTable():
         raise ValueError('MortTable not found')
 
 
+def LastAge():
+    """Age at which mortality becomes 1"""
+    x = 0
+    while True:
+        if BaseMortRate(x) == 1:
+            return x
+        x += 1
+            
+
 def BaseMortRate(x):
     """Bae mortality rate"""
     return MortTable()(pol.Sex, x)

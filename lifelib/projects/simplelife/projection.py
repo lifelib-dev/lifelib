@@ -9,6 +9,9 @@ Attributes:
 
 """
 
+def last_t():
+    return min(asmp.LastAge - pol.IssueAge, pol.PolicyTerm)
+
 def ppl_Age(t):
     """Attained age at time ``t``"""
     return pol.IssueAge + t
@@ -172,7 +175,13 @@ def nop_AccDeath(t):
 
 def nop_Surrender(t):
     """Number of policies: Surrender"""
-    return nop_BoP1(t) * asmp.SurrRate(t)
+    
+    if 'SurrRateMult' in globals():
+        surr_rate_mult = SurrRateMult
+    else:
+        surr_rate_mult = 1
+    
+    return nop_BoP1(t) * asmp.SurrRate(t) * surr_rate_mult
 
 def nop_Annuity(t):
     """Number of policies: Annuity"""
@@ -314,12 +323,55 @@ def prj_bnft_Total(t):
         + prj_bnft_Living(t) \
         + prj_bnft_Other(t)
 
+
 def prj_NetLiabilityCashflow(t):
     """Net liability cashflow"""
     return \
         prj_incm_Premium(t) \
         - prj_bnft_Total(t) \
         - prj_exps_Total(t)
+
+def pv_incm_Premium(t):
+    """Present value of premium income"""
+    if t > last_t:
+        return 0
+    else:
+        return prj_incm_Premium(t) + pv_incm_Premium(t + 1) / (1 + scen.DiscRate(t))
+
+
+def pv_bnft_Surrender(t):
+    """Present value of surrender benefits"""
+    if t > last_t:
+        return 0
+    else:
+        return (-prj_bnft_Surrender(t) + pv_bnft_Surrender(t + 1)) / (1 + scen.DiscRate(t))
+
+
+def pv_bnft_Death(t):
+    """Present value of death benefits"""
+    if t > last_t:
+        return 0
+    else:
+        return (-prj_bnft_Death(t) + pv_bnft_Death(t + 1)) / (1 + scen.DiscRate(t))
+    
+def pv_exps_Total(t):
+    """Present value of total expenses"""
+    if t > last_t:
+        return 0
+    else:
+        return - prj_exps_Total(t) + pv_exps_Total(t + 1) / (1 + scen.DiscRate(t))    
+    
+
+def pv_NetLiabilityCashflow(t):
+    """Present value of net liability cashflow"""
+    if t > last_t:
+        return 0
+    else:
+        return pv_NetLiabilityCashflow(t + 1) / (1 + scen.DiscRate(t)) \
+            + prj_incm_Premium(t) \
+            - prj_bnft_Total(t) / (1 + scen.DiscRate(t)) \
+            - prj_exps_Total(t)
+
 
 def prj_ChangeInReserve(t):
     """Change in reserve"""
