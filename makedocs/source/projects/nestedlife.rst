@@ -17,8 +17,17 @@ cashflows as the outer projection, and expected future cashflows at each
 projection step as each of the nested projection.
 
 
-- Projection
-    - NestedProjection
-    - DynamicSpaces[PolicyID, ScenID]
+Model structure
+---------------
 
+.. autosummary::
+   :toctree: nestedlife_generated/
+   :template: llmodule.rst
 
+   ~nestedlife
+   ~build_input
+   ~lifetable
+   ~policy
+   ~assumptions
+   ~economic
+   ~projection

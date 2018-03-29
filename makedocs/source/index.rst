@@ -124,5 +124,6 @@ Links
 
    quickstart
    projects/simplelife
+   projects/nestedlife
 
 

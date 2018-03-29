@@ -117,7 +117,7 @@ html_theme_options = {
 
     # Global TOC depth for "site" navbar tab. (Default: 1)
     # Switching to -1 shows all levels.
-    'globaltoc_depth': 3,
+    'globaltoc_depth': 2,
 
     # Location of link to source.
     # Options are "nav" (default), "footer" or anything else to exclude.
