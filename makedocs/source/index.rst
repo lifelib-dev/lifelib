@@ -126,3 +126,10 @@ Links
    projects/nestedlife
 
 
+Indexes
+-------
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+

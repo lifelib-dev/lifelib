@@ -93,12 +93,7 @@ Dependency
    Dependency is not necessarily the relationship between spaces, but it could be the cells
 
 
-Indexes
--------
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
 
 
