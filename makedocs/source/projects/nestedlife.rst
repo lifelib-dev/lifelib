@@ -5,7 +5,7 @@ Project Template: **nestedlife**
 
 **nestedlife** is a project template to build the same annual projection
 model of basic traditional life policies
-as :py:mod:`simplelife <simplelife.simplelife>`, but at each projection step,
+as :mod:`simplelife`, but at each projection step,
 a nested projection going forward from the step is carried out.
 The outer and nested projections shares the same base assumptions, but
 the assumptions of the nested projections can be adjusted based on how
@@ -21,7 +21,7 @@ Model structure
 ---------------
 
 .. autosummary::
-   :toctree: nestedlife_generated/
+   :toctree: generated/
    :template: llmodule.rst
 
    ~nestedlife

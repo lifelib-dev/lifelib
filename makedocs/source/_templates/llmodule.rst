@@ -5,7 +5,9 @@
 
    {% block functions %}
    {% if functions %}
-   .. rubric:: {{ 'Functions' if 'build' == name[:5] else 'Cells' }}
+   {% set projmodpair = fullname.split('.') %}
+   .. rubric:: {{ 'Functions' if 'build' == name[:5] or
+                  projmodpair[-2] == projmodpair[-1] else 'Cells' }}
 
    .. autosummary::
    {% for item in functions %}

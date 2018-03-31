@@ -97,7 +97,7 @@ from textwrap import dedent
 default_input = path.join(path.abspath(path.dirname(__file__)), 'input.xlsm')
 
 
-class PrintElapsedTime:
+class _PrintElapsedTime:
 
     def __init__(self):
         self.last_time = time.time()
@@ -129,7 +129,7 @@ def build_input(model, input_file=default_input):
     print_time = True
 
     if print_time:
-        timestamp = PrintElapsedTime()
+        timestamp = _PrintElapsedTime()
 
     print("Started loading data from 'input.xlsm'.")
 

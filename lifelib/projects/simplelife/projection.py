@@ -3,9 +3,9 @@
 .. rubric:: Refs
 
 Attributes:
-    pol: Reference to :py:mod:`Policy<.policy>` space
-    asmp: Reference to :py:mod:`Assumption<.assumptions>` space
-    scen: Reference to :py:mod:`Economic<.economic>` space
+    pol: Reference to :py:mod:`Policy<simplelife.policy>` space
+    asmp: Reference to :py:mod:`Assumption<simplelife.assumptions>` space
+    scen: Reference to :py:mod:`Economic<simplelife.economic>` space
 
 """
 

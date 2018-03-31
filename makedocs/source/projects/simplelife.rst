@@ -63,7 +63,7 @@ as they are quite a few. For details on the Input subspaces, see :py:mod:`simple
 
 
 .. autosummary::
-   :toctree: simplelife_generated/
+   :toctree: generated/
    :template: llmodule.rst
 
    ~simplelife

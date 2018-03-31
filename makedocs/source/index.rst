@@ -58,8 +58,8 @@ Start from :doc:`quickstart` page.
 
 .. _modelx: http://docs.modelx.io
 .. _Model: http://docs.modelx.io/en/latest/reference/generated/modelx.core.model.Model.html
-.. _Space: http://docs.modelx.io/en/latest/reference/generated/modelx.core.model.Space.html
-.. _Cells: http://docs.modelx.io/en/latest/reference/generated/modelx.core.model.Cells.html
+.. _Space: http://docs.modelx.io/en/latest/reference/generated/modelx.core.space.Space.html
+.. _Cells: http://docs.modelx.io/en/latest/reference/generated/modelx.core.cells.Cells.html
 
 
 Feature highlights
@@ -100,7 +100,6 @@ Got questions?
 If you have troubles to shoot, questions to be answered,
 post them on `stackoverflow <https://stackoverflow.com/>`_
 and add ``lifelib`` tag to the posts.
-
 If you find bugs or want to request new features,
 submit issues on
 `lifelib development site <https://github.com/fumitoh/lifelib/issues>`_
