@@ -1,4 +1,11 @@
-"""Source module to create "Economic" space from.
+"""Source module to create ``Economic`` space from.
+
+.. rubric:: Project Templates
+
+This module is included in the following project templates.
+
+* :mod:`simplelife`
+* :mod:`nestedlife`
 
 References:
     Scenario

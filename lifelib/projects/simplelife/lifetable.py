@@ -1,7 +1,7 @@
-"""Source module to create "LifeTables" space from.
+"""Source module to create ``LifeTables`` space from.
 
-This is a source module to create a space for *Life Tables and Commutation
-Functions*
+This is a source module to create ``LifeTables`` space and its
+sub spaces from.
 
 This module is passed to ``new_space_from_module`` method to create
 a space that contains cells that defines life tables and commutation functions,
@@ -22,9 +22,16 @@ Example
 References:
     * `International actuarial notation by F.S.Perryman <https://www.casact.org/pubs/proceed/proceed49/49123.pdf>`_
 
+.. rubric:: Project Templates
+
+This module is included in the following project templates.
+
+* :mod:`simplelife`
+* :mod:`nestedlife`
+
+.. rubric:: References in Sub
 
 Attributes:
-
     Sex: 'M' or 'F' to indicate male or female column in the mortality table.
     IntRate: The constant interest rate for discounting.
     MortalityTable: The ultimate mortality table by sex and age.

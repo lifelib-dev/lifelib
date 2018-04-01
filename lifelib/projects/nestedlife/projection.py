@@ -1,11 +1,18 @@
-"""Source module to create "Projection" space from.
+"""Source module to create ``Projection`` space from.
 
-.. rubric:: Refs
+.. rubric:: Project Templates
+
+This module is included in the following project templates.
+
+* :mod:`simplelife`
+* :mod:`nestedlife`
+
+.. rubric:: References
 
 Attributes:
-    pol: Reference to :py:mod:`Policy<simplelife.policy>` space
-    asmp: Reference to :py:mod:`Assumption<simplelife.assumptions>` space
-    scen: Reference to :py:mod:`Economic<simplelife.economic>` space
+    pol: Alias to :py:mod:`Policy<simplelife.policy>` space
+    asmp: Alias to :py:mod:`Assumption<simplelife.assumptions>` space
+    scen: Alias to :py:mod:`Economic<simplelife.economic>` space
 
 """
 

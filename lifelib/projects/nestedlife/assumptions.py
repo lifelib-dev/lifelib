@@ -1,12 +1,64 @@
-"""Source module to create "Assumptions" space from.
+"""Source module to create ``Assumptions`` space from.
 
-Space Args:
-    PolicyID
+This module is a source module to create ``Assumptions`` space and its
+sub spaces from.
+The formulas of the cells in the ``Assumptions`` space are created from the
+functions defined in this module.
 
-References:
-    PolicyData: Input.PolicyData
-    prdSpec: Input.prdSpec
-    LifeTable: LifeTable
+The ``Assumptions`` space is the base space of the assumption spaces
+for individual policies, which are derived from and belong to
+the ``Assumptions`` space as its dynamic child spaces.
+
+The assumption spaces for individual policies are parametrized by ``PolicyID``.
+For example, to get the assumption space of the policy whose ID is 171::
+
+    >> asmp = model.Assumptions(171)
+
+The cells in an assumption space for each individual policy retrieve
+input data, calculate and hold values of assumptions specific to that policy,
+so various spaces in :mod:`Input<simplelife.build_input>` must be accessible
+from the ``Assumptions`` space.
+
+.. rubric:: Project Templates
+
+This module is included in the following project templates.
+
+* :mod:`simplelife`
+* :mod:`nestedlife`
+
+.. rubric:: Referred Spaces
+
+The ``Assumptions`` space and its sub spaces depend of the following spaces.
+See references sections below for aliases to those spaces and their members
+that are referenced in the ``Assumptions`` spaces.
+
+* :mod:`Policy<simplelife.policy>` its sub spaces
+* ``LifeTable`` in :mod:`Input<simplelife.build_input>`
+* ``MortalityTables`` in :mod:`Input<simplelife.build_input>`
+* ``Assumptions`` in :mod:`Input<simplelife.build_input>`
+
+.. rubric:: Space Parameters
+
+Attributes:
+    PolicyID: Policy ID
+
+.. rubric:: References in Base
+
+Attributes:
+    asmp_tbl: ``AssumptionTables`` space in :mod:`Input<simplelife.build_input>` space
+    asmp: ``Assumptions`` space in :mod:`Input<simplelife.build_input>` space
+    MortalityTables: ``MortalityTables`` space in :mod:`Input<simplelife.build_input>` space
+
+.. rubric:: References in Sub
+
+Attributes:
+    pol: Alias to :mod:`Policy[PolicyID]<simplelife.policy>`
+    prd: Alias to :attr:`Policy[PolicyID].Product<simplelife.policy.Product>`
+    polt: Alias to :attr:`Policy[PolicyID].PolicyType<simplelife.policy.PolicyType>`
+    gen: Alias to :attr:`Policy[PolicyID].Gen<simplelife.policy.Gen>`
+
+
+
 """
 
 policy_attrs = []

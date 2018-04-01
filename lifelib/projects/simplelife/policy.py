@@ -1,16 +1,58 @@
-"""Source module to create "Policy" space from.
+"""Source module to create ``Policy`` space from.
 
-.. rubric:: Space Params
+This module is a source module to create ``Policy`` space and its
+sub spaces from.
+The formulas of the cells in the ``Policy`` space are created from the
+functions defined in this module.
+
+The ``Policy`` space is the base space of the policy spaces
+for individual policies, which are derived from and belong to
+the ``Policy`` space as its dynamic child spaces.
+
+The policy spaces for individual policies are parametrized by ``PolicyID``.
+For example, to get the policy space of the policy whose ID is 171::
+
+    >> pol = model.Policy(171)
+
+The cells in a policy space for each individual policy retrieve
+input data, calculate and hold values of policy attributes specific to that policy,
+so various spaces in :mod:`Input<simplelife.build_input>` must be accessible
+from the ``Policy`` space.
+
+.. rubric:: Project Templates
+
+This module is included in the following project templates.
+
+* :mod:`simplelife`
+* :mod:`nestedlife`
+
+.. rubric:: Space Parameters
 
 Attributes:
     PolicyID: Policy ID
 
-.. rubric:: Refs
+.. rubric:: References in Base
 
 Attributes:
     PolicyData: Input.PolicyData
     ProductSpec: Input.ProductSpec
     LifeTable: LifeTable
+    Gen: Generation key
+
+.. rubric:: References in Sub
+
+Attributes:
+    Product: Product key
+    PolicyType: Policy type key
+    Gen: Generation key
+    Channel: Channel key
+    Sex: ``M`` for Male, ``F`` for Female
+    Duration: Number of years lapsed. 0 for new business
+    IssueAge: Issue age
+    PremFreq: Number of premium payments per year. 12 for monthly payments
+    PolicyTerm: Policy term in year
+    PolicyCount: Number of policies
+    SumAssured: Sum Assured per policy
 """
 
 
