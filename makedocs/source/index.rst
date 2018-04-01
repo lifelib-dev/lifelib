@@ -122,6 +122,7 @@ Links
    :maxdepth: 2
 
    quickstart
+   auto_examples/index
    projects/simplelife
    projects/nestedlife
 

@@ -1,13 +1,22 @@
-"""Draw a graph of liability cashflows of a simple whole life policy"""
+"""
+Actual vs expected
+==================
 
-import nestedlife
+Lapse assumption changes based on previous year experience.
+"""
+
+try:
+    import nestedlife.nestedlife as nestedlife
+except ImportError:
+    import nestedlife
+
 
 polid = 171
-model = nestedlife.build(load_saved=True)
+model = nestedlife.build(load_saved=False)
 outer = model.OuterProjection
 inner = model.OuterProjection.InnerProjection
 
-#%% Code block for overwiting the model
+#%% Code block for overwiting the default model
 
 def nop_Surrender_outer(t):
     """Number of policies: Surrender"""
@@ -31,8 +40,8 @@ def nop_EoP_inner(t):
 
 
 outer.new_cells(name='nop_Surrender', formula=nop_Surrender_outer)
-outer[171].InnerProjection[1].SurrRateMult = 2
-outer[171].InnerProjection[2].SurrRateMult = 0.5
+outer[polid].InnerProjection[1].SurrRateMult = 2
+outer[polid].InnerProjection[2].SurrRateMult = 0.5
 inner.new_cells(name='nop_EoP', formula=nop_EoP_inner)
 
 #%% Code block for drawing graphs
@@ -44,7 +53,7 @@ sns.set()
     
 def get_nested(item):
     
-    cells = getattr(outer[polid], item)
+    cells = outer[polid].cells[item]
     
     act = [cells[t] for t in range(50)]
     expect = []
@@ -55,7 +64,7 @@ def get_nested(item):
             if t < t0:
                 expect_t0[t] = np.nan
             else:
-                cells = getattr(outer[polid].InnerProjection[t0], item)
+                cells = outer[polid].InnerProjection[t0].cells[item]
                 expect_t0[t] = cells[t]
     
         expect.append(expect_t0)
@@ -71,7 +80,12 @@ def mask_act(act, t0):
     return masked_act
 
 
-def draw_graphs(item):
+def draw_single_ncf(ncf, ax, ls):
+    ax.plot(ncf, marker='o', linestyle=ls)
+    ax.set_xlim(right=10, left=-1)
+
+
+def draw_graph_column(item):
     
     act, expect = get_nested(item)
     
@@ -82,47 +96,25 @@ def draw_graphs(item):
         draw_single_ncf(mask_act(act, t0), ax, '-')
 
 
-def draw_single_ncf(ncf, ax, ls):
-    ax.plot(ncf, marker='o', linestyle=ls)
-    ax.set_xlim(right=10, left=-1)
+def draw_graph_pair(*items):
+
+    ncols = len(items)
+    pairs = [get_nested(item) for item in items]
+    nrows = len(pairs[0][1])
+    
+    fg, axs = plt.subplots(nrows=nrows, ncols=ncols, sharex=True)
+    
+    for col in range(ncols):
+        axs[0][col].set_title(items[col])
+        for t0 in range(nrows):
+            ax = axs[t0][col]
+            act, expect = pairs[col]
+            draw_single_ncf(expect[t0], ax, ':')
+            draw_single_ncf(mask_act(act, t0), ax, '-')    
+
+    
+if __name__ == '__main__':
+    draw_graph_pair('nop_Surrender', 'nop_EoP')
 
 
-#%% Code block for PV graph 
-    
-def draw_bars(item):
-    
-    term = 5
-    
-    expect = []
-    for t0 in range(term):
-        expect_t0 = [np.nan] * term
-        for t in range(t0, term):
-            cells = getattr(outer[polid].InnerProjection[t0], item)
-            expect_t0[t] = cells[t]
-            
-        expect.append(expect_t0)
-    
-    fg, ax = plt.subplots()
-    ax.set_xlim(left=-0.5, right=term + 1)
-    
-    for t0 in range(term):
-        draw_single_bar(expect[t0], ax, t0)
-    
-    
-def draw_single_bar(data, ax, t0):
-
-    size = len(data)
-    width = 1/ (size + 1)
-    ax.bar(np.arange(size) + t0 * (width + 0.05), data, width)
-    
-
-
-#%% PV Test
-liab0 = outer[171].InnerProjection[0]
-item = ['pv_incm_Premium',
-        'pv_bnft_Death',
-        'pv_bnft_Surrender',
-        'pv_exps_Total']
-
-draw_bars('pv_incm_Premium')
 

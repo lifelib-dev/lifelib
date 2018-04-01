@@ -44,7 +44,8 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
-    'sphinx.ext.napoleon']
+    'sphinx.ext.napoleon',
+    'sphinx_gallery.gen_gallery']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -203,3 +204,14 @@ autodoc_default_flags = [
     'show-inheritance']
     # , 'private-members', 'special-members']
 autodoc_member_order = 'bysource'
+
+
+# -- Options for Gallery -------------------------------------------
+sphinx_gallery_conf = {
+    # path to your examples scripts
+    'examples_dirs': '../../examples',
+    # path where to save gallery generated examples
+    'gallery_dirs': 'auto_examples',
+    # Supress warging:
+    'backreferences_dir': False
+}

@@ -1,6 +1,13 @@
-"""Draw a graph of liability cashflows of a simple whole life policy"""
+"""
+:mod:`simplelife` cashflow
+==========================
 
-import simplelife
+Draw a graph of liability cashflows of a simple whole life policy
+"""
+try:
+    import simplelife.simplelife as simplelife
+except ImportError:
+    import simplelife
 
 proj = simplelife.build().Projection
 
@@ -14,7 +21,7 @@ vars = ['prj_incm_Premium',
 polid = 171
 
 for cells in vars:
-    list(getattr(proj[polid], cells)(t) for t in range(50))
+    list(proj[polid].cells[cells](t) for t in range(50))
 
 cfs = proj[polid].frame[vars].sort_index().dropna()
 cfs[vars[1:]] = cfs[vars[1:]].mul(-1)
