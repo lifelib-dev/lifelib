@@ -54,7 +54,7 @@ def build(load_saved=False):
         return {'bases': _self,
                 'refs': refs}
 
-    lifetable = model.new_space_from_module(
+    lifetable = model.import_module(
         module_='lifetable',
         name='LifeTable',
         formula=lifetable_params,
@@ -81,7 +81,7 @@ def build(load_saved=False):
         return {'bases': _self,
                 'refs': refs}
 
-    policy = model.new_space_from_module(
+    policy = model.import_module(
         module_='policy',
         name='Policy',
         formula=policy_params,
@@ -105,7 +105,7 @@ def build(load_saved=False):
         return {'bases': _self,
                 'refs': refs}
 
-    asmp = model.new_space_from_module(
+    asmp = model.import_module(
         module_='assumptions',
         name='Assumptions',
         formula=asmp_params,
@@ -121,7 +121,7 @@ def build(load_saved=False):
         return {'bases': _self,
                 'refs': refs}
 
-    economic = model.new_space_from_module(
+    economic = model.import_module(
         module_='economic',
         name='Economic',
         formula=econ_params,
@@ -149,7 +149,7 @@ def build(load_saved=False):
         return {'bases': _self,
                 'refs': refs}
 
-    baseproj = model.new_space_from_module(
+    baseproj = model.import_module(
         module_='projection',
         name='BaseProjection')
 
@@ -173,7 +173,7 @@ def build(load_saved=False):
         name='InnerProjection',
         formula=innerproj_params)
 
-    # proj = model.new_space_from_module(
+    # proj = model.import_module(
     #     module_='projection',
     #     name='Projection',
     #     formula=proj_params,

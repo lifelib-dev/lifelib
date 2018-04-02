@@ -3,7 +3,7 @@
 This is a source module to create ``LifeTables`` space and its
 sub spaces from.
 
-This module is passed to ``new_space_from_module`` method to create
+This module is passed to ``import_module`` method to create
 a space that contains cells that defines life tables and commutation functions,
 for a selected combination of ``Sex``, ``IntRate`` and ``MortalityTable``.
 
@@ -14,7 +14,7 @@ Example
     Sample script::
 
         from modelx import *
-        space = new_model().new_space_from_module(module_=lifetable)
+        space = new_model().import_module(module_=lifetable)
         space.Sex = 'M'
         space.IntRate = 0.03
         space.MortalityTable = lambda sex, x: 0.001 if x < 110 else 1
