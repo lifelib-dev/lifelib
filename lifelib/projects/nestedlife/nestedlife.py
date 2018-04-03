@@ -142,7 +142,7 @@ def build(load_saved=False):
                  'Asmp': asmp,
                  'Scen': economic}
 
-    def proj_params(PolicyID, ScenID=3):
+    def proj_params(PolicyID, ScenID=1):
         refs = {'pol': Pol[PolicyID],
                 'asmp': Asmp[PolicyID],
                 'scen': Scen[ScenID]}

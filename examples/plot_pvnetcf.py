@@ -81,5 +81,5 @@ def draw_single_bar(data, ax, t0):
 
 #%% PV Test
 if __name__ == '__main__':
-    draw_bars('pv_incm_Premium')
+    draw_bars('pv_NetLiabilityCashflow')
 

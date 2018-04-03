@@ -12,7 +12,8 @@ common_files = ['build_input.py',
                 'policy.py',
                 'assumptions.py',
                 'economic.py',
-                'projection.py']
+                'projection.py',
+                'input.xlsm']
 
 
 def test_filecomp():
@@ -22,7 +23,8 @@ def test_filecomp():
     assert common_files == result[0]
 
 
-sample_files = {simplepath: ['plot_simplelife.py'],
+sample_files = {simplepath: ['plot_simplelife.py',
+                             'plot_pvcashflows.py'],
                 nestedpath: ['plot_pvnetcf.py',
                              'plot_actexpct.py']}
 

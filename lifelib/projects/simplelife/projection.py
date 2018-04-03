@@ -360,6 +360,29 @@ def pv_bnft_Death(t):
         return 0
     else:
         return (-prj_bnft_Death(t) + pv_bnft_Death(t + 1)) / (1 + scen.DiscRate(t))
+
+def pv_exps_CommTotal(t):
+    """Present value of total expenses"""
+    if t > last_t:
+        return 0
+    else:
+        return - prj_exps_CommTotal(t) + pv_exps_CommTotal(t + 1) / (1 + scen.DiscRate(t))   
+
+def pv_exps_Acq(t):
+    """Present value of total expenses"""
+    if t > last_t:
+        return 0
+    else:
+        return - prj_exps_Acq(t) + pv_exps_Acq(t + 1) / (1 + scen.DiscRate(t))
+    
+
+def pv_exps_Maint(t):
+    """Present value of total expenses"""
+    if t > last_t:
+        return 0
+    else:
+        return - prj_exps_Maint(t) + pv_exps_Maint(t + 1) / (1 + scen.DiscRate(t))   
+
     
 def pv_exps_Total(t):
     """Present value of total expenses"""
