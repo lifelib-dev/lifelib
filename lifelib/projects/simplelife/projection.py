@@ -438,3 +438,11 @@ def prj_rsv_Total_EoP(t):
     return prj_rsv_PremReserve_EoP(t) \
            + prj_rsv_UnearnedPrem_EoP(t)\
            + prj_rsv_HospReserve_EoP(t)
+
+def prj_InsInForce_EoP(t):
+    """Insurance in-force: End of period"""
+    return nop_EoP(t) * ppl_SumAssured(t)
+
+def prj_InsInForce_BoP1(t):
+    """Insurance in-force: Beginning of period 1"""
+    return nop_BoP1(t) * ppl_SumAssured(t)
