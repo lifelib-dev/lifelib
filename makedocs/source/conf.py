@@ -136,8 +136,8 @@ html_last_updated_fmt = '%b %d, %Y'
 
 # Custom sidebar templates, maps document names to template names.
 #html_sidebars = {}
-html_sidebars = {'*': ['globaltoc_sidebar.html', 'searchbox.html'],
-                 'projects/**': ['globaltoc_sidebar.html', 'searchbox.html']}
+html_sidebars = {'*': ['globaltoc_sidebar.html'],
+                 'projects/**': ['globaltoc_sidebar.html']}
 
 # -- Options for HTMLHelp output ------------------------------------------
 
@@ -207,11 +207,16 @@ autodoc_member_order = 'bysource'
 
 
 # -- Options for Gallery -------------------------------------------
+from sphinx_gallery.sorting import ExplicitOrder
 sphinx_gallery_conf = {
     # path to your examples scripts
     'examples_dirs': '../../examples',
+    'subsection_order': ExplicitOrder(
+        ['../../examples/simplelife',
+         '../../examples/nestedlife',
+         '../../examples/ifrs17sim']),
     # path where to save gallery generated examples
     'gallery_dirs': 'generated_examples',
-    # Supress warging:
+    # Suppress warning:
     'backreferences_dir': False
 }

@@ -22,10 +22,14 @@ common_files = [('build_input.py', [simplepath, nestedpath, ifrs17simpath]),
                 ('projection.py', [simplepath, nestedpath, ifrs17simpath]),
                 ('input.xlsm', [simplepath, nestedpath, ifrs17simpath])]
 
-sample_files = [('plot_simplelife.py', [simplepath, examplepath]),
-                ('plot_pvcashflows.py', [simplepath, examplepath]),
-                ('plot_pvnetcf.py', [nestedpath, examplepath]),
-                ('plot_actexpct.py', [nestedpath, examplepath])]
+sample_files = [('plot_simplelife.py',
+                 [simplepath, os.path.join(examplepath, 'simplelife')]),
+                ('plot_pvnetcf.py',
+                 [nestedpath, os.path.join(examplepath, 'nestedlife')]),
+                ('plot_actexpct.py',
+                 [nestedpath, os.path.join(examplepath, 'nestedlife')]),
+                ('plot_csm_amortization.py',
+                 [ifrs17simpath, os.path.join(examplepath, 'ifrs17sim')])]
 
 common_files += sample_files
 
