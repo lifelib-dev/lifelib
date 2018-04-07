@@ -1,36 +1,39 @@
+import os.path
 import pathlib
 import filecmp
+
+import pytest
+
 import lifelib
 import lifelib.projects.simplelife as simplelife
 import lifelib.projects.nestedlife as nestedlife
+import lifelib.projects.ifrs17sim as ifrs17sim
 
 simplepath = simplelife.__path__[0]
 nestedpath = nestedlife.__path__[0]
+ifrs17simpath = ifrs17sim.__path__[0]
+examplepath = str(pathlib.Path(lifelib.__path__[0]).parent.joinpath('examples'))
 
-common_files = ['build_input.py',
-                'lifetable.py',
-                'policy.py',
-                'assumptions.py',
-                'economic.py',
-                'projection.py',
-                'input.xlsm']
+common_files = [('build_input.py', [simplepath, nestedpath, ifrs17simpath]),
+                ('lifetable.py', [simplepath, nestedpath, ifrs17simpath]),
+                ('policy.py', [simplepath, nestedpath, ifrs17simpath]),
+                ('assumptions.py', [simplepath, nestedpath, ifrs17simpath]),
+                ('economic.py', [simplepath, nestedpath, ifrs17simpath]),
+                ('projection.py', [simplepath, nestedpath, ifrs17simpath]),
+                ('input.xlsm', [simplepath, nestedpath, ifrs17simpath])]
+
+sample_files = [('plot_simplelife.py', [simplepath, examplepath]),
+                ('plot_pvcashflows.py', [simplepath, examplepath]),
+                ('plot_pvnetcf.py', [nestedpath, examplepath]),
+                ('plot_actexpct.py', [nestedpath, examplepath])]
+
+common_files += sample_files
 
 
-def test_filecomp():
+@pytest.mark.parametrize('filename, filepaths', common_files)
+def test_filecomp(filename, filepaths):
     """Check equality of common files between simplelife and nestedlife"""
 
-    result = filecmp.cmpfiles(simplepath, nestedpath, common_files)
-    assert common_files == result[0]
-
-
-sample_files = {simplepath: ['plot_simplelife.py',
-                             'plot_pvcashflows.py'],
-                nestedpath: ['plot_pvnetcf.py',
-                             'plot_actexpct.py']}
-
-example_dir = str(pathlib.Path(lifelib.__path__[0]).parent.joinpath('examples'))
-
-def test_samplecomp():
-    for projdir, samples in sample_files.items():
-        result = filecmp.cmpfiles(projdir, example_dir, samples)
-        assert samples == result[0]
+    for path1, path2 in zip(filepaths, filepaths[1:]):
+        assert filecmp.cmp(os.path.join(path1, filename),
+                           os.path.join(path2, filename))
