@@ -37,12 +37,12 @@ def build(load_saved=False):
     from build_input import build_input
 
     if load_saved:
-        model = mx.open_model(proj_dir + '/lifelib.mx')
+        model = mx.open_model(proj_dir + '/nestedlife.mx')
         input = model.Input
     else:
-        model = mx.new_model(name='lifelib')
+        model = mx.new_model(name='nestedlife')
         input = build_input(model, proj_dir + '/input.xlsm')
-        model.save(proj_dir + '/lifelib.mx')
+        model.save(proj_dir + '/nestedlife.mx')
 
     # ------------------------------------------------------------------------
     # Build CommFunc space

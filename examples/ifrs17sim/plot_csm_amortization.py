@@ -18,6 +18,6 @@ if __name__ == '__main__':
     import seaborn as sns
     sns.set()
 
-    model, proj = ifrs17sim.build(True), mx.cur_model().OuterProjection[171]
+    model, proj = ifrs17sim.build(), mx.cur_model().OuterProjection[171]
     proj.CSM_Unfloored(10)
     proj.CSM_Unfloored.series.sort_index().plot()
