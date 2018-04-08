@@ -4,6 +4,7 @@
 
 Draw a graph of present value of cashflow
 """
+import modelx as mx
 
 try:
     import nestedlife.nestedlife as nestedlife
@@ -11,7 +12,12 @@ except ImportError:
     import nestedlife
 
 polid = 171
-model = nestedlife.build(load_saved=False)
+
+if 'nestedlife' in mx.get_models():
+    model = mx.get_models()['nestedlife']
+else:
+    model = nestedlife.build()
+
 outer = model.OuterProjection
 inner = model.OuterProjection.InnerProjection
 

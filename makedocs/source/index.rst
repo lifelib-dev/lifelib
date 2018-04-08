@@ -125,6 +125,7 @@ Links
    generated_examples/index
    projects/simplelife
    projects/nestedlife
+   projects/ifrs17sim
    archive
 
 
