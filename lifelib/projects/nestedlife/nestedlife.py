@@ -173,17 +173,7 @@ def build(load_saved=False):
         name='InnerProjection',
         formula=innerproj_params)
 
-    # proj = model.import_module(
-    #     module_='projection',
-    #     name='Projection',
-    #     formula=proj_params,
-    #     refs=proj_refs)
-
-
     return model
-
-
-
 
 
 if __name__ == '__main__':
@@ -229,35 +219,3 @@ if __name__ == '__main__':
 
     import seaborn as sns
     import matplotlib.pyplot as plt
-
-    # sns.set(style="white", rc={"axes.facecolor": (0, 0, 0, 0)})
-    # sns.set()
-
-    # axes = ncf.plot.line(marker='o', color='r')
-    # cfs.plot(kind='bar', stacked=True, ax=axes)
-
-    # Initialize the FacetGrid object
-    # pal = sns.cubehelix_palette(10, rot=-.25, light=.7)
-    # g = sns.FacetGrid(df, row='t0', hue='t0',  palette=pal)
-    # g = sns.FacetGrid(df, row='t0', sharex=True, aspect=15, size=.5, palette=pal)
-
-    # Draw the densities in a few steps
-    # g.map(plt.plot, 'NCF', clip_on=False, alpha=1, lw=1.5)
-    # g.map(plt.plot, 'NCF', clip_on=False, color="w", lw=2)
-    # g.map(plt.hist, 'NCF', clip_on=False)
-    # g.map(plt.axhline, y=0, lw=2, clip_on=False)
-
-    # plt.show()
-
-    # from qtpy.QtWidgets import QApplication
-    # from modelx.qtgui import get_modeltree
-
-    # app = QApplication.instance()
-    # if not app:
-    #     app = QApplication(sys.argv)
-
-    # model = nestedlife.build(load_saved=True)
-
-    # view = get_modeltree(model)
-    # view.show()
-    # app.exec_()

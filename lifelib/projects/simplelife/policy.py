@@ -114,8 +114,8 @@ def TableID(RateBasis):
 
 def LoadAcqSA():
     """Acquisition Loading per Sum Assured"""
-    param1 = ProductSpec.LoadAcqSAParam1(Product) #, PolicyType(), Gen)
-    param2 = ProductSpec.LoadAcqSAParam2(Product) #, PolicyType(), Gen)
+    param1 = ProductSpec.LoadAcqSAParam1(Product)
+    param2 = ProductSpec.LoadAcqSAParam2(Product)
 
     return param1 + param2 * min(PolicyTerm / 10, 1)
 

@@ -24,7 +24,6 @@ for cells in vars:
     list(proj[polid].cells[cells](t) for t in range(50))
 
 cfs = proj[polid].frame[vars].sort_index().dropna()
-#cfs[vars[1:]] = cfs[vars[1:]].mul(-1)
 
 [proj[polid].pv_NetLiabilityCashflow[t] for t in range(50)]
 

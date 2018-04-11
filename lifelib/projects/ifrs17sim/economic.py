@@ -23,16 +23,3 @@ def DiscRate(t):
 
 def InvRetRate(t):
     return Scenario.IntRate(t)
-
-# Public Enum id_GlobalProjection
-#
-# gprj_EndOfScen          'Boolean
-# gprj_InvRetRate         '(Year)
-# gprj_InvRetRateM        '(Month)
-# gprj_DiscRate           '(Year)
-# gprj_DiscRateM          '(Month)
-# gprj_DiscFac            '(Month)
-# gprj_InflFac            '(Month)
-# gprj_End = gprj_InflFac
-#
-# End Enum
