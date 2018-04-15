@@ -11,29 +11,29 @@ try:
 except ImportError:
     import nestedlife
 
-polid = 171
 
 if 'nestedlife' in mx.get_models():
     model = mx.get_models()['nestedlife']
 else:
-    model = nestedlife.build()
+    model = nestedlife.build(True)
 
-outer = model.OuterProjection
-inner = model.OuterProjection.InnerProjection
+# Policy point ID and aliases
+polid = 171
+outer = model.OuterProjection[polid]
+inner = model.OuterProjection[polid].InnerProjection
 
-#%% Code block for overwiting the default model
+# %% Code block for overriding the default model
 
-def nop_Surrender_outer(t):
-    """Number of policies: Surrender"""
-    
-    if t == 1:
-        surr_rate_mult = 2
-    elif t == 2:
-        surr_rate_mult = 0.5
+def SurrRateMult(t):
+    if t == 0:
+        return 1
     else:
-        surr_rate_mult = 1
-    
-    return nop_BoP1(t) * asmp.SurrRate(t) * surr_rate_mult
+        return SurrRateMult(t - 1)
+
+
+def nop_Surrender(t):
+    """Number of policies: Surrender"""    
+    return nop_BoP1(t) * asmp.SurrRate(t) * SurrRateMult(t)
 
 
 def nop_EoP_inner(t):
@@ -44,12 +44,19 @@ def nop_EoP_inner(t):
         return nop_BoP1(t - 1) - nop_Death(t - 1) - nop_Surrender(t - 1)
 
 
-outer.new_cells(name='nop_Surrender', formula=nop_Surrender_outer)
-outer[polid].InnerProjection[1].SurrRateMult = 2
-outer[polid].InnerProjection[2].SurrRateMult = 0.5
-inner.new_cells(name='nop_EoP', formula=nop_EoP_inner)
+model.BaseProjection.new_cells(formula=SurrRateMult)
+model.BaseProjection.new_cells(formula=nop_Surrender)
+outer.InnerProjection.new_cells(name='nop_EoP', formula=nop_EoP_inner)
 
-#%% Code block for drawing graphs
+outer.SurrRateMult[1] = 2
+outer.SurrRateMult[2] = 0.5
+outer.SurrRateMult[3] = 1
+
+outer.InnerProjection[1].SurrRateMult[1] = 2
+outer.InnerProjection[2].SurrRateMult[2] = 0.5
+outer.InnerProjection[3].SurrRateMult[3] = 1
+
+# %% Code block for drawing graphs
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -57,8 +64,7 @@ import seaborn as sns
 sns.set()    
     
 def get_nested(item):
-    
-    cells = outer[polid].cells[item]
+    cells = outer.cells[item]
     
     act = [cells[t] for t in range(50)]
     expect = []
@@ -69,7 +75,7 @@ def get_nested(item):
             if t < t0:
                 expect_t0[t] = np.nan
             else:
-                cells = outer[polid].InnerProjection[t0].cells[item]
+                cells = outer.InnerProjection[t0].cells[item]
                 expect_t0[t] = cells[t]
     
         expect.append(expect_t0)
@@ -120,6 +126,7 @@ def draw_graph_pair(*items):
     
 if __name__ == '__main__':
     draw_graph_pair('nop_Surrender', 'nop_EoP')
+
 
 
 

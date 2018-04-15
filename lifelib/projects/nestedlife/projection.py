@@ -182,13 +182,7 @@ def nop_AccDeath(t):
 
 def nop_Surrender(t):
     """Number of policies: Surrender"""
-    
-    if 'SurrRateMult' in globals():
-        surr_rate_mult = SurrRateMult
-    else:
-        surr_rate_mult = 1
-    
-    return nop_BoP1(t) * asmp.SurrRate(t) * surr_rate_mult
+    return nop_BoP1(t) * asmp.SurrRate(t)
 
 def nop_Annuity(t):
     """Number of policies: Annuity"""

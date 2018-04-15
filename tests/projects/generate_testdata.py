@@ -2,7 +2,6 @@ import os, math, pickle
 from lifelib.projects.simplelife import simplelife
 
 
-model = simplelife.build(load_saved=False)
 filepath = os.path.join(os.path.dirname(__file__), 'data')
 
 
@@ -24,4 +23,5 @@ def generate_data():
 
 
 if __name__ == '__main__':
+    model = simplelife.build(load_saved=False)
     generate_data()

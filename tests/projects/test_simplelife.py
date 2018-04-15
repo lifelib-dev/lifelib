@@ -6,7 +6,7 @@ import pytest
 from lifelib.projects.simplelife import simplelife
 from .generate_testdata import round_signif
 
-model = simplelife.build(load_saved=False)
+model = simplelife.build(load_saved=True)
 filepath = os.path.join(os.path.dirname(__file__), 'data')
 
 def test_simpleflie():
