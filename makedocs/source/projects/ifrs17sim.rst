@@ -1,7 +1,7 @@
 .. module:: ifrs17sim
 
-Project Template: **ifrs17sim**
-===============================
+Project **ifrs17sim**
+=====================
 
 **ifrs17sim** is a project template for simulating IFRS17
 financial statements on sample insurance contracts.

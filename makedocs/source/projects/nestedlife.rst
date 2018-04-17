@@ -1,7 +1,7 @@
 .. module:: nestedlife
 
-Project Template: **nestedlife**
-================================
+Project **nestedlife**
+======================
 
 **nestedlife** is a project template to build the same annual projection
 model of basic traditional life policies

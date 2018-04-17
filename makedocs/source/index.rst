@@ -123,9 +123,7 @@ Links
 
    quickstart
    generated_examples/index
-   projects/simplelife
-   projects/nestedlife
-   projects/ifrs17sim
+   projects/index
    archive
 
 

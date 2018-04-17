@@ -1,7 +1,7 @@
 .. module:: simplelife
 
-Project Template: **simplelife**
-================================
+Project **simplelife**
+======================
 
 **simplelife** is a project template to build an annual projection
 model of basic traditional life policies.
