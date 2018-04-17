@@ -11,29 +11,25 @@ try:
 except ImportError:
     import nestedlife
 
+model = nestedlife.build()
+
+# Policy point ID and aliases
 polid = 171
+outer = model.OuterProjection[polid]
+inner = outer.InnerProjection
 
-if 'nestedlife' in mx.get_models():
-    model = mx.get_models()['nestedlife']
-else:
-    model = nestedlife.build()
+# %% Code block for overwiting the defaut model
 
-outer = model.OuterProjection
-inner = model.OuterProjection.InnerProjection
-
-#%% Code block for overwiting the defaut model
-
-def nop_Surrender_outer(t):
-    """Number of policies: Surrender"""
-    
-    if t == 1:
-        surr_rate_mult = 2
-    elif t == 2:
-        surr_rate_mult = 0.5
+def SurrRateMult(t):
+    if t == 0:
+        return 1
     else:
-        surr_rate_mult = 1
-    
-    return nop_BoP1(t) * asmp.SurrRate(t) * surr_rate_mult
+        return SurrRateMult(t - 1)
+
+
+def nop_Surrender(t):
+    """Number of policies: Surrender"""    
+    return nop_BoP1(t) * asmp.SurrRate(t) * SurrRateMult(t)
 
 
 def nop_EoP_inner(t):
@@ -44,12 +40,19 @@ def nop_EoP_inner(t):
         return nop_BoP1(t - 1) - nop_Death(t - 1) - nop_Surrender(t - 1)
 
 
-outer.new_cells(name='nop_Surrender', formula=nop_Surrender_outer)
-outer[polid].InnerProjection[1].SurrRateMult = 2
-outer[polid].InnerProjection[2].SurrRateMult = 0.5
+model.BaseProjection.new_cells(formula=SurrRateMult)
+model.BaseProjection.new_cells(formula=nop_Surrender)
 inner.new_cells(name='nop_EoP', formula=nop_EoP_inner)
 
-#%% Code block for PV graph 
+outer.SurrRateMult[1] = 2
+outer.SurrRateMult[2] = 0.5
+outer.SurrRateMult[3] = 1
+
+inner[1].SurrRateMult[1] = 2
+inner[2].SurrRateMult[2] = 0.5
+inner[3].SurrRateMult[3] = 1
+
+# %% Code block for PV graph 
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -65,7 +68,7 @@ def draw_bars(item):
     for t0 in range(term):
         expect_t0 = [np.nan] * term
         for t in range(t0, term):
-            cells = outer[polid].InnerProjection[t0].cells[item]
+            cells = outer.InnerProjection[t0].cells[item]
             expect_t0[t] = cells[t]
             
         expect.append(expect_t0)
@@ -85,7 +88,7 @@ def draw_single_bar(data, ax, t0):
     
 
 
-#%% PV Test
+# %% PV Test
 if __name__ == '__main__':
     draw_bars('pv_NetLiabilityCashflow')
 

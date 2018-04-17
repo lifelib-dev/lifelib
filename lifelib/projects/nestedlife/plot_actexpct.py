@@ -11,16 +11,12 @@ try:
 except ImportError:
     import nestedlife
 
-
-if 'nestedlife' in mx.get_models():
-    model = mx.get_models()['nestedlife']
-else:
-    model = nestedlife.build(True)
+model = nestedlife.build()
 
 # Policy point ID and aliases
 polid = 171
 outer = model.OuterProjection[polid]
-inner = model.OuterProjection[polid].InnerProjection
+inner = outer.InnerProjection
 
 # %% Code block for overriding the default model
 
@@ -46,15 +42,15 @@ def nop_EoP_inner(t):
 
 model.BaseProjection.new_cells(formula=SurrRateMult)
 model.BaseProjection.new_cells(formula=nop_Surrender)
-outer.InnerProjection.new_cells(name='nop_EoP', formula=nop_EoP_inner)
+inner.new_cells(name='nop_EoP', formula=nop_EoP_inner)
 
 outer.SurrRateMult[1] = 2
 outer.SurrRateMult[2] = 0.5
 outer.SurrRateMult[3] = 1
 
-outer.InnerProjection[1].SurrRateMult[1] = 2
-outer.InnerProjection[2].SurrRateMult[2] = 0.5
-outer.InnerProjection[3].SurrRateMult[3] = 1
+inner[1].SurrRateMult[1] = 2
+inner[2].SurrRateMult[2] = 0.5
+inner[3].SurrRateMult[3] = 1
 
 # %% Code block for drawing graphs
 
@@ -123,7 +119,7 @@ def draw_graph_pair(*items):
             draw_single_ncf(expect[t0], ax, ':')
             draw_single_ncf(mask_act(act, t0), ax, '-')    
 
-    
+# %% Draw graphs    
 if __name__ == '__main__':
     draw_graph_pair('nop_Surrender', 'nop_EoP')
 
