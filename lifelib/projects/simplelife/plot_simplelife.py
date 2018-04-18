@@ -4,12 +4,15 @@
 
 Draw a graph of liability cashflows of a simple whole life policy
 """
+import modelx as mx
+
 try:
     import simplelife.simplelife as simplelife
 except ImportError:
     import simplelife
 
-proj = simplelife.build().Projection
+polid = 171
+proj = simplelife.build(True).Projection[polid]
 
 vars = ['prj_incm_Premium',
         'prj_bnft_Surrender',
@@ -18,20 +21,26 @@ vars = ['prj_incm_Premium',
         'prj_exps_CommTotal',
         'prj_exps_Acq']
 
-polid = 171
-
 for cells in vars:
-    list(proj[polid].cells[cells](t) for t in range(50))
+    list(proj.cells[cells](t) for t in range(50))
 
-cfs = proj[polid].frame[vars].sort_index().dropna()
-cfs[vars[1:]] = cfs[vars[1:]].mul(-1)
+list(proj.prj_NetLiabilityCashflow[t] for t in range(50))
 
-[proj[polid].prj_NetLiabilityCashflow[t] for t in range(50)]
 
-ncf = proj[polid].prj_NetLiabilityCashflow.frame.sort_index()
-
+# %% Code block for drawing graph
 import seaborn as sns
 sns.set()
 
-axes = ncf.plot.line(marker='o', color='r')
-cfs.plot(kind='bar', stacked=True, ax=axes)
+def draw_cashflow(proj):   
+    
+    cfs = proj.frame[vars].sort_index().dropna()
+    cfs[vars[1:]] = cfs[vars[1:]].mul(-1)   # Change outflows to negatives
+    
+    ncf = proj.prj_NetLiabilityCashflow.frame.sort_index()
+
+    axes = ncf.plot.line(marker='o', color='r')
+    cfs.plot(kind='bar', stacked=True, ax=axes)
+
+# %% Main
+if __name__ == '__main__':
+    draw_cashflow(proj)
