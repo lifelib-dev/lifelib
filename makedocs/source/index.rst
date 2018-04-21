@@ -29,6 +29,15 @@ lifelib models are built as `modelx`_ models, ready to be used out of the box
 with sample formulas and input files, and they are
 fully customizable by users.
 
+Latest Updates
+--------------
+
+.. include:: updates.rst
+   :start-after: Latest Updates Begin
+   :end-before: Latest Updates End
+
+.. :doc:`... See more updates<updates>`
+
 How **lifelib** works
 ---------------------
 
@@ -121,6 +130,7 @@ Links
    :hidden:
    :maxdepth: 2
 
+   whatsnew
    quickstart
    generated_examples/index
    projects/index

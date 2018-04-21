@@ -2,8 +2,8 @@ Archive
 =======
 
 
-Past Releases
--------------
+Past Documentation
+------------------
 
 .. raw:: html
 
