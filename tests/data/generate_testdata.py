@@ -2,7 +2,7 @@ import os, math, pickle
 from lifelib.projects.simplelife import simplelife
 
 
-filepath = os.path.join(os.path.dirname(__file__), 'data')
+filepath = os.path.join(os.path.dirname(__file__), 'data_simplelife')
 
 
 def round_signif(x, digit):
@@ -12,7 +12,8 @@ def round_signif(x, digit):
         base = int(math.log10(abs(x)))
         return round(x, digit - base - 1)
 
-def generate_data():
+
+def generate_data(model):
     data = []
     proj = model.Projection
     for i in range(10, 301, 10):
@@ -23,5 +24,4 @@ def generate_data():
 
 
 if __name__ == '__main__':
-    model = simplelife.build(load_saved=False)
-    generate_data()
+    generate_data(simplelife.build())
