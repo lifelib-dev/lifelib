@@ -7,10 +7,13 @@ dist/
 __pycache__/
 *.so
 *~
+temp.py
+temp[1-9].py
 
 # due to using tox and pytest
 .tox
 .cache
+.pytest_cache/
 
 # due to using PyCharm
 .idea/
