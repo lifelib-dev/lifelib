@@ -171,7 +171,7 @@ def ExpsAcqPol():
 
 def ExpsMaintSA():
     """Maintenance expense per sum assured"""
-    return asmp.ExpsAcqSA.match(prd, polt, gen).value
+    return asmp.ExpsMaintSA.match(prd, polt, gen).value
 
 def ExpsMaintAP():
     """Maintenance expense per annualized premium"""
