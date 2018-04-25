@@ -11,13 +11,30 @@ try:
 except ImportError:
     import ifrs17sim
 
+    
+def draw_bars(proj):
+    liab = [proj.InnerProjection[t].pv_NetLiabilityCashflow[t] for t in range(10)]
+    
+    proj.CSM_Unfloored(15)
+    data = [proj.CSM_Unfloored(i) for i in range(10)]
+    fg, ax = plt.subplots()
+    
+    draw_single_bar(liab, ax, -1)
+    draw_single_bar(data, ax, +1)    
+    
+    
+def draw_single_bar(data, ax, n):
+    width = 0.4
+    ax.bar(np.arange(len(data))  + n * (width/2), data, width - 0.05)
 
 if __name__ == '__main__':
     import numpy as np
     import matplotlib.pyplot as plt
     import seaborn as sns
     sns.set()
+    
+    model = ifrs17sim.build(True)
+    proj = model.OuterProjection[1]
+    draw_bars(proj)
 
-    model, proj = ifrs17sim.build(), mx.cur_model().OuterProjection[171]
-    proj.CSM_Unfloored(10)
-    proj.CSM_Unfloored.series.sort_index().plot()
+    
