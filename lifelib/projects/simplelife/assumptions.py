@@ -67,7 +67,6 @@ policy_attrs = []
 
 def MortTable():
     """Mortality Table"""
-    prd, polt, gen = pol.Product, pol.PolicyType, pol.Gen
     result = asmp.BaseMort.match(prd, polt, gen).value
 
     if result is not None:
@@ -92,7 +91,6 @@ def BaseMortRate(x):
 
 def MortFactor(y):
     """Mortality factor"""
-    prd, polt, gen = pol.Product, pol.PolicyType, pol.Gen
     table = asmp.MortFactor.match(prd, polt, gen).value
 
     if table is None:
@@ -108,7 +106,6 @@ def MortFactor(y):
 # --- Surrender Rates ---
 def SurrRate(y):
     """Surrender Rate"""
-    prd, polt, gen = pol.Product, pol.PolicyType, pol.Gen
     table = asmp.Surrender.match(prd, polt, gen).value
 
     if table is None:
@@ -124,8 +121,6 @@ def SurrRate(y):
 # --- Commissions ---
 def CmsnInitPrem():
     """Initial commission per premium"""
-
-    prd, polt, gen = pol.Product, pol.PolicyType, pol.Gen
     result = asmp.CmsnInitPrem.match(prd, polt, gen).value
 
     if result is not None:
@@ -136,8 +131,6 @@ def CmsnInitPrem():
 
 def CmsnRenPrem():
     """Renewal commission per premium"""
-
-    prd, polt, gen = pol.Product, pol.PolicyType, pol.Gen
     result = asmp.CmsnRenPrem.match(prd, polt, gen).value
 
     if result is not None:
@@ -147,8 +140,6 @@ def CmsnRenPrem():
 
 def CmsnRenTerm():
     """Renewal commission term"""
-
-    prd, polt, gen = pol.Product, pol.PolicyType, pol.Gen
     result = asmp.CmsnRenTerm.match(prd, polt, gen).value
 
     if result is not None:
