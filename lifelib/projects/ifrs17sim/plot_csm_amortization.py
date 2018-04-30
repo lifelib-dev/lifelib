@@ -33,7 +33,7 @@ if __name__ == '__main__':
     import seaborn as sns
     sns.set()
     
-    model = ifrs17sim.build(True)
+    model = ifrs17sim.build()
     proj = model.OuterProjection[1]
     draw_bars(proj)
 

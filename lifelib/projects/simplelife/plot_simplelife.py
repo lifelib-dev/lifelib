@@ -12,7 +12,7 @@ except ImportError:
     import simplelife
 
 polid = 171
-proj = simplelife.build(True).Projection[polid]
+proj = simplelife.build().Projection[polid]
 
 vars = ['prj_incm_Premium',
         'prj_bnft_Surrender',

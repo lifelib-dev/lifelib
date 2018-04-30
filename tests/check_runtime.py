@@ -1,6 +1,6 @@
 from lifelib.projects.simplelife import simplelife
 
-model = simplelife.build(load_saved=True)
+model = simplelife.build()
 
 
 def run_simplelife():
