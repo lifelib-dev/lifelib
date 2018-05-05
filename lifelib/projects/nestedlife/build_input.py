@@ -89,6 +89,7 @@ Scenarios
 
 
 """
+import sys
 import os.path as path
 import time
 from textwrap import dedent
@@ -101,9 +102,14 @@ class _PrintElapsedTime:
     def __init__(self):
         self.last_time = time.time()
 
+    def set_start(self, msg):
+        print(msg, end='', file=sys.stderr)
+        self.last_time = time.time()
+
     def print_time(self, msg):
         this_time = time.time()
-        print(msg, "({:.2f}secs)".format(this_time - self.last_time))
+        print(msg, "({:.2f}secs)".format(this_time - self.last_time),
+              file=sys.stderr)
         self.last_time = this_time
 
 
@@ -127,10 +133,11 @@ def build_input(model, input_file=default_input):
     inp.allow_none = True
     print_time = True
 
+    print("Started loading data from 'input.xlsm'.", file=sys.stderr)
+
     if print_time:
         timestamp = _PrintElapsedTime()
-
-    print("Started loading data from 'input.xlsm'.")
+        timestamp.set_start('Loading PolicyData...')
 
     policydata = inp.new_space_from_excel(
         book=input_file,
@@ -143,7 +150,8 @@ def build_input(model, input_file=default_input):
         cells_param_order=[])
 
     if print_time:
-        timestamp.print_time('...Loaded PolicyData')
+        timestamp.print_time('Done.')
+        timestamp.set_start('Loading MortalityTables...')
 
     mortbl = inp.new_space_from_excel(
         book=input_file,
@@ -158,7 +166,8 @@ def build_input(model, input_file=default_input):
         cells_param_order=[2, 0])
 
     if print_time:
-        timestamp.print_time('...Loaded MortalityTables')
+        timestamp.print_time('Done.')
+        timestamp.set_start('Loading ProductSpec...')
 
     prodspec = inp.new_space(name='ProductSpec')
     prodspec.new_cells_from_excel(
@@ -170,7 +179,8 @@ def build_input(model, input_file=default_input):
         param_order=[0, 1, 2])
 
     if print_time:
-        timestamp.print_time('...Loaded ProductSpec')
+        timestamp.print_time('Done.')
+        timestamp.set_start('Loading OtherParam1...')
 
     inp.new_cells_from_excel(
         book=input_file,
@@ -181,7 +191,8 @@ def build_input(model, input_file=default_input):
         param_order=[0])
 
     if print_time:
-        timestamp.print_time('...Loaded OtherParam1')
+        timestamp.print_time('Done.')
+        timestamp.set_start('Loading OtherParams2...')
 
     inp.new_cells_from_excel(
         book=input_file,
@@ -192,7 +203,8 @@ def build_input(model, input_file=default_input):
         param_order=[0])
 
     if print_time:
-        timestamp.print_time('...Loaded OtherParams2')
+        timestamp.print_time('Done.')
+        timestamp.set_start('Loading Assumptions...')
 
     asmp = inp.new_space(name='Assumptions')
     asmp.new_cells_from_excel(
@@ -204,7 +216,8 @@ def build_input(model, input_file=default_input):
         param_order=[0, 1, 2])
 
     if print_time:
-        timestamp.print_time('...Loaded Assumptions')
+        timestamp.print_time('Done.')
+        timestamp.set_start('Loading AssumptionTables...')
 
     asmptbls = inp.new_space(name='AssumptionTables')
     asmptbls.new_cells_from_excel(
@@ -216,7 +229,8 @@ def build_input(model, input_file=default_input):
         param_order=[0])
 
     if print_time:
-        timestamp.print_time('...Loaded AssumptionTables')
+        timestamp.print_time('Done.')
+        timestamp.set_start('Loading Scenarios...')
 
     scenarios = inp.new_space_from_excel(
         book=input_file,
@@ -229,11 +243,12 @@ def build_input(model, input_file=default_input):
         cells_param_order=[1])
 
     if print_time:
-        timestamp.print_time('...Loaded Scenarios')
+        timestamp.print_time('Done.')
 
     print(dedent("""\
         Input space and its sub spaces are saved in 'lifelib.mx'.
         You can load input data from the saved file instead of 'input.xlsx'
-        by passing 'load_saved=True' to simplelife.build function."""))
+        by passing 'load_saved=True' to simplelife.build function."""),
+          file=sys.stderr)
 
     return inp
