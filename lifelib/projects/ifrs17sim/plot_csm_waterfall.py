@@ -1,5 +1,5 @@
 """
-:mod:`ifrs17sim` CSM waterfall chars
+:mod:`ifrs17sim` CSM waterfall chart
 ====================================
 
 Draw a graph of CSM amortization pattern.
