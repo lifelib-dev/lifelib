@@ -1,0 +1,30 @@
+Steps to follow when releasing a new version
+
+Modified from:
+    https://github.com/pydata/xarray/blob/master/HOW_TO_RELEASE
+Reference:
+    https://packaging.python.org/tutorials/distributing-packages/
+
+ 1. Update whatsnew.rst and updates.rst.
+ 2. Remove 'dev' from the version in __init__.py.
+ 3. make docs and update and push lifelib-docs.(check version is not with 'dev')
+ 4. On the master branch, commit the release in git:
+      git commit -a -m "DIST: Release v0.X.Y"
+      git push
+ 5. Tag the release and push tags:
+      git tag v0.X.Y
+      git push origin --tags
+ 6. Build source and binary wheels for pypi:
+      python setup.py sdist
+      python setup.py bdist_wheel
+ 7. Use twine to register and upload the release on pypi.
+      twine upload dist/lifelib-0.X.Y*
+ 8. Clean up build dir.
+      python setup.py clean --all
+ 9. Increment version number and add 'dev' in __init__.py.
+10. Commit your changes and push to master again:
+      git commit -a -m "DIST: Bump version back to dev"
+      git push
+11. Copy lifelib-docs/docs in archive as docs-v0.X.Y.
+    Edit archive.rst to include a link to docs-v0.X.Y.
+    make docs and update and push lifelib-docs(version is 'dev' now)
