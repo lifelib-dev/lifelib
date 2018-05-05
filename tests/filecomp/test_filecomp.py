@@ -29,6 +29,8 @@ sample_files = [('plot_simplelife.py',
                 ('plot_actexpct.py',
                  [nestedpath, os.path.join(examplepath, 'nestedlife')]),
                 ('plot_csm_amortization.py',
+                 [ifrs17simpath, os.path.join(examplepath, 'ifrs17sim')]),
+                ('plot_csm_waterfall.py',
                  [ifrs17simpath, os.path.join(examplepath, 'ifrs17sim')])]
 
 common_files += sample_files
