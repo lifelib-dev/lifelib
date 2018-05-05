@@ -181,10 +181,10 @@ def NetPremRate(basis):
     gamma2 = LoadMaintSA2
     comf = LifeTable[Sex, IntRate(basis), TableID(basis)]
 
-    if Product == 1 or Product == 2:
+    if Product == 'TERM' or Product == 'WL':
         return (comf.Axn(x, n) + gamma2 * comf.AnnDuenx(x, n - m, 1, m)) / comf.AnnDuenx(x, n)
 
-    elif Product == 3:
+    elif Product == 'ENDW':
         return (comf.Axn(x, n) + gamma2 * comf.AnnDuenx(x, n - m, 1, m)) / comf.AnnDuenx(x, n)
 
     else:
@@ -202,11 +202,11 @@ def GrossPremRate():
 
     comf = LifeTable[Sex, IntRate('PREM'), TableID('PREM')]
 
-    if Product == 1 or Product == 2:
+    if Product == 'TERM' or Product == 'WL':
         return (comf.Axn(x, n) + alpha + gamma * comf.AnnDuenx(x, n, PremFreq)
                 + gamma2 * comf.AnnDuenx(x, n - m, 1, m)) / (1 - beta - delta) / PremFreq / comf.AnnDuenx(x, m, PremFreq)
 
-    elif Product == 3:
+    elif Product == 'ENDW':
         return (comf.Exn(x, n) + comf.Axn(x, n) + alpha + gamma * comf.AnnDuenx(x, n, PremFreq)
                 + gamma2 * comf.AnnDuenx(x, n - m, 1, m)) / (1 - beta - delta) / PremFreq / comf.AnnDuenx(x, m, PremFreq)
     else:
