@@ -3,6 +3,12 @@
 ====================================
 
 Draw a graph of CSM amortization pattern.
+
+*Run this sample now!* |launch binder|
+
+.. |launch binder| image:: https://mybinder.org/badge.svg
+   :target: https://mybinder.org/v2/gh/fumitoh/ifrs17sim-demo/master?filepath=ifrs17sim-demo.ipynb
+
 """
 import pandas as pd
 import collections
