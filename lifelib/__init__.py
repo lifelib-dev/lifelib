@@ -1,6 +1,6 @@
 import os.path
 
-VERSION = (0, 0, 6)
+VERSION = (0, 0, 7, 'dev')
 __version__ = '.'.join([str(x) for x in VERSION])
 LIB_DIR = os.path.abspath(os.path.dirname(__file__))
 TEMPLATE_DIR = os.path.join(LIB_DIR, 'projects')
