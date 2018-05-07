@@ -4,6 +4,9 @@ Updates
 
 .. Latest Updates Begin
 
+* *7 May 2018:*
+  lifelib v0.0.6 is released. See :ref:`releases` for details.
+
 * *6 May 2018:*
   :doc:`generated_examples/index` are now executable online in your browser.
 

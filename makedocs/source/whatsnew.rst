@@ -34,31 +34,42 @@ Updates
 
    updates
 
+.. _releases:
+
 Releases
 ========
 
-The contents of `lifelib.io <http://lifelib.io>`_ are constantly
-updated based on the development version of lifelib.
-Documentation for released versions of lifelib is available under
-:doc:`archive` page.
+.. The contents of `lifelib.io <http://lifelib.io>`_ are constantly
+   updated based on the development version of lifelib.
+   Documentation for released versions of lifelib is available under
+   :doc:`archive` page.
 
 
-v0.0.6.dev (XX April 2018)
---------------------------
+v0.0.6 (7 May 2018)
+-------------------
 
 Enhancements
 ~~~~~~~~~~~~
-- The plot sample scripts are updated.
+- :attr:`~simplelife.policy.Product` defined in the table
+  in *PolicyData* tab in *input.xlsm* are now strings
+  (``TERM``, ``WL``, ``ENDW``) instead of integer IDs (1, 2, 3).
 
-- ``build_input`` now saves models as their template names.
+- The assumption data is updated so that the selected sample policies
+  become profitable. The default scenario number is changed from 3 to 1.
 
-- New project template :doc:`projects/ifrs17sim` is added.
+- Removed redundant local variables in cells in :mod:`~simplelife.assumptions`.
+
+- Fixed a bug in the formula of :func:`~simplelife.assumptions.ExpsMaintSA`.
+
+- Input loading messages are now output to the standard error.
+
+- :func:`~simplelife.build_input` now saves models as their template names.
+
+- New project template :doc:`projects/ifrs17sim` and its examples are added.
 
 - Insuranc in-force cells and present value cells are added
   in :mod:`projection <simplelife.projection>` module.
 
-- The assumption data is updated so that the selected sample policy
-  becomes profitable. The default scenario number is changed from 3 to 1.
 
 - ``new_space_from_module`` methods are replaced with ``import_module``.
 
