@@ -23,3 +23,6 @@ temp[1-9].py
 
 # Sphinx auto-generated dirs
 generated*/
+
+# Jupyter notebook
+.ipynb_checkpoints

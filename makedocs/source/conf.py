@@ -210,11 +210,12 @@ autodoc_member_order = 'bysource'
 from sphinx_gallery.sorting import ExplicitOrder
 sphinx_gallery_conf = {
     # path to your examples scripts
-    'examples_dirs': '../../examples',
+    'ignore_pattern': '^(?!.*plot_)',
+    'examples_dirs': '../../lifelib/projects',
     'subsection_order': ExplicitOrder(
-        ['../../examples/simplelife',
-         '../../examples/nestedlife',
-         '../../examples/ifrs17sim']),
+        ['../../lifelib/projects/simplelife',
+         '../../lifelib/projects/nestedlife',
+         '../../lifelib/projects/ifrs17sim']),
     # path where to save gallery generated examples
     'gallery_dirs': 'generated_examples',
     # Suppress warning:
