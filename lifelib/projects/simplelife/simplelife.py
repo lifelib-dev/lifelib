@@ -7,16 +7,11 @@ If this module is run as a script, the :py:func:`build` function is called
 and the created model is available as ``model`` global variable.
 """
 
-import sys, os
 import modelx as mx
+from lifelib.utility import set_projdir
 
-if '__file__' in globals():
-    proj_dir = os.path.abspath(os.path.dirname(__file__))
-    if proj_dir not in sys.path:
-        sys.path.insert(0, proj_dir)
-else:
-    proj_dir = ''
-
+# Set the current folder to this project folder.
+proj_dir = set_projdir(__file__)
 
 def build(load_saved=False):
     """Build a model and return it.
