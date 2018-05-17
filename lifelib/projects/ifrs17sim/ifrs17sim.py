@@ -6,12 +6,8 @@ which creates a model from source modules and return it.
 If this module is run as a script, the :py:func:`build` function is called
 and the created model is available as ``model`` global variable.
 """
-
+import os
 import modelx as mx
-from lifelib.utility import set_projdir
-
-# Set the current folder to this project folder.
-proj_dir = set_projdir(__file__)
 
 def build(load_saved=False):
     """Build a model and return it.
@@ -26,18 +22,21 @@ def build(load_saved=False):
             is executed last time. Defaults to ``False``
     """
 
+    # Make sure the current directory is this folder
+    os.chdir(os.path.abspath(os.path.dirname(__file__)))
+
     # ------------------------------------------------------------------------
     # Build Input space
 
     from build_input import build_input
 
     if load_saved:
-        model = mx.open_model(proj_dir + '/ifrs17sim.mx')
+        model = mx.open_model('ifrs17sim.mx')
         input = model.Input
     else:
         model = mx.new_model(name='ifrs17sim')
-        input = build_input(model, proj_dir + '/input.xlsm')
-        model.save(proj_dir + '/ifrs17sim.mx')
+        input = build_input(model, 'input.xlsm')
+        model.save('ifrs17sim.mx')
 
     # ------------------------------------------------------------------------
     # Build CommFunc space
