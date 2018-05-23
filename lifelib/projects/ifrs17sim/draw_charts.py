@@ -11,7 +11,7 @@ import seaborn as sns
 sns.set()
 
 
-def draw_waterfall(df):
+def draw_waterfall(df, ax=None):
     """Draw waterfall chart"""
     data = df.stack()
     bottom = df.cumsum(axis=1).shift(1, axis=1).fillna(0).stack()
@@ -19,7 +19,8 @@ def draw_waterfall(df):
     colors = CustomColorMap(flowvals)
     xlabel = [idx[1] + '(' + str(idx[0]) + ')' for idx in df.stack().index]
     ax = sns.barplot(data=data, bottom=bottom,
-                     palette=colors.get_palette(data))
+                     palette=colors.get_palette(data),
+                     ax=ax)
     ax.set_xticklabels(labels=xlabel, rotation='vertical')
     ax.get_figure().tight_layout()
     return ax
@@ -33,8 +34,8 @@ class CustomColorMap:
         self.pallen = 20
         self.palette = pal = sns.color_palette("RdBu", self.pallen)
 
-        self.posmax = max([val for val in data if val >= 0] or 0)
-        self.negmin = min([val for val in data if val < 0] or 0)
+        self.posmax = max([val for val in data if val >= 0] or [0])
+        self.negmin = min([val for val in data if val < 0] or [0])
 
     def get_index(self, value):
 
