@@ -1,9 +1,13 @@
+import sys
 import os.path
 import pickle
 import pathlib
 
 from lifelib.projects.simplelife import simplelife
 from tests.data.generate_testdata import round_signif
+
+if '' not in sys.path:
+    sys.path.insert(0, '')
 
 model = simplelife.build(load_saved=False)
 

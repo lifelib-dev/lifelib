@@ -1,4 +1,8 @@
+import sys
 from lifelib.projects.simplelife import simplelife
+
+if '' not in sys.path:
+    sys.path.insert(0, '')
 
 model = simplelife.build()
 

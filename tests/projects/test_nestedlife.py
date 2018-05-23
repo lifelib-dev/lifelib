@@ -1,3 +1,4 @@
+import sys
 import os.path
 import pickle
 import pathlib
@@ -9,7 +10,8 @@ from tests.data.generate_testdata_nestedlife import (
     set_model,
     update_model)
 
-
+if '' not in sys.path:
+    sys.path.insert(0, '')
 
 
 datadir = pathlib.Path(__file__).parents[1].joinpath('data')
