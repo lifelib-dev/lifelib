@@ -74,3 +74,13 @@ def PV_NetCashflows(t):
                 - prj_exps_Total(t)
                 - prj_bnft_Total(t) / (1 + DiscRate(t))
                 + PV_NetCashflows(t + 1) / (1 + DiscRate(t)))
+
+
+def InterestNetCashflows(t):
+    """Interest accreted on pv of net cashflows"""
+    if t > last_t:
+        return 0
+    else:
+        return (PV_NetCashflows(t)
+                - prj_incm_Premium(t)
+                + prj_exps_Total(t)) * DiscRate(t)

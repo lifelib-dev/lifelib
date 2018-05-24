@@ -255,6 +255,10 @@ def prj_exps_CommTotal(t):
 def prj_exps_Acq(t):
     """Acquisition expenses"""
     return ppl_exps_Acq(t) * (nop_NewBiz(t) + nop_Renewal(t))
+
+def prj_exps_AcqTotal(t):
+    """Commissions and acquisition expenses"""
+    return prj_exps_CommTotal(t) + prj_exps_Acq(t)
     
 def prj_exps_Maint(t):
     """Maintenance expenses"""
@@ -263,6 +267,9 @@ def prj_exps_Maint(t):
 def prj_exps_Other(t):
     """Other expenses"""
     return 0
+
+def prj_exps_MaintTotal(t):
+    return prj_exps_Maint(t) + prj_exps_Other(t)
     
 def prj_exps_Total(t):
     """Total expenses"""
@@ -331,6 +338,23 @@ def prj_NetLiabilityCashflow(t):
         prj_incm_Premium(t) \
         - prj_bnft_Total(t) \
         - prj_exps_Total(t)
+        
+        
+def prj_InterestAccumCashflow(t):
+    """Intrest on accumulated cashflows"""
+    return (prj_NetLiabilityCashflow(t)
+            + prj_incm_Premium(t)
+            - prj_bnft_Total(t)) * scen.DiscRate(t)
+
+def prj_AccumCashflow(t):
+    """Accumulated cashflows"""
+    if t == 0:
+        return 0
+    else:
+        return (prj_AccumCashflow(t - 1)
+                + prj_InterestAccumCashflow(t - 1)
+                + prj_NetLiabilityCashflow(t - 1))
+
 
 def pv_incm_Premium(t):
     """Present value of premium income"""

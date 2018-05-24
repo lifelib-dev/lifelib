@@ -6,18 +6,49 @@ contract service margin (CSM) defined in IFRS17.
 This module is a mix-in module to projection module in nestedlife project.
 """
 
+
+#%% The statement of Financial Posisition
+
+def NetBalance(t):
+    return NetInsAssets(t) + prj_AccumCashflow(t)
+
+def NetInsAssets(t):
+    """Net Insurance Assets or Liabilities
+    
+    Warnings:
+        The liabilities for incurred claims are not implemented. 
+    """    
+    return (PV_FutureCashflow(t)
+            - RiskAdjustment(t)
+            - CSM_Unfloored(t))
+    
+
+def PV_FutureCashflow(t):
+    """Present value of future cashflow"""
+    return PV_CashFlows(t, t, t)
+
+    
+def RiskAdjustment(t):
+    """Risk Adjustment
+    
+    Warnings:
+        To be implemented
+    """
+    return 0
+
+#%% CSM Calculations
+
 def CSM_Unfloored(t):
     """Unfloored CSM (38, 44)"""
     if t == 0:
         # Initial recognition (38)
-        return PV_CashFlows(t, 0, 0)
+        return PV_FutureCashflow(t) - RiskAdjustment(t)
     else:
         # Subsequent recognition (44)
         return (CSM_Unfloored(t - 1)
                 + IntAccrCSM(t - 1)
                 + AdjCSM_FulCashFlows(t - 1)
                 - TransServices(t - 1))
-
 
         
 def IntAccrCSM(t):
@@ -88,4 +119,109 @@ def PV_SumCovUnits(t, t_rate):
     The discount rates used are the ones at time `t_rate`.
     """
     return InnerProjection(t).PresentValues(t_rate).PV_SumInsInForce(t)
+
+
+#%% The statement of Financial Performance
+    
+def InsServiceResult(t):
+    """Insurance Service Result (80(a), 83-86)"""  
+    return InsRevenue(t) - InsServiceExps(t)
+
+def InsFinanceIncomeExps(t):
+    """Insurance Finance Income or Expenses (80(b), 87-92, B128-B136)
+    
+    Warning:
+        Accounting Policy Choice 88(b) not implemented.
+    """
+    chg_discrate = (PV_CashFlows(t + 1, t + 1, t + 1) 
+                    - PV_CashFlows(t + 1, t + 1, t))
+    
+    return (ExpectedInterestCashflow(t) + chg_discrate 
+            - IntAccrCSM(t) + prj_InterestAccumCashflow(t))
+            
+
+def InsRevenue(t):
+    """Insurance Revenue (82-85, B120-B125)"""
+    return (ExpectedClaims(t)
+            + ExpectedExps(t)
+            + RelsRiskAdj(t)
+            + TransServices(t)
+            + AmortAcqCashflow(t))
+
+
+def ExpectedPremium(t):
+    return InnerProjection(t).prj_incm_Premium(t)
+    
+def ExpectedAcqCashflow(t):
+    """Expected Acquisition Cashflow"""
+
+    est = InnerProjection(t)
+    return (est.prj_exps_CommInit(t) 
+            + est.prj_exps_CommRen(t)
+            + est.prj_exps_Acq(t))
+    
+def ExpectedInterestCashflow(t):
+    """Expected Interest on future cashflows"""
+    return InnerProjection(t).PresentValues(t).InterestNetCashflows(t)
+    
+def ExpectedClaims(t):
+    """Expected Claims
+    
+    Warning:
+        Using actuarl invest componets as proxy.
+    """
+    est = InnerProjection(t)
+    
+    return est.prj_bnft_Total(t) - InvstComponents(t)
+
+
+def ExpectedExps(t):
+    """Expected Expense"""
+    
+    est = InnerProjection(t)
+    
+    return (est.prj_exps_Total(t)
+            - est.prj_exps_CommInit(t) 
+            - est.prj_exps_CommRen(t)
+            - est.prj_exps_Acq(t))
+    
+def RelsRiskAdj(t):
+    """Release of Risk Adjustment to Revenue
+    
+    Warning:
+        To be implemented.
+    """
+    return 0
+
+def InsServiceExps(t):
+    """Insurance Service Expense (103(b))"""
+    return (IncurredClaims(t)
+            + IncurredExps(t)
+            + AmortAcqCashflow(t))
+
+def IncurredClaims(t):
+    """Incurred Claims"""
+    return prj_bnft_Total(t) - InvstComponents(t)
+
+def InvstComponents(t):
+    """Investment Components in Incurred Claims
+    
+    Warning:
+        To be implemented.
+    """
+    return 0
+
+def IncurredExps(t):
+    """Incurred Expenses"""
+    return prj_exps_Total(t) - AmortAcqCashflow(t)
+
+def AmortAcqCashflow(t):
+    """Amortization of Acquisition Cash Flows
+    
+    Warning:
+        To be implemented.  
+    """
+    return (prj_exps_CommInit(t) 
+            + prj_exps_CommRen(t)
+            + prj_exps_Acq(t))
 
