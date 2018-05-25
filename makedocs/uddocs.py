@@ -1,8 +1,10 @@
 import os.path as path
 
 proj_dir = path.normpath(path.dirname(path.abspath(__file__)) + "\\..")
-str2remove = (proj_dir + "\\lifelib\\projects\\simplelife\\").replace("\\", "\\\\")
-target_file = ".\\build\\html\\projects\\generated\\simplelife.build_input.html"
+
+projects = ['simplelife',
+            'nestedlife',
+            'ifrs17sim']
 
 def inplace_change(filename, oldstr, newstr):
     # Code taken from:
@@ -22,4 +24,8 @@ def inplace_change(filename, oldstr, newstr):
         s = s.replace(oldstr, newstr)
         f.write(s)
 
-inplace_change(target_file, str2remove, '')
+
+for prj in projects:
+    s = (proj_dir + "\\lifelib\\projects\\" + prj + "\\").replace("\\", "\\\\")
+    trg = ".\\build\\html\\projects\\generated\\" + prj + ".build_input.html"
+    inplace_change(trg, s, '')
