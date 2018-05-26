@@ -171,7 +171,6 @@ def ExpectedClaims(t):
         Using actuarl invest componets as proxy.
     """
     est = InnerProjection(t)
-    
     return est.prj_bnft_Total(t) - InvstComponents(t)
 
 
@@ -179,7 +178,6 @@ def ExpectedExps(t):
     """Expected Expense"""
     
     est = InnerProjection(t)
-    
     return (est.prj_exps_Total(t)
             - est.prj_exps_CommInit(t) 
             - est.prj_exps_CommRen(t)
@@ -213,15 +211,27 @@ def InvstComponents(t):
 
 def IncurredExps(t):
     """Incurred Expenses"""
-    return prj_exps_Total(t) - AmortAcqCashflow(t)
+    return (prj_exps_Total(t) - prj_exps_CommTotal(t) - prj_exps_Acq(t))
+
+#%% Acquisition Cashflow Amortization
+
+def AcqPremRatio():
+    """Ratio of PV Acquisiton Cashflows to PV Premiums.
+    
+    The ratio is determined by the expectation at issue.
+    """
+    pvs = InnerProjection(0).PresentValues(0)
+    
+    return ((pvs.PV_ExpsCommTotal(0) + pvs.PV_ExpsAcq(0))
+            / pvs.PV_IncomePremium(0))
 
 def AmortAcqCashflow(t):
     """Amortization of Acquisition Cash Flows
     
     Warning:
-        To be implemented.  
+        Implemented as a constant percentage of actual premiums,
+        thus not totalling the original amount if actual != expected.
     """
-    return (prj_exps_CommInit(t) 
-            + prj_exps_CommRen(t)
-            + prj_exps_Acq(t))
+    return AcqPremRatio * prj_incm_Premium(t)
+
 
