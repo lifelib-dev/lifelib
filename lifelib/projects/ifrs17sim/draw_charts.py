@@ -12,7 +12,7 @@ import seaborn as sns
 sns.set()
 
 
-def draw_waterfall(df, ax=None):
+def draw_waterfall(df, ax=None, **kwargs):
     """Draw waterfall chart"""
     data = df.stack()
     bottom = df.cumsum(axis=1).shift(1, axis=1).fillna(0).stack()
@@ -22,6 +22,8 @@ def draw_waterfall(df, ax=None):
                      palette=palette.colors,
                      ax=ax)
     ax.set_xticklabels(labels=xlabel, rotation='vertical')
+    if 'title' in kwargs:
+        ax.set_title(kwargs['title'])
     ax.get_figure().tight_layout()
     return ax
 

@@ -37,7 +37,7 @@ df = pd.DataFrame(data)
 df['TransServices'] = -1 * df['TransServices']
 
 # plt.figure()
-draw_waterfall(df)
+draw_waterfall(df, title='CSM Amortization')
 
 # %% Expected Cashflow Rollforwad
 
@@ -66,7 +66,7 @@ for inflow in ['ExpectedPremium']:
     estcf[inflow] = -1 * estcf[inflow] 
 
 plt.figure()
-draw_waterfall(estcf)
+draw_waterfall(estcf, title='Expected Cashflows')
     
 # %% Actual Cashflow Rollforward
     
@@ -87,7 +87,7 @@ for outflow in ['prj_exps_AcqTotal',
     
 
 plt.figure()
-draw_waterfall(actcf)
+draw_waterfall(actcf, title='Actual Cashflows')
 
 # %% IFRS17 Financial Performance
 
@@ -110,4 +110,4 @@ for pl in ['InsServiceExps']:
 #fg.tight_layout()
 
 plt.figure()
-draw_waterfall(ifrspl)
+draw_waterfall(ifrspl, title='IFRS17 Profit/Loss')
