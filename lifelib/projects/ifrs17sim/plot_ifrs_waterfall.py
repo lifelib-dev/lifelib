@@ -36,7 +36,6 @@ for cells in ['CSM_Unfloored',
 df = pd.DataFrame(data)
 df['TransServices'] = -1 * df['TransServices']
 
-# plt.figure()
 draw_waterfall(df, title='CSM Amortization')
 
 # %% Expected Cashflow Rollforwad
@@ -51,16 +50,6 @@ for cells in ['PV_FutureCashflow',
     data[cells] = [proj.cells[cells](t) for t in range(3)]
 
 estcf = pd.DataFrame(data)
-
-
-# Want to express like below
-#
-#revenue = proj.cells['PV_FutureCashflow',
-#                     'ExpectedPremium',
-#                     'ExpectedInterestCashflow',
-#                     'ExpectedAcqCashflow',
-#                     'ExpectedClaims',
-#                     'ExpectedExps'](t=range(3)).frame
 
 for inflow in ['ExpectedPremium']:
     estcf[inflow] = -1 * estcf[inflow] 
@@ -102,12 +91,6 @@ for cells in ['NetBalance',
 ifrspl = pd.DataFrame(data)
 for pl in ['InsServiceExps']:
     ifrspl[pl] = -1 * ifrspl[pl]
-
-#fg, ax = plt.subplots(nrows=3)
-#draw_waterfall(estcf, ax[0])
-#draw_waterfall(actcf, ax[1])
-#draw_waterfall(df, ax[2])
-#fg.tight_layout()
 
 plt.figure()
 draw_waterfall(ifrspl, title='IFRS17 Profit/Loss')
