@@ -6,6 +6,7 @@ Draw a graph of CSM amortization pattern.
 """
 
 import collections
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -101,6 +102,46 @@ class CustomColorMap:
         idxs = [int(self.get_index(val)) for val in data]
         return [self.palette[i] for i in idxs]
 
+
+def draw_stackedbarpairs(data, ax=None, **kwargs):
+    """Draw pairs of stacked bars
+
+    Draw a series of pairs of stacked bars. For each column,
+    bars are drawn either on the left or right of the x ticks,
+    depending the sines of values (left if negative, right if positive).
+    Bars on each side of each x tick are stacked each other.
+
+    Args:
+        data: DataFrame
+    """
+
+    if ax is None:
+        ax = plt.gca()
+
+    rbars = data[data >= 0]
+    lbars = -1 * data[data < 0]
+
+    rbottom, lbottom = \
+        [bars.fillna(0).cumsum(axis=1).shift(1, axis=1).fillna(0)
+         for bars in [rbars, lbars]]
+
+    def draw_single_bar(data, bottom, ax, n, **kwargs):
+        width = 0.4
+        return ax.bar(np.arange(len(data)) + n * (width / 2), 
+                      data, width - 0.05, bottom=bottom, **kwargs)
+    
+    legend = [[],[]]
+    for c in data.columns:
+        bar = draw_single_bar(rbars[c], rbottom[c], ax, +1, label=c)
+        color = bar.patches[0].get_facecolor()
+        draw_single_bar(lbars[c], lbottom[c], ax, -1, color=color)
+        # legend[0].append(bar)
+        # legend[1].append(c)
+    
+    ax.legend()
+
+    if 'title' in kwargs:
+        ax.set_title(kwargs['title'])
 
 if __name__ == '__main__':
     from lifelib.projects.ifrs17sim import ifrs17sim
