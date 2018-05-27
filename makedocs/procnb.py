@@ -32,7 +32,7 @@ def adjust_notebook(file):
     return nb
 
 
-notebook = 'ifrs17sim-demo.ipynb'
+notebook = 'ifrs17sim_csm_waterfall.ipynb'
 os.chdir('../lifelib/projects/ifrs17sim')
 nb = adjust_notebook(notebook)
 os.chdir(os.path.abspath(os.path.dirname(__file__)) + '/source/projects')

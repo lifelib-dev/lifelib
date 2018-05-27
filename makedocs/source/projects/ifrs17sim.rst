@@ -10,11 +10,14 @@ Files that are unique to this project are :mod:`~ifrs17sim`,
 :mod:`~ifrs17sim.ifrs` and :mod:`~ifrs17sim.present_values`.
 Other files in this project are the same as those in :mod:`nestedlife`.
 
-Example Notebook
-----------------
+Jupyter Notebooks
+-----------------
+
+
+
 .. toctree::
 
-   ifrs17sim-demo.ipynb
+   ifrs17sim_csm_waterfall.ipynb
 
 Model structure
 ---------------
