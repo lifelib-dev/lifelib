@@ -13,7 +13,13 @@ Other files in this project are the same as those in :mod:`nestedlife`.
 Jupyter Notebooks
 -----------------
 
+A live version of the Jupyter notebook below is available online,
+thanks to Binder.
 
+*Launch this sample now!*  |launch binder ifrs17sim|
+
+.. |launch binder ifrs17sim| image:: https://mybinder.org/badge.svg
+   :target: https://mybinder.org/v2/gh/fumitoh/ifrs17sim-demo/master?filepath=ifrs17sim-demo.ipynb
 
 .. toctree::
 

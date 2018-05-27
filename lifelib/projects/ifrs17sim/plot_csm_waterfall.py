@@ -2,9 +2,13 @@
 :mod:`ifrs17sim` CSM waterfall chart
 ====================================
 
-Draw a graph of CSM amortization pattern.
+The script draws a CSM waterfall chart.
+The script is broken down into pieces of code, and explained in a Jupyter notebook,
+:doc:`/projects/ifrs17sim_csm_waterfall`.
 
-*Run this sample now!* |launch binder|
+The live version of the notebook is available online.
+
+*Launch this notebook online!* |launch binder|
 
 .. |launch binder| image:: https://mybinder.org/badge.svg
    :target: https://mybinder.org/v2/gh/fumitoh/ifrs17sim-demo/master?filepath=ifrs17sim-demo.ipynb
