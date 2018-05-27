@@ -242,3 +242,9 @@ sphinx_gallery_conf = {
     'download_all_examples': False,
     'download_section_examples': False
 }
+
+
+# Hide download note and buttons from gallery pages.
+# https://github.com/ryan-roemer/sphinx-bootstrap-theme
+def setup(app):
+    app.add_stylesheet("hide-downloads.css")
