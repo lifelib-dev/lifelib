@@ -4,6 +4,15 @@ Updates
 
 .. Latest Updates Begin
 
+* *27 May 2018:*
+  New **ifrs17sim** samples are added to :doc:`generated_examples/index`.
+
+* *27 May 2018:*
+  Jupyter notebook for :doc:`projects/ifrs17sim` is added.
+
+* *27 May 2018*
+  The theme of this site is updated.
+
 * *7 May 2018:*
   lifelib v0.0.6 is released. See :ref:`releases` for details.
 
