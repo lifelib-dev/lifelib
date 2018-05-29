@@ -144,9 +144,15 @@ def build(load_saved=False):
         return {'bases': _self,
                 'refs': refs}
 
+    pvmixin = model.import_module(
+        module_='present_values',
+        name='PV_Mixin')
+
     baseproj = model.import_module(
         module_='projection',
-        name='BaseProjection')
+        name='BaseProjection',
+        bases=pvmixin)
+
 
     outerproj = model.new_space(
         bases=baseproj,
@@ -158,7 +164,8 @@ def build(load_saved=False):
         refs = {'pol': _self.parent.pol,
                 'asmp': _self.parent.asmp,
                 'scen': _self.parent.scen,
-                'outer': _self.parent}
+                'outer': _self.parent,
+                'DiscRate': _self.parent.scen.DiscRate}
         
         return {'bases': _self,
                 'refs': refs}

@@ -1,9 +1,11 @@
-import os, math, pickle
+import sys, os, math, pickle
 from lifelib.projects.simplelife import simplelife
 
 
 filepath = os.path.join(os.path.dirname(__file__), 'data_simplelife')
 
+if '' not in sys.path:
+    sys.path.insert(0, '')
 
 def round_signif(x, digit):
     if x == 0:
@@ -17,7 +19,7 @@ def generate_data(model):
     data = []
     proj = model.Projection
     for i in range(10, 301, 10):
-        data.append(round_signif(proj(i).pv_NetLiabilityCashflow(0), 10))
+        data.append(round_signif(proj(i).PV_NetCashflows(0), 10))
 
     with open(filepath, 'wb') as file:
         pickle.dump(data, file, protocol=4)

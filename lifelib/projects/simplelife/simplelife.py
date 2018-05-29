@@ -125,6 +125,14 @@ def build(load_saved=False):
     # ------------------------------------------------------------------------
     # Build Projection space
 
+    projbase = model.import_module(
+        module_='projection',
+        name='ProjBase')
+
+    pvmixin = model.import_module(
+        module_='present_values',
+        name='PV')
+
     proj_refs = {'Policy': policy,
                  'Assumptions': asmp,
                  'Economic': economic}
@@ -132,13 +140,14 @@ def build(load_saved=False):
     def proj_params(PolicyID, ScenID=1):
         refs = {'pol': Policy[PolicyID],
                 'asmp': Assumptions[PolicyID],
-                'scen': Economic[ScenID]}
+                'scen': Economic[ScenID],
+                'DiscRate': Economic[ScenID].DiscRate}
         return {'bases': _self,
                 'refs': refs}
 
-    proj = model.import_module(
-        module_='projection',
+    proj = model.new_space(
         name='Projection',
+        bases=[projbase, pvmixin],
         formula=proj_params,
         refs=proj_refs)
 

@@ -19,7 +19,7 @@ def test_simpleflie():
     data = []
     proj = model.Projection
     for i in range(10, 301, 10):
-        data.append(round_signif(proj(i).pv_NetLiabilityCashflow(0), 10))
+        data.append(round_signif(proj(i).PV_NetCashflows(0), 10))
 
     with open(testdata, 'rb') as file:
         data_saved = pickle.load(file)

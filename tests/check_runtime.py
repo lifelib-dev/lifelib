@@ -10,7 +10,7 @@ model = simplelife.build()
 def run_simplelife():
     proj = model.Projection
     for i in range(10, 301, 10):
-        print(i, proj(i).pv_NetLiabilityCashflow(0))
+        print(i, proj(i).PV_NetCashflows(0))
 
 
 if __name__ == '__main__':

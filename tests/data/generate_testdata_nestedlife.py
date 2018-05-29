@@ -1,8 +1,11 @@
-import os, pickle
+import sys, os, pickle
 from tests.data.generate_testdata import round_signif
 from lifelib.projects.nestedlife import nestedlife
 
 import numpy as np
+
+if '' not in sys.path:
+    sys.path.insert(0, '')
 
 # %% Code block for overriding the default model
 

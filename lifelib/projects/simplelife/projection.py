@@ -255,6 +255,10 @@ def prj_exps_CommTotal(t):
 def prj_exps_Acq(t):
     """Acquisition expenses"""
     return ppl_exps_Acq(t) * (nop_NewBiz(t) + nop_Renewal(t))
+
+def prj_exps_AcqTotal(t):
+    """Commissions and acquisition expenses"""
+    return prj_exps_CommTotal(t) + prj_exps_Acq(t)
     
 def prj_exps_Maint(t):
     """Maintenance expenses"""
@@ -263,6 +267,9 @@ def prj_exps_Maint(t):
 def prj_exps_Other(t):
     """Other expenses"""
     return 0
+
+def prj_exps_MaintTotal(t):
+    return prj_exps_Maint(t) + prj_exps_Other(t)
     
 def prj_exps_Total(t):
     """Total expenses"""
@@ -331,70 +338,22 @@ def prj_NetLiabilityCashflow(t):
         prj_incm_Premium(t) \
         - prj_bnft_Total(t) \
         - prj_exps_Total(t)
+        
+        
+def prj_InterestAccumCashflow(t):
+    """Intrest on accumulated cashflows"""
+    return (prj_NetLiabilityCashflow(t)
+            + prj_incm_Premium(t)
+            - prj_bnft_Total(t)) * scen.DiscRate(t)
 
-def pv_incm_Premium(t):
-    """Present value of premium income"""
-    if t > last_t:
+def prj_AccumCashflow(t):
+    """Accumulated cashflows"""
+    if t == 0:
         return 0
     else:
-        return prj_incm_Premium(t) + pv_incm_Premium(t + 1) / (1 + scen.DiscRate(t))
-
-
-def pv_bnft_Surrender(t):
-    """Present value of surrender benefits"""
-    if t > last_t:
-        return 0
-    else:
-        return (-prj_bnft_Surrender(t) + pv_bnft_Surrender(t + 1)) / (1 + scen.DiscRate(t))
-
-
-def pv_bnft_Death(t):
-    """Present value of death benefits"""
-    if t > last_t:
-        return 0
-    else:
-        return (-prj_bnft_Death(t) + pv_bnft_Death(t + 1)) / (1 + scen.DiscRate(t))
-
-def pv_exps_CommTotal(t):
-    """Present value of total expenses"""
-    if t > last_t:
-        return 0
-    else:
-        return - prj_exps_CommTotal(t) + pv_exps_CommTotal(t + 1) / (1 + scen.DiscRate(t))   
-
-def pv_exps_Acq(t):
-    """Present value of total expenses"""
-    if t > last_t:
-        return 0
-    else:
-        return - prj_exps_Acq(t) + pv_exps_Acq(t + 1) / (1 + scen.DiscRate(t))
-    
-
-def pv_exps_Maint(t):
-    """Present value of total expenses"""
-    if t > last_t:
-        return 0
-    else:
-        return - prj_exps_Maint(t) + pv_exps_Maint(t + 1) / (1 + scen.DiscRate(t))   
-
-    
-def pv_exps_Total(t):
-    """Present value of total expenses"""
-    if t > last_t:
-        return 0
-    else:
-        return - prj_exps_Total(t) + pv_exps_Total(t + 1) / (1 + scen.DiscRate(t))    
-    
-
-def pv_NetLiabilityCashflow(t):
-    """Present value of net liability cashflow"""
-    if t > last_t:
-        return 0
-    else:
-        return pv_NetLiabilityCashflow(t + 1) / (1 + scen.DiscRate(t)) \
-            + prj_incm_Premium(t) \
-            - prj_bnft_Total(t) / (1 + scen.DiscRate(t)) \
-            - prj_exps_Total(t)
+        return (prj_AccumCashflow(t - 1)
+                + prj_InterestAccumCashflow(t - 1)
+                + prj_NetLiabilityCashflow(t - 1))
 
 
 def prj_ChangeInReserve(t):
