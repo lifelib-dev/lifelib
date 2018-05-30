@@ -7,7 +7,8 @@
 .. _ifrs17sim_examples:
 
 
-*Run this sample now!* |launch binder ifrs17sim|
+*Run this sample now!* |binder ifrs17sim_csm_waterfall|
 
-.. |launch binder ifrs17sim| image:: https://mybinder.org/badge.svg
-   :target: https://mybinder.org/v2/gh/fumitoh/ifrs17sim-demo/master?filepath=ifrs17sim-demo.ipynb
+.. include:: /binderlinks.rst
+   :start-after: Begin binder ifrs17sim_csm_waterfall
+   :end-before: End binder ifrs17sim_csm_waterfall

@@ -6,7 +6,8 @@
 
 .. _simplelife_examples:
 
-*Run this sample now!* |launch binder simplelife|
+*Run this sample now!* |binder simplelife_demo|
 
-.. |launch binder simplelife| image:: https://mybinder.org/badge.svg
-   :target: https://mybinder.org/v2/gh/fumitoh/simplelife-demo/master?filepath=simplelife-demo.ipynb
+.. include:: /binderlinks.rst
+   :start-after: Begin binder simplelife_demo
+   :end-before: End binder simplelife_demo

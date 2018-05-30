@@ -19,8 +19,8 @@ Updates
 * *6 May 2018:*
   :doc:`generated_examples/index` are now executable online in your browser.
 
-  - Run **ifrs17sim** sample now! |launch binder ifrs17sim|
-  - Run **simplelife** sample now! |launch binder simplelife|
+  - Run **ifrs17sim** sample now! |binder ifrs17sim_csm_waterfall|
+  - Run **simplelife** sample now! |binder simplelife_demo|
 
 * *6 May 2018:*
   New :doc:`generated_examples/ifrs17sim/plot_csm_waterfall` sample is added.
@@ -34,14 +34,14 @@ Updates
 * *1 April 2018:*
   New :doc:`generated_examples/index` pages are added.
 
-.. |launch binder simplelife| raw:: html
 
-   <a href="https://mybinder.org/v2/gh/fumitoh/simplelife-demo/master?filepath=simplelife-demo.ipynb" target="_blank"><img alt="launch binder" src="https://mybinder.org/badge.svg" /></a>
+.. include:: /binderlinks.rst
+   :start-after: Begin binder simplelife_demo
+   :end-before: End binder simplelife_demo
 
-.. |launch binder ifrs17sim| raw:: html
-
-   <a href="https://mybinder.org/v2/gh/fumitoh/ifrs17sim-demo/master?filepath=ifrs17sim-demo.ipynb" target="_blank"><img alt="launch binder" src="https://mybinder.org/badge.svg" /></a>
-
+.. include:: /binderlinks.rst
+   :start-after: Begin binder ifrs17sim_csm_waterfall
+   :end-before: End binder ifrs17sim_csm_waterfall
 
 .. Latest Updates End
 
