@@ -4,6 +4,12 @@ Updates
 
 .. Latest Updates Begin
 
+* *3 June 2018:*
+  lifelib v0.0.7 is released. See :ref:`releases` for details.
+
+* *3 June 2018:*
+  Jupyter notebook for :doc:`projects/ifrs17sim` is added.
+
 * *27 May 2018:*
   New **ifrs17sim** samples are added to :doc:`generated_examples/index`.
 

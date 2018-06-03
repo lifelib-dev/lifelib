@@ -6,7 +6,7 @@
 
 .. _simplelife_examples:
 
-*Run this sample now!* |binder simplelife_demo|
+*Run simplelife cashflow sample now!* |binder simplelife_demo|
 
 .. include:: /binderlinks.rst
    :start-after: Begin binder simplelife_demo

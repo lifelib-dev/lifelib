@@ -44,12 +44,19 @@ Releases
    Documentation for released versions of lifelib is available under
    :doc:`archive` page.
 
+v0.0.7 (3 June 2018)
+--------------------
+
+- Replace present value cells in :mod:`~simplelife.projection` with those in :mod:`~simplelife.present_values`.
+- Add cells to draw IFRS17 P&L in :mod:`~ifrs17sim.ifrs`.
+- Add ``draw_waterfall`` function in ``draw_charts`` module.
+- Add a Jupyter notebook and gallery sample for IFRS waterfall chart.
+- Add a Jupyter notebook for CSM waterfal chart.
+- Update IFRS charts in the gallery of examples.
 
 v0.0.6 (7 May 2018)
 -------------------
 
-Enhancements
-~~~~~~~~~~~~
 - :attr:`~simplelife.policy.Product` defined in the table
   in *PolicyData* tab in *input.xlsm* are now strings
   (``TERM``, ``WL``, ``ENDW``) instead of integer IDs (1, 2, 3).

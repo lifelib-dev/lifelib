@@ -1,8 +1,8 @@
 """
-:mod:`simplelife` cashflow
-==========================
+:mod:`simplelife` present values of cashflows
+=============================================
 
-Draw a graph of liability cashflows of a simple whole life policy
+Present values of liability cashflows of a simple whole life policy.
 """
 try:
     import simplelife.simplelife as simplelife

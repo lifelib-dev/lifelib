@@ -73,6 +73,7 @@ as they are quite a few. For details on the Input subspaces, see :py:mod:`simple
    ~assumptions
    ~economic
    ~projection
+   ~present_values
 
 
 There are three types of relationships between spaces, namely containment,  dependency, and inheritance.

@@ -16,11 +16,14 @@ Jupyter Notebooks
 A live version of the Jupyter notebook below is available online,
 thanks to Binder.
 
-*Launch this sample now!*  |binder ifrs17sim_csm_waterfall|
+*Launch this sample now!*
+
+* CSM waterfalls |binder ifrs17sim_csm_waterfall|
+* IFRS waterfalls |binder ifrs17sim_ifrs_waterfall|
 
 .. include:: /binderlinks.rst
    :start-after: Begin binder ifrs17sim_csm_waterfall
-   :end-before: End binder ifrs17sim_csm_waterfall
+   :end-before: End binder ifrs17sim_ifrs_waterfall
 
 .. toctree::
 

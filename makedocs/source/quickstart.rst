@@ -157,7 +157,7 @@ Create a Project
 
 First, you create your own project folder.
 A lifelib project is a folder containing source files and data
-to building a model.
+to build a model.
 
 A command ``lifelib-create`` helps you create a new project folder
 by copying a template project from within the lifelib package to your desired

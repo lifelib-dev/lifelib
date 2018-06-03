@@ -10,6 +10,7 @@ This module is a mix-in module to projection module in nestedlife project.
 #%% The statement of Financial Posisition
 
 def NetBalance(t):
+    """Net insurance assets plus accumulated cashflows."""
     return NetInsAssets(t) + prj_AccumCashflow(t)
 
 def NetInsAssets(t):
@@ -148,8 +149,8 @@ def InsRevenue(t):
             + TransServices(t)
             + AmortAcqCashflow(t))
 
-
 def ExpectedPremium(t):
+    """Expected Premium Income"""
     return InnerProjection(t).prj_incm_Premium(t)
     
 def ExpectedAcqCashflow(t):
