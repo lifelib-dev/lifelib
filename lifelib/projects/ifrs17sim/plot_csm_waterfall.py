@@ -8,10 +8,11 @@ The script is broken down into pieces of code, and explained in a Jupyter notebo
 
 The live version of the notebook is available online.
 
-*Launch this notebook online!* |launch binder|
+*Launch this notebook online!* |binder ifrs17sim_csm_waterfall|
 
-.. |launch binder| image:: https://mybinder.org/badge.svg
-   :target: https://mybinder.org/v2/gh/fumitoh/ifrs17sim-demo/master?filepath=ifrs17sim-demo.ipynb
+.. include:: /binderlinks.rst
+   :start-after: Begin binder ifrs17sim_csm_waterfall
+   :end-before: End binder ifrs17sim_csm_waterfall
 
 """
 import pandas as pd
