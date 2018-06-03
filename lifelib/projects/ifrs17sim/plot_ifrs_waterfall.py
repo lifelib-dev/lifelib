@@ -1,8 +1,19 @@
 """
-:mod:`ifrs17sim` CSM waterfall chart
-====================================
+:mod:`ifrs17sim` IFRS waterfall chart
+=====================================
 
-Draw a graph of CSM amortization pattern.
+The script draws multiple waterfall charts,
+each of which depict sources of changes in balances related to IFRS17.
+The script is broken down into pieces of code, and explained in a Jupyter notebook,
+:doc:`/projects/ifrs17sim_ifrs_waterfall`.
+
+The live version of the notebook is available online.
+
+*Launch this notebook online!* |binder ifrs17sim_ifrs_waterfall|
+
+.. include:: /binderlinks.rst
+   :start-after: Begin binder ifrs17sim_ifrs_waterfall
+   :end-before: End binder ifrs17sim_ifrs_waterfall
 
 """
 import pandas as pd

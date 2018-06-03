@@ -25,6 +25,7 @@ thanks to Binder.
 .. toctree::
 
    ifrs17sim_csm_waterfall.ipynb
+   ifrs17sim_ifrs_waterfall.ipynb
 
 Model structure
 ---------------

@@ -31,11 +31,12 @@ def adjust_notebook(file):
     node['source'] = src
     return nb
 
-
-notebook = 'ifrs17sim_csm_waterfall.ipynb'
-os.chdir('../lifelib/projects/ifrs17sim')
-nb = adjust_notebook(notebook)
-os.chdir(os.path.abspath(os.path.dirname(__file__)) + '/source/projects')
-if os.path.isfile(notebook):
-    os.remove(notebook)
-nbformat.write(nb, notebook)
+thisdir = os.path.abspath(os.path.dirname(__file__))
+for notebook in ('ifrs17sim_csm_waterfall.ipynb',
+                 'ifrs17sim_ifrs_waterfall.ipynb'):
+    os.chdir(thisdir + '/../lifelib/projects/ifrs17sim')
+    nb = adjust_notebook(notebook)
+    os.chdir(thisdir + '/source/projects')
+    if os.path.isfile(notebook):
+        os.remove(notebook)
+    nbformat.write(nb, notebook)
