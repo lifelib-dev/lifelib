@@ -197,47 +197,5 @@ def build(load_saved=False):
     return model
 
 
-
 if __name__ == '__main__':
-    import pandas as pd
-    import numpy as np
-    model = build(load_saved=True)
-    outer = model.OuterProjection
-
-    vars = ['prj_incm_Premium',
-            'prj_bnft_Surrender',
-            'prj_bnft_Death',
-            'prj_exps_Maint',
-            'prj_exps_CommTotal',
-            'prj_exps_Acq']
-
-    polid = 171
-
-    for cells in vars:
-        list(getattr(outer[polid], cells)(t) for t in range(50))
-
-    cfs = outer[polid].frame[vars].sort_index().dropna()
-    cfs[vars[1:]] = cfs[vars[1:]].mul(-1)
-
-    [outer[polid].prj_NetLiabilityCashflow[t] for t in range(50)]
-
-
-    ncf = outer[polid].prj_NetLiabilityCashflow.frame.sort_index()
-
-    inner = outer[polid].InnerProjection
-    ncf = [[inner[t0].prj_NetLiabilityCashflow[t] for t in range(t0, 10)]
-           for t0 in range(0, 6)]
-
-    data = []
-    for t0 in range(0, 6):
-        for t in range(0, 11):
-            data.append(
-                {'t0': t0,
-                 't': t,
-                 'NCF': inner[t0].prj_NetLiabilityCashflow[t]
-                    if t >= t0 else np.nan})
-
-    df = pd.DataFrame(data)
-
-    import seaborn as sns
-    import matplotlib.pyplot as plt
+    model = build()
