@@ -4,8 +4,6 @@
 
 Fulfilment CF, CSM, Cash balances
 """
-import collections
-import pandas as pd
 import matplotlib.pyplot as plt
 import modelx as mx
 
@@ -22,14 +20,16 @@ except ImportError:
 model = ifrs17sim.build()
 proj = model.OuterProjection[171]
 
-# From Python 3.7, dict is ordered so no need to use OrderedDict.
-data = collections.OrderedDict()
-data['CSM'] = [proj.CSM_Unfloored(t) for t in range(10)]
-data['FCF'] = [-proj.PV_FutureCashflow(t) for t in range(10)]
-data['Cash'] = [-proj.prj_AccumCashflow(t) for t in range(10)]
 
+ifrsbs = proj.cells['CSM_Unfloored',
+                    'PV_FutureCashflow',
+                    'prj_AccumCashflow'].to_frame(range(10))
 
-draw_charts.draw_stackedbarpairs(pd.DataFrame(data),
+ifrsbs.columns = ['CSM', 'FCF', 'Cash']
+ifrsbs['FCF'] = -1 * ifrsbs['FCF']
+ifrsbs['Cash'] = -1 * ifrsbs['Cash']
+
+draw_charts.draw_stackedbarpairs(ifrsbs,
                                  title='Fulfilment CF and CSM')
 
 plt.show()

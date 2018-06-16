@@ -15,8 +15,7 @@ The live version of the notebook is available online.
    :end-before: End binder ifrs17sim_csm_waterfall
 
 """
-import pandas as pd
-import collections
+import matplotlib.pyplot as plt
 from draw_charts import draw_waterfall
 
 try:
@@ -27,16 +26,13 @@ except ImportError:
 model = ifrs17sim.build()
 proj = model.OuterProjection[1]
 
-proj.CSM_Unfloored(15)
-data = collections.OrderedDict()
+csmrf = proj.cells['CSM_Unfloored',
+                   'IntAccrCSM',
+                   'AdjCSM_FulCashFlows',
+                   'TransServices'].to_frame(range(15))
 
-for cells in ['CSM_Unfloored',
-              'IntAccrCSM',
-              'AdjCSM_FulCashFlows',
-              'TransServices']:
-    data[cells] = [proj.cells[cells](t) for t in range(15)]
+csmrf['TransServices'] = -1 * csmrf['TransServices']
 
-df = pd.DataFrame(data)
-df['TransServices'] = -1 * df['TransServices']
+draw_waterfall(csmrf)
+plt.show()
 
-draw_waterfall(df)

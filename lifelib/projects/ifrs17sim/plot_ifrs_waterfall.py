@@ -16,8 +16,6 @@ The live version of the notebook is available online.
    :end-before: End binder ifrs17sim_ifrs_waterfall
 
 """
-import pandas as pd
-import collections
 import matplotlib.pyplot as plt
 from draw_charts import draw_waterfall
 
@@ -26,55 +24,43 @@ try:
 except ImportError:
     import ifrs17sim
 
-model = ifrs17sim.build(True)
+model = ifrs17sim.build()
 proj = model.OuterProjection[1]
 
-proj.CSM_Unfloored(15)
-data = collections.OrderedDict()
+# %% CSM Amortization
 
-for cells in ['CSM_Unfloored',
-              'IntAccrCSM',
-              'AdjCSM_FulCashFlows',
-              'TransServices']:
-    data[cells] = [proj.cells[cells](t) for t in range(3)]
+csmrf = proj.cells['CSM_Unfloored',
+                   'IntAccrCSM',
+                   'AdjCSM_FulCashFlows',
+                   'TransServices'].to_frame(range(3))
 
+csmrf['TransServices'] = -1 * csmrf['TransServices']
 
-df = pd.DataFrame(data)
-df['TransServices'] = -1 * df['TransServices']
-
-draw_waterfall(df, title='CSM Amortization')
+draw_waterfall(csmrf, title='CSM Amortization')
 
 # %% Expected Cashflow Rollforwad
 
-data.clear()
-for cells in ['PV_FutureCashflow',
-              'ExpectedPremium',
-              'ExpectedInterestCashflow',
-              'ExpectedAcqCashflow',
-              'ExpectedClaims',
-              'ExpectedExps']:
-    data[cells] = [proj.cells[cells](t) for t in range(3)]
+estcf = proj.cells['PV_FutureCashflow',
+                   'ExpectedPremium',
+                   'ExpectedInterestCashflow',
+                   'ExpectedAcqCashflow',
+                   'ExpectedClaims',
+                   'ExpectedExps'].to_frame(range(3))
 
-estcf = pd.DataFrame(data)
-
-for inflow in ['ExpectedPremium']:
-    estcf[inflow] = -1 * estcf[inflow] 
+estcf['ExpectedPremium'] = -1 * estcf['ExpectedPremium'] 
 
 plt.figure()
 draw_waterfall(estcf, title='Expected Cashflows')
     
 # %% Actual Cashflow Rollforward
     
-data.clear()
-for cells in ['prj_AccumCashflow',
-              'prj_incm_Premium',
-              'prj_InterestAccumCashflow',
-              'prj_exps_AcqTotal',
-              'prj_bnft_Total',
-              'prj_exps_MaintTotal']:
-    data[cells] = [proj.cells[cells](t) for t in range(3)]
-    
-actcf = pd.DataFrame(data)
+actcf = proj.cells['prj_AccumCashflow',
+                   'prj_incm_Premium',
+                   'prj_InterestAccumCashflow',
+                   'prj_exps_AcqTotal',
+                   'prj_bnft_Total',
+                   'prj_exps_MaintTotal'].to_frame(range(3))
+
 for outflow in ['prj_exps_AcqTotal',
                 'prj_bnft_Total',
                 'prj_exps_MaintTotal']:
@@ -86,17 +72,13 @@ draw_waterfall(actcf, title='Actual Cashflows')
 
 # %% IFRS17 Financial Performance
 
-data.clear()
-for cells in ['NetBalance',
-              'InsRevenue',
-              'InsServiceExps',
-              'InsFinanceIncomeExps']:
-    data[cells] = [proj.cells[cells](t) for t in range(5)]    
+ifrspl = proj.cells['NetBalance',
+                    'InsRevenue',
+                    'InsServiceExps',
+                    'InsFinanceIncomeExps'].to_frame(range(5))
 
-
-ifrspl = pd.DataFrame(data)
-for pl in ['InsServiceExps']:
-    ifrspl[pl] = -1 * ifrspl[pl]
+ifrspl['InsServiceExps'] = -1 * ifrspl['InsServiceExps']
 
 plt.figure()
 draw_waterfall(ifrspl, title='IFRS17 Profit/Loss')
+
