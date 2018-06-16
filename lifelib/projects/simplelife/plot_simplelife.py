@@ -11,15 +11,26 @@ Draw a graph of liability cashflows of a simple whole life policy
    :end-before: End binder simplelife_demo
 
 """
+import pandas as pd
 import modelx as mx
+
+import seaborn as sns
+sns.set()
 
 try:
     import simplelife.simplelife as simplelife
 except ImportError:
     import simplelife
 
+
 polid = 171
 proj = simplelife.build().Projection[polid]
+
+# %% Draw NetCashflows Graph
+data = {'NetCashflows': [proj.prj_NetLiabilityCashflow[t] for t in range(50)]}
+ax = pd.DataFrame(data).plot.line(marker='o', color='r')
+
+# %% Draw componets of net cashflows
 
 vars = ['prj_incm_Premium',
         'prj_bnft_Surrender',
@@ -28,26 +39,9 @@ vars = ['prj_incm_Premium',
         'prj_exps_CommTotal',
         'prj_exps_Acq']
 
-for cells in vars:
-    list(proj.cells[cells](t) for t in range(50))
 
-list(proj.prj_NetLiabilityCashflow[t] for t in range(50))
+df = proj.cells[vars].to_frame(range(50))
 
+df[vars[1:]] = df[vars[1:]].mul(-1)   # Change outflows to negatives
+df.plot(kind='bar', stacked=True, ax=ax, title='Insurance Cashflows')
 
-# %% Code block for drawing graph
-import seaborn as sns
-sns.set()
-
-def draw_cashflow(proj):   
-    
-    cfs = proj.frame[vars].sort_index().dropna()
-    cfs[vars[1:]] = cfs[vars[1:]].mul(-1)   # Change outflows to negatives
-    
-    ncf = proj.prj_NetLiabilityCashflow.frame.sort_index()
-
-    axes = ncf.plot.line(marker='o', color='r')
-    cfs.plot(kind='bar', stacked=True, ax=axes)
-
-# %% Main
-if __name__ == '__main__':
-    draw_cashflow(proj)

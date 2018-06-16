@@ -184,6 +184,12 @@ def ExpectedExps(t):
             - est.prj_exps_CommRen(t)
             - est.prj_exps_Acq(t))
     
+
+def AsmpChangeImpact(t):
+    """Non-financial assumption changes"""
+    return PV_CashFlows(t + 1, t + 1, 0) - PV_CashFlows(t, t + 1, 0)
+
+    
 def RelsRiskAdj(t):
     """Release of Risk Adjustment to Revenue
     
