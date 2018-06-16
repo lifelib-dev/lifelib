@@ -156,7 +156,8 @@ html_last_updated_fmt = '%b %d, %Y'
 # Custom sidebar templates, maps document names to template names.
 #html_sidebars = {}
 html_sidebars = {'*': ['globaltoc_sidebar.html'],
-                 'projects/**': ['globaltoc_sidebar.html']}
+                 'projects/**': ['globaltoc_sidebar.html'],
+                 'generated_examples/**': None}
 
 # -- Options for HTMLHelp output ------------------------------------------
 
