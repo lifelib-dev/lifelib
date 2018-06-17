@@ -147,8 +147,8 @@ if __name__ == '__main__':
     from lifelib.projects.ifrs17sim import ifrs17sim
 
     model = ifrs17sim.build(True)
-    proj = model.OuterProjection[1]
-    liab = [proj.InnerProjection[t].pv_NetLiabilityCashflow[t] for t in
+    proj = model.OuterProj[1]
+    liab = [proj.InnerProj[t].pv_NetLiabilityCashflow[t] for t in
             range(10)]
 
     proj.CSM_Unfloored(15)
@@ -156,7 +156,7 @@ if __name__ == '__main__':
 
     for cells in ['CSM_Unfloored',
                   'IntAccrCSM',
-                  'AdjCSM_FulCashFlows',
+                  'AdjCSM_FlufCF',
                   'TransServices']:
         data[cells] = [proj.cells[cells](t) for t in range(15)]
 

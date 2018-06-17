@@ -12,14 +12,14 @@ References:
 
 """
 
-def InflFac(t):
+def InflFactor(t):
     if t == 0:
         return 1
     else:
-        return InflFac(t - 1) / (1 + asmp.InflRate)
+        return InflFactor(t - 1) / (1 + asmp.InflRate)
 
 def DiscRate(t):
     return Scenario.IntRate(t)
 
-def InvRetRate(t):
+def InvstRetRate(t):
     return Scenario.IntRate(t)

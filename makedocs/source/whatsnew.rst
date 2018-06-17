@@ -47,7 +47,7 @@ Releases
 v0.0.7 (3 June 2018)
 --------------------
 
-- Replace present value cells in :mod:`~simplelife.projection` with those in :mod:`~simplelife.present_values`.
+- Replace present value cells in :mod:`~simplelife.projection` with those in :mod:`~simplelife.present_value`.
 - Add cells to draw IFRS17 P&L in :mod:`~ifrs17sim.ifrs`.
 - Add ``draw_waterfall`` function in ``draw_charts`` module.
 - Add a Jupyter notebook and gallery sample for IFRS waterfall chart.
@@ -64,9 +64,9 @@ v0.0.6 (7 May 2018)
 - The assumption data is updated so that the selected sample policies
   become profitable. The default scenario number is changed from 3 to 1.
 
-- Removed redundant local variables in cells in :mod:`~simplelife.assumptions`.
+- Removed redundant local variables in cells in :mod:`~simplelife.assumption`.
 
-- Fixed a bug in the formula of :func:`~simplelife.assumptions.ExpsMaintSA`.
+- Fixed a bug in the formula of :func:`~simplelife.assumption.ExpsMaintSA`.
 
 - Input loading messages are now output to the standard error.
 

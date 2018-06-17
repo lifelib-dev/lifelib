@@ -1,23 +1,23 @@
-"""Source module to create ``Assumptions`` space from.
+"""Source module to create ``Assumption`` space from.
 
-This module is a source module to create ``Assumptions`` space and its
+This module is a source module to create ``Assumption`` space and its
 sub spaces from.
-The formulas of the cells in the ``Assumptions`` space are created from the
+The formulas of the cells in the ``Assumption`` space are created from the
 functions defined in this module.
 
-The ``Assumptions`` space is the base space of the assumption spaces
+The ``Assumption`` space is the base space of the assumption spaces
 for individual policies, which are derived from and belong to
-the ``Assumptions`` space as its dynamic child spaces.
+the ``Assumption`` space as its dynamic child spaces.
 
 The assumption spaces for individual policies are parametrized by ``PolicyID``.
 For example, to get the assumption space of the policy whose ID is 171::
 
-    >> asmp = model.Assumptions(171)
+    >> asmp = model.Assumption(171)
 
 The cells in an assumption space for each individual policy retrieve
 input data, calculate and hold values of assumptions specific to that policy,
 so various spaces in :mod:`Input<simplelife.build_input>` must be accessible
-from the ``Assumptions`` space.
+from the ``Assumption`` space.
 
 .. rubric:: Project Templates
 
@@ -28,14 +28,14 @@ This module is included in the following project templates.
 
 .. rubric:: Referred Spaces
 
-The ``Assumptions`` space and its sub spaces depend of the following spaces.
+The ``Assumption`` space and its sub spaces depend of the following spaces.
 See references sections below for aliases to those spaces and their members
-that are referenced in the ``Assumptions`` spaces.
+that are referenced in the ``Assumption`` spaces.
 
 * :mod:`Policy<simplelife.policy>` its sub spaces
 * ``LifeTable`` in :mod:`Input<simplelife.build_input>`
 * ``MortalityTables`` in :mod:`Input<simplelife.build_input>`
-* ``Assumptions`` in :mod:`Input<simplelife.build_input>`
+* ``Assumption`` in :mod:`Input<simplelife.build_input>`
 
 .. rubric:: Space Parameters
 
@@ -46,14 +46,14 @@ Attributes:
 
 Attributes:
     asmp_tbl: ``AssumptionTables`` space in :mod:`Input<simplelife.build_input>` space
-    asmp: ``Assumptions`` space in :mod:`Input<simplelife.build_input>` space
+    asmp: ``Assumption`` space in :mod:`Input<simplelife.build_input>` space
     MortalityTables: ``MortalityTables`` space in :mod:`Input<simplelife.build_input>` space
 
 .. rubric:: References in Sub
 
 Attributes:
     pol: Alias to :mod:`Policy[PolicyID]<simplelife.policy>`
-    prd: Alias to :attr:`Policy[PolicyID].Product<simplelife.policy.Product>`
+    prod: Alias to :attr:`Policy[PolicyID].Product<simplelife.policy.Product>`
     polt: Alias to :attr:`Policy[PolicyID].PolicyType<simplelife.policy.PolicyType>`
     gen: Alias to :attr:`Policy[PolicyID].Gen<simplelife.policy.Gen>`
 
@@ -67,7 +67,7 @@ policy_attrs = []
 
 def MortTable():
     """Mortality Table"""
-    result = asmp.BaseMort.match(prd, polt, gen).value
+    result = asmp.BaseMort.match(prod, polt, gen).value
 
     if result is not None:
         return MortalityTables(result).MortalityTable
@@ -91,7 +91,7 @@ def BaseMortRate(x):
 
 def MortFactor(y):
     """Mortality factor"""
-    table = asmp.MortFactor.match(prd, polt, gen).value
+    table = asmp.MortFactor.match(prod, polt, gen).value
 
     if table is None:
         raise ValueError('MortFactor not found')
@@ -106,7 +106,7 @@ def MortFactor(y):
 # --- Surrender Rates ---
 def SurrRate(y):
     """Surrender Rate"""
-    table = asmp.Surrender.match(prd, polt, gen).value
+    table = asmp.Surrender.match(prod, polt, gen).value
 
     if table is None:
         raise ValueError('Surrender not found')
@@ -119,58 +119,58 @@ def SurrRate(y):
         return result
 
 # --- Commissions ---
-def CmsnInitPrem():
+def CommInitPrem():
     """Initial commission per premium"""
-    result = asmp.CmsnInitPrem.match(prd, polt, gen).value
+    result = asmp.CommInitPrem.match(prod, polt, gen).value
 
     if result is not None:
         return result
     else:
-        raise ValueError('CmsnInitPrem not found')
+        raise ValueError('CommInitPrem not found')
 
 
-def CmsnRenPrem():
+def CommRenPrem():
     """Renewal commission per premium"""
-    result = asmp.CmsnRenPrem.match(prd, polt, gen).value
+    result = asmp.CommRenPrem.match(prod, polt, gen).value
 
     if result is not None:
         return  result
     else:
-        raise ValueError('CmsnRenPrem not found')
+        raise ValueError('CommRenPrem not found')
 
-def CmsnRenTerm():
+def CommRenTerm():
     """Renewal commission term"""
-    result = asmp.CmsnRenTerm.match(prd, polt, gen).value
+    result = asmp.CommRenTerm.match(prod, polt, gen).value
 
     if result is not None:
         return result
     else:
-        raise ValueError('CmsnRenTerm not found')
+        raise ValueError('CommRenTerm not found')
 
 # # --- Expenses ---
 def ExpsAcqSA():
     """Acquisition expense per sum assured"""
-    return asmp.ExpsAcqSA.match(prd, polt, gen).value
+    return asmp.ExpsAcqSA.match(prod, polt, gen).value
 
-def ExpsAcqAP():
+def ExpsAcqAnnPrem():
     """Acquisition expense per annualized premium"""
-    return asmp.ExpsAcqAP.match(prd, polt, gen).value
+    return asmp.ExpsAcqAnnPrem.match(prod, polt, gen).value
 
 def ExpsAcqPol():
     """Acquisition expense per policy"""
-    return asmp.ExpsAcqPol.match(prd, polt, gen).value
+    return asmp.ExpsAcqPol.match(prod, polt, gen).value
 
 def ExpsMaintSA():
     """Maintenance expense per sum assured"""
-    return asmp.ExpsMaintSA.match(prd, polt, gen).value
+    return asmp.ExpsMaintSA.match(prod, polt, gen).value
 
-def ExpsMaintAP():
+def ExpsMaintAnnPrem():
     """Maintenance expense per annualized premium"""
-    return asmp.ExpsMaintGP.match(prd, polt, gen).value
+    return asmp.ExpsMaintPrem.match(prod, polt, gen).value
 
 def ExpsMaintPol():
     """Maintenance expense per policy"""
-    return asmp.ExpsMaintPol.match(prd, polt, gen).value
+    return asmp.ExpsMaintPol.match(prod, polt, gen).value
 
 def CnsmpTax():
     """Consumption tax rate"""

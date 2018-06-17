@@ -19,7 +19,7 @@ def generate_data(model):
     data = []
     proj = model.Projection
     for i in range(10, 301, 10):
-        data.append(round_signif(proj(i).PV_NetCashflows(0), 10))
+        data.append(round_signif(proj(i).PV_NetCashflow(0), 10))
 
     with open(filepath, 'wb') as file:
         pickle.dump(data, file, protocol=4)

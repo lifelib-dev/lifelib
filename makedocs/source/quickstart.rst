@@ -250,7 +250,7 @@ sample policies are defined on *PolicyData* tab in *Input.xlsm*.
 To calculate net liability cashflow of the Policy 1 from time 0 to 15::
 
    >> proj = model.Projection[1]
-   >> result = [proj.prj_NetLiabilityCashflow[t] for t in range(16)]
+   >> result = [proj.NetInsurCF[t] for t in range(16)]
 
 The first line of the above creates ``Projection[1]`` space under
 ``Projection`` for the Policy 1, and assign a shorter name to it for
@@ -292,8 +292,8 @@ for policy No. 1 (PolicyID=1, ScenID=1) is created.
 Output to Pandas objects
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-By calculating ``prj_NetLiabilityCashflow`` cells,
-other cells that the ``prj_NetLiabilityCashflow`` directly or indirectly
+By calculating ``NetInsurCF`` cells,
+other cells that the ``NetInsurCF`` directly or indirectly
 refers to are also calculated.
 To get the values of all cells in a space, access ``frame`` property of the
 space, which returns the values of all the child cells as

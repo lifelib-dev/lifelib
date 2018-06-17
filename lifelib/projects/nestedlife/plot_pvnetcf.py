@@ -15,8 +15,8 @@ model = nestedlife.build()
 
 # Policy point ID and aliases
 polid = 171
-outer = model.OuterProjection[polid]
-inner = outer.InnerProjection
+outer = model.OuterProj[polid]
+inner = outer.InnerProj
 
 # %% Code block for overwiting the defaut model
 
@@ -27,22 +27,22 @@ def SurrRateMult(t):
         return SurrRateMult(t - 1)
 
 
-def nop_Surrender(t):
+def PolsSurr(t):
     """Number of policies: Surrender"""    
-    return nop_BoP1(t) * asmp.SurrRate(t) * SurrRateMult(t)
+    return PolsIF_Beg1(t) * asmp.SurrRate(t) * SurrRateMult(t)
 
 
-def nop_EoP_inner(t):
+def PolsIF_End_inner(t):
     """Number of policies: End of period"""
     if t == t0:
-        return outer.nop_EoP(t)
+        return outer.PolsIF_End(t)
     else:
-        return nop_BoP1(t - 1) - nop_Death(t - 1) - nop_Surrender(t - 1)
+        return PolsIF_Beg1(t - 1) - PolsDeath(t - 1) - PolsSurr(t - 1)
 
 
 model.BaseProjection.new_cells(formula=SurrRateMult)
-model.BaseProjection.new_cells(formula=nop_Surrender)
-inner.new_cells(name='nop_EoP', formula=nop_EoP_inner)
+model.BaseProjection.new_cells(formula=PolsSurr)
+inner.new_cells(name='PolsIF_End', formula=PolsIF_End_inner)
 
 outer.SurrRateMult[1] = 2
 outer.SurrRateMult[2] = 0.5
@@ -68,7 +68,7 @@ def draw_bars(item):
     for t0 in range(term):
         expect_t0 = [np.nan] * term
         for t in range(t0, term):
-            cells = outer.InnerProjection[t0].cells[item]
+            cells = outer.InnerProj[t0].cells[item]
             expect_t0[t] = cells[t]
             
         expect.append(expect_t0)
@@ -90,5 +90,5 @@ def draw_single_bar(data, ax, t0):
 
 # %% PV Test
 if __name__ == '__main__':
-    draw_bars('PV_NetCashflows')
+    draw_bars('PV_NetCashflow')
 

@@ -11,22 +11,22 @@ This module is a mix-in module to projection module in nestedlife project.
 
 def NetBalance(t):
     """Net insurance assets plus accumulated cashflows."""
-    return NetInsAssets(t) + prj_AccumCashflow(t)
+    return NetInsurAssets(t) + AccumCF(t)
 
-def NetInsAssets(t):
+def NetInsurAssets(t):
     """Net Insurance Assets or Liabilities
     
     Warnings:
         The liabilities for incurred claims are not implemented. 
     """    
-    return (PV_FutureCashflow(t)
+    return (PV_FutureCF(t)
             - RiskAdjustment(t)
             - CSM_Unfloored(t))
     
 
-def PV_FutureCashflow(t):
+def PV_FutureCF(t):
     """Present value of future cashflow"""
-    return PV_CashFlows(t, t, t)
+    return PV_Cashflow(t, t, t)
 
     
 def RiskAdjustment(t):
@@ -43,21 +43,21 @@ def CSM_Unfloored(t):
     """Unfloored CSM (38, 44)"""
     if t == 0:
         # Initial recognition (38)
-        return PV_FutureCashflow(t) - RiskAdjustment(t)
+        return PV_FutureCF(t) - RiskAdjustment(t)
     else:
         # Subsequent recognition (44)
         return (CSM_Unfloored(t - 1)
                 + IntAccrCSM(t - 1)
-                + AdjCSM_FulCashFlows(t - 1)
+                + AdjCSM_FlufCF(t - 1)
                 - TransServices(t - 1))
 
         
 def IntAccrCSM(t):
     """Interest accreted on CSM (44(b))"""
-    return CSM_Unfloored(t) * InnerProjection(0).scen.DiscRate(t)
+    return CSM_Unfloored(t) * InnerProj(0).scen.DiscRate(t)
 
 
-def AdjCSM_FulCashFlows(t):
+def AdjCSM_FlufCF(t):
     """Adjustment to CSM for changes in fulfilment cashflows (44(c)->B96-B100)
 
     Warnings:
@@ -70,10 +70,10 @@ def AdjCSM_FulCashFlows(t):
     At the momemnt this adjustment allows negative CSM.
     """
 
-    return PV_CashFlows(t + 1, t + 1, 0) - PV_CashFlows(t, t + 1, 0)
+    return PV_Cashflow(t + 1, t + 1, 0) - PV_Cashflow(t, t + 1, 0)
         
     
-def PV_CashFlows(t, t_at, t_rate):
+def PV_Cashflow(t, t_at, t_rate):
     """Present value of future cashflows
     
     This formula takes 3 time parameters.
@@ -86,7 +86,7 @@ def PV_CashFlows(t, t_at, t_rate):
         t_at: Time discount rates at which are used.
         t_rate: Time to which the cashflows are discounted.
     """
-    return InnerProjection(t).PresentValues(t_rate).PV_NetCashflows(t_at)
+    return InnerProj(t).PresentValue(t_rate).PV_NetCashflow(t_at)
 
 
 def TransServices(t):
@@ -94,21 +94,21 @@ def TransServices(t):
     """
     csm_pre_rel = (CSM_Unfloored(t)
                    + IntAccrCSM(t)
-                   + AdjCSM_FulCashFlows(t))
+                   + AdjCSM_FlufCF(t))
 
-    diff_covunits = CovUnits_BoP1(t) * (1 + InnerProjection(0).scen.DiscRate(t))
+    diff_covunits = CovUnitsBeg1(t) * (1 + InnerProj(0).scen.DiscRate(t))
     pv_sumcovunits_end = PV_SumCovUnits(t + 1, 0)
 
     return csm_pre_rel * diff_covunits / (diff_covunits + pv_sumcovunits_end)
 
-def CovUnits_BoP1(t):
+def CovUnitsBeg1(t):
     """The number of coverage units at `t` after new business"""
-    return prj_InsInForce_BoP1(t)
+    return InsurIF_Beg1(t)
 
 
-def CovUnits_EoP(t):
+def CovUnitsEnd(t):
     """The number of coverage units at `t`"""
-    return prj_InsInForce_EoP(t)
+    return InsurIF_End(t)
 
 
 def PV_SumCovUnits(t, t_rate):
@@ -119,75 +119,75 @@ def PV_SumCovUnits(t, t_rate):
 
     The discount rates used are the ones at time `t_rate`.
     """
-    return InnerProjection(t).PresentValues(t_rate).PV_SumInsInForce(t)
+    return InnerProj(t).PresentValue(t_rate).PV_SumInsurIF(t)
 
 
 #%% The statement of Financial Performance
     
 def InsServiceResult(t):
     """Insurance Service Result (80(a), 83-86)"""  
-    return InsRevenue(t) - InsServiceExps(t)
+    return InsurRevenue(t) - InsurServiceExps(t)
 
-def InsFinanceIncomeExps(t):
+def InsurFinIncomeExps(t):
     """Insurance Finance Income or Expenses (80(b), 87-92, B128-B136)
     
     Warning:
         Accounting Policy Choice 88(b) not implemented.
     """
-    chg_discrate = (PV_CashFlows(t + 1, t + 1, t + 1) 
-                    - PV_CashFlows(t + 1, t + 1, t))
+    chg_discrate = (PV_Cashflow(t + 1, t + 1, t + 1)
+                    - PV_Cashflow(t + 1, t + 1, t))
     
-    return (ExpectedInterestCashflow(t) + chg_discrate 
-            - IntAccrCSM(t) + prj_InterestAccumCashflow(t))
+    return (EstIntOnCF(t) + chg_discrate 
+            - IntAccrCSM(t) + IntAccumCF(t))
             
 
-def InsRevenue(t):
+def InsurRevenue(t):
     """Insurance Revenue (82-85, B120-B125)"""
-    return (ExpectedClaims(t)
-            + ExpectedExps(t)
+    return (EstClaim(t)
+            + EstExps(t)
             + RelsRiskAdj(t)
             + TransServices(t)
             + AmortAcqCashflow(t))
 
-def ExpectedPremium(t):
+def EstPremIncome(t):
     """Expected Premium Income"""
-    return InnerProjection(t).prj_incm_Premium(t)
+    return InnerProj(t).PremIncome(t)
     
-def ExpectedAcqCashflow(t):
+def EstAcqCashflow(t):
     """Expected Acquisition Cashflow"""
 
-    est = InnerProjection(t)
-    return (est.prj_exps_CommInit(t) 
-            + est.prj_exps_CommRen(t)
-            + est.prj_exps_Acq(t))
+    est = InnerProj(t)
+    return (est.ExpsCommInit(t)
+            + est.ExpsCommRen(t)
+            + est.ExpsAcq(t))
     
-def ExpectedInterestCashflow(t):
+def EstIntOnCF(t):
     """Expected Interest on future cashflows"""
-    return InnerProjection(t).PresentValues(t).InterestNetCashflows(t)
+    return InnerProj(t).PresentValue(t).InterestNetCF(t)
     
-def ExpectedClaims(t):
+def EstClaim(t):
     """Expected Claims
     
     Warning:
         Using actuarl invest componets as proxy.
     """
-    est = InnerProjection(t)
-    return est.prj_bnft_Total(t) - InvstComponents(t)
+    est = InnerProj(t)
+    return est.BenefitTotal(t) - InvstComponent(t)
 
 
-def ExpectedExps(t):
+def EstExps(t):
     """Expected Expense"""
     
-    est = InnerProjection(t)
-    return (est.prj_exps_Total(t)
-            - est.prj_exps_CommInit(t) 
-            - est.prj_exps_CommRen(t)
-            - est.prj_exps_Acq(t))
+    est = InnerProj(t)
+    return (est.ExpsTotal(t)
+            - est.ExpsCommInit(t)
+            - est.ExpsCommRen(t)
+            - est.ExpsAcq(t))
     
 
 def AsmpChangeImpact(t):
     """Non-financial assumption changes"""
-    return PV_CashFlows(t + 1, t + 1, 0) - PV_CashFlows(t, t + 1, 0)
+    return PV_Cashflow(t + 1, t + 1, 0) - PV_Cashflow(t, t + 1, 0)
 
     
 def RelsRiskAdj(t):
@@ -198,27 +198,27 @@ def RelsRiskAdj(t):
     """
     return 0
 
-def InsServiceExps(t):
+def InsurServiceExps(t):
     """Insurance Service Expense (103(b))"""
-    return (IncurredClaims(t)
-            + IncurredExps(t)
+    return (IncurClaim(t)
+            + IncurExps(t)
             + AmortAcqCashflow(t))
 
-def IncurredClaims(t):
-    """Incurred Claims"""
-    return prj_bnft_Total(t) - InvstComponents(t)
+def IncurClaim(t):
+    """Incur Claims"""
+    return BenefitTotal(t) - InvstComponent(t)
 
-def InvstComponents(t):
-    """Investment Components in Incurred Claims
+def InvstComponent(t):
+    """Investment Components in Incur Claims
     
     Warning:
         To be implemented.
     """
     return 0
 
-def IncurredExps(t):
-    """Incurred Expenses"""
-    return (prj_exps_Total(t) - prj_exps_CommTotal(t) - prj_exps_Acq(t))
+def IncurExps(t):
+    """Incur Expenses"""
+    return (ExpsTotal(t) - ExpsCommTotal(t) - ExpsAcq(t))
 
 #%% Acquisition Cashflow Amortization
 
@@ -227,10 +227,10 @@ def AcqPremRatio():
     
     The ratio is determined by the expectation at issue.
     """
-    pvs = InnerProjection(0).PresentValues(0)
+    pvs = InnerProj(0).PresentValue(0)
     
     return ((pvs.PV_ExpsCommTotal(0) + pvs.PV_ExpsAcq(0))
-            / pvs.PV_IncomePremium(0))
+            / pvs.PV_PremIncome(0))
 
 def AmortAcqCashflow(t):
     """Amortization of Acquisition Cash Flows
@@ -239,6 +239,6 @@ def AmortAcqCashflow(t):
         Implemented as a constant percentage of actual premiums,
         thus not totalling the original amount if actual != expected.
     """
-    return AcqPremRatio * prj_incm_Premium(t)
+    return AcqPremRatio * PremIncome(t)
 
 

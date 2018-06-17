@@ -26,7 +26,7 @@ def test_nestedlife():
     for testdata, func in zip([testdata1, testdata2],
                           [set_model, update_model]):
 
-        data = get_nested(func(model), 'nop_Surrender')
+        data = get_nested(func(model), 'PolsSurr')
 
         with open(testdata, 'rb') as file:
             data_saved = pickle.load(file)

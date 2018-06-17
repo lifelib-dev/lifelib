@@ -28,6 +28,6 @@ Model structure
    ~build_input
    ~lifetable
    ~policy
-   ~assumptions
+   ~assumption
    ~economic
    ~projection

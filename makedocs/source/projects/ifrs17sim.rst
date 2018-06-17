@@ -7,7 +7,7 @@ Project **ifrs17sim**
 financial statements on sample insurance contracts.
 
 Files that are unique to this project are :mod:`~ifrs17sim`,
-:mod:`~ifrs17sim.ifrs` and :mod:`~ifrs17sim.present_values`.
+:mod:`~ifrs17sim.ifrs` and :mod:`~ifrs17sim.present_value`.
 Other files in this project are the same as those in :mod:`nestedlife`.
 
 Jupyter Notebooks
@@ -39,10 +39,10 @@ Model structure
 
    ~ifrs17sim
    ~ifrs
-   ~present_values
+   ~present_value
    ~build_input
    ~lifetable
    ~policy
-   ~assumptions
+   ~assumption
    ~economic
    ~projection

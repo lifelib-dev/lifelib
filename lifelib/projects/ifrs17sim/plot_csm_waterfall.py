@@ -24,11 +24,11 @@ except ImportError:
     import ifrs17sim
 
 model = ifrs17sim.build()
-proj = model.OuterProjection[1]
+proj = model.OuterProj[1]
 
 csmrf = proj.cells['CSM_Unfloored',
                    'IntAccrCSM',
-                   'AdjCSM_FulCashFlows',
+                   'AdjCSM_FlufCF',
                    'TransServices'].to_frame(range(15))
 
 csmrf['TransServices'] = -1 * csmrf['TransServices']

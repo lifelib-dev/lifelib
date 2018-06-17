@@ -15,8 +15,8 @@ model = nestedlife.build()
 
 # Policy point ID and aliases
 polid = 171
-outer = model.OuterProjection[polid]
-inner = outer.InnerProjection
+outer = model.OuterProj[polid]
+inner = outer.InnerProj
 
 # %% Code block for overriding the default model
 
@@ -27,22 +27,22 @@ def SurrRateMult(t):
         return SurrRateMult(t - 1)
 
 
-def nop_Surrender(t):
+def PolsSurr(t):
     """Number of policies: Surrender"""    
-    return nop_BoP1(t) * asmp.SurrRate(t) * SurrRateMult(t)
+    return PolsIF_Beg1(t) * asmp.SurrRate(t) * SurrRateMult(t)
 
 
-def nop_EoP_inner(t):
+def PolsIF_End_inner(t):
     """Number of policies: End of period"""
     if t == t0:
-        return outer.nop_EoP(t)
+        return outer.PolsIF_End(t)
     else:
-        return nop_BoP1(t - 1) - nop_Death(t - 1) - nop_Surrender(t - 1)
+        return PolsIF_Beg1(t - 1) - PolsDeath(t - 1) - PolsSurr(t - 1)
 
 
 model.BaseProjection.new_cells(formula=SurrRateMult)
-model.BaseProjection.new_cells(formula=nop_Surrender)
-inner.new_cells(name='nop_EoP', formula=nop_EoP_inner)
+model.BaseProjection.new_cells(formula=PolsSurr)
+inner.new_cells(name='PolsIF_End', formula=PolsIF_End_inner)
 
 outer.SurrRateMult[1] = 2
 outer.SurrRateMult[2] = 0.5
@@ -103,7 +103,7 @@ def draw_actest_pairs(*items):
             draw_single_ncf(act, ax, t_max, '-')
 
 
-draw_actest_pairs('nop_Surrender', 'nop_EoP')
+draw_actest_pairs('PolsSurr', 'PolsIF_End')
 plt.show()
 
 

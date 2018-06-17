@@ -70,10 +70,10 @@ as they are quite a few. For details on the Input subspaces, see :py:mod:`simple
    ~build_input
    ~lifetable
    ~policy
-   ~assumptions
+   ~assumption
    ~economic
    ~projection
-   ~present_values
+   ~present_value
 
 
 There are three types of relationships between spaces, namely containment,  dependency, and inheritance.

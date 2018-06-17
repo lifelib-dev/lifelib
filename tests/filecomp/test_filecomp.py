@@ -16,9 +16,10 @@ ifrs17simpath = ifrs17sim.__path__[0]
 common_files = [('build_input.py', [simplepath, nestedpath, ifrs17simpath]),
                 ('lifetable.py', [simplepath, nestedpath, ifrs17simpath]),
                 ('policy.py', [simplepath, nestedpath, ifrs17simpath]),
-                ('assumptions.py', [simplepath, nestedpath, ifrs17simpath]),
+                ('assumption.py', [simplepath, nestedpath, ifrs17simpath]),
                 ('economic.py', [simplepath, nestedpath, ifrs17simpath]),
                 ('projection.py', [simplepath, nestedpath, ifrs17simpath]),
+                ('present_value.py', [simplepath, nestedpath, ifrs17simpath]),
                 ('input.xlsm', [simplepath, nestedpath, ifrs17simpath])]
 
 
