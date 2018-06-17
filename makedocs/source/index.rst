@@ -132,8 +132,8 @@ Links
 
    whatsnew
    quickstart
-   generated_examples/index
    projects/index
+   generated_examples/index
    archive
 
 

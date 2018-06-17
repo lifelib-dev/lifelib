@@ -6,8 +6,8 @@ Project **ifrs17sim**
 **ifrs17sim** is a project template for simulating IFRS17
 financial statements on sample insurance contracts.
 
-Files that are unique to this project are :mod:`~ifrs17sim`,
-:mod:`~ifrs17sim.ifrs` and :mod:`~ifrs17sim.present_value`.
+Files that are unique to this project are :mod:`~ifrs17sim` and
+:mod:`~ifrs17sim.ifrs`.
 Other files in this project are the same as those in :mod:`nestedlife`.
 
 Jupyter Notebooks
@@ -30,7 +30,7 @@ thanks to Binder.
    ifrs17sim_csm_waterfall.ipynb
    ifrs17sim_ifrs_waterfall.ipynb
 
-Model structure
+Project Modules
 ---------------
 
 .. autosummary::

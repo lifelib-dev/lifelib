@@ -263,6 +263,7 @@ def ExpsOther(t):
     return 0
 
 def ExpsMaintTotal(t):
+    """Total maintenance expenses including other expenses"""
     return ExpsMaint(t) + ExpsOther(t)
     
 def ExpsTotal(t):

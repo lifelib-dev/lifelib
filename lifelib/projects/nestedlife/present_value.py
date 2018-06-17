@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Present Values modules
+"""Present Value mix-in modules
 
+This module defines cells that take present values of projected items
+in :mod:`projection <simplelife.projection>` module.
 """
 
 def PV_SumInsurIF(t):
+    """Present value of insurance in-force"""
     if t > last_t:
         return 0
     else:
@@ -34,7 +37,7 @@ def PV_BenefitDeath(t):
 
 
 def PV_ExpsCommTotal(t):
-    """Present value of total expenses"""
+    """Present value of commission expenses"""
     if t > last_t:
         return 0
     else:
@@ -42,7 +45,7 @@ def PV_ExpsCommTotal(t):
 
 
 def PV_ExpsAcq(t):
-    """Present value of total expenses"""
+    """Present value of acquisition expenses"""
     if t > last_t:
         return 0
     else:
@@ -50,7 +53,7 @@ def PV_ExpsAcq(t):
     
 
 def PV_ExpsMaint(t):
-    """Present value of total expenses"""
+    """Present value of maintenance expenses"""
     if t > last_t:
         return 0
     else:
@@ -66,7 +69,7 @@ def PV_ExpsTotal(t):
     
 
 def PV_NetCashflow(t):
-    """Present value of net liability cashflow"""
+    """Present value of net cashflow"""
     if t > last_t:
         return 0
     else:

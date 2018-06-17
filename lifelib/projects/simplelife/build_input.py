@@ -246,7 +246,7 @@ def build_input(model, input_file=default_input):
         timestamp.print_time('Done.')
 
     print(dedent("""\
-        Input space and its sub spaces are saved in 'lifelib.mx'.
+        Input space and its sub spaces are saved in '[project name].mx'.
         You can load input data from the saved file instead of 'input.xlsx'
         by passing 'load_saved=True' to simplelife.build function."""),
           file=sys.stderr)

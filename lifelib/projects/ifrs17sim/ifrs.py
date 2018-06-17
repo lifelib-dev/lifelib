@@ -25,7 +25,7 @@ def NetInsurAssets(t):
     
 
 def PV_FutureCF(t):
-    """Present value of future cashflow"""
+    """Present value of future cashflows"""
     return PV_Cashflow(t, t, t)
 
     
@@ -176,7 +176,7 @@ def EstClaim(t):
 
 
 def EstExps(t):
-    """Expected Expense"""
+    """Expected Expenses"""
     
     est = InnerProj(t)
     return (est.ExpsTotal(t)
@@ -205,7 +205,7 @@ def InsurServiceExps(t):
             + AmortAcqCashflow(t))
 
 def IncurClaim(t):
-    """Incur Claims"""
+    """Incurred Claims"""
     return BenefitTotal(t) - InvstComponent(t)
 
 def InvstComponent(t):
@@ -217,7 +217,7 @@ def InvstComponent(t):
     return 0
 
 def IncurExps(t):
-    """Incur Expenses"""
+    """Incurred Expenses"""
     return (ExpsTotal(t) - ExpsCommTotal(t) - ExpsAcq(t))
 
 #%% Acquisition Cashflow Amortization

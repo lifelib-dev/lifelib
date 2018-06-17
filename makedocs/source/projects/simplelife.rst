@@ -61,6 +61,8 @@ as they are quite a few. For details on the Input subspaces, see :py:mod:`simple
 .. figure:: /images/simplelife_drawio.png
    :width: 50%
 
+Project Modules
+---------------
 
 .. autosummary::
    :toctree: generated/

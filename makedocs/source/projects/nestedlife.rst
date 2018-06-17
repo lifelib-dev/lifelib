@@ -17,7 +17,7 @@ cashflows as the outer projection, and expected future cashflows at each
 projection step as each of the nested projection.
 
 
-Model structure
+Project Modules
 ---------------
 
 .. autosummary::

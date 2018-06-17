@@ -16,7 +16,7 @@ def build(load_saved=False):
     subspace and cells and populate them with the data.
 
     Args:
-        load_saved: If ``True``, input data is read from `lifelib.mx` file
+        load_saved: If ``True``, input data is read from `simplelife.mx` file
             instead of `input.xlsm`, which is saved when
             :py:func:`build_input <simplelife.build_input.build_input>`
             is executed last time. Defaults to ``False``
