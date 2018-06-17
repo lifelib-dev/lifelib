@@ -4,6 +4,9 @@ Updates
 
 .. Latest Updates Begin
 
+* *17 June 2018:*
+  lifelib v0.0.8 is released. See :ref:`releases` for details.
+
 * *3 June 2018:*
   lifelib v0.0.7 is released. See :ref:`releases` for details.
 

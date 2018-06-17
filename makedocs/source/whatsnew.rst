@@ -44,6 +44,18 @@ Releases
    Documentation for released versions of lifelib is available under
    :doc:`archive` page.
 
+v0.0.8 (17 June 2018)
+---------------------
+
+- :doc:`/projects/naming_convention` is introduced, and most source
+  functions and some space and modules are renamed to be consistent
+  with the naming convention and to improve readability.
+
+- The source code of gallery examples is updated, and it's shorter,
+  cleaner and more readable, thanks to the introduction of
+  ``space.cells[varnames].to_frame(args)`` expression.
+
+
 v0.0.7 (3 June 2018)
 --------------------
 
