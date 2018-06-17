@@ -119,21 +119,21 @@ def LoadAcqSA():
 
     return param1 + param2 * min(PolicyTerm / 10, 1)
 
-def LoadMaintGP():
+def LoadMaintPrem():
     """Maintenance Loading per Gross Premium"""
 
-    if ProductSpec.LoadMaintGPParam1(Product) is not None:
-        return ProductSpec.LoadMaintGPParam1(Product)
+    if ProductSpec.LoadMaintPremParam1(Product) is not None:
+        return ProductSpec.LoadMaintPremParam1(Product)
 
-    elif ProductSpec.LoadMaintGPParam2(Product) is not None:
-        param = ProductSpec.LoadMaintGPParam2(Product)
+    elif ProductSpec.LoadMaintPremParam2(Product) is not None:
+        param = ProductSpec.LoadMaintPremParam2(Product)
         return (param + min(10, PolicyTerm)) / 100
 
     else:
-        raise ValueError('LoadMaintGP parameters not found')
+        raise ValueError('LoadMaintPrem parameters not found')
 
 
-def LoadMaintPremWaiverGP():
+def LoadMaintPremWaiverPrem():
     """Maintenance Loading per Gross Premium for Premium Waiver"""
 
     if PremTerm < 5:
@@ -195,10 +195,10 @@ def GrossPremRate():
     """Gross Premium Rate per Sum Assured per payment"""
 
     alpha = LoadAcqSA
-    beta = LoadMaintGP
+    beta = LoadMaintPrem
     gamma = LoadMaintSA
     gamma2 = LoadMaintSA2
-    delta = LoadMaintPremWaiverGP
+    delta = LoadMaintPremWaiverPrem
 
     comf = LifeTable[Sex, IntRate('PREM'), TableID('PREM')]
 
@@ -213,7 +213,7 @@ def GrossPremRate():
         raise ValueError('invalid product')
 
 
-def AnnualizedPremRate():
+def AnnPremRate():
     """Annualized Premium Rate per Sum Assured"""
     return GrossPremRate * (1 / 10 if PremFreq == 0 else PremFreq)
 
@@ -222,7 +222,7 @@ def GrossPremTable():
     """Gross premium table"""
     return None
 
-def NLPReserveRate(basis, t):
+def ReserveNLP_Rate(basis, t):
     """Net level premium reserve rate"""
 
     gamma2 = LoadMaintSA2
@@ -246,9 +246,9 @@ def SurrCharge(t):
 
 def CashValueRate(t):
     """Cash Value Rate per Sum Assured"""
-    return max(NLPReserveRate('PREM', t) - SurrCharge(t), 0)
+    return max(ReserveNLP_Rate('PREM', t) - SurrCharge(t), 0)
 
-def UnearnedPremRate():
+def UernPremRate():
     """Unearned Premium Rate"""
     return None
 

@@ -64,12 +64,12 @@ ProductSpec
     finding the closest matching indexes for the given arguments.
 
 
-Assumptions
-    The sample assumption table read from *Assumptions* tab.
+Assumption
+    The sample assumption table read from *Assumption* tab.
 
-    The ``Assumptions`` space has dynamic subspaces indexed by ``Product``,
+    The ``Assumption`` space has dynamic subspaces indexed by ``Product``,
     ``PolType`` and ``Gen``, each of which has scalar cells defined by the
-    columns of *Assumptions* tab other than the index columns.
+    columns of *Assumption* tab other than the index columns.
 
     Empty cells in the index columns are imported as ``None``.
     ``Cells.match`` method treats ``None`` as the wildcard when
@@ -204,13 +204,13 @@ def build_input(model, input_file=default_input):
 
     if print_time:
         timestamp.print_time('Done.')
-        timestamp.set_start('Loading Assumptions...')
+        timestamp.set_start('Loading Assumption...')
 
-    asmp = inp.new_space(name='Assumptions')
+    asmp = inp.new_space(name='Assumption')
     asmp.new_cells_from_excel(
         book=input_file,
         range_='B7:T17',
-        sheet='Assumptions',
+        sheet='Assumption',
         names_row=0,
         param_cols=[0, 1, 2],
         param_order=[0, 1, 2])
@@ -246,7 +246,7 @@ def build_input(model, input_file=default_input):
         timestamp.print_time('Done.')
 
     print(dedent("""\
-        Input space and its sub spaces are saved in 'lifelib.mx'.
+        Input space and its sub spaces are saved in '[project name].mx'.
         You can load input data from the saved file instead of 'input.xlsx'
         by passing 'load_saved=True' to simplelife.build function."""),
           file=sys.stderr)

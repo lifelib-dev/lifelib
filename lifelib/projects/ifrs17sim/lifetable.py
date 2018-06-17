@@ -1,6 +1,6 @@
-"""Source module to create ``LifeTables`` space from.
+"""Source module to create ``LifeTable`` space from.
 
-This is a source module to create ``LifeTables`` space and its
+This is a source module to create ``LifeTable`` space and its
 sub spaces from.
 
 This module is passed to ``import_module`` method to create

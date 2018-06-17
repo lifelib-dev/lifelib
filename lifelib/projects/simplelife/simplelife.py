@@ -16,7 +16,7 @@ def build(load_saved=False):
     subspace and cells and populate them with the data.
 
     Args:
-        load_saved: If ``True``, input data is read from `lifelib.mx` file
+        load_saved: If ``True``, input data is read from `simplelife.mx` file
             instead of `input.xlsm`, which is saved when
             :py:func:`build_input <simplelife.build_input.build_input>`
             is executed last time. Defaults to ``False``
@@ -82,17 +82,17 @@ def build(load_saved=False):
         refs=policy_refs)
 
     # ------------------------------------------------------------------------
-    # Build Assumptions space
+    # Build Assumption space
 
     asmp_refs = {'Policy': policy,
                  'ProductSpec': input.ProductSpec,
                  'MortalityTables': input.MortalityTables,
-                 'asmp': input.Assumptions,
+                 'asmp': input.Assumption,
                  'asmp_tbl': input.AssumptionTables}
 
     def asmp_params(PolicyID):
         refs = {'pol': Policy[PolicyID]}
-        alias = {'prd': refs['pol'].Product,
+        alias = {'prod': refs['pol'].Product,
                  'polt': refs['pol'].PolicyType,
                  'gen': refs['pol'].Gen}
         refs.update(alias)
@@ -100,15 +100,15 @@ def build(load_saved=False):
                 'refs': refs}
 
     asmp = model.import_module(
-        module_='assumptions',
-        name='Assumptions',
+        module_='assumption',
+        name='Assumption',
         formula=asmp_params,
         refs=asmp_refs)
 
     asmp.allow_none = True
 
     # ------------------------------------------------------------------------
-    # Build Assumptions space
+    # Build Assumption space
 
     def econ_params(ScenID):
         refs = {'Scenario': Input.Scenarios[ScenID]}
@@ -130,16 +130,16 @@ def build(load_saved=False):
         name='ProjBase')
 
     pvmixin = model.import_module(
-        module_='present_values',
+        module_='present_value',
         name='PV')
 
     proj_refs = {'Policy': policy,
-                 'Assumptions': asmp,
+                 'Assumption': asmp,
                  'Economic': economic}
 
     def proj_params(PolicyID, ScenID=1):
         refs = {'pol': Policy[PolicyID],
-                'asmp': Assumptions[PolicyID],
+                'asmp': Assumption[PolicyID],
                 'scen': Economic[ScenID],
                 'DiscRate': Economic[ScenID].DiscRate}
         return {'bases': _self,

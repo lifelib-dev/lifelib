@@ -11,8 +11,8 @@ except ImportError:
 
 proj = simplelife.build().Projection
 
-vars = ['PV_IncomePremium',
-        'PV_BenefitSurrender',
+vars = ['PV_PremIncome',
+        'PV_BenefitSurr',
         'PV_BenefitDeath',
         'PV_ExpsMaint',
         'PV_ExpsCommTotal',
@@ -25,9 +25,9 @@ for cells in vars:
 
 cfs = proj[polid].frame[vars].sort_index().dropna()
 
-[proj[polid].PV_NetCashflows[t] for t in range(50)]
+[proj[polid].PV_NetCashflow[t] for t in range(50)]
 
-ncf = proj[polid].PV_NetCashflows.frame.sort_index()
+ncf = proj[polid].PV_NetCashflow.frame.sort_index()
 
 import seaborn as sns
 sns.set()

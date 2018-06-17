@@ -18,12 +18,12 @@ except ImportError:
     import draw_charts
 
 model = ifrs17sim.build()
-proj = model.OuterProjection[171]
+proj = model.OuterProj[171]
 
 
 ifrsbs = proj.cells['CSM_Unfloored',
-                    'PV_FutureCashflow',
-                    'prj_AccumCashflow'].to_frame(range(10))
+                    'PV_FutureCF',
+                    'AccumCF'].to_frame(range(10))
 
 ifrsbs.columns = ['CSM', 'FCF', 'Cash']
 ifrsbs['FCF'] = -1 * ifrsbs['FCF']

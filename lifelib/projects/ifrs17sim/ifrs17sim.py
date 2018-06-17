@@ -16,7 +16,7 @@ def build(load_saved=False):
     subspace and cells and populate them with the data.
 
     Args:
-        load_saved: If ``True``, input data is read from `lifelib.mx` file
+        load_saved: If ``True``, input data is read from `ifrs17sim.mx` file
             instead of `input.xlsm`, which is saved when
             :py:func:`build_input <simplelife.build_input.build_input>`
             is executed last time. Defaults to ``False``
@@ -82,17 +82,17 @@ def build(load_saved=False):
         refs=policy_refs)
 
     # ------------------------------------------------------------------------
-    # Build Assumptions space
+    # Build Assumption space
 
     asmp_refs = {'Policy': policy,
                  'ProductSpec': input.ProductSpec,
                  'MortalityTables': input.MortalityTables,
-                 'asmp': input.Assumptions,
+                 'asmp': input.Assumption,
                  'asmp_tbl': input.AssumptionTables}
 
     def asmp_params(PolicyID):
         refs = {'pol': Policy[PolicyID]}
-        alias = {'prd': refs['pol'].Product,
+        alias = {'prod': refs['pol'].Product,
                  'polt': refs['pol'].PolicyType,
                  'gen': refs['pol'].Gen}
         refs.update(alias)
@@ -100,15 +100,15 @@ def build(load_saved=False):
                 'refs': refs}
 
     asmp = model.import_module(
-        module_='assumptions',
-        name='Assumptions',
+        module_='assumption',
+        name='Assumption',
         formula=asmp_params,
         refs=asmp_refs)
 
     asmp.allow_none = True
 
     # ------------------------------------------------------------------------
-    # Build Assumptions space
+    # Build Assumption space
 
     def econ_params(ScenID):
         refs = {'Scenario': Input.Scenarios[ScenID]}
@@ -129,8 +129,8 @@ def build(load_saved=False):
     # 
     # lifelib --+
     #           +--BaseProjection
-    #           +--OuterProjection[PolicyID] <--- BaseProjection
-    #                    +--InnerProjection[t] <-- BaseProjection
+    #           +--OuterProj[PolicyID] <--- BaseProjection
+    #                    +--InnerProj[t] <-- BaseProjection
 
     proj_refs = {'Pol': policy,
                  'Asmp': asmp,
@@ -150,7 +150,7 @@ def build(load_saved=False):
 
     outerproj = model.new_space(
         bases=baseproj,
-        name='OuterProjection',
+        name='OuterProj',
         formula=proj_params,
         refs=proj_refs)
     
@@ -167,26 +167,26 @@ def build(load_saved=False):
 
     innerproj = outerproj.new_space(
         bases=baseproj,
-        name='InnerProjection',
+        name='InnerProj',
         formula=innerproj_params)
     
     
     pvs = innerproj.import_module(
-        module_='present_values',
-        name='PresentValues')
+        module_='present_value',
+        name='PresentValue')
     
     def pvs_params(t_rate):
         refs = {'last_t': _self.parent.last_t,
-                'prj_InsInForce_BoP1': _self.parent.prj_InsInForce_BoP1,
-                'prj_InsInForce_EoP': _self.parent.prj_InsInForce_EoP,
-                'prj_incm_Premium': _self.parent.prj_incm_Premium,
-                'prj_bnft_Surrender': _self.parent.prj_bnft_Surrender,
-                'prj_bnft_Death': _self.parent.prj_bnft_Death,
-                'prj_bnft_Total': _self.parent.prj_bnft_Total,
-                'prj_exps_CommTotal': _self.parent.prj_exps_CommTotal,
-                'prj_exps_Acq': _self.parent.prj_exps_Acq,
-                'prj_exps_Maint': _self.parent.prj_exps_Maint,
-                'prj_exps_Total': _self.parent.prj_exps_Total,
+                'InsurIF_Beg1': _self.parent.InsurIF_Beg1,
+                'InsurIF_End': _self.parent.InsurIF_End,
+                'PremIncome': _self.parent.PremIncome,
+                'BenefitSurr': _self.parent.BenefitSurr,
+                'BenefitDeath': _self.parent.BenefitDeath,
+                'BenefitTotal': _self.parent.BenefitTotal,
+                'ExpsCommTotal': _self.parent.ExpsCommTotal,
+                'ExpsAcq': _self.parent.ExpsAcq,
+                'ExpsMaint': _self.parent.ExpsMaint,
+                'ExpsTotal': _self.parent.ExpsTotal,
                 'DiscRate': _self.parent.scen.DiscRate}
         
         return {'bases': _self,
@@ -195,7 +195,6 @@ def build(load_saved=False):
     pvs.set_formula(pvs_params)
     
     return model
-
 
 
 if __name__ == '__main__':

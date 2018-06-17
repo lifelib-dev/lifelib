@@ -27,17 +27,17 @@ polid = 171
 proj = simplelife.build().Projection[polid]
 
 # %% Draw NetCashflows Graph
-data = {'NetCashflows': [proj.prj_NetLiabilityCashflow[t] for t in range(50)]}
+data = {'NetCashflows': [proj.NetInsurCF[t] for t in range(50)]}
 ax = pd.DataFrame(data).plot.line(marker='o', color='r')
 
 # %% Draw componets of net cashflows
 
-vars = ['prj_incm_Premium',
-        'prj_bnft_Surrender',
-        'prj_bnft_Death',
-        'prj_exps_Maint',
-        'prj_exps_CommTotal',
-        'prj_exps_Acq']
+vars = ['PremIncome',
+        'BenefitSurr',
+        'BenefitDeath',
+        'ExpsMaint',
+        'ExpsCommTotal',
+        'ExpsAcq']
 
 
 df = proj.cells[vars].to_frame(range(50))
