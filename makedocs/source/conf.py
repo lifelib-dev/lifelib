@@ -46,7 +46,8 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
     'nbsphinx',
-    'sphinx_gallery.gen_gallery']
+    'sphinx_gallery.gen_gallery',
+    'sphinxcontrib.blockdiag']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -244,6 +245,9 @@ sphinx_gallery_conf = {
     'download_section_examples': False
 }
 
+
+# blockdiag_fontpath = 'c:/windows/fonts/calibri.ttf'
+blockdiag_html_image_format = 'SVG'
 
 # Hide download note and buttons from gallery pages.
 # https://github.com/ryan-roemer/sphinx-bootstrap-theme
