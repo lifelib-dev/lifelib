@@ -148,13 +148,15 @@ def build(load_saved=False):
         module_='projection',
         name='BaseProjection')
 
+    ifrs = model.import_module(
+        module_='ifrs',
+        name='IFRS')
+
     outerproj = model.new_space(
-        bases=baseproj,
+        bases=[ifrs, baseproj],
         name='OuterProj',
         formula=proj_params,
         refs=proj_refs)
-    
-    outerproj.import_funcs('ifrs')
 
     def innerproj_params(t0):
         refs = {'pol': _self.parent.pol,
@@ -169,8 +171,7 @@ def build(load_saved=False):
         bases=baseproj,
         name='InnerProj',
         formula=innerproj_params)
-    
-    
+
     pvs = innerproj.import_module(
         module_='present_value',
         name='PresentValue')
