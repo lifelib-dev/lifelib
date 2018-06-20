@@ -27,14 +27,14 @@ Model Structure
      nestedlife [shape=roundedbox, linecolor="#7B99C5", color="#D4E8FC"]
      nestedlife <- "OuterProj[PolicyID]" <- "InnerProj[t0]" [hstyle=composition];
      "OuterProj[PolicyID]" [stacked];
-     "OuterProj[PolicyID]" -> BaseProjection [folded, hstyle=generalization]
-     "InnerProj[t0]" -> BaseProjection [folded, hstyle=generalization]
+     "OuterProj[PolicyID]" -> BaseProj [folded, hstyle=generalization]
+     "InnerProj[t0]" -> BaseProj [folded, hstyle=generalization]
      "InnerProj[t0]" [stacked];
-     BaseProjection [style=dotted];
-     nestedlife <- BaseProjection [hstyle=composition, style=dotted];
-     PV_Mixin [style=dotted];
-     nestedlife <- PV_Mixin [hstyle=composition, style=dotted];
-     BaseProjection -> PV_Mixin [folded, hstyle=generalization];
+     BaseProj [style=dotted];
+     nestedlife <- BaseProj [hstyle=composition, style=dotted];
+     PresentValue [style=dotted];
+     nestedlife <- PresentValue [hstyle=composition, style=dotted];
+     BaseProj -> PresentValue [folded, hstyle=generalization];
      nestedlife <- Economic [hstyle=composition];
      nestedlife <- Assumption [hstyle=composition];
      nestedlife <- Policy [hstyle=composition];

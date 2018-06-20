@@ -40,8 +40,8 @@ def PolsIF_End_inner(t):
         return PolsIF_Beg1(t - 1) - PolsDeath(t - 1) - PolsSurr(t - 1)
 
 
-model.BaseProjection.new_cells(formula=SurrRateMult)
-model.BaseProjection.new_cells(formula=PolsSurr)
+model.BaseProj.new_cells(formula=SurrRateMult)
+model.BaseProj.new_cells(formula=PolsSurr)
 inner.new_cells(name='PolsIF_End', formula=PolsIF_End_inner)
 
 outer.SurrRateMult[1] = 2

@@ -25,12 +25,12 @@ Model Structure
      "OuterProj[PolicyID]" -> IFRS [folded, hstyle=generalization]
      ifrs17sim <- "OuterProj[PolicyID]" <- "InnerProj[t0]" [hstyle=composition];
      "OuterProj[PolicyID]" [stacked];
-     "OuterProj[PolicyID]" -> BaseProjection [folded, hstyle=generalization]
-     "InnerProj[t0]" -> BaseProjection [folded, hstyle=generalization]
+     "OuterProj[PolicyID]" -> BaseProj [folded, hstyle=generalization]
+     "InnerProj[t0]" -> BaseProj [folded, hstyle=generalization]
      "InnerProj[t0]" [stacked];
      "InnerProj[t0]" <- "PresentValue[t_rate]" [hstyle=composition];
-     BaseProjection [style=dotted];
-     ifrs17sim <- BaseProjection [hstyle=composition, style=dotted];
+     BaseProj [style=dotted];
+     ifrs17sim <- BaseProj [hstyle=composition, style=dotted];
      "PresentValue[t_rate]"[stacked];
      ifrs17sim <- Economic [hstyle=composition];
      ifrs17sim  <- Assumption [hstyle=composition];

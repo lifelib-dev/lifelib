@@ -129,9 +129,9 @@ def build(load_saved=False):
     # Model tree structure
     # 
     # lifelib --+
-    #           +--BaseProjection
-    #           +--OuterProj[PolicyID] <--- BaseProjection
-    #                    +--InnerProj[t] <-- BaseProjection
+    #           +--BaseProj
+    #           +--OuterProj[PolicyID] <--- BaseProj
+    #                    +--InnerProj[t] <-- BaseProj
 
     proj_refs = {'Pol': policy,
                  'Asmp': asmp,
@@ -146,11 +146,11 @@ def build(load_saved=False):
 
     pvmixin = model.import_module(
         module_='present_value',
-        name='PV_Mixin')
+        name='PresentValue')
 
     baseproj = model.import_module(
         module_='projection',
-        name='BaseProjection',
+        name='BaseProj',
         bases=pvmixin)
 
 
