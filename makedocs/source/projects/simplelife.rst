@@ -58,8 +58,33 @@ The diagram below shows the spaces contained in a simplelife model.
 Note that the subspaces under Input space are not drawn in the diagram,
 as they are quite a few. For details on the Input subspaces, see :py:mod:`simplelife.build_input` page.
 
-.. figure:: /images/simplelife_drawio.png
-   :width: 50%
+.. blockdiag::
+
+   blockdiag {
+     default_node_color="#D5E8D4";
+     default_linecolor="#628E47";
+     node_width=150;
+     simplelife [shape=roundedbox, linecolor="#7B99C5", color="#D4E8FC"]
+     PresentValue [style=dotted];
+     simplelife <- PresentValue;
+     Proj [label="Projection[PolicyID]", stacked];
+     PresentValue <- Proj [folded, hstyle=generalization]
+     simplelife <- Proj [hstyle=composition];
+     Proj -> BaseProj [folded, hstyle=generalization]
+     BaseProj [style=dotted];
+     simplelife <- BaseProj [hstyle=composition, style=dotted];
+     Econ[label="Economic[ScenID]", stacked];
+     simplelife <- Econ[hstyle=composition];
+     Assumption [label="Assumption[PolicyID]", stacked];
+     simplelife <- Assumption [hstyle=composition];
+     Policy [label="Policy[PolicyID]", stacked];
+     simplelife <- Policy [hstyle=composition];
+     LifeTable [label="LifeTable\n[Sex, IntRate, TableID]", stacked];
+     simplelife <- LifeTable [hstyle=composition];
+     simplelife <- Input [hstyle=composition];
+     "various..." [stacked];
+     Input <- "various..."[hstyle=composition];
+   }
 
 Project Modules
 ---------------
