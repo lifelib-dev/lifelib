@@ -127,7 +127,7 @@ def build(load_saved=False):
 
     projbase = model.import_module(
         module_='projection',
-        name='ProjBase')
+        name='BaseProj')
 
     pvmixin = model.import_module(
         module_='present_value',
