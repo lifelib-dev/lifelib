@@ -4,6 +4,10 @@ Updates
 
 .. Latest Updates Begin
 
+* *24 June 2018:*
+  Model structure diagrams are added in :doc:`projects/simplelife`,
+  :doc:`projects/nestedlife` and :doc:`projects/ifrs17sim` pages.
+
 * *17 June 2018:*
   lifelib v0.0.8 is released. See :ref:`releases` for details.
 

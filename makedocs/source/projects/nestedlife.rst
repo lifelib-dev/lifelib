@@ -16,8 +16,15 @@ The main purpose of this template is to simulate actual/realistic
 cashflows as the outer projection, and expected future cashflows at each
 projection step as each of the inner projection.
 
+.. contents:: Contents
+   :depth: 1
+   :local:
+
 Model Structure
 ---------------
+
+Spaces in the dotted yellow line have the same structure as :mod:`simplelife`
+model, so refer to :mod:`simplelife` for more details about those sapces.
 
 .. blockdiag::
 
@@ -52,6 +59,9 @@ Model Structure
      }
    }
 
+.. include:: simplelife.rst
+   :start-after: Begin diagram how-to
+   :end-before: End diagram how-to
 
 Project Modules
 ---------------
