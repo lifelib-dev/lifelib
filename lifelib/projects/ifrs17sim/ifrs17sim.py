@@ -45,8 +45,7 @@ def build(load_saved=False):
 
     def lifetable_params(Sex, IntRate, TableID):
         refs={'MortalityTable': Input.MortalityTables(TableID).MortalityTable}
-        return {'bases': _self,
-                'refs': refs}
+        return {'refs': refs}
 
     lifetable = model.import_module(
         module_='lifetable',
@@ -72,8 +71,7 @@ def build(load_saved=False):
                  'n': refs['PolicyTerm']}
 
         refs.update(alias)
-        return {'bases': _self,
-                'refs': refs}
+        return {'refs': refs}
 
     policy = model.import_module(
         module_='policy',
@@ -96,8 +94,7 @@ def build(load_saved=False):
                  'polt': refs['pol'].PolicyType,
                  'gen': refs['pol'].Gen}
         refs.update(alias)
-        return {'bases': _self,
-                'refs': refs}
+        return {'refs': refs}
 
     asmp = model.import_module(
         module_='assumption',
@@ -112,8 +109,7 @@ def build(load_saved=False):
 
     def econ_params(ScenID):
         refs = {'Scenario': Input.Scenarios[ScenID]}
-        return {'bases': _self,
-                'refs': refs}
+        return {'refs': refs}
 
     economic = model.import_module(
         module_='economic',
@@ -141,8 +137,7 @@ def build(load_saved=False):
                 'asmp': Asmp[PolicyID],
                 'scen': Scen[ScenID]}
 
-        return {'bases': _self,
-                'refs': refs}
+        return {'refs': refs}
 
     baseproj = model.import_module(
         module_='projection',
@@ -164,8 +159,7 @@ def build(load_saved=False):
                 'scen': _self.parent.scen,
                 'outer': _self.parent}
         
-        return {'bases': _self,
-                'refs': refs}
+        return {'refs': refs}
 
     innerproj = outerproj.new_space(
         bases=baseproj,
@@ -190,8 +184,7 @@ def build(load_saved=False):
                 'ExpsTotal': _self.parent.ExpsTotal,
                 'DiscRate': _self.parent.scen.DiscRate}
         
-        return {'bases': _self,
-                'refs': refs}
+        return {'refs': refs}
         
     pvs.set_formula(pvs_params)
     
