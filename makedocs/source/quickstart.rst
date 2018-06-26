@@ -123,9 +123,13 @@ start *Anaconda Prompt* inside *Anaconda3* submenu to bring up a command prompt.
 
 .. figure:: /images/AnacondaPrompt.png
 
-Then in the *Anaconda Prompt*, type::
+Then in the *Anaconda Prompt*, execute the following command::
 
     > pip install lifelib
+
+When you update your existing installation to the newest release, use ``-U`` option::
+
+    > pip install -U lifelib
 
 The command also installs `modelx`_ the package lifelib depends on.
 All the other required or optionally used packages are included
@@ -135,7 +139,7 @@ in `Anaconda`_, so no need to install them separately.
 
 
 .. Note::
-   *(For developers)* To install the latest development version instead of
+   *(For advanced users)* To install the latest development version instead of
    the released version,
    clone the `lifelib repository`_ and `modelx repository`_ on github,
    and install them from the cloned repos in `editable mode`_.
