@@ -27,7 +27,7 @@ Updates
    :start-after: Latest Updates Begin
    :end-before: Latest Updates End
 
-.. :doc:`... See more updates<updates>`
+:doc:`... See more updates<updates>`
 
 .. toctree::
    :hidden:
@@ -39,10 +39,10 @@ Updates
 Releases
 ========
 
-.. The contents of `lifelib.io <http://lifelib.io>`_ are constantly
-   updated based on the development version of lifelib.
-   Documentation for released versions of lifelib is available under
-   :doc:`archive` page.
+The contents of `lifelib.io <http://lifelib.io>`_ are constantly
+updated based on the development version of lifelib.
+Documentation for released versions of lifelib is available under
+:doc:`archive` page.
 
 v0.0.8 (17 June 2018)
 ---------------------

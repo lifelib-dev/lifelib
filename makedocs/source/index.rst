@@ -24,10 +24,13 @@
     <br>
 
 
-**lifelib** is a collection of actuarial projection models.
-lifelib models are built as `modelx`_ models, ready to be used out of the box
-with sample formulas and input files, and they are
-fully customizable by users.
+What is **lifelib**?
+--------------------
+
+**lifelib** is a collection of open-source life actuarial models written in Python.
+You can run the models right out of the box,
+customize them in any way you want, or create your own models from scratch.
+
 
 Latest Updates
 --------------
@@ -36,7 +39,22 @@ Latest Updates
    :start-after: Latest Updates Begin
    :end-before: Latest Updates End
 
-.. :doc:`... See more updates<updates>`
+:doc:`... See more updates<updates>`
+
+
+Feature highlights
+------------------
+
+* Readable formulas
+* Multidimensional data structure
+* Instant evaluation
+* Dependency tracking (Under development)
+* Reusable code
+* Object oriented models
+* Interface with Excel/Pandas
+* Version control
+* Documentation integration
+
 
 How **lifelib** works
 ---------------------
@@ -71,21 +89,6 @@ Start from :doc:`quickstart` page.
 .. _Cells: http://docs.modelx.io/en/latest/reference/generated/modelx.core.cells.Cells.html
 
 
-Feature highlights
-------------------
-
-- Formulas and their calculated values paired as `Cells`_,
-  just like spreadsheet cells
-- Relevant cells grouped together as a `Space`_, just like a spreadsheet
-- Spaces in other spaces (subspaces), forming trees of spaces
-- Object-oriented `Model`_ composed of spaces
-- Space inheritance
-- Parametrized dynamic subspaces created automatically
-- Saving to / loading from files
-- Conversion to Pandas objects
-- Reading data from Excel files
-- Cells graph to track cells interdependency
-
 Why **lifelib**?
 ----------------
 
@@ -97,9 +100,11 @@ Why **lifelib**?
 What for?
 ---------
 
-- Pricing / Profit testing
+- For research/educational projects
+- As communication tools to convey model specifications
 - Model validation / testing
 - Prototyping for production models
+- Pricing / Profit testing
 - As corporate models
 - For simulations
 - As replacement for any spreadsheet models
@@ -113,18 +118,20 @@ If you find bugs or want to request new features,
 submit issues on
 `lifelib development site <https://github.com/fumitoh/lifelib/issues>`_
 on github.
+Or, connect with
+`Fumito Hamamura <https://www.linkedin.com/in/fumito-hamamura>`_
+on Linkedin and send a message to him (May take about a week to respond).
 
 Links
 -----
 
-`modelx`_
-   A Python package for building complex models of formulas and data.
+* `modelx`_: A Python package for building complex models of
+  formulas and data.
 
-`lifelib on PyPI <https://pypi.python.org/pypi/lifelib/>`_
-   lifelib's Python Package Index page.
+* `lifelib on PyPI <https://pypi.python.org/pypi/lifelib/>`_: lifelib's Python
+  Package Index page.
 
-`Development site <https://github.com/fumitoh/lifelib>`_
-   Github repository of lifelib.
+* `Development site <https://github.com/fumitoh/lifelib>`_: Github repository of lifelib.
 
 .. toctree::
    :hidden:
@@ -134,7 +141,7 @@ Links
    quickstart
    projects/index
    generated_examples/index
-   archive
+
 
 
 Indexes
@@ -144,3 +151,9 @@ Indexes
 * :ref:`modindex`
 * :ref:`search`
 
+
+Archive
+-------
+
+.. include:: archive.rst
+   :start-after: Past Docs Begin

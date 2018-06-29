@@ -5,6 +5,8 @@ Archive
 Past Documentation
 ------------------
 
+.. Past Docs Begin
+
 .. raw:: html
 
     <ul class="simple">

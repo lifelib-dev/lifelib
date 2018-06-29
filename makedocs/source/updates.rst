@@ -17,6 +17,8 @@ Updates
 * *3 June 2018:*
   Jupyter notebook for :doc:`projects/ifrs17sim` is added.
 
+.. Latest Updates End
+
 * *27 May 2018:*
   New **ifrs17sim** samples are added to :doc:`generated_examples/index`.
 
@@ -56,7 +58,7 @@ Updates
    :start-after: Begin binder ifrs17sim_csm_waterfall
    :end-before: End binder ifrs17sim_csm_waterfall
 
-.. Latest Updates End
+
 
 -------
 
