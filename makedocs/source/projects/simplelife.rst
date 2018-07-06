@@ -68,7 +68,7 @@ as they are quite a few. For details on the Input subspaces, see :py:mod:`simple
      default_node_color="#D5E8D4";
      default_linecolor="#628E47";
      node_width=150;
-     simplelife [shape=roundedbox, linecolor="#7B99C5", color="#D4E8FC"]
+     simplelife [shape=roundedbox, linecolor="#7B99C5", color="#D4E8FC", width=96]
      PresentValue [style=dotted];
      simplelife <- PresentValue;
      Proj [label="Projection[PolicyID]", stacked];
@@ -86,7 +86,7 @@ as they are quite a few. For details on the Input subspaces, see :py:mod:`simple
      LifeTable [label="LifeTable\n[Sex, IntRate, TableID]", stacked];
      simplelife <- LifeTable [hstyle=composition];
      simplelife <- Input [hstyle=composition];
-     "various..." [stacked];
+     "various..." [stacked, width=96];
      Input <- "various..."[hstyle=composition];
    }
 

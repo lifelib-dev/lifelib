@@ -31,7 +31,7 @@ model, so refer to :mod:`simplelife` for more details about those sapces.
    blockdiag {
      default_node_color="#D5E8D4";
      default_linecolor="#628E47";
-     nestedlife [shape=roundedbox, linecolor="#7B99C5", color="#D4E8FC"]
+     nestedlife [shape=roundedbox, linecolor="#7B99C5", color="#D4E8FC", width=96]
      nestedlife <- "OuterProj[PolicyID]" <- "InnerProj[t0]" [hstyle=composition];
      "OuterProj[PolicyID]" [stacked];
      "OuterProj[PolicyID]" -> BaseProj [folded, hstyle=generalization]

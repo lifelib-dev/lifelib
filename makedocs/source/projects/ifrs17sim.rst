@@ -26,7 +26,7 @@ model, so refer to :mod:`simplelife` for more details about those spaces.
    blockdiag {
      default_node_color="#D5E8D4";
      default_linecolor="#628E47";
-     ifrs17sim [shape=roundedbox, linecolor="#7B99C5", color="#D4E8FC"];
+     ifrs17sim [shape=roundedbox, linecolor="#7B99C5", color="#D4E8FC", width=96];
      ifrs17sim <- IFRS [hstyle=composition, style=dotted];
      IFRS [style=dotted];
      "OuterProj[PolicyID]" -> IFRS [folded, hstyle=generalization];
@@ -34,7 +34,7 @@ model, so refer to :mod:`simplelife` for more details about those spaces.
      "OuterProj[PolicyID]" [stacked];
      "OuterProj[PolicyID]" -> BaseProj [folded, hstyle=generalization];
      "InnerProj[t0]" -> BaseProj [folded, hstyle=generalization];
-     "InnerProj[t0]" [stacked];
+     "InnerProj[t0]" [stacked, width=96];
      "InnerProj[t0]" <- "PresentValue[t_rate]" [hstyle=composition];
      BaseProj [style=dotted];
      ifrs17sim <- BaseProj [hstyle=composition, style=dotted];
