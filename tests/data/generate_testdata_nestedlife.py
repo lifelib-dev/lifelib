@@ -36,8 +36,8 @@ def set_model(model):
     inner = outer.InnerProj
 
     model.BaseProj.new_cells(formula=SurrRateMult)
-    model.BaseProj.new_cells(formula=PolsSurr)
-    inner.new_cells(name='PolsIF_End', formula=PolsIF_End_inner)
+    model.BaseProj.PolsSurr.set_formula(PolsSurr)
+    inner.PolsIF_End.set_formula(PolsIF_End_inner)
 
     outer.SurrRateMult[1] = 2
     outer.SurrRateMult[2] = 0.5
