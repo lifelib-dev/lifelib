@@ -4,6 +4,9 @@ Updates
 
 .. Latest Updates Begin
 
+* *25 July 2018:*
+  This site now supports HTTPS (https://lifelib.io).
+
 * *24 June 2018:*
   Model structure diagrams are added in :doc:`projects/simplelife`,
   :doc:`projects/nestedlife` and :doc:`projects/ifrs17sim` pages.

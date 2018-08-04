@@ -39,7 +39,7 @@ Updates
 Releases
 ========
 
-The contents of `lifelib.io <http://lifelib.io>`_ are constantly
+The contents of `lifelib.io <https://lifelib.io>`_ are constantly
 updated based on the development version of lifelib.
 Documentation for released versions of lifelib is available under
 :doc:`archive` page.

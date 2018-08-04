@@ -15,7 +15,7 @@ DISTNAME = 'lifelib'
 LICENSE = 'License :: OSI Approved :: MIT License'
 AUTHOR = "Fumito Hamamura"
 EMAIL = "fumito.ham@gmail.com"
-URL = "http://lifelib.io"
+URL = "https://lifelib.io"
 
 DESCRIPTION = "Actuarial models in Python"
 
