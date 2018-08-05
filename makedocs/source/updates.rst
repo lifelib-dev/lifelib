@@ -4,6 +4,9 @@ Updates
 
 .. Latest Updates Begin
 
+* *5 August 2018:*
+  lifelib v0.0.9 is released. See :ref:`releases` for details.
+
 * *25 July 2018:*
   This site now supports HTTPS (https://lifelib.io).
 

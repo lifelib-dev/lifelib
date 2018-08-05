@@ -44,6 +44,32 @@ updated based on the development version of lifelib.
 Documentation for released versions of lifelib is available under
 :doc:`archive` page.
 
+v0.0.9 (5 August 2018)
+----------------------
+
+.. warning::
+
+   `modelx`_ needs to be updated to v0.0.13 for this version of lifelib.
+
+   Accordingly, Support for Python 3.4 and 3.5 is dropped. Now Python 3.6 or
+   3.7 is required.
+
+- Due to an update in modelx, updating existing cells with ``new_cells``
+  method of Space no longer works.
+  Accordingly, ``new_cells`` in
+  :doc:`generated_examples/nestedlife/plot_actest` and
+  :doc:`generated_examples/nestedlife/plot_pvnetcf` examples are replaced
+  with ``set_fomula`` method.
+  Check `this commit on github <https://github.com/fumitoh/lifelib/commit/c580487d414ae535ff65755d3cdfb46f3aab139a>`__
+  to see the exact changes.
+
+- Due to a spec change in modelx, dynamic spaces now inherit their
+  parent spaces by default.
+  Accordingly, :func:`simplelife.simplelife.build`, :func:`nestedlife.nestedlife.build` and
+  :func:`ifrs17sim.ifrs17sim.build` are updated.
+  Check `this commit on github <https://github.com/fumitoh/lifelib/commit/14f3263d32de873a672a09ad34f578703ea46180>`__
+  to see the exact changes.
+
 v0.0.8 (17 June 2018)
 ---------------------
 
