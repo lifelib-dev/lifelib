@@ -33,8 +33,8 @@ and it was first released in November 2017.
 
 Requirements
 ------------
-* Python 3.4+
+* Python 3.6+
 * modelx
-* networkx
+* networkx 2.0+
 * Pandas
 * OpenPyXL
