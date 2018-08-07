@@ -32,7 +32,7 @@ Downlowd and install `Anaconda distribution`_.
 You must install Python 3.x version,
 not Python 2.7 version. lifelib does not work with Python 2.7.
 If you already have `Anaconda`_ installed, make sure the Python version is
-3.4 or newer.
+3.6 or newer.
 `Anaconda`_ is a bundle of Python, its major packages and IDEs including
 packages required or optionally used by for lifelib,
 such as `openpyxl`_, `pandas`_, `Spyder`_, and provides a Python environment

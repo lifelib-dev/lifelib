@@ -27,7 +27,7 @@
 What is **lifelib**?
 --------------------
 
-**lifelib** is a collection of open-source life actuarial models written in Python.
+**lifelib** is a library of open-source life actuarial models written in Python.
 You can run the models right out of the box,
 customize them in any way you want, or create your own models from scratch.
 
