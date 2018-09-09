@@ -49,7 +49,6 @@ estcf = proj.cells['PV_FutureCF',
 
 estcf['EstPremIncome'] = -1 * estcf['EstPremIncome'] 
 
-plt.figure()
 draw_waterfall(estcf, title='Expected Cashflows')
     
 # %% Actual Cashflow Rollforward
@@ -65,9 +64,7 @@ for outflow in ['ExpsAcqTotal',
                 'BenefitTotal',
                 'ExpsMaintTotal']:
     actcf[outflow] = -1 * actcf[outflow]
-    
 
-plt.figure()
 draw_waterfall(actcf, title='Actual Cashflows')
 
 # %% IFRS17 Financial Performance
@@ -79,6 +76,5 @@ ifrspl = proj.cells['NetBalance',
 
 ifrspl['InsurServiceExps'] = -1 * ifrspl['InsurServiceExps']
 
-plt.figure()
 draw_waterfall(ifrspl, title='IFRS17 Profit/Loss')
 

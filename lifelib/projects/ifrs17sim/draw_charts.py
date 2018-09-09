@@ -15,6 +15,11 @@ sns.set()
 
 def draw_waterfall(df, ax=None, **kwargs):
     """Draw waterfall chart"""
+
+    if ax is None:
+        plt.figure()
+        ax = plt.gca()
+
     data = df.stack()
     bottom = df.cumsum(axis=1).shift(1, axis=1).fillna(0).stack()
     palette = WaterfallColorPalette(df)
