@@ -20,30 +20,6 @@ inner = outer.InnerProj
 
 # %% Code block for overriding the default model
 
-def SurrRateMult(t):
-    if t == 0:
-        return 1
-    else:
-        return SurrRateMult(t - 1)
-
-
-def PolsSurr(t):
-    """Number of policies: Surrender"""    
-    return PolsIF_Beg1(t) * asmp.SurrRate(t) * SurrRateMult(t)
-
-
-def PolsIF_End_inner(t):
-    """Number of policies: End of period"""
-    if t == t0:
-        return outer.PolsIF_End(t)
-    else:
-        return PolsIF_Beg1(t - 1) - PolsDeath(t - 1) - PolsSurr(t - 1)
-
-
-model.BaseProj.new_cells(formula=SurrRateMult)
-model.BaseProj.PolsSurr.set_formula(PolsSurr)
-inner.PolsIF_End.set_formula(PolsIF_End_inner)
-
 outer.SurrRateMult[1] = 2
 outer.SurrRateMult[2] = 0.5
 outer.SurrRateMult[3] = 1

@@ -10,6 +10,30 @@ and the created model is available as ``model`` global variable.
 import os
 import modelx as mx
 
+# %% Code block for defining override formulas.
+
+def SurrRateMult(t):
+    """Surrender rate multiple (Default: 1)"""
+    if t == 0:
+        return 1
+    else:
+        return SurrRateMult(t - 1)
+
+def PolsSurr(t):
+    """Number of policies: Surrender"""    
+    return PolsIF_Beg1(t) * asmp.SurrRate(t) * SurrRateMult(t)
+
+
+def PolsIF_End_inner(t):
+    """Number of policies: End of period"""
+    if t == t0:
+        return outer.PolsIF_End(t)
+    else:
+        return PolsIF_Beg1(t - 1) - PolsDeath(t - 1) - PolsSurr(t - 1)
+
+
+# %% Code block for build function
+
 def build(load_saved=False):
     """Build a model and return it.
 
@@ -168,6 +192,11 @@ def build(load_saved=False):
         bases=baseproj,
         name='InnerProj',
         formula=innerproj_params)
+
+    # Add or override functions.
+    baseproj.new_cells(formula=SurrRateMult)
+    baseproj.PolsSurr.set_formula(PolsSurr)
+    innerproj.PolsIF_End.set_formula(PolsIF_End_inner)
 
     return model
 

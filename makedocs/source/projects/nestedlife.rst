@@ -16,12 +16,19 @@ The main purpose of this template is to simulate actual/realistic
 cashflows as the outer projection, and expected future cashflows at each
 projection step as each of the inner projection.
 
+By default, some formulas are redefined in :mod:`~nestedlife` module,
+to define new cells or redefine existing cells
+in :mod:`~projection` module for nested projection, and to allow the user
+to adjust surrender rates.
+
 .. contents:: Contents
    :depth: 1
    :local:
 
 Model Structure
 ---------------
+
+**Composition Structure**
 
 Spaces in the dotted yellow line have the same structure as :mod:`simplelife`
 model, so refer to :mod:`simplelife` for more details about those sapces.
@@ -34,14 +41,7 @@ model, so refer to :mod:`simplelife` for more details about those sapces.
      nestedlife [shape=roundedbox, linecolor="#7B99C5", color="#D4E8FC", width=96]
      nestedlife <- "OuterProj[PolicyID]" <- "InnerProj[t0]" [hstyle=composition];
      "OuterProj[PolicyID]" [stacked];
-     "OuterProj[PolicyID]" -> BaseProj [folded, hstyle=generalization]
-     "InnerProj[t0]" -> BaseProj [folded, hstyle=generalization]
      "InnerProj[t0]" [stacked];
-     BaseProj [style=dotted];
-     nestedlife <- BaseProj [hstyle=composition, style=dotted];
-     PresentValue [style=dotted];
-     nestedlife <- PresentValue [hstyle=composition, style=dotted];
-     BaseProj -> PresentValue [folded, hstyle=generalization];
      nestedlife <- Economic [hstyle=composition];
      nestedlife <- Assumption [hstyle=composition];
      nestedlife <- Policy [hstyle=composition];
@@ -57,6 +57,18 @@ model, so refer to :mod:`simplelife` for more details about those sapces.
        style=dashed
        color=orange
      }
+   }
+
+**Inheritance Structure**
+
+.. blockdiag::
+
+   blockdiag {
+     default_node_color="#D5E8D4";
+     default_linecolor="#628E47";
+     PresentValue <- BaseProj [folded, hstyle=generalization];
+     BaseProj <- OuterProj [hstyle=generalization]
+     BaseProj <- InnerProj [hstyle=generalization]
    }
 
 .. include:: simplelife.rst
