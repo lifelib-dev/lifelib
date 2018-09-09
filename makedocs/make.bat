@@ -26,6 +26,11 @@ if errorlevel 9009 (
 	exit /b 1
 )
 
+REM Update and copy jupyter notebooks for building as static pages
+if "%1" == "html" (
+	python procnb.py
+)
+
 %SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS%
 if "%1" == "clean" goto remove_dirs
 goto end

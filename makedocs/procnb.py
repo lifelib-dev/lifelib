@@ -2,6 +2,7 @@ import os
 import re
 import nbformat
 
+# Update and copy Jupyter notebooks to be built as static pages by nbsphinx
 
 def adjust_notebook(file):
     nb = nbformat.read(file, as_version=nbformat.NO_CONVERT)
