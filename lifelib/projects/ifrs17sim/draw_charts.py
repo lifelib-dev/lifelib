@@ -5,12 +5,66 @@
 Draw a graph of CSM amortization pattern.
 """
 
-import collections
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set()
+
+
+def _get_est(inner, item, t0, t_max):
+    """Get estimated values for ``item`` (nan for t < t0)."""
+    cells = inner[t0].cells[item]
+    return [cells[t] if t >= t0 else np.nan
+            for t in range(t_max)]
+
+
+def _get_act(outer, item, t0, t_max):
+    """Get actual values for ``item`` (nan for t > t0)."""
+    cells = outer.cells[item]
+    return [cells[t] if t <= t0 else np.nan
+            for t in range(t_max)]
+
+
+def _get_actest(outer, inner, item, t0_max, t_max):
+    """Get a pair of actual and estimated values at t0."""
+    return (_get_act(outer, item, t0_max, t_max),
+            _get_est(inner, item, t0_max, t_max))
+
+
+def _draw_single_ncf(values, ax, xlim, ls):
+    """Draw a plotted line of values."""
+    ax.plot(values, marker='o', linestyle=ls)
+    ax.set_xlim(right=xlim, left=-1)
+
+
+def draw_actest(outer, inner, item, act_len, t_max):
+    """Draw a graph of actual and estimated"""
+
+    _, axs = plt.subplots(nrows=act_len, sharex=True, sharey=True)
+
+    axs[0].set_title(item)
+
+    for t0 in range(act_len):
+        ax = axs[t0]
+        act, est = _get_actest(outer, inner, item, t0, t_max + 1)
+        _draw_single_ncf(est, ax, t_max, ':')
+        _draw_single_ncf(act, ax, t_max, '-')
+
+
+def draw_actest_pairs(outer, inner, items, act_len, t_max):
+    """Draw pairs of line graphs."""
+    ncols = len(items)
+    nrows = act_len
+
+    _, axs = plt.subplots(nrows=nrows, ncols=ncols, sharex=True)
+
+    for col, item in enumerate(items):
+        axs[0][col].set_title(items[col])
+        for t0 in range(nrows):
+            ax = axs[t0][col]
+            act, est = _get_actest(outer, inner, item, t0, t_max + 1)
+            _draw_single_ncf(est, ax, t_max, ':')
+            _draw_single_ncf(act, ax, t_max, '-')
 
 
 def draw_waterfall(df, ax=None, **kwargs):
@@ -147,26 +201,3 @@ def draw_stackedbarpairs(data, ax=None, **kwargs):
 
     if 'title' in kwargs:
         ax.set_title(kwargs['title'])
-
-if __name__ == '__main__':
-    from lifelib.projects.ifrs17sim import ifrs17sim
-
-    model = ifrs17sim.build(True)
-    proj = model.OuterProj[1]
-    liab = [proj.InnerProj[t].pv_NetLiabilityCashflow[t] for t in
-            range(10)]
-
-    proj.CSM_Unfloored(15)
-    data = collections.OrderedDict()
-
-    for cells in ['CSM_Unfloored',
-                  'IntAccrCSM',
-                  'AdjCSM_FlufCF',
-                  'TransServices']:
-        data[cells] = [proj.cells[cells](t) for t in range(15)]
-
-    df = pd.DataFrame(data)
-    df['TransServices'] = -1 * df['TransServices']
-
-    draw_waterfall(df)
-    plt.show()

@@ -20,6 +20,7 @@ common_files = [('build_input.py', [simplepath, nestedpath, ifrs17simpath]),
                 ('economic.py', [simplepath, nestedpath, ifrs17simpath]),
                 ('projection.py', [simplepath, nestedpath, ifrs17simpath]),
                 ('present_value.py', [simplepath, nestedpath, ifrs17simpath]),
+                ('draw_charts.py', [nestedpath, ifrs17simpath]),
                 ('input.xlsm', [simplepath, nestedpath, ifrs17simpath])]
 
 
