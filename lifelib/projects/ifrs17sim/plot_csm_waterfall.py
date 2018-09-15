@@ -16,23 +16,23 @@ The live version of the notebook is available online.
 
 """
 import matplotlib.pyplot as plt
-from draw_charts import draw_waterfall
+from draw_charts import draw_waterfall, get_waterfalldata
 
 try:
     import ifrs17sim.ifrs17sim as ifrs17sim
 except ImportError:
     import ifrs17sim
 
-model = ifrs17sim.build()
+model = ifrs17sim.build(True)
 proj = model.OuterProj[1]
 
-csmrf = proj.cells['CSM_Unfloored',
-                   'IntAccrCSM',
-                   'AdjCSM_FlufCF',
-                   'TransServices'].to_frame(range(15))
-
-csmrf['TransServices'] = -1 * csmrf['TransServices']
+csmrf = get_waterfalldata(
+        proj,
+        items=['CSM_Unfloored',
+               'IntAccrCSM',
+               'AdjCSM_FlufCF',
+               'TransServices'],
+        length=15,
+        reverseitems=['TransServices'])
 
 draw_waterfall(csmrf)
-plt.show()
-

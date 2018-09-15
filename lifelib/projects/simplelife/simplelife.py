@@ -45,8 +45,7 @@ def build(load_saved=False):
 
     def lifetable_params(Sex, IntRate, TableID):
         refs={'MortalityTable': Input.MortalityTables(TableID).MortalityTable}
-        return {'bases': _self,
-                'refs': refs}
+        return {'refs': refs}
 
     lifetable = model.import_module(
         module_='lifetable',
@@ -72,8 +71,7 @@ def build(load_saved=False):
                  'n': refs['PolicyTerm']}
 
         refs.update(alias)
-        return {'bases': _self,
-                'refs': refs}
+        return {'refs': refs}
 
     policy = model.import_module(
         module_='policy',
@@ -96,8 +94,7 @@ def build(load_saved=False):
                  'polt': refs['pol'].PolicyType,
                  'gen': refs['pol'].Gen}
         refs.update(alias)
-        return {'bases': _self,
-                'refs': refs}
+        return {'refs': refs}
 
     asmp = model.import_module(
         module_='assumption',
@@ -112,8 +109,7 @@ def build(load_saved=False):
 
     def econ_params(ScenID):
         refs = {'Scenario': Input.Scenarios[ScenID]}
-        return {'bases': _self,
-                'refs': refs}
+        return {'refs': refs}
 
     economic = model.import_module(
         module_='economic',
@@ -127,7 +123,7 @@ def build(load_saved=False):
 
     projbase = model.import_module(
         module_='projection',
-        name='ProjBase')
+        name='BaseProj')
 
     pvmixin = model.import_module(
         module_='present_value',
@@ -142,8 +138,7 @@ def build(load_saved=False):
                 'asmp': Assumption[PolicyID],
                 'scen': Economic[ScenID],
                 'DiscRate': Economic[ScenID].DiscRate}
-        return {'bases': _self,
-                'refs': refs}
+        return {'refs': refs}
 
     proj = model.new_space(
         name='Projection',

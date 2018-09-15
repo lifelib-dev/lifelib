@@ -10,6 +10,30 @@ and the created model is available as ``model`` global variable.
 import os
 import modelx as mx
 
+# %% Code block for defining override formulas.
+
+def SurrRateMult(t):
+    """Surrender rate multiple (Default: 1)"""
+    if t == 0:
+        return 1
+    else:
+        return SurrRateMult(t - 1)
+
+def PolsSurr(t):
+    """Number of policies: Surrender"""    
+    return PolsIF_Beg1(t) * asmp.SurrRate(t) * SurrRateMult(t)
+
+
+def PolsIF_End_inner(t):
+    """Number of policies: End of period"""
+    if t == t0:
+        return outer.PolsIF_End(t)
+    else:
+        return PolsIF_Beg1(t - 1) - PolsDeath(t - 1) - PolsSurr(t - 1)
+
+
+# %% Code block for build function
+
 def build(load_saved=False):
     """Build a model and return it.
 
@@ -46,8 +70,7 @@ def build(load_saved=False):
 
     def lifetable_params(Sex, IntRate, TableID):
         refs={'MortalityTable': Input.MortalityTables(TableID).MortalityTable}
-        return {'bases': _self,
-                'refs': refs}
+        return {'refs': refs}
 
     lifetable = model.import_module(
         module_='lifetable',
@@ -73,8 +96,7 @@ def build(load_saved=False):
                  'n': refs['PolicyTerm']}
 
         refs.update(alias)
-        return {'bases': _self,
-                'refs': refs}
+        return {'refs': refs}
 
     policy = model.import_module(
         module_='policy',
@@ -97,8 +119,7 @@ def build(load_saved=False):
                  'polt': refs['pol'].PolicyType,
                  'gen': refs['pol'].Gen}
         refs.update(alias)
-        return {'bases': _self,
-                'refs': refs}
+        return {'refs': refs}
 
     asmp = model.import_module(
         module_='assumption',
@@ -113,8 +134,7 @@ def build(load_saved=False):
 
     def econ_params(ScenID):
         refs = {'Scenario': Input.Scenarios[ScenID]}
-        return {'bases': _self,
-                'refs': refs}
+        return {'refs': refs}
 
     economic = model.import_module(
         module_='economic',
@@ -129,9 +149,9 @@ def build(load_saved=False):
     # Model tree structure
     # 
     # lifelib --+
-    #           +--BaseProjection
-    #           +--OuterProj[PolicyID] <--- BaseProjection
-    #                    +--InnerProj[t] <-- BaseProjection
+    #           +--BaseProj
+    #           +--OuterProj[PolicyID] <--- BaseProj
+    #                    +--InnerProj[t] <-- BaseProj
 
     proj_refs = {'Pol': policy,
                  'Asmp': asmp,
@@ -141,16 +161,15 @@ def build(load_saved=False):
         refs = {'pol': Pol[PolicyID],
                 'asmp': Asmp[PolicyID],
                 'scen': Scen[ScenID]}
-        return {'bases': _self,
-                'refs': refs}
+        return {'refs': refs}
 
     pvmixin = model.import_module(
         module_='present_value',
-        name='PV_Mixin')
+        name='PresentValue')
 
     baseproj = model.import_module(
         module_='projection',
-        name='BaseProjection',
+        name='BaseProj',
         bases=pvmixin)
 
 
@@ -167,13 +186,17 @@ def build(load_saved=False):
                 'outer': _self.parent,
                 'DiscRate': _self.parent.scen.DiscRate}
         
-        return {'bases': _self,
-                'refs': refs}
+        return {'refs': refs}
 
     innerproj = outerproj.new_space(
         bases=baseproj,
         name='InnerProj',
         formula=innerproj_params)
+
+    # Add or override functions.
+    baseproj.new_cells(formula=SurrRateMult)
+    baseproj.PolsSurr.set_formula(PolsSurr)
+    innerproj.PolsIF_End.set_formula(PolsIF_End_inner)
 
     return model
 
