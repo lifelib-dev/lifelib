@@ -17,7 +17,7 @@ The live version of the notebook is available online.
 
 """
 import matplotlib.pyplot as plt
-from draw_charts import draw_waterfall
+from draw_charts import draw_waterfall, get_waterfalldata
 
 try:
     import ifrs17sim.ifrs17sim as ifrs17sim
@@ -29,52 +29,59 @@ proj = model.OuterProj[1]
 
 # %% CSM Amortization
 
-csmrf = proj.cells['CSM_Unfloored',
+csmrf = get_waterfalldata(
+            proj, 
+            items=['CSM_Unfloored',
                    'IntAccrCSM',
                    'AdjCSM_FlufCF',
-                   'TransServices'].to_frame(range(3))
-
-csmrf['TransServices'] = -1 * csmrf['TransServices']
+                   'TransServices'],
+            length=3,
+            reverseitems=['TransServices'])
 
 draw_waterfall(csmrf, title='CSM Amortization')
 
 # %% Expected Cashflow Rollforwad
 
-estcf = proj.cells['PV_FutureCF',
+estcf = get_waterfalldata(
+            proj,
+            items=['PV_FutureCF',
                    'EstPremIncome',
                    'EstIntOnCF',
                    'EstAcqCashflow',
                    'EstClaim',
-                   'EstExps'].to_frame(range(3))
-
-estcf['EstPremIncome'] = -1 * estcf['EstPremIncome'] 
+                   'EstExps'],
+            length=3,
+            reverseitems=['EstPremIncome'])
 
 draw_waterfall(estcf, title='Expected Cashflows')
     
 # %% Actual Cashflow Rollforward
     
-actcf = proj.cells['AccumCF',
+actcf = get_waterfalldata(
+            proj,
+            items=['AccumCF',
                    'PremIncome',
                    'IntAccumCF',
                    'ExpsAcqTotal',
                    'BenefitTotal',
-                   'ExpsMaintTotal'].to_frame(range(3))
-
-for outflow in ['ExpsAcqTotal',
-                'BenefitTotal',
-                'ExpsMaintTotal']:
-    actcf[outflow] = -1 * actcf[outflow]
+                   'ExpsMaintTotal'],
+            length=3,
+            reverseitems=['ExpsAcqTotal',
+                       'BenefitTotal',
+                       'ExpsMaintTotal'])
 
 draw_waterfall(actcf, title='Actual Cashflows')
 
 # %% IFRS17 Financial Performance
 
-ifrspl = proj.cells['NetBalance',
-                    'InsurRevenue',
-                    'InsurServiceExps',
-                    'InsurFinIncomeExps'].to_frame(range(5))
-
-ifrspl['InsurServiceExps'] = -1 * ifrspl['InsurServiceExps']
+ifrspl = get_waterfalldata(
+            proj,
+            items=['NetBalance',
+                   'InsurRevenue',
+                   'InsurServiceExps',
+                   'InsurFinIncomeExps'],
+            length=5,
+            reverseitems=['InsurServiceExps'])
 
 draw_waterfall(ifrspl, title='IFRS17 Profit/Loss')
 
