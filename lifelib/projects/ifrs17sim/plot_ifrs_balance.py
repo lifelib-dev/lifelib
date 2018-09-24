@@ -4,8 +4,6 @@
 
 Fulfilment CF, CSM, Cash balances
 """
-import matplotlib.pyplot as plt
-import modelx as mx
 
 # When the current directory is this folder,
 # The try-except statement below can be replaced by just the last two
@@ -32,4 +30,3 @@ ifrsbs['Cash'] = -1 * ifrsbs['Cash']
 draw_charts.draw_stackedbarpairs(ifrsbs,
                                  title='Fulfilment CF and CSM')
 
-plt.show()
