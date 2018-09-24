@@ -1,3 +1,6 @@
+
+.. _naming_convention:
+
 Naming Convention
 =================
 

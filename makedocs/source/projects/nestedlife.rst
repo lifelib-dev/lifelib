@@ -1,5 +1,7 @@
 .. module:: nestedlife
 
+.. _project_nestedlife:
+
 Project **nestedlife**
 ======================
 

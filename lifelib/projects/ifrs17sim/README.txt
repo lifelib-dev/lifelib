@@ -1,10 +1,8 @@
 
+.. _ifrs17sim_examples:
 
 :mod:`ifrs17sim` Examples
 -------------------------
-
-
-.. _ifrs17sim_examples:
 
 
 * *Run CSM waterfall sample now!*  |binder ifrs17sim_csm_waterfall|

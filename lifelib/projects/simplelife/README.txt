@@ -1,10 +1,8 @@
 
+.. _simplelife_examples:
 
 :mod:`simplelife` Examples
 --------------------------
-
-
-.. _simplelife_examples:
 
 *Run simplelife cashflow sample now!* |binder simplelife_demo|
 

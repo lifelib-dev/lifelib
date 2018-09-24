@@ -1,5 +1,7 @@
 .. module:: simplelife
 
+.. _project_simplelife:
+
 Project **simplelife**
 ======================
 

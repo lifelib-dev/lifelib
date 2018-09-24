@@ -8,32 +8,56 @@
 **lifelib**: Actuarial models in Python
 =======================================
 
+.. raw:: html
+
+   <div class="lead">
+
+An open-source library of life actuarial models written in Python.
+You can run the models right out of the box,
+customize them in any way you want, or create your own models from scratch.
+
+.. raw:: html
+
+   </div>
 
 .. raw:: html
 
    <!-- Modified from https://github.com/mwaskom/seaborn/blob/master/doc/index.rst -->
 
     <div style="clear: both"></div>
-    <div class="container-fluid">
-      <!-- div class="row" -->
-        <a href="projects/simplelife.html">
-            <img src="_images/LiabilityCashflow.png">
+    <div class="container-fluid hidden-xs">
+      <div class="row">
+        <a href="generated_examples/index.html">
+          <div class="col-sm-3 thumbnail">
+            <img src="_images/thumb1.png">
+          </div>
         </a>
-      <!-- /div -->
+        <a href="generated_examples/index.html">
+          <div class="col-sm-3 thumbnail">
+            <img src="_images/thumb2.png">
+          </div>
+        </a>
+        <a href="generated_examples/index.html">
+          <div class="col-sm-3 thumbnail">
+            <img src="_images/thumb3.png">
+          </div>
+        </a>
+        <a href="generated_examples/index.html">
+          <div class="col-sm-3 thumbnail">
+            <img src="_images/thumb4.png">
+          </div>
+        </a>
+      </div>
     </div>
-    <br>
 
+.. 1st row: Updates & Quick Start ---------------------------------
 
-What is **lifelib**?
---------------------
+.. raw:: html
 
-**lifelib** is a library of open-source life actuarial models written in Python.
-You can run the models right out of the box,
-customize them in any way you want, or create your own models from scratch.
-
-
-Latest Updates
---------------
+   <div class="container-fluid">
+     <div class="row">
+       <div class="col-md-6">
+          <h2>Last Updates</h2>
 
 .. include:: updates.rst
    :start-after: Latest Updates Begin
@@ -41,9 +65,67 @@ Latest Updates
 
 :doc:`... See more updates<updates>`
 
+.. raw:: html
 
-Feature highlights
-------------------
+       </div>
+       <div class="col-md-6">
+          <h2>Quick Start</h2>
+
+* :ref:`installation`
+* :ref:`first_project`
+
+.. raw:: html
+
+       </div>
+     </div>
+   </div>
+
+.. 2nd row, Projects & Gallery & Notebooks ---------------------------------
+
+.. raw:: html
+
+   <div class="container-fluid">
+     <div class="row">
+       <div class="col-md-4">
+          <h2>Projects</h2>
+
+* :ref:`project_simplelife`
+* :ref:`project_nestedlife`
+* :ref:`project_ifrs17sim`
+* :ref:`naming_convention`
+
+.. raw:: html
+
+       </div>
+       <div class="col-md-4">
+          <h2>Gallery</h2>
+
+* :ref:`simplelife_examples`
+* :ref:`nestedlife_examples`
+* :ref:`ifrs17sim_examples`
+
+.. raw:: html
+
+       </div>
+       <div class="col-md-4">
+          <h2>Jupyter Notebooks</h2>
+
+* :ref:`notebooks_ifrs17sim`
+
+.. raw:: html
+
+       </div>
+     </div>
+   </div>
+
+.. 3rd row, Features & Why & What for ---------------------------------
+
+.. raw:: html
+
+   <div class="container-fluid">
+     <div class="row">
+       <div class="col-md-4">
+          <h2>Feature highlights</h2>
 
 * Readable formulas
 * Multidimensional data structure
@@ -55,9 +137,46 @@ Feature highlights
 * Version control
 * Documentation integration
 
+.. raw:: html
 
-How **lifelib** works
----------------------
+       </div>
+       <div class="col-md-4">
+          <h2>Why <strong>lifelib</strong>?</h2>
+
+- Better model integrity and extensibility
+- For readable formula expressions
+- For eliminating spreadsheet errors
+- For better version control/model governance
+
+.. raw:: html
+
+       </div>
+       <div class="col-md-4">
+          <h2>What for?</h2>
+
+- For research/educational projects
+- As communication tools to convey model specifications
+- Model validation / testing
+- Prototyping for production models
+- Pricing / Profit testing
+- As corporate models
+- For simulations
+- As replacement for any spreadsheet models
+
+.. raw:: html
+
+       </div>
+     </div>
+   </div>
+
+.. 4th row, How it works & questions ---------------------------------
+
+.. raw:: html
+
+   <div class="container-fluid">
+     <div class="row">
+       <div class="col-md-6">
+          <h2>How <strong>lifelib</strong> works</h2>
 
 You can create an actuarial projection model as `modelx`_ `Model`_ object by:
 
@@ -88,29 +207,12 @@ Start from :doc:`quickstart` page.
 .. _Space: http://docs.modelx.io/en/latest/reference/generated/modelx.core.space.Space.html
 .. _Cells: http://docs.modelx.io/en/latest/reference/generated/modelx.core.cells.Cells.html
 
+.. raw:: html
 
-Why **lifelib**?
-----------------
+       </div>
+       <div class="col-md-6">
+          <h2>Got questions?</h2>
 
-- Better model integrity and extensibility
-- For readable formula expressions
-- For eliminating spreadsheet errors
-- For better version control/model governance
-
-What for?
----------
-
-- For research/educational projects
-- As communication tools to convey model specifications
-- Model validation / testing
-- Prototyping for production models
-- Pricing / Profit testing
-- As corporate models
-- For simulations
-- As replacement for any spreadsheet models
-
-Got questions?
---------------
 If you have troubles to shoot, questions to be answered,
 post them on `stackoverflow <https://stackoverflow.com/>`_
 and add ``lifelib`` tag to the posts.
@@ -120,10 +222,23 @@ submit issues on
 on github.
 Or, connect with
 `Fumito Hamamura <https://www.linkedin.com/in/fumito-hamamura>`_
-on Linkedin and send a message to him (May take about a week to respond).
+on Linkedin and send a message to him (He may take a while to respond).
 
-Links
------
+.. raw:: html
+
+       </div>
+     </div>
+   </div>
+
+
+.. last row, Links & Indexes & Archive ---------------------------------
+
+.. raw:: html
+
+   <div class="container-fluid">
+     <div class="row">
+       <div class="col-md-6">
+          <h2>Links</h2>
 
 * `modelx`_: A Python package for building complex models of
   formulas and data.
@@ -133,6 +248,35 @@ Links
 
 * `Development site <https://github.com/fumitoh/lifelib>`_: Github repository of lifelib.
 
+
+.. raw:: html
+
+       </div>
+       <div class="col-md-3">
+          <h2>Indexes</h2>
+
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+
+
+.. raw:: html
+
+       </div>
+       <div class="col-md-3">
+          <h2>Archive</h2>
+
+.. include:: archive.rst
+   :start-after: Past Docs Begin
+
+.. raw:: html
+
+       </div>
+     </div>
+   </div>
+
+
 .. toctree::
    :hidden:
    :maxdepth: 2
@@ -141,19 +285,4 @@ Links
    quickstart
    projects/index
    generated_examples/index
-
-
-
-Indexes
--------
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
-
-Archive
--------
-
-.. include:: archive.rst
-   :start-after: Past Docs Begin
+   notebooks

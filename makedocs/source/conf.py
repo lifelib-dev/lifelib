@@ -119,7 +119,7 @@ html_theme_options = {
     'bootstrap_version': "3",
 
     # Tab name for entire site. (Default: "Site")
-    'navbar_site_name': "Top Menu",
+    'navbar_site_name': "Menu",
 
     # A list of tuples containing pages or urls to link to.
     # Valid tuples should be in the following forms:
@@ -128,20 +128,20 @@ html_theme_options = {
     #    (name, "http://example.com", True) # arbitrary absolute url
     # Note the "1" or "True" value above as the third argument to indicate
     # an arbitrary url.
-    # 'navbar_links': [
-    #     # ("Quick Start", "quickstart"),
-    #     ("Projects", "projects/index"),
-    #     ("Gallery", "generated_examples/index")
-    # ],
+    'navbar_links': [
+        # ("Quick Start", "quickstart"),
+        ("Projects", "projects/index"),
+        ("Gallery", "generated_examples/index")
+    ],
 
     # Render the next and previous page links in navbar. (Default: true)
-    'navbar_sidebarrel': True,
+    'navbar_sidebarrel': False,
 
     # Render the current pages TOC in the navbar. (Default: true)
     'navbar_pagenav': True,
 
     # Tab name for the current pages TOC. (Default: "Page")
-    'navbar_pagenav_name': "This Page",
+    'navbar_pagenav_name': "Contents",
 
     # Global TOC depth for "site" navbar tab. (Default: 1)
     # Switching to -1 shows all levels.
@@ -181,7 +181,8 @@ html_last_updated_fmt = '%b %d, %Y'
 
 # Custom sidebar templates, maps document names to template names.
 #html_sidebars = {}
-html_sidebars = {'*': ['globaltoc_sidebar.html'],
+html_sidebars = {'index': None,
+                 '*': ['globaltoc_sidebar.html'],
                  'projects/**': ['globaltoc_sidebar.html'],
                  'generated_examples/**': None}
 

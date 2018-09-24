@@ -4,6 +4,9 @@ Updates
 
 .. Latest Updates Begin
 
+* *24 September 2018:*
+  The landing page is updated.
+
 * *5 August 2018:*
   lifelib v0.0.9 is released. See :ref:`releases` for details.
 

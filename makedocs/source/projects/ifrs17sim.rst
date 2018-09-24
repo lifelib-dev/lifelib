@@ -1,5 +1,7 @@
 .. module:: ifrs17sim
 
+.. _project_ifrs17sim:
+
 Project **ifrs17sim**
 =====================
 

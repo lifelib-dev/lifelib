@@ -1,8 +1,9 @@
 
+.. _nestedlife_examples:
 
 :mod:`nestedlife` Examples
 --------------------------
 
 
-.. _nestedlife_examples:
+
 

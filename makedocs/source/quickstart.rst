@@ -1,3 +1,6 @@
+
+.. _quick_start:
+
 Quick Start
 ===========
 
@@ -20,6 +23,8 @@ such as
 
 This guide assumes users are on Windows platform, but lifelib runs on Linux,
 and probably on Mac as well although it's not tested.
+
+.. _installation:
 
 Installation
 ------------
@@ -148,13 +153,15 @@ in `Anaconda`_, so no need to install them separately.
 .. _modelx repository: https://github.com/fumitoh/modelx
 .. _editable mode: https://pip.pypa.io/en/stable/reference/pip_install/#editable-installs
 
-.. _create-a-project:
+.. _first_project:
 
 First Project
 -------------
 
 Now that you have installed all the programs and packages needed, Let's
 start using lifelib.
+
+.. _create-a-project:
 
 Create a Project
 ^^^^^^^^^^^^^^^^

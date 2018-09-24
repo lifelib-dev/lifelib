@@ -3,7 +3,9 @@ Project Templates
 
 
 .. toctree::
-   naming_convention
+   :maxdepth: 3
+
    simplelife
    nestedlife
    ifrs17sim
+   naming_convention
