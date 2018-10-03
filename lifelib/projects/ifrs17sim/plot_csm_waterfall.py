@@ -15,7 +15,6 @@ The live version of the notebook is available online.
    :end-before: End binder ifrs17sim_csm_waterfall
 
 """
-import matplotlib.pyplot as plt
 from draw_charts import draw_waterfall, get_waterfalldata
 
 try:

@@ -337,9 +337,9 @@ def NetInsurCF(t):
         
 def IntAccumCF(t):
     """Intrest on accumulated cashflows"""
-    return (NetInsurCF(t)
+    return (AccumCF(t)
             + PremIncome(t)
-            - BenefitTotal(t)) * scen.DiscRate(t)
+            - ExpsTotal(t)) * scen.DiscRate(t)
 
 def AccumCF(t):
     """Accumulated cashflows"""

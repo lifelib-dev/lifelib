@@ -59,29 +59,29 @@ draw_waterfall(estcf, title='Expected Cashflows')
     
 actcf = get_waterfalldata(
             proj,
-            items=['AccumCF',
-                   'PremIncome',
+            items=['PremIncome',
                    'IntAccumCF',
                    'ExpsAcqTotal',
                    'BenefitTotal',
-                   'ExpsMaintTotal'],
+                   'ExpsMaintTotal',
+                   'ActualNetCF'],
             length=3,
             reverseitems=['ExpsAcqTotal',
-                       'BenefitTotal',
-                       'ExpsMaintTotal'])
+                          'BenefitTotal',
+                          'ExpsMaintTotal'])
 
-draw_waterfall(actcf, title='Actual Cashflows')
+draw_waterfall(actcf, stocks=[0, 5], title='Actual Cashflows')
 
 # %% IFRS17 Financial Performance
 
 ifrspl = get_waterfalldata(
             proj,
-            items=['NetBalance',
-                   'InsurRevenue',
+            items=['InsurRevenue',
                    'InsurServiceExps',
-                   'InsurFinIncomeExps'],
+                   'InsurFinIncomeExps',
+                   'ProfitBefTax'],
             length=5,
             reverseitems=['InsurServiceExps'])
 
-draw_waterfall(ifrspl, title='IFRS17 Profit/Loss')
+draw_waterfall(ifrspl, stocks=[0, 3], title='IFRS17 Profit/Loss')
 
