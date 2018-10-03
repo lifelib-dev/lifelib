@@ -6,6 +6,13 @@ contract service margin (CSM) defined in IFRS17.
 This module is a mix-in module to projection module in nestedlife project.
 """
 
+def AccumCF(t):
+    """Accumulated cashflows"""
+    return -NetInsurAssets(t)
+
+def ActualNetCF(t):
+    """Acutal net cashflow"""
+    return NetInsurCF(t) + IntAccumCF(t)
 
 #%% The statement of Financial Posisition
 
@@ -124,6 +131,10 @@ def PV_SumCovUnits(t, t_rate):
 
 #%% The statement of Financial Performance
     
+def ProfitBefTax(t):
+    """IFRS Profit before tax"""
+    return InsServiceResult(t) + InsurFinIncomeExps(t)
+
 def InsServiceResult(t):
     """Insurance Service Result (80(a), 83-86)"""  
     return InsurRevenue(t) - InsurServiceExps(t)

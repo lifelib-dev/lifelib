@@ -4,6 +4,12 @@ Updates
 
 .. Latest Updates Begin
 
+* *3 October 2018:*
+  Update :doc:`projects/ifrs17sim` to pay out profits each period.
+
+* *3 October 2018:*
+  Fix miscalculation in :func:`~ifrs17sim.projection.IntAccumCF` in :mod:`~ifrs17sim.projection`.
+
 * *24 September 2018:*
   The landing page is updated.
 
