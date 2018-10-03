@@ -57,6 +57,9 @@ def draw_actest_pairs(outer, inner, items, act_len, t_max):
     ncols = len(items)
     nrows = act_len
 
+    if ncols == 1:
+        return draw_actest(outer, inner, items[0], act_len, t_max)
+
     _, axs = plt.subplots(nrows=nrows, ncols=ncols, sharex=True)
 
     for col, item in enumerate(items):
@@ -78,15 +81,33 @@ def get_waterfalldata(space, items, length, reverseitems=[]):
     return data
 
 
-def draw_waterfall(df, ax=None, **kwargs):
-    """Draw waterfall chart"""
+def draw_waterfall(df, ax=None, stocks=[0], **kwargs):
+    """Draw waterfall chart
+
+    `stocks` parameter is for specifying column indexes of `df` that are to
+    be interpreted as stock items as opposed to flow items,
+    i.e. bars for these columns are drawn from zero.
+    """
 
     if ax is None:
         plt.figure()
         ax = plt.gca()
 
+    cols = len(df.columns)
+    cumsum = df.copy()
+    bottom = df.copy()
+    bottom.iloc[:,:] = 0
+
+    for c in range(cols):
+        if (c + 1) % cols in stocks:
+            cumsum.iloc[:, list(range(c + 1))] = 0
+            bottom.iloc[:, c] = 0
+        else:
+            bottom.iloc[:, c] = cumsum.cumsum(axis=1).iloc[:, c]
+
     data = df.stack()
-    bottom = df.cumsum(axis=1).shift(1, axis=1).fillna(0).stack()
+    bottom = bottom.stack().shift(1, axis=0).fillna(0)
+
     palette = WaterfallColorPalette(df)
     xlabel = [idx[1] + '(' + str(idx[0]) + ')' for idx in df.stack().index]
     ax = sns.barplot(data=data, bottom=bottom,
