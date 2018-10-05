@@ -278,4 +278,4 @@ blockdiag_html_image_format = 'SVG'
 # Hide download note and buttons from gallery pages.
 # https://github.com/ryan-roemer/sphinx-bootstrap-theme
 def setup(app):
-    app.add_stylesheet("hide-downloads.css")
+    app.add_stylesheet("custom-style.css")
