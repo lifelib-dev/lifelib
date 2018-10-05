@@ -64,6 +64,8 @@ The diagram below shows the spaces contained in a simplelife model.
 Note that the subspaces under Input space are not drawn in the diagram,
 as they are quite a few. For details on the Input subspaces, see :py:mod:`simplelife.build_input` page.
 
+**Composition Structure**
+
 .. blockdiag::
 
    blockdiag {
@@ -71,14 +73,8 @@ as they are quite a few. For details on the Input subspaces, see :py:mod:`simple
      default_linecolor="#628E47";
      node_width=150;
      simplelife [shape=roundedbox, linecolor="#7B99C5", color="#D4E8FC", width=96]
-     PresentValue [style=dotted];
-     simplelife <- PresentValue;
      Proj [label="Projection[PolicyID]", stacked];
-     PresentValue <- Proj [folded, hstyle=generalization]
      simplelife <- Proj [hstyle=composition];
-     Proj -> BaseProj [folded, hstyle=generalization]
-     BaseProj [style=dotted];
-     simplelife <- BaseProj [hstyle=composition, style=dotted];
      Econ[label="Economic[ScenID]", stacked];
      simplelife <- Econ[hstyle=composition];
      Assumption [label="Assumption[PolicyID]", stacked];
@@ -91,6 +87,20 @@ as they are quite a few. For details on the Input subspaces, see :py:mod:`simple
      "various..." [stacked, width=96];
      Input <- "various..."[hstyle=composition];
    }
+
+**Inheritance Structure**
+
+.. blockdiag::
+
+   blockdiag {
+     default_node_color="#D5E8D4";
+     default_linecolor="#628E47";
+     BaseProj[style=dotted]
+     BaseProj <- OuterProj [hstyle=generalization]
+     PresentValue[style=dotted]
+     PresentValue <- OuterProj [hstyle=generalization];
+   }
+
 
 .. Begin diagram how-to
 
@@ -135,14 +145,11 @@ in Space B.
      default_node_color="#D5E8D4";
      default_linecolor="#628E47";
      node_width=70;
-     model[shape=roundedbox, linecolor="#7B99C5", color="#D4E8FC"]
-     A[style=dotted];
-     model<- A;
-     A <- B[folded, hstyle=generalization]
-     model<- B[hstyle=composition];
+     A[style=dotted]
+     A <- B[hstyle=generalization]
    }
 
-The Space B above is drawn as a dotted rectangular to indicate that the space acts
+The Space A above is drawn as a dotted rectangular to indicate that the space acts
 solely as a base space of others, and it's not meant to be directly accessed
 by the user.
 

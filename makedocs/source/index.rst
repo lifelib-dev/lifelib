@@ -57,7 +57,7 @@ customize them in any way you want, or create your own models from scratch.
    <div class="container-fluid">
      <div class="row">
        <div class="col-md-6">
-          <h2>Last Updates</h2>
+          <h2><a href="whatsnew.html">Last Updates</a></h2>
 
 .. include:: updates.rst
    :start-after: Latest Updates Begin
@@ -69,7 +69,7 @@ customize them in any way you want, or create your own models from scratch.
 
        </div>
        <div class="col-md-6">
-          <h2>Quick Start</h2>
+          <h2><a href="quickstart.html">Quick Start</a></h2>
 
 * :ref:`installation`
 * :ref:`first_project`
@@ -87,7 +87,7 @@ customize them in any way you want, or create your own models from scratch.
    <div class="container-fluid">
      <div class="row">
        <div class="col-md-4">
-          <h2>Projects</h2>
+          <h2><a href="projects/index.html">Projects</a></h2>
 
 * :ref:`project_simplelife`
 * :ref:`project_nestedlife`
@@ -98,7 +98,7 @@ customize them in any way you want, or create your own models from scratch.
 
        </div>
        <div class="col-md-4">
-          <h2>Gallery</h2>
+          <h2><a href="generated_examples/index.html">Gallery</a></h2>
 
 * :ref:`simplelife_examples`
 * :ref:`nestedlife_examples`
@@ -108,7 +108,7 @@ customize them in any way you want, or create your own models from scratch.
 
        </div>
        <div class="col-md-4">
-          <h2>Jupyter Notebooks</h2>
+          <h2><a href="notebooks.html">Jupyter Notebooks</a></h2>
 
 * :ref:`notebooks_ifrs17sim`
 

@@ -68,7 +68,9 @@ model, so refer to :mod:`simplelife` for more details about those sapces.
    blockdiag {
      default_node_color="#D5E8D4";
      default_linecolor="#628E47";
+     PresentValue[style=dotted]
      PresentValue <- BaseProj [folded, hstyle=generalization];
+     BaseProj[style=dotted]
      BaseProj <- OuterProj [hstyle=generalization]
      BaseProj <- InnerProj [hstyle=generalization]
    }
