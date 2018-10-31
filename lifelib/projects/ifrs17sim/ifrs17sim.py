@@ -9,7 +9,7 @@ and the created model is available as ``model`` global variable.
 import os
 import modelx as mx
 
-# %% Code block for defining override formulas.
+# %% Code block for overriding lapse logic.
 
 def SurrRateMult(t):
     """Surrender rate multiple (Default: 1)"""
@@ -29,6 +29,40 @@ def PolsIF_End_inner(t):
         return outer.PolsIF_End(t)
     else:
         return PolsIF_Beg1(t - 1) - PolsDeath(t - 1) - PolsSurr(t - 1)
+
+# %% Code block for overriding discounting logic.
+
+def IntAccumCF_outer(t):
+    """Intrest on accumulated cashflows"""
+    return (AccumCF(t)
+            + PremIncome(t)
+            - ExpsTotal(t)) * DiscRate(t, 0)
+
+
+def IntAccumCF_inner(t):
+    """Intrest on accumulated cashflows"""
+    return (AccumCF(t)
+            + PremIncome(t)
+            - ExpsTotal(t)) * DiscRate(t)
+
+
+def DiscRateAdj(t):
+    """Adjustment to the outer discount rates"""
+    if t == 0:
+        return 0
+    else:
+        return DiscRateAdj(t - 1)
+
+    
+def DiscRate_outer(t, dur):
+    """Discount rates for the outer projection"""
+    return scen.DiscRate(dur) + DiscRateAdj(t)
+
+
+def DiscRate_inner(t):
+    """Discount rates for the inner projection"""
+    return outer.DiscRate(t0, t)
+    
     
 # %% Code block for build function
 
@@ -205,7 +239,7 @@ def build(load_saved=False):
                 'ExpsAcq': _self.parent.ExpsAcq,
                 'ExpsMaint': _self.parent.ExpsMaint,
                 'ExpsTotal': _self.parent.ExpsTotal,
-                'DiscRate': _self.parent.scen.DiscRate}
+                'DiscRate': _self.parent.parent[t_rate].DiscRate}
         
         return {'refs': refs}
         
@@ -214,6 +248,11 @@ def build(load_saved=False):
     # Add or override functions.
     baseproj.new_cells(formula=SurrRateMult)
     baseproj.PolsSurr.set_formula(PolsSurr)
+    outerproj.IntAccumCF.set_formula(IntAccumCF_outer)
+    outerproj.new_cells(name='DiscRate', formula=DiscRate_outer)
+    outerproj.new_cells(formula=DiscRateAdj)
+    innerproj.new_cells(name='DiscRate', formula=DiscRate_inner)
+    innerproj.IntAccumCF.set_formula(IntAccumCF_inner)
     innerproj.PolsIF_End.set_formula(PolsIF_End_inner)
     
     return model
