@@ -61,7 +61,7 @@ def CSM_Unfloored(t):
         
 def IntAccrCSM(t):
     """Interest accreted on CSM (44(b))"""
-    return CSM_Unfloored(t) * InnerProj(0).scen.DiscRate(t)
+    return CSM_Unfloored(t) * DiscRate(t, 0)
 
 
 def AdjCSM_FlufCF(t):
