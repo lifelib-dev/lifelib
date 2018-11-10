@@ -5,7 +5,7 @@
 The script draws multiple waterfall charts,
 each of which depict sources of changes in balances related to IFRS17.
 The script is broken down into pieces of code, and explained in a Jupyter notebook,
-:doc:`/projects/ifrs17sim_ifrs_waterfall`.
+:doc:`/projects/ifrs17sim_charts_baseline`.
 
 The live version of the notebook is available online.
 
