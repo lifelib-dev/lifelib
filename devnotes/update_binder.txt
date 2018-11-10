@@ -1,0 +1,15 @@
+Updating binder branch
+
+The binder branch is for binder to lauch notebooks from.
+
+When to update binder branch:
+    - When notebooks in the master branch are updated.
+
+Steps to update binder branch (https://stackoverflow.com/questions/18115411/how-to-merge-specific-files-from-git-branches):
+
+* Switch to binder branch
+* Overwrite updated files form master branch, for examples
+
+    > git checkout master projects
+
+* Run makedocs/generate_mxfiles.py to update mx files.
