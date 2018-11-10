@@ -34,7 +34,7 @@ def adjust_notebook(file):
 
 thisdir = os.path.abspath(os.path.dirname(__file__))
 for notebook in ('ifrs17sim_csm_waterfall.ipynb',
-                 'ifrs17sim_ifrs_waterfall.ipynb'):
+                 'ifrs17sim_charts_baseline.ipynb'):
     os.chdir(thisdir + '/../lifelib/projects/ifrs17sim')
     nb = adjust_notebook(notebook)
     os.chdir(thisdir + '/source/projects')
