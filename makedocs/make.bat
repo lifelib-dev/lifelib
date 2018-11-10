@@ -32,6 +32,13 @@ if "%1" == "html" (
 )
 
 %SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS%
+
+REM Copy image files that are not referenced in rst.
+if "%1" == "html" (
+	copy %SOURCEDIR%\images\thumb*.png %BUILDDIR%\html\_images /Y
+)
+
+
 if "%1" == "clean" goto remove_dirs
 goto end
 
