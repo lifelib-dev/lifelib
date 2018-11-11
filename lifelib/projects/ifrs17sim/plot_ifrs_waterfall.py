@@ -9,11 +9,11 @@ The script is broken down into pieces of code, and explained in a Jupyter notebo
 
 The live version of the notebook is available online.
 
-*Launch this notebook online!* |binder ifrs17sim_ifrs_waterfall|
+*Launch this notebook online!* |binder ifrs17sim_charts_baseline|
 
 .. include:: /binderlinks.rst
-   :start-after: Begin binder ifrs17sim_ifrs_waterfall
-   :end-before: End binder ifrs17sim_ifrs_waterfall
+   :start-after: Begin binder ifrs17sim_charts_baseline
+   :end-before: End binder ifrs17sim_charts_baseline
 
 """
 import matplotlib.pyplot as plt

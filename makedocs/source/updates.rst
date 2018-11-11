@@ -4,6 +4,9 @@ Updates
 
 .. Latest Updates Begin
 
+* *11 November 2018:*
+  New notebook :doc:`IFRS17 Simulation (Lapse scenario) </notebooks>` is added.
+
 * *3 October 2018:*
   Update :doc:`projects/ifrs17sim` to pay out profits each period.
 
@@ -66,12 +69,9 @@ Updates
 
 
 .. include:: /binderlinks.rst
-   :start-after: Begin binder simplelife_demo
-   :end-before: End binder simplelife_demo
+   :start-after: Begin binder banner
+   :end-before: End binder banner
 
-.. include:: /binderlinks.rst
-   :start-after: Begin binder ifrs17sim_csm_waterfall
-   :end-before: End binder ifrs17sim_csm_waterfall
 
 
 

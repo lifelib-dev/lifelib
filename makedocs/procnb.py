@@ -4,6 +4,10 @@ import nbformat
 
 # Update and copy Jupyter notebooks to be built as static pages by nbsphinx
 
+notebooks = ['ifrs17sim_csm_waterfall.ipynb',
+             'ifrs17sim_charts_baseline.ipynb',
+             'ifrs17sim_charts_lapsescen.ipynb']
+
 def adjust_notebook(file):
     nb = nbformat.read(file, as_version=nbformat.NO_CONVERT)
 
@@ -33,8 +37,8 @@ def adjust_notebook(file):
     return nb
 
 thisdir = os.path.abspath(os.path.dirname(__file__))
-for notebook in ('ifrs17sim_csm_waterfall.ipynb',
-                 'ifrs17sim_charts_baseline.ipynb'):
+
+for notebook in notebooks:
     os.chdir(thisdir + '/../lifelib/projects/ifrs17sim')
     nb = adjust_notebook(notebook)
     os.chdir(thisdir + '/source/projects')

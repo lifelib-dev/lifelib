@@ -80,16 +80,18 @@ thanks to Binder.
 *Launch this sample now!*
 
 * CSM waterfalls |binder ifrs17sim_csm_waterfall|
-* IFRS waterfalls |binder ifrs17sim_ifrs_waterfall|
+* IFRS17 Simulation (Baseline) |binder ifrs17sim_charts_baseline|
+* IFRS17 Simulation (Lapse Scenario) |binder ifrs17sim_charts_lapsescen|
 
 .. include:: /binderlinks.rst
-   :start-after: Begin binder ifrs17sim_csm_waterfall
-   :end-before: End binder ifrs17sim_ifrs_waterfall
+   :start-after: Begin binder banner
+   :end-before: End binder banner
 
 .. toctree::
 
    ifrs17sim_csm_waterfall.ipynb
    ifrs17sim_charts_baseline.ipynb
+   ifrs17sim_charts_lapsescen.ipynb
 
 
 Project Modules
