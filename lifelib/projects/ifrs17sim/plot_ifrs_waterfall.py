@@ -5,15 +5,15 @@
 The script draws multiple waterfall charts,
 each of which depict sources of changes in balances related to IFRS17.
 The script is broken down into pieces of code, and explained in a Jupyter notebook,
-:doc:`/projects/ifrs17sim_ifrs_waterfall`.
+:doc:`/projects/ifrs17sim_charts_baseline`.
 
 The live version of the notebook is available online.
 
-*Launch this notebook online!* |binder ifrs17sim_ifrs_waterfall|
+*Launch this notebook online!* |binder ifrs17sim_charts_baseline|
 
 .. include:: /binderlinks.rst
-   :start-after: Begin binder ifrs17sim_ifrs_waterfall
-   :end-before: End binder ifrs17sim_ifrs_waterfall
+   :start-after: Begin binder ifrs17sim_charts_baseline
+   :end-before: End binder ifrs17sim_charts_baseline
 
 """
 import matplotlib.pyplot as plt

@@ -11,12 +11,25 @@ import modelx as mx
 
 # %% Code block for overriding lapse logic.
 
-def SurrRateMult(t):
-    """Surrender rate multiple (Default: 1)"""
+def SurrRateMult_outer(t):
+    """Surrender rate multiple for the outer projection (Default: 1)"""
     if t == 0:
         return 1
     else:
         return SurrRateMult(t - 1)
+
+
+def SurrRateMult_inner(t):
+    """Surrender rate multiple for the inner projection (Default: 1)"""
+    if t == 0:
+        return outer.SurrRateMult(t)
+
+    elif t == t0:
+        return _space.parent(t - 1).SurrRateMult(t - 1)
+
+    else:
+        return SurrRateMult(t - 1)
+
 
 def PolsSurr(t):
     """Number of policies: Surrender"""    
@@ -246,12 +259,13 @@ def build(load_saved=False):
     pvs.set_formula(pvs_params)
     
     # Add or override functions.
-    baseproj.new_cells(formula=SurrRateMult)
+    baseproj.new_cells(name='SurrRateMult', formula=SurrRateMult_outer)
     baseproj.PolsSurr.set_formula(PolsSurr)
     outerproj.IntAccumCF.set_formula(IntAccumCF_outer)
     outerproj.new_cells(name='DiscRate', formula=DiscRate_outer)
     outerproj.new_cells(formula=DiscRateAdj)
     innerproj.new_cells(name='DiscRate', formula=DiscRate_inner)
+    innerproj.SurrRateMult.set_formula(SurrRateMult_inner)
     innerproj.IntAccumCF.set_formula(IntAccumCF_inner)
     innerproj.PolsIF_End.set_formula(PolsIF_End_inner)
     
