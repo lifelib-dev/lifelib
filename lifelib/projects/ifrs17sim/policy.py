@@ -182,10 +182,10 @@ def NetPremRate(basis):
     comf = LifeTable[Sex, IntRate(basis), TableID(basis)]
 
     if Product == 'TERM' or Product == 'WL':
-        return (comf.Axn(x, n) + gamma2 * comf.AnnDuenx(x, n - m, 1, m)) / comf.AnnDuenx(x, n)
+        return (comf.Axn(x, n) + gamma2 * comf.AnnDuenx(x, n-m, 1, m)) / comf.AnnDuenx(x, n)
 
     elif Product == 'ENDW':
-        return (comf.Axn(x, n) + gamma2 * comf.AnnDuenx(x, n - m, 1, m)) / comf.AnnDuenx(x, n)
+        return (comf.Axn(x, n) + gamma2 * comf.AnnDuenx(x, n-m, 1, m)) / comf.AnnDuenx(x, n)
 
     else:
         raise ValueError('invalid product')
@@ -204,18 +204,18 @@ def GrossPremRate():
 
     if Product == 'TERM' or Product == 'WL':
         return (comf.Axn(x, n) + alpha + gamma * comf.AnnDuenx(x, n, PremFreq)
-                + gamma2 * comf.AnnDuenx(x, n - m, 1, m)) / (1 - beta - delta) / PremFreq / comf.AnnDuenx(x, m, PremFreq)
+                + gamma2 * comf.AnnDuenx(x, n-m, 1, m)) / (1-beta-delta) / PremFreq / comf.AnnDuenx(x, m, PremFreq)
 
     elif Product == 'ENDW':
         return (comf.Exn(x, n) + comf.Axn(x, n) + alpha + gamma * comf.AnnDuenx(x, n, PremFreq)
-                + gamma2 * comf.AnnDuenx(x, n - m, 1, m)) / (1 - beta - delta) / PremFreq / comf.AnnDuenx(x, m, PremFreq)
+                + gamma2 * comf.AnnDuenx(x, n-m, 1, m)) / (1-beta-delta) / PremFreq / comf.AnnDuenx(x, m, PremFreq)
     else:
         raise ValueError('invalid product')
 
 
 def AnnPremRate():
     """Annualized Premium Rate per Sum Assured"""
-    return GrossPremRate * (1 / 10 if PremFreq == 0 else PremFreq)
+    return GrossPremRate * (1/10 if PremFreq == 0 else PremFreq)
 
 
 def GrossPremTable():
@@ -230,10 +230,10 @@ def ReserveNLP_Rate(basis, t):
     lt = LifeTable[Sex, IntRate(basis), TableID(basis)]
 
     if t <= m:
-        return lt.Axn(x + t, n - t) + gamma2 * lt.AnnDuenx(x + t, n - m, 1, m - t) \
-                - NetPremRate(basis) * lt.AnnDuenx(x + t, m - t)
+        return lt.Axn(x+t, n-t) + gamma2 * lt.AnnDuenx(x+t, n-m, 1, m-t) \
+                - NetPremRate(basis) * lt.AnnDuenx(x+t, m-t)
     else:
-        return lt.Axn(x + t, n - t) + gamma2 * lt.AnnDuenx(x + t, n - m, 1, m - t)
+        return lt.Axn(x+t, n-t) + gamma2 * lt.AnnDuenx(x+t, n-m, 1, m-t)
 
 
 def ReserveRate():

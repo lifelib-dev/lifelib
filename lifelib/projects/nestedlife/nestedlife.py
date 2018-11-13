@@ -17,7 +17,7 @@ def SurrRateMult(t):
     if t == 0:
         return 1
     else:
-        return SurrRateMult(t - 1)
+        return SurrRateMult(t-1)
 
 def PolsSurr(t):
     """Number of policies: Surrender"""    
@@ -29,7 +29,7 @@ def PolsIF_End_inner(t):
     if t == t0:
         return outer.PolsIF_End(t)
     else:
-        return PolsIF_Beg1(t - 1) - PolsDeath(t - 1) - PolsSurr(t - 1)
+        return PolsIF_Beg1(t-1) - PolsDeath(t-1) - PolsSurr(t-1)
 
 
 # %% Code block for build function

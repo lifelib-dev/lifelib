@@ -99,7 +99,7 @@ def MortFactor(y):
     result = asmp_tbl.cells[table](y)
 
     if result is None:
-        return MortFactor(y - 1)
+        return MortFactor(y-1)
     else:
         return result
 
@@ -114,7 +114,7 @@ def SurrRate(y):
     result =  asmp_tbl.cells[table](y)
 
     if result is None:
-        return SurrRate(y - 1)
+        return SurrRate(y-1)
     else:
         return result
 
