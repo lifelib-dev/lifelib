@@ -4,25 +4,18 @@
 Quick Start
 ===========
 
-This is Quick Start guide walk you through steps from setting up a
-Python environment for lifelib to running a sample model.
-In this guide, you will see how to:
+Running Online
+--------------
 
-* Prepare Python environment for lifelib,
-* Install lifelib,
-* Create your project using a command,
-* Build a model by running a script in the project
-
-lifelib models are built in the form of `modelx`_ objects.
-Refer to `modelx`_ documentation when you have
-questions about `modelx`_ as you proceed with this tutorial.
-
-To learn Python itself, there are many good tutorials out there on the web,
-such as
-`the one on Python's official web site <https://docs.python.org/3/tutorial/>`_.
-
-This guide assumes users are on Windows platform, but lifelib runs on Linux,
-and probably on Mac as well although it's not tested.
+Jupyter Notebook enables you to run Python code in your browser.
+lifelib comes with some Jupyter notebooks, and the quickest way
+to try lifelib is to run the notebooks online.
+Go to :doc:`notebooks` page and click one of the banner links.
+The link will take you to a web page where the selected notebook starts loading.
+Once the notebook loads, select **Cell** menu,
+and then select **Run All** to run & build models and get results and draw graphs.
+To run the notebooks locally on your computer,
+refer to `running-notebooks`_ section.
 
 .. _installation:
 
@@ -32,25 +25,30 @@ Installation
 Set up Python Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You need to set up a Python environment to use lifelib.
-Downlowd and install `Anaconda distribution`_.
-You must install Python 3.x version,
-not Python 2.7 version. lifelib does not work with Python 2.7.
-If you already have `Anaconda`_ installed, make sure the Python version is
-3.6 or newer.
+To run lifelib models locally on your PC,
+you need to have a Python environment.
+This guide assumes users are on Windows platform,
+but lifelib runs on both Windows and Linux,
+and probably on Mac as well although it's not tested on Mac.
+
+If you don't have Python environment set up on your computer,
+downlowd and install `Anaconda distribution`_.
 `Anaconda`_ is a bundle of Python, its major packages and IDEs including
 packages required or optionally used by for lifelib,
-such as `openpyxl`_, `pandas`_, `Spyder`_, and provides a Python environment
+such as `openpyxl`_, `Pandas`_, `Spyder`_, and provides a Python environment
 out-of-the-box, just by installing it with few clicks.
+
+lifelib requires Python 3.6 or newer.
+If you already have `Anaconda`_ installed, make sure the Python version is
+3.6 or newer. lifelib does not work with Python 2.7.
 
 Microsoft Excel is not required. You would only need Excel or its alternatives
 if you want to edit input data files.
 
-
 .. _modelx: http://docs.modelx.io
 .. _openpyxl: https://openpyxl.readthedocs.io
-.. _pandas: http://pandas.pydata.org/
-.. _Spyder: https://pythonhosted.org/spyder/
+.. _Pandas: http://pandas.pydata.org/
+.. _Spyder: https://www.spyder-ide.org/
 .. _Anaconda: https://www.anaconda.com/
 .. _Anaconda distribution: https://www.anaconda.com/download/
 
@@ -59,63 +57,7 @@ if you want to edit input data files.
   Although we assume we use  `Anaconda`_ and `Spyder`_ in this guide,
   you should be completely fine with using lifelib with
   other distributions or IDEs, as long as all the relevant
-  packages are properly installed and configured.
-
-
-Configure Spyder
-^^^^^^^^^^^^^^^^
-
-There are 2 Spyder settings that you want to consider changinig from their
-default values.
-Note that you need to restart Spyder to biring your changes into effect.
-
-**Disable User Module Reloader**
-
-From the Spyder menu, select *Tools->Preferences* to bring up Preferences window.
-Choose *Python interpreter* in the left pane, and you'll find an area titled
-*User Module Rloader (UMR)* on the bottom right side of the Preferences window.
-Uncheck *Enable UMR* option to disable User Module Reloader. This prevents
-Spyder from reloading modelx module every time you re-run the same script
-from *Run* menu.
-Reloading modelx module creates multiple instances of modelx systems within
-the same Python process,
-causing models created before and after a reload to reside in different
-modelx systems.
-
-.. figure:: /images/PreferencesUMR.png
-   :scale: 50%
-
-   User Module Reloader setting
-
-
-**Graphic Backend**
-
-By defult, *Graphic Backend* option is set to *Inline*. This option affects
-where graphs are placed, and how modelx GUI widgets behaves.
-
-If *Graphic Backend* is set to *Inline*, graphs are embedded in the IPython
-console as an output. If it is set to *Automatic*, graphs are drawn
-in separate windows, which pop up upon calling plot methods on matplotlib objects.
-
-If *Graphic Backend* is set to *Inline*, ``show_tree`` function shows
-the model tree, blocking the IPython interpreter until you close
-the tree window.
-If it is set to *Automatic*, ``show_tree`` does not work,
-and you need to use ``get_tree`` instead::
-
-    tree = get_tree(model)
-    tree.show()
-
-The tree window does not block the interpreter.
-
-To change *Graphic Backend* option, go to *Tools->Preferences*, and on the
-left side of the Preferences window, select *IPython console* then
-*Graphics* tab on the right pane.
-
-.. figure:: /images/PreferencesGraphicsBackend.png
-   :scale: 50%
-
-   Graphics Backend setting
+  packages are installed and configured.
 
 
 Install lifelib
@@ -136,7 +78,7 @@ When you update your existing installation to the newest release, use ``-U`` opt
 
     > pip install -U lifelib
 
-The command also installs `modelx`_ the package lifelib depends on.
+The command also installs `modelx`_ package, because lifelib depends on it.
 All the other required or optionally used packages are included
 in `Anaconda`_, so no need to install them separately.
 
@@ -153,22 +95,14 @@ in `Anaconda`_, so no need to install them separately.
 .. _modelx repository: https://github.com/fumitoh/modelx
 .. _editable mode: https://pip.pypa.io/en/stable/reference/pip_install/#editable-installs
 
-.. _first_project:
-
-First Project
--------------
-
-Now that you have installed all the programs and packages needed, Let's
-start using lifelib.
-
 .. _create-a-project:
 
-Create a Project
-^^^^^^^^^^^^^^^^
+Creating a Project
+------------------
 
-First, you create your own project folder.
-A lifelib project is a folder containing source files and data
-to build a model.
+lifelib is essentially a collections of folders called projects, containing
+source and data files to build models. You use lifelib by copying
+a project from lifelib package to your own path.
 
 A command ``lifelib-create`` helps you create a new project folder
 by copying a template project from within the lifelib package to your desired
@@ -189,165 +123,40 @@ you can get away with `--template` option like this::
 Check that the folder is created and populated with files
 copied from lifelib's default project.
 
-Build a Model
-^^^^^^^^^^^^^
+.. _running-notebooks:
 
-Building a model is a process to construct a Model object in a live
-Python session from script and source files in your project folder.
+Running Notebooks
+-----------------
 
-By default, you have a project module in your project folder, which has
-the same name as the project name, such as
-:mod:`simplelife.py <simplelife.simplelife>`.
-To build a model, import the project module into a Python session and
-call ``build`` function in the module. Let's see how this can be
-done in `Spyder`_.
+Jupyter notebooks on :doc:`notebooks` page are also included in lifelib
+projects, and can be executed on your local computer by running
+Jupyter Notebook locally.
+For example, if you create a project folder named ``myifrs17sim`` from
+the project template :py:mod:`ifrs17sim<ifrs17sim>`,
+you can go to the folder by ``cd`` command and launch Jupyter Notebook::
 
-Go to Windows menu, launch `Spyder`_ inside *Anaconda3* menu.
+    > cd myifrs17sim
 
-.. figure:: /images/SpyderMenu.png
+    > jupyter notebook
 
-You'll find *File explorer* in the upper right pane of the main Spyder window.
-Bring it up and navigate to your project folder. By doing so, the working
-directory(folder) of the IPython console in the bottom right pane is
-set to the project folder. Then, Type::
+The command above opens a new tab in your web browser,
+and Jupyter Notebook session starts in the tab.
 
-  >>> import simplelife
-  >>> model = simplelife.build()
+.. figure:: /images/notebook/myifrs17sim-files.png
 
-Instead of directly typing the code in the console,
-you can create a Python script in your project folder,
-write the code in the script using *Editor* pane on the left side of the window,
-and *Run* it by clicking the green play button in the tool bar.
-The script is executed in the console on the bottom right side.
+files with ``ipynb`` extension are Jupyter notebooks. By double-clicking one,
+it opens in another tab, and you'll see the same page as you see it online.
 
-During the build, messages appear as the input file is read in. The next time
-you build the model, you can pass ``True`` as ``load_saved`` parameter
-of the build function to save loading time::
+Using Spyder
+------------
+`Spyder`_ is a popular scientific Python IDE,
+and it's bundled in with `Anaconda`_ by default.
+**Spyder plugin for modelx** adds widgets to Spyder,
+letting users to
+develop models with modelx more intuitively in Spyder.
+Go on to :doc:`spyder` page for more details.
 
-  >>> model = simplelife.build(load_saved=True)
+.. toctree::
+   :maxdepth: 2
 
-Show Model Tree
-^^^^^^^^^^^^^^^
-
-Let's see if the model is built by showing a model tree.
-By typing in the following code in the console, another window opens.
-
-  >>> import modelx as mx
-  >>> tree = mx.get_tree()
-  >>> tree.show()
-
-.. figure:: /images/simplelife_tree.png
-   :width: 50%
-
-The leftmost *Objects* column lists child spaces of the model we have just built.
-Click on one of the spaces, for example :py:mod:`Input<simplelife.build_input>`,
-to open it and see what are inside in the space.
-
-.. figure:: /images/simplelife_tree_input.png
-   :width: 50%
-
-The *Objects* column now also shows the child spaces and cells of the
-:py:mod:`Input<simplelife.build_input>` space.
-
-
-Run Projection
-^^^^^^^^^^^^^^
-
-By default, :py:mod:`simplelife<simplelife>` model is set up for you to
-carry out projections and store results by policy under
-:py:mod:`Projection<simplelife.projection>`. The attributes of the
-sample policies are defined on *PolicyData* tab in *Input.xlsm*.
-
-To calculate net liability cashflow of the Policy 1 from time 0 to 15::
-
-   >> proj = model.Projection[1]
-   >> result = [proj.NetInsurCF[t] for t in range(16)]
-
-The first line of the above creates ``Projection[1]`` space under
-``Projection`` for the Policy 1, and assign a shorter name to it for
-convenience.
-The second line calculate net liability cashflow of the Policy 1 for
-15 years (from time=0 to 15) and store the results in a list ``result``.
-To see the values, type ``result``::
-
-   >> result
-   [-2090.721539115584,
-    1593.887335778444,
-    1403.8230981682598,
-    1247.2761938300212,
-    1113.2288348112097,
-    1106.8034770880981,
-    979.7641693356699,
-    857.345650426334,
-    745.0110777520256,
-    649.2535254400561,
-    567.927885159707,
-    496.5241286816653,
-    431.8978250326952,
-    371.9666103072977,
-    317.486904907175,
-    0.0]
-
-Let's see the Projection space for the Policy 1 in the model tree::
-
-  >>> tree = mx.get_tree()
-  >>> tree.show()
-
-.. figure:: /images/simplelife_tree_proj.png
-   :width: 50%
-
-You can see under *Dynamic Spaces* under Projection space, a space
-for policy No. 1 (PolicyID=1, ScenID=1) is created.
-
-
-Output to Pandas objects
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-By calculating ``NetInsurCF`` cells,
-other cells that the ``NetInsurCF`` directly or indirectly
-refers to are also calculated.
-To get the values of all cells in a space, access ``frame`` property of the
-space, which returns the values of all the child cells as
-`Pandas`_ DataFrame object::
-
-   >> df = proj.frame
-
-`Pandas`_ is a widely-used data analysis library for Python that provides
-feature rich data types for data manipulation, such as *DataFrame*.
-
-To see the contents of ``df`` the DataFrame object we have just created,
-bring up *Variable explorer* tab on the top right side of the *Spyder* window,
-then click on ``df`` row.
-
-.. figure:: /images/simplelife_df.png
-
-.. _Pandas: http://pandas.pydata.org/
-
-There are many Pandas tutorials and books out there for you to learn
-how to slice and dice the data as you like.
-
-Run Sample Scripts
-^^^^^^^^^^^^^^^^^^
-
-By default, the project folder also contains sample scripts. Files whose
-names start with ``plot_`` are the sample scripts that are on
-:doc:`generated_examples/index` pages.
-
-Let's run a sample script to draw a graph of liability cashflows.
-
-In `Spyder`_, open ``plot_simplelife.py`` file
-in the project folder, from *File* menu or from *File explorer*
-and *Run* it. The grpah below shows up in another window.
-
-.. figure:: /images/LiabilityCashflow.png
-
-After execution of the script, the session will move to
-interactive mode. The session is available in an IPython console
-in `Spyder`_ for you to interface with the created model.
-
-The :py:mod:`Projection <simplelife.projection>` space becomes available as
-a global variable ``proj`` in the Python console::
-
-    >>> proj
-    <Space Projection[171, 1] in lifelib>
-
+   spyder

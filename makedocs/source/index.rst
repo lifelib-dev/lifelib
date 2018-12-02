@@ -72,7 +72,9 @@ customize them in any way you want, or create your own models from scratch.
           <h2><a href="quickstart.html">Quick Start</a></h2>
 
 * :ref:`installation`
-* :ref:`first_project`
+* :ref:`create-a-project`
+* :ref:`running-notebooks`
+* :doc:`spyder`
 
 .. raw:: html
 

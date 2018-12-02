@@ -4,6 +4,14 @@ Updates
 
 .. Latest Updates Begin
 
+* *2 December 2018:*
+  New :doc:`spyder` sub page is added in :doc:`quickstart`.
+
+* *2 December 2018:*
+  modelx v0.0.17 and spyder-modelx v0.0.6 is released.
+  See `modelx documentation <http://docs.modelx.io/en/latest/index.html>`_
+  for more details.
+
 * *11 November 2018:*
   New notebook :doc:`IFRS17 Simulation (Lapse scenario) </notebooks>` is added.
 
