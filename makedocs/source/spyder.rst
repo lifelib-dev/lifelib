@@ -173,7 +173,7 @@ To see the values, type ``result``::
     317.486904907175,
     0.0]
 
-Let's see the Projection space for the Policy 1 in the model tree::
+A dynamic space for the Policy 1 appears in the model tree:
 
 .. figure:: /images/spyder/MxExplorerSimpleLifeDynamicSpace.png
 
