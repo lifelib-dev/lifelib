@@ -67,9 +67,6 @@ model, so refer to :mod:`simplelife` for more details about those spaces.
      BaseProj <- InnerProj [folded, hstyle=generalization]
    }
 
-.. include:: simplelife.rst
-   :start-after: Begin diagram how-to
-   :end-before: End diagram how-to
 
 Jupyter Notebooks
 -----------------

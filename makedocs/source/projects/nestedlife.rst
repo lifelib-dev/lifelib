@@ -75,9 +75,6 @@ model, so refer to :mod:`simplelife` for more details about those sapces.
      BaseProj <- InnerProj [hstyle=generalization]
    }
 
-.. include:: simplelife.rst
-   :start-after: Begin diagram how-to
-   :end-before: End diagram how-to
 
 Project Modules
 ---------------

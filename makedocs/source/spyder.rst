@@ -45,6 +45,10 @@ on modelx documentation site.
 .. _Spyder: https://www.spyder-ide.org/
 .. _Spyder plugin: https://docs.modelx.io/en/latest/spyder.html
 
+.. contents:: Contents
+   :depth: 1
+   :local:
+
 Configure Spyder
 ----------------
 

@@ -73,7 +73,7 @@ v0.0.9 (5 August 2018)
 v0.0.8 (17 June 2018)
 ---------------------
 
-- :doc:`/projects/naming_convention` is introduced, and most source
+- :doc:`/projects/devguide/naming_convention` is introduced, and most source
   functions and some space and modules are renamed to be consistent
   with the naming convention and to improve readability.
 

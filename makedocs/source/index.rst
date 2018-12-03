@@ -94,7 +94,7 @@ customize them in any way you want, or create your own models from scratch.
 * :ref:`project_simplelife`
 * :ref:`project_nestedlife`
 * :ref:`project_ifrs17sim`
-* :ref:`naming_convention`
+* :doc:`projects/devguide/index`
 
 .. raw:: html
 
