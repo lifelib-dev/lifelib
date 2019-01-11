@@ -1,5 +1,5 @@
-Using Spyder
-============
+Using Spyder plugin
+===================
 
 .. figure:: /images/spyder/MxPluginImage.png
 
@@ -58,18 +58,24 @@ Note that you need to restart Spyder to bring your changes into effect.
 
 **Disable User Module Reloader**
 
-From the Spyder menu, select *Tools->Preferences* to bring up Preferences window.
-Choose *Python interpreter* in the left pane, and you'll find an area titled
-*User Module Rloader (UMR)* on the bottom right side of the Preferences window.
-Uncheck *Enable UMR* option to disable User Module Reloader. This prevents
-Spyder from reloading modelx module every time you re-run the same script
-from *Run* menu.
 Reloading modelx module creates multiple instances of modelx systems within
 the same Python process,
 causing models created before and after a reload to reside in different
-modelx systems.
+modelx systems. To prevent this, you need to change *User Module Reloader (UMR)*
+setting.
 
-.. figure:: /images/PreferencesUMR.png
+From the Spyder menu, select *Tools->Preferences* to bring up Preferences window.
+Choose *Python interpreter* in the left pane, and you'll find an area titled
+*User Module Reloader (UMR)* on the bottom right side of the Preferences window.
+Leave *Enable UMR* option checked,
+click *Set UMR excluded(not reloaded) modules* and then UMR dialog box pops up
+as the figure blow.
+Enter "modelx" in the dialog box. This prevents
+Spyder from reloading the modelx module every time you re-run the same script
+from *Run* menu, while allowing other modules to be reloaded.
+
+
+.. figure:: /images/spyder/PreferencesUMR.png
 
    User Module Reloader setting
 
@@ -87,7 +93,7 @@ To change *Graphic Backend* option, go to *Tools->Preferences*, and on the
 left side of the Preferences window, select *IPython console* then
 *Graphics* tab on the right pane.
 
-.. figure:: /images/PreferencesGraphicsBackend.png
+.. figure:: /images/spyder/PreferencesGraphicsBackend.png
 
    Graphics Backend setting
 

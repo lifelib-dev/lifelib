@@ -147,8 +147,8 @@ and Jupyter Notebook session starts in the tab.
 files with ``ipynb`` extension are Jupyter notebooks. By double-clicking one,
 it opens in another tab, and you'll see the same page as you see it online.
 
-Using Spyder
-------------
+Using Spyder plugin
+-------------------
 `Spyder`_ is a popular scientific Python IDE,
 and it's bundled in with `Anaconda`_ by default.
 **Spyder plugin for modelx** adds widgets to Spyder,
