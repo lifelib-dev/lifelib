@@ -1,38 +1,15 @@
-"""The main module to build a simplelife model.
+"""The main module to build a solvency2 model.
 
 This module contains only one function :py:func:`build`,
 which creates a model from source modules and return it.
 
-If this module is run as a script, the :py:func:`build` function is called
-and the created model is available as ``model`` global variable.
+If this module is run as a script, the :py:func:`build`
+function is called and the created model is available as
+``model`` global variable.
 """
-
 import os
 import modelx as mx
 
-# %% Code block for defining override formulas.
-
-def SurrRateMult(t):
-    """Surrender rate multiple (Default: 1)"""
-    if t == 0:
-        return 1
-    else:
-        return SurrRateMult(t-1)
-
-def PolsSurr(t):
-    """Number of policies: Surrender"""    
-    return PolsIF_Beg1(t) * asmp.SurrRate(t) * SurrRateMult(t)
-
-
-def PolsIF_End_inner(t):
-    """Number of policies: End of period"""
-    if t == t0:
-        return outer.PolsIF_End(t)
-    else:
-        return PolsIF_Beg1(t-1) - PolsDeath(t-1) - PolsSurr(t-1)
-
-
-# %% Code block for build function
 
 def build(load_saved=False):
     """Build a model and return it.
@@ -41,9 +18,9 @@ def build(load_saved=False):
     subspace and cells and populate them with the data.
 
     Args:
-        load_saved: If ``True``, input data is read from `nestedlife.mx` file
+        load_saved: If ``True``, input data is read from `solvency2.mx` file
             instead of `input.xlsm`, which is saved when
-            :py:func:`build_input <simplelife.build_input.build_input>`
+            :py:func:`build_input <solvency2.build_input.build_input>`
             is executed last time. Defaults to ``False``
     """
 
@@ -54,14 +31,16 @@ def build(load_saved=False):
     # Build Input space
 
     from build_input import build_input
+    from build_input_scr import build_input_scr
 
     if load_saved:
-        model = mx.open_model('nestedlife.mx')
+        model = mx.open_model('solvency2.mx')
         input = model.Input
     else:
-        model = mx.new_model(name='nestedlife')
+        model = mx.new_model(name='solvency2')
         input = build_input(model, 'input.xlsm')
-        model.save('nestedlife.mx')
+        build_input_scr(input, 'input_scr.xlsx')
+        model.save('solvency2.mx')
 
     # ------------------------------------------------------------------------
     # Build CommFunc space
@@ -143,63 +122,93 @@ def build(load_saved=False):
         refs={'asmp': asmp,
               'Input': input})
 
+
+    # ------------------------------------------------------------------------
+    # Build SCR_life space
+    
+    def scrlife_params(t0, PolicyID, ScenID=1):
+        pass
+    
+    scr_life = model.import_module(
+        module_='scr_life',
+        name='SCR_life',
+        formula=scrlife_params,
+        refs={'Corr': input.CorrLife})
+
+
     # ------------------------------------------------------------------------
     # Build Projection space
-    
-    # Model tree structure
-    # 
-    # lifelib --+
-    #           +--BaseProj
-    #           +--OuterProj[PolicyID] <--- BaseProj
-    #                    +--InnerProj[t] <-- BaseProj
 
-    proj_refs = {'Pol': policy,
-                 'Asmp': asmp,
-                 'Scen': economic}
-
-    def proj_params(PolicyID, ScenID=1):
-        refs = {'pol': Pol[PolicyID],
-                'asmp': Asmp[PolicyID],
-                'scen': Scen[ScenID]}
-        return {'refs': refs}
+    projbase = model.import_module(
+        module_='projection',
+        name='BaseProj')
 
     pvmixin = model.import_module(
         module_='present_value',
-        name='PresentValue')
+        name='PV')
+    
+    override = model.new_space(name='Override')
+    
+    override.import_module(
+        module_='override.mortality',
+        name='Mortality')
+    
+    
+    override.import_module(
+        module_='override.lapse',
+        name='Lapse')
 
-    baseproj = model.import_module(
-        module_='projection',
-        name='BaseProj',
-        bases=pvmixin)
+    override.import_module(
+        module_='override.lapse_mass',
+        name='LapseMass')
+    
+    override.import_module(
+        module_='override.expense',
+        name='Expense')
+    
+
+    proj_refs = {'Policy': policy,
+                 'Assumption': asmp,
+                 'Economic': economic}
 
 
-    outerproj = model.new_space(
-        bases=baseproj,
-        name='OuterProj',
+    def proj_params(Risk='base', Shock=None, Scope=None):
+        
+        
+        if Risk == 'mort' or Risk == 'longev':
+            bases = [_space.model.Override.Mortality, _space]  
+        
+        elif Risk == 'lapse':
+            if Shock == 'mass':
+                bases = [_space.model.Override.LapseMass, _space]
+            else:
+                bases = [_space.model.Override.Lapse, _space]
+        elif Risk == 'exps':
+                bases = [_space.model.Override.Expense, _space]   
+        else:
+            bases = [_space]
+    
+        refs = {'pol': Policy[PolicyID],
+                'asmp': Assumption[PolicyID],
+                'scen': Economic[ScenID],
+                'DiscRate': Economic[ScenID].DiscRate,
+                'Factor': _space.model.Input.Factor}
+        
+        return {'bases':bases, 'refs': refs}
+
+
+    proj = scr_life.new_space(
+        name='Projection',
+        bases=[projbase, pvmixin],
         formula=proj_params,
         refs=proj_refs)
-
-    def innerproj_params(t0):
-        refs = {'pol': _self.parent.pol,
-                'asmp': _self.parent.asmp,
-                'scen': _self.parent.scen,
-                'outer': _self.parent,
-                'DiscRate': _self.parent.scen.DiscRate}
-        
-        return {'refs': refs}
-
-    innerproj = outerproj.new_space(
-        bases=baseproj,
-        name='InnerProj',
-        formula=innerproj_params)
-
-    # Add or override functions.
-    baseproj.new_cells(formula=SurrRateMult)
-    baseproj.PolsSurr.set_formula(PolsSurr)
-    innerproj.PolsIF_End.set_formula(PolsIF_End_inner)
 
     return model
 
 
 if __name__ == '__main__':
     model = build()
+
+
+
+

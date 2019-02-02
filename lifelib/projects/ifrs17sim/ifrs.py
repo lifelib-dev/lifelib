@@ -53,10 +53,10 @@ def CSM_Unfloored(t):
         return PV_FutureCF(t) - RiskAdjustment(t)
     else:
         # Subsequent recognition (44)
-        return (CSM_Unfloored(t - 1)
-                + IntAccrCSM(t - 1)
-                + AdjCSM_FlufCF(t - 1)
-                - TransServices(t - 1))
+        return (CSM_Unfloored(t-1)
+                + IntAccrCSM(t-1)
+                + AdjCSM_FlufCF(t-1)
+                - TransServices(t-1))
 
         
 def IntAccrCSM(t):

@@ -94,7 +94,7 @@ def SizeBenefitAccDth(t):
 def SizeBenefitSurr(t):
     """Surrender benefit per policy"""
     return SizeSumAssured(t) * (pol.CashValueRate(t)
-                                + pol.CashValueRate(t + 1)) / 2
+                                + pol.CashValueRate(t+1)) / 2
 
 def SizeBenefitAnn(t):
     """Annuity benefit per policy"""
@@ -207,7 +207,7 @@ def PolsIF_End(t):
     if t == 0:
         return 0 # pol.PolicyCount
     else:
-        return PolsIF_Beg1(t - 1) - PolsDeath(t - 1) - PolsSurr(t - 1)
+        return PolsIF_Beg1(t-1) - PolsDeath(t-1) - PolsSurr(t-1)
 
 def PolsMaturity(t):
     """Number of policies: Maturity"""
@@ -346,14 +346,14 @@ def AccumCF(t):
     if t == 0:
         return 0
     else:
-        return (AccumCF(t - 1)
-                + IntAccumCF(t - 1)
-                + NetInsurCF(t - 1))
+        return (AccumCF(t-1)
+                + IntAccumCF(t-1)
+                + NetInsurCF(t-1))
 
 
 def ChangeRsrv(t):
     """Change in reserve"""
-    return ReserveTotal_End(t + 1) - ReserveTotal_End(t)
+    return ReserveTotal_End(t+1) - ReserveTotal_End(t)
 
                         
 def ProfitBefTax(t):

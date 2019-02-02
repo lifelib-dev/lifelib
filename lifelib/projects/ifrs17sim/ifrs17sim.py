@@ -16,7 +16,7 @@ def SurrRateMult_outer(t):
     if t == 0:
         return 1
     else:
-        return SurrRateMult(t - 1)
+        return SurrRateMult(t-1)
 
 
 def SurrRateMult_inner(t):
@@ -25,10 +25,10 @@ def SurrRateMult_inner(t):
         return outer.SurrRateMult(t)
 
     elif t == t0:
-        return _space.parent(t - 1).SurrRateMult(t - 1)
+        return _space.parent(t-1).SurrRateMult(t-1)
 
     else:
-        return SurrRateMult(t - 1)
+        return SurrRateMult(t-1)
 
 
 def PolsSurr(t):
@@ -41,7 +41,7 @@ def PolsIF_End_inner(t):
     if t == t0:
         return outer.PolsIF_End(t)
     else:
-        return PolsIF_Beg1(t - 1) - PolsDeath(t - 1) - PolsSurr(t - 1)
+        return PolsIF_Beg1(t-1) - PolsDeath(t-1) - PolsSurr(t-1)
 
 # %% Code block for overriding discounting logic.
 
@@ -64,7 +64,7 @@ def DiscRateAdj(t):
     if t == 0:
         return 0
     else:
-        return DiscRateAdj(t - 1)
+        return DiscRateAdj(t-1)
 
     
 def DiscRate_outer(t, dur):
