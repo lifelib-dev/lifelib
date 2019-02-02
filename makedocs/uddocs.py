@@ -1,10 +1,9 @@
 import os.path as path
+from lifelib import TEMPLATES
 
 proj_dir = path.normpath(path.dirname(path.abspath(__file__)) + "\\..")
 
-projects = ['simplelife',
-            'nestedlife',
-            'ifrs17sim']
+projects = TEMPLATES
 
 def inplace_change(filename, oldstr, newstr):
     # Code taken from:

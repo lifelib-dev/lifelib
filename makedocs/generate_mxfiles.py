@@ -1,13 +1,15 @@
 import sys
 import os
+import importlib
 
 if sys.path[0] != '':
     sys.path.insert(0, '')
 
-from lifelib.projects.simplelife import simplelife
-from lifelib.projects.nestedlife import nestedlife
-from lifelib.projects.ifrs17sim import ifrs17sim
+from lifelib import TEMPLATES
 
-for module in [simplelife, nestedlife, ifrs17sim]:
+modules = [importlib.import_module('lifelib.projects.' + name + '.' + name)
+           for name in TEMPLATES]
+
+for module in modules:
     os.chdir(os.path.dirname(module.__file__))
     module.build()
