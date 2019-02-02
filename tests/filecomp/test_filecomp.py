@@ -8,20 +8,24 @@ import lifelib
 import lifelib.projects.simplelife as simplelife
 import lifelib.projects.nestedlife as nestedlife
 import lifelib.projects.ifrs17sim as ifrs17sim
+import lifelib.projects.solvency2 as solvency2
 
 simplepath = simplelife.__path__[0]
 nestedpath = nestedlife.__path__[0]
 ifrs17simpath = ifrs17sim.__path__[0]
+solvency2path = solvency2.__path__[0]
 
-common_files = [('build_input.py', [simplepath, nestedpath, ifrs17simpath]),
-                ('lifetable.py', [simplepath, nestedpath, ifrs17simpath]),
-                ('policy.py', [simplepath, nestedpath, ifrs17simpath]),
-                ('assumption.py', [simplepath, nestedpath, ifrs17simpath]),
-                ('economic.py', [simplepath, nestedpath, ifrs17simpath]),
-                ('projection.py', [simplepath, nestedpath, ifrs17simpath]),
-                ('present_value.py', [simplepath, nestedpath, ifrs17simpath]),
+all_projects = [simplepath, nestedpath, ifrs17simpath, solvency2path]
+
+common_files = [('build_input.py', all_projects),
+                ('lifetable.py', all_projects),
+                ('policy.py', all_projects),
+                ('assumption.py', all_projects),
+                ('economic.py', all_projects),
+                ('projection.py', all_projects),
+                ('present_value.py', all_projects),
                 ('draw_charts.py', [nestedpath, ifrs17simpath]),
-                ('input.xlsm', [simplepath, nestedpath, ifrs17simpath])]
+                ('input.xlsm', all_projects)]
 
 
 @pytest.mark.parametrize('filename, filepaths', common_files)

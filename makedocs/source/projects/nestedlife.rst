@@ -30,7 +30,8 @@ to adjust surrender rates.
 Model Structure
 ---------------
 
-**Composition Structure**
+Composition Structure
+^^^^^^^^^^^^^^^^^^^^^
 
 Spaces in the dotted yellow line have the same structure as :mod:`simplelife`
 model, so refer to :mod:`simplelife` for more details about those sapces.
@@ -61,7 +62,8 @@ model, so refer to :mod:`simplelife` for more details about those sapces.
      }
    }
 
-**Inheritance Structure**
+Inheritance Structure
+^^^^^^^^^^^^^^^^^^^^^
 
 .. blockdiag::
 

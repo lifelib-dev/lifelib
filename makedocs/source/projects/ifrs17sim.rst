@@ -19,10 +19,12 @@ Other files in this project are the same as those in :mod:`nestedlife`.
 Model Structure
 ---------------
 
+Composition Structure
+^^^^^^^^^^^^^^^^^^^^^
+
 Spaces in the dotted yellow line have the same structure as :mod:`simplelife`
 model, so refer to :mod:`simplelife` for more details about those spaces.
 
-**Composition Structure**
 
 .. blockdiag::
 
@@ -53,7 +55,8 @@ model, so refer to :mod:`simplelife` for more details about those spaces.
      }
    }
 
-**Inheritance Structure**
+Inheritance Structure
+^^^^^^^^^^^^^^^^^^^^^
 
 .. blockdiag::
 

@@ -94,6 +94,7 @@ customize them in any way you want, or create your own models from scratch.
 * :ref:`project_simplelife`
 * :ref:`project_nestedlife`
 * :ref:`project_ifrs17sim`
+* :ref:`project_solvency2`
 * :doc:`projects/devguide/index`
 
 .. raw:: html
@@ -105,6 +106,7 @@ customize them in any way you want, or create your own models from scratch.
 * :ref:`simplelife_examples`
 * :ref:`nestedlife_examples`
 * :ref:`ifrs17sim_examples`
+* :ref:`solvency2_examples`
 
 .. raw:: html
 

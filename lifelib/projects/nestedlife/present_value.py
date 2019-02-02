@@ -36,6 +36,22 @@ def PV_BenefitDeath(t):
         return (-BenefitDeath(t) + PV_BenefitDeath(t+1)) / (1 + DiscRate(t))
 
 
+def PV_BenefitMat(t):
+    """Present value of matuirty benefits"""
+    if t > last_t:
+        return 0
+    else:
+        return (-BenefitMat(t) + PV_BenefitMat(t+1)) / (1 + DiscRate(t))
+
+    
+def PV_BenefitTotal(t):
+    """Present value of total benefits"""
+    if t > last_t:
+        return 0
+    else:
+        return (-BenefitTotal(t) + PV_BenefitTotal(t+1)) / (1 + DiscRate(t))
+
+
 def PV_ExpsCommTotal(t):
     """Present value of commission expenses"""
     if t > last_t:
@@ -68,7 +84,15 @@ def PV_ExpsTotal(t):
         return - ExpsTotal(t) + PV_ExpsTotal(t+1) / (1 + DiscRate(t))
     
 
+
 def PV_NetCashflow(t):
+    """Present value of net cashflow"""
+    return (PV_PremIncome(t)
+            + PV_ExpsTotal(t)
+            + PV_BenefitTotal(t))
+
+
+def PV_NetCashflowForCheck(t):
     """Present value of net cashflow"""
     if t > last_t:
         return 0
@@ -77,6 +101,10 @@ def PV_NetCashflow(t):
                 - ExpsTotal(t)
                 - BenefitTotal(t) / (1 + DiscRate(t))
                 + PV_NetCashflow(t+1) / (1 + DiscRate(t)))
+        
+        
+def PV_Check(t):
+    return PV_NetCashflow(t) - PV_NetCashflowForCheck(t)
 
 
 def InterestNetCF(t):

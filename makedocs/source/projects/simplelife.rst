@@ -60,11 +60,12 @@ There is no explicit 'Run' command to run the model. The model calculates its va
 Model structure
 ---------------
 
+Composition Structure
+^^^^^^^^^^^^^^^^^^^^^
+
 The diagram below shows the spaces contained in a simplelife model.
 Note that the subspaces under Input space are not drawn in the diagram,
 as they are quite a few. For details on the Input subspaces, see :py:mod:`simplelife.build_input` page.
-
-**Composition Structure**
 
 .. blockdiag::
 
@@ -88,7 +89,8 @@ as they are quite a few. For details on the Input subspaces, see :py:mod:`simple
      Input <- "various..."[hstyle=composition];
    }
 
-**Inheritance Structure**
+Inheritance Structure
+^^^^^^^^^^^^^^^^^^^^^
 
 .. blockdiag::
 

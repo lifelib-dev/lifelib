@@ -1,18 +1,11 @@
-import sys, os, math, pickle
+import sys, os, pickle
 from lifelib.projects.simplelife import simplelife
-
+from tests.data import round_signif
 
 filepath = os.path.join(os.path.dirname(__file__), 'data_simplelife')
 
 if '' not in sys.path:
     sys.path.insert(0, '')
-
-def round_signif(x, digit):
-    if x == 0:
-        return 0
-    else:
-        base = int(math.log10(abs(x)))
-        return round(x, digit - base - 1)
 
 
 def generate_data(model):

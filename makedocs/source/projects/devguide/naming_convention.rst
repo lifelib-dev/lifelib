@@ -68,14 +68,17 @@ as names of cells and spaces in lifelib projects.
     Before             Bfr
     Begin(ning)        Beg
     Cashflow           CF
+    Catastrophe        Cat
     Change             Chg
     Charge             Chrg
     Commission         Comm
     Commutation        Comm
     Consumption        Cnsmp
+    Correlation        Corr
     Coverage           Cov
     Death              Dth
     Decrease           Decr
+    Disability         Disab
     Discount           Disc
     Dividend           Div
     Economic           Econ
@@ -100,6 +103,7 @@ as names of cells and spaces in lifelib projects.
     Investment         Invst
     Issue              Iss
     Loading            Load
+    Longevity          Longev
     Maintenance        Maint
     Maturity           Mat
     Morbidity          Morbid
@@ -114,6 +118,7 @@ as names of cells and spaces in lifelib projects.
     Release            Rels
     Reserve            Rsrv
     Return             Ret
+    Revision           Rev
     Scenario           Scen
     Sickness           Sick
     Sum Assured        SA

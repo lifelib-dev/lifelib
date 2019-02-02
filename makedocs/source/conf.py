@@ -262,7 +262,8 @@ sphinx_gallery_conf = {
     'subsection_order': ExplicitOrder(
         ['../../lifelib/projects/simplelife',
          '../../lifelib/projects/nestedlife',
-         '../../lifelib/projects/ifrs17sim']),
+         '../../lifelib/projects/ifrs17sim',
+         '../../lifelib/projects/solvency2']),
     # path where to save gallery generated examples
     'gallery_dirs': 'generated_examples',
     # Suppress warning:
