@@ -44,6 +44,25 @@ updated based on the development version of lifelib.
 Documentation for released versions of lifelib is available under
 :doc:`archive` page.
 
+v0.0.10 (2 February 2019)
+-------------------------
+
+- :doc:`projects/solvency2` project is added. See the project page for details.
+
+- :doc:`projects/ifrs17sim_charts_lapsescen` notebook is added.
+
+- Override formulas are included in :mod:`~nestedlife.nestedlife` and
+  :mod:`~ifrs17sim.ifrs17sim`.
+
+- Update :doc:`projects/ifrs17sim` model to pay out profits each period.
+
+- Fix miscalculation in :func:`~ifrs17sim.projection.IntAccumCF`
+  in :mod:`~ifrs17sim.projection`.
+
+- :mod:`~ifrs17sim.ifrs17sim` and :mod:`~ifrs17sim.ifrs` modules are
+  modified to correct discounting and surrender in nested projections.
+
+
 v0.0.9 (5 August 2018)
 ----------------------
 

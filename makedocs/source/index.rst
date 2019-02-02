@@ -42,7 +42,7 @@ customize them in any way you want, or create your own models from scratch.
             <img src="_images/thumb3.png">
           </div>
         </a>
-        <a href="generated_examples/index.html">
+        <a href="spyder.html">
           <div class="col-sm-3 thumbnail">
             <img src="_images/thumb4.png">
           </div>

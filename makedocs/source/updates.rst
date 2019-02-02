@@ -4,6 +4,9 @@ Updates
 
 .. Latest Updates Begin
 
+* *2 February 2019:*
+  lifelib v0.0.10 is released. See :ref:`releases` for details.
+
 * *2 December 2018:*
   New :doc:`spyder` sub page is added in :doc:`quickstart`.
 
