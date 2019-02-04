@@ -29,22 +29,22 @@ customize them in any way you want, or create your own models from scratch.
       <div class="row">
         <a href="generated_examples/index.html">
           <div class="col-sm-3 thumbnail">
-            <img src="_images/thumb1.png">
+            <img src="_static/thumb1.png">
           </div>
         </a>
         <a href="generated_examples/index.html">
           <div class="col-sm-3 thumbnail">
-            <img src="_images/thumb2.png">
+            <img src="_static/thumb2.png">
           </div>
         </a>
         <a href="generated_examples/index.html">
           <div class="col-sm-3 thumbnail">
-            <img src="_images/thumb3.png">
+            <img src="_static/thumb3.png">
           </div>
         </a>
         <a href="spyder.html">
           <div class="col-sm-3 thumbnail">
-            <img src="_images/thumb4.png">
+            <img src="_static/thumb4.png">
           </div>
         </a>
       </div>
