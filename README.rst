@@ -29,7 +29,7 @@ with a newer version.
 History
 -------
 lifelib was originally conceived and written by Fumito Hamamura
-and it was first released in November 2017.
+and it was first released on January 2nd, 2018.
 
 Requirements
 ------------
