@@ -118,7 +118,7 @@ def build(load_saved=False):
         return {'refs': refs}
 
     lifetable = model.import_module(
-        module_='lifetable',
+        module='lifetable',
         name='LifeTable',
         formula=lifetable_params,
         refs=lifetable_refs)
@@ -144,7 +144,7 @@ def build(load_saved=False):
         return {'refs': refs}
 
     policy = model.import_module(
-        module_='policy',
+        module='policy',
         name='Policy',
         formula=policy_params,
         refs=policy_refs)
@@ -167,7 +167,7 @@ def build(load_saved=False):
         return {'refs': refs}
 
     asmp = model.import_module(
-        module_='assumption',
+        module='assumption',
         name='Assumption',
         formula=asmp_params,
         refs=asmp_refs)
@@ -182,7 +182,7 @@ def build(load_saved=False):
         return {'refs': refs}
 
     economic = model.import_module(
-        module_='economic',
+        module='economic',
         name='Economic',
         formula=econ_params,
         refs={'asmp': asmp,
@@ -210,11 +210,11 @@ def build(load_saved=False):
         return {'refs': refs}
 
     baseproj = model.import_module(
-        module_='projection',
+        module='projection',
         name='BaseProj')
 
     ifrs = model.import_module(
-        module_='ifrs',
+        module='ifrs',
         name='IFRS')
 
     outerproj = model.new_space(
@@ -237,7 +237,7 @@ def build(load_saved=False):
         formula=innerproj_params)
 
     pvs = innerproj.import_module(
-        module_='present_value',
+        module='present_value',
         name='PresentValue')
     
     def pvs_params(t_rate):
