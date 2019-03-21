@@ -180,11 +180,11 @@ def build(load_saved=False):
         refs=proj_refs)
 
     def innerproj_params(t0):
-        refs = {'pol': _self.parent.pol,
-                'asmp': _self.parent.asmp,
-                'scen': _self.parent.scen,
-                'outer': _self.parent,
-                'DiscRate': _self.parent.scen.DiscRate}
+        refs = {'pol': _space.parent.pol,
+                'asmp': _space.parent.asmp,
+                'scen': _space.parent.scen,
+                'outer': _space.parent,
+                'DiscRate': _space.parent.scen.DiscRate}
         
         return {'refs': refs}
 

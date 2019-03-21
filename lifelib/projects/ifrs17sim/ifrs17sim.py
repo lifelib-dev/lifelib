@@ -224,10 +224,10 @@ def build(load_saved=False):
         refs=proj_refs)
 
     def innerproj_params(t0):
-        refs = {'pol': _self.parent.pol,
-                'asmp': _self.parent.asmp,
-                'scen': _self.parent.scen,
-                'outer': _self.parent}
+        refs = {'pol': _space.parent.pol,
+                'asmp': _space.parent.asmp,
+                'scen': _space.parent.scen,
+                'outer': _space.parent}
         
         return {'refs': refs}
 
@@ -241,18 +241,18 @@ def build(load_saved=False):
         name='PresentValue')
     
     def pvs_params(t_rate):
-        refs = {'last_t': _self.parent.last_t,
-                'InsurIF_Beg1': _self.parent.InsurIF_Beg1,
-                'InsurIF_End': _self.parent.InsurIF_End,
-                'PremIncome': _self.parent.PremIncome,
-                'BenefitSurr': _self.parent.BenefitSurr,
-                'BenefitDeath': _self.parent.BenefitDeath,
-                'BenefitTotal': _self.parent.BenefitTotal,
-                'ExpsCommTotal': _self.parent.ExpsCommTotal,
-                'ExpsAcq': _self.parent.ExpsAcq,
-                'ExpsMaint': _self.parent.ExpsMaint,
-                'ExpsTotal': _self.parent.ExpsTotal,
-                'DiscRate': _self.parent.parent[t_rate].DiscRate}
+        refs = {'last_t': _space.parent.last_t,
+                'InsurIF_Beg1': _space.parent.InsurIF_Beg1,
+                'InsurIF_End': _space.parent.InsurIF_End,
+                'PremIncome': _space.parent.PremIncome,
+                'BenefitSurr': _space.parent.BenefitSurr,
+                'BenefitDeath': _space.parent.BenefitDeath,
+                'BenefitTotal': _space.parent.BenefitTotal,
+                'ExpsCommTotal': _space.parent.ExpsCommTotal,
+                'ExpsAcq': _space.parent.ExpsAcq,
+                'ExpsMaint': _space.parent.ExpsMaint,
+                'ExpsTotal': _space.parent.ExpsTotal,
+                'DiscRate': _space.parent.parent[t_rate].DiscRate}
         
         return {'refs': refs}
         
