@@ -103,7 +103,23 @@ Inheritance Structure
      PresentValue <- OuterProj [hstyle=generalization];
    }
 
+Jupyter Notebooks
+-----------------
 
+A live version of the Jupyter notebook below is available online,
+thanks to Binder.
+
+*Launch this sample now!*
+
+* simplelife Space Overview |binder simplelife_space_overview|
+
+.. include:: /binderlinks.rst
+   :start-after: Begin binder banner
+   :end-before: End binder banner
+
+.. toctree::
+
+   simplelife-space-overview.ipynb
 
 Project Modules
 ---------------

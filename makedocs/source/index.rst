@@ -114,6 +114,7 @@ customize them in any way you want, or create your own models from scratch.
        <div class="col-md-4">
           <h2><a href="notebooks.html">Jupyter Notebooks</a></h2>
 
+* :ref:`notebooks_simplelife`
 * :ref:`notebooks_ifrs17sim`
 
 .. raw:: html

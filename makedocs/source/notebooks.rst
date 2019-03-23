@@ -1,16 +1,27 @@
 
 .. _notebooks_index:
 
+.. include:: /binderlinks.rst
+
 Jupyter Notebooks
 =================
+
+.. _notebooks_simplelife:
+
+:mod:`simplelife` Notebooks
+---------------------------
+
+.. toctree::
+   :hidden:
+
+   projects/simplelife-space-overview.ipynb
+
+* `simplelife Space Overview <projects/simplelife-space-overview.ipynb>`_  (*Run online now!* |binder simplelife_space_overview| )
 
 .. _notebooks_ifrs17sim:
 
 :mod:`ifrs17sim` Notebooks
 --------------------------
-
-.. include:: /binderlinks.rst
-
 
 .. toctree::
    :hidden:

@@ -10,6 +10,14 @@
 
 .. End binder simplelife_demo
 
+.. Begin binder simplelife_space_overview
+
+.. |binder simplelife_space_overview| raw:: html
+
+   <a href="https://mybinder.org/v2/gh/fumitoh/lifelib/binder?filepath=lifelib%2Fprojects%2Fsimplelife%2Fsimplelife-space-overview.ipynb" target="_blank">
+   <img alt="launch binder" src="https://mybinder.org/badge.svg" /></a>
+
+.. End binder simplelife_space_overview
 
 .. Begin binder_ifrs17sim
 
