@@ -6,8 +6,8 @@ Reference:
     https://packaging.python.org/tutorials/distributing-packages/
 
  1. Update whatsnew.rst and updates.rst.
- 2. Remove 'dev' from the version in __init__.py.
- 3. make docs and update and push lifelib-docs.(check version is not with 'dev')
+ 2. Remove 'dev' from the version in __init__.py. Make sure to upgrade versions of depending packages in conf.py.
+ 3. make docs and update and push lifelib-docs.(check version is not with 'dev'). Make sure to update archive.rst to include a link to the last version.
  4. On the master branch, commit the release in git:
       git commit -a -m "DIST: Release v0.X.Y"
       git push
