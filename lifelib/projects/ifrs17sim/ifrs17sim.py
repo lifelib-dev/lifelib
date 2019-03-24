@@ -82,12 +82,12 @@ def DiscRate_inner(t):
 def build(load_saved=False):
     """Build a model and return it.
 
-    Read input data from `input.xlsm`, create `Input` space and its
+    Read input data from `input.xlsx`, create `Input` space and its
     subspace and cells and populate them with the data.
 
     Args:
         load_saved: If ``True``, input data is read from `ifrs17sim.mx` file
-            instead of `input.xlsm`, which is saved when
+            instead of `input.xlsx`, which is saved when
             :py:func:`build_input <simplelife.build_input.build_input>`
             is executed last time. Defaults to ``False``
     """
@@ -105,7 +105,7 @@ def build(load_saved=False):
         input = model.Input
     else:
         model = mx.new_model(name='ifrs17sim')
-        input = build_input(model, 'input.xlsm')
+        input = build_input(model, 'input.xlsx')
         model.save('ifrs17sim.mx')
 
     # ------------------------------------------------------------------------
@@ -118,7 +118,7 @@ def build(load_saved=False):
         return {'refs': refs}
 
     lifetable = model.import_module(
-        module_='lifetable',
+        module='lifetable',
         name='LifeTable',
         formula=lifetable_params,
         refs=lifetable_refs)
@@ -144,7 +144,7 @@ def build(load_saved=False):
         return {'refs': refs}
 
     policy = model.import_module(
-        module_='policy',
+        module='policy',
         name='Policy',
         formula=policy_params,
         refs=policy_refs)
@@ -167,7 +167,7 @@ def build(load_saved=False):
         return {'refs': refs}
 
     asmp = model.import_module(
-        module_='assumption',
+        module='assumption',
         name='Assumption',
         formula=asmp_params,
         refs=asmp_refs)
@@ -182,7 +182,7 @@ def build(load_saved=False):
         return {'refs': refs}
 
     economic = model.import_module(
-        module_='economic',
+        module='economic',
         name='Economic',
         formula=econ_params,
         refs={'asmp': asmp,
@@ -210,11 +210,11 @@ def build(load_saved=False):
         return {'refs': refs}
 
     baseproj = model.import_module(
-        module_='projection',
+        module='projection',
         name='BaseProj')
 
     ifrs = model.import_module(
-        module_='ifrs',
+        module='ifrs',
         name='IFRS')
 
     outerproj = model.new_space(
@@ -224,10 +224,10 @@ def build(load_saved=False):
         refs=proj_refs)
 
     def innerproj_params(t0):
-        refs = {'pol': _self.parent.pol,
-                'asmp': _self.parent.asmp,
-                'scen': _self.parent.scen,
-                'outer': _self.parent}
+        refs = {'pol': _space.parent.pol,
+                'asmp': _space.parent.asmp,
+                'scen': _space.parent.scen,
+                'outer': _space.parent}
         
         return {'refs': refs}
 
@@ -237,22 +237,22 @@ def build(load_saved=False):
         formula=innerproj_params)
 
     pvs = innerproj.import_module(
-        module_='present_value',
+        module='present_value',
         name='PresentValue')
     
     def pvs_params(t_rate):
-        refs = {'last_t': _self.parent.last_t,
-                'InsurIF_Beg1': _self.parent.InsurIF_Beg1,
-                'InsurIF_End': _self.parent.InsurIF_End,
-                'PremIncome': _self.parent.PremIncome,
-                'BenefitSurr': _self.parent.BenefitSurr,
-                'BenefitDeath': _self.parent.BenefitDeath,
-                'BenefitTotal': _self.parent.BenefitTotal,
-                'ExpsCommTotal': _self.parent.ExpsCommTotal,
-                'ExpsAcq': _self.parent.ExpsAcq,
-                'ExpsMaint': _self.parent.ExpsMaint,
-                'ExpsTotal': _self.parent.ExpsTotal,
-                'DiscRate': _self.parent.parent[t_rate].DiscRate}
+        refs = {'last_t': _space.parent.last_t,
+                'InsurIF_Beg1': _space.parent.InsurIF_Beg1,
+                'InsurIF_End': _space.parent.InsurIF_End,
+                'PremIncome': _space.parent.PremIncome,
+                'BenefitSurr': _space.parent.BenefitSurr,
+                'BenefitDeath': _space.parent.BenefitDeath,
+                'BenefitTotal': _space.parent.BenefitTotal,
+                'ExpsCommTotal': _space.parent.ExpsCommTotal,
+                'ExpsAcq': _space.parent.ExpsAcq,
+                'ExpsMaint': _space.parent.ExpsMaint,
+                'ExpsTotal': _space.parent.ExpsTotal,
+                'DiscRate': _space.parent.parent[t_rate].DiscRate}
         
         return {'refs': refs}
         

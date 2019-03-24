@@ -14,12 +14,12 @@ import modelx as mx
 def build(load_saved=False):
     """Build a model and return it.
 
-    Read input data from `input.xlsm`, create `Input` space and its
+    Read input data from `input.xlsx`, create `Input` space and its
     subspace and cells and populate them with the data.
 
     Args:
         load_saved: If ``True``, input data is read from `solvency2.mx` file
-            instead of `input.xlsm`, which is saved when
+            instead of `input.xlsx`, which is saved when
             :py:func:`build_input <solvency2.build_input.build_input>`
             is executed last time. Defaults to ``False``
     """
@@ -38,7 +38,7 @@ def build(load_saved=False):
         input = model.Input
     else:
         model = mx.new_model(name='solvency2')
-        input = build_input(model, 'input.xlsm')
+        input = build_input(model, 'input.xlsx')
         build_input_scr(input, 'input_scr.xlsx')
         model.save('solvency2.mx')
 
@@ -52,7 +52,7 @@ def build(load_saved=False):
         return {'refs': refs}
 
     lifetable = model.import_module(
-        module_='lifetable',
+        module='lifetable',
         name='LifeTable',
         formula=lifetable_params,
         refs=lifetable_refs)
@@ -78,7 +78,7 @@ def build(load_saved=False):
         return {'refs': refs}
 
     policy = model.import_module(
-        module_='policy',
+        module='policy',
         name='Policy',
         formula=policy_params,
         refs=policy_refs)
@@ -101,7 +101,7 @@ def build(load_saved=False):
         return {'refs': refs}
 
     asmp = model.import_module(
-        module_='assumption',
+        module='assumption',
         name='Assumption',
         formula=asmp_params,
         refs=asmp_refs)
@@ -116,7 +116,7 @@ def build(load_saved=False):
         return {'refs': refs}
 
     economic = model.import_module(
-        module_='economic',
+        module='economic',
         name='Economic',
         formula=econ_params,
         refs={'asmp': asmp,
@@ -130,7 +130,7 @@ def build(load_saved=False):
         pass
     
     scr_life = model.import_module(
-        module_='scr_life',
+        module='scr_life',
         name='SCR_life',
         formula=scrlife_params,
         refs={'Corr': input.CorrLife})
@@ -140,30 +140,30 @@ def build(load_saved=False):
     # Build Projection space
 
     projbase = model.import_module(
-        module_='projection',
+        module='projection',
         name='BaseProj')
 
     pvmixin = model.import_module(
-        module_='present_value',
+        module='present_value',
         name='PV')
     
     override = model.new_space(name='Override')
     
     override.import_module(
-        module_='override.mortality',
+        module='override.mortality',
         name='Mortality')
     
     
     override.import_module(
-        module_='override.lapse',
+        module='override.lapse',
         name='Lapse')
 
     override.import_module(
-        module_='override.lapse_mass',
+        module='override.lapse_mass',
         name='LapseMass')
     
     override.import_module(
-        module_='override.expense',
+        module='override.expense',
         name='Expense')
     
 

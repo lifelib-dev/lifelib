@@ -37,12 +37,12 @@ def PolsIF_End_inner(t):
 def build(load_saved=False):
     """Build a model and return it.
 
-    Read input data from `input.xlsm`, create `Input` space and its
+    Read input data from `input.xlsx`, create `Input` space and its
     subspace and cells and populate them with the data.
 
     Args:
         load_saved: If ``True``, input data is read from `nestedlife.mx` file
-            instead of `input.xlsm`, which is saved when
+            instead of `input.xlsx`, which is saved when
             :py:func:`build_input <simplelife.build_input.build_input>`
             is executed last time. Defaults to ``False``
     """
@@ -60,7 +60,7 @@ def build(load_saved=False):
         input = model.Input
     else:
         model = mx.new_model(name='nestedlife')
-        input = build_input(model, 'input.xlsm')
+        input = build_input(model, 'input.xlsx')
         model.save('nestedlife.mx')
 
     # ------------------------------------------------------------------------
@@ -73,7 +73,7 @@ def build(load_saved=False):
         return {'refs': refs}
 
     lifetable = model.import_module(
-        module_='lifetable',
+        module='lifetable',
         name='LifeTable',
         formula=lifetable_params,
         refs=lifetable_refs)
@@ -99,7 +99,7 @@ def build(load_saved=False):
         return {'refs': refs}
 
     policy = model.import_module(
-        module_='policy',
+        module='policy',
         name='Policy',
         formula=policy_params,
         refs=policy_refs)
@@ -122,7 +122,7 @@ def build(load_saved=False):
         return {'refs': refs}
 
     asmp = model.import_module(
-        module_='assumption',
+        module='assumption',
         name='Assumption',
         formula=asmp_params,
         refs=asmp_refs)
@@ -137,7 +137,7 @@ def build(load_saved=False):
         return {'refs': refs}
 
     economic = model.import_module(
-        module_='economic',
+        module='economic',
         name='Economic',
         formula=econ_params,
         refs={'asmp': asmp,
@@ -164,11 +164,11 @@ def build(load_saved=False):
         return {'refs': refs}
 
     pvmixin = model.import_module(
-        module_='present_value',
+        module='present_value',
         name='PresentValue')
 
     baseproj = model.import_module(
-        module_='projection',
+        module='projection',
         name='BaseProj',
         bases=pvmixin)
 
@@ -180,11 +180,11 @@ def build(load_saved=False):
         refs=proj_refs)
 
     def innerproj_params(t0):
-        refs = {'pol': _self.parent.pol,
-                'asmp': _self.parent.asmp,
-                'scen': _self.parent.scen,
-                'outer': _self.parent,
-                'DiscRate': _self.parent.scen.DiscRate}
+        refs = {'pol': _space.parent.pol,
+                'asmp': _space.parent.asmp,
+                'scen': _space.parent.scen,
+                'outer': _space.parent,
+                'DiscRate': _space.parent.scen.DiscRate}
         
         return {'refs': refs}
 
