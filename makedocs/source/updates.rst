@@ -4,6 +4,14 @@ Updates
 
 .. Latest Updates Begin
 
+* *24 March 2019:*
+  lifelib v0.0.11 is released. See :ref:`releases` for details.
+
+* *24 March 2019:*
+  modelx v0.0.21 and spyder-modelx v0.0.9 is released.
+  See `modelx documentation <http://docs.modelx.io/en/latest/index.html>`_
+  for more details.
+
 * *2 February 2019:*
   lifelib v0.0.10 is released. See :ref:`releases` for details.
 
@@ -24,6 +32,8 @@ Updates
 * *3 October 2018:*
   Fix miscalculation in :func:`~ifrs17sim.projection.IntAccumCF` in :mod:`~ifrs17sim.projection`.
 
+.. Latest Updates End
+
 * *24 September 2018:*
   The landing page is updated.
 
@@ -32,8 +42,6 @@ Updates
 
 * *25 July 2018:*
   This site now supports HTTPS (https://lifelib.io).
-
-.. Latest Updates End
 
 * *24 June 2018:*
   Model structure diagrams are added in :doc:`projects/simplelife`,

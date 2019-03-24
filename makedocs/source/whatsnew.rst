@@ -44,6 +44,19 @@ updated based on the development version of lifelib.
 Documentation for released versions of lifelib is available under
 :doc:`archive` page.
 
+v0.0.11 (24 March 2019)
+-----------------------
+
+.. warning::
+
+   `modelx`_ needs to be updated to v0.0.21 for this version of lifelib.
+
+- :doc:`projects/simplelife-space-overview` notebook is added.
+- The input file is renamed from "input.xlsm" to "input.xlsx" and redundant
+  data and macros are removed from the file to gain speed in reading.
+- Parameter ``module_`` of Space's ``import_module`` method is renamed to ``module``.
+- Reserved name ``_self`` is renamed to ``_space``.
+
 v0.0.10 (2 February 2019)
 -------------------------
 
