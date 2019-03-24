@@ -94,7 +94,7 @@ import os.path as path
 import time
 from textwrap import dedent
 
-default_input = path.join(path.abspath(path.dirname(__file__)), 'input.xlsm')
+default_input = path.join(path.abspath(path.dirname(__file__)), 'input.xlsx')
 
 
 class _PrintElapsedTime:
@@ -133,7 +133,7 @@ def build_input(model, input_file=default_input):
     inp.allow_none = True
     print_time = True
 
-    print("Started loading data from 'input.xlsm'.", file=sys.stderr)
+    print("Started loading data from '%s'." % input_file, file=sys.stderr)
 
     if print_time:
         timestamp = _PrintElapsedTime()
@@ -184,7 +184,7 @@ def build_input(model, input_file=default_input):
 
     inp.new_cells_from_excel(
         book=input_file,
-        range_='G6:H9',
+        range_='C6:D9',
         sheet='OtherParams',
         names_row=0,
         param_cols=[0],
@@ -196,7 +196,7 @@ def build_input(model, input_file=default_input):
 
     inp.new_cells_from_excel(
         book=input_file,
-        range_='V6:W9',
+        range_='G6:H9',
         sheet='OtherParams',
         names_row=0,
         param_cols=[0],

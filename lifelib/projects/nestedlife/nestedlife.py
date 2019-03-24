@@ -37,12 +37,12 @@ def PolsIF_End_inner(t):
 def build(load_saved=False):
     """Build a model and return it.
 
-    Read input data from `input.xlsm`, create `Input` space and its
+    Read input data from `input.xlsx`, create `Input` space and its
     subspace and cells and populate them with the data.
 
     Args:
         load_saved: If ``True``, input data is read from `nestedlife.mx` file
-            instead of `input.xlsm`, which is saved when
+            instead of `input.xlsx`, which is saved when
             :py:func:`build_input <simplelife.build_input.build_input>`
             is executed last time. Defaults to ``False``
     """
@@ -60,7 +60,7 @@ def build(load_saved=False):
         input = model.Input
     else:
         model = mx.new_model(name='nestedlife')
-        input = build_input(model, 'input.xlsm')
+        input = build_input(model, 'input.xlsx')
         model.save('nestedlife.mx')
 
     # ------------------------------------------------------------------------

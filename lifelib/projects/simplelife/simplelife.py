@@ -35,7 +35,7 @@ def build(load_saved=False):
         input = model.Input
     else:
         model = mx.new_model(name='simplelife')
-        input = build_input(model, 'input.xlsm')
+        input = build_input(model, 'input.xlsx')
         model.save('simplelife.mx')
 
     # ------------------------------------------------------------------------

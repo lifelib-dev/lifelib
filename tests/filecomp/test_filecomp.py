@@ -25,7 +25,7 @@ common_files = [('build_input.py', all_projects),
                 ('projection.py', all_projects),
                 ('present_value.py', all_projects),
                 ('draw_charts.py', [nestedpath, ifrs17simpath]),
-                ('input.xlsm', all_projects)]
+                ('input.xlsx', all_projects)]
 
 
 @pytest.mark.parametrize('filename, filepaths', common_files)
