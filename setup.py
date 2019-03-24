@@ -150,7 +150,7 @@ setup(
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['modelx>=0.0.13'],
+    install_requires=['modelx>=0.0.21'],
 
     # If your project only runs on certain Python versions,
     # setting the python_requires argument to the appropriate PEP 440 version
@@ -172,7 +172,7 @@ setup(
     # installed, specify them here.  If using Python 2.6 or less, then these
     # have to be included in MANIFEST.in as well.
     package_data={
-        'lifelib': ['projects/*/*.xlsm',
+        'lifelib': ['projects/*/*.xlsx',
                     'projects/*/*.mx'],
     },
 
