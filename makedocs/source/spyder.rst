@@ -23,10 +23,11 @@ a primary version of components, including:
 * MxExplorer
 * MxDataView
 
-Spyder plugin for modelx is available on PyPI as a separate Python package,
-and can be installed using the pip command::
+Spyder plugin for modelx is available on PyPI as a separate Python package.
+If you're using Anaconda, you can install the plugin by the following
+command::
 
-    > pip install spyder-modelx
+    > pip install --no-deps spyder-modelx
 
 For more about Spyder plugin for modelx, refer to
 `Spyder plugin`_ page
