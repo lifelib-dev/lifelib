@@ -169,14 +169,14 @@ def build_input(model, input_file=default_input):
         timestamp.print_time('Done.')
         timestamp.set_start('Loading ProductSpec...')
 
-    prodspec = inp.new_space(name='ProductSpec')
-    prodspec.new_cells_from_excel(
+    inp.new_space_from_excel(
         book=input_file,
         range_='B7:V22',
         sheet='ProductSpec',
+        name='ProductSpec',
         names_row=0,
         param_cols=[0, 1, 2],
-        param_order=[0, 1, 2])
+        cells_param_order=[0, 1, 2])
 
     if print_time:
         timestamp.print_time('Done.')
@@ -206,27 +206,27 @@ def build_input(model, input_file=default_input):
         timestamp.print_time('Done.')
         timestamp.set_start('Loading Assumption...')
 
-    asmp = inp.new_space(name='Assumption')
-    asmp.new_cells_from_excel(
+    inp.new_space_from_excel(
         book=input_file,
         range_='B7:T17',
         sheet='Assumption',
+        name='Assumption',
         names_row=0,
         param_cols=[0, 1, 2],
-        param_order=[0, 1, 2])
+        cells_param_order=[0, 1, 2])
 
     if print_time:
         timestamp.print_time('Done.')
         timestamp.set_start('Loading AssumptionTables...')
 
-    asmptbls = inp.new_space(name='AssumptionTables')
-    asmptbls.new_cells_from_excel(
+    inp.new_space_from_excel(
         book=input_file,
         range_='B7:J27',
         sheet='AssumptionTables',
+        name='AssumptionTables',
         names_row=0,
         param_cols=[0],
-        param_order=[0])
+        cells_param_order=[0])
 
     if print_time:
         timestamp.print_time('Done.')
