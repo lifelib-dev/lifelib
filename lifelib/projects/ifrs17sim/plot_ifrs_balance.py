@@ -19,7 +19,7 @@ model = ifrs17sim.build()
 proj = model.OuterProj[171]
 
 
-ifrsbs = proj.cells['CSM_Unfloored',
+ifrsbs = proj.cells['CSM',
                     'PV_FutureCF',
                     'AccumCF'].to_frame(range(10))
 
