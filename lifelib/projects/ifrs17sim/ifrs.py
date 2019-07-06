@@ -46,14 +46,14 @@ def RiskAdjustment(t):
 
 #%% CSM Calculations
 
-def CSM(t):
+def CSM_Unfloored(t):
     """Unfloored CSM (38, 44)"""
     if t == 0:
         # Initial recognition (38)
         return PV_FutureCF(t) - RiskAdjustment(t)
     else:
         # Subsequent recognition (44)
-        return (CSM(t-1)
+        return (CSM_Unfloored(t-1)
                 + IntAccrCSM(t-1)
                 + AdjCSM_FlufCF(t-1)
                 - TransServices(t-1))

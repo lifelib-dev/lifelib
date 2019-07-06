@@ -44,8 +44,36 @@ updated based on the development version of lifelib.
 Documentation for released versions of lifelib is available under
 :doc:`archive` page.
 
+
+v0.0.12 (6 July 2019)
+---------------------
+
+.. warning::
+
+   `modelx`_ needs to be updated to v0.0.22 for this version of lifelib.
+
+This version fixes the trouble resulted from erroneous packaging in v0.0.11,
+and includes minor code improvements.
+
+- Fix the packaging error in v0.0.11 (`Issue #6 <https://github.com/fumitoh/lifelib/issues/6>`_).
+- Update :mod:`~ifrs17sim.ifrs` to include the loss component logic.
+- Fix the sign in :func:`~ifrs17sim.ifrs.AmortAcqCashflow`.
+- Update :mod:`~simplelife.build_input` to make a better use of
+  updated ``new_space_from_excel``.
+
+
 v0.0.11 (24 March 2019)
 -----------------------
+
+.. warning::
+    This version of lifelib should not be used, as the uploaded files in
+    `PyPI <https://pypi.org/project/lifelib/>`_ were
+    not properly packaged and some older files were included
+    by mistake.
+    You will see an error when you try to run the default models.
+    For more on th error and how to fix it,
+    see `this discussion on github <https://github.com/fumitoh/lifelib/issues/6>`_.
+
 
 .. warning::
 
