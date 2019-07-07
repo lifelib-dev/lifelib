@@ -28,7 +28,7 @@ def NetInsurAssets(t):
     """    
     return (PV_FutureCF(t)
             - RiskAdjustment(t)
-            - CSM_Unfloored(t))
+            - CSM(t))
     
 
 def PV_FutureCF(t):
@@ -58,10 +58,49 @@ def CSM_Unfloored(t):
                 + AdjCSM_FlufCF(t-1)
                 - TransServices(t-1))
 
+
+def CSM(t):
+    """floored CSM (38, 44)"""
+    if t == 0:
+        # Initial recognition (38)
+        return max(0, PV_FutureCF(t) - RiskAdjustment(t))
+    else:
+        # Subsequent recognition (44)
+        return max(0, (CSM(t - 1)
+                + IntAccrCSM(t - 1)
+                + AdjCSM_FlufCF(t - 1)
+                - TransServices(t - 1)))
+
+
+def LossComp(t):
+    """Loss Component"""
+    if t == 0:
+        # Initial recognition
+        return - min(0, PV_FutureCF(t) - RiskAdjustment(t))
+    else:
+        # Subsequent recognition
+        return max(0, LossComp(t - 1) - AdjLCO_FulfCF(t - 1))
+
+
+def Incr_LossComp(t):
+    """Increase in Loss Component"""
+    if t == 0:
+        return LossComp(t)
+    else:
+        return max(0, LossComp(t) - LossComp(t - 1))
+
+
+def AdjLCO_FulfCF(t):
+    """Adjustment to Loss Component for changes in fulfilment cashflows"""
+    if LossComp(t) > 0:
+        return min(LossComp(t), EstClaim(t) + EstExps(t) + RelsRiskAdj(t))
+    else:
+        return 0
+
         
 def IntAccrCSM(t):
     """Interest accreted on CSM (44(b))"""
-    return CSM_Unfloored(t) * DiscRate(t, 0)
+    return CSM(t) * DiscRate(t, 0)
 
 
 def AdjCSM_FlufCF(t):
@@ -99,7 +138,7 @@ def PV_Cashflow(t, t_at, t_rate):
 def TransServices(t):
     """Transfer of services (44(e)->B119)
     """
-    csm_pre_rel = (CSM_Unfloored(t)
+    csm_pre_rel = (CSM(t)
                    + IntAccrCSM(t)
                    + AdjCSM_FlufCF(t))
 
@@ -158,7 +197,8 @@ def InsurRevenue(t):
             + EstExps(t)
             + RelsRiskAdj(t)
             + TransServices(t)
-            + AmortAcqCashflow(t))
+            + AmortAcqCashflow(t)
+            - AdjLCO_FulfCF(t))
 
 def EstPremIncome(t):
     """Expected Premium Income"""
@@ -213,7 +253,9 @@ def InsurServiceExps(t):
     """Insurance Service Expense (103(b))"""
     return (IncurClaim(t)
             + IncurExps(t)
-            + AmortAcqCashflow(t))
+            + AmortAcqCashflow(t)
+            + Incr_LossComp(t)
+            - AdjLCO_FulfCF(t))
 
 def IncurClaim(t):
     """Incurred Claims"""
@@ -250,6 +292,6 @@ def AmortAcqCashflow(t):
         Implemented as a constant percentage of actual premiums,
         thus not totalling the original amount if actual != expected.
     """
-    return AcqPremRatio * PremIncome(t)
+    return -AcqPremRatio * PremIncome(t)
 
 

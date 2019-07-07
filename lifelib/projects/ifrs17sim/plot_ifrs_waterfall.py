@@ -31,7 +31,7 @@ proj = model.OuterProj[1]
 
 csmrf = get_waterfalldata(
             proj, 
-            items=['CSM_Unfloored',
+            items=['CSM',
                    'IntAccrCSM',
                    'AdjCSM_FlufCF',
                    'TransServices'],
