@@ -110,7 +110,7 @@ def draw_waterfall(df, ax=None, stocks=[0], **kwargs):
 
     palette = WaterfallColorPalette(df)
     xlabel = [idx[1] + '(' + str(idx[0]) + ')' for idx in df.stack().index]
-    ax = sns.barplot(data=data, bottom=bottom,
+    ax = sns.barplot(data=[[i] for i in data], bottom=list(bottom),
                      palette=palette.colors,
                      ax=ax)
     ax.set_xticklabels(labels=xlabel, rotation='vertical')
