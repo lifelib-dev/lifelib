@@ -15,7 +15,7 @@ datadir = pathlib.Path(__file__).parents[1].joinpath('data')
 testdata = str(datadir.joinpath('data_solvency2'))
 
 
-def test_nestedlife():
+def test_solvency2():
     model = solvency2.build()
     data = generate_data(model)
 
