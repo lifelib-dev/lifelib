@@ -1,0 +1,4 @@
+pandas
+numpy
+openpyxl
+-e git://github.com/fumitoh/modelx.git#egg=modelx

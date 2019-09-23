@@ -1,0 +1,13 @@
+os:
+  - linux
+#  - windows
+language: python
+python:
+  - "3.6"
+  - "3.7"
+  - "3.8-dev"
+
+install:
+  - pip install -r requirements-travis.txt
+script:
+  - pytest
