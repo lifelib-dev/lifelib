@@ -12,7 +12,7 @@ from codecs import open
 from os import path
 
 DISTNAME = 'lifelib'
-LICENSE = 'License :: OSI Approved :: MIT License'
+LICENSE = 'MIT License'
 AUTHOR = "Fumito Hamamura"
 EMAIL = "fumito.ham@gmail.com"
 URL = "https://lifelib.io"

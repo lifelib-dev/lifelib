@@ -2,6 +2,18 @@ lifelib
 ==========
 *Life actuarial models in Python*
 
+.. image:: https://travis-ci.org/fumitoh/lifelib.svg?branch=master
+    :target: https://travis-ci.org/fumitoh/lifelib
+
+.. image:: https://img.shields.io/pypi/pyversions/lifelib
+    :target: https://pypi.org/project/lifelib/
+
+.. image:: https://img.shields.io/pypi/v/lifelib
+    :target: https://pypi.org/project/lifelib/
+
+.. image:: https://img.shields.io/pypi/l/lifelib
+    :target: https://github.com/fumitoh/lifelib/blob/master/LICENSE.txt
+
 What is lifelib?
 -------------------
 lifelib is a collection of prototypes of life insurance models.
