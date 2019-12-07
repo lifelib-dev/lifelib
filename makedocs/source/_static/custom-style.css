@@ -7,6 +7,11 @@
     display: none;
 }
 
+/* Left-align texts in tables by default */
+table.align-default {
+    text-align: left
+}
+
 /* Colors taken from https://bootswatch.com/3/united/ */
 
 .admonition.warning {

@@ -17,6 +17,19 @@
 
 {% endblock %}
 
+{%- block content %}
+{{ navBar() }}
+<div class="container">
+  <div class="row">
+    {%- block sidebar1 %}{{ bsidebar() }}{% endblock %}
+    <div class="{{ bs_span_prefix }}{{ bs_content_width }} content" role="main">
+      {% block body %}{% endblock %}
+    </div>
+    {% block sidebar2 %} {# possible location for sidebar #} {% endblock %}
+  </div>
+</div>
+{%- endblock %}
+
 {%- block footer %}
 <footer class="footer">
   <div class="container">
