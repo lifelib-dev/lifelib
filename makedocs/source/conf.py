@@ -242,6 +242,11 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
+# -- Options for Auto doc -----------------------------------------------
+# If true, the current module name will be prepended to all description
+# unit titles (such as .. function::).
+# https://stackoverflow.com/questions/20864406/remove-package-and-module-name-from-sphinx-function
+add_module_names = False
 
 # -- Options for Auto summary -------------------------------------------
 autosummary_generate = True
