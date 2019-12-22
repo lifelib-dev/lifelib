@@ -50,4 +50,13 @@
 
 .. End binder_ifrs17sim
 
+.. Begin binder smithwilson_overview
+
+.. |binder smithwilson_overview| raw:: html
+
+   <a href="https://mybinder.org/v2/gh/fumitoh/lifelib/binder?filepath=lifelib%2Fprojects%2Fsmithwilson%2Fsmithwilson-overview.ipynb" target="_blank">
+   <img alt="launch binder" src="https://mybinder.org/badge.svg" /></a>
+
+.. End binder smithwilson_overview
+
 .. End binder banner

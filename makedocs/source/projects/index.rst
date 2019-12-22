@@ -10,3 +10,4 @@ Project Templates
    nestedlife
    ifrs17sim
    solvency2
+   smithwilson

@@ -95,6 +95,7 @@ customize them in any way you want, or create your own models from scratch.
 * :ref:`project_nestedlife`
 * :ref:`project_ifrs17sim`
 * :ref:`project_solvency2`
+* :ref:`project_smithwilson`
 * :doc:`projects/devguide/index`
 
 .. raw:: html
@@ -116,6 +117,7 @@ customize them in any way you want, or create your own models from scratch.
 
 * :ref:`notebooks_simplelife`
 * :ref:`notebooks_ifrs17sim`
+* :ref:`notebooks_smithwilson`
 
 .. raw:: html
 
