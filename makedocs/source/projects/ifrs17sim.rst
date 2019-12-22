@@ -89,9 +89,9 @@ thanks to Binder.
 
 .. toctree::
 
-   ifrs17sim_csm_waterfall.ipynb
-   ifrs17sim_charts_baseline.ipynb
-   ifrs17sim_charts_lapsescen.ipynb
+   notebooks/ifrs17sim/ifrs17sim_csm_waterfall.ipynb
+   notebooks/ifrs17sim/ifrs17sim_charts_baseline.ipynb
+   notebooks/ifrs17sim/ifrs17sim_charts_lapsescen.ipynb
 
 
 Project Modules

@@ -14,9 +14,9 @@ Jupyter Notebooks
 .. toctree::
    :hidden:
 
-   projects/simplelife-space-overview.ipynb
+   projects/notebooks/simplelife/simplelife-space-overview.ipynb
 
-* `simplelife Space Overview <projects/simplelife-space-overview.ipynb>`_  (*Run online now!* |binder simplelife_space_overview| )
+* `simplelife Space Overview <projects/notebooks/simplelife/simplelife-space-overview.ipynb>`_  (*Run online now!* |binder simplelife_space_overview| )
 
 .. _notebooks_ifrs17sim:
 
@@ -26,14 +26,14 @@ Jupyter Notebooks
 .. toctree::
    :hidden:
 
-   projects/ifrs17sim_csm_waterfall.ipynb
-   projects/ifrs17sim_charts_baseline.ipynb
-   projects/ifrs17sim_charts_lapsescen.ipynb
+   projects/notebooks/ifrs17sim/ifrs17sim_csm_waterfall.ipynb
+   projects/notebooks/ifrs17sim/ifrs17sim_charts_baseline.ipynb
+   projects/notebooks/ifrs17sim/ifrs17sim_charts_lapsescen.ipynb
 
 
-* `CSM Waterfall Chart <projects/ifrs17sim_csm_waterfall.ipynb>`_  (*Run online now!* |binder ifrs17sim_csm_waterfall| )
-* `IFRS17 Simulation (Baseline) <projects/ifrs17sim_charts_baseline.ipynb>`_  (*Run online now!* |binder ifrs17sim_charts_baseline| )
-* `IFRS17 Simulation (Lapse scenario) <projects/ifrs17sim_charts_lapsescen.ipynb>`_  (*Run online now!* |binder ifrs17sim_charts_lapsescen| )
+* `CSM Waterfall Chart <projects/notebooks/ifrs17sim/ifrs17sim_csm_waterfall.ipynb>`_  (*Run online now!* |binder ifrs17sim_csm_waterfall| )
+* `IFRS17 Simulation (Baseline) <projects/notebooks/ifrs17sim/ifrs17sim_charts_baseline.ipynb>`_  (*Run online now!* |binder ifrs17sim_charts_baseline| )
+* `IFRS17 Simulation (Lapse scenario) <projects/notebooks/ifrs17sim/ifrs17sim_charts_lapsescen.ipynb>`_  (*Run online now!* |binder ifrs17sim_charts_lapsescen| )
 
 
 .. _notebooks_smithwilson:
@@ -44,6 +44,6 @@ Jupyter Notebooks
 .. toctree::
    :hidden:
 
-   projects/smithwilson-overview.ipynb
+   projects/notebooks/smithwilson/smithwilson-overview.ipynb
 
-* `Smith-Wilson Model Overview <projects/smithwilson-overview.ipynb>`_ (*Run online now!* |binder smithwilson_overview| )
+* `Smith-Wilson Model Overview <projects/notebooks/smithwilson/smithwilson-overview.ipynb>`_ (*Run online now!* |binder smithwilson_overview| )

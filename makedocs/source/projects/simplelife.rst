@@ -119,7 +119,7 @@ thanks to Binder.
 
 .. toctree::
 
-   simplelife-space-overview.ipynb
+   notebooks/simplelife/simplelife-space-overview.ipynb
 
 Project Modules
 ---------------

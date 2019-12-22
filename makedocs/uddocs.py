@@ -27,4 +27,5 @@ def inplace_change(filename, oldstr, newstr):
 for prj in projects:
     s = (proj_dir + "\\lifelib\\projects\\" + prj + "\\").replace("\\", "\\\\")
     trg = ".\\build\\html\\projects\\generated\\" + prj + ".build_input.html"
-    inplace_change(trg, s, '')
+    if path.exists(trg):
+        inplace_change(trg, s, '')

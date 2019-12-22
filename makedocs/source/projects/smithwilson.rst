@@ -89,7 +89,7 @@ thanks to Binder.
 
 .. toctree::
 
-   smithwilson-overview.ipynb
+   notebooks/smithwilson/smithwilson-overview.ipynb
 
 
 Model Components

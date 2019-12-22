@@ -1,3 +1,5 @@
+import sys, shutil
+import pathlib
 import os
 import re
 import nbformat
@@ -64,8 +66,14 @@ entries = [
     {"project": "ifrs17sim",
      "notebook": "ifrs17sim_charts_lapsescen.ipynb",
      "is_target": is_target_ifrs17sim,
-     "proc": proc_ifrs17sim}
+     "proc": proc_ifrs17sim},
+
+    {"project": "smithwilson",
+     "notebook": "smithwilson-overview.ipynb",
+     "is_target": lambda node: True,
+     "proc": lambda node: None}
 ]
+
 
 def adjust_notebook(file, is_target, proc):
 
@@ -75,15 +83,54 @@ def adjust_notebook(file, is_target, proc):
     return nb
 
 
-thisdir = os.path.abspath(os.path.dirname(__file__))
+thisdir = pathlib.Path(os.path.abspath(os.path.dirname(__file__))).as_posix()
 
 
-for entry in entries:
-    project = entry.pop("project")
-    notebook = entry.pop("notebook")
-    os.chdir(thisdir + '/../lifelib/projects/' + project)
-    nb = adjust_notebook(notebook, **entry)
-    os.chdir(thisdir + '/source/projects')
-    if os.path.isfile(notebook):
-        os.remove(notebook)
-    nbformat.write(nb, notebook)
+def _get_dirs(project):
+
+    return (thisdir + '/../lifelib/projects/' + project,
+            thisdir + '/source/projects/notebooks/' + project)
+
+def prepare_notebooks():
+
+    for entry in entries:
+
+        entry = entry.copy()    # To not delete global entries directory
+        project = entry.pop("project")
+        notebook = entry.pop("notebook")
+        srcdir, trgdir = _get_dirs(project)
+
+        nb = adjust_notebook(srcdir + '/' + notebook, **entry)
+
+        if not os.path.exists(trgdir):
+            pathlib.Path(trgdir).mkdir(parents=True)
+
+        nbformat.write(nb, trgdir + '/' + notebook)
+
+
+def prepare_models():
+
+    for entry in entries:
+        project = entry["project"]
+        srcdir, trgdir = _get_dirs(project)
+
+        mdir = srcdir + "/" + "model"
+        if os.path.exists(mdir) and os.path.isdir(mdir):
+            shutil.copytree(mdir, trgdir + "/" + "model")
+
+
+def remove_notebooks():
+    nbdir = thisdir + "/source/projects/notebooks"
+    if os.path.exists(nbdir):
+        shutil.rmtree(nbdir)
+
+
+if __name__ == "__main__":
+    arg = sys.argv[1]
+    if arg == "prepare":
+        prepare_notebooks()
+        prepare_models()
+    elif arg == "remove":
+        remove_notebooks()
+    else:
+        raise KeyError
