@@ -268,7 +268,8 @@ sphinx_gallery_conf = {
         ['../../lifelib/projects/simplelife',
          '../../lifelib/projects/nestedlife',
          '../../lifelib/projects/ifrs17sim',
-         '../../lifelib/projects/solvency2']),
+         '../../lifelib/projects/solvency2',
+         '../../lifelib/projects/smithwilson']),
     # path where to save gallery generated examples
     'gallery_dirs': 'generated_examples',
     # Suppress warning:

@@ -108,6 +108,7 @@ customize them in any way you want, or create your own models from scratch.
 * :ref:`nestedlife_examples`
 * :ref:`ifrs17sim_examples`
 * :ref:`solvency2_examples`
+* :ref:`smithwilson_examples`
 
 .. raw:: html
 
