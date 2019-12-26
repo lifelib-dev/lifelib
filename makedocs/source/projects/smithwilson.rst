@@ -10,8 +10,9 @@ which extrapolates observed risk-free interest rates using the Smith-Wilson meth
 
 The Smith-Wilson method is used for extrapolating risk-free interest rates under the Solvency II framework.
 The method is described in
-`QIS 5 Risk-free interest rates – Extrapolation method`_,
+*"QIS 5 Risk-free interest rates – Extrapolation method"*,
 a technical paper issued by CEIOPS(the predecessor of EIOPA).
+The technical paper is available on `EIOPA's web site`_.
 Cells in this model are named consistently
 with the mathematical symbols in the technical paper.
 
@@ -22,16 +23,20 @@ A copy of the original work is included in this project
 under smith-wilson-py folder for your reference.
 
 The model contains default input values as references (refs),
-such as `spot_rates`, `N`, `UFR` and `alpha`.
+such as ``spot_rates``, ``N``, ``UFR`` and ``alpha``.
 By default, these values are set equal to the values used in Dejan's
 reference model.
+
 The original source of the input data is Switzerland EIOPA spot rates
-with LLP 25 years available from the following URL.
+with LLP 25 years available from the following source.
 
-Source: https://eiopa.europa.eu/Publications/Standards/EIOPA_RFR_20190531.zip;
-EIOPA_RFR_20190531_Term_Structures.xlsx; Tab: RFR_spot_no_VA
+Source: RFR_spot_no_VA tab in EIOPA_RFR_20190531_Term_Structures.xlsx,
+archived in EIOPA_RFR_20190531.zip, avaialble on
+`EIOPA's Risk-Free Interest Rate Term Structures web site`_.
 
+.. _EIOPA's Risk-Free Interest Rate Term Structures web site: https://eiopa.europa.eu/regulation-supervision/insurance/solvency-ii-technical-information/risk-free-interest-rate-term-structures
 
+.. _EIOPA's web site: https://eiopa.europa.eu/publications/qis/insurance/insurance-quantitative-impact-study-5/background-documents
 .. _QIS 5 Risk-free interest rates – Extrapolation method: https://eiopa.europa.eu/Publications/QIS/ceiops-paper-extrapolation-risk-free-rates_en-20100802.pdf
 
 .. contents:: Contents
@@ -52,6 +57,7 @@ The table below lists files and folders included in the project.
     smithwilson-overview.ipnb  Jupyter notebook that to create the model from scratch.
     model                      The smithwilson model.
     smith-wilson-py            Pure python implementation by Dejan Simic.
+    plot_smithwilson.py        Example script.
     ========================== ====================================================================
 
 How to use the model

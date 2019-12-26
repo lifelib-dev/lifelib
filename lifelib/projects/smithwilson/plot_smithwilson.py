@@ -5,6 +5,18 @@ Smith-Wilson extrapolation with various alphas
 This notebook extrapolates forward rates
 using the Smith-Wilson methods with various alphas, and draws
 the forward rates.
+See :doc:`/projects/smithwilson` for the details of the **smithwilson** model.
+
+The source of the input data is Switzerland EIOPA spot rates
+with LLP 25 years available from the following source.
+
+Source: RFR_spot_no_VA tab in EIOPA_RFR_20190531_Term_Structures.xlsx,
+archived in EIOPA_RFR_20190531.zip, avaialble on
+`EIOPA's Risk-Free Interest Rate Term Structures web site`_.
+
+.. _EIOPA's Risk-Free Interest Rate Term Structures web site: https://eiopa.europa.eu/regulation-supervision/insurance/solvency-ii-technical-information/risk-free-interest-rate-term-structures
+
+
 """
 
 import modelx as mx
