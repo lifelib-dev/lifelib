@@ -2,8 +2,9 @@
 Smith-Wilson extrapolation with various alphas
 ==============================================
 
-This notebook extrapolates forward rates
-using the Smith-Wilson methods with various alphas, and draws
+This notebook reads in the **smithwilson** model,
+and extrapolates forward rates
+using the Smith-Wilson method with various alphas, and draws
 the forward rates.
 See :doc:`/projects/smithwilson` for the details of the **smithwilson** model.
 
@@ -23,19 +24,20 @@ import modelx as mx
 import pandas as pd
 
 #%%
-# The code below reads the ``smithwilson`` model from "model" folder,
-# and assign the SmithWilson space of the model to ``space``.
+# The code below reads the ``smithwilson`` model from *"model"* folder,
+# and assign ``SmithWilson`` space in the model to
+# a global variable named ``space``.
 
 space = mx.read_model("model").SmithWilson
 
 #%%
-# The code below is for parametrizing the SmithWilson space by ``x``.
-# The parameter ``x`` takes integer values, and it means that
-# the alpha in the space is increased by ``x`` times 10% of the original
-# alpha. ``x`` can be negative.
+# The code below is for parametrizing  the ``SmithWilson`` space by ``x``.
+# The parameter ``x`` takes integer values, and they can be positive and negative.
+# the alpha in the ``SmithWilson[x]`` space is adjusted from the original alpha
+# by ``x`` times 10%.
 
 def parametrize(x):
-    return {"refs": {"alpha": alpha * (1 + 0.1 * x)}}
+    return {"refs": {"alpha": alpha * (1 + 0.1*x)}}
 
 space.formula = parametrize
 

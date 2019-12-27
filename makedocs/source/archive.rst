@@ -10,6 +10,7 @@ Past Documentation
 .. raw:: html
 
     <ul class="simple">
+    <li><a href="https://pastdocs.lifelib.io/docs-v0.0.12/index.html">lifelib v0.0.12</a></li>
     <li><a href="https://pastdocs.lifelib.io/docs-v0.0.11/index.html">lifelib v0.0.11</a></li>
     <li><a href="https://pastdocs.lifelib.io/docs-v0.0.10/index.html">lifelib v0.0.10</a></li>
     <li><a href="https://pastdocs.lifelib.io/docs-v0.0.9/index.html">lifelib v0.0.9</a></li>

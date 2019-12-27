@@ -4,6 +4,9 @@ Updates
 
 .. Latest Updates Begin
 
+* *27 December 2019:*
+  lifelib v0.0.13 is released. :doc:`smithwilson <projects/smithwilson>` project is added.
+
 * *6 July 2019:*
   lifelib v0.0.12 is released. See :ref:`releases` for details.
 
@@ -17,6 +20,8 @@ Updates
 
 * *2 February 2019:*
   lifelib v0.0.10 is released. See :ref:`releases` for details.
+
+.. Latest Updates End
 
 * *2 December 2018:*
   New :doc:`spyder` sub page is added in :doc:`quickstart`.
@@ -34,8 +39,6 @@ Updates
 
 * *3 October 2018:*
   Fix miscalculation in :func:`~ifrs17sim.projection.IntAccumCF` in :mod:`~ifrs17sim.projection`.
-
-.. Latest Updates End
 
 * *24 September 2018:*
   The landing page is updated.

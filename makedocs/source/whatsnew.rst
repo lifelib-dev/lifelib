@@ -45,6 +45,16 @@ Documentation for released versions of lifelib is available under
 :doc:`archive` page.
 
 
+v0.0.13 (27 Dec 2019)
+---------------------
+
+.. warning::
+
+   `modelx`_ needs to be updated to v0.1.0 for this version of lifelib.
+
+- :doc:`smithwilson <projects/smithwilson>` project is added. See the project page for details.
+
+
 v0.0.12 (6 July 2019)
 ---------------------
 

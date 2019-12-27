@@ -26,7 +26,6 @@ The model contains default input values as references (refs),
 such as ``spot_rates``, ``N``, ``UFR`` and ``alpha``.
 By default, these values are set equal to the values used in Dejan's
 reference model.
-
 The original source of the input data is Switzerland EIOPA spot rates
 with LLP 25 years available from the following source.
 
@@ -51,14 +50,14 @@ The table below lists files and folders included in the project.
 
 .. table::
 
-    ========================== ====================================================================
-    File/Folder                Notes
-    ========================== ====================================================================
-    smithwilson-overview.ipnb  Jupyter notebook that to create the model from scratch.
-    model                      The smithwilson model.
-    smith-wilson-py            Pure python implementation by Dejan Simic.
-    plot_smithwilson.py        Example script.
-    ========================== ====================================================================
+    ===================================== ==============================================================================================
+    File/Folder                           Notes
+    ===================================== ==============================================================================================
+    smithwilson-overview.ipnb             A `Jupyter notebook`_ showing how to read or create the model.
+    model                                 The smithwilson model.
+    smith-wilson-py                       Pure python implementation by Dejan Simic.
+    plot_smithwilson.py                   An :doc:`example script </generated_examples/index>` to plot forward rates with various alpha.
+    ===================================== ==============================================================================================
 
 How to use the model
 --------------------
@@ -73,7 +72,7 @@ You should pass your own project path as the last argument.
     > lifelib-create --template smithwilson C:\Users\fumito\mysmithwilson
 
 
-A Jupyter notebook is included in the created folder.
+A `Jupyter notebook`_ is included in the created folder.
 The notebook shows how to read in the model included in the project.
 It also shows how to create the same model from scratch.
 
