@@ -4,13 +4,11 @@
 
 The Smith-Wilson method is used for extrapolating risk-free interest rates under the Solvency II framework.
 The method is described in
-`QIS 5 Risk-free interest rates – Extrapolation method`_,
+*"QIS 5 Risk-free interest rates – Extrapolation method"*,
 a technical paper issued by CEIOPS (the predecessor of EIOPA).
+The technical paper is available on `EIOPA's web site`_.
 Cells in this space are named consistently
 with the mathematical symbols in `the technical paper`_.
-
-.. _QIS 5 Risk-free interest rates – Extrapolation method: https://eiopa.europa.eu/Publications/QIS/ceiops-paper-extrapolation-risk-free-rates_en-20100802.pdf
-
 
 .. rubric:: References
 
@@ -24,6 +22,8 @@ Attributes:
     alpha: The convergence parameter :math:`\\alpha`
 
 .. _Numpy : https://numpy.org/
+
+.. _EIOPA's web site: https://eiopa.europa.eu/publications/qis/insurance/insurance-quantitative-impact-study-5/background-documents
 
 .. _the technical paper: https://eiopa.europa.eu/Publications/QIS/ceiops-paper-extrapolation-risk-free-rates_en-20100802.pdf
 
