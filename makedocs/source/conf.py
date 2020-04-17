@@ -275,9 +275,12 @@ sphinx_gallery_conf = {
     # Suppress warning:
     'backreferences_dir': False,
     'download_all_examples': False,
-    'download_section_examples': False
+    'download_section_examples': False,
+    'capture_repr': ()
 }
 
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
 
 # blockdiag_fontpath = 'c:/windows/fonts/calibri.ttf'
 blockdiag_html_image_format = 'SVG'

@@ -27,7 +27,7 @@ except ImportError:
 model = ifrs17sim.build()
 proj = model.OuterProj[1]
 
-# %% CSM Amortization
+# CSM Amortization
 
 csmrf = get_waterfalldata(
             proj, 
@@ -40,7 +40,7 @@ csmrf = get_waterfalldata(
 
 draw_waterfall(csmrf, title='CSM Amortization')
 
-# %% Expected Cashflow Rollforwad
+# Expected Cashflow Rollforwad
 
 estcf = get_waterfalldata(
             proj,
@@ -55,7 +55,7 @@ estcf = get_waterfalldata(
 
 draw_waterfall(estcf, title='Expected Cashflows')
     
-# %% Actual Cashflow Rollforward
+# Actual Cashflow Rollforward
     
 actcf = get_waterfalldata(
             proj,
@@ -72,7 +72,7 @@ actcf = get_waterfalldata(
 
 draw_waterfall(actcf, stocks=[0, 5], title='Actual Cashflows')
 
-# %% IFRS17 Financial Performance
+# IFRS17 Financial Performance
 
 ifrspl = get_waterfalldata(
             proj,

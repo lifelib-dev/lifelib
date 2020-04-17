@@ -26,11 +26,11 @@ except ImportError:
 polid = 171
 proj = simplelife.build().Projection[polid]
 
-# %% Draw NetCashflows Graph
+# Draw NetCashflows Graph
 data = {'NetCashflows': [proj.NetInsurCF[t] for t in range(50)]}
 ax = pd.DataFrame(data).plot.line(marker='o', color='r')
 
-# %% Draw componets of net cashflows
+# Draw componets of net cashflows
 
 vars = ['PremIncome',
         'BenefitSurr',
@@ -38,7 +38,6 @@ vars = ['PremIncome',
         'ExpsMaint',
         'ExpsCommTotal',
         'ExpsAcq']
-
 
 df = proj.cells[vars].to_frame(range(50))
 
