@@ -4,6 +4,9 @@ Updates
 
 .. Latest Updates Begin
 
+* *18 April 2020:*
+  lifelib v0.0.14 is released. See :ref:`releases` for details.
+
 * *27 December 2019:*
   lifelib v0.0.13 is released. :doc:`smithwilson <projects/smithwilson>` project is added.
 

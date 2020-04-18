@@ -45,6 +45,23 @@ Documentation for released versions of lifelib is available under
 :doc:`archive` page.
 
 
+v0.0.14 (18 April 2020)
+-----------------------
+
+This release reflects changes for models to run on `modelx`_ v0.5.0.
+
+.. warning::
+
+    Due to backward incompatible changed introduced in `modelx`_
+    v0.5.0, models based on lifelib versions prior to this
+    release need manual changes in their source code.
+    See `commit 605802a`_ and `commit df083f6`_ for where and
+    how to make changes in such models.
+
+.. _commit 605802a: https://github.com/fumitoh/lifelib/commit/605802a0ea52d8fbec9a7380b6a0a0717de9bd71
+.. _commit df083f6: https://github.com/fumitoh/lifelib/commit/df083f681752eab16508e676c63f9e2f6ae7ca4f
+
+
 v0.0.13 (27 Dec 2019)
 ---------------------
 
