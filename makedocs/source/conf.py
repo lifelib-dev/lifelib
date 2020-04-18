@@ -273,7 +273,7 @@ sphinx_gallery_conf = {
     # path where to save gallery generated examples
     'gallery_dirs': 'generated_examples',
     # Suppress warning:
-    'backreferences_dir': False,
+    'backreferences_dir': None,
     'download_all_examples': False,
     'download_section_examples': False,
     'capture_repr': ()
