@@ -18,7 +18,7 @@ polid = 171
 outer = model.OuterProj[polid]
 inner = outer.InnerProj
 
-# %% Code block for overwiting the defaut model
+# Code block for overwiting the defaut model
 
 def SurrRateMult(t):
     if t == 0:
@@ -52,7 +52,7 @@ inner[1].SurrRateMult[1] = 2
 inner[2].SurrRateMult[2] = 0.5
 inner[3].SurrRateMult[3] = 1
 
-# %% Code block for PV graph 
+# Code block for PV graph
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -87,8 +87,7 @@ def draw_single_bar(data, ax, t0):
     ax.bar(np.arange(size) + t0 * (width + 0.05), data, width)
     
 
-
-# %% PV Test
+# PV Test
 if __name__ == '__main__':
     draw_bars('PV_NetCashflow')
 

@@ -64,7 +64,7 @@ def build(load_saved=False):
                    'PolicyAttrs': policy_attrs}
 
     def policy_params(PolicyID):
-        refs = {attr: PolicyData[PolicyID].cells[attr] for attr in PolicyAttrs}
+        refs = {attr: PolicyData[PolicyID].cells[attr]() for attr in PolicyAttrs}
         alias = {'PremTerm': refs['PolicyTerm'],
                  'x': refs['IssueAge'],
                  'm': refs['PolicyTerm'],
