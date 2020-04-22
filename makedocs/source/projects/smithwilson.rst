@@ -63,7 +63,7 @@ How to use the model
 --------------------
 
 Create a project folder
-by executing the following command in the *Anaconda* prompt
+by executing the following command in the *WinPython Command Prompt*
 as explained in :ref:`create-a-project` section.
 You should pass your own project path as the last argument.
 

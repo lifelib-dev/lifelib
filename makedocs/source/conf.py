@@ -130,6 +130,7 @@ html_theme_options = {
     # an arbitrary url.
     'navbar_links': [
         # ("Quick Start", "quickstart"),
+        ("Download", "download"),
         ("Projects", "projects/index"),
         ("Gallery", "generated_examples/index")
     ],

@@ -65,13 +65,22 @@ customize them in any way you want, or create your own models from scratch.
 
 :doc:`... See more updates<updates>`
 
+
 .. raw:: html
 
        </div>
-       <div class="col-md-6">
+       <div class="col-md-3">
+          <h2><a href="download.html">Download</a></h2>
+
+            Download lifelib with WinPython from <a href="download.html">here</a>.
+            No installation is required. Just unzip the file and it's all set.
+
+.. raw:: html
+
+       </div>
+       <div class="col-md-3">
           <h2><a href="quickstart.html">Quick Start</a></h2>
 
-* :ref:`installation`
 * :ref:`create-a-project`
 * :ref:`running-notebooks`
 * :doc:`spyder`
@@ -290,6 +299,7 @@ on Linkedin and send a message to him (He may take a while to respond).
    :maxdepth: 2
 
    whatsnew
+   download
    quickstart
    projects/index
    generated_examples/index
