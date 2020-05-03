@@ -4,6 +4,9 @@ Updates
 
 .. Latest Updates Begin
 
+* *29 April 2020:*
+  New download available on :doc:`download` page.
+
 * *22 April 2020:*
   lifelib with WinPython is available on :doc:`download` page.
 
