@@ -4,6 +4,9 @@ Updates
 
 .. Latest Updates Begin
 
+* *10 May 2020:*
+  New download available on :doc:`download` page.
+
 * *29 April 2020:*
   New download available on :doc:`download` page.
 
