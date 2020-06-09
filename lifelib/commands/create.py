@@ -22,7 +22,7 @@ def main(argv=sys.argv[1:]):
     proj_dir = os.path.abspath(args['proj_dir'])
 
     if args['template'] not in TEMPLATES:
-        raise "Template %s not found" % args['template']
+        raise ValueError("Template %s not found" % args['template'])
     else:
         template = args['template']
 
