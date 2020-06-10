@@ -44,8 +44,32 @@ Creating a Project
 ------------------
 
 lifelib is essentially a collections of folders called projects, containing
-source and data files to build models. You use lifelib by copying
-a project from lifelib package to your own path.
+source and data files to build models.
+You can create your copies of lifelib projects, either from IPython consoles
+or from command prompts.
+
+.. rubric:: Creating a project from IPython
+
+You can create a copy of a lifelib project from IPython using
+``lifelib.create`` function::
+
+    >>> import lifelib
+
+    >>> lifelib.create("simplelife", "folder")
+
+The first parameter is the name of a lifelib project. If not given,
+"simplelife" is assigned. The second parameter is the folder path to create.
+If only a folder name is given, the folder is created under the current
+folder. The current folder can be reported by ``os.getcwd`` function::
+
+    >>> import os
+
+    >>> os.getcwd()
+
+If the second argument is omitted, the first parameter, which is
+the project name is used.
+
+.. rubric:: Creating a project from command prompt
 
 A command ``lifelib-create`` helps you create a new project folder
 by copying a template project from within the lifelib package to your desired

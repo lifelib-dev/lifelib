@@ -1,9 +1,8 @@
 import os.path
+from lifelib._dirs import TEMPLATE_DIR, TEMPLATES
+from lifelib.commands.create import create
 
 VERSION = (0, 0, 15, "dev")
 __version__ = '.'.join([str(x) for x in VERSION])
-LIB_DIR = os.path.abspath(os.path.dirname(__file__))
-TEMPLATE_DIR = os.path.join(LIB_DIR, 'projects')
-TEMPLATES = [f for f in os.listdir(TEMPLATE_DIR)
-             if os.path.isdir(os.path.join(TEMPLATE_DIR, f)) and f[0] != '_']
+
 
