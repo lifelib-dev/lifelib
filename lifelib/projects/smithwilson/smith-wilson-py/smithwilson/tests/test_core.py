@@ -146,7 +146,7 @@ class TestSmithWilson(unittest.TestCase):
     def test_fit_smithwilson_rates_actual(self):
         """Test estimation of yield curve fitted with the Smith-Wilson algorithm.
            This example uses an actual example from EIOPA. Deviations must be less than 1bps (0.01%).
-           Source: https://eiopa.europa.eu/Publications/Standards/EIOPA_RFR_20190531.zip
+           Source: https://wayback.archive-it.org/org-1495/20191229100044/https:/eiopa.europa.eu/Publications/Standards/EIOPA_RFR_20190531.zip
                    EIOPA_RFR_20190531_Term_Structures.xlsx; Tab: RFR_spot_no_VA; Switzerland
         """
 

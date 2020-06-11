@@ -52,7 +52,7 @@ def wilson_function(t1: np.ndarray, t2: np.ndarray, alpha: float, ufr: float) ->
             * (e^(α * min(t1, t2)) - e^(-α * min(t1, t2))))
 
     Source: EIOPA QIS 5 Technical Paper; Risk-free interest rates – Extrapolation method; p.11ff
-    https://eiopa.europa.eu/Publications/QIS/ceiops-paper-extrapolation-risk-free-rates_en-20100802.pdf
+    https://wayback.archive-it.org/org-1495/20191229100044/https:/eiopa.europa.eu/Publications/QIS/ceiops-paper-extrapolation-risk-free-rates_en-20100802.pdf
 
     Args:
         t1: time to maturity vector of length m
@@ -93,7 +93,7 @@ def fit_parameters(rates: np.ndarray, t: np.ndarray, alpha: float, ufr: float) -
         ζ = W^-1 * (μ - P)
 
     Source: EIOPA QIS 5 Technical Paper; Risk-free interest rates – Extrapolation method; p.11ff
-    https://eiopa.europa.eu/Publications/QIS/ceiops-paper-extrapolation-risk-free-rates_en-20100802.pdf
+    https://wayback.archive-it.org/org-1495/20191229100044/https:/eiopa.europa.eu/Publications/QIS/ceiops-paper-extrapolation-risk-free-rates_en-20100802.pdf
 
     Args:
         rates: Observed zero-coupon rates vector of length n
@@ -144,7 +144,7 @@ def fit_smithwilson_rates(rates_obs: np.ndarray, t_obs: np.ndarray, t_target: np
     In the last case, t can be any maturity vector
 
     Source: EIOPA QIS 5 Technical Paper; Risk-free interest rates – Extrapolation method; p.11ff
-    https://eiopa.europa.eu/Publications/QIS/ceiops-paper-extrapolation-risk-free-rates_en-20100802.pdf
+    https://wayback.archive-it.org/org-1495/20191229100044/https:/eiopa.europa.eu/Publications/QIS/ceiops-paper-extrapolation-risk-free-rates_en-20100802.pdf
 
     Args:
         rates_obs: Initially observed zero-coupon rates vector before LLP of length n

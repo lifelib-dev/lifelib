@@ -41,7 +41,7 @@ the solvency capital requirement standard formula under Solvency II.
 
 References:
     * `COMMISSION DELEGATED REGULATION (EU) 2015/35 of 10 October 2014 <https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32015R0035>`_
-    * `Solvency II Technical Specifications <https://eiopa.europa.eu/regulation-supervision/insurance/solvency-ii/solvency-ii-technical-specifications>`_
+    * `Solvency II Technical Specifications <https://wayback.archive-it.org/org-1495/20191229100044/https:/eiopa.europa.eu/regulation-supervision/insurance/solvency-ii/solvency-ii-technical-specifications>`_
 
 
 Model Structure

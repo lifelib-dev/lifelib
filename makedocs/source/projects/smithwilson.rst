@@ -33,10 +33,10 @@ Source: RFR_spot_no_VA tab in EIOPA_RFR_20190531_Term_Structures.xlsx,
 archived in EIOPA_RFR_20190531.zip, avaialble on
 `EIOPA's Risk-Free Interest Rate Term Structures web site`_.
 
-.. _EIOPA's Risk-Free Interest Rate Term Structures web site: https://eiopa.europa.eu/regulation-supervision/insurance/solvency-ii-technical-information/risk-free-interest-rate-term-structures
+.. _EIOPA's Risk-Free Interest Rate Term Structures web site: https://wayback.archive-it.org/org-1495/20191229100044/https:/eiopa.europa.eu/regulation-supervision/insurance/solvency-ii-technical-information/risk-free-interest-rate-term-structures
 
-.. _EIOPA's web site: https://eiopa.europa.eu/publications/qis/insurance/insurance-quantitative-impact-study-5/background-documents
-.. _QIS 5 Risk-free interest rates – Extrapolation method: https://eiopa.europa.eu/Publications/QIS/ceiops-paper-extrapolation-risk-free-rates_en-20100802.pdf
+.. _EIOPA's web site: https://wayback.archive-it.org/org-1495/20191229100044/https:/eiopa.europa.eu/publications/qis/insurance/insurance-quantitative-impact-study-5/background-documents
+.. _QIS 5 Risk-free interest rates – Extrapolation method: https://wayback.archive-it.org/org-1495/20191229100044/https:/eiopa.europa.eu/Publications/QIS/ceiops-paper-extrapolation-risk-free-rates_en-20100802.pdf
 
 .. contents:: Contents
    :depth: 1

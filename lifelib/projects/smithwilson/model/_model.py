@@ -9,7 +9,7 @@ a technical paper issued by CEIOPS (the predecessor of EIOPA).
 Cells in this model are named consistently
 with the mathematical symbols in the technical paper.
 
-.. _QIS 5 Risk-free interest rates – Extrapolation method: https://eiopa.europa.eu/Publications/QIS/ceiops-paper-extrapolation-risk-free-rates_en-20100802.pdf
+.. _QIS 5 Risk-free interest rates – Extrapolation method: https://wayback.archive-it.org/org-1495/20191229100044/https:/eiopa.europa.eu/Publications/QIS/ceiops-paper-extrapolation-risk-free-rates_en-20100802.pdf
 
 """
 

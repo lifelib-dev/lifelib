@@ -23,9 +23,9 @@ Attributes:
 
 .. _Numpy : https://numpy.org/
 
-.. _EIOPA's web site: https://eiopa.europa.eu/publications/qis/insurance/insurance-quantitative-impact-study-5/background-documents
+.. _EIOPA's web site: https://wayback.archive-it.org/org-1495/20191229100044/https:/eiopa.europa.eu/publications/qis/insurance/insurance-quantitative-impact-study-5/background-documents
 
-.. _the technical paper: https://eiopa.europa.eu/Publications/QIS/ceiops-paper-extrapolation-risk-free-rates_en-20100802.pdf
+.. _the technical paper: https://wayback.archive-it.org/org-1495/20191229100044/https:/eiopa.europa.eu/Publications/QIS/ceiops-paper-extrapolation-risk-free-rates_en-20100802.pdf
 
 .. _the standard math library: https://docs.python.org/3/library/math.html
 """
