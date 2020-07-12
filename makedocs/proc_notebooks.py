@@ -51,7 +51,7 @@ entries = [
     {"project": "simplelife",
      "notebook": "simplelife-space-overview.ipynb",
      "is_target": is_target_simplelife,
-     "proc": proc_simplelife},
+     "proc": lambda node: None},
 
     {"project": "ifrs17sim",
      "notebook": "ifrs17sim_csm_waterfall.ipynb",
@@ -78,8 +78,11 @@ entries = [
 def adjust_notebook(file, is_target, proc):
 
     nb = nbformat.read(file, as_version=nbformat.NO_CONVERT)
-    node = next(c for c in nb.cells if is_target(c))
-    proc(node)
+    try:
+        node = next(c for c in nb.cells if is_target(c))
+        proc(node)
+    except StopIteration:
+        pass
     return nb
 
 
@@ -90,6 +93,7 @@ def _get_dirs(project):
 
     return (thisdir + '/../lifelib/projects/' + project,
             thisdir + '/source/projects/notebooks/' + project)
+
 
 def prepare_notebooks():
 
@@ -114,9 +118,10 @@ def prepare_models():
         project = entry["project"]
         srcdir, trgdir = _get_dirs(project)
 
-        mdir = srcdir + "/" + "model"
-        if os.path.exists(mdir) and os.path.isdir(mdir):
-            shutil.copytree(mdir, trgdir + "/" + "model")
+        srcmodel = srcdir + "/" + "model"
+        trgmodel = trgdir + "/" + "model"
+        if os.path.exists(srcmodel) and os.path.isdir(srcmodel) and not os.path.exists(trgmodel):
+            shutil.copytree(srcmodel, trgdir + "/" + "model")
 
 
 def remove_notebooks():

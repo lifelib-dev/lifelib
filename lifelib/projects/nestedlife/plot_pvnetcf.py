@@ -6,12 +6,7 @@ Draw a graph of present value of cashflow
 """
 import modelx as mx
 
-try:
-    import nestedlife.nestedlife as nestedlife
-except ImportError:
-    import nestedlife
-
-model = nestedlife.build()
+model = mx.read_model("model")
 
 # Policy point ID and aliases
 polid = 171

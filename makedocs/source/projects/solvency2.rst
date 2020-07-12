@@ -113,17 +113,17 @@ Project Modules
    :toctree: generated/
    :template: llmodule.rst
 
-   ~solvency2
-   ~scr_life
-   ~override.mortality
-   ~override.lapse
-   ~override.lapse_mass
-   ~override.expense
-   ~present_value
-   ~build_input
-   ~build_input_scr
-   ~lifetable
-   ~policy
-   ~assumption
-   ~economic
-   ~projection
+   ~model
+   ~model.Assumption
+   ~model.BaseProj
+   ~model.Economic
+   ~model.LifeTable
+   ~model.Override.Expense
+   ~model.Override.Lapse
+   ~model.Override.LapseMass
+   ~model.Override.Mortality
+   ~model.SCR_life.Projection
+   ~model.Policy
+   ~model.PV
+   ~model.SCR_life
+

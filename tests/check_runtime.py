@@ -1,5 +1,5 @@
 import sys
-from lifelib.projects.simplelife import simplelife
+from lifelib.projects.simplelife.scripts import simplelife
 
 if '' not in sys.path:
     sys.path.insert(0, '')

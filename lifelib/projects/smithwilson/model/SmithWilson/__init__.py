@@ -19,7 +19,7 @@ Attributes:
     N: Number of durations for which the observed spot rates are available
     spot_rates: List of the observed spot rates (annual compound)
     UFR: The ultimate forward rate (continuous compound)
-    alpha: The convergence parameter :math:`\\alpha`
+    alpha: The convergence parameter :math:`\alpha`
 
 .. _Numpy : https://numpy.org/
 
@@ -214,9 +214,9 @@ def R(i):
 
 np = ("Module", "numpy")
 
-log = ("Pickle", "SmithWilson/data/log")
+log = ("Pickle", 2074070178376)
 
-exp = ("Pickle", "SmithWilson/data/exp")
+exp = ("Pickle", 2074070177016)
 
 UFR = 0.028587456851912472
 
@@ -224,4 +224,4 @@ alpha = 0.128562
 
 N = 25
 
-spot_rates = ("Pickle", "SmithWilson/data/spot_rates")
+spot_rates = ("Pickle", 2072439860616)

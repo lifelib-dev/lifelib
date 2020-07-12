@@ -16,15 +16,10 @@ The live version of the notebook is available online.
    :end-before: End binder ifrs17sim_charts_baseline
 
 """
-import matplotlib.pyplot as plt
 from draw_charts import draw_waterfall, get_waterfalldata
+import modelx as mx
 
-try:
-    import ifrs17sim.ifrs17sim as ifrs17sim
-except ImportError:
-    import ifrs17sim
-
-model = ifrs17sim.build()
+model = mx.read_model("model")
 proj = model.OuterProj[1]
 
 # CSM Amortization

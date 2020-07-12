@@ -8,14 +8,10 @@ Fulfilment CF, CSM, Cash balances
 # When the current directory is this folder,
 # The try-except statement below can be replaced by just the last two
 # import statements.
-try:
-    import ifrs17sim.ifrs17sim as ifrs17sim
-    import ifrs17sim.draw_charts as draw_charts
-except ImportError:
-    import ifrs17sim
-    import draw_charts
+import draw_charts
+import modelx as mx
 
-model = ifrs17sim.build()
+model = mx.read_model("model")
 proj = model.OuterProj[171]
 
 

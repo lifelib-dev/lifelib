@@ -6,12 +6,7 @@ Lapse assumption changes based on previous year experience.
 """
 import modelx as mx
 
-try:
-    import nestedlife.nestedlife as nestedlife
-except ImportError:
-    import nestedlife
-
-model = nestedlife.build()
+model = mx.read_model("model")
 
 # Policy point ID and aliases
 polid = 171

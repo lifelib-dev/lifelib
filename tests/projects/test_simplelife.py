@@ -3,7 +3,7 @@ import os.path
 import pickle
 import pathlib
 
-from lifelib.projects.simplelife import simplelife
+from lifelib.projects.simplelife.scripts import simplelife
 from tests.data.generate_testdata import round_signif
 
 if '' not in sys.path:

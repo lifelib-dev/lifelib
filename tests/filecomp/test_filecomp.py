@@ -5,10 +5,10 @@ import filecmp
 import pytest
 
 import lifelib
-import lifelib.projects.simplelife as simplelife
-import lifelib.projects.nestedlife as nestedlife
-import lifelib.projects.ifrs17sim as ifrs17sim
-import lifelib.projects.solvency2 as solvency2
+import lifelib.projects.simplelife.scripts as simplelife
+import lifelib.projects.nestedlife.scripts as nestedlife
+import lifelib.projects.ifrs17sim.scripts as ifrs17sim
+import lifelib.projects.solvency2.scripts as solvency2
 
 simplepath = simplelife.__path__[0]
 nestedpath = nestedlife.__path__[0]
@@ -24,7 +24,7 @@ common_files = [('build_input.py', all_projects),
                 ('economic.py', all_projects),
                 ('projection.py', all_projects),
                 ('present_value.py', all_projects),
-                ('draw_charts.py', [nestedpath, ifrs17simpath]),
+                ('draw_charts.py', [nestedpath + "/..", ifrs17simpath + "/.."]),
                 ('input.xlsx', all_projects)]
 
 

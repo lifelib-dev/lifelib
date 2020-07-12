@@ -101,12 +101,12 @@ Project Modules
    :toctree: generated/
    :template: llmodule.rst
 
-   ~ifrs17sim
-   ~ifrs
-   ~present_value
-   ~build_input
-   ~lifetable
-   ~policy
-   ~assumption
-   ~economic
-   ~projection
+   ~model
+   ~model.Assumption
+   ~model.BaseProj
+   ~model.Economic
+   ~model.LifeTable
+   ~model.Policy
+   ~model.OuterProj
+   ~model.OuterProj.InnerProj
+   ~model.OuterProj.InnerProj.PresentValue

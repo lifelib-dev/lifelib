@@ -85,10 +85,12 @@ Project Modules
    :toctree: generated/
    :template: llmodule.rst
 
-   ~nestedlife
-   ~build_input
-   ~lifetable
-   ~policy
-   ~assumption
-   ~economic
-   ~projection
+   ~model
+   ~model.Assumption
+   ~model.BaseProj
+   ~model.Economic
+   ~model.LifeTable
+   ~model.Policy
+   ~model.PresentValue
+   ~model.OuterProj
+   ~model.OuterProj.InnerProj

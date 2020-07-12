@@ -128,14 +128,14 @@ Project Modules
    :toctree: generated/
    :template: llmodule.rst
 
-   ~simplelife
-   ~build_input
-   ~lifetable
-   ~policy
-   ~assumption
-   ~economic
-   ~projection
-   ~present_value
+   ~model
+   ~model.LifeTable
+   ~model.Policy
+   ~model.Assumption
+   ~model.Economic
+   ~model.BaseProj
+   ~model.PV
+   ~model.Projection
 
 
 

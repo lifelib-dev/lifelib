@@ -13,18 +13,11 @@ Draw a graph of liability cashflows of a simple whole life policy
 """
 import pandas as pd
 import modelx as mx
-
 import seaborn as sns
 sns.set()
 
-try:
-    import simplelife.simplelife as simplelife
-except ImportError:
-    import simplelife
-
-
 polid = 171
-proj = simplelife.build().Projection[polid]
+proj = mx.read_model("model").Projection[polid]
 
 # Draw NetCashflows Graph
 data = {'NetCashflows': [proj.NetInsurCF[t] for t in range(50)]}
