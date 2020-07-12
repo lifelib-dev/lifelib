@@ -1,4 +1,9 @@
 
+/* Suppress warnings output to stderr */
+.sphx-glr-script-out {
+    display: none;
+}
+
 .sphx-glr-download-link-note {
     display: none;
 }

@@ -10,12 +10,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set()
 
-# try:
-#     import solvency2.solvency2 as solvency2
-# except ImportError:
-#     import solvency2
-
-# model = solvency2.build()
 model = mx.read_model("model")
 
 
