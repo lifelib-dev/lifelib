@@ -4,6 +4,8 @@
 Quick Start
 ===========
 
+.. _getting-lifelib:
+
 Getting lifelib
 ---------------
 
@@ -24,8 +26,35 @@ lifelib on your `Anaconda`_ environment, follow the instruction.
    installation
 
 
-Running Online
---------------
+.. _using-spyder:
+
+Using lifelib on Spyder
+-------------------------
+`Spyder`_ is a popular scientific Python IDE,
+and it's bundled in with WinPython by default.
+**Spyder plugin for modelx** adds widgets to Spyder,
+letting users to
+develop models with modelx more intuitively in Spyder.
+Go on to :doc:`spyder` page for more details.
+
+The Spyder plugin for modelx is pre-installed in the zip file :doc:`here <download>`,
+and the Spyder in the file is pre-configured and customized.
+
+.. toctree::
+   :maxdepth: 2
+
+   spyder
+
+.. _Spyder: https://www.spyder-ide.org/
+.. _Anaconda: https://www.anaconda.com/
+
+.. _running-notebooks:
+
+Running Notebooks
+-----------------
+
+Running Notebooks online
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 Jupyter Notebook enables you to run Python code in your browser.
 lifelib comes with some Jupyter notebooks, and the quickest way
@@ -34,68 +63,9 @@ Go to :doc:`notebooks` page and click one of the banner links.
 The link will take you to a web page where the selected notebook starts loading.
 Once the notebook loads, select **Cell** menu,
 and then select **Run All** to run & build models and get results and draw graphs.
-To run the notebooks locally on your computer,
-refer to `running-notebooks`_ section.
 
-
-.. _create-a-project:
-
-Creating a Project
-------------------
-
-lifelib is essentially a collections of folders called projects, containing
-source and data files to build models.
-You can create your copies of lifelib projects, either from IPython consoles
-or from command prompts.
-
-.. rubric:: Creating a project from IPython
-
-You can create a copy of a lifelib project from IPython using
-``lifelib.create`` function::
-
-    >>> import lifelib
-
-    >>> lifelib.create("simplelife", "folder")
-
-The first parameter is the name of a lifelib project. If not given,
-"simplelife" is assigned. The second parameter is the folder path to create.
-If only a folder name is given, the folder is created under the current
-folder. The current folder can be reported by ``os.getcwd`` function::
-
-    >>> import os
-
-    >>> os.getcwd()
-
-If the second argument is omitted, the first parameter, which is
-the project name is used.
-
-.. rubric:: Creating a project from command prompt
-
-A command ``lifelib-create`` helps you create a new project folder
-by copying a template project from within the lifelib package to your desired
-folder path.
-
-For example, to create a project folder named
-``mylife`` under the path ``C:\Users\fumito`` by copying lifelib's default project
-template :py:mod:`simplelife<simplelife>`,
-
-Go to the unzipped folder and start *WinPython Command Prompt.exe*.
-Type the following command on the command prompt::
-
-    > lifelib-create --template simplelife C:\Users\fumito\mylife
-
-Alternatively, since :py:mod:`simplelife<simplelife>` is the default template,
-you can get away with `--template` option like this::
-
-    > lifelib-create C:\Users\fumito\mylife
-
-Check that the folder is created and populated with files
-copied from lifelib's default project.
-
-.. _running-notebooks:
-
-Running Notebooks
------------------
+Running Notebooks locally
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Jupyter notebooks on :doc:`notebooks` page are also included in lifelib
 projects, and can be executed on your local computer by running
@@ -116,22 +86,3 @@ and Jupyter Notebook session starts in the tab.
 files with ``ipynb`` extension are Jupyter notebooks. By double-clicking one,
 it opens in another tab, and you'll see the same page as you see it online.
 
-Using Spyder plugin
--------------------
-`Spyder`_ is a popular scientific Python IDE,
-and it's bundled in with WinPython by default.
-**Spyder plugin for modelx** adds widgets to Spyder,
-letting users to
-develop models with modelx more intuitively in Spyder.
-Go on to :doc:`spyder` page for more details.
-
-The Spyder plugin for modelx is pre-installed in the zip file here,
-and the Spyder in the file is pre-configured and customized.
-
-.. toctree::
-   :maxdepth: 2
-
-   spyder
-
-.. _Spyder: https://www.spyder-ide.org/
-.. _Anaconda: https://www.anaconda.com/

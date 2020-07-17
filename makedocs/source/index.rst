@@ -70,20 +70,22 @@ customize them in any way you want, or create your own models from scratch.
 
        </div>
        <div class="col-md-3">
-          <h2><a href="download.html">Download</a></h2>
 
-            Download lifelib with WinPython from <a href="download.html">here</a>.
-            No installation is required. Just unzip the file and it's all set.
+          <h2><a href="quickstart.html">Quick Start</a></h2>
+
+* :ref:`getting-lifelib`
+* :ref:`using-spyder`
+* :ref:`running-notebooks`
+
 
 .. raw:: html
 
        </div>
        <div class="col-md-3">
-          <h2><a href="quickstart.html">Quick Start</a></h2>
+          <h2><a href="download.html">Download</a></h2>
 
-* :ref:`create-a-project`
-* :ref:`running-notebooks`
-* :doc:`spyder`
+            Download lifelib with WinPython from <a href="download.html">here</a>.
+            No installation is required. Just unzip the file and it's all set.
 
 .. raw:: html
 
@@ -147,7 +149,7 @@ customize them in any way you want, or create your own models from scratch.
 * Readable formulas
 * Multidimensional data structure
 * Instant evaluation
-* Dependency tracking (Under development)
+* Dependency tracking
 * Reusable code
 * Object oriented models
 * Interface with Excel/Pandas
@@ -193,53 +195,33 @@ customize them in any way you want, or create your own models from scratch.
    <div class="container-fluid">
      <div class="row">
        <div class="col-md-6">
-          <h2>How <strong>lifelib</strong> works</h2>
 
-You can create an actuarial projection model as `modelx`_ `Model`_ object by:
+          <h2><strong>modelx</strong> sites</h2>
 
-- Creating a project folder from a lifelib project template,
-- Build a `modelx`_ `Model`_ from source modules and
-  input data in the project, by running
-  :py:func:`build <simplelife.simplelife.build>` function.
+**modelx** is a Python package to use Python like a spreadsheet.
+modelx provides the foundation of lifelib. Find out more
+about modelx on the following sites.
 
-Once the model is built, they are available as a modelx `Model`_ object
-in Python console. The model is composed of `Space`_.
-Spaces contain `Cells`_ and other spaces.
-`Cells`_ are much like cells in spreadsheets, which in turn, can store
-formulas and associated values.
+========================== ====================================
+Home page                  https://modelx.io
+Documentation site         https://docs.modelx.io
+Development site           https://github.com/fumitoh/modelx
+modelx on PyPI             https://pypi.org/project/modelx/
+========================== ====================================
 
-With a lifelib model, you can:
-
-- Get calculated values by simply accessing model elements,
-- Change the model by changing input and writing formulas in Python,
-- View the tree of model elements in graphical user interface,
-- Output results to Pandas objects,
-- Save the model, load it back again, and do much more.
-
-Start from :doc:`quickstart` page.
-
-
-.. _modelx: http://docs.modelx.io
-.. _Model: http://docs.modelx.io/en/latest/reference/generated/modelx.core.model.Model.html
-.. _Space: http://docs.modelx.io/en/latest/reference/generated/modelx.core.space.Space.html
-.. _Cells: http://docs.modelx.io/en/latest/reference/generated/modelx.core.cells.Cells.html
 
 .. raw:: html
 
        </div>
        <div class="col-md-6">
-          <h2>Got questions?</h2>
 
-If you have troubles to shoot, questions to be answered,
-post them on `stackoverflow <https://stackoverflow.com/>`_
-and add ``lifelib`` tag to the posts.
-If you find bugs or want to request new features,
+          <h2>Ask questions</h2>
+
+If you have questions about lifelib, find bugs or want to request new features,
 submit issues on
 `lifelib development site <https://github.com/fumitoh/lifelib/issues>`_
 on github.
 Or, connect with
-`Fumito Hamamura <https://www.linkedin.com/in/fumito-hamamura>`_
-on Linkedin and send a message to him (He may take a while to respond).
 
 .. raw:: html
 
@@ -255,16 +237,17 @@ on Linkedin and send a message to him (He may take a while to respond).
    <div class="container-fluid">
      <div class="row">
        <div class="col-md-6">
+
           <h2>Links</h2>
 
-* `modelx`_: A Python package for building complex models of
-  formulas and data.
+Connect with `Fumito Hamamura <https://www.linkedin.com/in/fumito-hamamura>`_
+or follow him on LinkedIn to subscribe to updates on lifelib and modelx.
 
-* `lifelib on PyPI <https://pypi.python.org/pypi/lifelib/>`_: lifelib's Python
-  Package Index page.
-
-* `Development site <https://github.com/fumitoh/lifelib>`_: Github repository of lifelib.
-
+========================== ============================================
+Development site           https://github.com/fumitoh/lifelib
+lifelib on PyPI            https://pypi.org/project/lifelib/
+Author's profile           https://www.linkedin.com/in/fumito-hamamura
+========================== ============================================
 
 .. raw:: html
 

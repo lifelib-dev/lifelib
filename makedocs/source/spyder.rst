@@ -26,15 +26,18 @@ For more about Spyder plugin for modelx, refer to
 `Spyder plugin`_ page on modelx documentation site.
 
 .. Note::
-    lifelib models are built in the form of `modelx`_ objects.
-    Refer to `modelx`_ documentation when you have
-    questions about `modelx`_ as you proceed with this guide.
+    lifelib models are built in the form of **modelx** objects.
+    The `modelx documentation`_ site includes a step-by-step tutorial
+    using simpler examples.
+    Check out `modelx documentation`_  site to learn modelx, or
+    when you have
+    questions about modelx as you proceed with this guide.
     To learn Python itself, there are many good online tutorials,
     such as
     `the one on Python's official web site <https://docs.python.org/3/tutorial/>`_.
 
 .. _Pandas: http://pandas.pydata.org/
-.. _modelx: http://docs.modelx.io
+.. _modelx documentation: http://docs.modelx.io
 .. _Spyder: https://www.spyder-ide.org/
 .. _Spyder plugin: https://docs.modelx.io/en/latest/spyder.html
 
@@ -43,44 +46,85 @@ For more about Spyder plugin for modelx, refer to
    :local:
 
 
-Building a Model
+.. _create-a-project:
+
+Creating a Project
+------------------
+
+lifelib is essentially a collections of folders called projects, containing
+source and data files to build models.
+You can create your copies of lifelib projects, either from IPython consoles
+or from command prompts.
+
+.. rubric:: Creating a project from IPython
+
+You can create a copy of a lifelib project from Spyder's IPython console using
+``lifelib.create`` function::
+
+    >>> import lifelib
+
+    >>> lifelib.create("simplelife", "folder")
+
+The first parameter is the name of a lifelib project. If not given,
+"simplelife" is assigned. The second parameter is the folder path to create.
+If only a folder name is given, the folder is created under the current
+folder. The current folder can be reported by ``os.getcwd`` function::
+
+    >>> import os
+
+    >>> os.getcwd()
+
+If the second argument is omitted, the first parameter, which is
+the project name is used.
+
+.. rubric:: Creating a project from command prompt
+
+Alternatively, you can create a project from a command prompt.
+A command ``lifelib-create`` helps you create a new project folder
+by copying a template project from within the lifelib package to your desired
+folder path.
+
+For example, to create a project folder named
+``mylife`` under the path ``C:\Users\fumito`` by copying lifelib's default project
+template :py:mod:`simplelife<simplelife>`,
+
+Go to the unzipped folder and start *WinPython Command Prompt.exe*.
+Type the following command on the command prompt::
+
+    > lifelib-create --template simplelife C:\Users\fumito\mylife
+
+Alternatively, since :py:mod:`simplelife<simplelife>` is the default template,
+you can get away with `--template` option like this::
+
+    > lifelib-create C:\Users\fumito\mylife
+
+Check that the folder is created and populated with files
+copied from lifelib's default project.
+
+.. _read-a-model:
+
+Reading a Model
 ----------------
 
-Building a model is a process to construct a Model object in a live
-Python session from script and source files in your project folder.
+The project folder you just created contains a model folder named ``model``.
+The model is read from the model folder into a live IPython session.
 
-By default, you have a project module in your project folder, which has
-the same name as the project name, such as
-:mod:`simplelife.py <simplelife.simplelife>`.
-To build a model, import the project module into a Python session and
-call ``build`` function in the module. Let's see how this can be
-done in Spyder.
+To read in the model,
+show MxExplorer and MxDataView as instructed in the `Spyder plugin`_ page
+on the modelx documentation site.
+Make sure a **MxConsole** is the active IPython console in the IPython widget.
+See the `Spyder plugin`_ page to learn how to create a new MxConsole if you don't
+have one.
 
-First, Show MxExplorer and MxDataView as instructed in `Spyder plugin`_ page,
-and make sure a MxConsole is the active IPython console in the IPython widget.
+Right click on the blank space in MxExplorer then a context menu shows up.
+Select *Read Model* item in the menu.
 
-You'll find *File explorer* in the upper right pane of the main Spyder window.
-Bring it up and navigate to your project folder. By doing so, the working
-directory(folder) of the MxConsole is
-set to the project folder. Then, Type::
+.. figure:: /images/spyder/MxExplorerContextMenu.png
 
-  >>> import simplelife
-  >>> model = simplelife.build()
-
-Instead of directly typing the code in the console,
-you can create a Python script in your project folder,
-write the code in the script using *Editor* pane on the left side of the window,
-and *Run* it by clicking the green play button in the tool bar.
-The script is executed in the MxConsole.
-
-During the build, messages appear as the input file is read in. The next time
-you build the model, you can pass ``True`` as ``load_saved`` parameter
-of the build function to save loading time::
-
-  >>> model = simplelife.build(load_saved=True)
-
-After model is built successfully, The objects that compose ``model`` object
-are shown as a tree in the MxExplorer.
+Click the folder icon next to the text box at the top,
+select the ``model`` folder in the project folder then click *OK*.
+After model is read successfully, the components of the model
+appear as a tree in the MxExplorer.
 
 .. figure:: /images/spyder/MxExplorerSimpleLife.png
 
@@ -89,6 +133,18 @@ By selecting a space in the MxExplorer and right clicking and selecting
 in the selected space are listed next to the model tree in the MxExplorer.
 
 .. figure:: /images/spyder/MxExplorerSimpleLifeWithFormulas.png
+
+The model object is available as a global varialbe named ``simplelife``
+in the active MxConsole.
+
+.. Note::
+
+    Before lifelib v0.0.15, models are created from Python modules in the
+    project folder. With the release of lifelib v0.0.15, the models
+    are read from *model* folder in the project folder,
+    by `modelx.read_model <https://docs.modelx.io/en/latest/reference/generated/modelx.read_model.html>`_
+    function. The Python modules from the older releases are still available
+    in *scripts* folder under the project folder.
 
 
 Run Projection
@@ -101,7 +157,7 @@ sample policies are defined on *PolicyData* tab in *Input.xlsm*.
 
 To calculate net liability cashflow of the Policy 1 from time 0 to 15::
 
-   >> proj = model.Projection[1]
+   >> proj = simplelife.Projection[1]
    >> result = [proj.NetInsurCF[t] for t in range(16)]
 
 The first line of the above creates ``Projection[1]`` space under
