@@ -1,26 +1,28 @@
-"""Source module to create ``LifeTable`` space from.
+"""Commutation functions and actuarial notations
 
-This is a source module to create ``LifeTable`` space and its
-sub spaces from.
-
-This module is passed to ``import_module`` method to create
-a space that contains cells that defines life tables and commutation functions,
-for a selected combination of ``Sex``, ``IntRate`` and ``MortalityTable``.
-
-``MortalityTable`` and ``Sex`` are used in :py:func:`qx` below to identify
+The ``LifeTable`` space includes Cells to calculate
+commutation functions and actuarial notations for given
+``Sex``, ``IntRate`` and ``MortalityTable``. ``MortalityTable`` and
+``Sex`` are used in :py:func:`qx` below to identify
 the mortality rates to be applied.
 
-Example
-    Sample script::
+Example:
 
-        from modelx import *
-        space = new_model().import_module(module=lifetable)
-        space.Sex = 'M'
-        space.IntRate = 0.03
-        space.MortalityTable = lambda sex, x: 0.001 if x < 110 else 1
+    An example of ``LifeTable`` in the :mod:`simplelife` model::
+
+        >>> space = simplelife.LifeTable
+
+        >>> space.Sex = 'M'
+
+        >>> space.IntRate = 0.03
+
+        >>> space.MortalityTable = lambda sex, x: 0.001 if x < 110 else 1
+
+        >>> space.AnnDuenx(40, 10)
 
 References:
     * `International actuarial notation by F.S.Perryman <https://www.casact.org/pubs/proceed/proceed49/49123.pdf>`_
+    * `Actuarial notations on Wikipedia <https://en.wikipedia.org/wiki/Actuarial_notation>`_
 
 .. rubric:: Project Templates
 
