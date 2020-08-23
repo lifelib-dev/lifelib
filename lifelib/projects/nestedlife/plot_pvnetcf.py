@@ -10,8 +10,7 @@ model = mx.read_model("model")
 
 # Policy point ID and aliases
 polid = 171
-outer = model.OuterProj[polid]
-inner = outer.InnerProj
+outer = model.OuterProj
 
 # Code block for overwiting the defaut model
 
@@ -39,13 +38,13 @@ model.BaseProj.new_cells(formula=SurrRateMult)
 model.BaseProj.PolsSurr.set_formula(PolsSurr)
 model.OuterProj.InnerProj.PolsIF_End.set_formula(PolsIF_End_inner)
 
-outer.SurrRateMult[1] = 2
-outer.SurrRateMult[2] = 0.5
-outer.SurrRateMult[3] = 1
+outer[polid].SurrRateMult[1] = 2
+outer[polid].SurrRateMult[2] = 0.5
+outer[polid].SurrRateMult[3] = 1
 
-inner[1].SurrRateMult[1] = 2
-inner[2].SurrRateMult[2] = 0.5
-inner[3].SurrRateMult[3] = 1
+outer[polid].InnerProj[1].SurrRateMult[1] = 2
+outer[polid].InnerProj[2].SurrRateMult[2] = 0.5
+outer[polid].InnerProj[3].SurrRateMult[3] = 1
 
 # Code block for PV graph
 
@@ -63,7 +62,7 @@ def draw_bars(item):
     for t0 in range(term):
         expect_t0 = [np.nan] * term
         for t in range(t0, term):
-            cells = outer.InnerProj[t0].cells[item]
+            cells = outer[polid].InnerProj[t0].cells[item]
             expect_t0[t] = cells[t]
             
         expect.append(expect_t0)
