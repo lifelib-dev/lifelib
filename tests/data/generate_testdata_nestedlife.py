@@ -32,39 +32,41 @@ def PolsIF_End_inner(t):
 def set_model(model):
     # Policy point ID and aliases
     polid = 171
-    outer = model.OuterProj[polid]
-    inner = outer.InnerProj
+    outer = model.OuterProj
 
     model.BaseProj.new_cells(formula=SurrRateMult)
     model.BaseProj.PolsSurr.set_formula(PolsSurr)
     model.OuterProj.InnerProj.PolsIF_End.set_formula(PolsIF_End_inner)
 
-    outer.SurrRateMult[1] = 2
-    outer.SurrRateMult[2] = 0.5
-    outer.SurrRateMult[3] = 1
+    outer[polid].SurrRateMult[1] = 2
+    outer[polid].SurrRateMult[2] = 0.5
+    outer[polid].SurrRateMult[3] = 1
+
+    inner = outer[polid].InnerProj
 
     inner[1].SurrRateMult[1] = 2
     inner[2].SurrRateMult[2] = 0.5
     inner[3].SurrRateMult[3] = 1
 
-    return outer
+    return outer[polid]
 
 
 def update_model(model):
 
     polid = 171
-    outer = model.OuterProj[polid]
-    inner = outer.InnerProj
+    outer = model.OuterProj
 
-    outer.SurrRateMult[1] = 0.5
-    outer.SurrRateMult[2] = 2
-    outer.SurrRateMult[3] = 1
+    outer[polid].SurrRateMult[1] = 0.5
+    outer[polid].SurrRateMult[2] = 2
+    outer[polid].SurrRateMult[3] = 1
+
+    inner = outer[polid].InnerProj
 
     inner[1].SurrRateMult[1] = 0.5
     inner[2].SurrRateMult[2] = 2
     inner[3].SurrRateMult[3] = 1
 
-    return outer
+    return outer[polid]
 
 
 def get_nested(outer, item):
