@@ -1,12 +1,6 @@
 from modelx.serialize.jsonvalues import *
 
-def _formula(PolicyID, ScenID=1):
-    refs = {'pol': Policy[PolicyID],
-            'asmp': Assumption[PolicyID],
-            'scen': Economic[ScenID],
-            'DiscRate': Economic[ScenID].DiscRate}
-    return {'refs': refs}
-
+_formula = lambda PolicyID, ScenID=1: None
 
 _bases = [
     ".BaseProj",
@@ -15,13 +9,33 @@ _bases = [
 
 _allow_none = None
 
-_spaces = []
+_spaces = [
+    "Policy",
+    "Assumptions"
+]
+
+# ---------------------------------------------------------------------------
+# Cells
+
+def DiscRate(t):
+    return scen[ScenID].DiscRate(t)
+
+
+def InflFactor(t):
+    return scen[ScenID].InflFactor(t)
+
+
+def InvstRetRate(t):
+    return scen[ScenID].InvstRetRate(t)
+
 
 # ---------------------------------------------------------------------------
 # References
 
-Assumption = ("Interface", ("..", "Assumption"))
-
 Economic = ("Interface", ("..", "Economic"))
 
-Policy = ("Interface", ("..", "Policy"))
+pol = ("Interface", (".", "Policy"))
+
+asmp = ("Interface", (".", "Assumptions"))
+
+scen = ("Interface", ("..", "Economic"))

@@ -42,8 +42,7 @@ Attributes:
 
 from modelx.serialize.jsonvalues import *
 
-def _formula(Sex, IntRate, TableID): pass
-
+_formula = lambda Sex, IntRate, TableID: None
 
 _bases = []
 
@@ -205,4 +204,4 @@ IntRate = 0.01
 
 TableID = 1
 
-MortalityTable = ("Pickle", 2140219827400)
+MortalityTable = ("Pickle", 2281929384328)

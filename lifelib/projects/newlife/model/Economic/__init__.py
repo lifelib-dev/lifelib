@@ -14,8 +14,7 @@ References:
 
 from modelx.serialize.jsonvalues import *
 
-def _formula(ScenID): pass
-
+_formula = lambda ScenID: None
 
 _bases = []
 
@@ -48,4 +47,4 @@ ScenID = 1
 
 AsmpLookup = ("Interface", ("..", "Input", "AsmpLookup"))
 
-Scenarios = ("Pickle", 2140223567688)
+Scenarios = ("Pickle", 2281883137608)

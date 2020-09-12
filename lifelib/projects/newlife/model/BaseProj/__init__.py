@@ -181,7 +181,7 @@ def IntAccumCF(t):
     """Intrest on accumulated cashflows"""
     return (AccumCF(t)
             + PremIncome(t)
-            - ExpsTotal(t)) * scen.DiscRate(t)
+            - ExpsTotal(t)) * DiscRate(t)
 
 
 def InvstIncome(t):
@@ -380,7 +380,7 @@ def SizeExpsAcq(t):
     if t == 0:
         return (SizeAnnPrem(t) * asmp.ExpsAcqAnnPrem
                 + (SizeSumAssured(t) * asmp.ExpsAcqSA + asmp.ExpsAcqPol)
-                * scen.InflFactor(t) / scen.InflFactor(0))
+                * InflFactor(t) / InflFactor(0))
     else:
         return 0
 
@@ -407,7 +407,7 @@ def SizeExpsMaint(t):
     """Maintenance expense per policy at time t"""
     return (SizeAnnPrem(t) * asmp.ExpsMaintAnnPrem
             + (SizeSumAssured(t) * asmp.ExpsMaintSA + asmp.ExpsMaintPol)
-            * scen.InflFactor(t))
+            * InflFactor(t))
 
 
 def SizeExpsOther(t):
@@ -417,7 +417,7 @@ def SizeExpsOther(t):
 
 def SizeInvstIncome(t):
     """Investment Income per policy from t to t+1"""
-    return (SizeReserveTotalAftMat(t) + SizePremium(t)) * scen.InvstRetRate(t)
+    return (SizeReserveTotalAftMat(t) + SizePremium(t)) * InvstRetRate(t)
 
 
 def SizePremium(t):
