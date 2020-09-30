@@ -65,15 +65,11 @@ as they are quite a few.
      simplelife <- Proj [hstyle=composition];
      Econ[label="Economic[ScenID]", stacked];
      simplelife <- Econ[hstyle=composition];
-     Assumption [label="Assumption[PolicyID]", stacked];
-     simplelife <- Assumption [hstyle=composition];
-     Policy [label="Policy[PolicyID]", stacked];
-     simplelife <- Policy [hstyle=composition];
+     Proj <- Assumptions [hstyle=composition];
+     Proj <- Policy [hstyle=composition];
      LifeTable [label="LifeTable\n[Sex, IntRate, TableID]", stacked];
      simplelife <- LifeTable [hstyle=composition];
      simplelife <- Input [hstyle=composition];
-     "various..." [stacked, width=96];
-     Input <- "various..."[hstyle=composition];
    }
 
 Inheritance Structure
@@ -116,11 +112,12 @@ Project Modules
    :template: llmodule.rst
 
    ~model.LifeTable
-   ~model.Policy
-   ~model.Assumption
    ~model.Economic
    ~model.BaseProj
    ~model.PV
+   ~model.Projection
+   ~model.Projection.Policy
+   ~model.Projection.Assumptions
 
 
 

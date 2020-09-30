@@ -42,10 +42,7 @@ Attributes:
 
 from modelx.serialize.jsonvalues import *
 
-def _formula(Sex, IntRate, TableID):
-    refs={'MortalityTable': Input.MortalityTables(TableID).MortalityTable}
-    return {'refs': refs}
-
+_formula = lambda Sex, IntRate, TableID: None
 
 _bases = []
 
@@ -195,10 +192,16 @@ def lx(x):
 
 def qx(x):
     """Probability that a person at age ``x`` will die in one year."""
-    return MortalityTable(Sex, x)
+    return MortalityTable[TableID, Sex, x]
 
 
 # ---------------------------------------------------------------------------
 # References
 
-Input = ("Interface", ("..", "Input"))
+Sex = "M"
+
+IntRate = 0.01
+
+TableID = 1
+
+MortalityTable = ("Pickle", 1889853839344)
