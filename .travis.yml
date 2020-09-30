@@ -10,4 +10,4 @@ python:
 install:
   - pip install -r requirements-travis.txt
 script:
-  - pytest
+  - pytest tests/
