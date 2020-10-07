@@ -1,27 +1,21 @@
 from modelx.serialize.jsonvalues import *
 
-def _formula(PolicyID, ScenID=1):
-    refs = {'pol': Pol[PolicyID],
-            'asmp': Asmp[PolicyID],
-            'scen': Scen[ScenID]}
-    return {'refs': refs}
-
+_formula = lambda PolicyID, ScenID=1: None
 
 _bases = [
-    ".BaseProj"
+    ".BaseProj",
+    ".PV"
 ]
 
 _allow_none = None
 
 _spaces = [
-    "InnerProj"
+    "InnerProj",
+    "Policy",
+    "Assumptions"
 ]
 
 # ---------------------------------------------------------------------------
 # References
 
-Asmp = ("Interface", ("..", "Assumption"))
-
-Pol = ("Interface", ("..", "Policy"))
-
-Scen = ("Interface", ("..", "Economic"))
+pol = ("Interface", (".", "Policy"), "auto")

@@ -58,23 +58,15 @@ Attributes:
     gen: Alias to :attr:`Policy[PolicyID].Gen<simplelife.policy.Gen>`
 
 
-
 """
 
 from modelx.serialize.jsonvalues import *
 
-def _formula(PolicyID):
-    refs = {'pol': Policy[PolicyID]}
-    alias = {'prod': refs['pol'].Product,
-             'polt': refs['pol'].PolicyType,
-             'gen': refs['pol'].Gen}
-    refs.update(alias)
-    return {'refs': refs}
-
+_formula = None
 
 _bases = []
 
-_allow_none = True
+_allow_none = None
 
 _spaces = []
 
@@ -83,17 +75,19 @@ _spaces = []
 
 def BaseMortRate(x):
     """Bae mortality rate"""
-    return MortTable()(pol.Sex, x)
+
+    table_id = AsmpLookup.match("BaseMort", prod(), polt(), gen()).value
+    return MortalityTables[table_id, sex(), x]
 
 
 def CnsmpTax():
     """Consumption tax rate"""
-    return asmp.CnsmpTax()
+    return AsmpLookup("CnsmpTax")
 
 
 def CommInitPrem():
     """Initial commission per premium"""
-    result = asmp.CommInitPrem.match(prod, polt, gen).value
+    result = AsmpLookup.match("CommInitPrem", prod(), polt(), gen()).value
 
     if result is not None:
         return result
@@ -103,7 +97,7 @@ def CommInitPrem():
 
 def CommRenPrem():
     """Renewal commission per premium"""
-    result = asmp.CommRenPrem.match(prod, polt, gen).value
+    result = AsmpLookup.match("CommRenPrem", prod(), polt(), gen()).value
 
     if result is not None:
         return  result
@@ -113,7 +107,7 @@ def CommRenPrem():
 
 def CommRenTerm():
     """Renewal commission term"""
-    result = asmp.CommRenTerm.match(prod, polt, gen).value
+    result = AsmpLookup.match("CommRenTerm", prod(), polt(), gen()).value
 
     if result is not None:
         return result
@@ -123,37 +117,37 @@ def CommRenTerm():
 
 def ExpsAcqAnnPrem():
     """Acquisition expense per annualized premium"""
-    return asmp.ExpsAcqAnnPrem.match(prod, polt, gen).value
+    return AsmpLookup.match("ExpsAcqAnnPrem", prod(), polt(), gen()).value
 
 
 def ExpsAcqPol():
     """Acquisition expense per policy"""
-    return asmp.ExpsAcqPol.match(prod, polt, gen).value
+    return AsmpLookup.match("ExpsAcqPol", prod(), polt(), gen()).value
 
 
 def ExpsAcqSA():
     """Acquisition expense per sum assured"""
-    return asmp.ExpsAcqSA.match(prod, polt, gen).value
+    return AsmpLookup.match("ExpsAcqSA", prod(), polt(), gen()).value
 
 
 def ExpsMaintAnnPrem():
     """Maintenance expense per annualized premium"""
-    return asmp.ExpsMaintPrem.match(prod, polt, gen).value
+    return AsmpLookup.match("ExpsMaintPrem", prod(), polt(), gen()).value
 
 
 def ExpsMaintPol():
     """Maintenance expense per policy"""
-    return asmp.ExpsMaintPol.match(prod, polt, gen).value
+    return AsmpLookup.match("ExpsMaintPol", prod(), polt(), gen()).value
 
 
 def ExpsMaintSA():
     """Maintenance expense per sum assured"""
-    return asmp.ExpsMaintSA.match(prod, polt, gen).value
+    return AsmpLookup.match("ExpsMaintSA", prod(), polt(), gen()).value
 
 
 def InflRate():
     """Inflation rate"""
-    return asmp.InflRate()
+    return AsmpLookup("InflRate")
 
 
 def LastAge():
@@ -167,12 +161,12 @@ def LastAge():
 
 def MortFactor(y):
     """Mortality factor"""
-    table = asmp.MortFactor.match(prod, polt, gen).value
+    table = AsmpLookup.match("MortFactor", prod(), polt(), gen()).value
 
     if table is None:
         raise ValueError('MortFactor not found')
 
-    result = asmp_tbl.cells[table](y)
+    result = AssumptionTables.get((table, y), None)
 
     if result is None:
         return MortFactor(y-1)
@@ -182,7 +176,7 @@ def MortFactor(y):
 
 def MortTable():
     """Mortality Table"""
-    result = asmp.BaseMort.match(prod, polt, gen).value
+    result = AsmpLookup.match("BaseMort", prod(), polt(), gen()).value
 
     if result is not None:
         return MortalityTables(result).MortalityTable
@@ -192,12 +186,12 @@ def MortTable():
 
 def SurrRate(y):
     """Surrender Rate"""
-    table = asmp.Surrender.match(prod, polt, gen).value
+    table = AsmpLookup.match("Surrender", prod(), polt(), gen()).value
 
     if table is None:
         raise ValueError('Surrender not found')
 
-    result =  asmp_tbl.cells[table](y)
+    result =  AssumptionTables.get((table, y), None)
 
     if result is None:
         return SurrRate(y-1)
@@ -205,15 +199,27 @@ def SurrRate(y):
         return result
 
 
+def SurrRateMult(t):
+    """Surrender rate multiple (Default: 1)"""
+    if t == 0:
+        return 1
+    else:
+        return SurrRateMult(t-1)
+
+
 # ---------------------------------------------------------------------------
 # References
 
-MortalityTables = ("Interface", ("..", "Input", "MortalityTables"))
+AsmpLookup = ("Interface", ("...", "Input", "AsmpLookup"), "auto")
 
-Policy = ("Interface", ("..", "Policy"))
+AssumptionTables = ("Pickle", 2366657887496)
 
-ProductSpec = ("Interface", ("..", "Input", "ProductSpec"))
+MortalityTables = ("Pickle", 2366631136840)
 
-asmp = ("Interface", ("..", "Input", "Assumption"))
+gen = ("Pickle", 2366637284232)
 
-asmp_tbl = ("Interface", ("..", "Input", "AssumptionTables"))
+polt = ("Pickle", 2366637253256)
+
+prod = ("Pickle", 2366637253112)
+
+sex = ("Pickle", 2366631737672)

@@ -14,37 +14,13 @@ outer = model.OuterProj
 
 # Code block for overwiting the defaut model
 
-def SurrRateMult(t):
-    if t == 0:
-        return 1
-    else:
-        return SurrRateMult(t-1)
+outer[polid].asmp.SurrRateMult[1] = 2
+outer[polid].asmp.SurrRateMult[2] = 0.5
+outer[polid].asmp.SurrRateMult[3] = 1
 
-
-def PolsSurr(t):
-    """Number of policies: Surrender"""    
-    return PolsIF_Beg1(t) * asmp.SurrRate(t) * SurrRateMult(t)
-
-
-def PolsIF_End_inner(t):
-    """Number of policies: End of period"""
-    if t == t0:
-        return outer.PolsIF_End(t)
-    else:
-        return PolsIF_Beg1(t-1) - PolsDeath(t-1) - PolsSurr(t-1)
-
-
-model.BaseProj.new_cells(formula=SurrRateMult)
-model.BaseProj.PolsSurr.set_formula(PolsSurr)
-model.OuterProj.InnerProj.PolsIF_End.set_formula(PolsIF_End_inner)
-
-outer[polid].SurrRateMult[1] = 2
-outer[polid].SurrRateMult[2] = 0.5
-outer[polid].SurrRateMult[3] = 1
-
-outer[polid].InnerProj[1].SurrRateMult[1] = 2
-outer[polid].InnerProj[2].SurrRateMult[2] = 0.5
-outer[polid].InnerProj[3].SurrRateMult[3] = 1
+outer[polid].InnerProj[1].asmp.SurrRateMult[1] = 2
+outer[polid].InnerProj[2].asmp.SurrRateMult[2] = 0.5
+outer[polid].InnerProj[3].asmp.SurrRateMult[3] = 1
 
 # Code block for PV graph
 

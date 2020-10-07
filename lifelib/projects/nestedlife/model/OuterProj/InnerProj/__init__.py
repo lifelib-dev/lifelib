@@ -1,22 +1,21 @@
 from modelx.serialize.jsonvalues import *
 
 def _formula(t0):
-    refs = {'pol': _space.parent.pol,
-            'asmp': _space.parent.asmp,
-            'scen': _space.parent.scen,
-            'outer': _space.parent,
-            'DiscRate': _space.parent.scen.DiscRate}
-
+    refs = {'outer': _space.parent,
+            'pol': _space.parent.Policy}
     return {'refs': refs}
 
 
 _bases = [
-    "..BaseProj"
+    "..BaseProj",
+    "..PV"
 ]
 
 _allow_none = None
 
-_spaces = []
+_spaces = [
+    "Assumptions"
+]
 
 # ---------------------------------------------------------------------------
 # Cells
@@ -28,4 +27,12 @@ def PolsIF_End(t):
     else:
         return PolsIF_Beg1(t-1) - PolsDeath(t-1) - PolsSurr(t-1)
 
+
+Product = lambda: _space.parent.parent.Policy.Product()
+
+PolicyType = lambda: _space.parent.parent.Policy.PolicyType()
+
+Gen = lambda: _space.parent.parent.Policy.Gen()
+
+Sex = lambda: _space.parent.parent.Policy.Sex()
 
