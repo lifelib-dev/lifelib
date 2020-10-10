@@ -1,19 +1,7 @@
-"""Present Value mix-in Space
+"""Present Value mix-in modules
 
-This Space serves as a base Space for :mod:`~model.simplelife.Projection`
-Space, and it contains Cells to take the present value of projected cashflows.
-
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     BaseProj[style=dotted]
-     BaseProj <- OuterProj [hstyle=generalization]
-     PresentValue[style=dotted]
-     PresentValue <- OuterProj [hstyle=generalization];
-   }
-
+This module defines cells that take present values of projected items
+in :mod:`projection <simplelife.projection>` module.
 """
 
 from modelx.serialize.jsonvalues import *
@@ -156,7 +144,3 @@ def PV_SumInsurIF(t):
         return InsurIF_Beg1(t) + PV_SumInsurIF(t+1) / (1 + DiscRate(t))
 
 
-# ---------------------------------------------------------------------------
-# References
-
-scen = ("Interface", ("....", "Economic"), "auto")

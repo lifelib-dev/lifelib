@@ -1,28 +1,26 @@
-"""Commutation functions and actuarial notations
+"""Source module to create ``LifeTable`` space from.
 
-The ``LifeTable`` space includes Cells to calculate
-commutation functions and actuarial notations for given
-``Sex``, ``IntRate`` and ``MortalityTable``. ``MortalityTable`` and
-``Sex`` are used in :py:func:`qx` below to identify
+This is a source module to create ``LifeTable`` space and its
+sub spaces from.
+
+This module is passed to ``import_module`` method to create
+a space that contains cells that defines life tables and commutation functions,
+for a selected combination of ``Sex``, ``IntRate`` and ``MortalityTable``.
+
+``MortalityTable`` and ``Sex`` are used in :py:func:`qx` below to identify
 the mortality rates to be applied.
 
-Example:
+Example
+    Sample script::
 
-    An example of ``LifeTable`` in the :mod:`simplelife` model::
-
-        >>> space = simplelife.LifeTable
-
-        >>> space.Sex = 'M'
-
-        >>> space.IntRate = 0.03
-
-        >>> space.MortalityTable = lambda sex, x: 0.001 if x < 110 else 1
-
-        >>> space.AnnDuenx(40, 10)
+        from modelx import *
+        space = new_model().import_module(module=lifetable)
+        space.Sex = 'M'
+        space.IntRate = 0.03
+        space.MortalityTable = lambda sex, x: 0.001 if x < 110 else 1
 
 References:
     * `International actuarial notation by F.S.Perryman <https://www.casact.org/pubs/proceed/proceed49/49123.pdf>`_
-    * `Actuarial notations on Wikipedia <https://en.wikipedia.org/wiki/Actuarial_notation>`_
 
 .. rubric:: Project Templates
 
@@ -42,7 +40,10 @@ Attributes:
 
 from modelx.serialize.jsonvalues import *
 
-_formula = lambda Sex, IntRate, TableID: None
+def _formula(Sex, IntRate, TableID):
+    refs={'MortalityTable': Input.MortalityTables(TableID).MortalityTable}
+    return {'refs': refs}
+
 
 _bases = []
 
@@ -192,16 +193,10 @@ def lx(x):
 
 def qx(x):
     """Probability that a person at age ``x`` will die in one year."""
-    return MortalityTable[TableID, Sex, x]
+    return MortalityTable(Sex, x)
 
 
 # ---------------------------------------------------------------------------
 # References
 
-Sex = "M"
-
-IntRate = 0.01
-
-TableID = 1
-
-MortalityTable = ("Pickle", 2184217069128)
+Input = ("Interface", ("..", "Input"))

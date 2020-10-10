@@ -1,18 +1,22 @@
 from modelx.serialize.jsonvalues import *
 
-_formula = lambda PolicyID, ScenID=1: None
+def _formula(PolicyID, ScenID=1):
+    refs = {'pol': Pol[PolicyID],
+            'asmp': Asmp[PolicyID],
+            'scen': Scen[ScenID]}
+
+    return {'refs': refs}
+
 
 _bases = [
-    ".BaseProj",
-    ".IFRS"
+    ".IFRS",
+    ".BaseProj"
 ]
 
 _allow_none = None
 
 _spaces = [
-    "InnerProj",
-    "Policy",
-    "Assumptions"
+    "InnerProj"
 ]
 
 # ---------------------------------------------------------------------------
@@ -41,4 +45,8 @@ def DiscRateAdj(t):
 # ---------------------------------------------------------------------------
 # References
 
-pol = ("Interface", (".", "Policy"), "auto")
+Asmp = ("Interface", ("..", "Assumption"))
+
+Pol = ("Interface", ("..", "Policy"))
+
+Scen = ("Interface", ("..", "Economic"))

@@ -1,11 +1,8 @@
 from modelx.serialize.jsonvalues import *
 
 def _formula(t0):
-    refs = {'pol': _space.parent.pol,
-            'asmp': _space.parent.asmp,
-            'scen': _space.parent.scen,
-            'outer': _space.parent}
-
+    refs = {'outer': _space.parent,
+            'pol': _space.parent.Policy}
     return {'refs': refs}
 
 
@@ -16,6 +13,7 @@ _bases = [
 _allow_none = None
 
 _spaces = [
+    "Assumptions",
     "PresentValue"
 ]
 
@@ -30,24 +28,13 @@ def PolsIF_End(t):
         return PolsIF_Beg1(t-1) - PolsDeath(t-1) - PolsSurr(t-1)
 
 
-def IntAccumCF(t):
-    """Intrest on accumulated cashflows"""
-    return (AccumCF(t)
-            + PremIncome(t)
-            - ExpsTotal(t)) * DiscRate(t)
+Product = lambda: _space.parent.parent.Policy.Product()
 
+PolicyType = lambda: _space.parent.parent.Policy.PolicyType()
 
-def SurrRateMult(t):
-    """Surrender rate multiple for the inner projection (Default: 1)"""
-    if t == 0:
-        return outer.SurrRateMult(t)
+Gen = lambda: _space.parent.parent.Policy.Gen()
 
-    elif t == t0:
-        return _space.parent(t-1).SurrRateMult(t-1)
-
-    else:
-        return SurrRateMult(t-1)
-
+Sex = lambda: _space.parent.parent.Policy.Sex()
 
 def DiscRate(t):
     """Discount rates for the inner projection"""

@@ -18,22 +18,7 @@ Space, and it contains Cells to take the present value of projected cashflows.
 
 from modelx.serialize.jsonvalues import *
 
-def _formula(t_rate):
-    refs = {'last_t': _space.parent.last_t,
-            'InsurIF_Beg1': _space.parent.InsurIF_Beg1,
-            'InsurIF_End': _space.parent.InsurIF_End,
-            'PremIncome': _space.parent.PremIncome,
-            'BenefitSurr': _space.parent.BenefitSurr,
-            'BenefitDeath': _space.parent.BenefitDeath,
-            'BenefitTotal': _space.parent.BenefitTotal,
-            'ExpsCommTotal': _space.parent.ExpsCommTotal,
-            'ExpsAcq': _space.parent.ExpsAcq,
-            'ExpsMaint': _space.parent.ExpsMaint,
-            'ExpsTotal': _space.parent.ExpsTotal,
-            'DiscRate': _space.parent.parent[t_rate].DiscRate}
-
-    return {'refs': refs}
-
+_formula = None
 
 _bases = []
 
@@ -156,7 +141,11 @@ def PV_SumInsurIF(t):
         return InsurIF_Beg1(t) + PV_SumInsurIF(t+1) / (1 + DiscRate(t))
 
 
+def DiscRate(t):
+    return scen[ScenID].DiscRate(t)
+
+
 # ---------------------------------------------------------------------------
 # References
 
-scen = ("Interface", ("....", "Economic"), "auto")
+scen = ("Interface", ("..", "Economic"), "auto")
