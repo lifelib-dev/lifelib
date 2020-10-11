@@ -487,6 +487,11 @@ def InvstRetRate(t):
     return scen[ScenID].InvstRetRate(t)
 
 
+def SurrRateMult(t):
+    """Surrender rate multiple (Default: 1)"""
+    return asmp.SurrRateMult(t)
+
+
 # ---------------------------------------------------------------------------
 # References
 
