@@ -57,7 +57,16 @@ Attributes:
 
 from modelx.serialize.jsonvalues import *
 
-_formula = lambda PolicyID: None
+def _formula(PolicyID):
+    refs = {attr: PolicyData[PolicyID].cells[attr]() for attr in PolicyAttrs}
+    alias = {'PremTerm': refs['PolicyTerm'],
+             'x': refs['IssueAge'],
+             'm': refs['PolicyTerm'],
+             'n': refs['PolicyTerm']}
+
+    refs.update(alias)
+    return {'refs': refs}
+
 
 _bases = []
 
@@ -81,15 +90,13 @@ def CashValueRate(t):
 def GrossPremRate():
     """Gross Premium Rate per Sum Assured per payment"""
 
-    alpha = LoadAcqSA()
-    beta = LoadMaintPrem()
-    gamma = LoadMaintSA()
-    gamma2 = LoadMaintSA2()
-    delta = LoadMaintPremWaiverPrem()
+    alpha = LoadAcqSA
+    beta = LoadMaintPrem
+    gamma = LoadMaintSA
+    gamma2 = LoadMaintSA2
+    delta = LoadMaintPremWaiverPrem
 
-    x, n, m = IssueAge(), PolicyTerm(), PremTerm()
-
-    comf = LifeTable[Sex(), IntRate('PREM'), TableID('PREM')]
+    comf = LifeTable[Sex, IntRate('PREM'), TableID('PREM')]
 
     if Product == 'TERM' or Product == 'WL':
         return (comf.Axn(x, n) + alpha + gamma * comf.AnnDuenx(x, n, PremFreq)
@@ -110,8 +117,8 @@ def GrossPremTable():
 def InitSurrCharge():
     """Initial Surrender Charge Rate"""
 
-    param1 = SpecLookup.match("SurrChargeParam1", Product(), PolicyType(), Gen()).value
-    param2 = SpecLookup.match("SurrChargeParam2", Product(), PolicyType(), Gen()).value
+    param1 = ProductSpec.SurrChargeParam1.match(Product, PolicyType, Gen).value
+    param2 = ProductSpec.SurrChargeParam2.match(Product, PolicyType, Gen).value
 
     if param1 is None or param2 is None:
         raise ValueError('SurrChargeParam not found')
@@ -123,13 +130,13 @@ def IntRate(RateBasis):
     """Interest Rate"""
 
     if RateBasis == 'PREM':
-        basis = 'IntRatePrem'
+        int_rate = ProductSpec.IntRatePrem
     elif RateBasis == 'VAL':
-        basis = 'IntRateVal'
+        int_rate = ProductSpec.IntRateVal
     else:
         raise ValueError('invalid RateBasis')
 
-    result = SpecLookup.match(basis, Product(), PolicyType(), Gen()).value
+    result = int_rate.match(Product, PolicyType, Gen).value
 
     if result is not None:
         return result
@@ -139,8 +146,8 @@ def IntRate(RateBasis):
 
 def LoadAcqSA():
     """Acquisition Loading per Sum Assured"""
-    param1 = SpecLookup("LoadAcqSAParam1", Product())
-    param2 = SpecLookup("LoadAcqSAParam2", Product())
+    param1 = ProductSpec.LoadAcqSAParam1(Product)
+    param2 = ProductSpec.LoadAcqSAParam2(Product)
 
     return param1 + param2 * min(PolicyTerm / 10, 1)
 
@@ -148,11 +155,11 @@ def LoadAcqSA():
 def LoadMaintPrem():
     """Maintenance Loading per Gross Premium"""
 
-    if SpecLookup("LoadMaintPremParam1", Product()) is not None:
-        return SpecLookup("LoadMaintPremParam1", Product())
+    if ProductSpec.LoadMaintPremParam1(Product) is not None:
+        return ProductSpec.LoadMaintPremParam1(Product)
 
-    elif SpecLookup("LoadMaintPremParam2", Product()) is not None:
-        param = SpecLookup("LoadMaintPremParam2", Product())
+    elif ProductSpec.LoadMaintPremParam2(Product) is not None:
+        param = ProductSpec.LoadMaintPremParam2(Product)
         return (param + min(10, PolicyTerm)) / 100
 
     else:
@@ -173,7 +180,7 @@ def LoadMaintPremWaiverPrem():
 def LoadMaintSA():
     """Maintenance Loading per Sum Assured during Premium Payment"""
 
-    result = SpecLookup.match("LoadMaintSA", Product(), PolicyType(), Gen()).value
+    result = ProductSpec.LoadMaintSA.match(Product, PolicyType, Gen).value
 
     if result is not None:
         return result
@@ -184,7 +191,7 @@ def LoadMaintSA():
 def LoadMaintSA2():
     """Maintenance Loading per Sum Assured after Premium Payment"""
 
-    result = SpecLookup.match("LoadMaintSA2", Product(), PolicyType(), Gen()).value
+    result = ProductSpec.LoadMaintSA2.match(Product, PolicyType, Gen).value
 
     if result is not None:
         return result
@@ -196,9 +203,7 @@ def NetPremRate(basis):
     """Net Premium Rate"""
 
     gamma2 = LoadMaintSA2
-    comf = LifeTable[Sex(), IntRate(basis), TableID(basis)]
-
-    x, n, m = IssueAge(), PolicyTerm(), PremTerm()
+    comf = LifeTable[Sex, IntRate(basis), TableID(basis)]
 
     if Product == 'TERM' or Product == 'WL':
         return (comf.Axn(x, n) + gamma2 * comf.AnnDuenx(x, n-m, 1, m)) / comf.AnnDuenx(x, n)
@@ -213,11 +218,9 @@ def NetPremRate(basis):
 def ReserveNLP_Rate(basis, t):
     """Net level premium reserve rate"""
 
-    gamma2 = LoadMaintSA2()
+    gamma2 = LoadMaintSA2
 
-    lt = LifeTable[Sex(), IntRate(basis), TableID(basis)]
-
-    x, n, m = IssueAge(), PolicyTerm(), PremTerm()
+    lt = LifeTable[Sex, IntRate(basis), TableID(basis)]
 
     if t <= m:
         return lt.Axn(x+t, n-t) + gamma2 * lt.AnnDuenx(x+t, n-m, 1, m-t) \
@@ -233,7 +236,6 @@ def ReserveRate():
 
 def SurrCharge(t):
     """Surrender Charge Rate per Sum Assured"""
-    m = PremTerm()
     return InitSurrCharge * max((min(m, 10) - t) / min(m, 10), 0)
 
 
@@ -241,13 +243,13 @@ def TableID(RateBasis):
     """Mortality Table ID"""
 
     if RateBasis == 'PREM':
-        basis = "MortTablePrem"
+        mort_table = ProductSpec.MortTablePrem
     elif RateBasis == 'VAL':
-        basis = "MortTableVal"
+        mort_table = ProductSpec.MortTableVal
     else:
         raise ValueError('invalid RateBasis')
 
-    result = SpecLookup.match(basis, Product(), PolicyType(), Gen()).value
+    result = mort_table.match(Product, PolicyType, Gen).value
 
     if result is not None:
         return result
@@ -260,41 +262,13 @@ def UernPremRate():
     return None
 
 
-Product = lambda: PolicyData[PolicyID, 'Product']
-
-PolicyType = lambda: PolicyData[PolicyID, 'PolicyType']
-
-Gen = lambda: PolicyData[PolicyID, 'Gen']
-
-Channel = lambda: PolicyData[PolicyID, 'Channel']
-
-Sex = lambda: PolicyData[PolicyID, 'Sex']
-
-Duration = lambda: PolicyData[PolicyID, 'Duration']
-
-IssueAge = lambda: PolicyData[PolicyID, 'IssueAge']
-
-PremFreq = lambda: PolicyData[PolicyID, 'PremFreq']
-
-PolicyTerm = lambda: PolicyData[PolicyID, 'PolicyTerm']
-
-PolicyCount = lambda: PolicyData[PolicyID, 'PolicyCount']
-
-SumAssured = lambda: PolicyData[PolicyID, 'SumAssured']
-
 # ---------------------------------------------------------------------------
 # References
 
-LifeTable = ("Interface", ("..", "LifeTable"), "auto")
+LifeTable = ("Interface", ("..", "LifeTable"))
 
-PolicyData = ("Pickle", 1381372082120)
+PolicyAttrs = ("Pickle", 2072436192008)
 
-x = ("Interface", (".", "IssueAge"), "auto")
+PolicyData = ("Interface", ("..", "Input", "PolicyData"))
 
-m = ("Interface", (".", "PolicyTerm"), "auto")
-
-PremTerm = ("Interface", (".", "PolicyTerm"), "auto")
-
-n = ("Interface", (".", "PolicyTerm"), "auto")
-
-SpecLookup = ("Interface", ("..", "Input", "SpecLookup"), "auto")
+ProductSpec = ("Interface", ("..", "Input", "ProductSpec"))

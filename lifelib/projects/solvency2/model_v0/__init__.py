@@ -7,12 +7,12 @@ _allow_none = False
 _spaces = [
     "Input",
     "LifeTable",
+    "Policy",
+    "Assumption",
     "Economic",
+    "SCR_life",
     "BaseProj",
     "PV",
-    "Override",
-    "SCR_life",
-    "Policy",
-    "Assumptions"
+    "Override"
 ]
 

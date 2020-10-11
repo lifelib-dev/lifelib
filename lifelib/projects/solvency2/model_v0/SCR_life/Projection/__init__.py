@@ -17,7 +17,7 @@ def _formula(Risk='base', Shock=None, Scope=None):
         bases = [_space]
 
     refs = {'pol': Policy[PolicyID],
-            'asmp': Assumptions[PolicyID],
+            'asmp': Assumption[PolicyID],
             'scen': Economic[ScenID],
             'DiscRate': Economic[ScenID].DiscRate,
             'Factor': _space.model.Input.Factor}
@@ -37,8 +37,8 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # References
 
-Economic = ("Interface", ("...", "Economic"), "auto")
+Assumption = ("Interface", ("...", "Assumption"))
 
-Policy = ("Interface", ("...", "Policy"), "auto")
+Economic = ("Interface", ("...", "Economic"))
 
-Assumptions = ("Interface", ("...", "Assumptions"), "auto")
+Policy = ("Interface", ("...", "Policy"))

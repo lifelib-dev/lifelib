@@ -14,7 +14,10 @@ References:
 
 from modelx.serialize.jsonvalues import *
 
-_formula = lambda ScenID: None
+def _formula(ScenID):
+    refs = {'Scenario': Input.Scenarios[ScenID]}
+    return {'refs': refs}
+
 
 _bases = []
 
@@ -26,25 +29,23 @@ _spaces = []
 # Cells
 
 def DiscRate(t):
-    return Scenarios[ScenID, "IntRate", t]
+    return Scenario.IntRate(t)
 
 
 def InflFactor(t):
     if t == 0:
         return 1
     else:
-        return InflFactor(t-1) / (1 + AsmpLookup("InflRate"))
+        return InflFactor(t-1) / (1 + asmp.InflRate)
 
 
 def InvstRetRate(t):
-    return DiscRate(t)
+    return Scenario.IntRate(t)
 
 
 # ---------------------------------------------------------------------------
 # References
 
-ScenID = 1
+Input = ("Interface", ("..", "Input"))
 
-AsmpLookup = ("Interface", ("..", "Input", "AsmpLookup"), "auto")
-
-Scenarios = ("Pickle", 1381379645576)
+asmp = ("Interface", ("..", "Assumption"))

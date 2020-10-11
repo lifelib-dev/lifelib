@@ -1,35 +1,18 @@
-"""Base Space for the :mod:`~simplelife.model.Projection` Space.
+"""Source module to create ``Projection`` space from.
 
-This Space serves as a base Space for :mod:`~simplelife.model.Projection`
-Space, and it contains Cells for cashflow projection.
+.. rubric:: Project Templates
 
-.. rubric:: Projects
-
-This module is included in the following projects.
+This module is included in the following project templates.
 
 * :mod:`simplelife`
 * :mod:`nestedlife`
 
 .. rubric:: References
 
-This Cells is this Space reference the following attributes.
-The attributes are not defined in this Space, but defined in its
-sub Space, :mod:`~simplelife.model.Projection`
-
 Attributes:
-    pol: Alias to :mod:`~simplelife.model.Projection.Policy` space
-    asmp: Alias to :mod:`~simplelife.model.Projection.Assumptions` space
-
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     BaseProj[style=dotted]
-     BaseProj <- OuterProj [hstyle=generalization]
-     PresentValue[style=dotted]
-     PresentValue <- OuterProj [hstyle=generalization];
-   }
+    pol: Alias to :py:mod:`Policy<simplelife.policy>` space
+    asmp: Alias to :py:mod:`Assumption<simplelife.assumption>` space
+    scen: Alias to :py:mod:`Economic<simplelife.economic>` space
 
 """
 
@@ -198,7 +181,7 @@ def IntAccumCF(t):
     """Intrest on accumulated cashflows"""
     return (AccumCF(t)
             + PremIncome(t)
-            - ExpsTotal(t)) * DiscRate(t)
+            - ExpsTotal(t)) * scen.DiscRate(t)
 
 
 def InvstIncome(t):
@@ -397,7 +380,7 @@ def SizeExpsAcq(t):
     if t == 0:
         return (SizeAnnPrem(t) * asmp.ExpsAcqAnnPrem
                 + (SizeSumAssured(t) * asmp.ExpsAcqSA + asmp.ExpsAcqPol)
-                * InflFactor(t) / InflFactor(0))
+                * scen.InflFactor(t) / scen.InflFactor(0))
     else:
         return 0
 
@@ -424,7 +407,7 @@ def SizeExpsMaint(t):
     """Maintenance expense per policy at time t"""
     return (SizeAnnPrem(t) * asmp.ExpsMaintAnnPrem
             + (SizeSumAssured(t) * asmp.ExpsMaintSA + asmp.ExpsMaintPol)
-            * InflFactor(t))
+            * scen.InflFactor(t))
 
 
 def SizeExpsOther(t):
@@ -434,7 +417,7 @@ def SizeExpsOther(t):
 
 def SizeInvstIncome(t):
     """Investment Income per policy from t to t+1"""
-    return (SizeReserveTotalAftMat(t) + SizePremium(t)) * InvstRetRate(t)
+    return (SizeReserveTotalAftMat(t) + SizePremium(t)) * scen.InvstRetRate(t)
 
 
 def SizePremium(t):
@@ -474,10 +457,6 @@ def SizeSumAssured(t):
 
 
 def last_t():
-    return min(asmp.LastAge() - pol.IssueAge(), pol.PolicyTerm())
-
-
-def InflFactor(t):
-    return scen[ScenID].InflFactor(t)
+    return min(asmp.LastAge - pol.IssueAge, pol.PolicyTerm)
 
 
