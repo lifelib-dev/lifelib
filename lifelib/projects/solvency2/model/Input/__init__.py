@@ -19,9 +19,6 @@ def SpecLookup(spec, prod=None, polt=None, gen=None):
     return  ProductSpec.get((spec, prod, polt, gen), None)
 
 
-def CorrLife(row=None, col=None): pass
-
-
 def Factor(risk=None, shock=None, scope=None, extrakey=None):
     return FactorData[risk, shock, scope, extrakey]
 
@@ -29,22 +26,22 @@ def Factor(risk=None, shock=None, scope=None, extrakey=None):
 # ---------------------------------------------------------------------------
 # References
 
-PolicyData = ("Pickle", 1381372082120)
+PolicyData = ("Pickle", 2449873593416)
 
-MortalityTables = ("Pickle", 1381371911560)
+MortalityTables = ("Pickle", 2449876034440)
 
-AssumptionTables = ("Pickle", 1381379646536)
+AssumptionTables = ("Pickle", 2449883322440)
 
-Scenarios = ("Pickle", 1381379645576)
+Scenarios = ("Pickle", 2449883321480)
 
-DiscountRate = ("Pickle", 1381379820616)
+DiscountRate = ("Pickle", 2449883493448)
 
-PremWaiverCost = ("Pickle", 1381379821192)
+PremWaiverCost = ("Pickle", 2449883492488)
 
-Assumption = ("Pickle", 1381380296008)
+Assumption = ("Pickle", 2449883976968)
 
-ProductSpec = ("Pickle", 1381380301832)
+ProductSpec = ("Pickle", 2449883977736)
 
-CorrData = ("Pickle", 1381380303176)
+CorrData = ("Pickle", 2449883979080)
 
-FactorData = ("Pickle", 1381373131592)
+FactorData = ("Pickle", 2449877034440)
