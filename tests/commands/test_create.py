@@ -24,12 +24,8 @@ def test_argparser(argv):
     [],
     ['--template', 'simplelife']
 ])
-def test_main(argv):
-    tempdir = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                           'mylife')
-
-    if os.path.exists(tempdir):
-        shutil.rmtree(tempdir)
+def test_main(argv, tmp_path):
+    tempdir = str(tmp_path / 'mylife')
 
     argv.append(tempdir)
     cmd.main(argv)
