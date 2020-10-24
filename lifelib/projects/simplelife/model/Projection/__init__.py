@@ -1,25 +1,40 @@
 """Space for cashflow projection.
 
-This Space serves as a base Space for :mod:`~simplelife.model.Projection`
-Space, and it contains Cells for cashflow projection.
+This Space is for projecting cashflows of individual model points.
+Most Cells in this Spaces are defined in its base Spaces,
+:mod:`~simplelife.model.BaseProj` and :mod:`~simplelife.model.PV`.
 
-.. rubric:: Projects
+This Space is parametrized with ``PolicyID`` and ``ScenID``,
+and calling this space with a pair of integers returns the ItemSpace
+for the policy ID and scenario ID.
+``ScenID`` has a default value of 1,
+so for example ``Projection[1]`` represents the Projection Space for Policy 1.
+The present values of the cashflow items are also calculated in
+the Space by the Cells inherited from the base Space :mod:`~simplelife.model.BaseProj`.
 
-This module is included in the following projects.
+This Space has child Spaces,
+:mod:`~simplelife.model.Projection.Policy` and :mod:`~simplelife.model.Projection.Assumptions`.
+The :mod:`~simplelife.model.Projection.Policy` Space contains Cells representing policy attributes, such as
+product type, issue age, sum assured, etc.
+It also contains Cells for calculating policy values such as premium rates and
+cash surrender value rates.
+The :mod:`~simplelife.model.Projection.Assumptions` Space contains Cells to pick up assumption data for
+its model point.
 
-* :mod:`simplelife`
-* :mod:`nestedlife`
-* :mod:`ifrs17sim`
-* :mod:`solvency2`
+.. rubric:: Composition Structure
 
-.. rubric:: References
+.. blockdiag::
 
-The following attributes are referenced in this Space by its base Spaces.
+   blockdiag {
+     default_node_color="#D5E8D4";
+     default_linecolor="#628E47";
+     node_width=150;
+     Proj[label="Projection\\n[PolicyID, ScenID=1]", stacked];
+     Proj <- Assumptions [hstyle=composition];
+     Proj <- Policy [hstyle=composition];
+   }
 
-Attributes:
-    pol: Alias for :mod:`~simplelife.model.Projection.Policy` child Space
-    asmp: Alias for :mod:`~simplelife.model.Projection.Assumptions` child Space
-    scen: :mod:`~simplelife.model.Economic` Space
+.. rubric:: Inheritance Structure
 
 .. blockdiag::
 
@@ -31,6 +46,16 @@ Attributes:
      PresentValue[style=dotted]
      PresentValue <- OuterProj [hstyle=generalization];
    }
+
+.. rubric:: References
+
+The following attributes are referenced in this Space by its base Spaces.
+
+Attributes:
+    pol: Alias for :mod:`~simplelife.model.Projection.Policy` child Space
+    asmp: Alias for :mod:`~simplelife.model.Projection.Assumptions` child Space
+    scen: Alias for :mod:`~simplelife.model.Economic` Space
+
 
 """
 
@@ -54,14 +79,26 @@ _spaces = [
 # Cells
 
 def DiscRate(t):
+    """Rates for discount cashflows
+
+    Refers to :func:`Economic[ScenID].DiscRate<simplelife.model.Economic.DiscRate>`
+    """
     return scen[ScenID].DiscRate(t)
 
 
 def InflFactor(t):
+    """Inflation factors to adjust expense cashflows
+
+    Refers to :func:`Economic[ScenID].InflFactor<simplelife.model.Economic.InflFactor>`
+    """
     return scen[ScenID].InflFactor(t)
 
 
 def InvstRetRate(t):
+    """Rate of investment return
+
+    Refers to :func:`Economic[ScenID].InvstRetRate<simplelife.model.Economic.InvstRetRate>`
+    """
     return scen[ScenID].InvstRetRate(t)
 
 

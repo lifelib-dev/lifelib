@@ -26,10 +26,12 @@ _spaces = []
 # Cells
 
 def DiscRate(t):
+    """Rates for discount cashflows"""
     return Scenarios[ScenID, "IntRate", t]
 
 
 def InflFactor(t):
+    """Inflation factors to adjust expense cashflows"""
     if t == 0:
         return 1
     else:
@@ -37,6 +39,10 @@ def InflFactor(t):
 
 
 def InvstRetRate(t):
+    """Rate of investment return
+
+    Set equal to the :func:`DiscRate`
+    """
     return DiscRate(t)
 
 

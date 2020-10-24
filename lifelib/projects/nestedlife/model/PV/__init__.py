@@ -8,10 +8,10 @@ Space, and it contains Cells to take the present value of projected cashflows.
    blockdiag {
      default_node_color="#D5E8D4";
      default_linecolor="#628E47";
-     BaseProj[style=dotted]
-     BaseProj <- OuterProj [hstyle=generalization]
-     PresentValue[style=dotted]
-     PresentValue <- OuterProj [hstyle=generalization];
+
+     PV[style=dotted]
+     PV <- OuterProj [hstyle=generalization]
+     PV <- InnerProj [hstyle=generalization]
    }
 
 """

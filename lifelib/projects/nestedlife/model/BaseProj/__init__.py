@@ -25,10 +25,10 @@ Attributes:
    blockdiag {
      default_node_color="#D5E8D4";
      default_linecolor="#628E47";
+
      BaseProj[style=dotted]
      BaseProj <- OuterProj [hstyle=generalization]
-     PresentValue[style=dotted]
-     PresentValue <- OuterProj [hstyle=generalization];
+     BaseProj <- InnerProj [hstyle=generalization]
    }
 
 """

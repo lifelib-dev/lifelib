@@ -31,28 +31,21 @@ model, so refer to :mod:`simplelife` for more details about those spaces.
    blockdiag {
      default_node_color="#D5E8D4";
      default_linecolor="#628E47";
-     ifrs17sim [shape=roundedbox, linecolor="#7B99C5", color="#D4E8FC", width=96];
-     ifrs17sim <- "OuterProj[PolicyID]" <- "InnerProj[t0]" [hstyle=composition];
-     "OuterProj[PolicyID]" [stacked];
-     "InnerProj[t0]" [stacked, width=96];
-     "InnerProj[t0]" <- "PresentValue[t_rate]" [hstyle=composition];
-     "PresentValue[t_rate]"[stacked];
-     ifrs17sim <- Economic [hstyle=composition];
-     ifrs17sim  <- Assumption [hstyle=composition];
-     ifrs17sim <- Policy [hstyle=composition];
-     ifrs17sim <- LifeTable [hstyle=composition];
-     ifrs17sim <- Input [hstyle=composition];
-
-     group {
-       Economic;
-       Assumption;
-       Policy;
-       LifeTable;
-       Input;
-       shape=line
-       style=dashed
-       color=orange
-     }
+     nestedlife [shape=roundedbox, linecolor="#7B99C5", color="#D4E8FC", width=96]
+     nestedlife <- "OuterProj\n[PolicyID, ScenID=1]" <- "InnerProj[t0]" [hstyle=composition];
+     "OuterProj\n[PolicyID, ScenID=1]" [stacked];
+     "InnerProj[t0]" [stacked];
+     "InnerProj[t0]" <- PV [hstyle=composition]
+     nestedlife <- Economic [hstyle=composition];
+     "OuterProj\n[PolicyID, ScenID=1]" <- Policy [hstyle=composition];
+     nestedlife <- LifeTable [hstyle=composition];
+     nestedlife <- Input [hstyle=composition];
+     nestedlife<- BaseProj
+     BaseProj[style=dotted]
+     BaseProj <- Assumption [hstyle=composition];
+     Assumption[style=dotted]
+     nestedlife<- IFRS
+     IFRS [style=dotted]
    }
 
 Inheritance Structure
@@ -67,7 +60,15 @@ Inheritance Structure
      IFRS <- OuterProj [hstyle=generalization]
      BaseProj[style=dotted]
      BaseProj <- OuterProj [hstyle=generalization]
-     BaseProj <- InnerProj [folded, hstyle=generalization]
+   }
+
+.. blockdiag::
+
+   blockdiag {
+     default_node_color="#D5E8D4";
+     default_linecolor="#628E47";
+     BaseProj[style=dotted]
+     BaseProj <- InnerProj[hstyle=generalization]
    }
 
 
@@ -101,12 +102,12 @@ Project Modules
    :toctree: generated/
    :template: llmodule.rst
 
-   ~model
-   ~model.Assumption
+
    ~model.BaseProj
+   ~model.BaseProj.Assumptions
    ~model.Economic
    ~model.LifeTable
-   ~model.Policy
    ~model.OuterProj
+   ~model.OuterProj.Policy
    ~model.OuterProj.InnerProj
-   ~model.OuterProj.InnerProj.PresentValue
+   ~model.OuterProj.InnerProj.PV

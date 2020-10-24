@@ -42,24 +42,20 @@ model, so refer to :mod:`simplelife` for more details about those sapces.
      default_node_color="#D5E8D4";
      default_linecolor="#628E47";
      nestedlife [shape=roundedbox, linecolor="#7B99C5", color="#D4E8FC", width=96]
-     nestedlife <- "OuterProj[PolicyID]" <- "InnerProj[t0]" [hstyle=composition];
-     "OuterProj[PolicyID]" [stacked];
+     nestedlife <- "OuterProj\n[PolicyID, ScenID=1]" <- "InnerProj[t0]" [hstyle=composition];
+     "OuterProj\n[PolicyID, ScenID=1]" [stacked];
      "InnerProj[t0]" [stacked];
      nestedlife <- Economic [hstyle=composition];
-     nestedlife <- Assumption [hstyle=composition];
-     nestedlife <- Policy [hstyle=composition];
+     "OuterProj\n[PolicyID, ScenID=1]" <- Policy [hstyle=composition];
      nestedlife <- LifeTable [hstyle=composition];
      nestedlife <- Input [hstyle=composition];
-     group {
-       Economic;
-       Assumption;
-       Policy;
-       LifeTable;
-       Input;
-       shape=line
-       style=dashed
-       color=orange
-     }
+     nestedlife<- BaseProj
+     BaseProj[style=dotted]
+     BaseProj <- Assumption [hstyle=composition];
+     Assumption[style=dotted]
+     nestedlife <- PV;
+     PV[style=dotted];
+
    }
 
 Inheritance Structure
@@ -70,13 +66,22 @@ Inheritance Structure
    blockdiag {
      default_node_color="#D5E8D4";
      default_linecolor="#628E47";
-     PresentValue[style=dotted]
-     PresentValue <- BaseProj [folded, hstyle=generalization];
+
      BaseProj[style=dotted]
      BaseProj <- OuterProj [hstyle=generalization]
      BaseProj <- InnerProj [hstyle=generalization]
    }
 
+.. blockdiag::
+
+   blockdiag {
+     default_node_color="#D5E8D4";
+     default_linecolor="#628E47";
+
+     PV[style=dotted]
+     PV <- OuterProj [hstyle=generalization]
+     PV <- InnerProj [hstyle=generalization]
+   }
 
 Project Modules
 ---------------
@@ -85,12 +90,11 @@ Project Modules
    :toctree: generated/
    :template: llmodule.rst
 
-   ~model
-   ~model.Assumption
    ~model.BaseProj
+   ~model.BaseProj.Assumptions
    ~model.Economic
    ~model.LifeTable
-   ~model.Policy
-   ~model.PresentValue
+   ~model.PV
    ~model.OuterProj
+   ~model.OuterProj.Policy
    ~model.OuterProj.InnerProj

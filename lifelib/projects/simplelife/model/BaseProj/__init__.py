@@ -3,6 +3,17 @@
 This Space serves as a base Space for :mod:`~simplelife.model.Projection`
 Space, and it contains Cells for cashflow projection.
 
+.. blockdiag::
+
+   blockdiag {
+     default_node_color="#D5E8D4";
+     default_linecolor="#628E47";
+     BaseProj[style=dotted]
+     BaseProj <- Projection [hstyle=generalization]
+     PV[style=dotted]
+     PV <- Projection [hstyle=generalization];
+   }
+
 .. rubric:: Projects
 
 This module is included in the following projects.
@@ -12,7 +23,7 @@ This module is included in the following projects.
 
 .. rubric:: References
 
-This Cells is this Space reference the following attributes.
+The Cells in this Space reference the following attributes.
 The attributes are not defined in this Space, but defined in its
 sub Space, :mod:`~simplelife.model.Projection`
 
@@ -20,16 +31,6 @@ Attributes:
     pol: Alias to :mod:`~simplelife.model.Projection.Policy` space
     asmp: Alias to :mod:`~simplelife.model.Projection.Assumptions` space
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     BaseProj[style=dotted]
-     BaseProj <- OuterProj [hstyle=generalization]
-     PresentValue[style=dotted]
-     PresentValue <- OuterProj [hstyle=generalization];
-   }
 
 """
 

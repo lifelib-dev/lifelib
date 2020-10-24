@@ -1,5 +1,5 @@
-Project Templates
-=================
+Projects
+========
 
 
 .. toctree::
