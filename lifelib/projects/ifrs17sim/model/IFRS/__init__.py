@@ -29,7 +29,7 @@ def AcqPremRatio():
 
     The ratio is determined by the expectation at issue.
     """
-    pvs = InnerProj(0).PresentValue(0)
+    pvs = InnerProj(0).PV(0)
 
     return ((pvs.PV_ExpsCommTotal(0) + pvs.PV_ExpsAcq(0))
             / pvs.PV_PremIncome(0))
@@ -146,7 +146,7 @@ def EstExps(t):
 
 def EstIntOnCF(t):
     """Expected Interest on future cashflows"""
-    return InnerProj(t).PresentValue(t).InterestNetCF(t)
+    return InnerProj(t).PV(t).InterestNetCF(t)
 
 
 def EstPremIncome(t):
@@ -262,7 +262,7 @@ def PV_Cashflow(t, t_at, t_rate):
         t_at: Time discount rates at which are used.
         t_rate: Time to which the cashflows are discounted.
     """
-    return InnerProj(t).PresentValue(t_rate).PV_NetCashflow(t_at)
+    return InnerProj(t).PV(t_rate).PV_NetCashflow(t_at)
 
 
 def PV_FutureCF(t):
@@ -278,7 +278,7 @@ def PV_SumCovUnits(t, t_rate):
 
     The discount rates used are the ones at time `t_rate`.
     """
-    return InnerProj(t).PresentValue(t_rate).PV_SumInsurIF(t)
+    return InnerProj(t).PV(t_rate).PV_SumInsurIF(t)
 
 
 def ProfitBefTax(t):

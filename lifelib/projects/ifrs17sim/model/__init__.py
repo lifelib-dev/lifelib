@@ -9,7 +9,6 @@ _spaces = [
     "LifeTable",
     "Economic",
     "BaseProj",
-    "PV",
     "OuterProj",
     "IFRS"
 ]
