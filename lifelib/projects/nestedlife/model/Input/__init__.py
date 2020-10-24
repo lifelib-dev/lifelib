@@ -22,18 +22,18 @@ def SpecLookup(spec, prod=None, polt=None, gen=None):
 # ---------------------------------------------------------------------------
 # References
 
-PolicyData = ("Pickle", 1777734646920)
+PolicyData = ("Pickle", 2523989600712)
 
-MortalityTables = ("Pickle", 1777735372232)
+MortalityTables = ("Pickle", 2523989396104)
 
-AssumptionTables = ("Pickle", 1777741969416)
+AssumptionTables = ("Pickle", 2523998001736)
 
-Scenarios = ("Pickle", 1777741968456)
+Scenarios = ("Pickle", 2523998000776)
 
-DiscountRate = ("Pickle", 1777742128200)
+DiscountRate = ("Pickle", 2523998176840)
 
-PremWaiverCost = ("Pickle", 1777742127944)
+PremWaiverCost = ("Pickle", 2523998175880)
 
-Assumption = ("Pickle", 1777742607560)
+Assumption = ("Pickle", 2523998660360)
 
-ProductSpec = ("Pickle", 1777742608328)
+ProductSpec = ("Pickle", 2523998661128)

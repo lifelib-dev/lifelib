@@ -204,4 +204,4 @@ IntRate = 0.01
 
 TableID = 1
 
-MortalityTable = ("Pickle", 1777735372232)
+MortalityTable = ("Pickle", 2523989396104)
