@@ -67,17 +67,15 @@ Composition Structure
      solvency2 <- Policy [hstyle=composition];
      solvency2 <- LifeTable [hstyle=composition];
      solvency2 <- Input [hstyle=composition];
-
-     group {
-       Economic;
-       Assumption;
-       Policy;
-       LifeTable;
-       shape=line
-       style=dashed
-       color=orange
-     }
-
+     solvency2 <- PV [hstyle=composition];
+     solvency2 <- BaseProj [hstyle=composition];
+     PV [style=dotted]
+     BaseProj [style=dotted]
+     solvency2 <- Override
+     Override <- Mortality[hstyle=composition]
+     Override <- Lapse[hstyle=composition]
+     Override <- LapseMass[hstyle=composition]
+     Override <- Expense[hstyle=composition]
    }
 
 Inheritance Structure
@@ -113,8 +111,7 @@ Project Modules
    :toctree: generated/
    :template: llmodule.rst
 
-   ~model
-   ~model.Assumption
+   ~model.Assumptions
    ~model.BaseProj
    ~model.Economic
    ~model.LifeTable
