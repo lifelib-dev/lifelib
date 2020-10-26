@@ -215,13 +215,16 @@ modelx on PyPI             https://pypi.org/project/modelx/
        </div>
        <div class="col-md-6">
 
-          <h2>Ask questions</h2>
+          <h2>Links</h2>
 
-If you have questions about lifelib, find bugs or want to request new features,
-submit issues on
-`lifelib development site <https://github.com/fumitoh/lifelib/issues>`_
-on github.
-Or, connect with
+Connect with `Fumito Hamamura <https://www.linkedin.com/in/fumito-hamamura>`_
+or follow him on LinkedIn to subscribe to updates on lifelib and modelx.
+
+========================== ============================================
+Development site           https://github.com/fumitoh/lifelib
+lifelib on PyPI            https://pypi.org/project/lifelib/
+Author's profile           https://www.linkedin.com/in/fumito-hamamura
+========================== ============================================
 
 .. raw:: html
 
@@ -238,16 +241,12 @@ Or, connect with
      <div class="row">
        <div class="col-md-6">
 
-          <h2>Links</h2>
+          <h2>Ask questions</h2>
 
-Connect with `Fumito Hamamura <https://www.linkedin.com/in/fumito-hamamura>`_
-or follow him on LinkedIn to subscribe to updates on lifelib and modelx.
-
-========================== ============================================
-Development site           https://github.com/fumitoh/lifelib
-lifelib on PyPI            https://pypi.org/project/lifelib/
-Author's profile           https://www.linkedin.com/in/fumito-hamamura
-========================== ============================================
+If you have questions about lifelib, find bugs or want to request new features,
+submit issues on
+`lifelib development site <https://github.com/fumitoh/lifelib/issues>`_
+on github.
 
 .. raw:: html
 
