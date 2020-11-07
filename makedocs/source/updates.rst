@@ -4,6 +4,15 @@ Updates
 
 .. Latest Updates Begin
 
+
+
+.. raw:: html
+
+    <p><small><strong>Note:</strong>
+    Visit <a href="https://modelx.io" target="_blank">modelx.io</a>
+    for more updates.</small></p>
+
+
 * *24 May 2020:*
   New download available on :doc:`download` page.
 
