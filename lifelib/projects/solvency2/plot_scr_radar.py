@@ -7,15 +7,11 @@ Each spoke of the radar chart represents a sub risk of SCR life risks,
 and the sizes of the sub risks by duration are drawn in the radar chart. 
 
 """
+import modelx as mx
 import pandas as pd
 from draw_charts_radar import draw_radar
 
-try:
-    import solvency2.solvency2 as solvency2
-except ImportError:
-    import solvency2
-
-model = solvency2.build()
+model = mx.read_model("model")
 scr = model.SCR_life
 risks = ('mort', 'longev', 'disab', 'exps', 'lapse')
 scenid = 1

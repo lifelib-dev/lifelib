@@ -4,17 +4,13 @@
 
 Net liability cashflows by SCR shock scenarios for selected policies
 """
+import modelx as mx
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set()
 
-try:
-    import solvency2.solvency2 as solvency2
-except ImportError:
-    import solvency2
-
-model = solvency2.build()
+model = mx.read_model("model")
 
 
 def draw(polid, t0):

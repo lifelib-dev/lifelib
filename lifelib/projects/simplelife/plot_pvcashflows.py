@@ -4,12 +4,8 @@
 
 Present values of liability cashflows of a simple whole life policy.
 """
-try:
-    import simplelife.simplelife as simplelife
-except ImportError:
-    import simplelife
-
-proj = simplelife.build().Projection
+import modelx as mx
+proj = mx.read_model("model").Projection
 
 vars = ['PV_PremIncome',
         'PV_BenefitSurr',

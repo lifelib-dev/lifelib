@@ -15,14 +15,10 @@ The live version of the notebook is available online.
    :end-before: End binder ifrs17sim_csm_waterfall
 
 """
+import modelx as mx
 from draw_charts import draw_waterfall, get_waterfalldata
 
-try:
-    import ifrs17sim.ifrs17sim as ifrs17sim
-except ImportError:
-    import ifrs17sim
-
-model = ifrs17sim.build(True)
+model = mx.read_model("model")
 proj = model.OuterProj[1]
 
 csmrf = get_waterfalldata(

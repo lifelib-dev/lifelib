@@ -2,7 +2,7 @@ import smithwilson as sw
 import pandas as pd
 
 # Input - Switzerland EIOPA spot rates with LLP 25 years and extrapolation period of 150 years
-# Source: https://eiopa.europa.eu/Publications/Standards/EIOPA_RFR_20190531.zip
+# Source: https://wayback.archive-it.org/org-1495/20191229100044/https:/eiopa.europa.eu/Publications/Standards/EIOPA_RFR_20190531.zip
 #         EIOPA_RFR_20190531_Term_Structures.xlsx; Tab: RFR_spot_no_VA
 rates = [-0.00803, -0.00814, -0.00778, -0.00725, -0.00652,
          -0.00565, -0.0048, -0.00391, -0.00313, -0.00214,

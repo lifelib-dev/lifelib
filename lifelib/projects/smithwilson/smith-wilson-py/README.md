@@ -1,6 +1,6 @@
 # README
 ## Overview
-This Python package provides an implementation of the Smith-Wilson yield curve fitting algorithm for interpolations and extrapolations of zero-coupon bond rates. This algorithm is used for the extrapolation of [EIOPA risk-free term structures](https://eiopa.europa.eu/Publications/Standards/Technical%20Documentation%20(31%20Jan%202018).pdf) in the Solvency II framework. Details are available in the Technical Paper [QIS 5  Risk-free interest rates](https://eiopa.europa.eu/Publications/QIS/ceiops-paper-extrapolation-risk-free-rates_en-20100802.pdf). Examples of extrapolated yield curves including the parameters applied can be found [here](https://eiopa.europa.eu/Publications/Standards/EIOPA_RFR_20190531.zip).
+This Python package provides an implementation of the Smith-Wilson yield curve fitting algorithm for interpolations and extrapolations of zero-coupon bond rates. This algorithm is used for the extrapolation of [EIOPA risk-free term structures](https://wayback.archive-it.org/org-1495/20191229100044/https:/eiopa.europa.eu/Publications/Standards/Technical%20Documentation%20(31%20Jan%202018).pdf) in the Solvency II framework. Details are available in the Technical Paper [QIS 5  Risk-free interest rates](https://wayback.archive-it.org/org-1495/20191229100044/https:/eiopa.europa.eu/Publications/QIS/ceiops-paper-extrapolation-risk-free-rates_en-20100802.pdf). Examples of extrapolated yield curves including the parameters applied can be found [here](https://wayback.archive-it.org/org-1495/20191229100044/https:/eiopa.europa.eu/Publications/Standards/EIOPA_RFR_20190531.zip).
 <br /><br />
 
 ## Implementation
@@ -39,9 +39,9 @@ To use the Smith-Wilson fitting algorithm import the Python package and call `fi
 <br /><br />
 
 ## Sources
-[EIOPA (2010). QIS 5 Technical Paper; Risk-free interest rates – Extrapolation method](https://eiopa.europa.eu/Publications/QIS/ceiops-paper-extrapolation-risk-free-rates_en-20100802.pdf); p.11ff
+[EIOPA (2010). QIS 5 Technical Paper; Risk-free interest rates – Extrapolation method](https://wayback.archive-it.org/org-1495/20191229100044/https:/eiopa.europa.eu/Publications/QIS/ceiops-paper-extrapolation-risk-free-rates_en-20100802.pdf); p.11ff
 
-[EIOPA (2018). Technical documentation of the methodology to derive EIOPA’srisk-free interest rate term structures](https://eiopa.europa.eu/Publications/Standards/Technical%20Documentation%20(31%20Jan%202018).pdf); p.37-46
+[EIOPA (2018). Technical documentation of the methodology to derive EIOPA’srisk-free interest rate term structures](https://wayback.archive-it.org/org-1495/20191229100044/https:/eiopa.europa.eu/Publications/Standards/Technical%20Documentation%20(31%20Jan%202018).pdf); p.37-46
 <br /><br />
 
 ## Author
