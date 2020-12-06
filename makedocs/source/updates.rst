@@ -14,6 +14,7 @@ Updates
 
 * *6 Dec 2020:*
   lifelib v0.0.15 is released. See :ref:`releases` for details.
+  New download available on :doc:`download` page.
 
 * *24 May 2020:*
   New download available on :doc:`download` page.
