@@ -220,14 +220,14 @@ def SurrRateMult(t):
 
 AsmpLookup = ("Interface", ("...", "Input", "AsmpLookup"), "auto")
 
-AssumptionTables = ("Pickle", 1338047252680)
+AssumptionTables = ("Pickle", 2325094460872)
 
-MortalityTables = ("Pickle", 1338041233224)
+MortalityTables = ("Pickle", 2325069517000)
 
-gen = ("Pickle", 1338041089288)
+gen = ("Pickle", 2325087992616)
 
-polt = ("Pickle", 1338041088520)
+polt = ("Pickle", 2325087990888)
 
-prod = ("Pickle", 1338041090008)
+prod = ("Pickle", 2325087992328)
 
-sex = ("Pickle", 1338040878280)
+sex = ("Pickle", 2325087991944)

@@ -192,9 +192,9 @@ def SurrRate(y):
 
 AsmpLookup = ("Interface", ("...", "Input", "AsmpLookup"), "auto")
 
-AssumptionTables = ("Pickle", 1889862980512)
+AssumptionTables = ("Pickle", 2325077011464)
 
-MortalityTables = ("Pickle", 1889853839344)
+MortalityTables = ("Pickle", 2325070426248)
 
 gen = ("Interface", ("..", "Policy", "Gen"), "auto")
 

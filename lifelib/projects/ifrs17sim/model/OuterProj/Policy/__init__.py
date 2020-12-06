@@ -286,7 +286,7 @@ SumAssured = lambda: PolicyData[PolicyID, 'SumAssured']
 
 LifeTable = ("Interface", ("...", "LifeTable"), "auto")
 
-PolicyData = ("Pickle", 1338028857992)
+PolicyData = ("Pickle", 2325087635976)
 
 PremTerm = ("Interface", (".", "PolicyTerm"), "auto")
 

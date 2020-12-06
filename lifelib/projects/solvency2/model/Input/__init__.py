@@ -26,22 +26,22 @@ def Factor(risk=None, shock=None, scope=None, extrakey=None):
 # ---------------------------------------------------------------------------
 # References
 
-PolicyData = ("Pickle", 2449873593416)
+PolicyData = ("Pickle", 2325077945160)
 
-MortalityTables = ("Pickle", 2449876034440)
+MortalityTables = ("Pickle", 2325095460104)
 
-AssumptionTables = ("Pickle", 2449883322440)
+AssumptionTables = ("Pickle", 2325101521608)
 
-Scenarios = ("Pickle", 2449883321480)
+Scenarios = ("Pickle", 2325101521416)
 
-DiscountRate = ("Pickle", 2449883493448)
+DiscountRate = ("Pickle", 2325101684424)
 
-PremWaiverCost = ("Pickle", 2449883492488)
+PremWaiverCost = ("Pickle", 2325101684232)
 
-Assumption = ("Pickle", 2449883976968)
+Assumption = ("Pickle", 2325102163848)
 
-ProductSpec = ("Pickle", 2449883977736)
+ProductSpec = ("Pickle", 2325102164616)
 
-CorrData = ("Pickle", 2449883979080)
+CorrData = ("Pickle", 2325102165768)
 
-FactorData = ("Pickle", 2449877034440)
+FactorData = ("Pickle", 2325102235144)
