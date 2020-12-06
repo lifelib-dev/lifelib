@@ -97,8 +97,8 @@ thanks to Binder.
    notebooks/smithwilson/smithwilson-overview.ipynb
 
 
-Model Components
-----------------
+Space Details
+-------------
 
 The **smithwilson** model contains only one space
 named :mod:`~smithwilson.model.SmithWilson`.

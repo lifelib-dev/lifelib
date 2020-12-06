@@ -1,24 +1,10 @@
-"""Base Space for the :mod:`~simplelife.model.Projection` Space.
+"""Base Space for the :mod:`~ifrs17sim.model.OuterProj` and :mod:`~ifrs17sim.model.OuterProj.InnerProj`.
 
-This Space serves as a base Space for :mod:`~simplelife.model.Projection`
-Space, and it contains Cells for cashflow projection.
+This Space serves as a base Space for :mod:`~ifrs17sim.model.OuterProj`
+and :mod:`~ifrs17sim.model.OuterProj.InnerProj`,
+and it contains Cells for cashflow projection.
 
-.. rubric:: Projects
-
-This module is included in the following projects.
-
-* :mod:`simplelife`
-* :mod:`nestedlife`
-
-.. rubric:: References
-
-This Cells is this Space reference the following attributes.
-The attributes are not defined in this Space, but defined in its
-sub Space, :mod:`~simplelife.model.Projection`
-
-Attributes:
-    pol: Alias to :mod:`~simplelife.model.Projection.Policy` space
-    asmp: Alias to :mod:`~simplelife.model.Projection.Assumptions` space
+.. rubric:: Inheritance Structure
 
 .. blockdiag::
 
@@ -26,7 +12,9 @@ Attributes:
      default_node_color="#D5E8D4";
      default_linecolor="#628E47";
      BaseProj[style=dotted]
-     BaseProj <- OuterProj[hstyle=generalization]
+     BaseProj <- OuterProj [hstyle=generalization]
+     PV[style=dotted]
+     PV <- OuterProj [hstyle=generalization];
    }
 
 .. blockdiag::
@@ -35,8 +23,28 @@ Attributes:
      default_node_color="#D5E8D4";
      default_linecolor="#628E47";
      BaseProj[style=dotted]
-     BaseProj <- InnerProj[hstyle=generalization]
+     BaseProj <- InnerProj [hstyle=generalization]
+     PV[style=dotted]
+     PV <- InnerProj [hstyle=generalization];
    }
+
+``Pols``:
+    Cells whose names start with ``Pols`` deal with number of policies.
+    For example, ``PolsDeath(t)`` represents number of deaths between
+    time ``t`` and ``t+1``.
+
+``Size``:
+    Cells whose names start with ``Size`` represents an amount per policy.
+    For example, ``SizeBenefitDeath`` represents sum assured per policy.
+
+``Exps``:
+    Cells whose names start with ``Exps`` represents expense cashflows.
+    For example, ``ExpsCommRen`` means the renewal commission cashflow.
+
+``Benefit``:
+    Cells whose names start with ``Benefit`` represents benefit cashflows.
+    For example, ``BenefitDeath(t)`` death benefits incurred
+    between ``t`` and ``t+1``.
 
 """
 

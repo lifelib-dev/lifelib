@@ -1,16 +1,43 @@
 """Space for cashflow projection.
 
 This Space is for projecting cashflows of individual model points.
-Most Cells in this Spaces are defined in its base Spaces,
-:mod:`~simplelife.model.BaseProj` and :mod:`~simplelife.model.PV`.
 
-This Space is parametrized with ``PolicyID`` and ``ScenID``,
-and calling this space with a pair of integers returns the ItemSpace
-for the policy ID and scenario ID.
-``ScenID`` has a default value of 1,
+.. rubric:: Inheritance Structure
+
+The ``Projection`` Space inherits its contents from its
+base Spaces,
+:mod:`~simplelife.model.BaseProj` and :mod:`~simplelife.model.PV`.
+Projection items are inherited from :mod:`~simplelife.model.BaseProj`
+and the present values of the cashflow items are
+inherited from :mod:`~simplelife.model.BaseProj`.
+
+.. blockdiag::
+
+   blockdiag {
+     default_node_color="#D5E8D4";
+     default_linecolor="#628E47";
+     BaseProj[style=dotted]
+     BaseProj <- OuterProj [hstyle=generalization]
+     PresentValue[style=dotted]
+     PresentValue <- OuterProj [hstyle=generalization];
+   }
+
+.. rubric:: Parameters
+
+This Space is parametrized with ``PolicyID`` and ``ScenID``::
+
+    >>> simplelife.Projection.parameters
+    ('PolicyID', 'ScenID')
+
+Calling this space with a pair of integers returns the ItemSpace
+for the policy ID and scenario ID. ``ScenID`` has a default value of 1,
 so for example ``Projection[1]`` represents the Projection Space for Policy 1.
-The present values of the cashflow items are also calculated in
-the Space by the Cells inherited from the base Space :mod:`~simplelife.model.BaseProj`.
+
+Attributes:
+    PolicyID(:obj:`int`): Policy ID
+    ScenID(:obj:`int`, optional): Scenario ID, defaults to 1.
+
+.. rubric:: Composition Structure
 
 This Space has child Spaces,
 :mod:`~simplelife.model.Projection.Policy` and :mod:`~simplelife.model.Projection.Assumptions`.
@@ -20,8 +47,6 @@ It also contains Cells for calculating policy values such as premium rates and
 cash surrender value rates.
 The :mod:`~simplelife.model.Projection.Assumptions` Space contains Cells to pick up assumption data for
 its model point.
-
-.. rubric:: Composition Structure
 
 .. blockdiag::
 
@@ -34,18 +59,7 @@ its model point.
      Proj <- Policy [hstyle=composition];
    }
 
-.. rubric:: Inheritance Structure
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     BaseProj[style=dotted]
-     BaseProj <- OuterProj [hstyle=generalization]
-     PresentValue[style=dotted]
-     PresentValue <- OuterProj [hstyle=generalization];
-   }
 
 .. rubric:: References
 

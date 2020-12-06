@@ -143,8 +143,7 @@ in the active MxConsole.
     project folder. With the release of lifelib v0.0.15, the models
     are read from *model* folder in the project folder,
     by `modelx.read_model <https://docs.modelx.io/en/latest/reference/generated/modelx.read_model.html>`_
-    function. The Python modules from the older releases are still available
-    in *scripts* folder under the project folder.
+    function.
 
 
 Run Projection
@@ -157,8 +156,8 @@ sample policies are defined on *PolicyData* tab in *Input.xlsm*.
 
 To calculate net liability cashflow of the Policy 1 from time 0 to 15::
 
-   >> proj = simplelife.Projection[1]
-   >> result = [proj.NetInsurCF[t] for t in range(16)]
+   >>> proj = simplelife.Projection[1]
+   >>> result = [proj.NetInsurCF[t] for t in range(16)]
 
 The first line of the above creates ``Projection[1]`` space under
 ``Projection`` for the Policy 1, and assign a shorter name to it for
@@ -167,7 +166,7 @@ The second line calculate net liability cashflow of the Policy 1 for
 15 years (from time=0 to 15) and store the results in a list ``result``.
 To see the values, type ``result``::
 
-   >> result
+   >>> result
    [-2090.721539115584,
     1593.887335778444,
     1403.8230981682598,
@@ -203,7 +202,7 @@ To get the values of all cells in a space, access ``frame`` property of the
 space, which returns the values of all the child cells as
 `Pandas`_ DataFrame object::
 
-   >> df = proj.frame
+   >>> df = proj.frame
 
 `Pandas`_ is a widely-used data analysis library for Python that provides
 feature rich data types for data manipulation, such as *DataFrame*.

@@ -11,13 +11,16 @@ The simplelife model is designed in such a way that allows you to
 trace calculations for each individual model point,
 so it can be a good reference for building validation models.
 
-A simplelife model projects life insurance cashflows for policies
+A simplelife model projects life insurance cashflows and
+their present values for policies
 represented by model points. Projected items include:
 
 * Premium income,
-* Investment income,
 * Commissions and expenses,
-* Benefit outgo, change in reserves.
+* Benefit outgo.
+
+Cells for investment income, change in reserve and profits are included
+but not tested.
 
 The cashflow projection is carried out in the :mod:`~simplelife.model.Projection` Space.
 Most Cells in the :mod:`~simplelife.model.Projection` Spaces are defined in its base Spaces,
@@ -55,9 +58,21 @@ The Space contains References that hold `ExcelRange`_ objects.
 .. _ExcelRange:
    https://docs.modelx.io/en/latest/reference/dataclient.html#excelrange
 
+Premium rates are calculated using commutation functions and actuarial
+formulas. Commutation functions are calculated for each
+combination of mortality table IDs, sex and constant interest rates
+in LifeTable Spaces.
+
+Cash surrender values are calculated as net premium reserves net of
+surrender charges. The net premium reserves are calculated using
+the same commutation functions as the ones used by
+the premium rate calculation.
+
+
 .. contents:: Contents
    :depth: 1
    :local:
+
 
 How to use the project
 -----------------------
@@ -138,8 +153,8 @@ thanks to Binder.
 
    notebooks/simplelife/simplelife-space-overview.ipynb
 
-Project Modules
----------------
+Space Details
+-------------
 
 .. autosummary::
    :toctree: generated/

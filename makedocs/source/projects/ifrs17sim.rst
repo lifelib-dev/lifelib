@@ -5,12 +5,12 @@
 Project **ifrs17sim**
 =====================
 
-**ifrs17sim** is a project template for simulating IFRS17
+**ifrs17sim** is a project for simulating IFRS17
 financial statements on sample insurance contracts.
 
 Files that are unique to this project are :mod:`~ifrs17sim` and
 :mod:`~ifrs17sim.ifrs`.
-Other files in this project are the same as those in :mod:`nestedlife`.
+Other files in this project are similar to those in :mod:`nestedlife`.
 
 .. contents:: Contents
    :depth: 1
@@ -22,8 +22,9 @@ Model Structure
 Composition Structure
 ^^^^^^^^^^^^^^^^^^^^^
 
-Spaces in the dotted yellow line have the same structure as :mod:`simplelife`
-model, so refer to :mod:`simplelife` for more details about those spaces.
+The composition structure is almost the same as the structure of
+:mod:`~nestedlife`, except that :mod:`~ifrs17sim.model.OuterProj.InnerProj.PV`
+in this model is a child Space of :mod:`~ifrs17sim.model.OuterProj.InnerProj`
 
 
 .. blockdiag::
@@ -31,20 +32,20 @@ model, so refer to :mod:`simplelife` for more details about those spaces.
    blockdiag {
      default_node_color="#D5E8D4";
      default_linecolor="#628E47";
-     nestedlife [shape=roundedbox, linecolor="#7B99C5", color="#D4E8FC", width=96]
-     nestedlife <- "OuterProj\n[PolicyID, ScenID=1]" <- "InnerProj[t0]" [hstyle=composition];
+     ifrs17sim [shape=roundedbox, linecolor="#7B99C5", color="#D4E8FC", width=96]
+     ifrs17sim <- "OuterProj\n[PolicyID, ScenID=1]" <- "InnerProj[t0]" [hstyle=composition];
      "OuterProj\n[PolicyID, ScenID=1]" [stacked];
      "InnerProj[t0]" [stacked];
      "InnerProj[t0]" <- PV [hstyle=composition]
-     nestedlife <- Economic [hstyle=composition];
+     ifrs17sim <- Economic [hstyle=composition];
      "OuterProj\n[PolicyID, ScenID=1]" <- Policy [hstyle=composition];
-     nestedlife <- LifeTable [hstyle=composition];
-     nestedlife <- Input [hstyle=composition];
-     nestedlife<- BaseProj
+     ifrs17sim <- LifeTable [hstyle=composition];
+     ifrs17sim <- Input [hstyle=composition];
+     ifrs17sim<- BaseProj
      BaseProj[style=dotted]
-     BaseProj <- Assumption [hstyle=composition];
-     Assumption[style=dotted]
-     nestedlife<- IFRS
+     BaseProj <- Assumptions [hstyle=composition];
+     Assumptions[style=dotted]
+     ifrs17sim<- IFRS
      IFRS [style=dotted]
    }
 
@@ -95,8 +96,8 @@ thanks to Binder.
    notebooks/ifrs17sim/ifrs17sim_charts_lapsescen.ipynb
 
 
-Project Modules
----------------
+Space Details
+-------------
 
 .. autosummary::
    :toctree: generated/

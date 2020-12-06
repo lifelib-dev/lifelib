@@ -1,14 +1,44 @@
-"""Source module to create ``Economic`` space from.
+"""Economic scenarios
 
-.. rubric:: Project Templates
+The ``Economic`` spaces provides economic assumptions such as
+interest rate scenarios.
 
-This module is included in the following project templates.
+This Space is included in:
 
 * :mod:`simplelife`
 * :mod:`nestedlife`
+* :mod:`ifrs17sim`
+* :mod:`solvency2`
 
-References:
-    Scenario
+
+.. _ExcelRange:
+   https://docs.modelx.io/en/latest/reference/dataclient.html#excelrange
+
+.. rubric:: Parameters
+
+``Economic`` Space is parameterized with :attr:`ScenID`::
+
+        >>> simplelife.Economic.parameters
+        ('ScenID',)
+
+Each ItemSpace represents economic scenarios for a specific :attr:`ScenID`.
+For example, ``Economic[1]`` contains economic scenarios for ScenID 1.
+
+Attributes:
+    ScenID(:obj:`int`): Scenario ID
+
+.. rubric:: References
+
+Attributes:
+    Scenario: `ExcelRange`_ object holding the data of interest rate
+        assumptions. The data is read from *Scenarios* range in *input.xlsx*.
+
+Example:
+
+    An example of ``Economic`` in the :mod:`simplelife` model::
+
+        >>> simplelife.Economic[1].DiscRate(0)
+        0.015
 
 """
 

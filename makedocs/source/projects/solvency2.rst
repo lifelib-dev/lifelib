@@ -5,9 +5,11 @@
 Project **solvency2**
 =====================
 
-**solvency2** is a project template for building a model to 
+**solvency2** is a project for building a model to
 calculate life risks of selected policies at various points in their policy periods
 based on Solvency II standard formula.
+This project serves as a reference for
+building models that contain complex nested projections.
 
 .. contents:: Contents
    :depth: 1
@@ -17,7 +19,7 @@ based on Solvency II standard formula.
 Overview
 --------
 
-The :func:`solvency2.build` function returns a model named ``solvency2``.
+The model included in this project is named ``solvency2``.
 The model calculates the capital requirement for life underwriting risk
 based on Solvency II standard formula by policy and duration.
 
@@ -31,9 +33,9 @@ and the deterministic scenario with a prescribed stress on the risk factor,
 except for Lapse risk.
 For Lapse risk, three ("up", "down", "mass") scenarios are considered.
 
-The model contains a parametric space ``SCR_Life[t0, PolicyID, ScenID]``
-based from :mod:`~solvency2.scr_life` module.
-:func:`~solvency2.scr_life.SCR_life` cells in each ``SCR_Life[t0, PolicyID, ScenID]``
+The model contains a parametric space
+:mod:`SCR_Life[t0, PolicyID, ScenID] <solvency2.model.SCR_life>`.
+:func:`~solvency2.model.SCR_life.SCR_life` cells in each ``SCR_Life[t0, PolicyID, ScenID]``
 holds the value of Life underwriting risk at time ``t0`` for ``PolicyID``
 and ``ScenID`` (1 by default), calculated based on
 the solvency capital requirement standard formula under Solvency II.
@@ -46,9 +48,6 @@ References:
 
 Model Structure
 ---------------
-
-Spaces in the dotted yellow line have the same structure as :mod:`simplelife`
-model, so refer to :mod:`simplelife` for more details about those spaces.
 
 Composition Structure
 ^^^^^^^^^^^^^^^^^^^^^
@@ -63,7 +62,7 @@ Composition Structure
      "SCR_life[t0, PolicyID, ScenID]" [stacked, width=200];
      "Projection[Risk, Shock, Scope]" [stacked, width=200];
      solvency2 <- Economic [hstyle=composition];
-     solvency2  <- Assumption [hstyle=composition];
+     solvency2  <- Assumptions [hstyle=composition];
      solvency2 <- Policy [hstyle=composition];
      solvency2 <- LifeTable [hstyle=composition];
      solvency2 <- Input [hstyle=composition];
@@ -104,8 +103,8 @@ Inheritance Structure
    }
 
 
-Project Modules
----------------
+Space Details
+-------------
 
 .. autosummary::
    :toctree: generated/

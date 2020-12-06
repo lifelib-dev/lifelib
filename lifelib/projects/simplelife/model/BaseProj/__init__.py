@@ -3,6 +3,8 @@
 This Space serves as a base Space for :mod:`~simplelife.model.Projection`
 Space, and it contains Cells for cashflow projection.
 
+.. rubric:: Inheritance Structure
+
 .. blockdiag::
 
    blockdiag {
@@ -14,23 +16,24 @@ Space, and it contains Cells for cashflow projection.
      PV <- Projection [hstyle=generalization];
    }
 
-.. rubric:: Projects
 
-This module is included in the following projects.
+``Pols``:
+    Cells whose names start with ``Pols`` deal with number of policies.
+    For example, ``PolsDeath(t)`` represents number of deaths between
+    time ``t`` and ``t+1``.
 
-* :mod:`simplelife`
-* :mod:`nestedlife`
+``Size``:
+    Cells whose names start with ``Size`` represents an amount per policy.
+    For example, ``SizeBenefitDeath`` represents sum assured per policy.
 
-.. rubric:: References
+``Exps``:
+    Cells whose names start with ``Exps`` represents expense cashflows.
+    For example, ``ExpsCommRen`` means the renewal commission cashflow.
 
-The Cells in this Space reference the following attributes.
-The attributes are not defined in this Space, but defined in its
-sub Space, :mod:`~simplelife.model.Projection`
-
-Attributes:
-    pol: Alias to :mod:`~simplelife.model.Projection.Policy` space
-    asmp: Alias to :mod:`~simplelife.model.Projection.Assumptions` space
-
+``Benefit``:
+    Cells whose names start with ``Benefit`` represents benefit cashflows.
+    For example, ``BenefitDeath(t)`` death benefits incurred
+    between ``t`` and ``t+1``.
 
 """
 

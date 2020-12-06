@@ -1,60 +1,57 @@
-"""Source module to create ``Policy`` space from.
+"""Policy attributes and policy values
 
-This module is a source module to create ``Policy`` space and its
-sub spaces from.
-The formulas of the cells in the ``Policy`` space are created from the
-functions defined in this module.
+This Space is a child Space of :mod:`~ifrs17sim.model.OuterProj`.
+A child Space derived from this Space is created under each
+:mod:`~ifrs17sim.model.OuterProj` ItemSpace,
+such as ``ifrs17sim.OuterProj[1].Policy``,
+which holds policy attributes and policy values for Policy 1.
+The Space is used by :mod:`~ifrs17sim.model.BaseProj.Assumptions`
+and :mod:`~ifrs17sim.model.OuterProj.InnerProj`.
 
-The ``Policy`` space is the base space of the policy spaces
-for individual policies, which are derived from and belong to
-the ``Policy`` space as its dynamic child spaces.
+Some Cells in this Space, such as :func:`Product` and :func:`IssueAge`,
+are for retrieving attributes for the selected policy from :attr:`PolicyData`.
+Some other Cells, such as :func:`GrossPremRate` are for
+calculating policy values for the policy from the attributes and
+product specs looked up through :attr:`SpecLookup`.
 
-The policy spaces for individual policies are parametrized by ``PolicyID``.
-For example, to get the policy space of the policy whose ID is 171::
 
-    >> pol = model.Policy(171)
+.. blockdiag::
 
-The cells in a policy space for each individual policy retrieve
-input data, calculate and hold values of policy attributes specific to that policy,
-so various spaces in :mod:`Input<simplelife.build_input>` must be accessible
-from the ``Policy`` space.
+   blockdiag {
+     default_node_color="#D5E8D4";
+     default_linecolor="#628E47";
+     node_width=150;
+     Proj[label="OuterProj\\n[PolicyID, ScenID=1]", stacked];
+     Proj <- Assumptions [hstyle=composition];
+     Proj <- Policy [hstyle=composition];
+   }
 
-.. rubric:: Projects
 
-This module is included in the following projects.
+.. rubric:: Parameters
 
-* :mod:`simplelife`
-* :mod:`nestedlife`
-* :mod:`ifrs17sim`
-* :mod:`solvency2`
-
-.. rubric:: Space Parameters
-
-Attributes:
-    PolicyID: Policy ID
-
-.. rubric:: References in Base
-
-Attributes:
-    PolicyData: Input.PolicyData
-    ProductSpec: Input.ProductSpec
-    LifeTable: LifeTable
-    Gen: Generation key
-
-.. rubric:: References in Sub
+Since :mod:`~ifrs17sim.model.OuterProj` is parameterized with
+:attr:`PolicyID` and :attr:`ScenID`, this Space is also
+parameterized as a child space of :mod:`~ifrs17sim.model.OuterProj`.
+For example, ``ifrs17sim.Projection[1].Policy.GrossPremRate()``
+represents the gross premium rate for Policy 1.
 
 Attributes:
-    Product: Product key
-    PolicyType: Policy type key
-    Gen: Generation key
-    Channel: Channel key
-    Sex: ``M`` for Male, ``F`` for Female
-    Duration: Number of years lapsed. 0 for new business
-    IssueAge: Issue age
-    PremFreq: Number of premium payments per year. 12 for monthly payments
-    PolicyTerm: Policy term in year
-    PolicyCount: Number of policies
-    SumAssured: Sum Assured per policy
+    PolicyID(:obj:`int`): Policy ID
+    ScenID(:obj:`int`, optional): Scenario ID, defaults to 1.
+
+
+.. rubric:: References
+
+Attributes:
+    LifeTable: :mod:`~ifrs17sim.model.LifeTable` Space
+    PolicyData: `ExcelRange`_ object holding data read from the
+        Excel range *PolicyData* in *input.xlsx*.
+    SpecLookup: :func:`~ifrs17sim.model.Input.SpecLookup`
+    PremTerm: Alias for :func:`PolicyTerm`
+
+.. _ExcelRange:
+   https://docs.modelx.io/en/latest/reference/dataclient.html#excelrange
+
 """
 
 from modelx.serialize.jsonvalues import *

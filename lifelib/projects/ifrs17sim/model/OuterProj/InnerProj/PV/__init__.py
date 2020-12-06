@@ -1,17 +1,22 @@
-"""Present Value mix-in Space
+"""Present values of cashflows
 
-This Space serves as a base Space for :mod:`~model.simplelife.Projection`
-Space, and it contains Cells to take the present value of projected cashflows.
+This Space is a child Space of :mod:`~ifrs17sim.model.OuterProj.InnerProj`,
+and calculates present values of cashflows.
+
+This Space is parameterized with ``t_rate``, which indicates that
+the discount rates at time ``t_rate`` are used for discounting.
 
 .. blockdiag::
 
    blockdiag {
      default_node_color="#D5E8D4";
      default_linecolor="#628E47";
-     BaseProj[style=dotted]
-     BaseProj <- OuterProj [hstyle=generalization]
-     PresentValue[style=dotted]
-     PresentValue <- OuterProj [hstyle=generalization];
+     ifrs17sim [shape=roundedbox, linecolor="#7B99C5", color="#D4E8FC", width=96]
+     ifrs17sim <- "OuterProj\\n[PolicyID, ScenID=1]" <- "InnerProj[t0]" [hstyle=composition];
+     "OuterProj\\n[PolicyID, ScenID=1]" [stacked];
+     "InnerProj[t0]" [stacked];
+     "PV[t_rate]" [stacked];
+     "InnerProj[t0]" <- "PV[t_rate]" [hstyle=composition]
    }
 
 """

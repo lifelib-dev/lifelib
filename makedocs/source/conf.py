@@ -63,7 +63,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'lifelib'
-copyright = '2017-2019, Fumito Hamamura'
+copyright = '2017-2020, Fumito Hamamura'
 author = 'Fumito Hamamura'
 
 # The version info for the project you're documenting, acts as replacement for

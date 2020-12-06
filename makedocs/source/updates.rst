@@ -9,9 +9,11 @@ Updates
 .. raw:: html
 
     <p><small><strong>Note:</strong>
-    Visit <a href="https://modelx.io" target="_blank">modelx.io</a>
+    Visit <a href="https://modelx.io/allposts" target="_blank">modelx blog</a>
     for more updates.</small></p>
 
+* *6 Dec 2020:*
+  lifelib v0.0.15 is released. See :ref:`releases` for details.
 
 * *24 May 2020:*
   New download available on :doc:`download` page.
@@ -28,6 +30,8 @@ Updates
 * *18 April 2020:*
   lifelib v0.0.14 is released. See :ref:`releases` for details.
 
+.. Latest Updates End
+
 * *27 December 2019:*
   lifelib v0.0.13 is released. :doc:`smithwilson <projects/smithwilson>` project is added.
 
@@ -41,8 +45,6 @@ Updates
   modelx v0.0.21 and spyder-modelx v0.0.9 is released.
   See `modelx documentation <http://docs.modelx.io/en/latest/index.html>`_
   for more details.
-
-.. Latest Updates End
 
 * *2 February 2019:*
   lifelib v0.0.10 is released. See :ref:`releases` for details.

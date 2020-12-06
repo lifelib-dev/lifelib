@@ -14,7 +14,7 @@
 
 An open-source library of life actuarial models written in Python.
 You can run the models right out of the box,
-customize them in any way you want, or create your own models from scratch.
+customize them in any way you like, or create your own models from scratch.
 
 .. raw:: html
 
@@ -71,12 +71,14 @@ customize them in any way you want, or create your own models from scratch.
        </div>
        <div class="col-md-3">
 
-          <h2><a href="quickstart.html">Quick Start</a></h2>
+          <h2><a href="about_lifelib.html">About</a></h2>
 
-* :ref:`getting-lifelib`
-* :ref:`using-spyder`
-* :ref:`running-notebooks`
-
+* :ref:`what-is-lifelib`
+* :ref:`how-lifelib-works`
+* :ref:`modindex`
+* :ref:`genindex`
+* :ref:`search`
+* :ref:`past-documents`
 
 .. raw:: html
 
@@ -99,8 +101,18 @@ customize them in any way you want, or create your own models from scratch.
 
    <div class="container-fluid">
      <div class="row">
-       <div class="col-md-4">
-          <h2><a href="projects/index.html">Projects</a></h2>
+       <div class="col-md-3">
+          <h2><a href="quickstart.html">Quick Start</a></h2>
+
+* :ref:`getting-lifelib`
+* :ref:`using-spyder`
+* :ref:`running-notebooks`
+
+.. raw:: html
+
+       </div>
+       <div class="col-md-3">
+          <h2><a href="generated_examples/index.html">Projects</a></h2>
 
 * :ref:`project_simplelife`
 * :ref:`project_nestedlife`
@@ -112,7 +124,7 @@ customize them in any way you want, or create your own models from scratch.
 .. raw:: html
 
        </div>
-       <div class="col-md-4">
+       <div class="col-md-3">
           <h2><a href="generated_examples/index.html">Gallery</a></h2>
 
 * :ref:`simplelife_examples`
@@ -124,7 +136,7 @@ customize them in any way you want, or create your own models from scratch.
 .. raw:: html
 
        </div>
-       <div class="col-md-4">
+       <div class="col-md-3">
           <h2><a href="notebooks.html">Jupyter Notebooks</a></h2>
 
 * :ref:`notebooks_simplelife`
@@ -137,58 +149,7 @@ customize them in any way you want, or create your own models from scratch.
      </div>
    </div>
 
-.. 3rd row, Features & Why & What for ---------------------------------
-
-.. raw:: html
-
-   <div class="container-fluid">
-     <div class="row">
-       <div class="col-md-4">
-          <h2>Feature highlights</h2>
-
-* Readable formulas
-* Multidimensional data structure
-* Instant evaluation
-* Dependency tracking
-* Reusable code
-* Object oriented models
-* Interface with Excel/Pandas
-* Version control
-* Documentation integration
-
-.. raw:: html
-
-       </div>
-       <div class="col-md-4">
-          <h2>Why <strong>lifelib</strong>?</h2>
-
-- Better model integrity and extensibility
-- For readable formula expressions
-- For eliminating spreadsheet errors
-- For better version control/model governance
-
-.. raw:: html
-
-       </div>
-       <div class="col-md-4">
-          <h2>What for?</h2>
-
-- For research/educational projects
-- As communication tools to convey model specifications
-- Model validation / testing
-- Prototyping for production models
-- Pricing / Profit testing
-- As corporate models
-- For simulations
-- As replacement for any spreadsheet models
-
-.. raw:: html
-
-       </div>
-     </div>
-   </div>
-
-.. 4th row, How it works & questions ---------------------------------
+.. 3rd row, modelx sites, links & contact ---------------------------------
 
 .. raw:: html
 
@@ -203,7 +164,7 @@ modelx provides the foundation of lifelib. Find out more
 about modelx on the following sites.
 
 ========================== ====================================
-Home page                  https://modelx.io
+Home page & Blog           https://modelx.io
 Documentation site         https://docs.modelx.io
 Development site           https://github.com/fumitoh/modelx
 modelx on PyPI             https://pypi.org/project/modelx/
@@ -215,10 +176,16 @@ modelx on PyPI             https://pypi.org/project/modelx/
        </div>
        <div class="col-md-6">
 
-          <h2>Links</h2>
+          <h2>Contact & Links</h2>
+
+If you have questions about lifelib, find bugs or want to request new features,
+submit issues on
+`lifelib development site <https://github.com/fumitoh/lifelib/issues>`_
+on github.
 
 Connect with `Fumito Hamamura <https://www.linkedin.com/in/fumito-hamamura>`_
 or follow him on LinkedIn to subscribe to updates on lifelib and modelx.
+Let him know your use cases to make lifelib more practical.
 
 ========================== ============================================
 Development site           https://github.com/fumitoh/lifelib
@@ -233,55 +200,11 @@ Author's profile           https://www.linkedin.com/in/fumito-hamamura
    </div>
 
 
-.. last row, Links & Indexes & Archive ---------------------------------
-
-.. raw:: html
-
-   <div class="container-fluid">
-     <div class="row">
-       <div class="col-md-6">
-
-          <h2>Ask questions</h2>
-
-If you have questions about lifelib, find bugs or want to request new features,
-submit issues on
-`lifelib development site <https://github.com/fumitoh/lifelib/issues>`_
-on github.
-
-.. raw:: html
-
-       </div>
-       <div class="col-md-3">
-          <h2>Indexes</h2>
-
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
-
-.. raw:: html
-
-       </div>
-       <div class="col-md-3">
-          <h2>Archive</h2>
-
-.. include:: archive.rst
-   :start-after: Past Docs Begin
-
-.. raw:: html
-
-       </div>
-     </div>
-   </div>
-
-
 .. toctree::
    :hidden:
    :maxdepth: 2
 
-   whatsnew
-   download
+   about
    quickstart
    projects/index
    generated_examples/index

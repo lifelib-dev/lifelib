@@ -1,42 +1,57 @@
 """Commutation functions and actuarial notations
 
-The ``LifeTable`` space includes Cells to calculate
-commutation functions and actuarial notations for given
-``Sex``, ``IntRate`` and ``MortalityTable``. ``MortalityTable`` and
-``Sex`` are used in :py:func:`qx` below to identify
-the mortality rates to be applied.
+The ``LifeTable`` Space provides
+commutation functions and actuarial notations, such as
+:math:`D_{x}` and :math:`\\require{enclose}{}_{f|}\\overline{A}_{x}`.
+Mortality tables are read from *input.xlsx* into an `ExcelRange`_ object.
+The `ExcelRange`_ object is bound to a Reference, :attr:`MortalityTable`.
+
+This Space is included in:
+
+* :mod:`simplelife`
+* :mod:`nestedlife`
+* :mod:`ifrs17sim`
+* :mod:`solvency2`
+
+.. _ExcelRange:
+   https://docs.modelx.io/en/latest/reference/dataclient.html#excelrange
+
+.. rubric:: Parameters
+
+``LifeTable`` Space is parameterized with :attr:`Sex`,
+:attr:`IntRate` and :attr:`TableID`::
+
+        >>> simplelife.LifeTable.parameters
+        ('Sex', 'IntRate', 'TableID')
+
+Each ItemSpace represents commutations functions actuarial notations
+for a combination of :attr:`Sex`, :attr:`IntRate` and :attr:`TableID`.
+For example, ``LifeTable['M', 0.03, 1]`` contains commutation functions
+and actuarial notations for Male, the interest rate of 3%, mortality table 1.
+
+
+Attributes:
+    Sex(:obj:`str`): 'M' or 'F' to indicate male or female column in the mortality table.
+    IntRate(:obj:`float`): The constant interest rate for discounting.
+    TableID(:obj:`int`): The identifier of the mortality table
+
+
+.. rubric:: References
+
+Attributes:
+    MortalityTable: `ExcelRange`_ object holding mortality tables.
+        The data is read from *MortalityTables* range in *input.xlsx*.
 
 Example:
 
     An example of ``LifeTable`` in the :mod:`simplelife` model::
 
-        >>> space = simplelife.LifeTable
+        >>> simplelife.LifeTable['M', 0.03, 1].AnnDuenx(40, 10)
+        8.725179890621531
 
-        >>> space.Sex = 'M'
-
-        >>> space.IntRate = 0.03
-
-        >>> space.MortalityTable = lambda sex, x: 0.001 if x < 110 else 1
-
-        >>> space.AnnDuenx(40, 10)
-
-References:
+External Links:
     * `International actuarial notation by F.S.Perryman <https://www.casact.org/pubs/proceed/proceed49/49123.pdf>`_
     * `Actuarial notations on Wikipedia <https://en.wikipedia.org/wiki/Actuarial_notation>`_
-
-.. rubric:: Project Templates
-
-This module is included in the following project templates.
-
-* :mod:`simplelife`
-* :mod:`nestedlife`
-
-.. rubric:: References in Sub
-
-Attributes:
-    Sex: 'M' or 'F' to indicate male or female column in the mortality table.
-    IntRate: The constant interest rate for discounting.
-    MortalityTable: The ultimate mortality table by sex and age.
 
 """
 

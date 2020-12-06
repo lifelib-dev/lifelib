@@ -45,6 +45,56 @@ Documentation for released versions of lifelib is available under
 :doc:`archive` page.
 
 
+v0.0.15 (6 December 2020)
+------------------------------
+
+This release includes models updated from the previous version.
+The updated models are:
+
+* :doc:`projects/simplelife`
+* :doc:`projects/nestedlife`
+* :doc:`projects/ifrs17sim`
+* :doc:`projects/solvency2`
+
+The updated models produce the same results as the previous version's.
+The updated models are much simpler than previous versions, thanks to
+2 new enhancements introduced in `modelx v0.9.0`_ and `modelx v0.10.0`_.
+One of the enhancements is ExcelRange introduced in `modelx v0.9.0`_.
+Input data read from the Excel input file is now stored as *ExcelRange*
+objects in the models.
+The other enhancement is the introduction of *Relative Reference*.
+Thanks to the introduction of the relative reference,
+Space formulas in the models got simpler and easier to understand. Read
+`this blog post <http://modelx.io/blog/2020/09/19/modelx-v010-introduce-relative-reference/>`_
+on modelx site to know more about how *Relative Reference* makes lifelib models simpler.
+
+From this release, models are provided in the form of modelx models,
+which are folders containing files and data to construct models.
+Models are read into IPython sessions by
+`modelx.read_model`_ function. See updated :doc:`spyder` section for how to read models.
+
+Python scripts for building models are not provided from this release.
+All the example notebooks now read models using `modelx.read_model`_.
+
+Models from the previous release are also included in the projects.
+Those models are files named "model_0_0_14.zip". The zip files
+can also be read by `modelx.read_model`_ directly, and no unzipping needed.
+
+.. _modelx.read_model: https://docs.modelx.io/en/latest/reference/generated/modelx.read_model.html
+
+**Related links**
+
+* `modelx blog: Heads-up on lifelib development <http://modelx.io/blog/2020/07/23/heads-up-on-lifelib-development/>`_
+* `modelx blog: modelx 0.9.0 introduces a new interface to Excel <http://modelx.io/blog/2020/08/10/modelx-v090-introduce-excel-range/>`_
+* `modelx blog: modelx v0.10.0 will make lifelib simpler <http://modelx.io/blog/2020/09/19/modelx-v010-introduce-relative-reference/>`_
+
+* `modelx v0.9.0 release notes <https://docs.modelx.io/en/latest/releases/relnotes_v0_9_0.html>`_
+* `modelx v0.10.0 release notes <https://docs.modelx.io/en/latest/releases/relnotes_v0_10_0.html>`_
+
+.. _modelx v0.10.0: https://docs.modelx.io/en/latest/releases/relnotes_v0_10_0.html
+.. _modelx v0.9.0: https://docs.modelx.io/en/latest/releases/relnotes_v0_9_0.html
+
+
 v0.0.14 (18 April 2020)
 -----------------------
 

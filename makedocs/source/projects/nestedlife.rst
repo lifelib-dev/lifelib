@@ -5,7 +5,7 @@
 Project **nestedlife**
 ======================
 
-**nestedlife** is a project template to build the same annual projection
+The **nestedlife** project has the same annual projection
 model of basic traditional life policies
 as :mod:`simplelife`, but at each projection step,
 a nested projection going forward from the step is carried out.
@@ -14,14 +14,9 @@ the assumptions of the nested projections can be adjusted based on how
 the outer projection develops up to each projection step at which point a
 nested projection starts.
 
-The main purpose of this template is to simulate actual/realistic
+The main purpose of this model is to simulate actual/realistic
 cashflows as the outer projection, and expected future cashflows at each
 projection step as each of the inner projection.
-
-By default, some formulas are redefined in :mod:`~nestedlife` module,
-to define new cells or redefine existing cells
-in :mod:`~projection` module for nested projection, and to allow the user
-to adjust surrender rates.
 
 .. contents:: Contents
    :depth: 1
@@ -33,8 +28,23 @@ Model Structure
 Composition Structure
 ^^^^^^^^^^^^^^^^^^^^^
 
-Spaces in the dotted yellow line have the same structure as :mod:`simplelife`
-model, so refer to :mod:`simplelife` for more details about those sapces.
+:mod:`~nestedlife.model.Input` Space and :mod:`~nestedlife.model.Economic` Space hold
+input data read from *input.xlsx*. :mod:`~nestedlife.model.LifeTable` Space
+is the same is the one in :mod:`simplelife`, and calculates
+commutation functions and actuarial notations.
+:mod:`~nestedlife.model.BaseProj`, and :mod:`~nestedlife.model.PV` serve as
+base Spaces for :mod:`~nestedlife.model.OuterProj`
+and :mod:`~nestedlife.model.OuterProj.InnerProj`.
+:mod:`~nestedlife.model.OuterProj` is for carrying out outer projections,
+
+As is the case of :mod:`simplelife`,
+The :mod:`~nestedlife.model.OuterProj` is parametrized with ``PolicyID``,
+so ``Projection[1]`` represents the Projection Space for Policy 1.
+The present values of the cashflow items are also calculated in
+the :mod:`~nestedlife.model.OuterProj` Spaces.
+For example, the expression
+``nestedlife.OuterProj[1].PV_NetCashflow(0)``
+returns the present value of net cashflows for Policy 1.
 
 .. blockdiag::
 
@@ -51,8 +61,8 @@ model, so refer to :mod:`simplelife` for more details about those sapces.
      nestedlife <- Input [hstyle=composition];
      nestedlife<- BaseProj
      BaseProj[style=dotted]
-     BaseProj <- Assumption [hstyle=composition];
-     Assumption[style=dotted]
+     BaseProj <- Assumptions [hstyle=composition];
+     Assumptions[style=dotted]
      nestedlife <- PV;
      PV[style=dotted];
 
@@ -83,16 +93,17 @@ Inheritance Structure
      PV <- InnerProj [hstyle=generalization]
    }
 
-Project Modules
----------------
+Space Details
+-------------
 
 .. autosummary::
    :toctree: generated/
    :template: llmodule.rst
 
+   ~model.Input
+   ~model.Economic
    ~model.BaseProj
    ~model.BaseProj.Assumptions
-   ~model.Economic
    ~model.LifeTable
    ~model.PV
    ~model.OuterProj
