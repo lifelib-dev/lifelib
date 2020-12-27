@@ -112,7 +112,7 @@ customize them in any way you like, or create your own models from scratch.
 
        </div>
        <div class="col-md-3">
-          <h2><a href="generated_examples/index.html">Projects</a></h2>
+          <h2><a href="projects/index.html">Projects</a></h2>
 
 * :ref:`project_simplelife`
 * :ref:`project_nestedlife`
