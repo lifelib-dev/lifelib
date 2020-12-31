@@ -69,16 +69,6 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
-def AsmpLookup(asmp, prod=None, polt=None, gen=None):
-    """Look up assumptions"""
-    return Assumption.get((asmp, prod, polt, gen), None)
-
-
-def SpecLookup(spec, prod=None, polt=None, gen=None):
-    """Look up product specs"""
-    return ProductSpec.get((spec, prod, polt, gen), None)
-
-
 def TableLastAge(): 
 
     result = MortalityTables.idxmax()
@@ -89,18 +79,4 @@ def TableLastAge():
 # ---------------------------------------------------------------------------
 # References
 
-PolicyData = ("Pickle", 2233386886344)
-
-MortalityTables = ("Pickle", 2235289201608)
-
-AssumptionTables = ("Pickle", 2233389980872)
-
-Scenarios = ("Pickle", 2233390044744)
-
-DiscountRate = ("Pickle", 2233395762888)
-
-PremWaiverCost = ("Pickle", 2233396001416)
-
-Assumption = ("Pickle", 2233396402568)
-
-ProductSpec = ("Pickle", 2233396403336)
+MortalityTables = ("Pickle", 2119462435528)

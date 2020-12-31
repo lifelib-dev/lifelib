@@ -66,19 +66,12 @@ _formula = None
 
 _bases = []
 
-_allow_none = None
+_allow_none = True
 
 _spaces = []
 
 # ---------------------------------------------------------------------------
 # Cells
-
-def BaseMortRate(x):
-    """Bae mortality rate"""
-
-    table_id = AsmpLookup.match("BaseMort", prod(), polt(), gen()).value
-    return MortalityTables[table_id, sex(), x]
-
 
 def CnsmpTax():
     """Consumption tax rate"""
@@ -211,55 +204,23 @@ def LastAge():
 def MortFactor(y):
     """Mortality factor"""
 
-    def get_factor(pol, y):
+    fac = MortFactorID().apply(lambda facid: AssumptionTables.get((facid, y), np.NaN))
 
-        key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
-        table = AsmpLookup.match("MortFactor", key1, key2, key2).value
-
-        if table is None:
-            raise ValueError('MortFactor not found')
-
-        result = AssumptionTables.get((table, y), None)
-
-        if result is None:
-            return MortFactor(y-1)[pol.name]
-        else:
-            return result
-
-
-    return PolicyData.apply(lambda pol: get_factor(pol, y), axis=1)
-
-
-def MortTable():
-    """Mortality Table"""
-
-    def get_table_id(pol):
-        key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
-        return AsmpLookup.match("BaseMort", key1, key2, key2).value
-
-    return PolicyData.apply(get_table_id, axis=1)
+    if y == 0 or not fac.isnull().any():
+        return fac
+    else:
+        return fac.mask(fac.isnull(), MortFactor(y-1))
 
 
 def SurrRate(y):
     """Surrender Rate"""
 
-    def get_factor(pol, y):
+    fac = SurrRateID().apply(lambda surrid: AssumptionTables.get((surrid, y), np.NaN))
 
-        key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
-        table = AsmpLookup.match("Surrender", key1, key2, key2).value
-
-        if table is None:
-            raise ValueError('Surrender not found')
-
-        result = AssumptionTables.get((table, y), None)
-
-        if result is None:
-            return SurrRate(y-1)[pol.name]
-        else:
-            return result
-
-
-    return PolicyData.apply(lambda pol: get_factor(pol, y), axis=1)
+    if y == 0 or not fac.isnull().any():
+        return fac
+    else:
+        return fac.mask(fac.isnull(), SurrRate(y-1))
 
 
 def MortTableID():
@@ -275,14 +236,48 @@ def MortTableID():
     return result
 
 
+def MortFactorID():
+    """Mortality factor"""
+
+    def get_factor(pol):
+
+        key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
+        table = AsmpLookup.match("MortFactor", key1, key2, key2).value
+
+        if table is None:
+            raise ValueError('MortFactor not found')
+
+        return table
+
+    return PolicyData.apply(lambda pol: get_factor(pol), axis=1)
+
+
+def SurrRateID():
+
+    def get_factor(pol):
+
+        key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
+        table = AsmpLookup.match("Surrender", key1, key2, key2).value
+
+        if table is None:
+            raise ValueError('Surrender not found')
+
+        return table
+
+    return PolicyData.apply(lambda pol: get_factor(pol), axis=1)
+
+
+def AsmpLookup(asmp, prod=None, polt=None, gen=None):
+    """Look up assumptions"""
+    return Assumption.get((asmp, prod, polt, gen), None)
+
+
 # ---------------------------------------------------------------------------
 # References
 
-AsmpLookup = ("Interface", ("...", "Input", "AsmpLookup"), "auto")
+AssumptionTables = ("Pickle", 2119470176904)
 
-AssumptionTables = ("Pickle", 2233389980872)
-
-MortalityTables = ("Pickle", 2235289201608)
+MortalityTables = ("Pickle", 2119462435528)
 
 gen = ("Interface", ("..", "Policy", "Gen"), "auto")
 
@@ -292,6 +287,8 @@ prod = ("Interface", ("..", "Policy", "Product"), "auto")
 
 sex = ("Interface", ("..", "Policy", "Sex"), "auto")
 
-PolicyData = ("Pickle", 2233386886344)
+PolicyData = ("Pickle", 2119466648840)
 
 TableLastAge = ("Interface", ("...", "Input", "TableLastAge"), "auto")
+
+Assumption = ("Pickle", 2119470177992)

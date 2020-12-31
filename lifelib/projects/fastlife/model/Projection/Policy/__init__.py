@@ -63,7 +63,7 @@ _formula = None
 
 _bases = []
 
-_allow_none = None
+_allow_none = True
 
 _spaces = []
 
@@ -72,7 +72,7 @@ _spaces = []
 
 def AnnPremRate():
     """Annualized Premium Rate per Sum Assured"""
-    return GrossPremRate() * PremFreq().where(PremFreq() != 0, other=1/10)
+    return GrossPremRate() * PremFreq().mask(PremFreq() == 0, other=1/10)
 
 
 def CashValueRate(t):
@@ -82,16 +82,6 @@ def CashValueRate(t):
 
 def GrossPremRate():
     """Gross Premium Rate per Sum Assured per payment"""
-
-
-    data = pd.concat([PolicyData, 
-                      LoadAcqSA(),
-                      LoadMaintPrem(),
-                      LoadMaintPrem2(),
-                      LoadMaintSA(),
-                      LoadMaintSA2(),
-                      IntRate('PREM'),
-                      TableID('PREM')], axis=1)
 
     def get_value(pol):
 
@@ -118,7 +108,7 @@ def GrossPremRate():
             raise ValueError('invalid product')
 
 
-    result = data.apply(get_value, axis=1)
+    result = PolicyDataExt1().apply(get_value, axis=1)
     result.name = 'GrossPremRate'
 
     return result
@@ -259,11 +249,6 @@ def LoadMaintSA2():
 def NetPremRate(basis):
     """Net Premium Rate"""
 
-    data = pd.concat([PolicyData, 
-                      LoadMaintSA2(),
-                      IntRate(basis),
-                      TableID(basis)], axis=1)
-
     def get_value(pol):
 
         prod = pol['Product']
@@ -283,7 +268,7 @@ def NetPremRate(basis):
             raise ValueError('invalid product')
 
 
-    result = data.apply(get_value, axis=1)
+    result = PolicyDataExt1().apply(get_value, axis=1)
     result.name = 'NetPremRate_' + basis
 
     return result
@@ -291,13 +276,6 @@ def NetPremRate(basis):
 
 def ReserveNLP_Rate(basis, t):
     """Net level premium reserve rate"""
-
-    data = pd.concat([PolicyData, 
-                      LoadMaintSA2(),
-                      IntRate(basis),
-                      TableID(basis),
-                      NetPremRate(basis)], axis=1)
-
 
     def get_value(pol):
 
@@ -318,7 +296,7 @@ def ReserveNLP_Rate(basis, t):
             return 0
 
 
-    result = data.apply(get_value, axis=1)
+    result = PolicyDataExt2().apply(get_value, axis=1)
     result.name = 'ReserveNLP_Rate'
 
     return result
@@ -404,13 +382,42 @@ def LoadMaintPrem2():
     return result
 
 
+def PolicyDataExt1():
+    """Extended Poicy Data"""
+
+    data = pd.concat([PolicyData, 
+                      LoadAcqSA(),
+                      LoadMaintPrem(),
+                      LoadMaintPrem2(),
+                      LoadMaintSA(),
+                      LoadMaintSA2(),
+                      IntRate('PREM'),
+                      TableID('PREM')], axis=1)
+
+    return data
+
+
+def PolicyDataExt2():
+    """Extended Poicy Data"""
+
+    data = pd.concat([PolicyDataExt1(),
+                      NetPremRate('PREM')], axis=1)
+
+    return data
+
+
+def SpecLookup(spec, prod=None, polt=None, gen=None):
+    """Look up product specs"""
+    return ProductSpec.get((spec, prod, polt, gen), None)
+
+
 # ---------------------------------------------------------------------------
 # References
 
 LifeTable = ("Interface", ("...", "LifeTable"), "auto")
 
-PolicyData = ("Pickle", 2233386886344)
-
-SpecLookup = ("Interface", ("...", "Input", "SpecLookup"), "auto")
+PolicyData = ("Pickle", 2119466648840)
 
 PremTerm = ("Interface", (".", "PolicyTerm"), "auto")
+
+ProductSpec = ("Pickle", 2119470175880)

@@ -130,22 +130,20 @@ def PolsNewBiz(t):
 
 
 def BaseMortRate(t):
-    """Bae mortality rate"""
-
-    keys = pd.concat([asmp.MortTableID(), pol.Sex(), AttAge(t)],
-                      axis=1, keys=["ID", "Sex", "Age"])
+    """Base mortality rate"""
 
     exist = (t <= last_t())
 
-    keys_exist = keys[exist]
-    keys_non_exist = keys[~exist]
+    keys = pd.concat([asmp.MortTableID(), pol.Sex(), AttAge(t), exist],
+                      axis=1, keys=["ID", "Sex", "Age", "exist"])
 
+    def find_rate(key):
+        if key["exist"]:
+            return asmp.MortalityTables[key["ID"], key["Sex"]][key["Age"]]
+        else:
+            return 0
 
-    result = keys_exist.apply(
-            lambda key: asmp.MortalityTables[key["ID"], key["Sex"]][key["Age"]], axis=1)
-
-
-    result = pd.concat([result, pd.Series(0, index=keys_non_exist.index)])
+    result = keys.apply(find_rate, axis=1)
     result.name = "BaseMortRate"
 
     return result

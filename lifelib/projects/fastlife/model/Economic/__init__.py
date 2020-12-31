@@ -51,6 +51,6 @@ def InvstRetRate(t):
 
 ScenID = 1
 
-AsmpLookup = ("Interface", ("..", "Input", "AsmpLookup"), "auto")
+Scenarios = ("Pickle", 2119463740680)
 
-Scenarios = ("Pickle", 2233390044744)
+AsmpLookup = ("Interface", ("..", "Projection", "Assumptions", "AsmpLookup"), "auto")
