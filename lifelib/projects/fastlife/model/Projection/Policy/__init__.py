@@ -136,7 +136,7 @@ def InitSurrCharge():
         return param1 + param2 * min(term / 10, 1)
 
 
-    result = PolicyData.apply(get_value, axis=1)
+    result = PolicyData().apply(get_value, axis=1)
     result.name = 'InitSurrCharge'
 
     return result
@@ -166,7 +166,7 @@ def IntRate(RateBasis):
             raise ValueError('lookup failed')
 
 
-    result = PolicyData.apply(get_value, axis=1)
+    result = PolicyData().apply(get_value, axis=1)
     result.name = 'IntRate_' + RateBasis
     return result
 
@@ -198,7 +198,7 @@ def LoadMaintPrem():
             raise ValueError('LoadMaintPrem parameters not found')
 
 
-    result = PolicyData.apply(get_value, axis=1)
+    result = PolicyData().apply(get_value, axis=1)
     result.name = 'LoadMaintPrem'
 
     return result
@@ -220,7 +220,7 @@ def LoadMaintSA():
             raise ValueError('lookup failed')
 
 
-    result = PolicyData.apply(get_value, axis=1)
+    result = PolicyData().apply(get_value, axis=1)
     result.name = 'LoadMaintSA'
     return result
 
@@ -241,7 +241,7 @@ def LoadMaintSA2():
             raise ValueError('lookup failed')
 
 
-    result = PolicyData.apply(get_value, axis=1)
+    result = PolicyData().apply(get_value, axis=1)
     result.name = 'LoadMaintSA2'
     return result
 
@@ -337,7 +337,7 @@ def TableID(RateBasis):
             raise ValueError('lookup failed')
 
 
-    result = PolicyData.apply(get_value, axis=1)
+    result = PolicyData().apply(get_value, axis=1)
     result.name = 'TableID_' + RateBasis
     return result
 
@@ -347,32 +347,32 @@ def UernPremRate():
     return None
 
 
-Product = lambda: PolicyData['Product']
+Product = lambda: PolicyData()['Product']
 
-PolicyType = lambda: PolicyData['PolicyType']
+PolicyType = lambda: PolicyData()['PolicyType']
 
-Gen = lambda: PolicyData['Gen']
+Gen = lambda: PolicyData()['Gen']
 
-Channel = lambda: PolicyData['Channel']
+Channel = lambda: PolicyData()['Channel']
 
-Sex = lambda: PolicyData['Sex']
+Sex = lambda: PolicyData()['Sex']
 
-Duration = lambda: PolicyData['Duration']
+Duration = lambda: PolicyData()['Duration']
 
-IssueAge = lambda: PolicyData['IssueAge']
+IssueAge = lambda: PolicyData()['IssueAge']
 
-PremFreq = lambda: PolicyData['PremFreq']
+PremFreq = lambda: PolicyData()['PremFreq']
 
-PolicyTerm = lambda: PolicyData['PolicyTerm']
+PolicyTerm = lambda: PolicyData()['PolicyTerm']
 
-PolicyCount = lambda: PolicyData['PolicyCount']
+PolicyCount = lambda: PolicyData()['PolicyCount']
 
-SumAssured = lambda: PolicyData['SumAssured']
+SumAssured = lambda: PolicyData()['SumAssured']
 
 def LoadMaintPrem2():
     """Maintenance Loading per Gross Premium for Premium Waiver"""
 
-    result = pd.Series(0.002, index=PolicyData.index)
+    result = pd.Series(0.002, index=PolicyData().index)
 
     result[PremTerm < 10] = 0.001
     result[PremTerm < 5] = 0.0005
@@ -385,7 +385,7 @@ def LoadMaintPrem2():
 def PolicyDataExt1():
     """Extended Poicy Data"""
 
-    data = pd.concat([PolicyData, 
+    data = pd.concat([PolicyData(), 
                       LoadAcqSA(),
                       LoadMaintPrem(),
                       LoadMaintPrem2(),
@@ -416,8 +416,8 @@ def SpecLookup(spec, prod=None, polt=None, gen=None):
 
 LifeTable = ("Interface", ("...", "LifeTable"), "auto")
 
-PolicyData = ("Pickle", 2119466648840)
-
 PremTerm = ("Interface", (".", "PolicyTerm"), "auto")
 
-ProductSpec = ("Pickle", 2119470175880)
+ProductSpec = ("Pickle", 3020542092744)
+
+PolicyData = ("Pickle", 3020548337160)

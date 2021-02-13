@@ -8,7 +8,6 @@ _spaces = [
     "Input",
     "LifeTable",
     "Economic",
-    "BaseProj",
     "PV",
     "Projection"
 ]

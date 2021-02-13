@@ -192,16 +192,16 @@ def lx(x):
 
 def qx(x):
     """Probability that a person at age ``x`` will die in one year."""
-    return MortalityTable[TableID, Sex, x]
+    return MortalityTables()[TableID, Sex][x]
 
 
 # ---------------------------------------------------------------------------
 # References
 
-Sex = "M"
-
 IntRate = 0.01
+
+Sex = "M"
 
 TableID = 1
 
-MortalityTable = ("Pickle", 2119463502216)
+MortalityTables = ("Pickle", 3020541952136)

@@ -90,7 +90,7 @@ def CommInitPrem():
         else:
             raise ValueError('CommInitPrem not found')
 
-    return PolicyData.apply(get_table_id, axis=1)
+    return PolicyData().apply(get_table_id, axis=1)
 
 
 def CommRenPrem():
@@ -105,7 +105,7 @@ def CommRenPrem():
         else:
             raise ValueError('CommRenPrem not found')
 
-    return PolicyData.apply(get_table_id, axis=1)
+    return PolicyData().apply(get_table_id, axis=1)
 
 
 def CommRenTerm():
@@ -120,7 +120,7 @@ def CommRenTerm():
         else:
             raise ValueError('CommRenTerm not found')
 
-    return PolicyData.apply(get_table_id, axis=1)
+    return PolicyData().apply(get_table_id, axis=1)
 
 
 def ExpsAcqAnnPrem():
@@ -130,7 +130,7 @@ def ExpsAcqAnnPrem():
         key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
         return AsmpLookup.match("ExpsAcqAnnPrem", key1, key2, key2).value
 
-    return PolicyData.apply(get_table_id, axis=1)
+    return PolicyData().apply(get_table_id, axis=1)
 
 
 def ExpsAcqPol():
@@ -140,7 +140,7 @@ def ExpsAcqPol():
         key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
         return AsmpLookup.match("ExpsAcqPol", key1, key2, key2).value
 
-    return PolicyData.apply(get_table_id, axis=1)
+    return PolicyData().apply(get_table_id, axis=1)
 
 
 def ExpsAcqSA():
@@ -150,7 +150,7 @@ def ExpsAcqSA():
         key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
         return AsmpLookup.match("ExpsAcqSA", key1, key2, key2).value
 
-    return PolicyData.apply(get_table_id, axis=1)
+    return PolicyData().apply(get_table_id, axis=1)
 
 
 def ExpsMaintAnnPrem():
@@ -160,7 +160,7 @@ def ExpsMaintAnnPrem():
         key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
         return AsmpLookup.match("ExpsMaintPrem", key1, key2, key2).value
 
-    return PolicyData.apply(get_table_id, axis=1)
+    return PolicyData().apply(get_table_id, axis=1)
 
 
 def ExpsMaintPol():
@@ -170,7 +170,7 @@ def ExpsMaintPol():
         key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
         return AsmpLookup.match("ExpsMaintPol", key1, key2, key2).value
 
-    return PolicyData.apply(get_table_id, axis=1)
+    return PolicyData().apply(get_table_id, axis=1)
 
 
 def ExpsMaintSA():
@@ -181,7 +181,7 @@ def ExpsMaintSA():
         key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
         return AsmpLookup.match("ExpsMaintSA", key1, key2, key2).value
 
-    return PolicyData.apply(get_table_id, axis=1)
+    return PolicyData().apply(get_table_id, axis=1)
 
 
 def InflRate():
@@ -230,7 +230,7 @@ def MortTableID():
         key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
         return AsmpLookup.match("BaseMort", key1, key2, key2).value
 
-    result = PolicyData.apply(get_table_id, axis=1)
+    result = PolicyData().apply(get_table_id, axis=1)
     result.name = 'MortTableID'
 
     return result
@@ -249,7 +249,7 @@ def MortFactorID():
 
         return table
 
-    return PolicyData.apply(lambda pol: get_factor(pol), axis=1)
+    return PolicyData().apply(lambda pol: get_factor(pol), axis=1)
 
 
 def SurrRateID():
@@ -264,7 +264,7 @@ def SurrRateID():
 
         return table
 
-    return PolicyData.apply(lambda pol: get_factor(pol), axis=1)
+    return PolicyData().apply(lambda pol: get_factor(pol), axis=1)
 
 
 def AsmpLookup(asmp, prod=None, polt=None, gen=None):
@@ -275,9 +275,13 @@ def AsmpLookup(asmp, prod=None, polt=None, gen=None):
 # ---------------------------------------------------------------------------
 # References
 
-AssumptionTables = ("Pickle", 2119470176904)
+Assumption = ("Pickle", 3020548391688)
 
-MortalityTables = ("Pickle", 2119462435528)
+AssumptionTables = ("Pickle", 3020548383112)
+
+PolicyData = ("Pickle", 3020548337160)
+
+TableLastAge = ("Interface", ("...", "Input", "TableLastAge"), "auto")
 
 gen = ("Interface", ("..", "Policy", "Gen"), "auto")
 
@@ -287,8 +291,4 @@ prod = ("Interface", ("..", "Policy", "Product"), "auto")
 
 sex = ("Interface", ("..", "Policy", "Sex"), "auto")
 
-PolicyData = ("Pickle", 2119466648840)
-
-TableLastAge = ("Interface", ("...", "Input", "TableLastAge"), "auto")
-
-Assumption = ("Pickle", 2119470177992)
+MortalityTables = ("Pickle", 3020541952136)

@@ -71,7 +71,7 @@ def PV_BenefitTotal(t):
     if not exist.any():
         return 0
     else:
-        result = -BenefitTotal(t) + PV_BenefitTotal(t+1) / (1 + DiscRate(t))
+        result = (-BenefitTotal(t) + PV_BenefitTotal(t+1)) / (1 + DiscRate(t))
         result.name = "PV_BenefitTotal"
         return result
 
@@ -137,10 +137,15 @@ def PV_NetCashflowForCheck(t):
 
 def PV_PremIncome(t):
     """Present value of premium income"""
-    if t > last_t:
+
+    exist = (t <= last_t())
+
+    if not exist.any():
         return 0
     else:
-        return PremIncome(t) + PV_PremIncome(t+1) / (1 + DiscRate(t))
+        result = exist * PremIncome(t) + PV_PremIncome(t+1) / (1 + DiscRate(t))
+        result.name = "PV_PremIncome"
+        return result
 
 
 def PV_SumInsurIF(t):
