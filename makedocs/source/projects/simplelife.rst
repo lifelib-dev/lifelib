@@ -68,6 +68,16 @@ surrender charges. The net premium reserves are calculated using
 the same commutation functions as the ones used by
 the premium rate calculation.
 
+.. warning::
+
+    The **simplelife** model is designed with a focus more on traceability
+    than speed and is best suited for model validation.
+    To build a fast model, you should take `the parallel modeling approach`_
+    as employed by :doc:`/projects/fastlife`.
+
+.. _the parallel modeling approach:
+   http://modelx.io/blog/2020/12/12/introduction-to-fastlife-and-parallel-modeling/
+
 
 .. contents:: Contents
    :depth: 1
