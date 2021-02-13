@@ -8,9 +8,12 @@ Updates
 
 .. raw:: html
 
-    <p><small><strong>Note:</strong>
+    <p><strong>Note:</strong>
     Visit <a href="https://modelx.io/allposts" target="_blank">modelx blog</a>
-    for more updates.</small></p>
+    for more updates.</p>
+
+* *14 Feb 2021:*
+  lifelib v0.0.16 is released. See :ref:`releases` for details.
 
 * *6 Dec 2020:*
   lifelib v0.0.15 is released. See :ref:`releases` for details.

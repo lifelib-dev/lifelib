@@ -45,6 +45,21 @@ Documentation for released versions of lifelib is available under
 :doc:`archive` page.
 
 
+v0.0.16 (14 February 2021)
+------------------------------
+
+.. warning::
+
+   `modelx`_ needs to be updated to v0.12.1 for this version of lifelib.
+
+- :doc:`fastlife <projects/fastlife>` project is added. See the project page for details.
+
+**Related links**
+
+* `modelx blog: Introduction to fastlife and parallel modeling <http://modelx.io/blog/2020/12/12/introduction-to-fastlife-and-parallel-modeling/>`_
+* `modelx blog: fastlife got faster <http://modelx.io/blog/2021/01/31/fastlife-got-faster/>`_
+
+
 v0.0.15 (6 December 2020)
 ------------------------------
 

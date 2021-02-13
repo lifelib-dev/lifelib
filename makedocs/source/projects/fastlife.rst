@@ -38,8 +38,8 @@ and performance of fastlife.
 
 **Related posts**
 
-* `modelx blog: fastlife got faster <http://modelx.io/blog/2021/01/31/fastlife-got-faster/>`_
 * `modelx blog: Introduction to fastlife and parallel modeling <http://modelx.io/blog/2020/12/12/introduction-to-fastlife-and-parallel-modeling/>`_
+* `modelx blog: fastlife got faster <http://modelx.io/blog/2021/01/31/fastlife-got-faster/>`_
 
 .. contents:: Contents
    :depth: 1
