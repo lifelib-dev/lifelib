@@ -15,7 +15,9 @@ sex (``M`` or ``F``).
 
 Attributes:
     MortalityTables: `PandasData`_ object holding the data of mortality tables.
-        The data is read from *MortalityTables.xlsx*.
+        The data is read from *MortalityTables.xlsx*. Defined also
+        in :mod:`fastlife.model.LifeTable`,
+        :mod:`fastlife.model.Input` and :mod:`fastlife.model.Projection.Assumptions`
 
 
 .. _PandasData:

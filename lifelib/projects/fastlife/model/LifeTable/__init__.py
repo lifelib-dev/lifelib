@@ -1,42 +1,62 @@
 """Commutation functions and actuarial notations
 
-The ``LifeTable`` space includes Cells to calculate
-commutation functions and actuarial notations for given
-``Sex``, ``IntRate`` and ``MortalityTable``. ``MortalityTable`` and
+The ``LifeTable`` Space includes Cells to calculate
+commutation functions and actuarial notations.
+``LifeTable`` is parameterized with
+``Sex``, ``IntRate`` and ``TableID``. ``TableID`` and
 ``Sex`` are used in :py:func:`qx` below to identify
 the mortality rates to be applied.
 
 Example:
 
-    An example of ``LifeTable`` in the :mod:`simplelife` model::
+    .. code-block:: python
 
-        >>> space = simplelife.LifeTable
+            >>> fastlife.LifeTable['M', 0.03, 3].AnnDuenx(x=30, n=10)
+            8.752619688735953
 
-        >>> space.Sex = 'M'
+            >>> fastlife.LifeTable['F', 0.03, 3].qx(x=50)
+            0.00196
 
-        >>> space.IntRate = 0.03
+            >>> fastlife.LifeTable.MortalityTables()
+                       1                 2                 3                 4
+                       M        F        M        F        M        F        M        F
+            0    0.00246  0.00210  0.00298  0.00252  0.00345  0.00298  0.00456  0.00383
+            1    0.00037  0.00033  0.00045  0.00034  0.00051  0.00044  0.00069  0.00059
+            2    0.00026  0.00023  0.00032  0.00025  0.00038  0.00030  0.00051  0.00041
+            3    0.00018  0.00015  0.00022  0.00018  0.00027  0.00020  0.00037  0.00028
+            4    0.00013  0.00011  0.00016  0.00013  0.00021  0.00014  0.00029  0.00021
+            ..       ...      ...      ...      ...      ...      ...      ...      ...
+            126  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
+            127  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
+            128  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
+            129  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
+            130  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
 
-        >>> space.MortalityTable = lambda sex, x: 0.001 if x < 110 else 1
-
-        >>> space.AnnDuenx(40, 10)
+            [131 rows x 8 columns]
 
 References:
     * `International actuarial notation by F.S.Perryman <https://www.casact.org/pubs/proceed/proceed49/49123.pdf>`_
     * `Actuarial notations on Wikipedia <https://en.wikipedia.org/wiki/Actuarial_notation>`_
 
-.. rubric:: Project Templates
-
-This module is included in the following project templates.
-
-* :mod:`simplelife`
-* :mod:`nestedlife`
-
-.. rubric:: References in Sub
+.. rubric:: Space Parameters
 
 Attributes:
     Sex: 'M' or 'F' to indicate male or female column in the mortality table.
-    IntRate: The constant interest rate for discounting.
-    MortalityTable: The ultimate mortality table by sex and age.
+    IntRate: Constant interest rate for discounting.
+    TableID: ID of an ultimate mortality table by sex and age.
+
+.. rubric:: References
+
+Attributes:
+    MortalityTables: `PandasData`_ object holding the data of mortality tables.
+        The data is read from *MortalityTables.xlsx*. Defined also
+        in :mod:`fastlife.model.LifeTable`,
+        :mod:`fastlife.model.Input` and :mod:`fastlife.model.Projection.Assumptions`
+
+
+.. _PandasData:
+   https://docs.modelx.io/en/latest/reference/dataclient.html#pandasdata
+
 
 """
 

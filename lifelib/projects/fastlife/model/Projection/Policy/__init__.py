@@ -1,60 +1,25 @@
-"""Source module to create ``Policy`` space from.
+"""Policy data and attributes
 
-This module is a source module to create ``Policy`` space and its
-sub spaces from.
-The formulas of the cells in the ``Policy`` space are created from the
-functions defined in this module.
+This Space contains policy data and Cells associated with
+policy attributes and policy values.
 
-The ``Policy`` space is the base space of the policy spaces
-for individual policies, which are derived from and belong to
-the ``Policy`` space as its dynamic child spaces.
-
-The policy spaces for individual policies are parametrized by ``PolicyID``.
-For example, to get the policy space of the policy whose ID is 171::
-
-    >> pol = model.Policy(171)
-
-The cells in a policy space for each individual policy retrieve
-input data, calculate and hold values of policy attributes specific to that policy,
-so various spaces in :mod:`Input<simplelife.build_input>` must be accessible
-from the ``Policy`` space.
-
-.. rubric:: Projects
-
-This module is included in the following projects.
-
-* :mod:`simplelife`
-* :mod:`nestedlife`
-* :mod:`ifrs17sim`
-* :mod:`solvency2`
-
-.. rubric:: Space Parameters
+.. rubric:: References
 
 Attributes:
-    PolicyID: Policy ID
+    PolicyData: `PandasData`_ object holding model point data as a pandas
+        DataFrame read from the model point file.
+    ProductSpec: `ExcelRange`_ object which is a dict like object for associating
+        product spec parameters to model point keys.
+    LifeTable: Alias for :mod:`~fastlife.model.LifeTable`
+    PremTerm: Alias for :func:`PolicyTerm`
 
-.. rubric:: References in Base
 
-Attributes:
-    PolicyData: Input.PolicyData
-    ProductSpec: Input.ProductSpec
-    LifeTable: LifeTable
-    Gen: Generation key
+.. _PandasData:
+   https://docs.modelx.io/en/latest/reference/dataclient.html#pandasdata
 
-.. rubric:: References in Sub
+.. _ExcelRange:
+   https://docs.modelx.io/en/latest/reference/dataclient.html#excelrange
 
-Attributes:
-    Product: Product key
-    PolicyType: Policy type key
-    Gen: Generation key
-    Channel: Channel key
-    Sex: ``M`` for Male, ``F`` for Female
-    Duration: Number of years lapsed. 0 for new business
-    IssueAge: Issue age
-    PremFreq: Number of premium payments per year. 12 for monthly payments
-    PolicyTerm: Policy term in year
-    PolicyCount: Number of policies
-    SumAssured: Sum Assured per policy
 """
 
 from modelx.serialize.jsonvalues import *

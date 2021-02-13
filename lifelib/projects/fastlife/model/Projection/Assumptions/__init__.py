@@ -1,62 +1,31 @@
-"""Source module to create ``Assumption`` space from.
+"""Projection Assumptions
 
-This module is a source module to create ``Assumption`` space and its
-sub spaces from.
-The formulas of the cells in the ``Assumption`` space are created from the
-functions defined in this module.
 
-The ``Assumption`` space is the base space of the assumption spaces
-for individual policies, which are derived from and belong to
-the ``Assumption`` space as its dynamic child spaces.
+This Space associates projection assumptions to model points,
+by looking up paramters in a table stored as an `ExcelRange`_ object
+associated to a Reference named :attr:`Assumption`.
 
-The assumption spaces for individual policies are parametrized by ``PolicyID``.
-For example, to get the assumption space of the policy whose ID is 171::
+.. _PandasData:
+   https://docs.modelx.io/en/latest/reference/dataclient.html#pandasdata
 
-    >> asmp = model.Assumption(171)
+.. _ExcelRange:
+   https://docs.modelx.io/en/latest/reference/dataclient.html#excelrange
 
-The cells in an assumption space for each individual policy retrieve
-input data, calculate and hold values of assumptions specific to that policy,
-so various spaces in :mod:`Input<simplelife.build_input>` must be accessible
-from the ``Assumption`` space.
 
-.. rubric:: Project Templates
-
-This module is included in the following project templates.
-
-* :mod:`simplelife`
-* :mod:`nestedlife`
-
-.. rubric:: Referred Spaces
-
-The ``Assumption`` space and its sub spaces depend of the following spaces.
-See references sections below for aliases to those spaces and their members
-that are referenced in the ``Assumption`` spaces.
-
-* :mod:`Policy<simplelife.policy>` its sub spaces
-* ``LifeTable`` in :mod:`Input<simplelife.build_input>`
-* ``MortalityTables`` in :mod:`Input<simplelife.build_input>`
-* ``Assumption`` in :mod:`Input<simplelife.build_input>`
-
-.. rubric:: Space Parameters
+.. rubric:: References
 
 Attributes:
-    PolicyID: Policy ID
-
-.. rubric:: References in Base
-
-Attributes:
-    asmp_tbl: ``AssumptionTables`` space in :mod:`Input<simplelife.build_input>` space
-    asmp: ``Assumption`` space in :mod:`Input<simplelife.build_input>` space
-    MortalityTables: ``MortalityTables`` space in :mod:`Input<simplelife.build_input>` space
-
-.. rubric:: References in Sub
-
-Attributes:
-    pol: Alias to :mod:`Policy[PolicyID]<simplelife.policy>`
-    prod: Alias to :attr:`Policy[PolicyID].Product<simplelife.policy.Product>`
-    polt: Alias to :attr:`Policy[PolicyID].PolicyType<simplelife.policy.PolicyType>`
-    gen: Alias to :attr:`Policy[PolicyID].Gen<simplelife.policy.Gen>`
-
+    Assumption: `ExcelRange`_ object for associating
+        assumption identifiers to model point keys
+    AssumptionTables: `ExcelRange`_ object holding assumption tables
+        such as surrender rates and mortality factors
+    PolicyData: `PandasData`_ object holding model point data as a pandas
+        DataFrame read from the model point file
+    TableLastAge: Reference to :func:`fastlife.model.Input.TableLastAge`
+    prod: Reference to :func:`fastlife.Projection.Policy.Product`
+    polt: Reference to :func:`fastlife.Projection.Policy.PolicyType`
+    gen: Reference to :func:`fastlife.Projection.Policy.Gen`
+    sex: Reference to :func:`fastlife.Projection.Policy.Sex`
 
 """
 

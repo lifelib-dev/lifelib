@@ -1,6 +1,24 @@
 
 .. Begin binder banner
 
+.. Begin binder fastlife_introduction
+
+.. |binder fastlife_introduction| raw:: html
+
+   <a href="https://mybinder.org/v2/gh/fumitoh/lifelib/binder?filepath=lifelib%2Fprojects%2Ffastlife%2Ffastlife-introduction.ipynb" target="_blank">
+   <img alt="launch binder" src="https://mybinder.org/badge.svg" /></a>
+
+.. End binder fastlife_introduction
+
+.. Begin binder fastlife_pvnetcfs
+
+.. |binder fastlife_pvnetcfs| raw:: html
+
+   <a href="https://mybinder.org/v2/gh/fumitoh/lifelib/binder?filepath=lifelib%2Fprojects%2Ffastlife%2Ffastlife-pvnetcfs.ipynb" target="_blank">
+   <img alt="launch binder" src="https://mybinder.org/badge.svg" /></a>
+
+.. End binder fastlife_pvnetcfs
+
 .. Begin binder simplelife_demo
 
 .. |binder simplelife_demo| raw:: html

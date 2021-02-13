@@ -266,7 +266,8 @@ sphinx_gallery_conf = {
     'ignore_pattern': '^(?!.*plot_)',
     'examples_dirs': '../../lifelib/projects',
     'subsection_order': ExplicitOrder(
-        ['../../lifelib/projects/simplelife',
+        ['../../lifelib/projects/fastlife',
+         '../../lifelib/projects/simplelife',
          '../../lifelib/projects/nestedlife',
          '../../lifelib/projects/ifrs17sim',
          '../../lifelib/projects/solvency2',

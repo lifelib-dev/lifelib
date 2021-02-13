@@ -1,25 +1,18 @@
 """Space for cashflow projection.
 
-This Space is for projecting cashflows of individual model points.
-Most Cells in this Spaces are defined in its base Spaces,
-:mod:`~simplelife.model.BaseProj` and :mod:`~simplelife.model.PV`.
-
-This Space is parametrized with ``PolicyID`` and ``ScenID``,
-and calling this space with a pair of integers returns the ItemSpace
-for the policy ID and scenario ID.
-``ScenID`` has a default value of 1,
-so for example ``Projection[1]`` represents the Projection Space for Policy 1.
-The present values of the cashflow items are also calculated in
-the Space by the Cells inherited from the base Space :mod:`~simplelife.model.BaseProj`.
+This Space is for projecting cashflows.
+Most Cells in this Spaces return calculation results for all model points as
+pandas Series objects indexed by Policy ID.
 
 This Space has child Spaces,
-:mod:`~simplelife.model.Projection.Policy` and :mod:`~simplelife.model.Projection.Assumptions`.
-The :mod:`~simplelife.model.Projection.Policy` Space contains Cells representing policy attributes, such as
+:mod:`~fastlife.model.Projection.Policy` and :mod:`~fastlife.model.Projection.Assumptions`.
+The :mod:`~fastlife.model.Projection.Policy` Space contains Cells representing policy attributes, such as
 product type, issue age, sum assured, etc.
 It also contains Cells for calculating policy values such as premium rates and
 cash surrender value rates.
-The :mod:`~simplelife.model.Projection.Assumptions` Space contains Cells to pick up assumption data for
-its model point.
+
+This Space has a base Space, :mod:`~fastlife.model.PV`, in which
+Cells for taking present values of cashflows are defined.
 
 .. rubric:: Composition Structure
 
@@ -29,10 +22,8 @@ its model point.
      default_node_color="#D5E8D4";
      default_linecolor="#628E47";
      node_width=150;
-     Proj[label="Projection
-[PolicyID, ScenID=1]", stacked];
-     Proj <- Assumptions [hstyle=composition];
-     Proj <- Policy [hstyle=composition];
+     Projection <- Assumptions [hstyle=composition];
+     Projection <- Policy [hstyle=composition];
    }
 
 .. rubric:: Inheritance Structure
@@ -42,20 +33,19 @@ its model point.
    blockdiag {
      default_node_color="#D5E8D4";
      default_linecolor="#628E47";
-     BaseProj[style=dotted]
-     BaseProj <- OuterProj [hstyle=generalization]
-     PresentValue[style=dotted]
-     PresentValue <- OuterProj [hstyle=generalization];
+     PV[style=dotted]
+     PV<- Projection [hstyle=generalization];
    }
 
 .. rubric:: References
 
-The following attributes are referenced in this Space by its base Spaces.
+The following attributes defined in this Space.
 
 Attributes:
-    pol: Alias for :mod:`~simplelife.model.Projection.Policy` child Space
-    asmp: Alias for :mod:`~simplelife.model.Projection.Assumptions` child Space
-    scen: Alias for :mod:`~simplelife.model.Economic` Space
+    pol: Alias for :mod:`~fastlife.model.Projection.Policy` child Space
+    asmp: Alias for :mod:`~fastlife.model.Projection.Assumptions` child Space
+    scen: Alias for :mod:`~fastlife.model.Economic` Space
+    ScenID: Scenario ID (``1`` by default)
 
 
 """

@@ -1,14 +1,22 @@
-"""Source module to create ``Economic`` space from.
+"""Economic Assumptions
 
-.. rubric:: Project Templates
+This Space includes economic assumptions, such as discount rates
+and inflation rates. This Space is parametrized with :attr:`ScenID`.
 
-This module is included in the following project templates.
+.. rubric:: Space Parameters
 
-* :mod:`simplelife`
-* :mod:`nestedlife`
+Attributes:
+    ScenID(:obj:`int`): Scenario ID
 
-References:
-    Scenario
+.. rubric:: References
+
+Attributes:
+    AsmpLookup: Reference to :func:`fastlife.model.Projection.Assumptions.AsmpLookup`
+    Scenarios: `ExcelRange`_ object holding scenario data read from
+        the input file.
+
+.. _ExcelRange:
+   https://docs.modelx.io/en/latest/reference/dataclient.html#excelrange
 
 """
 

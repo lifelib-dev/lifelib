@@ -114,6 +114,7 @@ customize them in any way you like, or create your own models from scratch.
        <div class="col-md-3">
           <h2><a href="projects/index.html">Projects</a></h2>
 
+* :ref:`project_fastlife`
 * :ref:`project_simplelife`
 * :ref:`project_nestedlife`
 * :ref:`project_ifrs17sim`
@@ -127,6 +128,7 @@ customize them in any way you like, or create your own models from scratch.
        <div class="col-md-3">
           <h2><a href="generated_examples/index.html">Gallery</a></h2>
 
+* :ref:`fastlife_examples`
 * :ref:`simplelife_examples`
 * :ref:`nestedlife_examples`
 * :ref:`ifrs17sim_examples`
@@ -139,6 +141,7 @@ customize them in any way you like, or create your own models from scratch.
        <div class="col-md-3">
           <h2><a href="notebooks.html">Jupyter Notebooks</a></h2>
 
+* :ref:`notebooks_fastlife`
 * :ref:`notebooks_simplelife`
 * :ref:`notebooks_ifrs17sim`
 * :ref:`notebooks_smithwilson`

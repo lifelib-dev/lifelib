@@ -6,6 +6,18 @@
 Jupyter Notebooks
 =================
 
+.. _notebooks_fastlife:
+
+:mod:`fastlife` Notebooks
+---------------------------
+
+.. toctree::
+   :hidden:
+
+   projects/notebooks/fastlife/fastlife-introduction.ipynb
+
+* `Introduction to fastlife <projects/notebooks/fastlife/fastlife-introduction.ipynb>`_  (*Run online now!* |binder fastlife_introduction| )
+
 .. _notebooks_simplelife:
 
 :mod:`simplelife` Notebooks
