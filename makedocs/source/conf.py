@@ -205,10 +205,21 @@ add_module_names = False
 # -- Options for Auto summary -------------------------------------------
 autosummary_generate = True
 # autoclass_content = 'class'
-autodoc_default_flags = [
-    'members', 'inherited_members',  # 'undoc-members',
-    'show-inheritance']
-    # , 'private-members', 'special-members']
+# autodoc_default_flags = [
+#     'members', 'inherited_members',  # 'undoc-members',
+#     'show-inheritance']
+#     # , 'private-members', 'special-members']
+
+autodoc_default_options = {
+    'members': True,
+    # 'member-order': 'bysource',
+    'inherited_members': True,
+    'show-inheritance': True
+    # 'special-members': '__init__',
+    # 'undoc-members': True,
+    # 'exclude-members': '__weakref__'
+}
+
 autodoc_member_order = 'bysource'
 
 
