@@ -20,35 +20,28 @@ customize them in any way you like, or create your own models from scratch.
 
    </div>
 
-.. raw:: html
 
-   <!-- Modified from https://github.com/mwaskom/seaborn/blob/master/doc/index.rst -->
+.. panels::
+    :container: container-fluid pb-3 examples-container
+    :column: col-lg-3 col-md-3 col-sm-12 col-xs-12 p-2
 
-    <div style="clear: both"></div>
-    <div class="container-fluid hidden-xs">
-      <div class="row">
-        <a href="generated_examples/index.html">
-          <div class="col-sm-3 thumbnail">
-            <img src="_static/thumb1.png">
-          </div>
-        </a>
-        <a href="generated_examples/index.html">
-          <div class="col-sm-3 thumbnail">
-            <img src="_static/thumb2.png">
-          </div>
-        </a>
-        <a href="generated_examples/index.html">
-          <div class="col-sm-3 thumbnail">
-            <img src="_static/thumb3.png">
-          </div>
-        </a>
-        <a href="spyder.html">
-          <div class="col-sm-3 thumbnail">
-            <img src="_static/thumb4.png">
-          </div>
-        </a>
-      </div>
-    </div>
+    .. image:: /_static/thumb1.png
+       :target: generated_examples/index.html
+       :alt: Thumbnail for image example
+    ---
+    .. image:: /_static/thumb2.png
+       :target: generated_examples/index.html
+       :alt: Thumbnail for Anscombe's quartet example
+    ---
+    .. image:: /_static/thumb3.png
+       :target: generated_examples/index.html
+       :alt: Thumbnail for stocks example
+    ---
+    .. image:: /_static/thumb4.png
+       :target: spyder.html
+       :alt: Thumbnail for Lorenz attractor example
+
+
 
 .. 1st row: Updates & Quick Start ---------------------------------
 
@@ -56,7 +49,7 @@ customize them in any way you like, or create your own models from scratch.
 
    <div class="container-fluid">
      <div class="row">
-       <div class="col-md-6">
+       <div class="col-md-12">
           <h2><a href="whatsnew.html">Last Updates</a></h2>
 
 .. include:: updates.rst
@@ -64,30 +57,6 @@ customize them in any way you like, or create your own models from scratch.
    :end-before: Latest Updates End
 
 :doc:`... See more updates<updates>`
-
-
-.. raw:: html
-
-       </div>
-       <div class="col-md-3">
-
-          <h2><a href="about_lifelib.html">About</a></h2>
-
-* :ref:`what-is-lifelib`
-* :ref:`how-lifelib-works`
-* :ref:`modindex`
-* :ref:`genindex`
-* :ref:`search`
-* :ref:`past-documents`
-
-.. raw:: html
-
-       </div>
-       <div class="col-md-3">
-          <h2><a href="download.html">Download</a></h2>
-
-            Download lifelib with WinPython from <a href="download.html">here</a>.
-            No installation is required. Just unzip the file and it's all set.
 
 .. raw:: html
 
@@ -97,60 +66,74 @@ customize them in any way you like, or create your own models from scratch.
 
 .. 2nd row, Projects & Gallery & Notebooks ---------------------------------
 
-.. raw:: html
 
-   <div class="container-fluid">
-     <div class="row">
-       <div class="col-md-3">
-          <h2><a href="quickstart.html">Quick Start</a></h2>
+.. panels::
+    :container: container-fluid pb-3
+    :column: col-lg-3 col-md-3 col-sm-12 col-xs-12 p-2
+    :header: h3
 
-* :ref:`getting-lifelib`
-* :ref:`using-spyder`
-* :ref:`running-notebooks`
+    :doc:`About<about_lifelib>`
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. raw:: html
+    * :ref:`what-is-lifelib`
+    * :ref:`how-lifelib-works`
+    * :ref:`modindex`
+    * :ref:`genindex`
+    * :ref:`search`
+    * :ref:`past-documents`
 
-       </div>
-       <div class="col-md-3">
-          <h2><a href="projects/index.html">Projects</a></h2>
+    ---
 
-* :ref:`project_fastlife`
-* :ref:`project_simplelife`
-* :ref:`project_nestedlife`
-* :ref:`project_ifrs17sim`
-* :ref:`project_solvency2`
-* :ref:`project_smithwilson`
-* :doc:`projects/devguide/index`
+    :doc:`Download<download>`
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. raw:: html
+    Download lifelib with WinPython from :doc:`here<download>`.
+    No installation is required. Just unzip the file and it's all set.
 
-       </div>
-       <div class="col-md-3">
-          <h2><a href="generated_examples/index.html">Gallery</a></h2>
+    ---
 
-* :ref:`fastlife_examples`
-* :ref:`simplelife_examples`
-* :ref:`nestedlife_examples`
-* :ref:`ifrs17sim_examples`
-* :ref:`solvency2_examples`
-* :ref:`smithwilson_examples`
+    :doc:`Quick Start<quickstart>`
+    ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. raw:: html
+    * :ref:`getting-lifelib`
+    * :ref:`using-spyder`
+    * :ref:`running-notebooks`
 
-       </div>
-       <div class="col-md-3">
-          <h2><a href="notebooks.html">Jupyter Notebooks</a></h2>
+    ---
 
-* :ref:`notebooks_fastlife`
-* :ref:`notebooks_simplelife`
-* :ref:`notebooks_ifrs17sim`
-* :ref:`notebooks_smithwilson`
+    :doc:`Projects<projects/index>`
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. raw:: html
+    * :ref:`project_fastlife`
+    * :ref:`project_simplelife`
+    * :ref:`project_nestedlife`
+    * :ref:`project_ifrs17sim`
+    * :ref:`project_solvency2`
+    * :ref:`project_smithwilson`
+    * :doc:`projects/devguide/index`
 
-       </div>
-     </div>
-   </div>
+    ---
+
+    :doc:`Gallery<generated_examples/index>`
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    * :ref:`fastlife_examples`
+    * :ref:`simplelife_examples`
+    * :ref:`nestedlife_examples`
+    * :ref:`ifrs17sim_examples`
+    * :ref:`solvency2_examples`
+    * :ref:`smithwilson_examples`
+
+    ---
+
+    :doc:`Jupyter Notebooks<notebooks>`
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    * :ref:`notebooks_fastlife`
+    * :ref:`notebooks_simplelife`
+    * :ref:`notebooks_ifrs17sim`
+    * :ref:`notebooks_smithwilson`
+
 
 .. 3rd row, modelx sites, links & contact ---------------------------------
 

@@ -47,7 +47,9 @@ extensions = [
     'sphinx.ext.napoleon',
     'nbsphinx',
     'sphinx_gallery.gen_gallery',
-    'sphinxcontrib.blockdiag']
+    'sphinxcontrib.blockdiag',
+    'sphinx_panels'
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -100,12 +102,8 @@ todo_include_todos = True
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-# import sphinx_rtd_theme
-# html_theme = 'sphinx_rtd_theme'
-# html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-import sphinx_bootstrap_theme
-html_theme = 'bootstrap'
-html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
+html_theme = "pydata_sphinx_theme"
+html_logo = "images/logo.png"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -116,58 +114,13 @@ html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 # https://ryan-roemer.github.io/sphinx-bootstrap-theme/README.html
 html_theme_options = {
 
-    'bootstrap_version': "3",
-
-    # Tab name for entire site. (Default: "Site")
-    'navbar_site_name': "Menu",
-
-    # A list of tuples containing pages or urls to link to.
-    # Valid tuples should be in the following forms:
-    #    (name, page)                 # a link to a page
-    #    (name, "/aa/bb", 1)          # a link to an arbitrary relative url
-    #    (name, "http://example.com", True) # arbitrary absolute url
-    # Note the "1" or "True" value above as the third argument to indicate
-    # an arbitrary url.
-    'navbar_links': [
-        # ("Quick Start", "quickstart"),
-        ("Download", "download"),
-        ("Projects", "projects/index"),
-        ("Gallery", "generated_examples/index")
-    ],
-
-    # Render the next and previous page links in navbar. (Default: true)
-    'navbar_sidebarrel': False,
-
-    # Render the current pages TOC in the navbar. (Default: true)
-    'navbar_pagenav': True,
-
-    # Tab name for the current pages TOC. (Default: "Page")
-    'navbar_pagenav_name': "Contents",
-
-    # Global TOC depth for "site" navbar tab. (Default: 1)
-    # Switching to -1 shows all levels.
-    'globaltoc_depth': 2,
-
-    # Location of link to source.
-    # Options are "nav" (default), "footer" or anything else to exclude.
-    'source_link_position': "hide",
-
-    # HTML navbar class (Default: "navbar") to attach to <div> element.
-    # For black navbar, do "navbar navbar-inverse"
-    'navbar_class': "navbar navbar-inverse",
-
-    # Bootswatch (http://bootswatch.com/) theme.
-    #
-    # Options are nothing (default) or the name of a valid theme
-    # such as "cosmo" or "sandstone".
-    #
-    # The set of valid themes depend on the version of Bootstrap
-    # that's used (the next config option).
-    #
-    # Currently, the supported themes are:
-    # - Bootstrap 2: https://bootswatch.com/2
-    # - Bootstrap 3: https://bootswatch.com/3
-    'bootswatch_theme': "cosmo",
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/fumitoh/lifelib",
+            "icon": "fab fa-github-square"
+        }
+    ]
 
 }
 
@@ -181,11 +134,11 @@ html_static_path = ['_static']
 html_last_updated_fmt = '%b %d, %Y'
 
 # Custom sidebar templates, maps document names to template names.
-#html_sidebars = {}
-html_sidebars = {'index': None,
-                 '*': ['globaltoc_sidebar.html'],
-                 'projects/**': ['globaltoc_sidebar.html'],
-                 'generated_examples/**': None}
+html_sidebars = {
+    "index": None,
+    "notebooks": None,
+    "generated_examples/**": None
+}
 
 # -- Options for HTMLHelp output ------------------------------------------
 
@@ -287,7 +240,11 @@ warnings.filterwarnings("ignore", category=UserWarning)
 # blockdiag_fontpath = 'c:/windows/fonts/calibri.ttf'
 blockdiag_html_image_format = 'SVG'
 
+# https://sphinx-panels.readthedocs.io/en/latest/
+panels_add_bootstrap_css = False
+
 # Hide download note and buttons from gallery pages.
 # https://github.com/ryan-roemer/sphinx-bootstrap-theme
+
 def setup(app):
-    app.add_stylesheet("custom-style.css")
+    app.add_css_file("custom-style.css")

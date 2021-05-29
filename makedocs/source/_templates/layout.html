@@ -1,4 +1,7 @@
-{% extends "!layout.html" %}
+<!-- Taken from https://github.com/bokeh/bokeh/blob/branch-2.4/sphinx/source/_templates/layout.html -->
+
+{% extends "pydata_sphinx_theme/layout.html" %}
+
 
 {% block extrahead %}
 {{ super() }}
@@ -21,58 +24,51 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   gtag('config', 'UA-108824439-3');
 </script>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
 {% endblock %}
+
 
 {%- block content %}
 
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M64S8SK"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+                  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 
-{{ navBar() }}
-<div class="container">
-  <div class="row">
-    {%- block sidebar1 %}{{ bsidebar() }}{% endblock %}
-    <div class="{{ bs_span_prefix }}{{ bs_content_width }} content" role="main">
-      {% block body %}{% endblock %}
-    </div>
-    {% block sidebar2 %} {# possible location for sidebar #} {% endblock %}
-  </div>
-</div>
+{{ super() }}
 {%- endblock %}
 
-{%- block footer %}
-<footer class="footer">
-  <div class="container">
-    <p class="pull-right">
-      <a class="fa fa-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://lifelib.io" target="_blank"></a>
-      <a class="fa fa-twitter" href="https://twitter.com/intent/tweet?text=lifelib:%20Actuarial%20models%20in%20Python%0Ahttps://lifelib.io" target="_blank"></a>
-      <a class="fa fa-linkedin" href="https://www.linkedin.com/shareArticle?mini=true&url=https://lifelib.io" target="_blank"></a>
-      <a href="#">Back to top</a>
-      {% if theme_source_link_position == "footer" %}
-        <br/>
-        {% include "sourcelink.html" %}
-      {% endif %}
-    </p>
-    <p>
-    {%- if show_copyright %}
-      {%- if hasdoc('copyright') %}
-        {% trans path=pathto('copyright'), copyright=copyright|e %}&copy; <a href="{{ path }}">Copyright</a> {{ copyright }}.{% endtrans %}<br/>
-      {%- else %}
-        {% trans copyright=copyright|e %}&copy; Copyright {{ copyright }}.{% endtrans %}<br/>
-      {%- endif %}
-    {%- endif %}
-    {%- if last_updated %}
-      {% trans last_updated=last_updated|e %}Last updated on {{ last_updated }}.{% endtrans %}<br/>
-    {%- endif %}
-    {%- if show_sphinx %}
-      {% trans sphinx_version=sphinx_version|e %}Created using <a href="http://sphinx-doc.org/">Sphinx</a> {{ sphinx_version }}.{% endtrans %}
-    {%- endif %}
-    {% trans path=pathto('privacypolicy') %}<a href="{{ path }}">Privacy Policy</a>.{% endtrans %}<br/>
-    </p>
-  </div>
-</footer>
-{%- endblock %}
+
+{% block docs_sidebar %}
+  <!-- Only show if we have sidebars configured -->
+  {% if sidebars %}
+  {{ super() }}
+  {% endif %}
+{% endblock %}
+
+{% block docs_toc %}
+  <!-- Only show if we have sidebars configured -->
+  {% if sidebars %}
+  {{ super() }}
+  {% endif %}
+{% endblock %}
+
+
+{% block docs_main %}
+{% if sidebars %}
+{% set content_col_class = "col-md-9 col-xl-7" %}
+{% else %}
+{% set content_col_class = "col-md-12" %}
+{% endif %}
+<main class="col-12 {{ content_col_class }} py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+    {% block docs_body %}
+    <div>
+        {% block body %} {% endblock %}
+    </div>
+    {% endblock %}
+    {% if theme_show_prev_next %}
+    <div class='prev-next-bottom'>
+        {{ prev_next(prev, next) }}
+    </div>
+    {% endif %}
+</main>
+{% endblock %}
