@@ -12,8 +12,13 @@ Updates
     Visit <a href="https://modelx.io/allposts" target="_blank">modelx blog</a>
     for more updates.</p>
 
+* *29 May 2021:*
+  This site is now based on `the PyData Sphinx theme <https://pydata-sphinx-theme.readthedocs.io/en/latest/>`_.
+
 * *19 May 2021:*
-  New download available on :doc:`download` page.
+  `modelx v0.15.0 <https://docs.modelx.io/en/latest/releases/relnotes_v0_15_0.html>`_
+  and `spyder-modelx v0.8.0 <https://docs.modelx.io/en/latest/releases/spymx_relnotes_v0.8.0.html>`_
+  are released. New download available on :doc:`download` page.
 
 * *24 Apr 2021:*
   `spyder-modelx v0.7.0 <https://docs.modelx.io/en/latest/releases/spymx_relnotes_v0.7.0.html>`_
@@ -21,12 +26,14 @@ Updates
 
 * *29 Mar 2021:*
   `spyder-modelx v0.6.0 <https://docs.modelx.io/en/latest/releases/spymx_relnotes_v0.6.0.html>`_
-  and models v0.13.1 are released.
+  and modelx v0.13.1 are released.
   New download available on :doc:`download` page.
 
 * *14 Feb 2021:*
   lifelib v0.0.16 is released. See :ref:`releases` for details.
   New download available on :doc:`download` page.
+
+.. Latest Updates End
 
 * *6 Dec 2020:*
   lifelib v0.0.15 is released. See :ref:`releases` for details.
@@ -47,7 +54,6 @@ Updates
 * *18 April 2020:*
   lifelib v0.0.14 is released. See :ref:`releases` for details.
 
-.. Latest Updates End
 
 * *27 December 2019:*
   lifelib v0.0.13 is released. :doc:`smithwilson <projects/smithwilson>` project is added.

@@ -1,5 +1,5 @@
 
 .. _smithwilson_examples:
 
-``smithwilson`` Examples
---------------------------
+:mod:`smithwilson` Examples
+---------------------------

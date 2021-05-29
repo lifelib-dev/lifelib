@@ -126,7 +126,7 @@ customize them in any way you like, or create your own models from scratch.
 
     ---
 
-    :doc:`Jupyter Notebooks<notebooks>`
+    :doc:`Notebooks<notebooks>`
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     * :ref:`notebooks_fastlife`
@@ -162,22 +162,21 @@ modelx on PyPI             https://pypi.org/project/modelx/
        </div>
        <div class="col-md-6">
 
-          <h2>Contact & Links</h2>
+          <h2><strong>lifelib</strong> sites</h2>
 
-If you have questions about lifelib, find bugs or want to request new features,
-submit issues on
+If you find a bug, submit an issue on
 `lifelib development site <https://github.com/fumitoh/lifelib/issues>`_
-on github.
+on GitHub. Start a discussion on
+the `Discussions <https://github.com/fumitoh/lifelib/discussions>`_ site
+to ask a question about lifelib, propose a new feature,
+or share your experience with lifelib.
 
-Connect with `Fumito Hamamura <https://www.linkedin.com/in/fumito-hamamura>`_
-or follow him on LinkedIn to subscribe to updates on lifelib and modelx.
-Let him know your use cases to make lifelib more practical.
-
-========================== ============================================
+========================== ================================================
 Development site           https://github.com/fumitoh/lifelib
+Discussions                https://github.com/fumitoh/lifelib/discussions
 lifelib on PyPI            https://pypi.org/project/lifelib/
 Author's profile           https://www.linkedin.com/in/fumito-hamamura
-========================== ============================================
+========================== ================================================
 
 .. raw:: html
 
@@ -191,6 +190,7 @@ Author's profile           https://www.linkedin.com/in/fumito-hamamura
    :maxdepth: 2
 
    about
+   download
    quickstart
    projects/index
    generated_examples/index

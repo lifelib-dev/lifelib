@@ -7,4 +7,4 @@ About
 
    whatsnew
    about_lifelib
-   download
+

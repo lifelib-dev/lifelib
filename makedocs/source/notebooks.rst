@@ -3,7 +3,7 @@
 
 .. include:: /binderlinks.rst
 
-Jupyter Notebooks
+Notebooks
 =================
 
 .. _notebooks_fastlife:
