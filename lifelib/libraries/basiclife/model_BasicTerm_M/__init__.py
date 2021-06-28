@@ -1,6 +1,6 @@
 from modelx.serialize.jsonvalues import *
 
-_name = "TermAssurance"
+_name = "BasicTerm_M"
 
 _allow_none = False
 
@@ -12,3 +12,5 @@ _spaces = [
 # References
 
 np = ("Module", "numpy")
+
+pd = ("Module", "pandas")
