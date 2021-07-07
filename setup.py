@@ -4,7 +4,7 @@ See:
 https://packaging.python.org/en/latest/distributing.html
 https://github.com/pypa/sampleproject
 """
-
+import os
 # Always prefer setuptools over distutils
 from setuptools import setup, find_packages
 # To use a consistent encoding
@@ -97,6 +97,23 @@ version_line = list(
 # finishing its installation
 VERSION = get_version(eval(version_line.split('=')[-1]))
 
+
+def get_package_data(top_dirs: list):
+    result = []
+    extensions = ['ipynb', 'xlsx', 'csv']
+    for topd in top_dirs:
+        for root, dirs, files in os.walk(topd):
+            for f in files:
+                l = f.split(".")
+                if len(l) > 1 and l[-1] in extensions:
+                    # https://stackoverflow.com/questions/3167154/how-to-split-a-dos-path-into-its-components-in-python
+                    # exclude such *.ipynb in .ipynb_checkpoints/
+                    dir_comps = path.normpath(root).split(os.sep)
+                    if not any(dname[0] == "." for dname in dir_comps):
+                        result.append(path.join(root, f))
+    return result
+
+
 setup(
     name=DISTNAME,
     version=VERSION,
@@ -174,8 +191,7 @@ setup(
     # installed, specify them here.  If using Python 2.6 or less, then these
     # have to be included in MANIFEST.in as well.
     package_data={
-        'lifelib': ['projects/*/*.xlsx',
-                    'projects/*/*.mx'],
+        'lifelib': get_package_data([path.join(here, 'lifelib', 'projects')]),
     },
 
     # Although 'package_data' is the preferred approach, in some case you may
