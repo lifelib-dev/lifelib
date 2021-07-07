@@ -100,7 +100,7 @@ VERSION = get_version(eval(version_line.split('=')[-1]))
 
 def get_package_data(top_dirs: list):
     result = []
-    extensions = ['ipynb', 'xlsx', 'csv']
+    extensions = ['ipynb', 'xlsx', 'csv', 'json']
     for topd in top_dirs:
         for root, dirs, files in os.walk(topd):
             for f in files:
