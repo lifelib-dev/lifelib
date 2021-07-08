@@ -9,8 +9,13 @@ Updates
 .. raw:: html
 
     <p><strong>Note:</strong>
-    Visit <a href="https://modelx.io/allposts" target="_blank">modelx blog</a>
+    Visit <a href="https://github.com/fumitoh/lifelib/discussions" target="_blank">Discussions</a>
+    and <a href="https://modelx.io/allposts" target="_blank">modelx blog</a>
     for more updates.</p>
+
+* *9 Jul 2021:*
+  lifelib v0.0.19 is released. See :ref:`releases` for details.
+  New download available on :doc:`download` page.
 
 * *29 May 2021:*
   This site is now based on `the PyData Sphinx theme <https://pydata-sphinx-theme.readthedocs.io/en/latest/>`_.

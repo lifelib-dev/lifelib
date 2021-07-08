@@ -4,20 +4,6 @@
 What's New
 ==========
 
-.. warning::
-
-   **lifelib** and `modelx`_ are in their early alpha-release stage,
-   and their specifications are
-   subject to changes without consideration on backward compatibility.
-   The source files of you models may need to be modified manually,
-   if there are updates that break backward compatibility in newer versions
-   of modelx.
-
-   Likewise, model files saved with one version may not load with a newer version.
-   When updating modelx to a newer version,
-   make sure you rebuild model files saved using older versions of modelx
-   from their source code.
-
 .. _modelx: http://docs.modelx.io
 
 Updates
@@ -44,9 +30,27 @@ updated based on the development version of lifelib.
 Documentation for released versions of lifelib is available under
 :doc:`archive` page.
 
+v0.0.19 (9 July 2021)
+----------------------
+
+The prior version of lifelib was erroneously packaged.
+This version of lifelib is released to fix the packaging issue, and
+has the same contents as v0.0.16.
+
+To update lifelib, execute the command::
+
+    >>> pip install lifelib --upgrade
+
+
+v0.0.18 and v0.0.17 are discarded due to packaging error.
 
 v0.0.16 (14 February 2021)
 ------------------------------
+
+.. warning::
+
+    lifelib v0.0.16 was not packaged correctly. Use v0.0.19 instead.
+
 
 .. warning::
 
@@ -62,6 +66,10 @@ v0.0.16 (14 February 2021)
 
 v0.0.15 (6 December 2020)
 ------------------------------
+
+.. warning::
+
+    lifelib v0.0.15 was not packaged correctly. Use v0.0.19 instead.
 
 This release includes models updated from the previous version.
 The updated models are:

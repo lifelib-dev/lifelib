@@ -7,7 +7,7 @@ Download lifelib with WinPython.
 
 .. raw:: html
 
-    <a class="btn btn-primary btn-lg" href="https://drive.google.com/u/0/uc?export=download&id=1TrKtW9GWcOK2-Xu_wH7VYZaEivpA-Sav" role="button">Download</a>
+    <a class="btn btn-primary btn-lg" href="https://drive.google.com/u/0/uc?export=download&id=1rZbHJcDLQO3aAu86J2rb3bL22wrIQeWk" role="button">Download</a>
 
 |
 
@@ -17,10 +17,35 @@ Download lifelib with WinPython.
 File Information
 ================
 
-Latest release (19 May 2021)
+Latest release (9 Jul 2021)
 ------------------------------
 
-:Downloadable: WPy64-3850-20210519.zip
+:Downloadable: WPy64-3850-20210709.zip
+
+:Base Python Distribution:
+    WinPython64-3.8.5.0
+
+    (Python 3.8.5 + Spyder 4.1.4)
+
+:Additional Packages:
+    openpyxl 3.0.5
+
+    numpy-financial 1.0.0
+
+    modelx 0.15.0
+
+    spyder-modelx 0.8.0
+
+    lifelib 0.0.19 *(Updated)*
+
+
+Past releases
+-------------
+
+19 May 2021
+^^^^^^^^^^^
+
+:Downloadable: `WPy64-3850-20210519.zip`_
 
 :Base Python Distribution:
     WinPython64-3.8.5.0
@@ -38,9 +63,7 @@ Latest release (19 May 2021)
 
     lifelib 0.0.16
 
-
-Past releases
--------------
+.. _WPy64-3850-20210519.zip: https://drive.google.com/u/0/uc?export=download&id=1TrKtW9GWcOK2-Xu_wH7VYZaEivpA-Sav
 
 24 Apr 2021
 ^^^^^^^^^^^
