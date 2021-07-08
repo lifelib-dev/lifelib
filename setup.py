@@ -100,7 +100,8 @@ VERSION = get_version(eval(version_line.split('=')[-1]))
 
 def get_package_data(top_dirs: list):
     result = []
-    extensions = ['ipynb', 'xlsx', 'csv', 'json']
+    extensions = ['ipynb', 'xlsx', 'csv', 'json', 'pickle']
+    modelfiles = ['_dynamic_inputs']
     for topd in top_dirs:
         for root, dirs, files in os.walk(topd):
             for f in files:
@@ -111,6 +112,8 @@ def get_package_data(top_dirs: list):
                     dir_comps = path.normpath(root).split(os.sep)
                     if not any(dname[0] == "." for dname in dir_comps):
                         result.append(path.join(root, f))
+                elif len(l) == 1 and f in modelfiles:
+                    result.append(path.join(root, f))
     return result
 
 
