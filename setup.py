@@ -110,7 +110,7 @@ def get_package_data(top_dirs: list):
                     # https://stackoverflow.com/questions/3167154/how-to-split-a-dos-path-into-its-components-in-python
                     # exclude such *.ipynb in .ipynb_checkpoints/
                     dir_comps = path.normpath(root).split(os.sep)
-                    if not any(dname[0] == "." for dname in dir_comps):
+                    if not any(dname[0] == "." for dname in dir_comps if dname):
                         result.append(path.join(root, f))
                 elif len(l) == 1 and f in modelfiles:
                     result.append(path.join(root, f))
