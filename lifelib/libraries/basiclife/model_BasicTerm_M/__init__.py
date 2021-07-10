@@ -8,9 +8,3 @@ _spaces = [
     "Projection"
 ]
 
-# ---------------------------------------------------------------------------
-# References
-
-np = ("Module", "numpy")
-
-pd = ("Module", "pandas")

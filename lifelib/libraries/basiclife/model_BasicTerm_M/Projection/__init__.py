@@ -259,10 +259,12 @@ def result_pv ():
 # ---------------------------------------------------------------------------
 # References
 
-point_id = 1
+disc_rate_ann = ("DataClient", 2014729409480)
 
-model_point_table = ("DataClient", 2509778972168)
+model_point_table = ("DataClient", 2014729351432)
 
-disc_rate_ann = ("DataClient", 2509778728456)
+mort_table = ("DataClient", 2014717001352)
 
-mort_table = ("DataClient", 2509784743688)
+np = ("Module", "numpy")
+
+pd = ("Module", "pandas")
