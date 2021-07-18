@@ -5,7 +5,7 @@ import pathlib
 
 import pytest
 
-from lifelib.projects_v0.nestedlife.scripts import nestedlife
+from lifelib.projects.nestedlife.scripts import nestedlife
 from tests.data.generate_testdata_nestedlife_v0 import (
     round_signif,
     get_nested,
