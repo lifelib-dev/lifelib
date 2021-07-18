@@ -84,14 +84,6 @@ customize them in any way you like, or create your own models from scratch.
 
     ---
 
-    :doc:`Download<download>`
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-    Download lifelib with WinPython from :doc:`here<download>`.
-    No installation is required. Just unzip the file and it's all set.
-
-    ---
-
     :doc:`Quick Start<quickstart>`
     ^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -101,7 +93,14 @@ customize them in any way you like, or create your own models from scratch.
 
     ---
 
-    :doc:`Projects<projects/index>`
+    :doc:`Libraries<libraries/index>`
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    * :doc:`libraries/basiclife/index`
+
+    ---
+
+    :ref:`Past Libraries<past-libraries>`
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     * :ref:`project_fastlife`
@@ -111,6 +110,14 @@ customize them in any way you like, or create your own models from scratch.
     * :ref:`project_solvency2`
     * :ref:`project_smithwilson`
     * :doc:`projects/devguide/index`
+
+    ---
+
+    :doc:`Download<download>`
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    Download lifelib with WinPython from :doc:`here<download>`.
+    No installation is required. Just unzip the file and it's all set.
 
     ---
 
@@ -190,8 +197,8 @@ Author's profile           https://www.linkedin.com/in/fumito-hamamura
    :maxdepth: 2
 
    about
-   download
    quickstart
-   projects/index
+   libraries/index
+   download
    generated_examples/index
    notebooks

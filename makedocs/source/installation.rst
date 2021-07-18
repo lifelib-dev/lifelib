@@ -98,13 +98,6 @@ To launch Spyder, go to Windows menu, select Spyder inside *Anaconda3* menu.
 The plugin adds custom IPython consoles
 and GUI widgets for using modelx in Spyder.
 
-The plugin is under active development, and currently comes with
-a primary version of components, including:
-
-* MxConsole
-* MxExplorer
-* MxDataView
-
 Spyder plugin for modelx is available on PyPI as a separate Python package.
 If you're using Anaconda, you can install the plugin by the following
 command::
@@ -115,6 +108,14 @@ For more about Spyder plugin for modelx, refer to
 `Spyder plugin`_ page
 on modelx documentation site.
 
+.. warning::
+
+    Don't forget ``--no-deps`` option when installing spyder-modelx
+    into your *Anaconda* environment using *pip*.
+    Forgetting the option may cause some packages
+    unintentionally overwritten by *pip*.
+
+
 .. Note::
     lifelib models are built in the form of `modelx`_ objects.
     Refer to `modelx`_ documentation when you have
@@ -123,9 +124,6 @@ on modelx documentation site.
     such as
     `the one on Python's official web site <https://docs.python.org/3/tutorial/>`_.
 
-.. _Pandas: http://pandas.pydata.org/
-.. _modelx: http://docs.modelx.io
-.. _Spyder: https://www.spyder-ide.org/
 .. _Spyder plugin: https://docs.modelx.io/en/latest/spyder.html
 
 .. contents:: Contents

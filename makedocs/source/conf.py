@@ -26,6 +26,7 @@ sys.path.insert(0, os.path.abspath(here + "../.."))
 # Insert project path in sys.path so that each directory under
 # the path is interpreted as the top level package in the API reference.
 sys.path.insert(0, os.path.abspath(here + "/../../lifelib/projects"))
+sys.path.insert(0, os.path.abspath(here + "/../../lifelib/libraries"))
 sys.path.insert(0, '')  # Add the current folder at front.
 
 # -- General configuration ------------------------------------------------
@@ -211,10 +212,10 @@ autosummary_generate = True
 #     # , 'private-members', 'special-members']
 
 autodoc_default_options = {
-    'members': True,
+    # 'members': True,
     # 'member-order': 'bysource',
-    'inherited_members': True,
-    'show-inheritance': True
+    # 'inherited_members': True,
+    # 'show-inheritance': True
     # 'special-members': '__init__',
     # 'undoc-members': True,
     # 'exclude-members': '__weakref__'
@@ -241,7 +242,7 @@ sphinx_gallery_conf = {
     # Suppress warning:
     'backreferences_dir': None,
     'download_all_examples': False,
-    'download_section_examples': False,
+    # 'download_section_examples': False,
     'capture_repr': ()
 }
 
