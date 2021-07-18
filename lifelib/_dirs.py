@@ -1,7 +1,20 @@
 import os.path
 
-LIB_DIR = os.path.abspath(os.path.dirname(__file__))
-TEMPLATE_DIR = os.path.join(LIB_DIR, 'projects')
-TEMPLATES = [f for f in os.listdir(TEMPLATE_DIR)
-             if os.path.isdir(os.path.join(TEMPLATE_DIR, f)) and f[0] != '_']
-DEFAULT_TEMPLATE = "simplelife"
+_here = os.path.abspath(os.path.dirname(__file__))
+
+
+TEMPLATE_DIRS = [
+    os.path.join(_here, 'libraries'),
+    os.path.join(_here, 'projects')
+]
+
+# dict of library paths
+TEMPLATES = {}
+for d in TEMPLATE_DIRS:
+    for f in os.listdir(d):
+        fullpath = os.path.join(d, f)
+        if os.path.isdir(fullpath) and f[0] != '_':
+            TEMPLATES[f] = fullpath
+
+DEFAULT_TEMPLATE = "basiclife"
+

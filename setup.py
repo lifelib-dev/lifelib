@@ -194,7 +194,10 @@ setup(
     # installed, specify them here.  If using Python 2.6 or less, then these
     # have to be included in MANIFEST.in as well.
     package_data={
-        'lifelib': get_package_data([path.join(here, 'lifelib', 'projects')]),
+        'lifelib': get_package_data([
+            path.join(here, 'lifelib', 'libraries'),
+            path.join(here, 'lifelib', 'projects')
+        ]),
     },
 
     # Although 'package_data' is the preferred approach, in some case you may

@@ -2,8 +2,7 @@ import sys
 import os.path
 import argparse
 import shutil
-from lifelib._dirs import (
-    TEMPLATE_DIR, TEMPLATES, DEFAULT_TEMPLATE)
+from lifelib._dirs import (TEMPLATES, DEFAULT_TEMPLATE)
 
 
 def get_argparser():
@@ -11,7 +10,7 @@ def get_argparser():
     parse.add_argument('proj_dir',
                        help="Path to the project folder")
     parse.add_argument('--template', default=DEFAULT_TEMPLATE,
-                       help="Name of a template project")
+                       help="Name of a library")
     return parse
 
 
@@ -31,12 +30,12 @@ def main(argv=sys.argv[1:]):
 
 
 def create(template=DEFAULT_TEMPLATE, path=None):
-    """Create new project folder from template.
+    """Create a copy of a library
 
     Args:
-        template(:obj:`str`, optional): name of a project template.
-            Defaults to ``simplelife``.
-        path(:obj:`str`, optional): path to the project folder. Absolute path
+        template(:obj:`str`, optional): name of the library.
+            Defaults to ``basiclife``.
+        path(:obj:`str`, optional): path to the copied folder. Absolute path
             or relative path to the current working directory/folder.
             If omitted, ``template`` is used.
     """
@@ -45,7 +44,7 @@ def create(template=DEFAULT_TEMPLATE, path=None):
         path = template
 
     proj_dir = os.path.abspath(path)
-    tpath = os.path.join(TEMPLATE_DIR, template)
+    tpath = TEMPLATES[template]
     shutil.copytree(tpath, proj_dir)
 
 
