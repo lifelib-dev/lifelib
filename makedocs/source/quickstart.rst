@@ -119,8 +119,8 @@ The created folder contains folders whose names start with *model_*.
 Those are model folders. By reading a model folder into an IPython session,
 a live *Model* object is created.
 For example,
-the :doc:`BasicTerm_S</libraries/basiclife/model_BasicTerm_S>`
-model in :mod:`basiclife` is saved as a folder named *model_BasicTerm_S*.
+the :doc:`BasicTerm_S</libraries/basiclife/BasicTerm_S>`
+model in :mod:`basiclife` is saved as a folder named *BasicTerm_S*.
 To read the model,
 start an *MxConsole* session by right-clicking on *Console 1/A* tab
 and select *New MxConsole*.
@@ -133,7 +133,7 @@ Select *Read Model* item from the menu.
    *MxExplorer*'s context menu
 
 Click the folder icon next to the text box at the top,
-select the *model_BasicTerm_S* folder in the created folder then click *OK*.
+select the *BasicTerm_S* folder in the created folder then click *OK*.
 After model is read successfully, the components of the model
 appear as a tree in the MxExplorer.
 The top item in the tree is *Projection*, and it represents

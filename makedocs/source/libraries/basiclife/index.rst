@@ -23,23 +23,23 @@ as the net premium with loadings, where the net premium is calculated
 from the present value of the claims.
 
 The library currently includes 2 basic projection models,
-:doc:`BasicTerm_S<model_BasicTerm_S>` and :doc:`BasicTerm_M<model_BasicTerm_M>`.
+:doc:`BasicTerm_S<BasicTerm_S>` and :doc:`BasicTerm_M<BasicTerm_M>`.
 Both of the models produces the exact same results but in different ways.
 
-The :doc:`BasicTerm_S<model_BasicTerm_S>` model defines and executes formulas for each model point separately,
-while the :doc:`model_BasicTerm_M` model executes each formula at each time step
+The :doc:`BasicTerm_S<BasicTerm_S>` model defines and executes formulas for each model point separately,
+while the :doc:`BasicTerm_M` model executes each formula at each time step
 for all model points at once. They produce the same results for the same model point.
-:doc:`BasicTerm_S<model_BasicTerm_S>` is straight forward, and its formulas are easier to understand,
+:doc:`BasicTerm_S<BasicTerm_S>` is straight forward, and its formulas are easier to understand,
 but it runs slower. It's suitable for validation purposes.
-:doc:`BasicTerm_M<model_BasicTerm_M>` is runs fast, but its formulas are expressed as vector operations
+:doc:`BasicTerm_M<BasicTerm_M>` is runs fast, but its formulas are expressed as vector operations
 and can be more complex in some places.
 
 
 .. toctree::
    :maxdepth: 2
 
-   model_BasicTerm_S
-   model_BasicTerm_M
+   BasicTerm_S
+   BasicTerm_M
 
 
 How to Use the Library
@@ -61,8 +61,8 @@ Library Contents
 =========================== ===============================================================
 File or Folder              Description
 =========================== ===============================================================
-model_BasicTerm_S           The :doc:`BasicTerm_S<model_BasicTerm_S>` model.
-model_BasicTerm_M           The :doc:`BasicTerm_M<model_BasicTerm_M>` model.
+BasicTerm_S                 The :doc:`BasicTerm_S` model.
+BasicTerm_M                 The :doc:`BasicTerm_M` model.
 basic_term.xlsx             An Excel file that reproduces the results of a selected model point. The file also shows the derivation of the sample mortality rates.
 generate_model_points.ipynb A Jupyter notebook used for generating the sample model points from random numbers.
 =========================== ===============================================================

@@ -1,4 +1,4 @@
-.. module:: basiclife.model_BasicTerm_S
+.. module:: basiclife.BasicTerm_S
 
 The **BasicTerm_S** Model
 =========================
@@ -27,12 +27,12 @@ Reading the model
 
 Create your copy of the *basiclife* library by following
 the steps on the :doc:`/quickstart` page.
-The model is saved as the folder named *model_BasicTerm_S* in the copied folder.
+The model is saved as the folder named *BasicTerm_S* in the copied folder.
 
 To read the model from Spyder, right-click on the empty space in *MxExplorer*,
 and select *Read Model*.
 Click the folder icon on the dialog box and select the
-*model_BasicTerm_S* folder.
+*BasicTerm_S* folder.
 
 Getting the results
 ^^^^^^^^^^^^^^^^^^^
@@ -50,7 +50,7 @@ Changing the model point
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 The model point to be selected is determined by
-:attr:`~Projection.point_id` in :mod:`~basiclife.model_BasicTerm_S.Projection`.
+:attr:`~Projection.point_id` in :mod:`~basiclife.BasicTerm_S.Projection`.
 It is ``1`` by default.
 :attr:`~Projection.model_point_table` contains all the 10,000 sample model points
 as a pandas DataFrame.
@@ -62,7 +62,7 @@ all the values of Cells that are specific to the previous model point.
 Getting multiple results
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-The :mod:`~basiclife.model_BasicTerm_S.Projection` space
+The :mod:`~basiclife.BasicTerm_S.Projection` space
 is parameterized with :attr:`~Projection.point_id`,
 i.e. the Projection space can have dynamic child spaces, such as
 ``Projection[1]``, ``Projection[2]``, ``Projection[3]`` ..., each of which
@@ -92,7 +92,7 @@ represents the Projection for each of the model points.
    The default *BasicTerm_S* model would take more than a minute
    for 1000 model points on an ordinary spec PC.
    To calculate for many model points,
-   consider using the :mod:`~basiclife.model_BasicTerm_M` model.
+   consider using the :mod:`~basiclife.BasicTerm_M` model.
 
 
 
@@ -100,13 +100,13 @@ Model Specifications
 ---------------------
 
 The *BasicTerm_S* model has only one UserSpace,
-named :mod:`~basiclife.model_BasicTerm_S.Projection`,
+named :mod:`~basiclife.BasicTerm_S.Projection`,
 and all the Cells and References are defined in the space.
 
 The Projection Space
 ^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: basiclife.model_BasicTerm_S.Projection
+.. automodule:: basiclife.BasicTerm_S.Projection
 
 
 Projection parameters

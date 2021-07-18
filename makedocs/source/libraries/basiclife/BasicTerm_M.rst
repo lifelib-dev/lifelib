@@ -1,4 +1,4 @@
-.. module:: basiclife.model_BasicTerm_M
+.. module:: basiclife.BasicTerm_M
 
 The **BasicTerm_M** Model
 =========================
@@ -6,29 +6,29 @@ The **BasicTerm_M** Model
 .. _DataFrame: https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html
 .. _Series: https://pandas.pydata.org/docs/reference/api/pandas.Series.html
 
-.. py:currentmodule:: basiclife.model_BasicTerm_M.Projection
+.. py:currentmodule:: basiclife.BasicTerm_M.Projection
 
 Overview
 -----------
 
 The **BasicTerm_M** model is a faster reimplementation of
-the :mod:`~basiclife.model_BasicTerm_S` model.
+the :mod:`~basiclife.BasicTerm_S` model.
 
-The :mod:`~basiclife.model_BasicTerm_M` model reproduces the same results as
-:mod:`~basiclife.model_BasicTerm_S` much faster.
+The :mod:`~basiclife.BasicTerm_M` model reproduces the same results as
+:mod:`~basiclife.BasicTerm_S` much faster.
 Each formula to be applied to all the model points
 operates on the entire set of model points at once
 with the help of Numpy and Pandas.
 
 The default product specs, assumptions and input data
-are the same as :mod:`~basiclife.model_BasicTerm_S`.
+are the same as :mod:`~basiclife.BasicTerm_S`.
 
 
 Speed comparison
 ^^^^^^^^^^^^^^^^
 
-The main advantage of the :mod:`~basiclife.model_BasicTerm_M` model over the
-:mod:`~basiclife.model_BasicTerm_S` model is its speed.
+The main advantage of the :mod:`~basiclife.BasicTerm_M` model over the
+:mod:`~basiclife.BasicTerm_S` model is its speed.
 Below is the result of a simple speed comparison between the two models.
 The machine used for this comparison is a consumer PC equipped
 with `Intel Core i5-6500T`_ CPU and 16GB RAM.
@@ -49,25 +49,25 @@ with `Intel Core i5-6500T`_ CPU and 16GB RAM.
    1.3366562999999587
 
 Note that only the first 100 model points were run with BasicTerm_S
-while all the 10000 model points were run with :mod:`~basiclife.model_BasicTerm_M`.
+while all the 10000 model points were run with :mod:`~basiclife.BasicTerm_M`.
 While BasicTerm_S took about 7.6 seconds for the 100 model points,
-:mod:`~basiclife.model_BasicTerm_M` too only 1.3 seconds for the 10000 model points.
-This means :mod:`~basiclife.model_BasicTerm_M`
-runs about **580** times faster than :mod:`~basiclife.model_BasicTerm_S`.
+:mod:`~basiclife.BasicTerm_M` too only 1.3 seconds for the 10000 model points.
+This means :mod:`~basiclife.BasicTerm_M`
+runs about **580** times faster than :mod:`~basiclife.BasicTerm_S`.
 
 
 Formula examples
 ^^^^^^^^^^^^^^^^
 
-Most formulas in the :mod:`~basiclife.model_BasicTerm_M` model
-are the same as those in :mod:`~basiclife.model_BasicTerm_S`.
+Most formulas in the :mod:`~basiclife.BasicTerm_M` model
+are the same as those in :mod:`~basiclife.BasicTerm_S`.
 However, some formulas are updated since they cannot
 be applied to vector operations without change.
 For example, below shows how
 ``pols_maturity``, the number of maturing policies
 at time *t*, is defined differently in
-:mod:`~basiclife.model_BasicTerm_S` and in
-:mod:`~basiclife.model_BasicTerm_M`.
+:mod:`~basiclife.BasicTerm_S` and in
+:mod:`~basiclife.BasicTerm_M`.
 
 .. code-block:: python
    :caption: pols_maturity in BasicTerm_S
@@ -84,8 +84,8 @@ at time *t*, is defined differently in
     def pols_maturity(t):
         return (t == policy_term() * 12) * (pols_if(t-1) - pols_lapse(t-1) - pols_death(t-1))
 
-In :mod:`~basiclife.model_BasicTerm_S`,
-:func:`~basiclife.model_BasicTerm_S.Projection.pols_maturity` returns an integer,
+In :mod:`~basiclife.BasicTerm_S`,
+:func:`~basiclife.BasicTerm_S.Projection.pols_maturity` returns an integer,
 such as 10 indicating a policy term of the selected model point in years,
 so the ``if`` clause checks if the value of ``t``
 is equal to the policy term in month:
@@ -99,10 +99,10 @@ is equal to the policy term in month:
    >>> pols_maturity(120)
    0.6534679117893804
 
-In contrast,  :func:`~policy_term` in :mod:`~basiclife.model_BasicTerm_M` returns
+In contrast,  :func:`~policy_term` in :mod:`~basiclife.BasicTerm_M` returns
 a `Series`_ of policy terms of all the model points.
 If the *if* clause were
-defined in the same way as in the :mod:`~basiclife.model_BasicTerm_S`,
+defined in the same way as in the :mod:`~basiclife.BasicTerm_S`,
 it would result in an error,
 because the condition ``t == policy_term() * 12``  for a certain ``t``
 returns a `Series`_ of boolean values and it is ambiguous
@@ -110,10 +110,10 @@ for the `Series`_ to be the if condition.
 Further more, whether the ``if`` branch or the ``else`` branch should
 be evaluated needs to be determined element-wise,
 but the ``if`` statement would not allow such element-wise branching.
-Instead of using the ``if`` statement, the formula in :mod:`~basiclife.model_BasicTerm_M`
+Instead of using the ``if`` statement, the formula in :mod:`~basiclife.BasicTerm_M`
 achieves the element-wise conditional operation by multiplication
 by a `Series`_ of boolean values.
-In the formula in :mod:`~basiclife.model_BasicTerm_M`,
+In the formula in :mod:`~basiclife.BasicTerm_M`,
 ``(pols_if(t-1) - pols_lapse(t-1) - pols_death(t-1))``
 returns the numbers of policies at time t for all the model points
 as a `Series`_.
@@ -184,12 +184,12 @@ Reading the model
 
 Create your copy of the *basiclife* library by following
 the steps on the :doc:`/quickstart` page.
-The model is saved as the folder named :mod:`~basiclife.model_BasicTerm_M` in the copied folder.
+The model is saved as the folder named :mod:`~basiclife.BasicTerm_M` in the copied folder.
 
 To read the model from Spyder, right-click on the empty space in *MxExplorer*,
 and select *Read Model*.
 Click the folder icon on the dialog box and select the
-:mod:`~basiclife.model_BasicTerm_M` folder.
+:mod:`~basiclife.BasicTerm_M` folder.
 
 Getting the results
 ^^^^^^^^^^^^^^^^^^^
@@ -226,7 +226,7 @@ By default, :func:`~model_point` returns the entire :attr:`~model_point_table`::
      model_point -> model_point_table
    }
 
-The calculations in :mod:`~basiclife.model_BasicTerm_M.Projection` apply to all the model points
+The calculations in :mod:`~basiclife.BasicTerm_M.Projection` apply to all the model points
 in :attr:`~model_point_table`.
 To limit the calculation target, change the :func:`~model_point` formula
 so that :func:`~model_point` returns a `DataFrame`_ that contains
@@ -256,14 +256,14 @@ Model Specifications
 ---------------------
 
 
-The :mod:`~basiclife.model_BasicTerm_M` model has only one UserSpace,
-named :mod:`~basiclife.model_BasicTerm_M.Projection`,
+The :mod:`~basiclife.BasicTerm_M` model has only one UserSpace,
+named :mod:`~basiclife.BasicTerm_M.Projection`,
 and all the Cells and References are defined in the space.
 
 The Projection Space
 ^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: basiclife.model_BasicTerm_M.Projection
+.. automodule:: basiclife.BasicTerm_M.Projection
 
 
 Projection parameters
