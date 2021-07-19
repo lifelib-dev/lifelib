@@ -38,9 +38,6 @@ archived in EIOPA_RFR_20190531.zip, avaialble on
 .. _EIOPA's web site: https://wayback.archive-it.org/org-1495/20191229100044/https:/eiopa.europa.eu/publications/qis/insurance/insurance-quantitative-impact-study-5/background-documents
 .. _QIS 5 Risk-free interest rates – Extrapolation method: https://wayback.archive-it.org/org-1495/20191229100044/https:/eiopa.europa.eu/Publications/QIS/ceiops-paper-extrapolation-risk-free-rates_en-20100802.pdf
 
-.. contents:: Contents
-   :depth: 1
-   :local:
 
 Project files and folders
 -------------------------

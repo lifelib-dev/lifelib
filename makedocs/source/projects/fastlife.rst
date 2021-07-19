@@ -41,10 +41,6 @@ and performance of fastlife.
 * `modelx blog: Introduction to fastlife and parallel modeling <http://modelx.io/blog/2020/12/12/introduction-to-fastlife-and-parallel-modeling/>`_
 * `modelx blog: fastlife got faster <http://modelx.io/blog/2021/01/31/fastlife-got-faster/>`_
 
-.. contents:: Contents
-   :depth: 1
-   :local:
-
 .. _pandas Series:
     https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.html
 

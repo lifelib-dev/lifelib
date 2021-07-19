@@ -4,6 +4,12 @@
 Naming Convention
 =================
 
+.. note::
+
+   This naming convention applies only to the projects introduced
+   before lifelib 0.1.0. Libraries introduced 0.1.0 onwards
+   do not follow this convention.
+
 Python has a relatively strict coding style guide as
 prescribed in the famous `PEP8`_ document.
 

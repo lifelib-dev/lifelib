@@ -18,9 +18,6 @@ The main purpose of this model is to simulate actual/realistic
 cashflows as the outer projection, and expected future cashflows at each
 projection step as each of the inner projection.
 
-.. contents:: Contents
-   :depth: 1
-   :local:
 
 Model Structure
 ---------------

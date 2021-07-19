@@ -11,11 +11,6 @@ based on Solvency II standard formula.
 This project serves as a reference for
 building models that contain complex nested projections.
 
-.. contents:: Contents
-   :depth: 1
-   :local:
-
-
 Overview
 --------
 

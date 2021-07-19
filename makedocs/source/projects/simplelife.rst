@@ -78,12 +78,6 @@ the premium rate calculation.
 .. _the parallel modeling approach:
    http://modelx.io/blog/2020/12/12/introduction-to-fastlife-and-parallel-modeling/
 
-
-.. contents:: Contents
-   :depth: 1
-   :local:
-
-
 How to use the project
 -----------------------
 

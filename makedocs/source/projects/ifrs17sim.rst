@@ -12,10 +12,6 @@ Files that are unique to this project are :mod:`~ifrs17sim` and
 :mod:`~ifrs17sim.ifrs`.
 Other files in this project are similar to those in :mod:`nestedlife`.
 
-.. contents:: Contents
-   :depth: 1
-   :local:
-
 Model Structure
 ---------------
 
