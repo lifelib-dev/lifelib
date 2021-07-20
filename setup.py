@@ -13,7 +13,7 @@ from os import path
 
 DISTNAME = 'lifelib'
 LICENSE = 'MIT License'
-AUTHOR = "Fumito Hamamura"
+AUTHOR = "lifelib Developers"
 EMAIL = "fumito.ham@gmail.com"
 URL = "https://lifelib.io"
 

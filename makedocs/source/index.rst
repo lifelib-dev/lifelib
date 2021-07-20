@@ -182,7 +182,7 @@ or share your experience with lifelib.
 Development site           https://github.com/fumitoh/lifelib
 Discussions                https://github.com/fumitoh/lifelib/discussions
 lifelib on PyPI            https://pypi.org/project/lifelib/
-Author's profile           https://www.linkedin.com/in/fumito-hamamura
+Maintainer's profile       https://www.linkedin.com/in/fumito-hamamura
 ========================== ================================================
 
 .. raw:: html
