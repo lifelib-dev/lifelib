@@ -14,8 +14,8 @@ Libraries
 Past Libraries
 ----------------
 
-The libraries below were introduced prior to the introduction of
-the *basiclife* library, and formerly called "projects".
+The libraries below were introduced prior to the release of
+lifelib v0.1.0, and formerly called "projects".
 These libraries, except for *simithwilson*, were based
 on an older cashflow model.
 

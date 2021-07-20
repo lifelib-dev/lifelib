@@ -48,10 +48,10 @@ with `Intel Core i5-6500T`_ CPU and 16GB RAM.
    >>> timeit.timeit("pv_net_cf()",globals=globals(), number=1)
    1.3366562999999587
 
-Note that only the first 100 model points were run with BasicTerm_S
+Note that only the first 100 model points were run with :mod:`~basiclife.BasicTerm_S`
 while all the 10000 model points were run with :mod:`~basiclife.BasicTerm_M`.
-While BasicTerm_S took about 7.6 seconds for the 100 model points,
-:mod:`~basiclife.BasicTerm_M` too only 1.3 seconds for the 10000 model points.
+While :mod:`~basiclife.BasicTerm_S` took about 7.6 seconds for the 100 model points,
+:mod:`~basiclife.BasicTerm_M` took only 1.3 seconds for the 10000 model points.
 This means :mod:`~basiclife.BasicTerm_M`
 runs about **580** times faster than :mod:`~basiclife.BasicTerm_S`.
 
