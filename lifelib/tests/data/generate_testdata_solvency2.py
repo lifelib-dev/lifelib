@@ -1,7 +1,7 @@
 import sys, os, pickle
 from itertools import  product
 from lifelib.projects.solvency2.scripts import solvency2
-from tests.data import round_signif
+from lifelib.tests.data import round_signif
 
 filepath = os.path.join(os.path.dirname(__file__), 'data_solvency2')
 

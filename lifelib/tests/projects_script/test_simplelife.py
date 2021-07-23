@@ -4,7 +4,7 @@ import pickle
 import pathlib
 
 from lifelib.projects.simplelife.scripts import simplelife
-from tests.data.generate_testdata import round_signif
+from lifelib.tests.data.generate_testdata import round_signif
 
 if '' not in sys.path:
     sys.path.insert(0, '')

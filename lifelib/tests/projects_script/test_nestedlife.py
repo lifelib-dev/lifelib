@@ -2,12 +2,11 @@ import sys
 import os.path
 import pickle
 import pathlib
-import modelx as mx
 
 import pytest
 
-import lifelib.projects.nestedlife.model as model_module
-from tests.data.generate_testdata_nestedlife import (
+from lifelib.projects.nestedlife.scripts import nestedlife
+from lifelib.tests.data.generate_testdata_nestedlife_v0 import (
     round_signif,
     get_nested,
     set_model,
@@ -16,7 +15,7 @@ from tests.data.generate_testdata_nestedlife import (
 if '' not in sys.path:
     sys.path.insert(0, '')
 
-modelpath = pathlib.Path(model_module.__file__).parent
+
 datadir = pathlib.Path(__file__).parents[1].joinpath('data')
 
 testdata1 = str(datadir.joinpath('data_nestedlife1'))
@@ -28,7 +27,7 @@ testdata2 = str(datadir.joinpath('data_nestedlife2'))
     [testdata2, update_model]
 ])
 def test_nestedlife(testdata, func):
-    model = mx.read_model(modelpath)
+    model = nestedlife.build(load_saved=False)
 
     data = get_nested(func(model), 'PolsSurr')
 

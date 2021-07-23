@@ -6,7 +6,7 @@ import pathlib
 import pytest
 
 from lifelib.projects.solvency2.scripts import solvency2
-from tests.data.generate_testdata_solvency2 import generate_data
+from lifelib.tests.data.generate_testdata_solvency2 import generate_data
 
 if '' not in sys.path:
     sys.path.insert(0, '')

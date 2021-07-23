@@ -1,6 +1,6 @@
 import sys, os, pickle
 from lifelib.projects.simplelife.scripts import simplelife
-from tests.data import round_signif
+from lifelib.tests.data import round_signif
 
 filepath = os.path.join(os.path.dirname(__file__), 'data_simplelife')
 
