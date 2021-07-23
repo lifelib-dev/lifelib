@@ -7,29 +7,33 @@ About lifelib
 What is lifelib?
 ----------------
 
-lifelib is a collection of life insurance models.
-The lifelib models are built using `modelx`_, an open-source
+**lifelib** is a collection of life actuarial models written in Python.
+lifelib includes a variety of models, with sample scripts
+and Jupyter notebooks to demonstrate how to use the models.
+lifelib is being continuously developed, and more models will be added
+in future.
+
+The lifelib depends on `modelx`_, an open-source
 Python package for building object-oriented models in Python.
-lifelib includes a variety of models along with some sample scripts
-and Jupyter notebooks that demonstrate how to use the models and draw
-graphs. More models will be added in future.
+
 
 .. _what-for:
 
 What for?
 ---------
 
-lifelib models are highly customizable, and
-thanks to modelx's strong inspection capability,
-they are best suited for such purposes as model validation, where
-you need to inspect calculations for each individual model point.
+lifelib models are highly versatile and transparent.
+You can customize lifelib models and utilize them
+in various practical areas, such as:
 
-- For model validation / testing
-- For pricing / profit testing
-- For research/educational projects
-- For prototyping production models in agile developments
-- For defining model requirements in replacement for documents
-- As replacement for any spreadsheet models
+- Model validation / testing
+- Pricing / profit testing
+- Research / educational projects
+- Valuation / cashflow projections
+- Asset-liability modeling
+- Risk and capital modeling
+- Actuarial modernization to replace spreadsheet models
+
 
 Why lifelib?
 ------------
@@ -37,15 +41,15 @@ Why lifelib?
 lifelib models are built using `modelx`_.
 Below is a non-exaustive list of the advantages of using modelx:
 
-* Readable formulas
-* Multidimensional data structure
-* Instant evaluation
-* Dependency tracking
-* Reusable code
-* Object oriented models
-* Interface with Excel/Pandas
-* Version control
-* Documentation integration
+* Models run fast!
+* Formulas are easy to read
+* Easy to trace formula dependency and errors
+* Formulas are instantly evaluated
+* Pandas and Numpy can be utilized
+* Object-oriented
+* Input from Excel and CSV files
+* Documents can be integrated
+* Models are saved in text files
 
 Consequently, you can expect following benefits from
 model development and governance perspectives:
@@ -53,7 +57,7 @@ model development and governance perspectives:
 - More efficient, transparent and faster model development
 - Model integration with Python ecosystem (Pandas, Numpy, SciPy, etc..)
 - Spreadsheet error elimination
-- Better version control/model governance
+- Better version control / model governance
 - Automated model testing
 
 
@@ -62,19 +66,21 @@ model development and governance perspectives:
 How lifelib works
 ------------------
 
-lifelib is a Python package, and it includes a variety of projects.
-A project is a folder containing a model, sample scripts and Jupyter notebooks.
-You can choose a project you want to use as the base for
-your own project, and copy the project from the package
+lifelib is a Python package, and it includes a variety of *libraries*.
+A library is a folder containing models, sample scripts and Jupyter notebooks.
+Choose a library you want to use as the base for
+your own project, and copy the library from the package
 to your own location. See :ref:`here <create-a-project>` for how to make
-a copy of a project.
-
-Once you make your own copy of the project, you can run the scripts
-or the notebooks in the project.
+a copy of a library.
 
 To interface with the model interactively,
 start your favorite IPython console, import `modelx`_
 and read the model into the IPython session by `modelx.read_model`_ function.
+You can use any IPython console, but Spyder with the plugin for modelx
+is the recommended IDE as it provides graphical user interface
+to lifelib models. Read more about
+:doc:`/spyder`.
+
 
 .. _modelx.read_model: https://docs.modelx.io/en/latest/reference/generated/modelx.read_model.html
 
@@ -96,10 +102,9 @@ Start from :doc:`quickstart` page.
 
 
 .. _modelx: http://docs.modelx.io
-.. _Model: http://docs.modelx.io/en/latest/reference/generated/modelx.core.model.Model.html
-.. _Spaces: http://docs.modelx.io/en/latest/reference/generated/modelx.core.space.Space.html
-.. _Cells: http://docs.modelx.io/en/latest/reference/generated/modelx.core.cells.Cells.html
-
+.. _Model: https://docs.modelx.io/en/latest/reference/model.html
+.. _Spaces: https://docs.modelx.io/en/latest/reference/space/index.html
+.. _Cells: https://docs.modelx.io/en/latest/reference/cells.html
 
 .. toctree::
    :hidden:

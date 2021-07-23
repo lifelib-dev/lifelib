@@ -3,10 +3,13 @@
 .. _relnotes_v0.1.0:
 
 ===============================
-lifelib v0.1.0 (XX July 2021)
+lifelib v0.1.0 (23 July 2021)
 ===============================
 
 This release introduces the following changes.
+To update lifelib, execute the command::
+
+    >>> pip install lifelib --upgrade
 
 .. rubric:: Projects renamed to Libraries
 
