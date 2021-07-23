@@ -1,9 +1,9 @@
 .. currentmodule:: lifelib.libraries
 
-.. _relnotes_v0.1.0:
+.. _relnotes_v0.1.1:
 
 ===============================
-lifelib v0.1.0 (23 July 2021)
+lifelib v0.1.1 (23 July 2021)
 ===============================
 
 This release introduces the following changes.
@@ -51,3 +51,4 @@ The :mod:`~basiclife.BasicTerm_S` is modified from a model and samples
 contributed by him.
 
 
+lifelib v0.1.0 is discarded due to packaging error.

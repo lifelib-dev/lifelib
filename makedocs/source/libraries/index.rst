@@ -15,7 +15,7 @@ Past Libraries
 ----------------
 
 The libraries below were introduced prior to the release of
-lifelib v0.1.0, and formerly called "projects".
+lifelib v0.1.1, and formerly called "projects".
 These libraries, except for *simithwilson*, were based
 on an older cashflow model.
 
