@@ -376,13 +376,16 @@ def claims(t):
 
 
 def expenses(t):
-    """Expenses
+    """Acquisition and maintenance expenses
 
-    Expense during the period from ``t`` to ``t+1``.
-    At ``t=0``, it is defined as :func:`expense_acq`.
-    For ``t=1`` and onwards, defined as::
+    Expense cashflow during the period from ``t`` to ``t+1``.
+    For any ``t``, the maintenance expense is recognized,
+    which is defined as::
 
         pols_if(t) * expense_maint()/12 * inflation_factor(t)
+
+    At ``t=0`` only, the acquisition expense,
+    defined as :func:`expense_acq`, is recognized.
 
     .. seealso::
 
@@ -390,11 +393,16 @@ def expenses(t):
         * :func:`expense_maint`
         * :func:`inflation_factor`
 
+    .. versionchanged:: 0.2.0
+       The maintenance expense is also recognized for ``t=0``.
+
     """
+    maint = pols_if(t) * expense_maint()/12 * inflation_factor(t)
+
     if t == 0:
-        return expense_acq()
+        return expense_acq() + maint
     else:
-        return pols_if(t) * expense_maint()/12 * inflation_factor(t)
+        return maint
 
 
 def age(t):

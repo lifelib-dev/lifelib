@@ -50,14 +50,14 @@ def test_main(argv, tmp_path):
          ("BasicTerm_S", "Projection", (1,), "pv_net_cf", ()),
          None,
          None,
-         917.9517309878909],
+         912.9517309878909],
 
         ["basiclife",
          "BasicTerm_M",
          ("BasicTerm_M", "Projection", "pv_net_cf", ()),
          "__getitem__",
          (0,),
-         917.9517309878909],
+         912.9517309878909],
 
         ["fastlife",
          "model",
