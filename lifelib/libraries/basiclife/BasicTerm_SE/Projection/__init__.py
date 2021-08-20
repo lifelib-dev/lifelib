@@ -525,12 +525,6 @@ def pols_if(t):
         * :func:`pols_maturity`
 
     """
-    # if t==0:
-    #     return pols_if_init()
-    # elif t > policy_term() * 12:
-    #     return 0
-    # else:
-    #     return pols_if(t-1) - pols_lapse(t-1) - pols_death(t-1) - pols_maturity(t)
     return pols_if_at(t, "BEF_MAT")
 
 
@@ -823,11 +817,11 @@ def sum_assured():
 # ---------------------------------------------------------------------------
 # References
 
-disc_rate_ann = ("DataClient", 2105143624584)
+disc_rate_ann = ("DataClient", 2669523455304)
 
-model_point_table = ("DataClient", 2105164985672)
+model_point_table = ("DataClient", 2669523493640)
 
-mort_table = ("DataClient", 2105143614152)
+mort_table = ("DataClient", 2669510679048)
 
 np = ("Module", "numpy")
 

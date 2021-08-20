@@ -394,10 +394,6 @@ def mort_rate(t):
        * :func:`mort_rate_mth`
 
     """
-    # result = mort_table[str(min(5, duration(t)))][age(t)]
-    # result.index = model_point().index
-    # return result
-
     mi = pd.MultiIndex.from_arrays([age(t), np.minimum(duration(t), 5)])
     return mort_table_reindexed().reindex(
         mi, fill_value=0).set_axis(model_point().index)
@@ -464,7 +460,6 @@ def net_premium_pp():
         * :func:`pv_pols_if`
 
     """
-    # return pv_claims() / pv_pols_if()
     with np.errstate(divide='ignore', invalid='ignore'):
         return np.nan_to_num(pv_claims() / pv_pols_if())
 
@@ -793,12 +788,12 @@ def sum_assured():
 # ---------------------------------------------------------------------------
 # References
 
-disc_rate_ann = ("DataClient", 2105125713800)
+disc_rate_ann = ("DataClient", 1780689657352)
 
-mort_table = ("DataClient", 2105174066376)
+mort_table = ("DataClient", 1780698761928)
 
 np = ("Module", "numpy")
 
 pd = ("Module", "pandas")
 
-model_point_table = ("DataClient", 2105112335944)
+model_point_table = ("DataClient", 1780698838472)
