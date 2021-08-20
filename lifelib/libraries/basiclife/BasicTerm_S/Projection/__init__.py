@@ -446,7 +446,7 @@ def mort_rate(t):
        * :func:`mort_rate_mth`
 
     """
-    return mort_table[str(min(5, duration(t)))][age(t)]
+    return mort_table[str(max(min(5, duration(t)),0))][age(t)]
 
 
 def mort_rate_mth(t):
@@ -760,11 +760,11 @@ def sum_assured():
 # ---------------------------------------------------------------------------
 # References
 
-disc_rate_ann = ("DataClient", 2105084589128)
+disc_rate_ann = ("DataClient", 2180220040776)
 
-model_point_table = ("DataClient", 2105084611784)
+model_point_table = ("DataClient", 2180211700488)
 
-mort_table = ("DataClient", 2105084808648)
+mort_table = ("DataClient", 2180225433416)
 
 pd = ("Module", "pandas")
 
