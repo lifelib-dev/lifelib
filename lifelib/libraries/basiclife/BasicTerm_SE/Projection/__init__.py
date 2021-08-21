@@ -590,7 +590,7 @@ def pols_maturity(t):
     otherwise ``0``.
     """
     if duration_mth(t) == policy_term() * 12:
-        return pols_if(t-1) - pols_lapse(t-1) - pols_death(t-1)
+        return pols_if_at(t, "BEF_MAT")
     else:
         return 0
 
