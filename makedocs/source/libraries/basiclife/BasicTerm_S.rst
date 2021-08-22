@@ -117,8 +117,8 @@ The time step of the model is monthly. Cashflows and other time-dependent
 variables are indexed with ``t``.
 
 Cashflows and other flows that accumulate throughout a period
-indexed with ``t`` denotes the sums of the flows from ``t`` til ``t+1``.
-Balance items indexed with ``t`` denotes the amount at ``t``.
+indexed with ``t`` denote the sums of the flows from ``t`` til ``t+1``.
+Balance items indexed with ``t`` denote the amount at ``t``.
 
 .. autosummary::
    :toctree: ../generated/

@@ -320,7 +320,7 @@ def expense_acq():
 
 
 def expense_maint():
-    """Annual maintenance expence per policy
+    """Annual maintenance expense per policy
 
     ``60`` by default.
     """
@@ -513,7 +513,7 @@ def pols_death(t):
 
 
 def pols_if(t):
-    """Number of Policies In-force
+    """Number of policies in-force
 
     Number of in-force policies calculated recursively.
     The initial value is read from :func:`pols_if_init`.
