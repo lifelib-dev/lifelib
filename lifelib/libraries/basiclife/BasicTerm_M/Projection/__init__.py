@@ -515,12 +515,15 @@ def pols_maturity(t):
     return (t == policy_term() * 12) * (pols_if(t-1) - pols_lapse(t-1) - pols_death(t-1))
 
 
-def premium_pp(t):
+def premium_pp():
     """Monthly premium per policy
 
     Monthly premium amount per policy defined as::
 
         round((1 + loading_prem()) * net_premium(), 2)
+
+    .. versionchanged:: 0.2.0
+       The ``t`` parameter is removed.
 
     .. seealso::
 
@@ -544,7 +547,7 @@ def premiums(t):
         * :func:`pols_if`
 
     """
-    return premium_pp(t) * pols_if(t)
+    return premium_pp() * pols_if(t)
 
 
 def proj_len():
