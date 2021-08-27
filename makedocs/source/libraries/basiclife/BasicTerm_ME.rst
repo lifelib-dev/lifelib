@@ -23,24 +23,46 @@ with the help of Numpy and Pandas.
 The default product specs, assumptions and input data
 are the same as :mod:`~basiclife.BasicTerm_SE`.
 
-duration
-<new> duration_mth
-expenses
-mort_rate
-mort_rate_reindexed
-net_premium_pp
-pols_death
-pols_if
-pols_if_at
-pols_if_init
-pols_lapse
-pols_maturity
-pols_new_biz
-pv_pols_if
-premiums
-proj_len
-<new> result_pols
+Changes from **BasicTerm_M**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+.. py:currentmodule:: basiclife.BasicTerm_ME.Projection
+
+Below is the list of
+Cells and References that are newly added or updated from :mod:`~basiclife.BasicTerm_M`.
+
+* :attr:`model_point_table`
+* :attr:`premium_table` <new>
+* :attr:`duration`
+* :attr:`duration_mth` <new>
+* :func:`expenses`
+* :func:`mort_rate`
+* :func:`mort_table_reindexed`
+* :func:`pols_death`
+* :func:`pols_if`
+* :func:`pols_if_at` <new>
+* :func:`pols_if_init`
+* :func:`pols_lapse`
+* :func:`pols_maturity`
+* :func:`pols_new_biz` <new>
+* :func:`pv_pols_if`
+* :func:`premium_pp`
+* :func:`premiums`
+* :func:`proj_len`
+* :func:`result_pols` <new>
+
+In summary, below are the main changes
+common to :mod:`~basiclife.BasicTerm_ME` and :mod:`~basiclife.BasicTerm_SE`.
+Refer to the descritpion for :mod:`~basiclife.BasicTerm_SE`.
+
+* :attr:`model_point_table` has the ``duration_mth`` column,
+  to indicate the duration of the model point at time 0,
+
+* :func:`pols_if_at(t, timing)<pols_if_at>` is introduced to allow
+  multiple values for the number of policy in-force at the same time
+  at different timing.
+
+* :attr:`premium_table` holds premium rate data calculated outside the model.
 
 Speed comparison
 ^^^^^^^^^^^^^^^^
@@ -58,21 +80,24 @@ with `Intel Core i5-6500T`_ CPU and 16GB RAM.
    :caption: 100 model points with BasicTerm_SE
 
    >>> timeit.timeit("[Projection[i].pv_net_cf() for i in range(1, 101)]",globals=globals(), number=1)
-   7.6481730999998945
+   5.971486999999996
 
 .. code-block::
    :caption: 10000 model points with BasicTerm_ME
 
    >>> timeit.timeit("pv_net_cf()",globals=globals(), number=1)
-   1.3366562999999587
+   3.9130262000000045
 
 Note that only the first 100 model points were run with :mod:`~basiclife.BasicTerm_SE`
 while all the 10000 model points were run with :mod:`~basiclife.BasicTerm_ME`.
-While :mod:`~basiclife.BasicTerm_SE` took about 7.6 seconds for the 100 model points,
-:mod:`~basiclife.BasicTerm_ME` took only 1.3 seconds for the 10000 model points.
+While :mod:`~basiclife.BasicTerm_SE` took about 6.0 seconds for the 100 model points,
+:mod:`~basiclife.BasicTerm_ME` took only 3.9 seconds for the 10000 model points.
 This means :mod:`~basiclife.BasicTerm_ME`
-runs about **580** times faster than :mod:`~basiclife.BasicTerm_SE`.
-
+runs about **153** times faster than :mod:`~basiclife.BasicTerm_SE`.
+The run time of :mod:`~basiclife.BasicTerm_SE`
+is shorter that :mod:`~basiclife.BasicTerm_S` because
+the projection length of each model point is shorter for
+:mod:`~basiclife.BasicTerm_SE`.
 
 Formula examples
 ^^^^^^^^^^^^^^^^
@@ -90,17 +115,17 @@ at time *t*, is defined differently in
 .. code-block:: python
    :caption: pols_maturity in BasicTerm_SE
 
-    def pols_maturity(t):
-        if t == policy_term() * 12:
-            return pols_if(t-1) - pols_lapse(t-1) - pols_death(t-1)
-        else:
-            return 0
+   def pols_maturity(t):
+       if duration_mth(t) == policy_term() * 12:
+           return pols_if_at(t, "BEF_MAT")
+       else:
+           return 0
 
 .. code-block:: python
    :caption: pols_maturity in BasicTerm_ME
 
     def pols_maturity(t):
-        return (t == policy_term() * 12) * (pols_if(t-1) - pols_lapse(t-1) - pols_death(t-1))
+        return (duration_mth(t) == policy_term() * 12) * pols_if_at(t, "BEF_MAT")
 
 In :mod:`~basiclife.BasicTerm_SE`,
 :func:`~basiclife.BasicTerm_SE.Projection.pols_maturity` returns an integer,
@@ -191,6 +216,12 @@ operation:
    10000    0.000000
    Length: 10000, dtype: float64
 
+
+Since projections for in-force policies do not start from their issuance,
+the premium rates are calculated externaly by
+:mod:`~basiclife.BasicTerm_M` and fed into the model as a table.
+The premium rates are stored in *premium_table.xlsx* in the model folder
+and read into :attr:`premium_table` as a Series.
 
 
 Basic Usage
@@ -321,6 +352,7 @@ under the model folder.
    ~age
    ~age_at_entry
    ~duration
+   ~duration_mth
 
 
 Assumptions
@@ -371,6 +403,7 @@ of inflation given as :func:`inflation_rate`.
 
    ~mort_rate
    ~mort_rate_mth
+   ~mort_table_reindexed
    ~disc_factors
    ~disc_rate_mth
    ~lapse_rate
@@ -419,9 +452,11 @@ mature.
 
    ~pols_death
    ~pols_if
+   ~pols_if_at
    ~pols_if_init
    ~pols_lapse
    ~pols_maturity
+   ~pols_new_biz
 
 
 Cashflows
@@ -466,7 +501,7 @@ in calculating :func:`net_premium_pp`.
   ~pv_premiums
 
 
-.. _basicterm_m-results:
+.. _basicterm_me-results:
 
 Results
 ^^^^^^^^^^^^^^^^^^
@@ -517,5 +552,6 @@ as a `DataFrame`_::
 
    ~result_cf
    ~result_pv
+   ~result_pols
 
 

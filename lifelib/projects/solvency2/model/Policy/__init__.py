@@ -37,7 +37,6 @@ Attributes:
     PolicyData: Input.PolicyData
     ProductSpec: Input.ProductSpec
     LifeTable: LifeTable
-    Gen: Generation key
 
 .. rubric:: References in Sub
 

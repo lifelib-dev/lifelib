@@ -99,6 +99,27 @@ Attributes:
            * :func:`sum_assured`
            * :func:`duration_mth`
 
+    premium_table: Premium rate table by entry age and duration as a Series.
+        The table is created using :mod:`~basiclife.BasicTerm_M`
+        as demonstrated in *create_premium_table.ipynb*.
+        The table is stored in *premium_table.xlsx* in the model folder.
+
+        .. code-block::
+
+            >>> Projection.premium_table
+            age_at_entry  policy_term
+            20            10             0.000046
+                          15             0.000052
+                          20             0.000057
+            21            10             0.000048
+                          15             0.000054
+                                           ...
+            58            15             0.000433
+                          20             0.000557
+            59            10             0.000362
+                          15             0.000471
+                          20             0.000609
+            Name: premium_rate, Length: 120, dtype: float64
 
     disc_rate_ann: Annual discount rates by duration as a pandas Series.
 

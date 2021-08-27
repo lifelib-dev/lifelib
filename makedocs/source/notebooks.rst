@@ -6,6 +6,16 @@
 Notebooks
 =================
 
+.. _notebooks_basiclife:
+
+:mod:`basiclife` Notebooks
+---------------------------
+
+* `Generating model points <libraries/notebooks/basiclife/generate_model_points.ipynb>`_
+* `Generating model points with duration <libraries/notebooks/basiclife/generate_model_points_with_duration.ipynb>`_
+* `Creating premium table <libraries/notebooks/basiclife/create_premium_table.ipynb>`_
+
+
 .. _notebooks_fastlife:
 
 :mod:`fastlife` Notebooks

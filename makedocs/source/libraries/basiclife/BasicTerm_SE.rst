@@ -3,6 +3,8 @@
 The **BasicTerm_SE** Model
 ==========================
 
+.. py:currentmodule:: basiclife.BasicTerm_SE.Projection
+
 Overview
 -----------
 
@@ -16,7 +18,12 @@ point at time 0 from the model point file.
 The duration of a model point being *N* months (*N* > 0) means
 *N* months have elapsed before time 0 since the issue of the model point.
 If the duration is *-N* months, the model point is issued
-*N* months after time 0.
+*N* months after time 0. Premium rates are fed into the model from a table
+which is assigned to :attr:`premium_table`.
+The rates are calculated by :mod:`~basiclife.BasicTerm_M`.
+How to create the table is demonstrated in the
+:doc:`create_premium_table.ipynb </libraries/notebooks/basiclife/create_premium_table>`
+notebook included in this library.
 
 Other specifications of :mod:`~basiclife.BasicTerm_SE` are the same as :mod:`~basiclife.BasicTerm_S`.
 The model is a monthly step model and
@@ -36,9 +43,8 @@ Changes from **BasicTerm_S**
 Below is the list of
 Cells and References that are newly added or updated from :mod:`~basiclife.BasicTerm_S`.
 
-.. py:currentmodule:: basiclife.BasicTerm_SE.Projection
-
 * :attr:`model_point_table`
+* :attr:`premium_table` <new>
 * :func:`duration`
 * :func:`duration_mth` <new>
 * :func:`expenses`
@@ -50,6 +56,7 @@ Cells and References that are newly added or updated from :mod:`~basiclife.Basic
 * :func:`pols_maturity`
 * :func:`pols_new_biz` <new>
 * :func:`premiums`
+* :func:`premium_pp`
 * :func:`proj_len`
 * :func:`result_pols` <new>
 
@@ -93,6 +100,12 @@ into :func:`pols_if_init`, and
 :func:`duration_mth` increments by 1 each step. If :func:`duration_mth`
 is negative, ``policy_count`` is read into :func:`pols_new_biz`
 when :func:`duration_mth` becomes 0.
+
+Since projections for in-force policies do not start from their issuance,
+the premium rates are calculated externaly by
+:mod:`~basiclife.BasicTerm_M` and fed into the model as a table.
+The premium rates are stored in *premium_table.xlsx* in the model folder
+and read into :attr:`premium_table` as a Series.
 
 
 Basic Usage
@@ -294,9 +307,10 @@ is set equal to :attr:`sum_assured`.
 The payment method is monthly whole term payment for all model points.
 The monthly premium per policy  (:func:`premium_pp`)
 is calculated for each policy
-as (1 + :func:`loading_prem`) times :func:`net_premium_pp`.
-The net premium is calculated so that the present value of the
-net premiums equates to the present values of claims.
+as :func:`sum_assured` times the premium rate in :attr:`premium_table`.
+for :func:`age_at_entry` and :func:`policy_term` of the policy.
+:func:`net_premium_pp` and :func:`loading_prem` are not used
+in :mod:`~basiclife.BasicTerm_SE` and :mod:`~basiclife.BasicTerm_ME`.
 
 This product is assumed to have no surrender value.
 
@@ -398,8 +412,8 @@ Present values
 
 The Cells whose names start with ``pv_`` are for calculating
 the present values of the cashflows indicated by the rest of their names.
-:func:`pols_if` is not a cashflow, but used as an annuity factor
-in calculating :func:`net_premium_pp`.
+:func:`pv_pols_if` is not used
+in :mod:`~basiclife.BasicTerm_SE` and :mod:`~basiclife.BasicTerm_ME`.
 
 .. autosummary::
   :toctree: ../generated/
@@ -424,27 +438,25 @@ as a DataFrame::
 
     >>> result_cf()
             Premiums       Claims    Expenses  Commissions  Net Cashflow
-    0    8145.060000  2939.548223  430.000000  8145.060000  -3369.548223
-    1    8073.411458  2913.690299  426.217477  8073.411458  -3339.907776
-    2    8002.393178  2888.059836  422.468228  8002.393178  -3310.528064
-    3    7931.999614  2862.654832  418.751959  7931.999614  -3281.406792
-    4    7862.225272  2837.473306  415.068381  7862.225272  -3252.541687
+    0    8156.240000  2939.548223  430.000000  8156.240000  -3369.548223
+    1    8084.493113  2913.690299  426.217477  8084.493113  -3339.907776
+    2    8013.377352  2888.059836  422.468228  8013.377352  -3310.528064
+    3    7942.887165  2862.654832  418.751959  7942.887165  -3281.406792
+    4    7873.017050  2837.473306  415.068381  7873.017050  -3252.541687
     ..           ...          ...         ...          ...           ...
-    115  5409.416566  5512.481202  312.332343     0.000000   -415.396979
-    116  5399.477788  5502.353062  311.758491     0.000000   -414.633765
-    117  5389.557270  5492.243531  311.185694     0.000000   -413.871954
-    118  5379.654980  5482.152574  310.613949     0.000000   -413.111543
+    115  5416.841591  5512.481202  312.332343     0.000000   -407.971953
+    116  5406.889171  5502.353062  311.758491     0.000000   -407.222382
+    117  5396.955036  5492.243531  311.185694     0.000000   -406.474188
+    118  5387.039154  5482.152574  310.613949     0.000000   -405.727369
     119     0.000000     0.000000    0.000000     0.000000      0.000000
 
-    [120 rows x 5 columns]
 
 :func:`result_pv` outputs the present values of the cashflows
 and also their percentages against the present value of premiums as a DataFrame::
 
     >>> result_pv()
-                    Premiums         Claims  ...   Commissions   Net Cashflow
-    PV         707408.134297  474803.297001  ...  85757.176047  107944.776893
-    % Premium       1.000000       0.671187  ...      0.121227       0.152592
+             Premiums         Claims      Expenses   Commissions   Net Cashflow
+    PV  708379.130574  474803.297001  38902.884356  85874.887301  108798.061916
 
 
 .. autosummary::

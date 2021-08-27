@@ -47,32 +47,57 @@ def proc_ifrs17sim(node):
     node['source'] = src
 
 entries = [
-    {"project": "fastlife",
+
+    {"dir": "libraries",
+     "project": "basiclife",
+     "notebook": "generate_model_points.ipynb",
+     "is_target": lambda node: True,
+     "proc": lambda node: None},
+
+    {"dir": "libraries",
+     "project": "basiclife",
+     "notebook": "generate_model_points_with_duration.ipynb",
+     "is_target": lambda node: True,
+     "proc": lambda node: None},
+
+    {"dir": "libraries",
+     "project": "basiclife",
+     "notebook": "create_premium_table.ipynb",
+     "is_target": lambda node: True,
+     "proc": lambda node: None},
+
+    {"dir": "projects",
+     "project": "fastlife",
      "notebook": "fastlife-introduction.ipynb",
      "is_target": lambda node: True,
      "proc": lambda node: None},
 
-    {"project": "simplelife",
+    {"dir": "projects",
+     "project": "simplelife",
      "notebook": "simplelife-space-overview.ipynb",
      "is_target": is_target_simplelife,
      "proc": lambda node: None},
 
-    {"project": "ifrs17sim",
+    {"dir": "projects",
+     "project": "ifrs17sim",
      "notebook": "ifrs17sim_csm_waterfall.ipynb",
      "is_target": is_target_ifrs17sim,
      "proc": proc_ifrs17sim},
 
-    {"project": "ifrs17sim",
+    {"dir": "projects",
+     "project": "ifrs17sim",
      "notebook": "ifrs17sim_charts_baseline.ipynb",
      "is_target": is_target_ifrs17sim,
      "proc": proc_ifrs17sim},
 
-    {"project": "ifrs17sim",
+    {"dir": "projects",
+     "project": "ifrs17sim",
      "notebook": "ifrs17sim_charts_lapsescen.ipynb",
      "is_target": is_target_ifrs17sim,
      "proc": proc_ifrs17sim},
 
-    {"project": "smithwilson",
+    {"dir": "projects",
+     "project": "smithwilson",
      "notebook": "smithwilson-overview.ipynb",
      "is_target": lambda node: True,
      "proc": lambda node: None}
@@ -93,10 +118,10 @@ def adjust_notebook(file, is_target, proc):
 thisdir = pathlib.Path(os.path.abspath(os.path.dirname(__file__))).as_posix()
 
 
-def _get_dirs(project):
+def _get_dirs(project, dir_):
 
-    return (thisdir + '/../lifelib/projects/' + project,
-            thisdir + '/source/projects/notebooks/' + project)
+    return (thisdir + '/../lifelib/'+ dir_ + '/' + project,
+            thisdir + '/source/' + dir_ + '/notebooks/' + project)
 
 
 def prepare_notebooks():
@@ -106,7 +131,8 @@ def prepare_notebooks():
         entry = entry.copy()    # To not delete global entries directory
         project = entry.pop("project")
         notebook = entry.pop("notebook")
-        srcdir, trgdir = _get_dirs(project)
+        dir_ = entry.pop("dir")
+        srcdir, trgdir = _get_dirs(project, dir_)
 
         nb = adjust_notebook(srcdir + '/' + notebook, **entry)
 
@@ -120,7 +146,8 @@ def prepare_models():
 
     for entry in entries:
         project = entry["project"]
-        srcdir, trgdir = _get_dirs(project)
+        dir_ = entry["dir"]
+        srcdir, trgdir = _get_dirs(project, dir_)
 
         srcmodel = srcdir + "/" + "model"
         trgmodel = trgdir + "/" + "model"
@@ -129,9 +156,11 @@ def prepare_models():
 
 
 def remove_notebooks():
-    nbdir = thisdir + "/source/projects/notebooks"
-    if os.path.exists(nbdir):
-        shutil.rmtree(nbdir)
+
+    for nbdir in (thisdir + "/source/libraries/notebooks",
+                  thisdir + "/source/projects/notebooks"):
+        if os.path.exists(nbdir):
+            shutil.rmtree(nbdir)
 
 
 if __name__ == "__main__":

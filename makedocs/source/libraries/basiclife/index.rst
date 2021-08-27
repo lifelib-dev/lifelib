@@ -66,6 +66,17 @@ under the path *C:\\path\\to\\your\\*, type below in an IPython console::
     >>> lifelib.create("basiclife", r"C:\path\to\your\basiclife")
 
 
+Jupyter Notebooks
+------------------------------
+
+.. toctree::
+   :maxdepth: 1
+
+   /libraries/notebooks/basiclife/generate_model_points.ipynb
+   /libraries/notebooks/basiclife/generate_model_points_with_duration.ipynb
+   /libraries/notebooks/basiclife/create_premium_table.ipynb
+
+
 Library Contents
 ------------------
 
@@ -80,6 +91,7 @@ Library Contents
    BasicTerm_SE                              The :mod:`~basiclife.BasicTerm_SE` model.
    BasicTerm_ME                              The :mod:`~basiclife.BasicTerm_ME` model.
    basic_term.xlsx                           An Excel file that reproduces the results of a selected model point. The file also shows the derivation of the sample mortality rates.
+   create_premium_table.ipynb                A Jupyter notebbok used for creating the premium table used by :mod:`~basiclife.BasicTerm_SE` and :mod:`~basiclife.BasicTerm_ME`.
    generate_model_points.ipynb               A Jupyter notebook used for generating the sample model points from random numbers for :mod:`~basiclife.BasicTerm_S` and :mod:`~basiclife.BasicTerm_M`.
    generate_model_points_with_duration.ipynb A Jupyter notebook used for generating the sample model points from random numbers for :mod:`~basiclife.BasicTerm_SE` and :mod:`~basiclife.BasicTerm_ME`.
    ========================================= ===============================================================

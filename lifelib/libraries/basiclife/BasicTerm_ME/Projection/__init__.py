@@ -73,6 +73,27 @@ Attributes:
            * :func:`sum_assured`
            * :func:`duration_mth`
 
+    premium_table: Premium rate table by entry age and duration as a Series.
+        The table is created using :mod:`~basiclife.BasicTerm_M`
+        as demonstrated in *create_premium_table.ipynb*.
+        The table is stored in *premium_table.xlsx* in the model folder.
+
+        .. code-block::
+
+            >>> Projection.premium_table
+            age_at_entry  policy_term
+            20            10             0.000046
+                          15             0.000052
+                          20             0.000057
+            21            10             0.000048
+                          15             0.000054
+                                           ...
+            58            15             0.000433
+                          20             0.000557
+            59            10             0.000362
+                          15             0.000471
+                          20             0.000609
+            Name: premium_rate, Length: 120, dtype: float64
 
     disc_rate_ann: Annual discount rates by duration as a pandas Series.
 
@@ -420,12 +441,25 @@ def model_point():
 def mort_rate(t):
     """Mortality rate to be applied at time t
 
+    Returns a Series of the mortality rates to be applied at time t.
+    The index of the Series is ``point_id``,
+    copied from :func:`model_point`.
+
     .. seealso::
 
-       * :attr:`mort_table`
+       * :func:`mort_table_reindexed`
        * :func:`mort_rate_mth`
+       * :func:`model_point`
 
     """
+
+    # mi is a MultiIndex whose values are
+    # pairs of age at t and duration at t capped at 5 for all the model points.
+
+    # ``mort_table_reindexed().reindex(mi, fill_value=0)`` returns
+    # a Series of mortality rates whose indexes match the MultiIndex values.
+    # The ``set_axis`` method replace the MultiIndex with ``point_id``
+
     mi = pd.MultiIndex.from_arrays([age(t), np.minimum(duration(t), 5)])
     return mort_table_reindexed().reindex(
         mi, fill_value=0).set_axis(model_point().index)
@@ -447,7 +481,7 @@ def mort_table_reindexed():
     """MultiIndexed mortality table
 
     Returns a Series of mortlity rates reshaped from :attr:`mortality_table`.
-    The returned Series is indexed by age and duration.
+    The returned Series is indexed by age and duration capped at 5.
 
     """
     result = []
@@ -637,16 +671,30 @@ def pols_new_biz(t):
 def premium_pp():
     """Monthly premium per policy
 
-    Monthly premium amount per policy defined as::
+    A Series of monthly premiums per policy for all the model points,
+    calculated as::
 
-        round((1 + loading_prem()) * net_premium(), 2)
+        np.around(sum_assured() * prem_rates, 2)
+
+    where the ``prem_rates`` is a Series of premium rates
+    retrieved from :attr:`premium_table`.
 
     .. seealso::
 
-        * :func:`loading_prem`
-        * :func:`net_premium_pp`
+        * :attr:`premium_table`
+        * :func:`model_point`
+        * :func:`age_at_enty`
+        * :func:`policy_term`
 
     """
+
+    # mi is a MultiIndex whose values are
+    # pairs of issue ages and policy terms for all the model points.
+
+    # ``premium_table.reindex(mi)`` returns
+    # a Series of premium rates whose indexes match the MultiIndex values.
+    # The ``set_axis`` method replace the MultiIndex with ``point_id``
+
     mi = pd.MultiIndex.from_arrays([age_at_entry(), policy_term()])
     prem_rates = premium_table.reindex(mi).set_axis(model_point().index)
     return np.around(sum_assured() * prem_rates, 2)
