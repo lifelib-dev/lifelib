@@ -634,7 +634,7 @@ def pols_new_biz(t):
     return model_point()['policy_count'].where(duration_mth(t) == 0, other=0)
 
 
-def premium_pp(t):
+def premium_pp():
     """Monthly premium per policy
 
     Monthly premium amount per policy defined as::
@@ -647,7 +647,9 @@ def premium_pp(t):
         * :func:`net_premium_pp`
 
     """
-    return np.around((1 + loading_prem()) * net_premium_pp(), 2)
+    mi = pd.MultiIndex.from_arrays([age_at_entry(), policy_term()])
+    prem_rates = premium_table.reindex(mi).set_axis(model_point().index)
+    return np.around(sum_assured() * prem_rates, 2)
 
 
 def premiums(t):
@@ -663,7 +665,7 @@ def premiums(t):
         * :func:`pols_if`
 
     """
-    return premium_pp(t) * pols_if_at(t, "BEF_DECR")
+    return premium_pp() * pols_if_at(t, "BEF_DECR")
 
 
 def proj_len():
@@ -862,12 +864,14 @@ def sum_assured():
 # ---------------------------------------------------------------------------
 # References
 
-disc_rate_ann = ("DataClient", 1780689657352)
+disc_rate_ann = ("DataClient", 2506406713416)
 
-mort_table = ("DataClient", 1780698761928)
+mort_table = ("DataClient", 2506337165064)
 
 np = ("Module", "numpy")
 
 pd = ("Module", "pandas")
 
-model_point_table = ("DataClient", 1780698838472)
+model_point_table = ("DataClient", 2506395652680)
+
+premium_table = ("DataClient", 2506414290888)

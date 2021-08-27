@@ -673,7 +673,7 @@ def pols_new_biz(t):
         return 0
 
 
-def premium_pp(t):
+def premium_pp():
     """Monthly premium per policy
 
     Monthly premium amount per policy defined as::
@@ -686,7 +686,7 @@ def premium_pp(t):
         * :func:`net_premium_pp`
 
     """
-    return round((1 + loading_prem()) * net_premium_pp(), 2)
+    return round(sum_assured() * premium_table[age_at_entry(), policy_term()], 2)
 
 
 def premiums(t):
@@ -702,7 +702,7 @@ def premiums(t):
         * :func:`pols_if`
 
     """
-    return premium_pp(t) * pols_if_at(t, "BEF_DECR")
+    return premium_pp() * pols_if_at(t, "BEF_DECR")
 
 
 def proj_len():
@@ -860,10 +860,9 @@ def result_pv():
 
     cols = ["Premiums", "Claims", "Expenses", "Commissions", "Net Cashflow"]
     pvs = [pv_premiums(), pv_claims(), pv_expenses(), pv_commissions(), pv_net_cf()]
-    per_prem = [x / pv_premiums() for x in pvs]
 
     return pd.DataFrame.from_dict(
-            data={"PV": pvs, "% Premium": per_prem},
+            data={"PV": pvs},
             columns=cols,
             orient='index')
 
@@ -889,14 +888,16 @@ def sum_assured():
 # ---------------------------------------------------------------------------
 # References
 
-disc_rate_ann = ("DataClient", 2669523455304)
+disc_rate_ann = ("DataClient", 2160330731208)
 
-model_point_table = ("DataClient", 2669523493640)
+model_point_table = ("DataClient", 2160335976392)
 
-mort_table = ("DataClient", 2669510679048)
+mort_table = ("DataClient", 2160317735752)
 
 np = ("Module", "numpy")
 
 pd = ("Module", "pandas")
 
 point_id = 1
+
+premium_table = ("DataClient", 2160336367816)
