@@ -745,6 +745,9 @@ def result_pv():
 def sex(): 
     """The sex of the selected model point
 
+    .. note::
+       This cells is not used by default.
+
     The element labeled ``sex`` of the Series returned by
     :func:`model_point`.
     """

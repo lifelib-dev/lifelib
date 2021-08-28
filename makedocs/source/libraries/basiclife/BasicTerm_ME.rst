@@ -53,14 +53,15 @@ Cells and References that are newly added or updated from :mod:`~basiclife.Basic
 
 In summary, below are the main changes
 common to :mod:`~basiclife.BasicTerm_ME` and :mod:`~basiclife.BasicTerm_SE`.
-Refer to the descritpion for :mod:`~basiclife.BasicTerm_SE`.
+Refer to the descritpion for :mod:`~basiclife.BasicTerm_SE` for
+more details.
 
 * :attr:`model_point_table` has the ``duration_mth`` column,
   to indicate the duration of the model point at time 0,
 
 * :func:`pols_if_at(t, timing)<pols_if_at>` is introduced to allow
   multiple values for the number of policy in-force at the same time
-  at different timing.
+  at different policy flow timing.
 
 * :attr:`premium_table` holds premium rate data calculated outside the model.
 
@@ -128,9 +129,9 @@ at time *t*, is defined differently in
         return (duration_mth(t) == policy_term() * 12) * pols_if_at(t, "BEF_MAT")
 
 In :mod:`~basiclife.BasicTerm_SE`,
-:func:`~basiclife.BasicTerm_SE.Projection.pols_maturity` returns an integer,
+:func:`~basiclife.BasicTerm_SE.Projection.policy_term` returns an integer,
 such as 10 indicating a policy term of the selected model point in years,
-so the ``if`` clause checks if the value of ``t``
+so the ``if`` clause checks if the value of :func:`~basiclife.BasicTerm_SE.Projection.duration_mth`
 is equal to the policy term in month:
 
 .. code-block:: python
@@ -147,7 +148,7 @@ a `Series`_ of policy terms of all the model points.
 If the *if* clause were
 defined in the same way as in the :mod:`~basiclife.BasicTerm_SE`,
 it would result in an error,
-because the condition ``t == policy_term() * 12``  for a certain ``t``
+because the condition ``duration_mth(t) == policy_term() * 12``  for a certain ``t``
 returns a `Series`_ of boolean values and it is ambiguous
 for the `Series`_ to be the if condition.
 Further more, whether the ``if`` branch or the ``else`` branch should
@@ -157,17 +158,17 @@ Instead of using the ``if`` statement, the formula in :mod:`~basiclife.BasicTerm
 achieves the element-wise conditional operation by multiplication
 by a `Series`_ of boolean values.
 In the formula in :mod:`~basiclife.BasicTerm_ME`,
-``(pols_if(t-1) - pols_lapse(t-1) - pols_death(t-1))``
+``pols_if_at(t, "BEF_MAT")``
 returns the numbers of policies at time t for all the model points
 as a `Series`_.
 Multiplying it
-by ``(t == policy_term() * 12)`` replaces
+by ``(duration_mth(t) == policy_term() * 12)`` replaces
 the numbers of policies with 0 for model points whose policy terms in month
 are not equal to ``t``. This operation is effectively an element-wise if
 operation:
 
 .. code-block:: python
-   :caption: In BasicTerm_ME
+   :caption: In BasicTerm_ME at t=119
 
    >>> policy_term()
    point_id
@@ -185,11 +186,11 @@ operation:
    Name: policy_term, Length: 10000, dtype: int64
 
 
-   >>> (120 == policy_term() * 12)
-   point_id
+   >>> (duration_mth(119) == policy_term() * 12)
+   policy_id
    1         True
    2        False
-   3         True
+   3        False
    4        False
    5        False
 
@@ -198,22 +199,22 @@ operation:
    9998     False
    9999     False
    10000    False
-   Name: policy_term, Length: 10000, dtype: bool
+   Length: 10000, dtype: bool
 
 
-   >>> pols_maturity(120)
-   point_id
-   1        0.653468
-   2        0.000000
-   3        0.650917
-   4        0.000000
-   5        0.000000
+   >>> pols_maturity(119)
+   policy_id
+   1        56.696979
+   2         0.000000
+   3         0.000000
+   4         0.000000
+   5         0.000000
 
-   9996     0.000000
-   9997     0.000000
-   9998     0.000000
-   9999     0.000000
-   10000    0.000000
+   9996      0.000000
+   9997      0.000000
+   9998      0.000000
+   9999      0.000000
+   10000     0.000000
    Length: 10000, dtype: float64
 
 
@@ -360,9 +361,12 @@ Assumptions
 
 The mortality table is stored in an Excel file named *mort_table.xlsx*
 under the model folder, and is read into :attr:`mort_table` as a `DataFrame`_.
-:func:`mort_rate` looks up :attr:`mort_table` and picks up
-the annual mortality rate to be applied for the selected
-model point at time ``t``.
+:func:`mort_table_reindexed` returns a mortality table
+reshaped from :attr:`mort_table`, which is a `Series`_
+indexed with ``Age`` and ``Duration``.
+:func:`mort_rate` looks up :func:`mort_table_reindexed` and picks up
+the annual mortality rates to be applied for all the
+model points at time ``t`` and returns them in a `Series`_.
 :func:`mort_rate_mth` converts :func:`mort_rate` to the monthly mortality
 rate to be applied during the month starting at time ``t``.
 
@@ -371,10 +375,11 @@ rate to be applied during the month starting at time ``t``.
    blockdiag {
      default_node_color="#D5E8D4";
      default_linecolor="#628E47";
-     node_width=120;
+     node_width=100;
      mort_rate_mth[label="mort_rate_mth(t)"];
      mort_rate[label="mort_rate(t)"];
-     mort_rate_mth -> mort_rate -> mort_table
+     mort_table_reindexed[width=150];
+     mort_rate_mth -> mort_rate -> mort_table_reindexed -> mort_table
    }
 
 The discount rate data is stored in an Excel file named *disc_rate_ann.xlsx*
@@ -510,38 +515,38 @@ Results
 as a `DataFrame`_::
 
       >>> result_cf()
-                Premiums         Claims      Expenses    Commissions  Net Cashflow
-      0    828052.400000  240181.385376  3.000000e+06  828052.400000 -3.240181e+06
-      1    820758.893595  238066.700397  4.956055e+04  820758.893595 -2.876273e+05
-      2    813529.629362  235970.634461  4.912497e+04  813529.629362 -2.850956e+05
-      3    806364.041439  233893.023631  4.869321e+04  806364.041439 -2.825862e+05
-      4    799261.568951  231833.705414  4.826525e+04  799261.568951 -2.800990e+05
-      ..             ...            ...           ...            ...           ...
-      236  175639.935592  255080.430556  1.065127e+04       0.000000 -9.009177e+04
-      237  175262.324017  254523.319976  1.063033e+04       0.000000 -8.989132e+04
-      238  174885.540149  253967.449257  1.060943e+04       0.000000 -8.969133e+04
-      239  174509.582137  253412.815586  1.058857e+04       0.000000 -8.949180e+04
-      240       0.000000       0.000000  0.000000e+00       0.000000  0.000000e+00
+               Premiums        Claims      Expenses   Commissions  Net Cashflow
+      0    3.481375e+07  2.551366e+07  2.722470e+06  2.304871e+06  4.272750e+06
+      1    3.458612e+07  2.533530e+07  2.777227e+06  2.271010e+06  4.202583e+06
+      2    3.460642e+07  2.532024e+07  2.992697e+06  2.316894e+06  3.976592e+06
+      3    3.446821e+07  2.526094e+07  2.816155e+06  2.308385e+06  4.082731e+06
+      4    3.440382e+07  2.527465e+07  2.896164e+06  2.319160e+06  3.913840e+06
+      ..            ...           ...           ...           ...           ...
+      272  1.509838e+05  2.281406e+05  8.909740e+03  0.000000e+00 -8.606662e+04
+      273  1.292070e+05  1.969228e+05  6.464827e+03  0.000000e+00 -7.418061e+04
+      274  9.360930e+04  1.447365e+05  4.187218e+03  0.000000e+00 -5.531445e+04
+      275  5.851123e+04  9.225161e+04  1.942107e+03  0.000000e+00 -3.568248e+04
+      276  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00
 
-      [241 rows x 5 columns]
+      [277 rows x 5 columns]
 
 
 :func:`result_pv` outputs the present values of the cashflows by model points::
 
       >>> result_pv()
-                 PV Premiums     PV Claims  ...  PV Commissions  PV Net Cashflow
-      point_id                              ...
-      1          8251.931435   5501.074678  ...     1084.601434       917.951731
-      2          8934.647903   5956.375886  ...      699.317588      1190.137329
-      3         13785.154420   9190.166764  ...     1814.196468      2033.119958
-      4          5771.417165   3847.385432  ...      452.022146       383.742941
-      5          4951.158886   3300.643396  ...      474.220266       245.572689
-                     ...           ...  ...             ...              ...
-      9996      27755.139250  18503.269117  ...     2189.101714      5980.458717
-      9997       7338.893087   4892.682575  ...      703.088993       812.566152
-      9998      22878.042022  15252.462621  ...     1801.701611      4740.283791
-      9999       6029.228626   4019.657332  ...      473.273387       449.939683
-      10000      3804.512116   2536.489758  ...      364.193562       -27.270550
+                  PV Premiums      PV Claims  ...  PV Commissions  PV Net Cashflow
+      policy_id                               ...
+      1          7.083791e+05  474803.297001  ...    85874.887301    108798.061916
+      2          9.950994e+04  109613.723658  ...        0.000000    -18305.709146
+      3          1.104613e+06  802437.653322  ...        0.000000    266073.249126
+      4          2.839117e+05  264723.616424  ...        0.000000    -18224.092562
+      5          4.399130e+05  352234.521794  ...        0.000000     32214.118896
+                      ...            ...  ...             ...              ...
+      9996       3.574210e+05  405869.354038  ...        0.000000    -58052.929127
+      9997       5.917467e+04   59908.482977  ...        0.000000     -5547.111546
+      9998       1.314719e+05  141951.671002  ...        0.000000    -14790.802910
+      9999       5.615703e+04   39215.159798  ...      372.420000      9219.186564
+      10000      7.927437e+03    7433.441293  ...        0.000000      -752.642292
 
       [10000 rows x 5 columns]
 

@@ -348,7 +348,13 @@ def loading_prem():
 
 
 max_proj_len = lambda: max(proj_len())
-"""The max of all projection lengths"""
+"""The max of all projection lengths
+
+Defined as ``max(proj_len())``
+
+.. seealso::
+    :func:`proj_len`
+"""
 
 def model_point():
     """Target model points
@@ -557,6 +563,10 @@ def proj_len():
 
         12 * policy_term() + 1
 
+    Since this model carries out projections for all the model points
+    simultaneously, the projections are actually carried out
+    from 0 to :attr:`max_proj_len` for all the model points.
+
     .. seealso::
 
         :func:`policy_term`
@@ -700,6 +710,9 @@ def result_pv():
 
 def sex():
     """The sex of the model points
+
+    .. note::
+       This cells is not used by default.
 
     The ``sex`` column of the DataFrame returned by
     :func:`model_point`.

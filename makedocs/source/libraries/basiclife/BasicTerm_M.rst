@@ -85,7 +85,7 @@ at time *t*, is defined differently in
         return (t == policy_term() * 12) * (pols_if(t-1) - pols_lapse(t-1) - pols_death(t-1))
 
 In :mod:`~basiclife.BasicTerm_S`,
-:func:`~basiclife.BasicTerm_S.Projection.pols_maturity` returns an integer,
+:func:`~basiclife.BasicTerm_S.Projection.policy_term` returns an integer,
 such as 10 indicating a policy term of the selected model point in years,
 so the ``if`` clause checks if the value of ``t``
 is equal to the policy term in month:
@@ -311,8 +311,8 @@ Assumptions
 The mortality table is stored in an Excel file named *mort_table.xlsx*
 under the model folder, and is read into :attr:`mort_table` as a `DataFrame`_.
 :func:`mort_rate` looks up :attr:`mort_table` and picks up
-the annual mortality rate to be applied for the selected
-model point at time ``t``.
+the annual mortality rates to be applied for all the
+model point at time ``t`` and returns them in a Series.
 :func:`mort_rate_mth` converts :func:`mort_rate` to the monthly mortality
 rate to be applied during the month starting at time ``t``.
 

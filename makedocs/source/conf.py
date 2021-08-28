@@ -121,6 +121,9 @@ html_theme_options = {
             "url": "https://github.com/fumitoh/lifelib",
             "icon": "fab fa-github-square"
         }
+    ],
+    "external_links": [
+        {"name": "Discussions", "url": "https://github.com/fumitoh/lifelib/discussions"}
     ]
 
 }

@@ -9,11 +9,12 @@ Overview
 -----------
 
 The :mod:`~basiclife.BasicTerm_SE` model is a variation of :mod:`~basiclife.BasicTerm_S`,
-and it projects
-in-force policies at time 0 and future policies issued after time 0.
+and it projects the cashslows of
+in-force policies at time 0 and future new business
+policies issued at or after time 0.
 
 While :mod:`~basiclife.BasicTerm_S` is a new business model and it assumes all model points
-are issued at time 0, :mod:`~basiclife.BasicTerm_SE` read the duration of each model
+are issued at time 0, :mod:`~basiclife.BasicTerm_SE` reads the duration of each model
 point at time 0 from the model point file.
 The duration of a model point being *N* months (*N* > 0) means
 *N* months have elapsed before time 0 since the issue of the model point.
@@ -64,7 +65,7 @@ Cells and References that are newly added or updated from :mod:`~basiclife.Basic
 The number of policies at a certain time can take different values
 depending on the timing of policy inflows and outflows at the same time.
 To represent different values for the number of policies
-depending on the timing of policy flows,
+depending on the timing of the policy flows,
 :func:`pols_if_at(t, timing)<pols_if_at>` is introduced.
 :func:`pols_if_at(t, timing)<pols_if_at>`
 calculates the number of policies in-force

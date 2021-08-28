@@ -11,14 +11,12 @@ lifelib v0.2.0 (28 August 2021)
 This release introduces two new models,
 :mod:`~basiclife.BasicTerm_SE` and :mod:`~basiclife.BasicTerm_ME`
 in the :mod:`basiclife` library.
-
-:mod:`~basiclife.BasicTerm_SE` and :mod:`~basiclife.BasicTerm_ME`
-are in-force projection models while
+While
 :mod:`~basiclife.BasicTerm_M` and :mod:`~basiclife.BasicTerm_S`
-are new business models.
-
+are new business models,
 :mod:`~basiclife.BasicTerm_SE` and :mod:`~basiclife.BasicTerm_ME`
-project in-force policies at time 0 as well as
+are in-force projection models
+which project the cashflows of in-force policies at time 0 and
 new business policies at 0 or any future time.
 
 

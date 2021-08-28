@@ -34,23 +34,23 @@ The library currently includes 4 basic projection models.
 
 :mod:`~basiclife.BasicTerm_S` and :mod:`~basiclife.BasicTerm_M`
 are new business models, i.e. all model points are issued at time 0.
-Both of the models produces the exact same results but in different ways.
+Both of the models produce the exact same results but in different ways.
 
 The :mod:`~basiclife.BasicTerm_S` model defines and executes formulas for each model point separately,
 while the :mod:`~basiclife.BasicTerm_M` model executes each formula at each time step
 for all model points at once. They produce the same results for the same model point.
 :mod:`~basiclife.BasicTerm_S` is straight forward, and its formulas are easier to understand,
 but it runs slower. It's suitable for validation purposes.
-:mod:`~basiclife.BasicTerm_M` is runs fast, but its formulas are expressed as vector operations
+:mod:`~basiclife.BasicTerm_M` runs fast, but its formulas are expressed as vector operations
 and can be more complex in some places.
 
 :mod:`~basiclife.BasicTerm_SE` and :mod:`~basiclife.BasicTerm_ME`
-can projects in-force policies at time 0 as well as
+project the cashflows of in-force policies at time 0 as well as
 new business policies at 0 or any future time.
 :mod:`~basiclife.BasicTerm_ME` is to :mod:`~basiclife.BasicTerm_SE`
 as :mod:`~basiclife.BasicTerm_M` is :mod:`~basiclife.BasicTerm_S`.
 Formulas in :mod:`~basiclife.BasicTerm_ME` apply to all the model point
-at a time while :mod:`~basiclife.BasicTerm_S` carries out
+at a time while :mod:`~basiclife.BasicTerm_SE` carries out
 projection for each model point separately.
 
 How to Use the Library

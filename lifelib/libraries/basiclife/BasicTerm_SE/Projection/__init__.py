@@ -438,6 +438,9 @@ def lapse_rate(t):
 def loading_prem():
     """Loading per premium
 
+    .. note::
+       This cells is not used by default.
+
     ``0.5`` by default.
 
     .. seealso::
@@ -530,6 +533,9 @@ def net_cf(t):
 
 def net_premium_pp():
     """Net premium per policy
+
+    .. note::
+       This cells is not used by default.
 
     The net premium per policy is defined so that
     the present value of net premiums equates to the present value of
@@ -699,12 +705,15 @@ def premium_pp():
 
     Monthly premium amount per policy defined as::
 
-        round((1 + loading_prem()) * net_premium(), 2)
+        round(sum_assured() * premium_table[age_at_entry(), policy_term()], 2)
 
     .. seealso::
 
-        * :func:`loading_prem`
-        * :func:`net_premium_pp`
+        * :attr:`premium_table`
+        * :func:`sum_assured`
+        * :func:`age_at_entry`
+        * :func:`policy_term`
+
 
     """
     return round(sum_assured() * premium_table[age_at_entry(), policy_term()], 2)
@@ -715,12 +724,12 @@ def premiums(t):
 
     Premium income during the period from ``t`` to ``t+1`` defined as::
 
-        premium_pp(t) * pols_if(t)
+        premium_pp() * pols_if_at(t, "BEF_DECR")
 
     .. seealso::
 
         * :func:`premium_pp`
-        * :func:`pols_if`
+        * :func:`pols_if_at`
 
     """
     return premium_pp() * pols_if_at(t, "BEF_DECR")
@@ -796,6 +805,9 @@ def pv_net_cf():
 
 def pv_pols_if():
     """Present value of policies in-force
+
+    .. note::
+       This cells is not used by default.
 
     The discounted sum of the number of in-force policies at each month.
     It is used as the annuity factor for calculating :func:`net_premium_pp`.
@@ -890,6 +902,9 @@ def result_pv():
 
 def sex(): 
     """The sex of the selected model point
+
+    .. note::
+       This cells is not used by default.
 
     The element labeled ``sex`` of the Series returned by
     :func:`model_point`.
