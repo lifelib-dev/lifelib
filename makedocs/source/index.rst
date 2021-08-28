@@ -136,6 +136,7 @@ customize them in any way you like, or create your own models from scratch.
     :doc:`Notebooks<notebooks>`
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+    * :ref:`notebooks_basiclife`
     * :ref:`notebooks_fastlife`
     * :ref:`notebooks_simplelife`
     * :ref:`notebooks_ifrs17sim`

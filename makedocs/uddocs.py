@@ -1,5 +1,5 @@
 import os.path as path
-from lifelib import TEMPLATES
+from lifelib._dirs import TEMPLATES
 
 proj_dir = path.normpath(path.dirname(path.abspath(__file__)) + "\\..")
 
