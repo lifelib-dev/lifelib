@@ -470,7 +470,7 @@ def mort_rate(t):
 
     mi = pd.MultiIndex.from_arrays([age(t), np.minimum(duration(t), 5)])
     return mort_table_reindexed().reindex(
-        mi, fill_value=0).set_axis(model_point().index)
+        mi, fill_value=0).set_axis(model_point().index, inplace=False)
 
 
 def mort_rate_mth(t):
@@ -707,7 +707,8 @@ def premium_pp():
     # The ``set_axis`` method replace the MultiIndex with ``point_id``
 
     mi = pd.MultiIndex.from_arrays([age_at_entry(), policy_term()])
-    prem_rates = premium_table.reindex(mi).set_axis(model_point().index)
+    prem_rates = premium_table.reindex(mi).set_axis(
+        model_point().index, inplace=False)
     return np.around(sum_assured() * prem_rates, 2)
 
 
