@@ -7,7 +7,7 @@ Download lifelib with WinPython.
 
 .. raw:: html
 
-    <a class="btn btn-primary btn-lg" href="https://drive.google.com/u/0/uc?export=download&id=1D0OMd7WX2wLcww1xJAu8F1PAfPCy5XVq" role="button">Download</a>
+    <a class="btn btn-primary btn-lg" href="https://drive.google.com/u/0/uc?export=download&id=1FmSRCoyUYWPrWchZViQIvcZvLD6dFjFl" role="button">Download</a>
 
 :ref:`Install manually <installation>` if you're a Linux or Mac user.
 
@@ -15,10 +15,10 @@ Download lifelib with WinPython.
 File Information
 ================
 
-Latest release (29 Aug 2021)
+Latest release (4 Sep 2021)
 ------------------------------
 
-:Downloadable: WPy64-3850-20210829.zip
+:Downloadable: WPy64-3850-20210904.zip
 
 :Base Python Distribution:
     WinPython64-3.8.5.0
