@@ -399,7 +399,7 @@ def claim_pp(t, kind):
     """
 
     if kind == "DEATH":
-        return max(sum_assured(t), av_pp_at(t, "MID_MTH"))
+        return max(sum_assured(), av_pp_at(t, "MID_MTH"))
 
     elif kind == "LAPSE":
         return av_pp_at(t, "MID_MTH")
@@ -761,7 +761,7 @@ def mort_table_last_age():
 
 
 def net_amt_at_risk(t):
-    return max(accum_prem_pp(t) - av_pp_at(t, 'BEF_FEE'), 0)
+    return max(sum_assured() - av_pp_at(t, 'BEF_FEE'), 0)
 
 
 def net_cf(t):
@@ -1224,13 +1224,13 @@ def sex():
     return model_point()["sex"]
 
 
-def sum_assured(t):
+def sum_assured():
     """The sum assured of the selected model point
 
     The element labeled ``sum_assured`` of the Series returned by
     :func:`model_point`.
     """
-    return accum_prem_pp(t)
+    return model_point()['sum_assured']
 
 
 def surr_charge(t):
@@ -1256,26 +1256,26 @@ def surr_charge_id():
 # ---------------------------------------------------------------------------
 # References
 
-disc_rate_ann = ("DataClient", 3016003473760)
+disc_rate_ann = ("DataClient", 1496770596384)
 
-mort_table = ("DataClient", 3016001335984)
+mort_table = ("DataClient", 1496772590992)
 
 np = ("Module", "numpy")
 
 pd = ("Module", "pandas")
 
-std_norm_rand = ("DataClient", 3016025095568)
+std_norm_rand = ("DataClient", 1496770234256)
 
-surr_charge_table = ("DataClient", 3016024596928)
+surr_charge_table = ("DataClient", 1496794315264)
 
-product_spec_table = ("DataClient", 3016000137200)
+product_spec_table = ("DataClient", 1496794315168)
 
 scen_id = 1
 
-point_id = 1
+model_point_samples = ("DataClient", 1496794316752)
 
-model_point_samples = ("DataClient", 3016022766352)
+model_point_all = ("DataClient", 1496794070128)
 
-model_point_all = ("DataClient", 3015995045104)
+model_point_table = ("DataClient", 1496794316752)
 
-model_point_table = ("DataClient", 3016022766352)
+point_id = 3

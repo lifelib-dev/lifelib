@@ -372,7 +372,7 @@ def claim_pp(t, kind):
     """
 
     if kind == "DEATH":
-        return np.maximum(sum_assured(t), av_pp_at(t, "MID_MTH"))
+        return np.maximum(sum_assured(), av_pp_at(t, "MID_MTH"))
 
     elif kind == "LAPSE":
         return av_pp_at(t, "MID_MTH")
@@ -711,7 +711,7 @@ def model_point():
 
     Be careful not to accidentally change the original table.
     """
-    return model_point_table_ext() #.loc[3:3]
+    return model_point_table_ext() #.loc[1:5000]
 
 
 def model_point_table_ext():
@@ -784,7 +784,7 @@ def mort_table_reindexed():
 
 
 def net_amt_at_risk(t):
-    return np.maximum(accum_prem_pp(t) - av_pp_at(t, 'BEF_FEE'), 0)
+    return np.maximum(sum_assured() - av_pp_at(t, 'BEF_FEE'), 0)
 
 
 def net_cf(t):
@@ -1268,13 +1268,13 @@ def sex():
     return model_point()["sex"]
 
 
-def sum_assured(t):
+def sum_assured():
     """The sum assured of the model points
 
     The ``sum_assured`` column of the DataFrame returned by
     :func:`model_point`.
     """
-    return accum_prem_pp(t)
+    return model_point()['sum_assured']
 
 
 def surr_charge(t):
@@ -1315,24 +1315,24 @@ def surr_charge_max_idx():
 # ---------------------------------------------------------------------------
 # References
 
-disc_rate_ann = ("DataClient", 1792401254480)
+disc_rate_ann = ("DataClient", 2387125989680)
 
-mort_table = ("DataClient", 1792403118208)
+mort_table = ("DataClient", 2387126202864)
 
 np = ("Module", "numpy")
 
 pd = ("Module", "pandas")
 
-std_norm_rand = ("DataClient", 1792424903824)
+std_norm_rand = ("DataClient", 2387147354272)
 
-surr_charge_table = ("DataClient", 1792403316160)
+surr_charge_table = ("DataClient", 2387147861632)
 
-product_spec_table = ("DataClient", 1792423023568)
+product_spec_table = ("DataClient", 2387123660304)
 
-model_point_samples = ("DataClient", 1792425747216)
+model_point_samples = ("DataClient", 2387125990880)
 
-model_point_all = ("DataClient", 1792425254624)
-
-model_point_table = ("DataClient", 1792425747216)
+model_point_all = ("DataClient", 2387126154384)
 
 scen_id = 1
+
+model_point_table = ("DataClient", 2387125990880)
