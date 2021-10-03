@@ -209,20 +209,6 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
-def accum_prem_init_pp():
-    return model_point()['accum_prem_init_pp']
-
-
-def accum_prem_pp(t):
-    if t == 0:
-        prev = accum_prem_init_pp()
-
-    else:
-        prev = accum_prem_pp(t-1)
-
-    return  prev + premium_pp(t)
-
-
 def age(t):
     """The attained age at time t.
 
@@ -657,7 +643,7 @@ def coi(t):
     return coi_pp(t) * pols_if_at(t, "BEF_DECR")
 
 
-def coi_av(t):
+def coi_rate(t):
     """Cost of insurance rate per account value
 
     The cost of insuranc rate per account value per month.
@@ -667,7 +653,7 @@ def coi_av(t):
 
         * :func:`mort_rate_mth`
         * :func:`coi_pp`
-        * :func:`coi_av`
+        * :func:`coi_rate`
 
     """
     return 1.1 * mort_rate_mth(t)
@@ -682,11 +668,11 @@ def coi_pp(t):
     .. seealso::
 
         * :func:`coi`
-        * :func:`coi_av`
+        * :func:`coi_rate`
         * :func:`net_amt_at_risk`
 
     """
-    return coi_av(t) * net_amt_at_risk(t)
+    return coi_rate(t) * net_amt_at_risk(t)
 
 
 def commissions(t):
@@ -979,7 +965,7 @@ def maint_fee(t):
     return maint_fee_pp(t) * pols_if_at(t, "BEF_DECR")
 
 
-def maint_fee_av():
+def maint_fee_rate():
     """Maintenance fee per account value
 
     The rate of maintenance fee on account value each month.
@@ -998,11 +984,11 @@ def maint_fee_pp(t):
 
     .. seealso::
 
-        * :func:`maint_fee_av`
+        * :func:`maint_fee_rate`
         * :func:`av_pp_at`
 
     """
-    return maint_fee_av() * av_pp_at(t, "BEF_FEE")
+    return maint_fee_rate() * av_pp_at(t, "BEF_FEE")
 
 
 def margin_expense(t):
@@ -1226,6 +1212,7 @@ def net_cf(t):
     """
     return (premiums(t)
             + inv_income(t) - claims(t) - expenses(t) - commissions(t) - av_change(t))
+
 
 def policy_term():
     """The policy term of the model points.
@@ -1733,24 +1720,24 @@ def surr_charge(t):
 
     .. seealso::
 
-        * :func:`surr_charge_av`
+        * :func:`surr_charge_rate`
         * :func:`av_pp_at`
         * :func:`pols_lapse`
         * :func:`proj_len`
         * :func:`disc_factors`
 
     """
-    return surr_charge_av(t) * av_pp_at(t, "MID_MTH") * pols_lapse(t)
+    return surr_charge_rate(t) * av_pp_at(t, "MID_MTH") * pols_lapse(t)
 
 
-def surr_charge_av(t):
+def surr_charge_rate(t):
     """Surrender charge rate
 
     Surrender charge rate to be applied for lapsed policies
 
     .. seealso::
 
-        * :func:`surr_charge_av`
+        * :func:`surr_charge_rate`
         * :func:`av_pp_at`
         * :func:`pols_lapse`
         * :func:`proj_len`
@@ -1791,7 +1778,7 @@ def surr_charge_table_stacked():
     .. seealso::
 
         * :attr:`surr_charge_table`
-        * :func:`surr_charge_av`
+        * :func:`surr_charge_rate`
 
     """
     return surr_charge_table.stack().reorder_levels([1, 0]).sort_index()
@@ -1804,7 +1791,7 @@ def surr_charge_max_idx():
 
     .. seealso::
 
-        * :attr:`surr_charge_av`
+        * :attr:`surr_charge_rate`
         * :func:`has_surr_charge`
 
     """
@@ -1814,24 +1801,22 @@ def surr_charge_max_idx():
 # ---------------------------------------------------------------------------
 # References
 
-disc_rate_ann = ("DataClient", 2387125989680)
+disc_rate_ann = ("DataClient", 2594541405808)
 
-mort_table = ("DataClient", 2387126202864)
+mort_table = ("DataClient", 2594541501264)
 
 np = ("Module", "numpy")
 
 pd = ("Module", "pandas")
 
-std_norm_rand = ("DataClient", 2387147354272)
+std_norm_rand = ("DataClient", 2594546034672)
 
-surr_charge_table = ("DataClient", 2387147861632)
+surr_charge_table = ("DataClient", 2594546546192)
 
-product_spec_table = ("DataClient", 2387123660304)
+product_spec_table = ("DataClient", 2594546545520)
 
-model_point_samples = ("DataClient", 2387125990880)
-
-model_point_all = ("DataClient", 2387126154384)
+model_point_samples = ("DataClient", 2594522251120)
 
 scen_id = 1
 
-model_point_table = ("DataClient", 2387125990880)
+model_point_table = ("DataClient", 2594522251120)
