@@ -1,6 +1,7 @@
 import os.path
 import sys
 import shutil
+import math
 import modelx as mx
 import lifelib
 import lifelib.commands.create as cmd
@@ -73,6 +74,20 @@ def test_main(argv, tmp_path):
          (0,),
          912.9517309878909],
 
+        ["savings",
+         "CashValue_SE",
+         ("CashValue_SE", "Projection", "pv_net_cf", ()),
+         None,
+         None,
+         4957050.428326165],
+
+        ["savings",
+         "CashValue_ME",
+         ("CashValue_ME", "Projection", "pv_net_cf", ()),
+         "__getitem__",
+         (0,),
+         4957050.4283261765],
+
         ["fastlife",
          "model",
          ("fastlife", "Projection", "PV_NetCashflow", (0,)),
@@ -129,4 +144,4 @@ def test_package(library, model_dir, target, method, args, expected, tmp_path):
     if method:
         actual = getattr(actual, method)(*args)
 
-    assert actual == expected
+    assert math.isclose(actual, expected)
