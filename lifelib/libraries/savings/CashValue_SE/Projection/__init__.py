@@ -29,10 +29,10 @@ Attributes:
             ('point_id',)
 
             >>> Projection[1]
-            <ItemSpace BasicTerm_SE.Projection[1]>
+            <ItemSpace CashValue_SE.Projection[1]>
 
             >>> Projection[2]
-            <ItemSpace BasicTerm_SE.Projection[2]>
+            <ItemSpace CashValue_SE.Projection[2]>
 
         .. seealso::
 
@@ -171,16 +171,19 @@ Attributes:
            * :func:`mort_rate_mth`
 
     std_norm_rand: Random numbers drawn from the standard normal distribution.
+
         A Series of random numbers drawn from the standard normal distribution
         indexed with ``scen_id`` and ``t``.
         Used for generating investment returns. See :func:`inv_return_table`.
 
     scen_id: Selected scenario ID
+
         An integer indicating the selected scenario ID.
         :attr:`scen_id` is referenced in by :func:`inv_return_mth`
         as one of the keys to select a scenario from :attr:`std_norm_rand`.
 
     surr_charge_table: Surrender charge rates by duration.
+
         A DataFrame of multiple patterns of surrender charge rates by duration.
         The column labels indicate :func:`surr_charge_id`.
         By default, ``"type_1"``, ``"type_2"`` and ``"type_3"`` are defined.
@@ -524,14 +527,14 @@ def claim_pp(t, kind):
 
     The claim amount per policy. The second parameter
     is to indicate the type of the claim, and
-    it takes a string, which is either "DEATH", "LAPSE" or "MATURITY".
+    it takes a string, which is either ``"DEATH"``, ``"LAPSE"`` or ``"MATURITY"``.
 
-    The death benefit as denoted by "DEATH", is
+    The death benefit as denoted by ``"DEATH"``, is
     the greater of :func:`sum_assured` and 
     mid-month account value (:func:`av_pp_at(t, "MID_MTH")<av_pp_at>`).
 
-    The surrender benefit as denoted by "LAPSE" and
-    the maturity benefit as denoted by "MATURITY" are
+    The surrender benefit as denoted by ``"LAPSE"`` and
+    the maturity benefit as denoted by ``"MATURITY"`` are
     equal to the mid-month account value.
 
     .. seealso::
@@ -559,20 +562,20 @@ def claims(t, kind=None):
 
     The claim amount during the period from ``t`` to ``t+1``.
     The optional second parameter is for indicating the type of the claim, and
-    it takes a string, which is either "DEATH", "LAPSE" or "MATURITY",
+    it takes a string, which is either ``"DEATH"``, ``"LAPSE"`` or ``"MATURITY"``,
     or defaults to ``None`` to indicate the total of all the types of claims
     during the period.
 
 
-    The death benefit as denoted by "DEATH" is defined as::
+    The death benefit as denoted by ``"DEATH"`` is defined as::
 
         claim_pp(t) * pols_death(t)
 
-    The surrender benefit as denoted by "LAPSE" is defined as::
+    The surrender benefit as denoted by ``"LAPSE"`` is defined as::
 
         claims_from_av(t, "LAPSE") - surr_charge(t)
 
-    The maturity benefit as denoted by "MATURITY" is defined as::
+    The maturity benefit as denoted by ``"MATURITY"`` is defined as::
 
         claims_from_av(t, "MATURITY")
 
@@ -606,17 +609,17 @@ def claims_from_av(t, kind):
 
     The part of the claim amount that is paid from account value.
     The second parameter takes a string indicating the type of the claim, 
-    which is either "DEATH", "LAPSE" or "MATURITY".
+    which is either ``"DEATH"``, ``"LAPSE"`` or ``"MATURITY"``.
 
 
-    Death benefit is denoted by "DEATH", is defined as::
+    Death benefit is denoted by ``"DEATH"``, is defined as::
 
         av_pp_at(t, "MID_MTH") * pols_death(t)
 
     When the account value is greater than the death benefit,
     the death benefit equates to the account value.
 
-    Surrender benefit as denoted by "LAPSE" is defined as::
+    Surrender benefit as denoted by ``"LAPSE"`` is defined as::
 
         av_pp_at(t, "MID_MTH") * pols_lapse(t)
 
@@ -624,7 +627,7 @@ def claims_from_av(t, kind):
     charge, when there is no surrender charge the surrender benefit
     equates to the account value.
 
-    Maturity benefit as denoted by "MATURITY" is defined as::
+    Maturity benefit as denoted by ``"MATURITY"`` is defined as::
 
         av_pp_at(t, "BEF_PREM") * pols_maturity(t)
 
@@ -1101,7 +1104,6 @@ def model_point():
             duration_mth               0
             premium_pp            500000
             av_pp_init                 0
-            accum_prem_init_pp         0
             premium_type          SINGLE
             has_surr_charge        False
             surr_charge_id           NaN
@@ -1121,7 +1123,6 @@ def model_point():
             duration_mth               0
             premium_pp              1000
             av_pp_init                 0
-            accum_prem_init_pp         0
             premium_type           LEVEL
             has_surr_charge        False
             surr_charge_id           NaN
@@ -1421,15 +1422,14 @@ def prem_to_av_pp(t):
 
 
 def premium_pp(t):
-    """Monthly premium per policy
+    """Premium amount per policy
 
-    Monthly premium amount per policy defined as::
-
-        round(sum_assured() * premium_table[age_at_entry(), policy_term()], 2)
+    Single premium amount if :func:`premium_type` is ``"SINGLE"``,
+    monthly premium amount if :func:`premium_type` is ``"LEVEL"``.
 
     .. seealso::
 
-        * :attr:`premium_table`
+        * :func:`premium_type`
         * :func:`sum_assured`
         * :func:`age_at_entry`
         * :func:`policy_term`
@@ -1458,7 +1458,7 @@ def premium_type():
     """Type of premium payment
 
     Returns a string indicating the payment type, which is either
-    "LEVEL" if level payment, or "SINGLE" if single payment.
+    ``"LEVEL"`` if level payment, or ``"SINGLE"`` if single payment.
 
     """
     return model_point()['premium_type']
@@ -1808,4 +1808,4 @@ model_point_samples = ("DataClient", 1932594126704)
 
 model_point_table = ("DataClient", 1932594126704)
 
-point_id = 3
+point_id = 1
