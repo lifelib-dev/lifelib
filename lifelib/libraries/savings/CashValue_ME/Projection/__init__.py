@@ -1428,8 +1428,10 @@ def premium_pp(t):
     #     model_point().index, inplace=False)
     # return np.around(sum_assured() * prem_rates, 2)
 
-    sp = (premium_type() == 'SINGLE') * (duration_mth(t) == 0) * model_point()['premium_pp']
-    lp = (premium_type() == 'LEVEL') * (duration_mth(t) < 12 * policy_term()) * model_point()['premium_pp']
+    sp = model_point()['premium_pp'].where((premium_type() == 'SINGLE') & (duration_mth(t) == 0), other=0)
+    lp = model_point()['premium_pp'].where(
+        (premium_type() == 'LEVEL') & (duration_mth(t) < 12 * policy_term()),
+        other=0)
     return sp + lp
 
 
