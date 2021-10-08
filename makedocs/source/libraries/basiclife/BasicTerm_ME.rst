@@ -80,13 +80,13 @@ with `Intel Core i5-6500T`_ CPU and 16GB RAM.
 .. code-block::
    :caption: 100 model points with BasicTerm_SE
 
-   >>> timeit.timeit("[Projection[i].pv_net_cf() for i in range(1, 101)]",globals=globals(), number=1)
+   >>> timeit.timeit("[Projection[i].pv_net_cf() for i in range(1, 101)]", globals=globals(), number=1)
    5.971486999999996
 
 .. code-block::
    :caption: 10000 model points with BasicTerm_ME
 
-   >>> timeit.timeit("pv_net_cf()",globals=globals(), number=1)
+   >>> timeit.timeit("pv_net_cf()", globals=globals(), number=1)
    3.9130262000000045
 
 Note that only the first 100 model points were run with :mod:`~basiclife.BasicTerm_SE`
@@ -138,7 +138,7 @@ is equal to the policy term in month:
    :caption: In BasicTerm_SE for model point 1
 
    >>> policy_term()
-   120
+   10
 
    >>> pols_maturity(120)
    0.6534679117893804
@@ -150,7 +150,7 @@ defined in the same way as in the :mod:`~basiclife.BasicTerm_SE`,
 it would result in an error,
 because the condition ``duration_mth(t) == policy_term() * 12``  for a certain ``t``
 returns a `Series`_ of boolean values and it is ambiguous
-for the `Series`_ to be the if condition.
+for the `Series`_ to be in the if condition.
 Further more, whether the ``if`` branch or the ``else`` branch should
 be evaluated needs to be determined element-wise,
 but the ``if`` statement would not allow such element-wise branching.

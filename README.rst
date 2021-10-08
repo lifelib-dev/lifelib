@@ -11,9 +11,61 @@ lifelib
 .. image:: https://img.shields.io/pypi/l/lifelib
     :target: https://github.com/fumitoh/lifelib/blob/master/LICENSE.txt
 
+
 What is lifelib?
 -------------------
-lifelib is a collection of open-source life actuarial models.
+
+**lifelib** is a collection of open-source life actuarial models.
+lifelib includes a variety of models, with sample scripts
+and Jupyter notebooks to demonstrate how to use the models.
+
+Visit https://lifelib.io for more information!
+
+
+What for?
+---------
+
+lifelib models are highly versatile and transparent.
+You can customize lifelib models and utilize them
+in various practical areas, such as:
+
+- Model validation / testing
+- Pricing / profit testing
+- Research / educational projects
+- Valuation / cashflow projections
+- Asset-liability modeling
+- Risk and capital modeling
+- Actuarial modernization to replace spreadsheet models
+
+
+Why lifelib?
+------------
+
+lifelib models are built using `modelx`_, an open-source
+Python package for building object-oriented models in Python.
+By using lifelib, you can enjoy the following advantages:
+
+* Models run fast!
+* Formulas are easy to read
+* Easy to trace formula dependency and errors
+* Formulas are instantly evaluated
+* Pandas and Numpy can be utilized
+* Object-oriented
+* Input from Excel and CSV files
+* Documents can be integrated
+* Formulas are saved in text files
+
+Consequently, you can expect following benefits from
+model development and governance perspectives:
+
+- More efficient, transparent and faster model development
+- Model integration with Python ecosystem (Pandas, Numpy, SciPy, etc..)
+- Spreadsheet error elimination
+- Better version control / model governance
+- Automated model testing
+
+.. _modelx: http://docs.modelx.io
+
 
 License
 -------

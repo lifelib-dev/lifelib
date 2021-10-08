@@ -6,6 +6,7 @@ Libraries
    :maxdepth: 2
 
    basiclife/index.rst
+   savings/index.rst
 
 
 .. _past-libraries:

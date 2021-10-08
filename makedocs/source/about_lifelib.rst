@@ -39,7 +39,7 @@ Why lifelib?
 ------------
 
 lifelib models are built using `modelx`_.
-Below is a non-exaustive list of the advantages of using modelx:
+Below is a non-exhaustive list of the advantages of using modelx:
 
 * Models run fast!
 * Formulas are easy to read
