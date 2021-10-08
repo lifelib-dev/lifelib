@@ -412,7 +412,7 @@ def inflation_factor(t):
         * :func:`inflation_rate`
 
     """
-    return (1 + inflation_rate)**(t//12)
+    return (1 + inflation_rate)**(t/12)
 
 
 def inflation_rate():
@@ -660,7 +660,7 @@ def pols_lapse(t):
         * :func:`lapse_rate`
 
     """
-    return pols_if_at(t, "BEF_DECR") * (1-(1 - lapse_rate(t))**(1/12))
+    return (pols_if_at(t, "BEF_DECR") - pols_death(t)) * (1-(1 - lapse_rate(t))**(1/12))
 
 
 def pols_maturity(t):
