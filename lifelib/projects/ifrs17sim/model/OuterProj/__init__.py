@@ -3,8 +3,8 @@ from modelx.serialize.jsonvalues import *
 _formula = lambda PolicyID, ScenID=1: None
 
 _bases = [
-    ".BaseProj",
-    ".IFRS"
+    ".IFRS",
+    ".BaseProj"
 ]
 
 _allow_none = None
