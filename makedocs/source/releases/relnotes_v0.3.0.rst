@@ -7,6 +7,9 @@ lifelib v0.3.0 (9 October 2021)
 =================================
 
 This release introduces a new library and some updates.
+To update lifelib, execute the command::
+
+    >>> pip install lifelib --upgrade
 
 New Library
 ===============
