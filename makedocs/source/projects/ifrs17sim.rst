@@ -104,6 +104,7 @@ Space Details
    ~model.BaseProj.Assumptions
    ~model.Economic
    ~model.LifeTable
+   ~model.IFRS
    ~model.OuterProj
    ~model.OuterProj.Policy
    ~model.OuterProj.InnerProj

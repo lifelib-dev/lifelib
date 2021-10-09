@@ -6,7 +6,7 @@
 lifelib v0.3.0 (9 October 2021)
 =================================
 
-This release introduces a new library and updates to :mod:`basiclife`
+This release introduces a new library and some updates.
 
 New Library
 ===============
@@ -25,9 +25,7 @@ See :doc:`/libraries/savings/index` page for details.
 Fixes and Updates
 ===================
 
-The following formulas in :mod:`basiclife` are updated.
-
-* The inflation factor
+* The inflation factor in :mod:`basiclife`
   is updated so that the factor is compounded every month instead of once every year.
 
     * :func:`basiclife.BasicTerm_S.Projection.inflation_factor`
@@ -36,7 +34,7 @@ The following formulas in :mod:`basiclife` are updated.
     * :func:`basiclife.BasicTerm_ME.Projection.inflation_factor`
 
 
-* The formula of the number of lapse
+* The formula of the number of lapse in :mod:`basiclife`
   is updated so that the number of lapse is based on the number of
   polices after deduction of the number of death.
 
@@ -44,3 +42,9 @@ The following formulas in :mod:`basiclife` are updated.
     * :func:`basiclife.BasicTerm_M.Projection.pols_lapse`
     * :func:`basiclife.BasicTerm_SE.Projection.pols_lapse`
     * :func:`basiclife.BasicTerm_ME.Projection.pols_lapse`
+
+.. currentmodule:: lifelib.projects
+
+* The base spaces of
+  :mod:`ifrs17sim.model.OuterProj` are now in the order of
+  :mod:`~ifrs17sim.model.IFRS` and :mod:`~ifrs17sim.model.BaseProj`.
