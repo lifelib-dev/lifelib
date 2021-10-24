@@ -79,14 +79,14 @@ def test_main(argv, tmp_path):
          ("CashValue_SE", "Projection", "pv_net_cf", ()),
          None,
          None,
-         4957050.428326165],
+         4950173.438724911],
 
         ["savings",
          "CashValue_ME",
          ("CashValue_ME", "Projection", "pv_net_cf", ()),
          "__getitem__",
          (0,),
-         4957050.4283261765],
+         4950173.438724911],
 
         ["fastlife",
          "model",
