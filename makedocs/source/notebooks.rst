@@ -16,6 +16,14 @@ Notebooks
 * `Creating premium table <libraries/notebooks/basiclife/create_premium_table.ipynb>`_
 
 
+.. _notebooks_savings:
+
+:mod:`savings` Notebooks
+---------------------------
+
+* :doc:`libraries/notebooks/savings/savings_example1`
+
+
 .. _notebooks_fastlife:
 
 :mod:`fastlife` Notebooks

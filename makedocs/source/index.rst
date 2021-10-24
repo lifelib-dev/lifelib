@@ -125,6 +125,7 @@ customize them in any way you like, or create your own models from scratch.
     :doc:`Gallery<generated_examples/index>`
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+    * :ref:`savings_examples`
     * :ref:`fastlife_examples`
     * :ref:`simplelife_examples`
     * :ref:`nestedlife_examples`
@@ -138,6 +139,7 @@ customize them in any way you like, or create your own models from scratch.
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     * :ref:`notebooks_basiclife`
+    * :ref:`notebooks_savings`
     * :ref:`notebooks_fastlife`
     * :ref:`notebooks_simplelife`
     * :ref:`notebooks_ifrs17sim`

@@ -107,7 +107,19 @@ Library Contents
    CashValue_SE                              The :mod:`~savings.CashValue_SE` model.
    CashValue_ME                              The :mod:`~savings.CashValue_ME` model.
    cash_value_sample.xlsx                    An Excel file that reproduces the results of a selected model point. The file also shows the derivation of the sample mortality rates.
+   CashValue_ME_EX1                          The example model for *savings_example1.ipynb*
+   savings_example1.ipynb                    Jupyter notebook :doc:`/libraries/notebooks/savings/savings_example1`
+   plot_av_paths.py                          Python script for :doc:`/generated_examples/savings_gallery/plot_av_paths`
+   plot_rand.py                              Python script for :doc:`/generated_examples/savings_gallery/plot_rand`
+   plot_option_value.py                      Python script for :doc:`/generated_examples/savings_gallery/plot_option_value`
    ========================================= ===============================================================
 
 
+Examples
+-----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /libraries/notebooks/savings/savings_example1.ipynb
 
