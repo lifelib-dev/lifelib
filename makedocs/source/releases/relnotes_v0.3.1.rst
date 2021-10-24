@@ -20,18 +20,18 @@ New Example
 An example is added to the :mod:`~savings` library.
 This example shows how to extend :mod:`~savings.CashValue_ME`
 to a stochastic model,
-by performing a classic exercise of calculating the time value of options and guarangees
-on a plain GMAB by two methods,
+by going through a classic exercise of calculating the time value of options and guarantees
+on a plain variable annuity with GMAB by two methods,
 the Black-Scholes-Merton formula and Monte Carlo simulation with risk-neutral scenarios.
 
-This example consists the model for the example, a Jupyter notebook
+This example consists of an example model, a Jupyter notebook
 and some Python scripts.
-The model is developed from :mod:`~savings.CashValue_ME and named ``CashValue_ME_EX1``.
+The model is developed from :mod:`~savings.CashValue_ME` and named ``CashValue_ME_EX1``.
 The Python scripts included in :mod:`~savings` are used to
 draw graphs on the :doc:`Gallery</generated_examples/index>` page
 The Jupyter notebook describes the ``CashValue_ME_EX1`` model,
 explains the changes from the original model,
-and output some graphs shown on the :doc:`Gallery</generated_examples/index>` page.
+and outputs some graphs on the :doc:`Gallery</generated_examples/index>` page.
 
 .. table::
    :widths: 20 80

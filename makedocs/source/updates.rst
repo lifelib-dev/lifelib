@@ -14,7 +14,7 @@ Updates
     for more updates.</p>
 
 * *24 Oct 2021:*
-  lifelib v0.3.2 is released. See :ref:`Release Notes<relnotes_v0.3.1>` for details.
+  lifelib v0.3.1 is released. See :ref:`Release Notes<relnotes_v0.3.1>` for details.
 
 * *9 Oct 2021:*
   lifelib v0.3.0 is released. See :ref:`Release Notes<relnotes_v0.3.0>` for details.
