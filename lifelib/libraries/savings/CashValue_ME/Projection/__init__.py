@@ -564,7 +564,7 @@ def claims(t, kind=None):
         return claims_from_av(t, "LAPSE") - surr_charge(t)
 
     elif kind == "MATURITY":
-        return claims_from_av(t, "MATURITY")
+        return claim_pp(t, "MATURITY") * pols_maturity(t)
 
     elif kind is None:
         return sum(claims[t, k] for k in ["DEATH", "LAPSE", "MATURITY"])
@@ -625,7 +625,7 @@ def claims_from_av(t, kind):
         raise ValueError("invalid kind")
 
 
-def claims_over_av(t):
+def claims_over_av(t, kind):
     """Claim in excess of account value
 
     The amount of death benefits in excess of account value.
@@ -637,7 +637,7 @@ def claims_over_av(t):
         * :func:`coi`
 
     """
-    return (claim_pp(t, "DEATH") - av_pp_at(t, "MID_MTH")) * pols_death(t)
+    return claims(t, kind) - claims_from_av(t, kind)
 
 
 def coi(t):
@@ -655,22 +655,6 @@ def coi(t):
     return coi_pp(t) * pols_if_at(t, "BEF_DECR")
 
 
-def coi_rate(t):
-    """Cost of insurance rate per account value
-
-    The cost of insuranc rate per account value per month.
-    By default, it is set to 1.1 times the monthly mortality rate.
-
-    .. seealso::
-
-        * :func:`mort_rate_mth`
-        * :func:`coi_pp`
-        * :func:`coi_rate`
-
-    """
-    return 1.1 * mort_rate_mth(t)
-
-
 def coi_pp(t):
     """Cost of insurance charges per policy
 
@@ -685,6 +669,22 @@ def coi_pp(t):
 
     """
     return coi_rate(t) * net_amt_at_risk(t)
+
+
+def coi_rate(t):
+    """Cost of insurance rate per account value
+
+    The cost of insuranc rate per account value per month.
+    By default, it is set to 1.1 times the monthly mortality rate.
+
+    .. seealso::
+
+        * :func:`mort_rate_mth`
+        * :func:`coi_pp`
+        * :func:`coi_rate`
+
+    """
+    return 1.1 * mort_rate_mth(t)
 
 
 def commissions(t):
@@ -900,10 +900,10 @@ def inv_return_table():
 
     .. math::
 
-        \exp\left(\mu{u}+\sigma\sqrt{u}\omega\right)-1
+        \exp\left(\left(\mu-\frac{\sigma^{2}}{2}\right)\Delta{t}+\sigma\sqrt{\Delta{t}}\epsilon\right)-1
 
-    where :math:`\mu=2\%`, :math:`\sigma=3\%`, :math:`u=\frac{1}{12}`, and
-    :math:`\omega` is a randome number from the standard normal distribution.
+    where :math:`\mu=2\%`, :math:`\sigma=3\%`, :math:`\Delta{t}=\frac{1}{12}`, and
+    :math:`\epsilon` is a randome number from the standard normal distribution.
 
     .. seealso::
 
@@ -911,7 +911,13 @@ def inv_return_table():
         * :attr:`scen_id`
 
     """
-    return np.exp(0.02 * 1/12 + 0.03 * (1/12)**0.5 * std_norm_rand) - 1
+    mu = 0.02
+    sigma = 0.03
+    dt = 1/12
+
+    return np.exp(
+        (mu - 0.5 * sigma**2) * dt + sigma * dt**0.5 * std_norm_rand
+        ) - 1
 
 
 def is_wl():
@@ -977,6 +983,18 @@ def maint_fee(t):
     return maint_fee_pp(t) * pols_if_at(t, "BEF_DECR")
 
 
+def maint_fee_pp(t):
+    """Maintenance fee per policy
+
+    .. seealso::
+
+        * :func:`maint_fee_rate`
+        * :func:`av_pp_at`
+
+    """
+    return maint_fee_rate() * av_pp_at(t, "BEF_FEE")
+
+
 def maint_fee_rate():
     """Maintenance fee per account value
 
@@ -989,18 +1007,6 @@ def maint_fee_rate():
 
     """
     return 0.01 / 12
-
-
-def maint_fee_pp(t):
-    """Maintenance fee per policy
-
-    .. seealso::
-
-        * :func:`maint_fee_rate`
-        * :func:`av_pp_at`
-
-    """
-    return maint_fee_rate() * av_pp_at(t, "BEF_FEE")
 
 
 def margin_expense(t):
@@ -1047,7 +1053,7 @@ def margin_mortality(t):
         * :func:`claims_over_av`
 
     """
-    return coi(t) - claims_over_av(t)
+    return coi(t) - claims_over_av(t, 'DEATH')
 
 
 max_proj_len = lambda: max(proj_len())
@@ -1736,6 +1742,36 @@ def surr_charge(t):
     return surr_charge_rate(t) * av_pp_at(t, "MID_MTH") * pols_lapse(t)
 
 
+def surr_charge_id():
+    """ID of surrender charge pattern
+
+    A string to indicate the ID of the surrender charge pattern.
+    The ID should be one of the column names in :attr:`surr_charge_table`
+    if :func:`has_surr_charge` is ``True``.
+
+    .. seealso::
+
+        * :attr:`surr_charge_table`
+        * :func:`has_surr_charge`
+
+    """
+    return model_point()['surr_charge_id']
+
+
+def surr_charge_max_idx():
+    """maximum index of surrender charge table
+
+    The maximum index(duration) of :attr:`surr_charge_table`.
+
+    .. seealso::
+
+        * :attr:`surr_charge_rate`
+        * :func:`has_surr_charge`
+
+    """
+    return max(surr_charge_table.index)
+
+
 def surr_charge_rate(t):
     """Surrender charge rate
 
@@ -1759,22 +1795,6 @@ def surr_charge_rate(t):
         model_point().index, inplace=False)
 
 
-def surr_charge_id():
-    """ID of surrender charge pattern
-
-    A string to indicate the ID of the surrender charge pattern.
-    The ID should be one of the column names in :attr:`surr_charge_table`
-    if :func:`has_surr_charge` is ``True``.
-
-    .. seealso::
-
-        * :attr:`surr_charge_table`
-        * :func:`has_surr_charge`
-
-    """
-    return model_point()['surr_charge_id']
-
-
 def surr_charge_table_stacked():
     """Stacked surrender charge table
 
@@ -1790,41 +1810,27 @@ def surr_charge_table_stacked():
     return surr_charge_table.stack().reorder_levels([1, 0]).sort_index()
 
 
-def surr_charge_max_idx():
-    """maximum index of surrender charge table
-
-    The maximum index(duration) of :attr:`surr_charge_table`.
-
-    .. seealso::
-
-        * :attr:`surr_charge_rate`
-        * :func:`has_surr_charge`
-
-    """
-    return max(surr_charge_table.index)
-
-
 # ---------------------------------------------------------------------------
 # References
 
-disc_rate_ann = ("DataClient", 1730633021136)
+disc_rate_ann = ("DataClient", 1882832352832)
 
-mort_table = ("DataClient", 1730631043776)
+mort_table = ("DataClient", 1882837214640)
 
 np = ("Module", "numpy")
 
 pd = ("Module", "pandas")
 
-std_norm_rand = ("DataClient", 1730624414528)
+std_norm_rand = ("DataClient", 1882832427664)
 
-surr_charge_table = ("DataClient", 1730654884096)
+surr_charge_table = ("DataClient", 1882832427424)
 
-product_spec_table = ("DataClient", 1730633288960)
+product_spec_table = ("DataClient", 1882837029552)
 
-model_point_samples = ("DataClient", 1730633141648)
+model_point_samples = ("DataClient", 1882838121440)
 
 scen_id = 1
 
-model_point_10000 = ("DataClient", 1730654998592)
+model_point_10000 = ("DataClient", 1882837472592)
 
-model_point_table = ("DataClient", 1730633141648)
+model_point_table = ("DataClient", 1882838121440)
