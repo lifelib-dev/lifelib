@@ -930,10 +930,10 @@ def inv_return_table():
 
     .. math::
 
-        \exp\left(\mu{u}+\sigma\sqrt{u}\omega\right)-1
+        \exp\left(\left(\mu-\frac{\sigma^{2}}{2}\right)\Delta{t}+\sigma\sqrt{\Delta{t}}\epsilon\right)-1
 
-    where :math:`\mu=2\%`, :math:`\sigma=3\%`, :math:`u=\frac{1}{12}`, and
-    :math:`\omega` is a randome number from the standard normal distribution.
+    where :math:`\mu=2\%`, :math:`\sigma=3\%`, :math:`\Delta{t}=\frac{1}{12}`, and
+    :math:`\epsilon` is a randome number from the standard normal distribution.
 
     .. seealso::
 
@@ -941,7 +941,13 @@ def inv_return_table():
         * :attr:`scen_id`
 
     """
-    return np.exp(0.02 * 1/12 + 0.03 * (1/12)**0.5 * std_norm_rand) - 1
+    mu = 0.02
+    sigma = 0.03
+    dt = 1/12
+
+    return np.exp(
+        (mu - 0.5 * sigma**2) * dt + sigma * dt**0.5 * std_norm_rand
+        ) - 1
 
 
 def is_wl():
@@ -1788,24 +1794,24 @@ def surr_charge_id():
 # ---------------------------------------------------------------------------
 # References
 
-disc_rate_ann = ("DataClient", 1932594021424)
+disc_rate_ann = ("DataClient", 2587740709888)
 
-mort_table = ("DataClient", 1932591599872)
+mort_table = ("DataClient", 2587740709744)
 
 np = ("Module", "numpy")
 
 pd = ("Module", "pandas")
 
-std_norm_rand = ("DataClient", 1932615192384)
+std_norm_rand = ("DataClient", 2587745257168)
 
-surr_charge_table = ("DataClient", 1932615538144)
+surr_charge_table = ("DataClient", 2587738011344)
 
-product_spec_table = ("DataClient", 1932594123728)
+product_spec_table = ("DataClient", 2587740620976)
 
 scen_id = 1
 
-model_point_samples = ("DataClient", 1932594126704)
+model_point_samples = ("DataClient", 2587745729360)
 
-model_point_table = ("DataClient", 1932594126704)
+model_point_table = ("DataClient", 2587745729360)
 
 point_id = 1
