@@ -47,6 +47,11 @@ def proc_ifrs17sim(node):
     node['source'] = src
 
 entries = [
+    {"dir": "libraries",
+     "project": "savings",
+     "notebook": "savings_example1.ipynb",
+     "is_target": lambda node: True,
+     "proc": lambda node: None},
 
     {"dir": "libraries",
      "project": "basiclife",
