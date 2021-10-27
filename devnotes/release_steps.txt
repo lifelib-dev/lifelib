@@ -7,7 +7,9 @@ Reference:
 
  1. Update whatsnew.rst and updates.rst.
  2. Remove 'dev' from the version in __init__.py. Make sure to upgrade versions of depending packages in conf.py.
- 3. make docs and update and push lifelib-docs.(check version is not with 'dev'). Make sure to update archive.rst to include a link to the last version.
+ 3. make docs and update and push lifelib-docs.(check version is not with 'dev').
+    Make sure to update archive.rst to include a link to the last version.
+    Create sitemap and put it in the lifelib-docs and commit again.
  4. On the master branch, commit the release in git:
       git commit -a -m "DIST: Release v0.X.Y"
       git push
