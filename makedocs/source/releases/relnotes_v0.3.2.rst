@@ -52,5 +52,5 @@ Fixes and Updates
 ===================
 
 * ``plot_av_paths.py`` in the :mod:`~savings` library is renamed to :doc:`plot_ex1_av_paths.py</generated_examples/savings_gallery/plot_ex1_av_paths>`
-* ``plot_rand.py`` in the :mod:`~savings` library is renamed to :doc:`plot_ex1_av_paths.py</generated_examples/savings_gallery/plot_ex1_rand>`
-* ``plot_option_value.py`` in the :mod:`~savings` library is renamed to :doc:`plot_ex1_av_paths.py</generated_examples/savings_gallery/plot_ex1_option_value>`
+* ``plot_rand.py`` in the :mod:`~savings` library is renamed to :doc:`plot_ex1_rand.py</generated_examples/savings_gallery/plot_ex1_rand>`
+* ``plot_option_value.py`` in the :mod:`~savings` library is renamed to :doc:`plot_ex1_option_value.py</generated_examples/savings_gallery/plot_ex1_option_value>`
