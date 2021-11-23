@@ -230,7 +230,7 @@ autodoc_member_order = 'bysource'
 
 
 # -- Options for Gallery -------------------------------------------
-from sphinx_gallery.sorting import ExplicitOrder
+from sphinx_gallery.sorting import ExplicitOrder, FileNameSortKey
 sphinx_gallery_conf = {
     # path to your examples scripts
     'ignore_pattern': '^(?!.*plot_)',
@@ -249,7 +249,8 @@ sphinx_gallery_conf = {
     'backreferences_dir': None,
     'download_all_examples': False,
     # 'download_section_examples': False,
-    'capture_repr': ()
+    'capture_repr': (),
+    'within_subsection_order': FileNameSortKey
 }
 
 import warnings

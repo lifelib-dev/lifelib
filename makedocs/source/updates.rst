@@ -13,6 +13,9 @@ Updates
     and <a href="https://modelx.io/allposts" target="_blank">modelx blog</a>
     for more updates.</p>
 
+* *23 Nov 2021:*
+  lifelib v0.3.2 is released. See :ref:`Release Notes<relnotes_v0.3.2>` for details.
+
 * *24 Oct 2021:*
   lifelib v0.3.1 is released. See :ref:`Release Notes<relnotes_v0.3.1>` for details.
 
@@ -31,6 +34,8 @@ Updates
 * *9 Jul 2021:*
   lifelib v0.0.19 is released. See :ref:`releases` for details.
   New download available on :doc:`download` page.
+
+.. Latest Updates End
 
 * *29 May 2021:*
   This site is now based on `the PyData Sphinx theme <https://pydata-sphinx-theme.readthedocs.io/en/latest/>`_.
@@ -52,8 +57,6 @@ Updates
 * *14 Feb 2021:*
   lifelib v0.0.16 is released. See :ref:`releases` for details.
   New download available on :doc:`download` page.
-
-.. Latest Updates End
 
 * *6 Dec 2020:*
   lifelib v0.0.15 is released. See :ref:`releases` for details.

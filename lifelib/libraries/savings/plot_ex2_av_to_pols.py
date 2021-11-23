@@ -8,7 +8,7 @@ and shows path dependency of policy decrement.
 
 The scatter plot shows how the number of policies at maturity varies
 by the level of account value at maturity, and the graphs on the sides
-shows the distributions of the two factors.
+show the distributions of the two factors.
 
 
 .. seealso::

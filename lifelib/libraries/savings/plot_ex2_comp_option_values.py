@@ -12,7 +12,7 @@ The Black-Scholes-Merton pricing formula for European put options
 on a dividend paying stock
 can be expressed as below, where
 :math:`X`, :math:`S_{0}`, :math:`q` correspond to the sum assured,
-the initial account value, the maintenence fee rate(1%) in this example.
+the initial account value and the maintenence fee rate(1%) in this example.
 
 .. math::
 

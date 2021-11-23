@@ -111,10 +111,12 @@ Library Contents
    CashValue_ME_EX2                          The example model for *savings_example2.ipynb*
    savings_example1.ipynb                    Jupyter notebook :doc:`/libraries/notebooks/savings/savings_example1`
    savings_example2.ipynb                    Jupyter notebook :doc:`/libraries/notebooks/savings/savings_example2`
-   plot_av_paths.py                          Python script for :doc:`/generated_examples/savings_gallery/plot_av_paths`
-   plot_rand.py                              Python script for :doc:`/generated_examples/savings_gallery/plot_rand`
-   plot_option_value.py                      Python script for :doc:`/generated_examples/savings_gallery/plot_option_value`
-   plot_av_to_pols.py                        Python script for :doc:`/generated_examples/savings_gallery/plot_av_to_pols`
+   plot_ex1_av_paths.py                      Python script for :doc:`/generated_examples/savings_gallery/plot_ex1_av_paths`
+   plot_ex1_rand.py                          Python script for :doc:`/generated_examples/savings_gallery/plot_ex1_rand`
+   plot_ex1_option_value.py                  Python script for :doc:`/generated_examples/savings_gallery/plot_ex1_option_value`
+   plot_ex2_comp_option_values.py            Python script for :doc:`/generated_examples/savings_gallery/plot_ex2_comp_option_values`
+   plot_ex2_lapse_decrement.py               Python script for :doc:`/generated_examples/savings_gallery/plot_ex2_lapse_decrement`
+   plot_ex2_av_to_pols.py                    Python script for :doc:`/generated_examples/savings_gallery/plot_ex2_av_to_pols`
    ========================================= ===============================================================
 
 
