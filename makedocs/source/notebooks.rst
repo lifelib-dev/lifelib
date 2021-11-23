@@ -22,6 +22,7 @@ Notebooks
 ---------------------------
 
 * :doc:`libraries/notebooks/savings/savings_example1`
+* :doc:`libraries/notebooks/savings/savings_example2`
 
 
 .. _notebooks_fastlife:
