@@ -18,7 +18,7 @@ To update lifelib, run the following command::
 New Example
 ===============
 
-A example notebook, :doc:`/libraries/notebooks/savings/savings_example2`
+An example notebook, :doc:`/libraries/notebooks/savings/savings_example2`
 is added to the :mod:`~savings` library.
 This example shows how to extend the ``CashValue_ME_EX1`` model in the :doc:`/libraries/notebooks/savings/savings_example1`
 and reflect maintenance fees, policy decrement, GMDB and dynamic lapse.

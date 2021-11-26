@@ -175,18 +175,21 @@ modelx on PyPI             https://pypi.org/project/modelx/
 
           <h2><strong>lifelib</strong> sites</h2>
 
-If you find a bug, submit an issue on
+Submit an issue on
 `lifelib development site <https://github.com/fumitoh/lifelib/issues>`_
-on GitHub. Start a discussion on
+on GitHub to report a bug.
+Start a discussion on
 the `Discussions <https://github.com/fumitoh/lifelib/discussions>`_ site
 to ask a question about lifelib, propose a new feature,
-or share your experience with lifelib.
+or share your experience with lifelib. Follow
+`lifelib's LinkedIn page <https://www.linkedin.com/company/lifelib/>`_
+to receive updates.
 
 ========================== ================================================
 Development site           https://github.com/fumitoh/lifelib
 Discussions                https://github.com/fumitoh/lifelib/discussions
 lifelib on PyPI            https://pypi.org/project/lifelib/
-Maintainer's profile       https://www.linkedin.com/in/fumito-hamamura
+LinkedIn page              https://www.linkedin.com/company/lifelib/
 ========================== ================================================
 
 .. raw:: html
