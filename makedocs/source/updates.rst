@@ -13,6 +13,9 @@ Updates
     and <a href="https://modelx.io/allposts" target="_blank">modelx blog</a>
     for more updates.</p>
 
+* *25 Dec 2021:*
+  New download available on :doc:`download` page.
+
 * *23 Nov 2021:*
   lifelib v0.3.2 is released. See :ref:`Release Notes<relnotes_v0.3.2>` for details.
 
