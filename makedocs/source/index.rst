@@ -72,7 +72,7 @@ customize them in any way you like, or create your own models from scratch.
     :column: col-lg-3 col-md-3 col-sm-12 col-xs-12 p-2
     :header: h3
 
-    :doc:`About<about_lifelib>`
+    :doc:`about`
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     * :ref:`what-is-lifelib`

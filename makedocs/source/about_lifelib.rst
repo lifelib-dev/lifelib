@@ -105,9 +105,3 @@ Start from :doc:`quickstart` page.
 .. _Model: https://docs.modelx.io/en/latest/reference/model.html
 .. _Spaces: https://docs.modelx.io/en/latest/reference/space/index.html
 .. _Cells: https://docs.modelx.io/en/latest/reference/cells.html
-
-.. toctree::
-   :hidden:
-   :maxdepth: 2
-
-   archive

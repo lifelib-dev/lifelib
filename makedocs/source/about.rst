@@ -8,4 +8,5 @@ About
    whatsnew
    about_lifelib
    contributing
+   archive
 
