@@ -77,6 +77,7 @@ customize them in any way you like, or create your own models from scratch.
 
     * :ref:`what-is-lifelib`
     * :ref:`how-lifelib-works`
+    * :doc:`contributing`
     * :ref:`modindex`
     * :ref:`genindex`
     * :ref:`search`

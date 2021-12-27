@@ -7,4 +7,5 @@ About
 
    whatsnew
    about_lifelib
+   contributing
 
