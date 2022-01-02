@@ -66,9 +66,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     </div>
     {% endblock %}
     {% if theme_show_prev_next %}
-    <div class='prev-next-bottom'>
-        {{ prev_next(prev, next) }}
-    </div>
+    {% include "prev-next.html" %}
     {% endif %}
 </main>
 {% endblock %}
