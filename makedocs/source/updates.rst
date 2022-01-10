@@ -13,6 +13,10 @@ Updates
     and <a href="https://modelx.io/allposts" target="_blank">modelx blog</a>
     for more updates.</p>
 
+* *8 Jan 2022:*
+  New blog post, `"Plan for lifelib with GPU" <https://modelx.io/blog/2022/01/08/plan-for-lifelib-with-gpu/>`_,
+  published on https://modelx.io .
+
 * *2 Jan 2022:*
   The :doc:`contribution guide<contributing>` is added.
 
@@ -33,11 +37,11 @@ Updates
   lifelib v0.2.0 is released. See :ref:`Release Notes<relnotes_v0.2.0>` for details.
   New download available on :doc:`download` page.
 
+.. Latest Updates End
+
 * *23 Jul 2021:*
   lifelib v0.1.1 is released. See :ref:`Release Notes<relnotes_v0.1.1>` for details.
   New download available on :doc:`download` page.
-
-.. Latest Updates End
 
 * *9 Jul 2021:*
   lifelib v0.0.19 is released. See :ref:`releases` for details.
