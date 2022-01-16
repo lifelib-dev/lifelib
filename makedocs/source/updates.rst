@@ -13,6 +13,10 @@ Updates
     and <a href="https://modelx.io/allposts" target="_blank">modelx blog</a>
     for more updates.</p>
 
+* *15 Jan 2022:*
+  New blog post, `"Testing lifelib on GPU" <https://modelx.io/blog/2022/01/15/testing-lifelib-on-gpu/>`_,
+  published on https://modelx.io .
+
 * *8 Jan 2022:*
   New blog post, `"Plan for lifelib with GPU" <https://modelx.io/blog/2022/01/08/plan-for-lifelib-with-gpu/>`_,
   published on https://modelx.io .
