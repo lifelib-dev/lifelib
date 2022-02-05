@@ -13,6 +13,14 @@ Updates
     and <a href="https://modelx.io/allposts" target="_blank">modelx blog</a>
     for more updates.</p>
 
+* *6 Feb 2022:*
+  lifelib is now available on `conda-forge <https://conda-forge.org/>`_.
+  The :doc:`manual installation </installation>` page is updated.
+
+* *23 Jan 2022:*
+  New blog post, `"Object-oriented actuarial model" <https://modelx.io/blog/2022/01/15/testing-lifelib-on-gpu/>`_,
+  published on https://modelx.io .
+
 * *15 Jan 2022:*
   New blog post, `"Testing lifelib on GPU" <https://modelx.io/blog/2022/01/15/testing-lifelib-on-gpu/>`_,
   published on https://modelx.io .
