@@ -13,6 +13,10 @@ Updates
     and <a href="https://modelx.io/allposts" target="_blank">modelx blog</a>
     for more updates.</p>
 
+* *13 Feb 2022:*
+  New blog post, `"Modeling assets with QuantLib" <https://modelx.io/blog/2022/02/13/modeling-assets-with-quantlib/>`_,
+  published on https://modelx.io .
+
 * *6 Feb 2022:*
   lifelib is now available on `conda-forge <https://conda-forge.org/>`_.
   The :doc:`manual installation </installation>` page is updated.
@@ -38,6 +42,8 @@ Updates
 * *23 Nov 2021:*
   lifelib v0.3.2 is released. See :ref:`Release Notes<relnotes_v0.3.2>` for details.
 
+.. Latest Updates End
+
 * *24 Oct 2021:*
   lifelib v0.3.1 is released. See :ref:`Release Notes<relnotes_v0.3.1>` for details.
 
@@ -48,8 +54,6 @@ Updates
 * *28 Aug 2021:*
   lifelib v0.2.0 is released. See :ref:`Release Notes<relnotes_v0.2.0>` for details.
   New download available on :doc:`download` page.
-
-.. Latest Updates End
 
 * *23 Jul 2021:*
   lifelib v0.1.1 is released. See :ref:`Release Notes<relnotes_v0.1.1>` for details.
