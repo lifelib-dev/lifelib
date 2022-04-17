@@ -9,9 +9,8 @@ Updates
 .. raw:: html
 
     <p><strong>Note:</strong>
-    Visit <a href="https://github.com/fumitoh/lifelib/discussions" target="_blank">Discussions</a>
-    and <a href="https://modelx.io/allposts" target="_blank">modelx blog</a>
-    for more updates.</p>
+    Follow <a href="https://www.linkedin.com/company/lifelib" target="_blank">lifelib</a>
+    on LinkedIn for more frequent updates.</p>
 
 * *13 Feb 2022:*
   New blog post, `"Modeling assets with QuantLib" <https://modelx.io/blog/2022/02/13/modeling-assets-with-quantlib/>`_,
