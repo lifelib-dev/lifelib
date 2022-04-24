@@ -50,6 +50,18 @@ entries = [
 
     {"dir": "libraries",
      "project": "savings",
+     "notebook": "savings_example3.ipynb",
+     "is_target": lambda node: True,
+     "proc": lambda node: None},
+
+    {"dir": "libraries",
+     "project": "savings",
+     "notebook": "generate_100K_model_points.ipynb",
+     "is_target": lambda node: True,
+     "proc": lambda node: None},
+
+    {"dir": "libraries",
+     "project": "savings",
      "notebook": "savings_example2.ipynb",
      "is_target": lambda node: True,
      "proc": lambda node: None},

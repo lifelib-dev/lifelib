@@ -93,6 +93,16 @@ under the path *C:\\path\\to\\your\\*, type below in an IPython console::
     >>> lifelib.create("savings", r"C:\path\to\your\savings")
 
 
+Examples
+-----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /libraries/notebooks/savings/savings_example1.ipynb
+   /libraries/notebooks/savings/savings_example2.ipynb
+   /libraries/notebooks/savings/savings_example3.ipynb
+
 
 
 Library Contents
@@ -111,6 +121,8 @@ Library Contents
    CashValue_ME_EX2                          The example model for *savings_example2.ipynb*
    savings_example1.ipynb                    Jupyter notebook :doc:`/libraries/notebooks/savings/savings_example1`
    savings_example2.ipynb                    Jupyter notebook :doc:`/libraries/notebooks/savings/savings_example2`
+   savings_example3.ipynb                    Jupyter notebook :doc:`/libraries/notebooks/savings/savings_example3`
+   generate_100K_model_points.ipynb          Jupyter notebook used for generating the large model point data for :doc:`/libraries/notebooks/savings/savings_example3`.
    plot_ex1_av_paths.py                      Python script for :doc:`/generated_examples/savings_gallery/plot_ex1_av_paths`
    plot_ex1_rand.py                          Python script for :doc:`/generated_examples/savings_gallery/plot_ex1_rand`
    plot_ex1_option_value.py                  Python script for :doc:`/generated_examples/savings_gallery/plot_ex1_option_value`
@@ -120,12 +132,13 @@ Library Contents
    ========================================= ===============================================================
 
 
-Examples
------------
+Other Notebooks
+----------------
 
 .. toctree::
    :maxdepth: 1
 
-   /libraries/notebooks/savings/savings_example1.ipynb
-   /libraries/notebooks/savings/savings_example2.ipynb
+   /libraries/notebooks/savings/generate_100K_model_points.ipynb
+
+
 

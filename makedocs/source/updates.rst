@@ -9,8 +9,11 @@ Updates
 .. raw:: html
 
     <p><strong>Note:</strong>
-    Follow <a href="https://www.linkedin.com/company/lifelib" target="_blank">lifelib</a>
-    on LinkedIn for more frequent updates.</p>
+    Follow <a href="https://www.linkedin.com/company/lifelib" target="_blank">lifelib on LinkedIn</a>
+    for more frequent updates.</p>
+
+* *24 Apr 2022:*
+  lifelib v0.3.3 is released. See :ref:`Release Notes<relnotes_v0.3.3>` for details.
 
 * *13 Feb 2022:*
   New blog post, `"Modeling assets with QuantLib" <https://modelx.io/blog/2022/02/13/modeling-assets-with-quantlib/>`_,
