@@ -7,7 +7,7 @@ Libraries
 
    basiclife/index.rst
    savings/index.rst
-
+   assets/index.rst
 
 .. _past-libraries:
 

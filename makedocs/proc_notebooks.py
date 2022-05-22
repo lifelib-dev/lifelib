@@ -49,6 +49,12 @@ def proc_ifrs17sim(node):
 entries = [
 
     {"dir": "libraries",
+     "project": "assets",
+     "notebook": "generate_bond_data.ipynb",
+     "is_target": lambda node: True,
+     "proc": lambda node: None},
+
+    {"dir": "libraries",
      "project": "savings",
      "notebook": "savings_example3.ipynb",
      "is_target": lambda node: True,
