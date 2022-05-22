@@ -1,9 +1,9 @@
 .. currentmodule:: lifelib.libraries
 
-.. _relnotes_v0.4.0:
+.. _relnotes_v0.4.1:
 
 =================================
-lifelib v0.4.0 (22 May 2022)
+lifelib v0.4.1 (22 May 2022)
 =================================
 
 This release introduces a new library, :mod:`~assets`.
