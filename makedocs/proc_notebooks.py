@@ -92,6 +92,12 @@ entries = [
 
     {"dir": "libraries",
      "project": "basiclife",
+     "notebook": "generate_model_points_ASL.ipynb",
+     "is_target": lambda node: True,
+     "proc": lambda node: None},
+
+    {"dir": "libraries",
+     "project": "basiclife",
      "notebook": "create_premium_table.ipynb",
      "is_target": lambda node: True,
      "proc": lambda node: None},

@@ -13,6 +13,7 @@ Notebooks
 
 * `Generating model points <libraries/notebooks/basiclife/generate_model_points.ipynb>`_
 * `Generating model points with duration <libraries/notebooks/basiclife/generate_model_points_with_duration.ipynb>`_
+* `Generating model points for ASL <libraries/notebooks/basiclife/generate_model_points_ASL.ipynb>`_
 * `Creating premium table <libraries/notebooks/basiclife/create_premium_table.ipynb>`_
 
 
