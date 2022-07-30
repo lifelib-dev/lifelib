@@ -7,7 +7,7 @@ Download lifelib with WinPython.
 
 .. raw:: html
 
-    <a class="btn btn-primary btn-lg" href="https://drive.google.com/u/0/uc?export=download&id=1GAep-a0NXiJf3cy0COHS7p9bk2IScJVr" role="button">Download</a>
+    <a class="btn btn-primary btn-lg" href="https://drive.google.com/u/0/uc?export=download&id=1TLC29H95yaHPJQCcm98D5EFWyyZbTDuH" role="button">Download</a>
 
 :ref:`Install manually <installation>` if you're a Linux or Mac user.
 
@@ -15,10 +15,37 @@ Download lifelib with WinPython.
 File Information
 ================
 
-Latest release (22 May 2022)
+Latest release (30 Jul 2022)
 ------------------------------
 
-:Downloadable: WPy64-31020-20220522.zip
+:Downloadable: WPy64-31020-20220730.zip
+
+:Base Python Distribution:
+    WinPython64-3.10.2.0
+
+    (Python 3.10.1 + Spyder 5.2.2)
+
+:Additional Packages:
+    openpyxl 3.0.9
+
+    numpy-financial 1.0.0
+
+    modelx 0.19.1
+
+    spyder-modelx 0.13.0 *(Updated)*
+
+    lifelib 0.5.0 *(Updated)*
+
+    QuantLib 1.26
+
+
+Past releases
+-------------
+
+22 May 2022
+^^^^^^^^^^^
+
+:Downloadable: `WPy64-31020-20220522.zip`_
 
 :Base Python Distribution:
     WinPython64-3.10.2.0
@@ -38,9 +65,7 @@ Latest release (22 May 2022)
 
     QuantLib 1.26 *(New)*
 
-
-Past releases
--------------
+.. _WPy64-31020-20220522.zip: https://drive.google.com/u/0/uc?export=download&id=1GAep-a0NXiJf3cy0COHS7p9bk2IScJVr
 
 25 Dec 2021
 ^^^^^^^^^^^
