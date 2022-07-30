@@ -28,5 +28,3 @@ for prod in ["TERM", "WL", "ENDW"]:
         pvcfs = proj.PV_NetCashflow(0).loc[filter]
         ax.scatter(ages, pvcfs, marker=marker)
 
-
-plt.show()
