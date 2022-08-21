@@ -94,6 +94,14 @@ customize them in any way you like, or create your own models from scratch.
 
     ---
 
+    :doc:`Videos<videos>`
+    ^^^^^^^^^^^^^^^^^^^^^^^
+
+    * :ref:`getting-started-videos`
+
+
+    ---
+
     :doc:`Libraries<libraries/index>`
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -207,6 +215,7 @@ LinkedIn page              https://www.linkedin.com/company/lifelib/
 
    about
    quickstart
+   videos
    libraries/index
    download
    generated_examples/index

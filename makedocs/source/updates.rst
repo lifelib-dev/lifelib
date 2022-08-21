@@ -12,10 +12,13 @@ Updates
     Follow <a href="https://www.linkedin.com/company/lifelib" target="_blank">lifelib on LinkedIn</a>
     for more frequent updates.</p>
 
-* *30 July 2022:*
+* *20 Aug 2022:*
+  New video series, *Getting Started with lifelib* available on the :doc:`videos` page.
+
+* *30 Jul 2022:*
   New download available on the :doc:`download` page.
 
-* *9 July 2022:*
+* *9 Jul 2022:*
   lifelib v0.5.0 is released. See :ref:`Release Notes<relnotes_v0.5.0>` for details.
 
 * *22 May 2022:*
@@ -48,13 +51,13 @@ Updates
 * *2 Jan 2022:*
   The :doc:`contribution guide<contributing>` is added.
 
+.. Latest Updates End
+
 * *25 Dec 2021:*
   New download available on :doc:`download` page.
 
 * *23 Nov 2021:*
   lifelib v0.3.2 is released. See :ref:`Release Notes<relnotes_v0.3.2>` for details.
-
-.. Latest Updates End
 
 * *24 Oct 2021:*
   lifelib v0.3.1 is released. See :ref:`Release Notes<relnotes_v0.3.1>` for details.
