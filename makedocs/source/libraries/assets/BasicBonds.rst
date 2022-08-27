@@ -37,7 +37,7 @@ The :mod:`~assets.BasicBonds.Bonds` Space
 
 
 .. autosummary::
-   :toctree: generated/
+   :toctree: ../generated/
    :template: llmodule.rst
 
    ~assets.BasicBonds.Bonds
