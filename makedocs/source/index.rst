@@ -108,6 +108,7 @@ customize them in any way you like, or create your own models from scratch.
     * :doc:`libraries/basiclife/index`
     * :doc:`libraries/savings/index`
     * :doc:`libraries/assets/index`
+    * :doc:`libraries/economic/index`
 
     ---
 

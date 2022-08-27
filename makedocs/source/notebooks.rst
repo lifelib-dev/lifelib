@@ -26,6 +26,14 @@ Notebooks
 * :doc:`libraries/notebooks/savings/savings_example2`
 
 
+.. _notebooks_economic:
+
+:mod:`economic` Notebooks
+---------------------------
+
+* :doc:`libraries/notebooks/economic/hull-white-simulation`
+
+
 .. _notebooks_fastlife:
 
 :mod:`fastlife` Notebooks

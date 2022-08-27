@@ -8,6 +8,7 @@ Libraries
    basiclife/index.rst
    savings/index.rst
    assets/index.rst
+   economic/index.rst
 
 .. _past-libraries:
 

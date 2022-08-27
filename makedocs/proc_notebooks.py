@@ -46,7 +46,15 @@ def proc_ifrs17sim(node):
     )
     node['source'] = src
 
+
 entries = [
+
+    {"dir": "libraries",
+     "project": "economic",
+     "notebook": "hull-white-simulation.ipynb",
+     "is_target": lambda node: True,
+     "proc": lambda node: None,
+     "model": "BasicHullWhite"},
 
     {"dir": "libraries",
      "project": "assets",
@@ -140,7 +148,7 @@ entries = [
 ]
 
 
-def adjust_notebook(file, is_target, proc):
+def adjust_notebook(file, is_target, proc, **kwargs):
 
     nb = nbformat.read(file, as_version=nbformat.NO_CONVERT)
     try:
@@ -184,11 +192,11 @@ def prepare_models():
         project = entry["project"]
         dir_ = entry["dir"]
         srcdir, trgdir = _get_dirs(project, dir_)
-
-        srcmodel = srcdir + "/" + "model"
-        trgmodel = trgdir + "/" + "model"
+        model = entry["model"] if "model" in entry else "model"
+        srcmodel = srcdir + "/" + model
+        trgmodel = trgdir + "/" + model
         if os.path.exists(srcmodel) and os.path.isdir(srcmodel) and not os.path.exists(trgmodel):
-            shutil.copytree(srcmodel, trgdir + "/" + "model")
+            shutil.copytree(srcmodel, trgdir + "/" + model)
 
 
 def remove_notebooks():
