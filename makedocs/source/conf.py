@@ -237,6 +237,7 @@ sphinx_gallery_conf = {
     'examples_dirs': '../../lifelib/projects',
     'subsection_order': ExplicitOrder(
         ['../../lifelib/projects/savings',
+         '../../lifelib/projects/economic',
          '../../lifelib/projects/fastlife',
          '../../lifelib/projects/simplelife',
          '../../lifelib/projects/nestedlife',
