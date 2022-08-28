@@ -123,12 +123,12 @@ Library Contents
    savings_example2.ipynb                    Jupyter notebook :doc:`/libraries/notebooks/savings/savings_example2`
    savings_example3.ipynb                    Jupyter notebook :doc:`/libraries/notebooks/savings/savings_example3`
    generate_100K_model_points.ipynb          Jupyter notebook used for generating the large model point data for :doc:`/libraries/notebooks/savings/savings_example3`.
-   plot_ex1_av_paths.py                      Python script for :doc:`/generated_examples/savings_gallery/plot_ex1_av_paths`
-   plot_ex1_rand.py                          Python script for :doc:`/generated_examples/savings_gallery/plot_ex1_rand`
-   plot_ex1_option_value.py                  Python script for :doc:`/generated_examples/savings_gallery/plot_ex1_option_value`
-   plot_ex2_comp_option_values.py            Python script for :doc:`/generated_examples/savings_gallery/plot_ex2_comp_option_values`
-   plot_ex2_lapse_decrement.py               Python script for :doc:`/generated_examples/savings_gallery/plot_ex2_lapse_decrement`
-   plot_ex2_av_to_pols.py                    Python script for :doc:`/generated_examples/savings_gallery/plot_ex2_av_to_pols`
+   plot_ex1_av_paths.py                      Python script for :doc:`/generated_examples/savings/plot_ex1_av_paths`
+   plot_ex1_rand.py                          Python script for :doc:`/generated_examples/savings/plot_ex1_rand`
+   plot_ex1_option_value.py                  Python script for :doc:`/generated_examples/savings/plot_ex1_option_value`
+   plot_ex2_comp_option_values.py            Python script for :doc:`/generated_examples/savings/plot_ex2_comp_option_values`
+   plot_ex2_lapse_decrement.py               Python script for :doc:`/generated_examples/savings/plot_ex2_lapse_decrement`
+   plot_ex2_av_to_pols.py                    Python script for :doc:`/generated_examples/savings/plot_ex2_av_to_pols`
    ========================================= ===============================================================
 
 
