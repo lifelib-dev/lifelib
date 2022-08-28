@@ -14,7 +14,7 @@ Draw a graph of liability cashflows of a simple whole life policy
 import pandas as pd
 import modelx as mx
 import seaborn as sns
-sns.set()
+sns.set_theme(style="darkgrid")
 
 polid = 171
 proj = mx.read_model("model").Projection[polid]

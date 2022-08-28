@@ -4,6 +4,10 @@
 
 Draw a graph of present value of cashflow
 """
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set_theme(style="darkgrid")
 import modelx as mx
 
 model = mx.read_model("model")
@@ -23,12 +27,6 @@ outer[polid].InnerProj[2].asmp.SurrRateMult[2] = 0.5
 outer[polid].InnerProj[3].asmp.SurrRateMult[3] = 1
 
 # Code block for PV graph
-
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-sns.set()    
-    
     
 def draw_bars(item):
     
@@ -57,7 +55,5 @@ def draw_single_bar(data, ax, t0):
     ax.bar(np.arange(size) + t0 * (width + 0.05), data, width)
     
 
-# PV Test
-if __name__ == '__main__':
-    draw_bars('PV_NetCashflow')
+draw_bars('PV_NetCashflow')
 

@@ -18,6 +18,8 @@ The live version of the notebook is available online.
 """
 from draw_charts import draw_waterfall, get_waterfalldata
 import modelx as mx
+import seaborn as sns
+sns.set_theme(style="darkgrid")
 
 model = mx.read_model("model")
 proj = model.OuterProj[1]

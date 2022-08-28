@@ -26,7 +26,7 @@ cfs = proj[polid].frame[vars].sort_index().dropna()
 ncf = proj[polid].PV_NetCashflow.frame.sort_index()
 
 import seaborn as sns
-sns.set()
+sns.set_theme(style="darkgrid")
 
 axes = ncf.plot.line(marker='o', color='r')
 cfs.plot(kind='bar', stacked=True, ax=axes)

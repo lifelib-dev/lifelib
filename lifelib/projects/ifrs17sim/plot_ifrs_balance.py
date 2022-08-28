@@ -10,6 +10,8 @@ Fulfilment CF, CSM, Cash balances
 # import statements.
 import draw_charts
 import modelx as mx
+import seaborn as sns
+sns.set_theme(style="darkgrid")
 
 model = mx.read_model("model")
 proj = model.OuterProj[171]

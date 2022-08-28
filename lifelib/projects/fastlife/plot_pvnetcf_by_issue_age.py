@@ -5,7 +5,7 @@
 
 import matplotlib.pyplot as plt
 import seaborn as sns
-sns.set()
+sns.set_theme(style="darkgrid")
 import modelx as mx
 
 proj = mx.read_model("model").Projection
