@@ -14,7 +14,7 @@ The Hull-White model is a short rate model represented by the stochastic differe
     dr(t) = (\theta(t) - a r(t))dt + \sigma dW
 
 
-:mod:`~economic.BasicHullWhite` preforms Monte-Carlo simulation
+:mod:`~economic.BasicHullWhite` preforms Monte-Carlo simulations
 and generates paths of the instantaneous short rate based on the Hull-White model.
 Many properties of the Hull-White model are analytically solvable,
 and :mod:`~economic.BasicHullWhite` also includes formulas analytically solving for the properties.

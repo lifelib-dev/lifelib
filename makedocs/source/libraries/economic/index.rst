@@ -44,12 +44,14 @@ Library Contents
 ------------------
 
 .. table::
-   :widths: 20 80
 
-   ======================================= ======================================================================
+   ======================================= ========================================================================================
    File or Folder                          Description
-   ======================================= ======================================================================
+   ======================================= ========================================================================================
    BasicHullWhite                          The :mod:`~economic.BasicHullWhite` model.
    hull-white-simulation.ipynb             Jupyter notebook :doc:`/libraries/notebooks/economic/hull-white-simulation`
-   ======================================= ======================================================================
+   plot_ex1_short_rate_paths.py            Python script for :doc:`/generated_examples/economic/plot_ex1_short_rate_paths`
+   plot_ex2_short_rate_mean_variance.py    Python script for :doc:`/generated_examples/economic/plot_ex2_short_rate_mean_variance`
+   plot_ex3_disc_factor_convergence.py     Python script for :doc:`/generated_examples/economic/plot_ex3_disc_factor_convergence`
+   ======================================= ========================================================================================
 
