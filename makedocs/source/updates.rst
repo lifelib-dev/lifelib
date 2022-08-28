@@ -12,6 +12,9 @@ Updates
     Follow <a href="https://www.linkedin.com/company/lifelib" target="_blank">lifelib on LinkedIn</a>
     for more frequent updates.</p>
 
+* *28 Aug 2022:*
+  lifelib v0.6.0 is released. See :ref:`Release Notes<relnotes_v0.6.0>` for details.
+
 * *20 Aug 2022:*
   New video series, *Getting Started with lifelib* available on the :doc:`videos` page.
 

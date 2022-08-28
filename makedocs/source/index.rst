@@ -137,6 +137,7 @@ customize them in any way you like, or create your own models from scratch.
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     * :ref:`savings_examples`
+    * :ref:`economic_examples`
     * :ref:`fastlife_examples`
     * :ref:`simplelife_examples`
     * :ref:`nestedlife_examples`
@@ -151,6 +152,7 @@ customize them in any way you like, or create your own models from scratch.
 
     * :ref:`notebooks_basiclife`
     * :ref:`notebooks_savings`
+    * :ref:`notebooks_economic`
     * :ref:`notebooks_fastlife`
     * :ref:`notebooks_simplelife`
     * :ref:`notebooks_ifrs17sim`
