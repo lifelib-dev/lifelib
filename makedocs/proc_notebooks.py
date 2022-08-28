@@ -207,12 +207,33 @@ def remove_notebooks():
             shutil.rmtree(nbdir)
 
 
+# For sphinx-gallery, copy libraries to projects dir.
+def copy_libraries():
+    libs_dir = thisdir + '/../lifelib/libraries'
+    projs_dir = thisdir + '/../lifelib/projects'
+    for lib in pathlib.Path(libs_dir).iterdir():
+        if lib.is_dir() and (lib / 'README.txt').exists():
+            shutil.copytree(lib.as_posix(), projs_dir + '/' + lib.name)
+
+
+def remove_libraries():
+    libs_dir = thisdir + '/../lifelib/libraries'
+    projs_dir = thisdir + '/../lifelib/projects'
+    for lib in pathlib.Path(libs_dir).iterdir():
+        if lib.is_dir() and (lib / 'README.txt').exists():
+            target = projs_dir + '/' + lib.name
+            if os.path.exists(target):
+                shutil.rmtree(target)
+
+
 if __name__ == "__main__":
     arg = sys.argv[1]
     if arg == "prepare":
         prepare_notebooks()
         prepare_models()
+        copy_libraries()
     elif arg == "remove":
         remove_notebooks()
+        remove_libraries()
     else:
         raise KeyError
