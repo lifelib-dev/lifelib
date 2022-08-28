@@ -41,9 +41,9 @@ and outputs some graphs on the :doc:`Gallery</generated_examples/index>` page.
    ========================================= ===============================================================
    CashValue_ME_EX1                          The example model for *savings_example1.ipynb*
    savings_example1.ipynb                    Jupyter notebook :doc:`/libraries/notebooks/savings/savings_example1`
-   plot_av_paths.py                          Python script for :doc:`/generated_examples/savings_gallery/plot_ex1_av_paths`
-   plot_rand.py                              Python script for :doc:`/generated_examples/savings_gallery/plot_ex1_rand`
-   plot_option_value.py                      Python script for :doc:`/generated_examples/savings_gallery/plot_ex1_option_value`
+   plot_av_paths.py                          Python script for :doc:`/generated_examples/savings/plot_ex1_av_paths`
+   plot_rand.py                              Python script for :doc:`/generated_examples/savings/plot_ex1_rand`
+   plot_option_value.py                      Python script for :doc:`/generated_examples/savings/plot_ex1_option_value`
    ========================================= ===============================================================
 
 
