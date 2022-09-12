@@ -69,7 +69,7 @@ model development and governance perspectives:
 
 License
 -------
-Copyright (c) 2021 lifelib Developers
+Copyright (c) 2022 lifelib Developers
 
 lifelib is free software; you can redistribute it and/or
 modify it under the terms of
