@@ -109,8 +109,8 @@ This release reflects changes for models to run on `modelx`_ v0.5.0.
     See `commit 605802a`_ and `commit df083f6`_ for where and
     how to make changes in such models.
 
-.. _commit 605802a: https://github.com/fumitoh/lifelib/commit/605802a0ea52d8fbec9a7380b6a0a0717de9bd71
-.. _commit df083f6: https://github.com/fumitoh/lifelib/commit/df083f681752eab16508e676c63f9e2f6ae7ca4f
+.. _commit 605802a: https://github.com/lifelib-dev/lifelib/commit/605802a0ea52d8fbec9a7380b6a0a0717de9bd71
+.. _commit df083f6: https://github.com/lifelib-dev/lifelib/commit/df083f681752eab16508e676c63f9e2f6ae7ca4f
 
 
 v0.0.13 (27 Dec 2019)
@@ -133,7 +133,7 @@ v0.0.12 (6 July 2019)
 This version fixes the trouble resulted from erroneous packaging in v0.0.11,
 and includes minor code improvements.
 
-- Fix the packaging error in v0.0.11 (`Issue #6 <https://github.com/fumitoh/lifelib/issues/6>`_).
+- Fix the packaging error in v0.0.11 (`Issue #6 <https://github.com/lifelib-dev/lifelib/issues/6>`_).
 - Update :mod:`~ifrs17sim.ifrs` to include the loss component logic.
 - Fix the sign in :func:`~ifrs17sim.ifrs.AmortAcqCashflow`.
 - Update :mod:`~simplelife.build_input` to make a better use of
@@ -150,7 +150,7 @@ v0.0.11 (24 March 2019)
     by mistake.
     You will see an error when you try to run the default models.
     For more on th error and how to fix it,
-    see `this discussion on github <https://github.com/fumitoh/lifelib/issues/6>`_.
+    see `this discussion on github <https://github.com/lifelib-dev/lifelib/issues/6>`_.
 
 
 .. warning::
@@ -198,14 +198,14 @@ v0.0.9 (5 August 2018)
   :doc:`/generated_examples/nestedlife/plot_actest` and
   :doc:`/generated_examples/nestedlife/plot_pvnetcf` examples are replaced
   with ``set_fomula`` method.
-  Check `this commit on github <https://github.com/fumitoh/lifelib/commit/c580487d414ae535ff65755d3cdfb46f3aab139a>`__
+  Check `this commit on github <https://github.com/lifelib-dev/lifelib/commit/c580487d414ae535ff65755d3cdfb46f3aab139a>`__
   to see the exact changes.
 
 - Due to a spec change in modelx, dynamic spaces now inherit their
   parent spaces by default.
   Accordingly, :func:`simplelife.simplelife.build`, :func:`nestedlife.nestedlife.build` and
   :func:`ifrs17sim.ifrs17sim.build` are updated.
-  Check `this commit on github <https://github.com/fumitoh/lifelib/commit/14f3263d32de873a672a09ad34f578703ea46180>`__
+  Check `this commit on github <https://github.com/lifelib-dev/lifelib/commit/14f3263d32de873a672a09ad34f578703ea46180>`__
   to see the exact changes.
 
 v0.0.8 (17 June 2018)

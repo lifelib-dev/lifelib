@@ -69,7 +69,7 @@ What for?
 Related sites
 -------------
 
-    - **lifelib** development site: https://github.com/fumitoh/lifelib
+    - **lifelib** development site: https://github.com/lifelib-dev/lifelib
     - **modelx** documentation: http://docs.modelx.io
 """
 

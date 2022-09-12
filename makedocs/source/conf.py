@@ -120,12 +120,12 @@ html_theme_options = {
     "icon_links": [
         {
             "name": "GitHub",
-            "url": "https://github.com/fumitoh/lifelib",
+            "url": "https://github.com/lifelib-dev/lifelib",
             "icon": "fab fa-github-square"
         }
     ],
     "external_links": [
-        {"name": "Discussions", "url": "https://github.com/fumitoh/lifelib/discussions"}
+        {"name": "Discussions", "url": "https://github.com/lifelib-dev/lifelib/discussions"}
     ]
 
 }

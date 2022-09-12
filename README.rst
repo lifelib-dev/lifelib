@@ -9,7 +9,7 @@ lifelib
     :target: https://pypi.org/project/lifelib/
 
 .. image:: https://img.shields.io/pypi/l/lifelib
-    :target: https://github.com/fumitoh/lifelib/blob/master/LICENSE.txt
+    :target: https://github.com/lifelib-dev/lifelib/blob/master/LICENSE.txt
 
 
 What is lifelib?
@@ -74,11 +74,11 @@ Copyright (c) 2021 lifelib Developers
 lifelib is free software; you can redistribute it and/or
 modify it under the terms of
 `MIT License
-<https://github.com/fumitoh/lifelib/blob/master/LICENSE.txt>`_.
+<https://github.com/lifelib-dev/lifelib/blob/master/LICENSE.txt>`_.
 
 Contributions, productive comments, requests and feedback from the community
 are always welcome. Information on lifelib development is found at Github
-https://github.com/fumitoh/lifelib
+https://github.com/lifelib-dev/lifelib
 
 Requirements
 ------------

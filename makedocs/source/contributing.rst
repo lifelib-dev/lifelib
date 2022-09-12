@@ -17,12 +17,12 @@ There are various ways to contribute to lifelib:
 * Write examples using lifelib models. See the `Writing examples`_ section below for more details.
 * Add a new library to lifelib. See the `Adding a new library`_ section below for more details.
 
-.. _Issue: https://github.com/fumitoh/lifelib/issues
-.. _Discussion: https://github.com/fumitoh/lifelib/discussions
-.. _issues: https://github.com/fumitoh/lifelib/issues
+.. _Issue: https://github.com/lifelib-dev/lifelib/issues
+.. _Discussion: https://github.com/lifelib-dev/lifelib/discussions
+.. _issues: https://github.com/lifelib-dev/lifelib/issues
 .. _lifelib site: https://lifelib.io
-.. _repository: https://github.com/fumitoh/lifelib
-.. _makedocs/source: https://github.com/fumitoh/lifelib/tree/master/makedocs/source
+.. _repository: https://github.com/lifelib-dev/lifelib
+.. _makedocs/source: https://github.com/lifelib-dev/lifelib/tree/master/makedocs/source
 .. _Sphinx: https://www.sphinx-doc.org/
 
 
@@ -115,9 +115,9 @@ Here are some preferable characteristics desired for libraries.
 Libraries are located in the `lifelib/libraries`_ path in the lifelib repository,
 and their documents are located in `makedocs/source/libraries`_ path in the repo.
 
-.. _lifelib/libraries: https://github.com/fumitoh/lifelib/tree/master/lifelib/libraries
+.. _lifelib/libraries: https://github.com/lifelib-dev/lifelib/tree/master/lifelib/libraries
 
-.. _makedocs/source/libraries: https://github.com/fumitoh/lifelib/tree/master/makedocs/source/libraries
+.. _makedocs/source/libraries: https://github.com/lifelib-dev/lifelib/tree/master/makedocs/source/libraries
 
 The docstrings of all the space and the cells in the model should
 be well-documented.

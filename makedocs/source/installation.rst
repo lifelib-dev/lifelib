@@ -116,7 +116,7 @@ to update your existing installation to the newest release, use ``-U`` option wi
     > pip install -U lifelib
 
 .. _PyPI: https://pypi.org/project/lifelib/
-.. _lifelib repository: https://github.com/fumitoh/lifelib
+.. _lifelib repository: https://github.com/lifelib-dev/lifelib
 .. _modelx repository: https://github.com/fumitoh/modelx
 .. _editable mode: https://pip.pypa.io/en/stable/reference/pip_install/#editable-installs
 .. _conda-forge: https://conda-forge.org/
