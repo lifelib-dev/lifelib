@@ -47,6 +47,13 @@ def test_main(argv, tmp_path):
     "library, model_dir, target, method, args, expected",
     [
         ["basiclife",
+         "BasicTermASL_ME",
+         ("BasicTermASL_ME", "Projection", "pv_net_cf", ()),
+         "__getitem__",
+         (0,),
+         34191.46241209286],
+
+        ["basiclife",
          "BasicTerm_SE",
          ("BasicTerm_SE", "Projection", (1,), "pv_net_cf", ()),
          None,
