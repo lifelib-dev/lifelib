@@ -50,6 +50,18 @@ def proc_ifrs17sim(node):
 entries = [
 
     {"dir": "libraries",
+     "project": "cluster",
+     "notebook": "cluster_model_points.ipynb",
+     "is_target": lambda node: True,
+     "proc": lambda node: None},
+
+    {"dir": "libraries",
+     "project": "cluster",
+     "notebook": "generate_model_points_for_cluster.ipynb",
+     "is_target": lambda node: True,
+     "proc": lambda node: None},
+
+    {"dir": "libraries",
      "project": "economic",
      "notebook": "hull-white-simulation.ipynb",
      "is_target": lambda node: True,

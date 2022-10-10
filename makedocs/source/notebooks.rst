@@ -33,6 +33,13 @@ Notebooks
 
 * :doc:`libraries/notebooks/economic/hull-white-simulation`
 
+.. _notebooks_cluster:
+
+:mod:`cluster` Notebooks
+---------------------------
+
+* :doc:`libraries/notebooks/cluster/cluster_model_points`
+* :doc:`libraries/notebooks/cluster/generate_model_points_for_cluster`
 
 .. _notebooks_fastlife:
 

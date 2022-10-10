@@ -9,6 +9,7 @@ Libraries
    savings/index.rst
    assets/index.rst
    economic/index.rst
+   cluster/index.rst
 
 .. _past-libraries:
 

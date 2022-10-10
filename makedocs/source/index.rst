@@ -109,7 +109,7 @@ customize them in any way you like, or create your own models from scratch.
     * :doc:`libraries/savings/index`
     * :doc:`libraries/assets/index`
     * :doc:`libraries/economic/index`
-
+    * :doc:`libraries/cluster/index`
     ---
 
     :ref:`Past Libraries<past-libraries>`
@@ -153,6 +153,7 @@ customize them in any way you like, or create your own models from scratch.
     * :ref:`notebooks_basiclife`
     * :ref:`notebooks_savings`
     * :ref:`notebooks_economic`
+    * :ref:`notebooks_cluster`
     * :ref:`notebooks_fastlife`
     * :ref:`notebooks_simplelife`
     * :ref:`notebooks_ifrs17sim`
