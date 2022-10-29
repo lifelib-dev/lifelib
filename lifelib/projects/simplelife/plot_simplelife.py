@@ -1,5 +1,5 @@
 """
-:mod:`simplelife` cashflow
+simplelife: cashflow
 ==========================
 
 Draw a graph of liability cashflows of a simple whole life policy
@@ -10,6 +10,9 @@ Draw a graph of liability cashflows of a simple whole life policy
    :start-after: Begin binder simplelife_demo
    :end-before: End binder simplelife_demo
 
+
+.. seealso::
+    * The :mod:`~simplelife` library
 """
 import pandas as pd
 import modelx as mx

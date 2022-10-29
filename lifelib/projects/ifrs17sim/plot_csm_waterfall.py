@@ -1,5 +1,5 @@
 """
-:mod:`ifrs17sim` CSM waterfall chart
+ifrs17sim: CSM waterfall chart
 ====================================
 
 The script draws a CSM waterfall chart.
@@ -14,6 +14,8 @@ The live version of the notebook is available online.
    :start-after: Begin binder ifrs17sim_csm_waterfall
    :end-before: End binder ifrs17sim_csm_waterfall
 
+.. seealso::
+    * The :mod:`~ifrs17sim` library
 """
 import modelx as mx
 from draw_charts import draw_waterfall, get_waterfalldata

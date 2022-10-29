@@ -1,8 +1,11 @@
 """
-:mod:`ifrs17sim` IFRS balancesheet itms
+ifrs17sim: IFRS balancesheet itms
 =======================================
 
 Fulfilment CF, CSM, Cash balances
+
+.. seealso::
+    * The :mod:`~ifrs17sim` library
 """
 
 # When the current directory is this folder,

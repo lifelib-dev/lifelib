@@ -1,8 +1,11 @@
 """
-Actual vs Estimated
-===================
+nestedlife: Actual vs Estimated
+================================
 
 Lapse assumption changes based on previous year experience.
+
+.. seealso::
+    * The :mod:`~nestedlife` library
 """
 import modelx as mx
 

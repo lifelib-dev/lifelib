@@ -1,6 +1,9 @@
 """
-:mod:`fastlife` present values of net cashflows
+fastlife: Present values of net cashflows
 ===============================================
+
+.. seealso::
+    * :mod:`~fastlife` library
 """
 
 import matplotlib.pyplot as plt

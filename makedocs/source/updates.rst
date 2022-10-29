@@ -1,3 +1,5 @@
+:html_theme.sidebar_secondary.remove:
+
 Updates
 =======
 
@@ -26,6 +28,8 @@ Updates
 
 * *30 Jul 2022:*
   New download available on the :doc:`download` page.
+
+.. Latest Updates End
 
 * *9 Jul 2022:*
   lifelib v0.5.0 is released. See :ref:`Release Notes<relnotes_v0.5.0>` for details.
@@ -59,8 +63,6 @@ Updates
 
 * *2 Jan 2022:*
   The :doc:`contribution guide<contributing>` is added.
-
-.. Latest Updates End
 
 * *25 Dec 2021:*
   New download available on :doc:`download` page.

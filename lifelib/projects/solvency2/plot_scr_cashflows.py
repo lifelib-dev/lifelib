@@ -1,8 +1,11 @@
 """
-:mod:`solvency2` cashflows
+solvency2: cashflows
 ===========================
 
 Net liability cashflows by SCR shock scenarios for selected policies
+
+.. seealso::
+    * The :mod:`~solvency2` library
 """
 import modelx as mx
 import pandas as pd

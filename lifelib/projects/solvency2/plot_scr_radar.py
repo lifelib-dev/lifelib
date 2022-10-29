@@ -1,11 +1,13 @@
 """
-:mod:`solvency2` Life SCR radar chart
+solvency2: Life SCR radar chart
 =====================================
 
 This script draws radar charts for selected policies.
 Each spoke of the radar chart represents a sub risk of SCR life risks,
-and the sizes of the sub risks by duration are drawn in the radar chart. 
+and the sizes of the sub risks by duration are drawn in the radar chart.
 
+.. seealso::
+    * The :mod:`~solvency2` library
 """
 import modelx as mx
 import pandas as pd

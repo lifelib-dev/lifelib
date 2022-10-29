@@ -1,3 +1,5 @@
+:html_theme.sidebar_secondary.remove:
+
 .. lifelib documentation master file, created by
    sphinx-quickstart on Sat Nov 11 16:48:39 2017.
    You can adapt this file completely to your liking, but it should at least
@@ -27,19 +29,19 @@ customize them in any way you like, or create your own models from scratch.
 
     .. image:: /_static/thumb1.png
        :target: generated_examples/index.html
-       :alt: Thumbnail for image example
+       :alt: Thumbnail for simplelife example
     ---
     .. image:: /_static/thumb2.png
-       :target: generated_examples/index.html
-       :alt: Thumbnail for Anscombe's quartet example
+       :target: generated_examples/index.html#savings-examples
+       :alt: Thumbnail for savings example
     ---
     .. image:: /_static/thumb3.png
-       :target: generated_examples/index.html
-       :alt: Thumbnail for stocks example
+       :target: libraries/notebooks/cluster/cluster_model_points.html
+       :alt: Thumbnail for cluster notebook
     ---
     .. image:: /_static/thumb4.png
        :target: spyder.html
-       :alt: Thumbnail for Lorenz attractor example
+       :alt: Thumbnail for Spyder example
 
 
 
@@ -68,8 +70,9 @@ customize them in any way you like, or create your own models from scratch.
 
 
 .. panels::
-    :container: container-fluid pb-3
-    :column: col-lg-3 col-md-3 col-sm-12 col-xs-12 p-2
+    :container: container pb-4
+    :column: col-lg-6 col-md-6 col-sm-6 col-xs-12 p-2
+    :card: shadow
     :header: h3
 
     :doc:`about`
@@ -91,13 +94,6 @@ customize them in any way you like, or create your own models from scratch.
     * :ref:`getting-lifelib`
     * :ref:`using-spyder`
     * :ref:`running-notebooks`
-
-    ---
-
-    :doc:`Videos<videos>`
-    ^^^^^^^^^^^^^^^^^^^^^^^
-
-    * :ref:`getting-started-videos`
 
 
     ---
@@ -122,14 +118,6 @@ customize them in any way you like, or create your own models from scratch.
     * :ref:`project_solvency2`
     * :ref:`project_smithwilson`
     * :doc:`projects/devguide/index`
-
-    ---
-
-    :doc:`Download<download>`
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-    Download lifelib with WinPython from :doc:`here<download>`.
-    No installation is required. Just unzip the file and it's all set.
 
     ---
 
@@ -159,35 +147,27 @@ customize them in any way you like, or create your own models from scratch.
     * :ref:`notebooks_ifrs17sim`
     * :ref:`notebooks_smithwilson`
 
+    ---
+
+    :doc:`Videos<videos>`
+    ^^^^^^^^^^^^^^^^^^^^^^^
+
+    * :ref:`getting-started-videos`
+
+    ---
+
+    :doc:`Download<download>`
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    Download lifelib with WinPython from :doc:`here<download>`.
+    No installation is required. Just unzip the file and it's all set.
+
+
 
 .. 3rd row, modelx sites, links & contact ---------------------------------
 
-.. raw:: html
-
-   <div class="container-fluid">
-     <div class="row">
-       <div class="col-md-6">
-
-          <h2><strong>modelx</strong> sites</h2>
-
-**modelx** is a Python package to use Python like a spreadsheet.
-modelx provides the foundation of lifelib. Find out more
-about modelx on the following sites.
-
-========================== ====================================
-Home page & Blog           https://modelx.io
-Documentation site         https://docs.modelx.io
-Development site           https://github.com/fumitoh/modelx
-modelx on PyPI             https://pypi.org/project/modelx/
-========================== ====================================
-
-
-.. raw:: html
-
-       </div>
-       <div class="col-md-6">
-
-          <h2><strong>lifelib</strong> sites</h2>
+**lifelib** sites
+--------------------
 
 Submit an issue on
 `lifelib development site <https://github.com/lifelib-dev/lifelib/issues>`_
@@ -206,11 +186,21 @@ lifelib on PyPI            https://pypi.org/project/lifelib/
 LinkedIn page              https://www.linkedin.com/company/lifelib/
 ========================== ================================================
 
-.. raw:: html
 
-       </div>
-     </div>
-   </div>
+**modelx** sites
+----------------------
+
+**modelx** is a Python package to use Python like a spreadsheet.
+modelx provides the foundation of lifelib. Find out more
+about modelx on the following sites.
+
+========================== ====================================
+Home page & Blog           https://modelx.io
+Documentation site         https://docs.modelx.io
+Development site           https://github.com/fumitoh/modelx
+modelx on PyPI             https://pypi.org/project/modelx/
+========================== ====================================
+
 
 
 .. toctree::

@@ -1,8 +1,11 @@
 """
-:mod:`nestedlife` cashflow
-==========================
+nestedlife: Present value of cashflows
+============================================
 
 Draw a graph of present value of cashflow
+
+.. seealso::
+    * The :mod:`~nestedlife` library
 """
 import numpy as np
 import matplotlib.pyplot as plt

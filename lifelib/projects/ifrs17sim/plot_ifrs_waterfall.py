@@ -1,5 +1,5 @@
 """
-:mod:`ifrs17sim` IFRS waterfall chart
+IFRS waterfall chart
 =====================================
 
 The script draws multiple waterfall charts,
@@ -14,6 +14,9 @@ The live version of the notebook is available online.
 .. include:: /binderlinks.rst
    :start-after: Begin binder ifrs17sim_charts_baseline
    :end-before: End binder ifrs17sim_charts_baseline
+
+.. seealso::
+    * The :mod:`~ifrs17sim` library
 
 """
 from draw_charts import draw_waterfall, get_waterfalldata

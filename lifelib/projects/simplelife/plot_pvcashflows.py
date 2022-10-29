@@ -1,8 +1,11 @@
 """
-:mod:`simplelife` present values of cashflows
+simplelife: present values of cashflows
 =============================================
 
 Present values of liability cashflows of a simple whole life policy.
+
+.. seealso::
+    * The :mod:`~simplelife` library
 """
 import modelx as mx
 proj = mx.read_model("model").Projection

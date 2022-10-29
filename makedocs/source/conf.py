@@ -117,6 +117,7 @@ html_title = "lifelib " + version
 # https://ryan-roemer.github.io/sphinx-bootstrap-theme/README.html
 html_theme_options = {
 
+    "header_links_before_dropdown": 8,
     "icon_links": [
         {
             "name": "GitHub",
