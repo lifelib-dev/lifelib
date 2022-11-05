@@ -14,9 +14,8 @@
 
    <div class="lead">
 
-An open-source library of life actuarial models written in Python.
-You can run the models right out of the box,
-customize them in any way you like, or create your own models from scratch.
+An open-source Python package of practical actuarial models, tools and examples. 
+Contribute your excellent work to lifelib and share it with actuaries all over the world!
 
 .. raw:: html
 
