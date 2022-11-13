@@ -1,10 +1,5 @@
-<h1 align="center" style="border-botom: none">
-  <b>
-    🐍 Sampled increments from two or more correlated Brownian motions (BM) 🐍     
-  </b>
-</h1>
+# 🐍 Sampled increments from two or more correlated Brownian motions (BM) 🐍     
 
-</br>
 
 Popular algorithm for generating a matrix of increments from a multidimensional Brownian motion (BM) with a given vector of means and a Variance-Covariance matrix.
 

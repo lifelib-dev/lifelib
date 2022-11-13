@@ -1,8 +1,4 @@
-<h1 align="center" style="border-botom: none">
-  <b>
-    🐍 Bisection method that finds the optimal parameter α for the Smith & Wilson algorithm 🐍     
-  </b>
-</h1>
+# 🐍 Bisection method that finds the optimal parameter α for the Smith & Wilson algorithm 🐍     
 
 This repository has an implementation for a simple bisection method that finds the optimal parameter α for the Smith & Wilson algorithm often used in insurance to interpolate/extrapolate rates or yields.
 

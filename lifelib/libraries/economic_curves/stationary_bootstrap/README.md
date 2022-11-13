@@ -1,8 +1,5 @@
-<h1 align="center" style="border-botom: none">
-  <b>
-    🐍 A block resampling method used for weakly-dependent stationary time-series data 🐍     
-  </b>
-</h1>
+# 🐍 A block resampling method used for weakly-dependent stationary time-series data 🐍     
+
 
 A block resampling method used for weakly-dependent stationary time-series data proposed in the 1994 paper by [Politis & Romano](https://www.researchgate.net/publication/254287565_The_Stationary_Bootstrap).
 
