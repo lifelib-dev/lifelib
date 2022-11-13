@@ -1,10 +1,4 @@
-<h1 align="center" style="border-botom: none">
-  <b>
-    🐍 Smith & Wilson algorithm 🐍     
-  </b>
-</h1>
-
-</br>
+#  🐍 Smith & Wilson algorithm 🐍    
 
 Popular algorithm for interpolating and extrapolating various curves such as bond yields and risk-free rates. 
 
@@ -84,6 +78,5 @@ To extrapolate the curve, it is enough to know the additional parameters(alpha, 
 
 An example of this format is the monthly risk free rate published by turopean Insurance and Occupational Pensions Authority (https://www.eiopa.europa.eu/tools-and-data/).
 
-</br>
 
 If you have any suggestions for improving the code/comments etc., please let us know.
