@@ -104,6 +104,7 @@ Contribute your excellent work to lifelib and share it with actuaries all over t
     * :doc:`libraries/savings/index`
     * :doc:`libraries/assets/index`
     * :doc:`libraries/economic/index`
+    * :doc:`libraries/economic_curves/index`
     * :doc:`libraries/cluster/index`
     ---
 
@@ -140,6 +141,7 @@ Contribute your excellent work to lifelib and share it with actuaries all over t
     * :ref:`notebooks_basiclife`
     * :ref:`notebooks_savings`
     * :ref:`notebooks_economic`
+    * :ref:`notebooks_economic_curves`
     * :ref:`notebooks_cluster`
     * :ref:`notebooks_fastlife`
     * :ref:`notebooks_simplelife`

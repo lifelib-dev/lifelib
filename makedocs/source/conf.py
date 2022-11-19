@@ -47,9 +47,11 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
     'nbsphinx',
+    'nbsphinx_link',
     'sphinx_gallery.gen_gallery',
     'sphinxcontrib.blockdiag',
-    'sphinx_panels'
+    'sphinx_panels',
+    'myst_parser'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
