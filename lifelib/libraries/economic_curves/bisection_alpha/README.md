@@ -1,4 +1,4 @@
-# 🐍 Bisection method that finds the optimal parameter α for the Smith & Wilson algorithm 🐍     
+# Bisection method that finds the optimal parameter α for the Smith & Wilson algorithm     
 
 This repository has an implementation for a simple bisection method that finds the optimal parameter α for the Smith & Wilson algorithm often used in insurance to interpolate/extrapolate rates or yields.
 
@@ -26,10 +26,10 @@ By transforming the minimization problem at the point of convergence into a prob
  Note that to be consistent with EIOPA's recommandations, the lower bound of the interval should be set to 0.05. 
  
 ## Getting started
+
 ```python
 import numpy as np
-from SWCalibrate import SWCalibrate as SWCalibrate
-from SWExtrapolate import SWExtrapolate as SWExtrapolate
+from smith_wilson_funcs import SWCalibrate, SWExtrapolate
 from bisection_alpha import Galfa as Galfa
 from bisection_alpha import BisectionAlpha as BisectionAlpha
 
@@ -51,5 +51,11 @@ Tau = 0.0001 # 1 basis point
 print("Example in the documentation for Galfa: "+ str(Galfa(M_Obs, r_Obs, ufr, 0.15, Tau)))
 print("Example in the documentation for BisectionAlpha: "+ str(BisectionAlpha(0.05, 0.5, M_Obs, r_Obs, ufr, Tau, Precision, 1000)))
 ```
-Note that this implementation use functions `SWCalibrate` and `SWExtrapolate` from the [Smith & Wilson implementation](https://github.com/qnity/insurance_python/tree/main/smith%26wilson). They are duplicated to this repository for completeness. If there are any inconsistencies or suggestions, raise an issue or contact us directly.
 
+Note that this implementation use functions {func}`~economic_curves.smith_wilson.smith_wilson_funcs.SWCalibrate()` from 
+the {doc}`smith_wilson` algorithm. 
+They are duplicated to this repository for completeness. 
+
+If there are any inconsistencies or suggestions, raise an [issue](https://github.com/lifelib-dev/lifelib/issues),
+or contact [the original authors](https://github.com/qnity), 
+or start a discussion at [lifelib Discussions](https://github.com/lifelib-dev/lifelib/discussions).

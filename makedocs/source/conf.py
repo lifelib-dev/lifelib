@@ -47,6 +47,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
     'nbsphinx',
+    'nbsphinx_link',
     'sphinx_gallery.gen_gallery',
     'sphinxcontrib.blockdiag',
     'sphinx_panels',

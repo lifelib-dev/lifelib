@@ -13,16 +13,18 @@ def OptimalLength(data: np.ndarray):
     
     Warning! The minimal size of the time series is 9 elements.
 
-    Example of use:
-    >>> import numpy as np
-    >>> data = np.array([0.4,0.2,0.1,0.4,0.3,0.1,0.3,0.4,0.2,0.5,0.1,0.2])
-    >>> OptimalLength(data)
-      Out[0]:  4.0
+    Example:
+
+        >>> import numpy as np
+        >>> data = np.array([0.4,0.2,0.1,0.4,0.3,0.1,0.3,0.4,0.2,0.5,0.1,0.2])
+        >>> OptimalLength(data)
+        4.0
+
     Args:
-       data ... ndarray array containing the time-series that we wish to bootstrap. 
-           Ex. np.array([-1,0.2,0.3,0.7,0.5,0.1,0.4,0.3,0.5])
+       data: ndarray array containing the time-series that we wish to bootstrap.
+             Ex. np.array([-1,0.2,0.3,0.7,0.5,0.1,0.4,0.3,0.5])
     Returns:
-       Bstar ... optimal value of the parameter m Ex. 1
+       Bstar: optimal value of the parameter m Ex. 1
 
     Original Matlab version written by:
     James P. LeSage, Dept of Economics
@@ -128,24 +130,27 @@ def OptimalLength(data: np.ndarray):
 
 
 def mlag(x: np.ndarray,n)-> np.ndarray:
-    """
-    Returns a numpy array in which the k-th column is the series x pushed down (lagged) by k places.
+    """Returns a numpy array in which the k-th column is the series x pushed down (lagged) by k places.
     
-    Example of use
-     >>> import numpy as np
-     >>> x = np.array([1,2,3,4])
-     >>> n = 2
-     >>> mlag(x,n)
-      Out[0]:  array([[0, 0],
-                      [1, 0],
-                      [2, 1],
-                      [3, 2]])   
+    Example:
+
+        >>> import numpy as np
+        >>> x = np.array([1,2,3,4])
+        >>> n = 2
+        >>> mlag(x,n)
+        array([[0, 0],
+          [1, 0],
+          [2, 1],
+          [3, 2]])
+
    The function was tested passing a numpy array (ndarray) as input and requires numpy to run.
+
    Args:
-       x ... ndarray array for which the lagged matrix is calculated. np.array([1,2,3,4])
-       n ... integer specifying how many lags does the function consider
+       x: ndarray array for which the lagged matrix is calculated. np.array([1,2,3,4])
+       n: integer specifying how many lags does the function consider
+
     Returns:
-        xlag... ndarray contining the k-th lagged values in the k-th column of the matrix
+        xlag: ndarray contining the k-th lagged values in the k-th column of the matrix
 
     Original Matlab version written by:
     James P. LeSage, Dept of Economics
@@ -167,22 +172,25 @@ def mlag(x: np.ndarray,n)-> np.ndarray:
     return out
 
 
-def lam(x: np.ndarray)-> np.ndarray:
-    """
-    Returns the value at points x of the Trapezoidal function. Trapezoidal funcion maps all numbers bigger than 1 or smaller than -1 to zero.
+def lam(x: np.ndarray) -> np.ndarray:
+    """Returns the value at points x of the Trapezoidal function.
+
+    Trapezoidal funcion maps all numbers bigger than 1 or smaller than -1 to zero.
     Values between -1/2 to 1/2 to 1 and the rest either on the line connecting (-1,0) to (-1/2,1) or (1/2,1) to (1,0).
 
-    Example of use:
-    >>> import numpy as np
-    >>> x = np.array([0.55])
-    >>> lam(x)
-      Out[0]:  array([0.9])
+    Example:
+
+        >>> import numpy as np
+        >>> x = np.array([0.55])
+        >>> lam(x)
+        array([0.9])
 
     Args:
-       x ... ndarray array of points on which we wish to apply the trapezoidal mapping. 
-           Ex. np.array([-1,0.2,0.3,0.7])
+       x: ndarray array of points on which we wish to apply the trapezoidal mapping.
+        Ex. np.array([-1,0.2,0.3,0.7])
+
     Returns:
-       out ... ndarray of mapped points Ex. array([0. , 1. , 1. , 0.6])
+       ndarray of mapped points Ex. array([0. , 1. , 1. , 0.6])
 
     Original Matlab version written by:
     James P. LeSage, Dept of Economics

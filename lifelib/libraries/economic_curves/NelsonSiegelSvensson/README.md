@@ -1,6 +1,6 @@
-# 🐍 Nelson-Siegel-Svannson algorithm 🐍     
+# Nelson-Siegel-Svennson algorithm   
 
-Popular algorithm for fitting a yield curve to obseved data. 
+Popular algorithm for fitting a yield curve to observed data. 
 
 ## Problem
 Data on bond yields is usualy avalible only for a small set of maturities, while the user is normaly interested in a wider range of yields. 
@@ -61,5 +61,5 @@ TimeResultVec = np.array([1,2,5,10,25,30,31]) # Maturities for yields that we ar
 OptiParam = NSSMinimize(beta0, beta1, beta2, beta3, lambda0, lambda1, TimeVec, YieldVec) # The Nelder-Mead simplex algorithem is used to find the parameters that result in a curve with the minimum residuals compared to the market data.
 
 # Print the yield curve with optimal parameter to compare with the data provided
-print(NelsonSiegelSvansson(TimeResultVec, OptiParam[0], OptiParam[1], OptiParam[2], OptiParam[3], OptiParam[4], OptiParam[5]))
+print(NelsonSiegelSvensson(TimeResultVec, OptiParam[0], OptiParam[1], OptiParam[2], OptiParam[3], OptiParam[4], OptiParam[5]))
 ```

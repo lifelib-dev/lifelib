@@ -1,4 +1,4 @@
-#  🐍 Smith & Wilson algorithm 🐍    
+# Smith & Wilson algorithm
 
 Popular algorithm for interpolating and extrapolating various curves such as bond yields and risk-free rates. 
 
@@ -29,8 +29,8 @@ Note that this implementation assumes that the yields were calculated on ZCB. Th
 
 The implementation is split in two parts: 
 
-- The available market data and the parameters are used to "calibrate" the algorithm. This returns a calibration vector that can be used to interpolate or extrapolate target maturities. This is done by calibrating the kernel functions. Look at the function `SWCalibrate()`.
-- The yields for ZCB with targeted maturities are Interpolated/extrapolated. Look at the function `SWExtrapolate()`.
+- The available market data and the parameters are used to "calibrate" the algorithm. This returns a calibration vector that can be used to interpolate or extrapolate target maturities. This is done by calibrating the kernel functions. Look at the function {func}`~smith_wilson_funcs.SWCalibrate()`.
+- The yields for ZCB with targeted maturities are Interpolated/extrapolated. Look at the function {func}`~smith_wilson_funcs.SWExtrapolate()`.
 
 The syntax in the functions tries to be consistent with EIOPA technical specifications.
 
@@ -40,8 +40,7 @@ Given the data on 6 ZCB with maturities of 1, 2, 4, 5, 6, and 7 years with obser
 
 ```bash
 import numpy as np
-from SWCalibrate import SWCalibrate as SWCalibrate
-from SWExtrapolate import SWExtrapolate as SWExtrapolate
+from smith_wilson_funcs import SWCalibrate, SWExtrapolate
 
 # yields observed on the market
 r_Obs = np.transpose(np.array([0.01, 0.02, 0.03, 0.032, 0.035, 0.04])) 
@@ -69,14 +68,25 @@ print("The interpolated/extrapolated rates are:")
 print(r_Target)
 ```
 
-## About the example in main.py
+## About example notebook
 
-Example.py contains a script with an example from EIOPA's own Excel implementation tool ( Smith-Wilson Risk-Free Interest Rate Extrapolation Tool 27102015.xlsb ). In this example, the yields are available for ZCB maturing in 1 year, 2 years, ..., 20 years. The output is the curve for up to 65 years.
+{doc}`smith_wilson_example.ipynb<smith_wilson_example>`, 
+a Jupyter notebook included in the algorythm folder
+contains a script with an example from EIOPA's own Excel implementation tool 
+(Smith-Wilson Risk-Free Interest Rate Extrapolation Tool 27102015.xlsb). 
+In this example, the yields are available for ZCB maturing in 1 year, 2 years, ..., 20 years. The output is the curve for up to 65 years.
 
-###Note:
-To extrapolate the curve, it is enough to know the additional parameters(alpha, ufr), the maturities used for calibration and the vector b*Q. If this is the case, it is not difficult to modify the function `SWExtrapolate()` to take as input Qb instead of b. To see an example of this, see the Jupyter Notebook at https://github.com/qnity/insurance_python/tree/main/EIOPA_smith_wilson_test .
+```{note}
+To extrapolate the curve, it is enough to know the additional parameters(alpha, ufr), 
+the maturities used for calibration and the vector b*Q. If this is the case, 
+it is not difficult to modify the function {func}`~smith_wilson_funcs.SWExtrapolate()` 
+to take as input Qb instead of b. To see an example of this, 
+see the Jupyter Notebook in  {doc}`/libraries/economic_curves/EIOPA_smith_wilson_test`.
+```
 
-An example of this format is the monthly risk free rate published by turopean Insurance and Occupational Pensions Authority (https://www.eiopa.europa.eu/tools-and-data/).
+An example of this format is the monthly risk free rate published by turopean Insurance and 
+Occupational Pensions Authority (<https://www.eiopa.europa.eu/tools-and-data/>).
 
-
-If you have any suggestions for improving the code/comments etc., please let us know.
+To suggest improving the code/comments etc. in this library
+contact [the original authors](https://github.com/qnity), 
+or start a discussion at [lifelib Discussions](https://github.com/lifelib-dev/lifelib/discussions).

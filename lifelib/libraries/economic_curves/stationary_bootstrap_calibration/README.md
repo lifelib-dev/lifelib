@@ -1,4 +1,4 @@
-# 🐍 Automatic calibration of the stationary bootstrap algorithm 🐍     
+# Automatic calibration of the stationary bootstrap algorithm
 
 ## Problem
 

@@ -1,4 +1,4 @@
-# 🐍 Black-Sholes model for simulating the price of a stock🐍     
+# Black-Sholes model for simulating the price of a stock 
 
 Black Sholes model is one of oldest models for simulating the stock market.
 

@@ -1,4 +1,4 @@
-# 🐍 Risk free curve test 🐍
+# Risk free curve test
 
 The risk free curve is one of the principal inputs into an economic scenario generator. This test recalculates the risk free curve using the parameters that are claimed to be used.
 
