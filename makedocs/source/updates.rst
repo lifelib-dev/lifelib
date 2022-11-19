@@ -14,6 +14,10 @@ Updates
     Follow <a href="https://www.linkedin.com/company/lifelib" target="_blank">lifelib on LinkedIn</a>
     for more frequent updates.</p>
 
+* *19 Nov 2022:*
+  lifelib v0.8.0 is released. New library :mod:`~economic_curves` is available.
+  See :ref:`Release Notes<relnotes_v0.8.0>` for details.
+
 * *10 Oct 2022:*
   lifelib v0.7.0 is released. See :ref:`Release Notes<relnotes_v0.7.0>` for details.
 
@@ -23,13 +27,13 @@ Updates
 * *28 Aug 2022:*
   lifelib v0.6.0 is released. See :ref:`Release Notes<relnotes_v0.6.0>` for details.
 
+.. Latest Updates End
+
 * *20 Aug 2022:*
   New video series, *Getting Started with lifelib* available on the :doc:`videos` page.
 
 * *30 Jul 2022:*
   New download available on the :doc:`download` page.
-
-.. Latest Updates End
 
 * *9 Jul 2022:*
   lifelib v0.5.0 is released. See :ref:`Release Notes<relnotes_v0.5.0>` for details.

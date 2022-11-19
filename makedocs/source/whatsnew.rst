@@ -33,6 +33,7 @@ Documentation for released versions of lifelib is available under
 .. toctree::
    :maxdepth: 2
 
+   releases/relnotes_v0.8.0
    releases/relnotes_v0.7.0
    releases/relnotes_v0.6.0
    releases/relnotes_v0.5.0
