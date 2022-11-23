@@ -4,6 +4,12 @@ import os
 import re
 import nbformat
 
+# Since lifelib v0.9.0, most of the functions defined in this file
+# are not used anymore, due to the introduction of nbsphinx-link
+# to generate docs from notebooks put outside the document dir.
+# Only copy_libraries and remove_libraries are used for sphinx-gallery
+# to put gallery thumbnails on the same page.
+
 # Update and copy Jupyter notebooks to be built as static pages by nbsphinx
 
 def is_target_simplelife(node):
@@ -241,11 +247,8 @@ def remove_libraries():
 if __name__ == "__main__":
     arg = sys.argv[1]
     if arg == "prepare":
-        prepare_notebooks()
-        prepare_models()
         copy_libraries()
     elif arg == "remove":
-        remove_notebooks()
         remove_libraries()
     else:
         raise KeyError

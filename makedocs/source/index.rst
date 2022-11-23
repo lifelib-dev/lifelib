@@ -35,7 +35,7 @@ Contribute your excellent work to lifelib and share it with actuaries all over t
        :alt: Thumbnail for savings example
     ---
     .. image:: /_static/thumb3.png
-       :target: libraries/notebooks/cluster/cluster_model_points.html
+       :target: libraries/cluster/cluster_model_points.html
        :alt: Thumbnail for cluster notebook
     ---
     .. image:: /_static/thumb4.png

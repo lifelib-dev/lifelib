@@ -11,10 +11,10 @@ Notebooks
 :mod:`basiclife` Notebooks
 ---------------------------
 
-* `Generating model points <libraries/notebooks/basiclife/generate_model_points.ipynb>`_
-* `Generating model points with duration <libraries/notebooks/basiclife/generate_model_points_with_duration.ipynb>`_
-* `Generating model points for ASL <libraries/notebooks/basiclife/generate_model_points_ASL.ipynb>`_
-* `Creating premium table <libraries/notebooks/basiclife/create_premium_table.ipynb>`_
+* :doc:`Generating model points <libraries/basiclife/generate_model_points>`
+* :doc:`Generating model points with duration <libraries/basiclife/generate_model_points_with_duration>`
+* :doc:`Generating model points for ASL <libraries/basiclife/generate_model_points_ASL>`
+* :doc:`Creating premium table <libraries/basiclife/create_premium_table>`
 
 
 .. _notebooks_savings:
@@ -22,16 +22,16 @@ Notebooks
 :mod:`savings` Notebooks
 ---------------------------
 
-* :doc:`libraries/notebooks/savings/savings_example1`
-* :doc:`libraries/notebooks/savings/savings_example2`
-
+* :doc:`libraries/savings/savings_example1`
+* :doc:`libraries/savings/savings_example2`
+* :doc:`libraries/savings/savings_example3`
 
 .. _notebooks_economic:
 
 :mod:`economic` Notebooks
 ---------------------------
 
-* :doc:`libraries/notebooks/economic/hull-white-simulation`
+* :doc:`libraries/economic/hull-white-simulation`
 
 
 .. _notebooks_economic_curves:
@@ -50,49 +50,31 @@ Notebooks
 :mod:`cluster` Notebooks
 ---------------------------
 
-* :doc:`libraries/notebooks/cluster/cluster_model_points`
-* :doc:`libraries/notebooks/cluster/generate_model_points_for_cluster`
+* :doc:`libraries/cluster/cluster_model_points`
+* :doc:`libraries/cluster/generate_model_points_for_cluster`
 
 .. _notebooks_fastlife:
 
 :mod:`fastlife` Notebooks
 ---------------------------
 
-.. toctree::
-   :hidden:
-
-   projects/notebooks/fastlife/fastlife-introduction.ipynb
-
-* `Introduction to fastlife <projects/notebooks/fastlife/fastlife-introduction.ipynb>`_  (*Run online now!* |binder fastlife_introduction| )
+* :doc:`Introduction to fastlife <projects/fastlife-introduction>`  (*Run online now!* |binder fastlife_introduction| )
 
 .. _notebooks_simplelife:
 
 :mod:`simplelife` Notebooks
 ---------------------------
 
-.. toctree::
-   :hidden:
-
-   projects/notebooks/simplelife/simplelife-space-overview.ipynb
-
-* `simplelife Space Overview <projects/notebooks/simplelife/simplelife-space-overview.ipynb>`_  (*Run online now!* |binder simplelife_space_overview| )
+* :doc:`simplelife Space Overview <projects/simplelife-space-overview>`  (*Run online now!* |binder simplelife_space_overview| )
 
 .. _notebooks_ifrs17sim:
 
 :mod:`ifrs17sim` Notebooks
 --------------------------
 
-.. toctree::
-   :hidden:
-
-   projects/notebooks/ifrs17sim/ifrs17sim_csm_waterfall.ipynb
-   projects/notebooks/ifrs17sim/ifrs17sim_charts_baseline.ipynb
-   projects/notebooks/ifrs17sim/ifrs17sim_charts_lapsescen.ipynb
-
-
-* `CSM Waterfall Chart <projects/notebooks/ifrs17sim/ifrs17sim_csm_waterfall.ipynb>`_  (*Run online now!* |binder ifrs17sim_csm_waterfall| )
-* `IFRS17 Simulation (Baseline) <projects/notebooks/ifrs17sim/ifrs17sim_charts_baseline.ipynb>`_  (*Run online now!* |binder ifrs17sim_charts_baseline| )
-* `IFRS17 Simulation (Lapse scenario) <projects/notebooks/ifrs17sim/ifrs17sim_charts_lapsescen.ipynb>`_  (*Run online now!* |binder ifrs17sim_charts_lapsescen| )
+* :doc:`CSM Waterfall Chart <projects/ifrs17sim_csm_waterfall>`  (*Run online now!* |binder ifrs17sim_csm_waterfall| )
+* :doc:`IFRS17 Simulation (Baseline) <projects/ifrs17sim_charts_baseline>`  (*Run online now!* |binder ifrs17sim_charts_baseline| )
+* :doc:`IFRS17 Simulation (Lapse scenario) <projects/ifrs17sim_charts_lapsescen>`  (*Run online now!* |binder ifrs17sim_charts_lapsescen| )
 
 
 .. _notebooks_smithwilson:
@@ -100,9 +82,4 @@ Notebooks
 :mod:`smithwilson` Notebooks
 ----------------------------
 
-.. toctree::
-   :hidden:
-
-   projects/notebooks/smithwilson/smithwilson-overview.ipynb
-
-* `Smith-Wilson Model Overview <projects/notebooks/smithwilson/smithwilson-overview.ipynb>`_ (*Run online now!* |binder smithwilson_overview| )
+* :doc:`Smith-Wilson Model Overview <projects/smithwilson-overview>` (*Run online now!* |binder smithwilson_overview| )

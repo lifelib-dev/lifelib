@@ -157,7 +157,7 @@ v0.0.11 (24 March 2019)
 
    `modelx`_ needs to be updated to v0.0.21 for this version of lifelib.
 
-- :doc:`/projects/notebooks/simplelife/simplelife-space-overview` notebook is added.
+- :doc:`/projects/simplelife-space-overview` notebook is added.
 - The input file is renamed from "input.xlsm" to "input.xlsx" and redundant
   data and macros are removed from the file to gain speed in reading.
 - Parameter ``module_`` of Space's ``import_module`` method is renamed to ``module``.
@@ -168,7 +168,7 @@ v0.0.10 (2 February 2019)
 
 - :doc:`/projects/solvency2` project is added. See the project page for details.
 
-- :doc:`/projects/notebooks/ifrs17sim/ifrs17sim_charts_lapsescen` notebook is added.
+- :doc:`/projects/ifrs17sim_charts_lapsescen` notebook is added.
 
 - Override formulas are included in :mod:`~nestedlife.nestedlife` and
   :mod:`~ifrs17sim.ifrs17sim`.

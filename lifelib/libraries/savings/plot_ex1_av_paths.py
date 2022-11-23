@@ -18,7 +18,7 @@ drawn from the standard normal distribution.
 
 .. seealso::
 
-    * :doc:`/libraries/notebooks/savings/savings_example1` notebook in the :mod:`~savings` library
+    * :doc:`/libraries/savings/savings_example1` notebook in the :mod:`~savings` library
 
 
 """

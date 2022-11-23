@@ -2,7 +2,7 @@
 Dynamic policy decrement
 ===================================
 
-As explained in :doc:`/libraries/notebooks/savings/savings_example2`,
+As explained in :doc:`/libraries/savings/savings_example2`,
 most variable annuity models include dynamic lapse assumptions.
 A dynamic lapse assumption is used to reflect such policy holder's behaviour
 that they are more likely to terminate their policies
@@ -45,5 +45,5 @@ model.close()
 #%%
 # .. seealso::
 #
-#    * :doc:`/libraries/notebooks/savings/savings_example2` notebook in the :mod:`~savings` library
+#    * :doc:`/libraries/savings/savings_example2` notebook in the :mod:`~savings` library
 #

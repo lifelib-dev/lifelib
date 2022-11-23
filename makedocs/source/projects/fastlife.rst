@@ -113,7 +113,7 @@ thanks to Binder.
 
 .. toctree::
 
-   notebooks/fastlife/fastlife-introduction.ipynb
+   fastlife-introduction
 
 Space Details
 -------------

@@ -81,10 +81,10 @@ Jupyter Notebooks
 .. toctree::
    :maxdepth: 1
 
-   /libraries/notebooks/basiclife/generate_model_points.ipynb
-   /libraries/notebooks/basiclife/generate_model_points_with_duration.ipynb
-   /libraries/notebooks/basiclife/generate_model_points_ASL.ipynb
-   /libraries/notebooks/basiclife/create_premium_table.ipynb
+   generate_model_points
+   generate_model_points_with_duration
+   generate_model_points_ASL
+   create_premium_table
 
 
 Library Contents

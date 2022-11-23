@@ -63,7 +63,7 @@ Jupyter Notebooks
 .. toctree::
    :maxdepth: 1
 
-   /libraries/notebooks/assets/generate_bond_data.ipynb
+   generate_bond_data
 
 
 Library Contents
@@ -76,7 +76,7 @@ Library Contents
    File or Folder                            Description
    ========================================= ===============================================================
    BasicBonds                                The :mod:`~assets.BasicBonds` model.
-   generate_bond_data.ipynb                  Jupyter notebook :doc:`/libraries/notebooks/assets/generate_bond_data`
+   generate_bond_data.ipynb                  Jupyter notebook :doc:`generate_bond_data`
    ========================================= ===============================================================
 
 

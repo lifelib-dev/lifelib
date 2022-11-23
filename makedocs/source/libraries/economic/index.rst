@@ -37,7 +37,7 @@ Jupyter Notebooks
 .. toctree::
    :maxdepth: 1
 
-   /libraries/notebooks/economic/hull-white-simulation.ipynb
+   hull-white-simulation
 
 
 Library Contents
@@ -49,7 +49,7 @@ Library Contents
    File or Folder                          Description
    ======================================= ========================================================================================
    BasicHullWhite                          The :mod:`~economic.BasicHullWhite` model.
-   hull-white-simulation.ipynb             Jupyter notebook :doc:`/libraries/notebooks/economic/hull-white-simulation`
+   hull-white-simulation.ipynb             Jupyter notebook :doc:`hull-white-simulation`
    plot_ex1_short_rate_paths.py            Python script for :doc:`/generated_examples/economic/plot_ex1_short_rate_paths`
    plot_ex2_short_rate_mean_variance.py    Python script for :doc:`/generated_examples/economic/plot_ex2_short_rate_mean_variance`
    plot_ex3_disc_factor_convergence.py     Python script for :doc:`/generated_examples/economic/plot_ex3_disc_factor_convergence`

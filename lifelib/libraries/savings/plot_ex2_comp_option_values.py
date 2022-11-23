@@ -2,7 +2,7 @@ r"""
 Black-Scholes-Merton on dividend paying stock
 =============================================
 
-As the :doc:`/libraries/notebooks/savings/savings_example2` shows,
+As the :doc:`/libraries/savings/savings_example2` shows,
 time values of options and guarantees on a GMAB policy
 can be calculated using the Black-Scholes-Merton formula
 on a dividend paying stock, when maintenance fees are deducted
@@ -30,8 +30,8 @@ Reference: *Options, Futures, and Other Derivatives* by John C.Hull
 
 .. seealso::
 
-    * :doc:`/libraries/notebooks/savings/savings_example1` notebook in the :mod:`~savings` library
-    * :doc:`/libraries/notebooks/savings/savings_example2` notebook in the :mod:`~savings` library
+    * :doc:`/libraries/savings/savings_example1` notebook in the :mod:`~savings` library
+    * :doc:`/libraries/savings/savings_example2` notebook in the :mod:`~savings` library
 
 
 """
