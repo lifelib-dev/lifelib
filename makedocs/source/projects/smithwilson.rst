@@ -91,7 +91,7 @@ thanks to Binder.
 
 .. toctree::
 
-   notebooks/smithwilson/smithwilson-overview.ipynb
+   smithwilson-overview
 
 
 Space Details

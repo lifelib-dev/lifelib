@@ -4,7 +4,7 @@ ifrs17sim: CSM waterfall chart
 
 The script draws a CSM waterfall chart.
 The script is broken down into pieces of code, and explained in a Jupyter notebook,
-:doc:`/projects/notebooks/ifrs17sim/ifrs17sim_csm_waterfall`.
+:doc:`/projects/ifrs17sim_csm_waterfall`.
 
 The live version of the notebook is available online.
 

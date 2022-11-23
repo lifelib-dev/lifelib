@@ -23,7 +23,7 @@ If the duration is *-N* months, the model point is issued
 which is assigned to :attr:`premium_table`.
 The rates are calculated by :mod:`~basiclife.BasicTerm_M`.
 How to create the table is demonstrated in the
-:doc:`create_premium_table.ipynb </libraries/notebooks/basiclife/create_premium_table>`
+:doc:`create_premium_table.ipynb </libraries/basiclife/create_premium_table>`
 notebook included in this library.
 
 Other specifications of :mod:`~basiclife.BasicTerm_SE` are the same as :mod:`~basiclife.BasicTerm_S`.

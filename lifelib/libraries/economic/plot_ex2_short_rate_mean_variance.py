@@ -10,7 +10,7 @@ the mean and the variance of the short rate :math:`r(t_i)` should converge to
 
 .. seealso::
     * :mod:`~economic.BasicHullWhite.HullWhite` in :mod:`~economic.BasicHullWhite`
-    * :doc:`/libraries/notebooks/economic/hull-white-simulation` notebook in the :mod:`~economic` library
+    * :doc:`/libraries/economic/hull-white-simulation` notebook in the :mod:`~economic` library
 
 """
 import modelx as mx

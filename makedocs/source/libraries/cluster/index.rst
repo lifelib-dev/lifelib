@@ -32,8 +32,8 @@ Jupyter Notebooks
 .. toctree::
    :maxdepth: 1
 
-   /libraries/notebooks/cluster/cluster_model_points.ipynb
-   /libraries/notebooks/cluster/generate_model_points_for_cluster.ipynb
+   cluster_model_points
+   generate_model_points_for_cluster
 
 
 Library Contents

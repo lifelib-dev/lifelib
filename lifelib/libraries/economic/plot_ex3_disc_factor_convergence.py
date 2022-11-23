@@ -10,7 +10,7 @@ As Balaraman's study shows, the convergence gets worse as :math:`\sigma/a` gets 
 
 .. seealso::
     * :mod:`~economic.BasicHullWhite.HullWhite` in :mod:`~economic.BasicHullWhite`
-    * :doc:`/libraries/notebooks/economic/hull-white-simulation` notebook in the :mod:`~economic` library
+    * :doc:`/libraries/economic/hull-white-simulation` notebook in the :mod:`~economic` library
 
 """
 import modelx as mx

@@ -155,7 +155,7 @@ thanks to Binder.
 
 .. toctree::
 
-   notebooks/simplelife/simplelife-space-overview.ipynb
+   simplelife-space-overview
 
 Space Details
 -------------

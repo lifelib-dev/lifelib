@@ -3,7 +3,7 @@ Account value to number of policies
 =========================================
 
 This graph uses the ``CashValue_ME_EX2`` model
-from :doc:`/libraries/notebooks/savings/savings_example2`,
+from :doc:`/libraries/savings/savings_example2`,
 and shows path dependency of policy decrement.
 
 The scatter plot shows how the number of policies at maturity varies
@@ -13,7 +13,7 @@ show the distributions of the two factors.
 
 .. seealso::
 
-    * :doc:`/libraries/notebooks/savings/savings_example2` notebook in the :mod:`~savings` library
+    * :doc:`/libraries/savings/savings_example2` notebook in the :mod:`~savings` library
 
 """
 

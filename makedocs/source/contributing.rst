@@ -59,13 +59,13 @@ There are two formats for an example file to be included in a library:
 You can write an example in Jupyter notebook.
 The notebook is rendered as part of the lifelib documentation
 and linked from the library's page, and also from the `Notebooks`_ page.
-See :doc:`/libraries/notebooks/savings/savings_example1`
+See :doc:`/libraries/savings/savings_example1`
 for example. This example is written as a Jupyter notebook,
 named *savings_example1.ipynb*, and included in the :mod:`savings` library.
 In case your example uses a custom model modified from the original
 model included in a lifelib library, the custom model is to be
 included in the library in addition to the example notebook.
-In the case of :doc:`/libraries/notebooks/savings/savings_example1`,
+In the case of :doc:`/libraries/savings/savings_example1`,
 a custom model named ``CashValue_ME_EX1`` is included in the :mod:`savings`
 library for the example.
 

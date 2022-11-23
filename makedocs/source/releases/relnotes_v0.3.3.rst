@@ -7,7 +7,7 @@ lifelib v0.3.3 (24 April 2022)
 =================================
 
 This release adds a new example,
-:doc:`/libraries/notebooks/savings/savings_example3` in the :mod:`~savings` library.
+:doc:`/libraries/savings/savings_example3` in the :mod:`~savings` library.
 
 To update lifelib, run the following command::
 
@@ -21,7 +21,7 @@ If you're using Anaconda, use the ``conda`` command instead::
 New Example
 ===============
 
-An example notebook, :doc:`/libraries/notebooks/savings/savings_example3`
+An example notebook, :doc:`/libraries/savings/savings_example3`
 is added to the :mod:`~savings` library.
 This example demonstrates how to effectively
 run a heavy model with a large data set.
@@ -40,8 +40,8 @@ example is included.
    ========================================= =========================================================================================
    File or Folder                            Description
    ========================================= =========================================================================================
-   savings_example3.ipynb                    Jupyter notebook :doc:`/libraries/notebooks/savings/savings_example3`
-   generate_100K_model_points.ipynb          Jupyter notebook :doc:`/libraries/notebooks/savings/generate_100K_model_points`
+   savings_example3.ipynb                    Jupyter notebook :doc:`/libraries/savings/savings_example3`
+   generate_100K_model_points.ipynb          Jupyter notebook :doc:`/libraries/savings/generate_100K_model_points`
    ========================================= =========================================================================================
 
 

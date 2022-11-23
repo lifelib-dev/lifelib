@@ -7,7 +7,7 @@ The first 10 and 100 paths are plotted.
 
 .. seealso::
     * :mod:`~economic.BasicHullWhite.HullWhite` in :mod:`~economic.BasicHullWhite`
-    * :doc:`/libraries/notebooks/economic/hull-white-simulation` notebook in the :mod:`~economic` library
+    * :doc:`/libraries/economic/hull-white-simulation` notebook in the :mod:`~economic` library
 """
 import modelx as mx
 import matplotlib.pyplot as plt

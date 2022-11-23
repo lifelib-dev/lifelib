@@ -27,6 +27,6 @@ to model point selection, as well as data
 used for the demonstration and
 other jupyter notebooks and models to generate the data.
 
-See :mod:`~cluster` and :doc:`/libraries/notebooks/cluster/cluster_model_points` for more details.
+See :mod:`~cluster` and :doc:`/libraries/cluster/cluster_model_points` for more details.
 
 
