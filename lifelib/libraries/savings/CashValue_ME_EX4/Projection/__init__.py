@@ -243,7 +243,7 @@ def age_at_entry():
     The ``age_at_entry`` column of the DataFrame returned by
     :func:`model_point`.
     """
-    return model_point()["age_at_entry"]
+    return model_point()["age_at_entry"].values
 
 
 def av_at(t, timing):
@@ -404,7 +404,7 @@ def av_pp_init():
         * :func:`av_pp_at`
 
     """
-    return model_point()["av_pp_init"]
+    return model_point()["av_pp_init"].values
 
 
 def check_av_roll_fwd():
@@ -770,7 +770,7 @@ def duration_mth(t):
     """
 
     if t == 0:
-        return model_point()['duration_mth']
+        return model_point()['duration_mth'].values
     else:
         return duration_mth(t-1) + 1
 
@@ -854,7 +854,7 @@ def has_surr_charge():
         * :func:`model_point`
 
     """
-    return model_point()['has_surr_charge']
+    return model_point()['has_surr_charge'].values
 
 
 def inflation_factor(t):
@@ -957,7 +957,7 @@ def inv_return_table():
     dt = 1/12
 
     return np.exp(
-        (mu - 0.5 * sigma**2) * dt + sigma * dt**0.5 * std_norm_rand()
+        (mu - 0.5 * sigma**2) * dt + sigma * dt**0.5 * std_norm_rand().unstack(1).values
         ) - 1
 
 
@@ -978,7 +978,7 @@ def is_wl():
         * :func:`model_point`
 
     """
-    return model_point()['is_wl']
+    return model_point()['is_wl'].values
 
 
 def lapse_rate(t):
@@ -994,7 +994,7 @@ def lapse_rate(t):
 
     """
     # return np.maximum(0.1 - 0.02 * duration(t), 0.02)
-    return pd.Series(0, index=model_point().index)
+    return pd.Series(0, index=model_point().index).values
 
 
 def load_prem_rate():
@@ -1011,7 +1011,7 @@ def load_prem_rate():
         * :func:`premium_pp`
 
     """
-    return model_point()['load_prem_rate']
+    return model_point()['load_prem_rate'].values
 
 
 def maint_fee(t):
@@ -1205,7 +1205,7 @@ def mort_rate(t):
     # return mort_table_reindexed().reindex(
     #     mi, fill_value=0).set_axis(model_point().index, inplace=False)
 
-    return pd.Series(0, index=model_point().index)
+    return pd.Series(0, index=model_point().index).values
 
 
 def mort_rate_mth(t):
@@ -1297,7 +1297,7 @@ def policy_term():
     """
 
     return (is_wl() * (mort_table_last_age() - age_at_entry()) 
-            + (is_wl() == False) * model_point()["policy_term"])
+            + (is_wl() == False) * model_point()["policy_term"].values)
 
 
 def pols_death(t):
@@ -1387,7 +1387,7 @@ def pols_if_init():
     Number of in-force policies at time 0 referenced from
     :func:`pols_if_at(0, "BEF_MAT")<pols_if_at>`.
     """
-    return model_point()["policy_count"].where(duration_mth(0) > 0, other=0)
+    return model_point()["policy_count"].where(duration_mth(0) > 0, other=0).values
 
 
 def pols_lapse(t):
@@ -1431,7 +1431,7 @@ def pols_new_biz(t):
         * :func:`model_point`
 
     """
-    return model_point()['policy_count'].where(duration_mth(t) == 0, other=0)
+    return model_point()['policy_count'].where(duration_mth(t) == 0, other=0).values
 
 
 def prem_to_av(t):
@@ -1491,10 +1491,10 @@ def premium_pp(t):
     #     model_point().index, inplace=False)
     # return np.around(sum_assured() * prem_rates, 2)
 
-    sp = model_point()['premium_pp'].where((premium_type() == 'SINGLE') & (duration_mth(t) == 0), other=0)
+    sp = model_point()['premium_pp'].where((premium_type() == 'SINGLE') & (duration_mth(t) == 0), other=0).values
     lp = model_point()['premium_pp'].where(
         (premium_type() == 'LEVEL') & (duration_mth(t) < 12 * policy_term()),
-        other=0)
+        other=0).values
     return sp + lp
 
 
@@ -1505,7 +1505,7 @@ def premium_type():
     ``"LEVEL"`` if level payment, or ``"SINGLE"`` if single payment.
 
     """
-    return model_point()['premium_type']
+    return model_point()['premium_type'].values
 
 
 def premiums(t):
@@ -1810,7 +1810,7 @@ def sex():
     The ``sex`` column of the DataFrame returned by
     :func:`model_point`.
     """
-    return model_point()["sex"]
+    return model_point()["sex"].values
 
 
 def std_norm_rand():
@@ -1838,7 +1838,7 @@ def sum_assured():
     The ``sum_assured`` column of the DataFrame returned by
     :func:`model_point`.
     """
-    return model_point()['sum_assured']
+    return model_point()['sum_assured'].values
 
 
 def surr_charge(t):
@@ -1871,7 +1871,7 @@ def surr_charge_id():
         * :func:`has_surr_charge`
 
     """
-    return model_point()['surr_charge_id']
+    return model_point()['surr_charge_id'].values
 
 
 def surr_charge_max_idx():
