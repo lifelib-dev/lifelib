@@ -957,7 +957,7 @@ def inv_return_table():
     dt = 1/12
 
     return np.exp(
-        (mu - 0.5 * sigma**2) * dt + sigma * dt**0.5 * std_norm_rand().unstack(1).values
+        (mu - 0.5 * sigma**2) * dt + sigma * dt**0.5 * std_norm_rand()
         ) - 1
 
 
@@ -1798,7 +1798,7 @@ def result_pv():
 
 
 def scen_index():
-    return std_norm_rand()[:, 0].index
+    return pd.Index(range(1, scen_size + 1), name='scen_id')
 
 
 def sex():
@@ -1818,18 +1818,15 @@ def std_norm_rand():
     if hasattr(np.random, 'default_rng'):
 
         gen = np.random.default_rng(1234)
-        rnd = gen.standard_normal(scen_size * 242)
+        rnd = gen.standard_normal((scen_size, 242))
 
     else:
         np.random.seed(1234)
-        rnd = np.random.standard_normal(size=scen_size * 242)
+        rnd = np.random.standard_normal(size=(scen_size, 242))
 
-    idx = pd.MultiIndex.from_product(
-            [range(1, scen_size + 1), range(242)],
-            names = ['scen_id', 't']
-        )
 
-    return pd.Series(rnd, index=idx)
+
+    return rnd
 
 
 def sum_assured():
@@ -1871,7 +1868,7 @@ def surr_charge_id():
         * :func:`has_surr_charge`
 
     """
-    return model_point()['surr_charge_id'].values
+    return model_point()['surr_charge_id'].values.astype(str)
 
 
 def surr_charge_max_idx():
@@ -1903,12 +1900,9 @@ def surr_charge_rate(t):
         * :func:`surr_charge_max_idx`
         * :func:`surr_charge_table_stacked`
     """
-    idx = pd.MultiIndex.from_arrays(
-        [has_surr_charge() * surr_charge_id(),
-         np.minimum(duration(t), surr_charge_max_idx())])
-
-    return surr_charge_table_stacked().reindex(idx, fill_value=0).set_axis(
-        model_point().index, inplace=False)
+    ind_row = surr_charge_table.index.searchsorted(np.minimum(duration(t), surr_charge_max_idx()), side='right') - 1
+    ind_col = surr_charge_table.columns.searchsorted(surr_charge_id(), side='right') - 1  # TODO: not clear how it should work with has_surr_charge()
+    return surr_charge_table.values.flat[ind_col + ind_row * len(surr_charge_table.columns)]
 
 
 def surr_charge_table_stacked():
