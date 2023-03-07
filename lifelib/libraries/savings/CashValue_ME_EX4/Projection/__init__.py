@@ -1205,7 +1205,7 @@ def mort_rate(t):
     # return mort_table_reindexed().reindex(
     #     mi, fill_value=0).set_axis(model_point().index, inplace=False)
 
-    return pd.Series(0, index=model_point().index).values
+    return np.zeros(len(model_point().index))
 
 
 def mort_rate_mth(t):
@@ -1431,7 +1431,7 @@ def pols_new_biz(t):
         * :func:`model_point`
 
     """
-    return model_point()['policy_count'].where(duration_mth(t) == 0, other=0).values
+    return model_point()['policy_count'].values * (duration_mth(t) == 0)
 
 
 def prem_to_av(t):
@@ -1491,11 +1491,8 @@ def premium_pp(t):
     #     model_point().index, inplace=False)
     # return np.around(sum_assured() * prem_rates, 2)
 
-    sp = model_point()['premium_pp'].where((premium_type() == 'SINGLE') & (duration_mth(t) == 0), other=0).values
-    lp = model_point()['premium_pp'].where(
-        (premium_type() == 'LEVEL') & (duration_mth(t) < 12 * policy_term()),
-        other=0).values
-    return sp + lp
+    return model_point()['premium_pp'].values * ((premium_type() == 'SINGLE') & (duration_mth(t) == 0) |
+                                                 (premium_type() == 'LEVEL') & (duration_mth(t) < 12 * policy_term()))
 
 
 def premium_type():
@@ -1900,9 +1897,12 @@ def surr_charge_rate(t):
         * :func:`surr_charge_max_idx`
         * :func:`surr_charge_table_stacked`
     """
-    ind_row = surr_charge_table.index.searchsorted(np.minimum(duration(t), surr_charge_max_idx()), side='right') - 1
-    ind_col = surr_charge_table.columns.searchsorted(surr_charge_id(), side='right') - 1  # TODO: not clear how it should work with has_surr_charge()
-    return surr_charge_table.values.flat[ind_col + ind_row * len(surr_charge_table.columns)]
+    ind_row = np.minimum(duration(t), surr_charge_max_idx())
+    return surr_charge_table.values.flat[surr_charge_table_column() + ind_row * len(surr_charge_table.columns)]
+
+
+def surr_charge_table_column():
+    return surr_charge_table.columns.searchsorted(surr_charge_id(), side='right') - 1
 
 
 def surr_charge_table_stacked():
