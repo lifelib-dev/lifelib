@@ -89,7 +89,7 @@ Alternatively, the current folder can be reported by ``os.getcwd`` function::
 If the second argument is omitted, the first parameter, which is
 the library name is used.
 
-.. rubric:: Creating a project from command prompt
+.. rubric:: Creating a library from command prompt
 
 Alternatively, you can copy a library
 by a command ``lifelib-create`` from the command prompt
