@@ -25,6 +25,7 @@ Notebooks
 * :doc:`libraries/savings/savings_example1`
 * :doc:`libraries/savings/savings_example2`
 * :doc:`libraries/savings/savings_example3`
+* :doc:`libraries/savings/savings_example4`
 
 .. _notebooks_economic:
 
