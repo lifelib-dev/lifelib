@@ -102,7 +102,7 @@ Examples
    savings_example1
    savings_example2
    savings_example3
-
+   savings_example4
 
 
 Library Contents
@@ -119,9 +119,11 @@ Library Contents
    cash_value_sample.xlsx                    An Excel file that reproduces the results of a selected model point. The file also shows the derivation of the sample mortality rates.
    CashValue_ME_EX1                          The example model for *savings_example1.ipynb*
    CashValue_ME_EX2                          The example model for *savings_example2.ipynb*
+   CashValue_ME_EX4                          The example model for *savings_example4.ipynb*
    savings_example1.ipynb                    Jupyter notebook :doc:`savings_example1`
    savings_example2.ipynb                    Jupyter notebook :doc:`savings_example2`
    savings_example3.ipynb                    Jupyter notebook :doc:`savings_example3`
+   savings_example4.ipynb                    Jupyter notebook :doc:`savings_example4`
    generate_100K_model_points.ipynb          Jupyter notebook used for generating the large model point data for :doc:`/libraries/savings/savings_example3`.
    plot_ex1_av_paths.py                      Python script for :doc:`/generated_examples/savings/plot_ex1_av_paths`
    plot_ex1_rand.py                          Python script for :doc:`/generated_examples/savings/plot_ex1_rand`

@@ -14,6 +14,11 @@ Updates
     Follow <a href="https://www.linkedin.com/company/lifelib" target="_blank">lifelib on LinkedIn</a>
     for more frequent updates.</p>
 
+* *3 May 2023:*
+  lifelib v0.8.1 is released. A new example, :doc:`/libraries/savings/savings_example4` is available in :mod:`~savings`.
+  See :ref:`Release Notes<relnotes_v0.8.1>` for details.
+
+
 * *19 Nov 2022:*
   lifelib v0.8.0 is released. New library :mod:`~economic_curves` is available.
   See :ref:`Release Notes<relnotes_v0.8.0>` for details.
