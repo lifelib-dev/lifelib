@@ -956,9 +956,9 @@ def inv_return_table():
     sigma = 0.03
     dt = 1/12
 
-    return np.exp(
-        (mu - 0.5 * sigma**2) * dt + sigma * dt**0.5 * std_norm_rand()
-        ) - 1
+    return np.tile(np.exp(
+        (mu - 0.5 * sigma**2) * dt + sigma * dt**0.5 * std_norm_rand()) - 1,
+        (point_size(), 1))
 
 
 def is_wl():
@@ -1920,6 +1920,8 @@ def surr_charge_table_stacked():
     return surr_charge_table.stack().reorder_levels([1, 0]).sort_index()
 
 
+point_size = lambda: len(model_point_table_ext())
+
 # ---------------------------------------------------------------------------
 # References
 
@@ -1939,10 +1941,10 @@ scen_id = 1
 
 stats = ("Module", "scipy.stats")
 
-scen_size = 10000
+scen_size = 1000
 
 model_point_1 = ("DataClient", 1916615684048)
 
 model_point_moneyness = ("DataClient", 1916616522432)
 
-model_point_table = ("DataClient", 1916615684048)
+model_point_table = ("DataClient", 1916616522432)
