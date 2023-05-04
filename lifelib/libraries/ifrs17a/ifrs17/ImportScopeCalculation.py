@@ -55,7 +55,7 @@ class IfrsWorkspace:
         ivs = [x for s in models.GetScopes(target, identities) for x in s.CalculatedIfrsVariables]
         self.database.Update(IfrsVariable, ivs)
 
-    def compute_all(self):
+    def compute_all(self):  # Not Used
         for args in self.models:
             self.compute(args)
 
@@ -1912,10 +1912,11 @@ class AllocateTechnicalMarginForEop(AllocateTechnicalMargin):
     def ComputedEstimateType(self) -> str:
         return self.ComputeEstimateType(self.AggregatedTechnicalMargin)
 
-
+# x.Identity.AocType != AocTypes.EOP is added to AllocateTechnicalMarginForReinsurance
+# to use AllocateTechnicalMarginForEop for reinsurance & EOP
 AllocateTechnicalMargin.Applicability = {
     AllocateTechnicalMarginForReinsuranceCL: lambda x: x.Identity.IsReinsurance and x.Identity.AocType == AocTypes.CL,
-    AllocateTechnicalMarginForReinsurance: lambda x: x.Identity.IsReinsurance,
+    AllocateTechnicalMarginForReinsurance: lambda x: x.Identity.IsReinsurance and x.Identity.AocType != AocTypes.EOP,
     ComputeAllocateTechnicalMarginWithIfrsVariable: lambda x: x.storage.IsSecondaryScope(x.Identity.DataNode),
     AllocateTechnicalMarginForBop: lambda x: x.Identity.AocType == AocTypes.BOP,
     AllocateTechnicalMarginForCl: lambda x: x.Identity.AocType == AocTypes.CL,
