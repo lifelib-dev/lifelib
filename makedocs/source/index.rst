@@ -22,27 +22,40 @@ Contribute your excellent work to lifelib and share it with actuaries all over t
    </div>
 
 
-.. panels::
-    :container: container-fluid pb-3 examples-container
-    :column: col-lg-3 col-md-3 col-sm-12 col-xs-12 p-2
+.. grid:: 1 2 4 4
 
-    .. image:: /_static/thumb1.png
-       :target: generated_examples/index.html
-       :alt: Thumbnail for simplelife example
-    ---
-    .. image:: /_static/thumb2.png
-       :target: generated_examples/index.html#savings-examples
-       :alt: Thumbnail for savings example
-    ---
-    .. image:: /_static/thumb3.png
-       :target: libraries/cluster/cluster_model_points.html
-       :alt: Thumbnail for cluster notebook
-    ---
-    .. image:: /_static/thumb4.png
-       :target: spyder.html
-       :alt: Thumbnail for Spyder example
+   .. grid-item::
+
+      .. card::
+         :img-background: /_static/thumb1.png
+         :img-alt: Thumbnail for simplelife example
+         :link: generated_examples/index
+         :link-type: doc
 
 
+   .. grid-item::
+
+      .. card::
+         :img-background: /_static/thumb2.png
+         :img-alt: Thumbnail for savings example
+         :link: generated_examples/index
+         :link-type: doc
+
+   .. grid-item::
+
+      .. card::
+         :img-background: /_static/thumb3.png
+         :img-alt: Thumbnail for cluster notebook
+         :link: libraries/cluster/cluster_model_points
+         :link-type: doc
+
+   .. grid-item::
+
+      .. card::
+         :img-background: /_static/thumb4.png
+         :img-alt: Thumbnail for Spyder example
+         :link: spyder
+         :link-type: doc
 
 .. 1st row: Updates & Quick Start ---------------------------------
 
@@ -68,101 +81,80 @@ Contribute your excellent work to lifelib and share it with actuaries all over t
 .. 2nd row, Projects & Gallery & Notebooks ---------------------------------
 
 
-.. panels::
-    :container: container pb-4
-    :column: col-lg-6 col-md-6 col-sm-6 col-xs-12 p-2
-    :card: shadow
-    :header: h3
+.. grid:: 1 1 2 2
 
-    :doc:`about`
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   .. grid-item-card:: :doc:`about`
 
-    * :ref:`what-is-lifelib`
-    * :ref:`how-lifelib-works`
-    * :doc:`contributing`
-    * :ref:`modindex`
-    * :ref:`genindex`
-    * :ref:`search`
-    * :ref:`past-documents`
-
-    ---
-
-    :doc:`Quick Start<quickstart>`
-    ^^^^^^^^^^^^^^^^^^^^^^^
-
-    * :ref:`getting-lifelib`
-    * :ref:`using-spyder`
-    * :ref:`running-notebooks`
+      * :ref:`what-is-lifelib`
+      * :ref:`how-lifelib-works`
+      * :doc:`contributing`
+      * :ref:`modindex`
+      * :ref:`genindex`
+      * :ref:`search`
+      * :ref:`past-documents`
 
 
-    ---
+   .. grid-item-card:: :doc:`Quick Start<quickstart>`
 
-    :doc:`Libraries<libraries/index>`
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      * :ref:`getting-lifelib`
+      * :ref:`using-spyder`
+      * :ref:`running-notebooks`
 
-    * :doc:`libraries/basiclife/index`
-    * :doc:`libraries/savings/index`
-    * :doc:`libraries/assets/index`
-    * :doc:`libraries/economic/index`
-    * :doc:`libraries/economic_curves/index`
-    * :doc:`libraries/cluster/index`
-    ---
 
-    :ref:`Past Libraries<past-libraries>`
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   .. grid-item-card:: :doc:`Libraries<libraries/index>`
 
-    * :ref:`project_fastlife`
-    * :ref:`project_simplelife`
-    * :ref:`project_nestedlife`
-    * :ref:`project_ifrs17sim`
-    * :ref:`project_solvency2`
-    * :ref:`project_smithwilson`
-    * :doc:`projects/devguide/index`
+      * :doc:`libraries/basiclife/index`
+      * :doc:`libraries/savings/index`
+      * :doc:`libraries/assets/index`
+      * :doc:`libraries/economic/index`
+      * :doc:`libraries/economic_curves/index`
+      * :doc:`libraries/cluster/index`
 
-    ---
 
-    :doc:`Gallery<generated_examples/index>`
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   .. grid-item-card:: :ref:`Past Libraries<past-libraries>`
 
-    * :ref:`savings_examples`
-    * :ref:`economic_examples`
-    * :ref:`fastlife_examples`
-    * :ref:`simplelife_examples`
-    * :ref:`nestedlife_examples`
-    * :ref:`ifrs17sim_examples`
-    * :ref:`solvency2_examples`
-    * :ref:`smithwilson_examples`
+      * :ref:`project_fastlife`
+      * :ref:`project_simplelife`
+      * :ref:`project_nestedlife`
+      * :ref:`project_ifrs17sim`
+      * :ref:`project_solvency2`
+      * :ref:`project_smithwilson`
+      * :doc:`projects/devguide/index`
 
-    ---
 
-    :doc:`Notebooks<notebooks>`
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   .. grid-item-card:: :doc:`Gallery<generated_examples/index>`
 
-    * :ref:`notebooks_basiclife`
-    * :ref:`notebooks_savings`
-    * :ref:`notebooks_economic`
-    * :ref:`notebooks_economic_curves`
-    * :ref:`notebooks_cluster`
-    * :ref:`notebooks_fastlife`
-    * :ref:`notebooks_simplelife`
-    * :ref:`notebooks_ifrs17sim`
-    * :ref:`notebooks_smithwilson`
+      * :ref:`savings_examples`
+      * :ref:`economic_examples`
+      * :ref:`fastlife_examples`
+      * :ref:`simplelife_examples`
+      * :ref:`nestedlife_examples`
+      * :ref:`ifrs17sim_examples`
+      * :ref:`solvency2_examples`
+      * :ref:`smithwilson_examples`
 
-    ---
 
-    :doc:`Videos<videos>`
-    ^^^^^^^^^^^^^^^^^^^^^^^
+   .. grid-item-card:: :doc:`Notebooks<notebooks>`
 
-    * :ref:`getting-started-videos`
+      * :ref:`notebooks_basiclife`
+      * :ref:`notebooks_savings`
+      * :ref:`notebooks_economic`
+      * :ref:`notebooks_economic_curves`
+      * :ref:`notebooks_cluster`
+      * :ref:`notebooks_fastlife`
+      * :ref:`notebooks_simplelife`
+      * :ref:`notebooks_ifrs17sim`
+      * :ref:`notebooks_smithwilson`
 
-    ---
 
-    :doc:`Download<download>`
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   .. grid-item-card:: :doc:`Videos<videos>`
 
-    Download lifelib with WinPython from :doc:`here<download>`.
-    No installation is required. Just unzip the file and it's all set.
+      * :ref:`getting-started-videos`
 
+   .. grid-item-card:: :doc:`Download<download>`
+
+      Download lifelib with WinPython from :doc:`here<download>`.
+      No installation is required. Just unzip the file and it's all set.
 
 
 .. 3rd row, modelx sites, links & contact ---------------------------------

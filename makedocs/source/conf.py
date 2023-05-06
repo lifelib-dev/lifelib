@@ -50,8 +50,9 @@ extensions = [
     'nbsphinx_link',
     'sphinx_gallery.gen_gallery',
     'sphinxcontrib.blockdiag',
-    'sphinx_panels',
-    'myst_parser'
+    'sphinx_design',
+    'myst_parser',
+    'sphinxcontrib.mermaid'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -268,6 +269,9 @@ panels_add_bootstrap_css = False
 
 # Hide download note and buttons from gallery pages.
 # https://github.com/ryan-roemer/sphinx-bootstrap-theme
+
+# Fix mermaid
+nbsphinx_requirejs_path = ''
 
 def setup(app):
     app.add_css_file("custom-style.css")
