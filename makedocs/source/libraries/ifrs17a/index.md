@@ -29,7 +29,7 @@ which is developed and made open-source under the MIT license by [Systemorph], a
 This library is experimental, and has been tested only with a limited number of sample sets. 
 The calculation logic is not validated, and may not comply with the standard or its variants. 
 As this library is in an early stage of development, error-proofing in the code is not comprehensive.
-Although this library implements some caching mechanisms, since the entire code is witten in Python, 
+Although this library implements some caching mechanisms, since the entire code is written in Python, 
 the code may not run fast enough for a large set of input data.
 
 ## How to Set Up the Library
