@@ -146,7 +146,7 @@ def test_package(library, model_dir, target, method, args, expected, tmp_path):
 
     m = mx.read_model(os.path.join(lib_dir, model_dir))
 
-    actual = mx.core.mxsys.get_object_from_tupleid(target)
+    actual = mx.core.mxsys.get_object_from_idtuple(target)
 
     if method:
         actual = getattr(actual, method)(*args)
