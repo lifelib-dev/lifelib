@@ -8,6 +8,7 @@ Libraries
    basiclife/index.rst
    savings/index.rst
    assets/index.rst
+   ifrs17a/index.md
    economic/index.rst
    economic_curves/index.md
    cluster/index.rst

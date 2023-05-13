@@ -35,8 +35,4 @@ workspace.import_with_type(os.path.join(filedir, "YieldCurve.xlsx"), type_=Yield
 
 workspace.import_with_format(os.path.join(filedir, "Cashflows.xlsx"), format_=ImportFormats.Cashflow)
 
-vars = workspace.database.get_ifrsvars()
-
-df = vars[(vars['EconomicBasis']=='L') & (vars['EstimateType']=='BE')].set_index(['Novelty', 'AocType', 'AmountType'])['Value'].groupby(level=[0, 1, 2]).sum().unstack(level=2)
-
-# https://youtu.be/dhdA3F6ZWbs?t=448
+ifrsvars = workspace.database.get_ifrsvars()

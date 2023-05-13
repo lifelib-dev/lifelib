@@ -41,20 +41,6 @@ workspace.import_with_format(os.path.join(filedir, "CF_DE_2021_12.xlsx"), format
 workspace.import_with_format(os.path.join(filedir, "CF_DE_2022_12.xlsx"), format_=ImportFormats.Cashflow)
 
 # https://www.youtube.com/watch?v=bhtSm0cJudo&t=115s
-
 # https://youtu.be/bhtSm0cJudo?t=475
 
-vars = workspace.database.get_ifrsvars(add_goc_attrs=True)
-
-df = vars[(vars['EconomicBasis']=='L') & (vars['EstimateType']=='BE') & (vars['ReportingNode']=='CH') & (vars['Year']==2021) & (vars['Month']==12)].set_index(['Novelty', 'AocType', 'AmountType'])['Value'].groupby(level=[0, 1, 2]).sum().unstack(level=2)
-
-# # In-Force
-#
-# df.loc[(df['Year'] == 2022) & (df['EconomicBasis'] == 'L') & (df['AmountType'] == 'PR') & (df['Novelty'] == 'I')]
-# df.loc[(df['Year'] == 2022) & (df['EconomicBasis'] == 'L') & (df['AmountType'] == 'CL') & (df['Novelty'] == 'I')]
-#
-# # New Business
-#
-# df.loc[(df['Year'] == 2022) & (df['EconomicBasis'] == 'L') & (df['AmountType'] == 'PR') & (df['Novelty'] == 'N')]
-# df.loc[(df['Year'] == 2022) & (df['EconomicBasis'] == 'L') & (df['AmountType'] == 'CL') & (df['Novelty'] == 'N')]
-
+ifrsvars = workspace.database.get_ifrsvars(add_goc_attrs=True)

@@ -193,8 +193,9 @@ class IModel:
             for k, v in self.scope_cache.items():
                 if scope_name in set(w.__name__ for w in k.mro()):
                     sscope = k.__name__
-                    result[sscope] = self._debug_single_scope(sscope, context, **kwargs)
-                    result[sscope].insert(loc=0, column='Scope', value=sscope)
+                    if (df := self._debug_single_scope(sscope, context, **kwargs)) is not None:
+                        result[sscope] = df
+                        result[sscope].insert(loc=0, column='Scope', value=sscope)
 
             return pd.concat(result.values(), ignore_index=True)
 
@@ -215,7 +216,7 @@ class IModel:
                             k,
                             self._get_cached_scope(k, context=c, **kwargs))
 
-        return pd.concat(result.values(), ignore_index=True)
+        return pd.concat(result.values(), ignore_index=True) if result else None
 
 
 class IScope(Generic[T, U]):
@@ -242,7 +243,10 @@ class IScope(Generic[T, U]):
         for o in cls.mro():
             for k, v in o.__dict__.items():
                 if isinstance(v, cached_property):
-                    result[k] = get_type_hints(v.func)['return']
+                    if hasattr(hints := get_type_hints(v.func), 'return'):
+                        result[k] = hints['return']
+                    else:
+                        result[k] = None
 
         return result
 

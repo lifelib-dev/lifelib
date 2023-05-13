@@ -9,9 +9,12 @@ resultdir = os.path.join(thisdir, 'expected')
 def test_present_values_ep2():
     """Test present value ep.2
 
-    Reproduce the table shown at https://youtu.be/dhdA3F6ZWbs?t=448
+    Replicate the table shown at https://youtu.be/dhdA3F6ZWbs?t=448
     """
-    from present_value_ep2 import df
+    from present_value_ep2 import ifrsvars as vars
+
+    df = vars[(vars['EconomicBasis'] == 'L') & (vars['EstimateType'] == 'BE')].set_index(
+        ['Novelty', 'AocType', 'AmountType'])['Value'].groupby(level=[0, 1, 2]).sum().unstack(level=2)
 
     expected = pd.read_excel(
         os.path.join(resultdir, "pv_ep2.xlsx"), index_col=[0, 1])
@@ -23,11 +26,11 @@ def test_present_values_ep2():
 def test_present_values(reporting_node, month):
     """Test present value ep.3
 
-    Reproduce the tables for
+    Replicate the tables for
     ReportingNode G at https://youtu.be/bhtSm0cJudo?t=115
     ReportingNode DE at https://youtu.be/bhtSm0cJudo?t=475
     """
-    from present_value_ep3 import vars
+    from present_value_ep3 import ifrsvars as vars
 
     filter = ((vars['EconomicBasis']=='L') & (vars['EstimateType']=='BE')
               & (vars['ReportingNode']==reporting_node) & (vars['Year']==2021) & (vars['Month']==month))

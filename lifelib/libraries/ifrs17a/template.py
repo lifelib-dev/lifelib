@@ -53,3 +53,8 @@ workspace.import_with_format(os.path.join(filedir, "NominalCashflows_CH_2021_3.x
 workspace.import_with_format(os.path.join(filedir, "Actuals_CH_2021_3.xlsx"), format_=ImportFormats.Actual)
 
 ifrsvars = workspace.database.get_ifrsvars(add_goc_attrs=True)
+
+
+model_act = list(workspace.models.values())[-1]
+
+model_act.debug('AllocateTechnicalMargin', DataNode='DT1.1', context='L')

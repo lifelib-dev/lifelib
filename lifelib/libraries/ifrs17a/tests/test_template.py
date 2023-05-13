@@ -15,7 +15,7 @@ def ifrsvars():
 def test_best_estimate(ifrsvars):
     """Test best estimate table
 
-    Reproduce table shown at https://youtu.be/Qfh73qsxgNY?t=239
+    Replicate table shown at https://youtu.be/Qfh73qsxgNY?t=239
     """
     vars = ifrsvars
     filter = (vars['Year'] == 2021) & (vars['Month'] == 3) & (vars['EstimateType'] == 'BE')
@@ -39,7 +39,7 @@ def test_risk_adjustment(ifrsvars):
 def test_written_actuals(ifrsvars):
     """Test written actuals
 
-    Reproduce table shown at https://youtu.be/T9bArA3QWJU?t=45
+    Replicate table shown at https://youtu.be/T9bArA3QWJU?t=45
     """
     vars = ifrsvars
     filter = (vars['Year'] == 2021) & (vars['Month'] == 3) & (vars['EstimateType'] == 'A')
@@ -53,7 +53,7 @@ def test_written_actuals(ifrsvars):
 def test_overdue_advanced_actuals(ifrsvars):
     """Test overdue and advanced actuals
 
-    Reproduce table shown at https://youtu.be/T9bArA3QWJU?t=75
+    Replicate table shown at https://youtu.be/T9bArA3QWJU?t=75
     """
     vars = ifrsvars
     filter = (vars['Year'] == 2021) & (vars['Month'] == 3) & ((vars['EstimateType'] == 'OA') | (vars['EstimateType'] == 'AA'))
@@ -67,7 +67,7 @@ def test_overdue_advanced_actuals(ifrsvars):
 def test_deferred_actuals(ifrsvars):
     """Test deferred actuals
 
-    Reproduce table shown at https://youtu.be/T9bArA3QWJU?t=92
+    Replicate table shown at https://youtu.be/T9bArA3QWJU?t=92
     """
     vars = ifrsvars
     filter = (vars['Year'] == 2021) & (vars['Month'] == 3) & (vars['EstimateType'] == 'DA')
@@ -81,7 +81,7 @@ def test_deferred_actuals(ifrsvars):
 def test_technical_margin(ifrsvars):
     """Test overdue and advanced actuals
 
-    Reproduce table shown at https://youtu.be/z4xohUbiyfM?t=85
+    Replicate table shown at https://youtu.be/z4xohUbiyfM?t=85
     """
     vars = ifrsvars
     filter = (vars['Year'] == 2021) & (vars['Month'] == 3) & (
