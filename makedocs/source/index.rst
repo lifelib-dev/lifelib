@@ -14,8 +14,8 @@
 
    <div class="lead">
 
-An open-source Python package of practical actuarial models, tools and examples. 
-Contribute your excellent work to lifelib and share it with actuaries all over the world!
+lifelib is an open-source Python package featuring practical actuarial models, tools, and examples.
+Contribute your excellent work to lifelib and share it with actuaries from all around the world!
 
 .. raw:: html
 

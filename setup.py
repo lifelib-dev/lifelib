@@ -26,51 +26,56 @@ here = path.abspath(path.dirname(__file__))
 #     LONG_DESCRIPTION = f.read()
 
 LONG_DESCRIPTION = """
-**lifelib** is a collection of actuarial projection models.
-lifelib models are built as `modelx`_ models, ready to be used out of the box
-with sample formulas and input files, and they are
-fully customizable by users.
+**lifelib** is a collection of open-source life actuarial models written in Python.
+lifelib includes a variety of models, with sample scripts
+and Jupyter notebooks that demonstrate how to use the models.
 
-.. _modelx: http://docs.modelx.io
-
-Feature highlights
-------------------
-
-    - Formulas and their calculated values paired as **Cells**,
-      just like spreadsheet cells
-    - Relevant cells grouped together as a **Space**, just like a spreadsheet
-    - Spaces in other spaces (subspaces), forming trees of spaces
-    - **Models** composed of spaces
-    - Space inheritance
-    - Parametrized dynamic subspaces created automatically
-    - Saving to / loading from files
-    - Conversion to Pandas objects
-    - Reading data from Excel files
-    - Cells graph to track cells interdependency
-
-Why **lifelib**?
-----------------
-
-    - Better model integrity and extensibility
-    - For readable formula expressions
-    - For eliminating spreadsheet errors
-    - For better version control/model governance
+Visit https://lifelib.io for more information!
 
 What for?
 ---------
 
-    - Pricing / Profit testing
-    - Model validation / testing
-    - Prototyping for production models
-    - As corporate models
-    - For simulations
-    - As replacement for any spreadsheet models
+lifelib models are highly versatile and transparent.
+You can customize lifelib models and utilize them
+in various practical areas, such as:
 
-Related sites
--------------
+- Model validation / testing
+- Pricing / profit testing
+- Research / educational projects
+- Valuation / cashflow projections
+- Asset-liability modeling
+- Risk and capital modeling
+- Actuarial modernization to replace spreadsheet models
 
-    - **lifelib** development site: https://github.com/lifelib-dev/lifelib
-    - **modelx** documentation: http://docs.modelx.io
+
+Why lifelib?
+------------
+
+By effectively utilizing the models in lifelib,
+you can expect the following benefits from both model development and governance perspectives:
+
+- A more efficient, transparent, and faster model development experience
+- Model integration with the Python ecosystem (Pandas, Numpy, SciPy, etc.)
+- Elimination of spreadsheet errors
+- Improved version control and model governance
+- Automated model testing
+
+Some of the models in lifelib are built using `modelx`_, an open-source
+Python package for building object-oriented models in Python.
+By using lifelib, you can enjoy the following advantages:
+
+* Models run fast!
+* Formulas are easy to read
+* Easy to trace formula dependency and errors
+* Formulas are instantly evaluated
+* Pandas and Numpy can be utilized
+* Object-oriented
+* Input from Excel and CSV files
+* Documents can be integrated
+* Formulas are saved in text files
+
+.. _modelx: http://docs.modelx.io
+
 """
 
 def get_version(version_tuple):
