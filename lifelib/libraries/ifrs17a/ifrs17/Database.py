@@ -30,6 +30,15 @@ def remove_duplicates(input_list: list) -> list:
     return [item for item in input_list if not (item in seen or seen.add(item))]
 
 
+def replace_nan(df):
+    float_cols = df.select_dtypes(include=['float64']).columns
+    str_cols = df.select_dtypes(include=['object']).columns
+
+    df.loc[:, float_cols] = df.loc[:, float_cols].fillna(0)
+    df.loc[:, str_cols] = df.loc[:, str_cols].fillna('')
+    return df
+
+
 class IfrsDatabase(BaseDatabase):
 
     _import_formats: dict[ImportFormats, Callable] = {}
@@ -47,7 +56,7 @@ class IfrsDatabase(BaseDatabase):
         else:
             sheets: dict[str, pd.DataFrame] = {}
             for name in opyxl.load_workbook(pathToFile).sheetnames:
-                sheets[name] = df = pd.read_excel(pathToFile, sheet_name=name, na_values=[''])
+                sheets[name] = df = replace_nan(pd.read_excel(pathToFile, sheet_name=name))
 
             return self._import_formats[format_](self, IDataSet(sheets))
 
