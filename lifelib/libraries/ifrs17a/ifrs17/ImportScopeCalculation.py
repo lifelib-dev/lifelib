@@ -231,7 +231,6 @@ class IScope(Generic[T, U]):
         self.model = model
         self.storage = self.model.storage
         self.context = context
-        self._multiply = 1
 
     def GetScope(self, scope: ScopeType, id_: T, context: str = ''):
         return self.model.GetScope(scope, id_, context)
@@ -588,7 +587,7 @@ class MonthlyRate(IScope):
         return [x ** (-1) for x in self.Interest]
 
 
-IdentityTuple = _namedtuple('IdentityTuple', ['Id', 'AmountType', 'EstimateType', 'AccidentYear'])
+IdentityTuple = _namedtuple('IdentityTuple', ['Id', 'AmountType', 'EstimateType', 'AccidentYear', 'Scale'], defaults=(1.0,))
 
 
 class NominalCashflow(IScope):  # <(ImportIdentity Id, string AmountType, string EstimateType, int? AccidentYear), ImportStorage>
@@ -891,7 +890,7 @@ class PresentValue(IWithGetValueFromValues):
 
     @cached_property
     def Value(self) -> float:
-        return self._multiply * self.GetValueFromValues(self.Values)
+        return self.Identity.Scale * self.GetValueFromValues(self.Values)
 
 
 class ComputePresentValueWithIfrsVariable(PresentValue):
@@ -899,7 +898,7 @@ class ComputePresentValueWithIfrsVariable(PresentValue):
 
     @cached_property
     def Value(self) -> list[float]:
-        return self._multiply * self.storage.GetValue(
+        return self.Identity.Scale * self.storage.GetValue(
             self.Identity.Id, self.Identity.AmountType, self.Identity.EstimateType, economicBasis=self.EconomicBasis, accidentYear=self.Identity.AccidentYear)
 
     @cached_property
@@ -1261,7 +1260,7 @@ class ActualBase(IScope):    # <(ImportIdentity Id, string AmountType, string Es
 
     @cached_property
     def Value(self) -> float:
-        return self._multiply * self.storage.GetValue(
+        return self.Identity.Scale * self.storage.GetValue(
             self.Identity.Id, self.Identity.AmountType,
             estimateType=self.Identity.EstimateType,
             accidentYear=self.Identity.AccidentYear)
@@ -1279,7 +1278,7 @@ class EndOfPeriodActual(ActualBase):
             result.append(self.GetScope(ActualBase,
                                         IdentityTuple(id_, self.Identity.AmountType, self.Identity.EstimateType, self.Identity.AccidentYear)).Value)
 
-        return self._multiply * sum(result)
+        return self.Identity.Scale * sum(result)
 
 
 class EmptyValuesActual(ActualBase):
@@ -1468,8 +1467,9 @@ class BeExperienceAdjustmentForPremium(IScope):     # <ImportIdentity, ImportSto
         mlt = self.storage.GetPremiumAllocationFactor(self.Identity)
         result = []
         for pr in self.storage.GetPremiums():
-            pv = self.GetScope(PresentValue, IdentityTuple(self.Identity, pr, EstimateTypes.BE, 0), self.EconomicBasis)
-            pv._multiply = mlt
+            pv = self.GetScope(PresentValue,
+                               IdentityTuple(self.Identity, pr, EstimateTypes.BE, 0, mlt),
+                               self.EconomicBasis)
             result.append(pv)
 
         return result
@@ -1498,8 +1498,7 @@ class ActualExperienceAdjustmentOnPremium(IScope):   #<ImportIdentity, ImportSto
         mlt = self.storage.GetPremiumAllocationFactor(self.Identity)
         result = []
         for pr in temp:
-            pv = self.GetScope(ActualBase, IdentityTuple(self.Identity, pr, EstimateTypes.A, 0), context='')
-            pv._multiply = mlt
+            pv = self.GetScope(ActualBase, IdentityTuple(self.Identity, pr, EstimateTypes.A, 0, mlt), context='')
             result.append(pv)
         return result
 
