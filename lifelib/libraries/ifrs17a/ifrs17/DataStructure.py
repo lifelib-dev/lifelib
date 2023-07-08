@@ -105,8 +105,9 @@ class VariableType(KeyedOrderedDimension):
 
 
 ### AoC Variable Type
+@_dataclass
 class AocType(VariableType): 
-    pass
+    PnlType: str
 
 
 AocStep = _namedtuple('AocStep', ['AocType', 'Novelty'])
@@ -318,6 +319,7 @@ class GroupOfContract(DataNode):
     Portfolio: str
     YieldCurveName: str
     Partner: str
+    IsReinsurance: bool
 
 
 @_dataclass(eq=False)

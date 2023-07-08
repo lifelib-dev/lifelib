@@ -389,7 +389,8 @@ def _FormatDataNode(target: IfrsDatabase, dataSet: IDataSet):
             Profitability=datarow["Profitability"],
             Portfolio=pf,
             YieldCurveName=datarow["YieldCurveName"] if "YieldCurveName" in dataset.Tables["GroupOfInsuranceContract"].columns else '',
-            Partner=''
+            Partner='',
+            IsReinsurance=False
         )
 
         return ExtendGroupOfContract(gic, datarow)
@@ -419,6 +420,7 @@ def _FormatDataNode(target: IfrsDatabase, dataSet: IDataSet):
             Portfolio=pf,
             Partner=datarow["Partner"],
             YieldCurveName=datarow["YieldCurveName"] if "YieldCurveName" in dataset.Tables["GroupOfInsuranceContract"].columns.values else '',
+            IsReinsurance=True
         )
         return ExtendGroupOfContract(gric, datarow)
     
