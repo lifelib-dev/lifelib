@@ -11,6 +11,7 @@ Past Documents
 .. raw:: html
 
     <ul class="simple">
+    <li><a href="https://pastdocs.lifelib.io/docs-v0.9.0/index.html" target="_blank">lifelib v0.9.0</a></li>
     <li><a href="https://pastdocs.lifelib.io/docs-v0.8.1/index.html" target="_blank">lifelib v0.8.1</a></li>
     <li><a href="https://pastdocs.lifelib.io/docs-v0.8.0/index.html" target="_blank">lifelib v0.8.0</a></li>
     <li><a href="https://pastdocs.lifelib.io/docs-v0.7.0/index.html" target="_blank">lifelib v0.7.0</a></li>

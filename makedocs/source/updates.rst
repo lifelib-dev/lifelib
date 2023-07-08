@@ -14,6 +14,11 @@ Updates
     Follow <a href="https://www.linkedin.com/company/lifelib" target="_blank">lifelib on LinkedIn</a>
     for more frequent updates.</p>
 
+* *8 July 2023:*
+  lifelib v0.9.1 is released.
+  a new notebook, :doc:`/libraries/ifrs17a/template_example2` is added in :mod:`~ifrs17a`.
+  See :ref:`Release Notes<relnotes_v0.9.1>` for details.
+
 * *13 May 2023:*
   lifelib v0.9.0 is released. :mod:`~ifrs17a`, a new library for IFRS 17 is added.
   See :ref:`Release Notes<relnotes_v0.9.0>` for details.

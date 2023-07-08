@@ -33,6 +33,7 @@ Notebooks
 ---------------------------
 
 * :doc:`libraries/ifrs17a/template_example`
+* :doc:`libraries/ifrs17a/template_example2`
 * :doc:`libraries/ifrs17a/present_value_example_ep2`
 * :doc:`libraries/ifrs17a/present_value_example_ep3`
 * :doc:`libraries/ifrs17a/logic_inspection_example`
