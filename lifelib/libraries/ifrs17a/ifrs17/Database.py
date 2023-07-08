@@ -138,16 +138,6 @@ class IfrsDatabase(BaseDatabase):
 
         return records
 
-    @staticmethod
-    def _query2df(query) -> pd.DataFrame:
-
-        data = []
-        for q in query:
-            data.append(dataclasses.asdict(q))
-
-        return pd.DataFrame.from_records(data)
-
-
     def LoadCurrentParameter(
         self,
         type_,

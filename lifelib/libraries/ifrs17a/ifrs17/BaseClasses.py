@@ -2,6 +2,7 @@ import dataclasses
 import uuid
 from dataclasses import dataclass
 from typing import (TypeVar, Generic, Iterable, Collection)
+import pandas as pd
 
 __all__ = ('Guid', 'BaseDatabase', 'INamed', 'IOrdered', 'IKeyedType', 'IDataSet', 'IDataRow')
 
@@ -83,7 +84,16 @@ class BaseDatabase:
         self._data.clear()
         self._current_partition.clear()
 
-    def Query(self, type_: type, partition=None, include_sub=True):
+    @staticmethod
+    def _query2df(query) -> pd.DataFrame:
+
+        data = []
+        for q in query:
+            data.append(dataclasses.asdict(q))
+
+        return pd.DataFrame.from_records(data)
+
+    def Query(self, type_: type, partition=None, include_sub=True, as_df=False):
 
         result = []
         if include_sub:
@@ -96,7 +106,10 @@ class BaseDatabase:
         if partition is not None:
             result = [v for v in result if v.Partition == partition]
 
-        return result
+        if as_df:
+            return self._query2df(result)
+        else:
+            return result
 
     def Delete(self, type_: type, data: Collection):
         records = self._data.get(type_, [])
