@@ -58,7 +58,7 @@ def AccumCF(t):
 
 def AttAge(t):
     """Attained age at time ``t``"""
-    return pol.IssueAge + t
+    return pol.IssueAge() + t
 
 
 def BenefitAccDth(t):
@@ -263,7 +263,7 @@ def PolsLiving(t):
 
 def PolsMaturity(t):
     """Number of policies: Maturity"""
-    if t == pol.PolicyTerm:
+    if t == pol.PolicyTerm():
         return PolsIF_End(t)
     else:
         return 0
@@ -271,7 +271,7 @@ def PolsMaturity(t):
 
 def PolsNewBiz(t):
     """Number of policies: New business"""
-    return pol.PolicyCount if t == 0 else 0
+    return pol.PolicyCount() if t == 0 else 0
 
 
 def PolsOther(t):
@@ -338,7 +338,7 @@ def ReserveUernPremEnd(t):
 
 def SizeAnnPrem(t):
     """Annualized premium per policy at time ``t``"""
-    return SizeSumAssured(t) * pol.AnnPremRate
+    return SizeSumAssured(t) * pol.AnnPremRate()
 
 
 def SizeBenefitAccDth(t):
@@ -395,8 +395,8 @@ def SizeBenefitSurr(t):
 def SizeExpsAcq(t):
     """Acquisition expense per policy at time t"""
     if t == 0:
-        return (SizeAnnPrem(t) * asmp.ExpsAcqAnnPrem
-                + (SizeSumAssured(t) * asmp.ExpsAcqSA + asmp.ExpsAcqPol)
+        return (SizeAnnPrem(t) * asmp.ExpsAcqAnnPrem()
+                + (SizeSumAssured(t) * asmp.ExpsAcqSA() + asmp.ExpsAcqPol())
                 * InflFactor(t) / InflFactor(0))
     else:
         return 0
@@ -405,7 +405,7 @@ def SizeExpsAcq(t):
 def SizeExpsCommInit(t):
     """Initial commission per policy at time t"""
     if t == 0:
-        return SizePremium(t) * asmp.CommInitPrem * (1 + asmp.CnsmpTax)
+        return SizePremium(t) * asmp.CommInitPrem() * (1 + asmp.CnsmpTax())
     else:
         return 0
 
@@ -414,16 +414,16 @@ def SizeExpsCommRen(t):
     """Renewal commission per policy at time t"""
     if t == 0:
         return 0
-    elif t < asmp.CommRenTerm:
-        return SizePremium(t) * asmp.CommRenPrem * (1 + asmp.CnsmpTax)
+    elif t < asmp.CommRenTerm():
+        return SizePremium(t) * asmp.CommRenPrem() * (1 + asmp.CnsmpTax())
     else:
         return 0
 
 
 def SizeExpsMaint(t):
     """Maintenance expense per policy at time t"""
-    return (SizeAnnPrem(t) * asmp.ExpsMaintAnnPrem
-            + (SizeSumAssured(t) * asmp.ExpsMaintSA + asmp.ExpsMaintPol)
+    return (SizeAnnPrem(t) * asmp.ExpsMaintAnnPrem()
+            + (SizeSumAssured(t) * asmp.ExpsMaintSA() + asmp.ExpsMaintPol())
             * InflFactor(t))
 
 
@@ -439,7 +439,7 @@ def SizeInvstIncome(t):
 
 def SizePremium(t):
     """Premium income per policy from t to t+1"""
-    return SizeSumAssured(t) * pol.GrossPremRate * pol.PremFreq
+    return SizeSumAssured(t) * pol.GrossPremRate() * pol.PremFreq()
 
 
 def SizeReservePremRsrvAftMat(t):
@@ -470,7 +470,7 @@ def SizeReserveUernPremEnd(t):
 
 def SizeSumAssured(t):
     """Sum assured per policy at time ``t``"""
-    return  pol.SumAssured
+    return  pol.SumAssured()
 
 
 def last_t():

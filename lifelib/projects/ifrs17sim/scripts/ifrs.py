@@ -292,6 +292,6 @@ def AmortAcqCashflow(t):
         Implemented as a constant percentage of actual premiums,
         thus not totalling the original amount if actual != expected.
     """
-    return -AcqPremRatio * PremIncome(t)
+    return -AcqPremRatio() * PremIncome(t)
 
 

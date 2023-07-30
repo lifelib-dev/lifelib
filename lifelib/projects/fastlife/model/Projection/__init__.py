@@ -132,7 +132,7 @@ def AccumCF(t):
 
 def AttAge(t):
     """Attained age at time ``t``"""
-    return pol.IssueAge + t
+    return pol.IssueAge() + t
 
 
 def BenefitAccDth(t):
@@ -337,7 +337,7 @@ def PolsLiving(t):
 
 def PolsMaturity(t):
     """Number of policies: Maturity"""
-    return (pol.PolicyTerm == t) * PolsIF_End(t)
+    return (pol.PolicyTerm() == t) * PolsIF_End(t)
 
 
 def PolsNewBiz(t):
@@ -476,7 +476,7 @@ def SizeExpsAcq(t):
 def SizeExpsCommInit(t):
     """Initial commission per policy at time t"""
     if t == 0:
-        return SizePremium(t) * asmp.CommInitPrem() * (1 + asmp.CnsmpTax)
+        return SizePremium(t) * asmp.CommInitPrem() * (1 + asmp.CnsmpTax())
     else:
         return 0
 

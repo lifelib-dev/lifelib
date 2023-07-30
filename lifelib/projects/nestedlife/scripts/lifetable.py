@@ -64,14 +64,14 @@ def qx(x):
 def Dx(x):
     """The commutation column :math:`D_{x} = l_{x}v^{x}`.
     """
-    return lx(x) * disc ** x
+    return lx(x) * disc() ** x
 
 
 def Cx(x):
     """The commutation column :math:`\\overline{C_x}`.
     """
 
-    return dx(x) * disc**(x+1/2)
+    return dx(x) * disc()**(x+1/2)
 
 
 def Nx(x):

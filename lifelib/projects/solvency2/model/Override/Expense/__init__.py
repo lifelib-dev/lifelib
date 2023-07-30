@@ -27,14 +27,14 @@ def InflFactor(t):
         else:
             shock = 0
 
-        return InflFactor(t-1) * (1 + asmp.InflRate + shock)
+        return InflFactor(t-1) * (1 + asmp.InflRate() + shock)
 
 
 def SizeExpsAcq(t):
     """Acquisition expense per policy at time t"""
     if t == 0:
-        return (SizeAnnPrem(t) * asmp.ExpsAcqAnnPrem
-                + (SizeSumAssured(t) * asmp.ExpsAcqSA + asmp.ExpsAcqPol)
+        return (SizeAnnPrem(t) * asmp.ExpsAcqAnnPrem()
+                + (SizeSumAssured(t) * asmp.ExpsAcqSA() + asmp.ExpsAcqPol())
                 * InflFactor(t) / InflFactor(0))
     else:
         return 0
@@ -45,8 +45,8 @@ def SizeExpsMaint(t):
 
     shock = Factor(Risk, Shock, Scope)
 
-    return (SizeAnnPrem(t) * asmp.ExpsMaintAnnPrem
-            + (SizeSumAssured(t) * asmp.ExpsMaintSA + asmp.ExpsMaintPol)
+    return (SizeAnnPrem(t) * asmp.ExpsMaintAnnPrem()
+            + (SizeSumAssured(t) * asmp.ExpsMaintSA() + asmp.ExpsMaintPol())
             * InflFactor(t)) * (1 + shock)
 
 

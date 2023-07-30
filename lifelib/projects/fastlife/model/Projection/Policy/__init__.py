@@ -275,7 +275,7 @@ def ReserveRate():
 def SurrCharge(t):
     """Surrender Charge Rate per Sum Assured"""
     m = PremTerm()
-    return InitSurrCharge * np.maximum((np.minimum(m, 10) - t) / np.minimum(m, 10), 0)
+    return InitSurrCharge() * np.maximum((np.minimum(m, 10) - t) / np.minimum(m, 10), 0)
 
 
 def TableID(RateBasis):
@@ -339,8 +339,8 @@ def LoadMaintPrem2():
 
     result = pd.Series(0.002, index=PolicyData().index)
 
-    result[PremTerm < 10] = 0.001
-    result[PremTerm < 5] = 0.0005
+    result[PremTerm() < 10] = 0.001
+    result[PremTerm() < 5] = 0.0005
 
     result.name = 'LoadMaintPrem2'
 

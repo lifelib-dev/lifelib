@@ -178,7 +178,7 @@ def InitSurrCharge():
 def NetPremRate(basis):
     """Net Premium Rate"""
 
-    gamma2 = LoadMaintSA2
+    gamma2 = LoadMaintSA2()
     comf = LifeTable[Sex, IntRate(basis), TableID(basis)]
 
     if Product == 'TERM' or Product == 'WL':
@@ -194,11 +194,11 @@ def NetPremRate(basis):
 def GrossPremRate():
     """Gross Premium Rate per Sum Assured per payment"""
 
-    alpha = LoadAcqSA
-    beta = LoadMaintPrem
-    gamma = LoadMaintSA
-    gamma2 = LoadMaintSA2
-    delta = LoadMaintPremWaiverPrem
+    alpha = LoadAcqSA()
+    beta = LoadMaintPrem()
+    gamma = LoadMaintSA()
+    gamma2 = LoadMaintSA2()
+    delta = LoadMaintPremWaiverPrem()
 
     comf = LifeTable[Sex, IntRate('PREM'), TableID('PREM')]
 
@@ -215,7 +215,7 @@ def GrossPremRate():
 
 def AnnPremRate():
     """Annualized Premium Rate per Sum Assured"""
-    return GrossPremRate * (1/10 if PremFreq == 0 else PremFreq)
+    return GrossPremRate() * (1/10 if PremFreq == 0 else PremFreq)
 
 
 def GrossPremTable():
@@ -225,7 +225,7 @@ def GrossPremTable():
 def ReserveNLP_Rate(basis, t):
     """Net level premium reserve rate"""
 
-    gamma2 = LoadMaintSA2
+    gamma2 = LoadMaintSA2()
 
     lt = LifeTable[Sex, IntRate(basis), TableID(basis)]
 
@@ -242,7 +242,7 @@ def ReserveRate():
 
 def SurrCharge(t):
     """Surrender Charge Rate per Sum Assured"""
-    return InitSurrCharge * max((min(m, 10) - t) / min(m, 10), 0)
+    return InitSurrCharge() * max((min(m, 10) - t) / min(m, 10), 0)
 
 def CashValueRate(t):
     """Cash Value Rate per Sum Assured"""

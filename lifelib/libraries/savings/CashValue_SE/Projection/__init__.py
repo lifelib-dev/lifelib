@@ -854,7 +854,7 @@ def inflation_factor(t):
         * :func:`inflation_rate`
 
     """
-    return (1 + inflation_rate)**(t/12)
+    return (1 + inflation_rate())**(t/12)
 
 
 def inflation_rate():
@@ -1442,14 +1442,14 @@ def premium_pp(t):
 
 
     """
-    if premium_type == 'SINGLE':
+    if premium_type() == 'SINGLE':
 
         if duration_mth(t) == 0:
             return model_point()['premium_pp']
         else:
             return 0
 
-    elif premium_type == 'LEVEL':
+    elif premium_type() == 'LEVEL':
 
         if duration_mth(t) < 12 * policy_term():
             return model_point()['premium_pp']

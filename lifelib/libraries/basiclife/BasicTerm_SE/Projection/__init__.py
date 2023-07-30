@@ -412,7 +412,7 @@ def inflation_factor(t):
         * :func:`inflation_rate`
 
     """
-    return (1 + inflation_rate)**(t/12)
+    return (1 + inflation_rate())**(t/12)
 
 
 def inflation_rate():

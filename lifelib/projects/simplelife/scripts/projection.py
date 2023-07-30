@@ -17,7 +17,7 @@ Attributes:
 """
 
 def last_t():
-    return min(asmp.LastAge - pol.IssueAge, pol.PolicyTerm)
+    return min(asmp.LastAge() - pol.IssueAge, pol.PolicyTerm)
 
 def AttAge(t):
     """Attained age at time ``t``"""
@@ -29,12 +29,12 @@ def SizeSumAssured(t):
 
 def SizeAnnPrem(t):
     """Annualized premium per policy at time ``t``"""
-    return SizeSumAssured(t) * pol.AnnPremRate
+    return SizeSumAssured(t) * pol.AnnPremRate()
 
 # --- Income ---
 def SizePremium(t):
     """Premium income per policy from t to t+1"""
-    return SizeSumAssured(t) * pol.GrossPremRate * pol.PremFreq
+    return SizeSumAssured(t) * pol.GrossPremRate() * pol.PremFreq
 
 def SizeInvstIncome(t):
     """Investment Income per policy from t to t+1"""
@@ -45,7 +45,7 @@ def SizeInvstIncome(t):
 def SizeExpsCommInit(t):
     """Initial commission per policy at time t"""
     if t == 0:
-        return SizePremium(t) * asmp.CommInitPrem * (1 + asmp.CnsmpTax)
+        return SizePremium(t) * asmp.CommInitPrem() * (1 + asmp.CnsmpTax())
     else:
         return 0
 
@@ -53,8 +53,8 @@ def SizeExpsCommRen(t):
     """Renewal commission per policy at time t"""
     if t == 0:
         return 0
-    elif t < asmp.CommRenTerm:
-        return SizePremium(t) * asmp.CommRenPrem * (1 + asmp.CnsmpTax)
+    elif t < asmp.CommRenTerm():
+        return SizePremium(t) * asmp.CommRenPrem() * (1 + asmp.CnsmpTax())
     else:
         return 0
 
@@ -63,8 +63,8 @@ def SizeExpsCommRen(t):
 def SizeExpsAcq(t):
     """Acquisition expense per policy at time t"""
     if t == 0:
-        return (SizeAnnPrem(t) * asmp.ExpsAcqAnnPrem
-                + (SizeSumAssured(t) * asmp.ExpsAcqSA + asmp.ExpsAcqPol)
+        return (SizeAnnPrem(t) * asmp.ExpsAcqAnnPrem()
+                + (SizeSumAssured(t) * asmp.ExpsAcqSA() + asmp.ExpsAcqPol())
                 * scen.InflFactor(t) / scen.InflFactor(0))
     else:
         return 0
@@ -72,8 +72,8 @@ def SizeExpsAcq(t):
 
 def SizeExpsMaint(t):
     """Maintenance expense per policy at time t"""
-    return (SizeAnnPrem(t) * asmp.ExpsMaintAnnPrem
-            + (SizeSumAssured(t) * asmp.ExpsMaintSA + asmp.ExpsMaintPol)
+    return (SizeAnnPrem(t) * asmp.ExpsMaintAnnPrem()
+            + (SizeSumAssured(t) * asmp.ExpsMaintSA() + asmp.ExpsMaintPol())
             * scen.InflFactor(t))
 
 

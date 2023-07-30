@@ -67,7 +67,7 @@ _spaces = []
 
 def AnnPremRate():
     """Annualized Premium Rate per Sum Assured"""
-    return GrossPremRate * (1/10 if PremFreq == 0 else PremFreq)
+    return GrossPremRate() * (1/10 if PremFreq() == 0 else PremFreq())
 
 
 def CashValueRate(t):
@@ -88,13 +88,13 @@ def GrossPremRate():
 
     comf = LifeTable[Sex(), IntRate('PREM'), TableID('PREM')]
 
-    if Product == 'TERM' or Product == 'WL':
-        return (comf.Axn(x, n) + alpha + gamma * comf.AnnDuenx(x, n, PremFreq)
-                + gamma2 * comf.AnnDuenx(x, n-m, 1, m)) / (1-beta-delta) / PremFreq / comf.AnnDuenx(x, m, PremFreq)
+    if Product() == 'TERM' or Product() == 'WL':
+        return (comf.Axn(x, n) + alpha + gamma * comf.AnnDuenx(x, n, PremFreq())
+                + gamma2 * comf.AnnDuenx(x, n-m, 1, m)) / (1-beta-delta) / PremFreq() / comf.AnnDuenx(x, m, PremFreq())
 
-    elif Product == 'ENDW':
-        return (comf.Exn(x, n) + comf.Axn(x, n) + alpha + gamma * comf.AnnDuenx(x, n, PremFreq)
-                + gamma2 * comf.AnnDuenx(x, n-m, 1, m)) / (1-beta-delta) / PremFreq / comf.AnnDuenx(x, m, PremFreq)
+    elif Product() == 'ENDW':
+        return (comf.Exn(x, n) + comf.Axn(x, n) + alpha + gamma * comf.AnnDuenx(x, n, PremFreq())
+                + gamma2 * comf.AnnDuenx(x, n-m, 1, m)) / (1-beta-delta) / PremFreq() / comf.AnnDuenx(x, m, PremFreq())
     else:
         raise ValueError('invalid product')
 
@@ -113,7 +113,7 @@ def InitSurrCharge():
     if param1 is None or param2 is None:
         raise ValueError('SurrChargeParam not found')
 
-    return param1 + param2 * min(PolicyTerm / 10, 1)
+    return param1 + param2 * min(PolicyTerm() / 10, 1)
 
 
 def IntRate(RateBasis):
@@ -139,7 +139,7 @@ def LoadAcqSA():
     param1 = SpecLookup("LoadAcqSAParam1", Product())
     param2 = SpecLookup("LoadAcqSAParam2", Product())
 
-    return param1 + param2 * min(PolicyTerm / 10, 1)
+    return param1 + param2 * min(PolicyTerm() / 10, 1)
 
 
 def LoadMaintPrem():
@@ -150,7 +150,7 @@ def LoadMaintPrem():
 
     elif SpecLookup("LoadMaintPremParam2", Product()) is not None:
         param = SpecLookup("LoadMaintPremParam2", Product())
-        return (param + min(10, PolicyTerm)) / 100
+        return (param + min(10, PolicyTerm())) / 100
 
     else:
         raise ValueError('LoadMaintPrem parameters not found')
@@ -159,9 +159,9 @@ def LoadMaintPrem():
 def LoadMaintPremWaiverPrem():
     """Maintenance Loading per Gross Premium for Premium Waiver"""
 
-    if PremTerm < 5:
+    if PremTerm() < 5:
         return 0.0005
-    elif PremTerm < 10:
+    elif PremTerm() < 10:
         return 0.001
     else:
         return 0.002
@@ -192,15 +192,15 @@ def LoadMaintSA2():
 def NetPremRate(basis):
     """Net Premium Rate"""
 
-    gamma2 = LoadMaintSA2
+    gamma2 = LoadMaintSA2()
     comf = LifeTable[Sex(), IntRate(basis), TableID(basis)]
 
     x, n, m = IssueAge(), PolicyTerm(), PremTerm()
 
-    if Product == 'TERM' or Product == 'WL':
+    if Product() == 'TERM' or Product() == 'WL':
         return (comf.Axn(x, n) + gamma2 * comf.AnnDuenx(x, n-m, 1, m)) / comf.AnnDuenx(x, n)
 
-    elif Product == 'ENDW':
+    elif Product() == 'ENDW':
         return (comf.Axn(x, n) + gamma2 * comf.AnnDuenx(x, n-m, 1, m)) / comf.AnnDuenx(x, n)
 
     else:
@@ -231,7 +231,7 @@ def ReserveRate():
 def SurrCharge(t):
     """Surrender Charge Rate per Sum Assured"""
     m = PremTerm()
-    return InitSurrCharge * max((min(m, 10) - t) / min(m, 10), 0)
+    return InitSurrCharge() * max((min(m, 10) - t) / min(m, 10), 0)
 
 
 def TableID(RateBasis):
