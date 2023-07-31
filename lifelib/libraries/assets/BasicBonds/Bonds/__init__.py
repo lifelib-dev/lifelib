@@ -273,11 +273,11 @@ def riskfree_curve():
     return ql.ZeroCurve(
         spot_dates,
         spot_rates, 
-        ql.Actual360(),       # dayCount
-        ql.UnitedStates(),    # calendar
-        ql.Linear(),          # Interpolator
-        ql.Compounded,        # compounding
-        ql.Annual             # frequency
+        ql.Actual360(),                                 # dayCount
+        ql.UnitedStates(ql.UnitedStates.Settlement),    # calendar
+        ql.Linear(),                                    # Interpolator
+        ql.Compounded,                                  # compounding
+        ql.Annual                                       # frequency
         )
 
 
@@ -310,8 +310,8 @@ def schedule(bond_id):
         issue_date, 
         maturity_date, 
         tenor, 
-        ql.UnitedStates(),               # calendar
-        ql.Unadjusted,                   # convention
+        ql.UnitedStates(ql.UnitedStates.Settlement),    # calendar
+        ql.Unadjusted,                                  # convention
         ql.Unadjusted ,                 # terminationDateConvention
         ql.DateGeneration.Backward,     # rule
         False   # endOfMonth
