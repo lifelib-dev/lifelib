@@ -713,7 +713,7 @@ def mort_rate(i):
     """
     mi = pd.MultiIndex.from_arrays([age(i), np.minimum(duration_y(i), 5)])
     return mort_table_reindexed().reindex(
-        mi, fill_value=0).set_axis(model_point().index, inplace=False)
+        mi, fill_value=0).set_axis(model_point().index)
 
 
 def mort_table_reindexed():
