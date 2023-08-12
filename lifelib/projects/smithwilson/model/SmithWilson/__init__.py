@@ -65,7 +65,7 @@ def u(i):
 
 
 def m(i):
-    """Observed zero-coupon bond prices at time :math:`u_i`.
+    r"""Observed zero-coupon bond prices at time :math:`u_i`.
 
     :func:`m` is calculated from :attr:`spot_rates` as
     :math:`(1 + spot\_rates[i-1])^{-u_i}`
@@ -77,7 +77,7 @@ def m(i):
 
 
 def mu(i):
-    """Ultimate Forward Rate (UFR) discount factors
+    r"""Ultimate Forward Rate (UFR) discount factors
 
     :func:`mu` is defined as :math:`e^{-UFR\cdot u_i}`.
 
@@ -88,22 +88,22 @@ def mu(i):
 
 
 def W(i, j):
-    """The Wilson functions.
+    r"""The Wilson functions.
 
     :func:`W` corresponds to formula (2) on page 16 in `the technical paper`_
     defined as:
 
     .. math::
 
-        W(t, u_j)=  \\
-            e^{-UFR\cdot (t+u_j)}\cdot  \\
-            \left\{   \\
-                \\alpha\cdot\min(t, u_j) \\
-                -0.5\cdot e^{-\\alpha\cdot\max(t, u_j)}\cdot(    \\
-                    e^{\\alpha\cdot\min(t, u_j)}     \\
-                    -e^{-\\alpha\cdot\min(t, u_j)}    \\
-                    )   \\
-            \\right\}
+        W(t, u_j)=  \
+            e^{-UFR\cdot (t+u_j)}\cdot  \
+            \left\{   \
+                \alpha\cdot\min(t, u_j) \
+                -0.5\cdot e^{-\alpha\cdot\max(t, u_j)}\cdot(    \
+                    e^{\alpha\cdot\min(t, u_j)}     \
+                    -e^{-\alpha\cdot\min(t, u_j)}    \
+                    )   \
+            \right\}
 
     where :math:`t = u_i`.
 
@@ -145,21 +145,21 @@ def W_matrix():
 
 
 def zeta_vector():
-    """The :func:`zeta` vector.
+    r"""The :func:`zeta` vector.
 
     :func:`zeta_vector` returns :math:`\zeta` parameters calculated
     by formula (5) on page 17 in `the technical paper`_, which is
 
     .. math::
 
-        \\bf \zeta= W^{-1}(p-\mu)
+        \bf \zeta= W^{-1}(p-\mu)
 
     """
     return np.linalg.inv(W_matrix()) @ (m_vector() - mu_vector())
 
 
 def zeta(i):
-    """The :math:`\zeta_i` parameters fitted to the observed spot rates.
+    r"""The :math:`\zeta_i` parameters fitted to the observed spot rates.
 
     Args:
         i(int): Time index (1, 2, ..., :attr:`N`)
@@ -168,7 +168,7 @@ def zeta(i):
 
 
 def P(i):
-    """Zero-coupon bond prices extrapolated by the Smith-Wilson method.
+    r"""Zero-coupon bond prices extrapolated by the Smith-Wilson method.
 
     :func:`P` corresponds to formula (1) on page 16 or formula (6)
     on page 18 in `the technical paper`_, defined as:
@@ -189,13 +189,13 @@ def P(i):
 
 
 def R(i):
-    """The extrapolated annual compound sport rates.
+    r"""The extrapolated annual compound sport rates.
 
     :func:`R` corresponds to :math:`R_t` defined as:
 
     .. math::
 
-        R_t = \left(\\frac{1}{P(t)}\\right)^\left(\\frac{1}{t}\\right)-1
+        R_t = \left(\frac{1}{P(t)}\right)^\left(\frac{1}{t}\right)-1
 
     on page 18 in `the technical paper`_,
     substituting :math:`t` with :math:`u_i`.

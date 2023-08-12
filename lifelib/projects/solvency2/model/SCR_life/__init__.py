@@ -99,7 +99,7 @@ def NetAstValue(risk='base', shock=None, scope=None):
 
 
 def SCR_life():
-    """The capital requirement for life underwriting risk
+    r"""The capital requirement for life underwriting risk
 
     .. math::
         \sqrt{\sum_{i,j}Corr_{(i,j)}\cdot SCR_i\cdot SCR_j}
