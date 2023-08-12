@@ -28,13 +28,14 @@ testdata2 = str(datadir.joinpath('data_nestedlife2'))
     [testdata2, update_model]
 ])
 def test_nestedlife(testdata, func):
-    model = mx.read_model(modelpath)
 
+    model = mx.read_model(modelpath)
     data = get_nested(func(model), 'PolsSurr')
 
     with open(testdata, 'rb') as file:
         data_saved = pickle.load(file)
 
     assert data == data_saved
+    model.close()
 
 

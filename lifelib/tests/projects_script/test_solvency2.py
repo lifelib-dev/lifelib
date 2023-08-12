@@ -23,5 +23,5 @@ def test_solvency2():
         data_saved = pickle.load(file)
 
     assert data == data_saved
-
+    model.close()
 

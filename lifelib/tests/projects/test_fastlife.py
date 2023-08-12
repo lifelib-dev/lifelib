@@ -18,3 +18,5 @@ def test_fastlife():
     fastsum = sum(fast.Projection.PV_NetCashflow(0))
 
     assert simplesum == fastsum
+    simple.close()
+    fast.close()

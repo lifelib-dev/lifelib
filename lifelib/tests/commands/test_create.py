@@ -152,3 +152,4 @@ def test_package(library, model_dir, target, method, args, expected, tmp_path):
         actual = getattr(actual, method)(*args)
 
     assert math.isclose(actual, expected)
+    m.close()

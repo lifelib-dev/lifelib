@@ -9,13 +9,11 @@ from lifelib.tests.data.generate_testdata import round_signif
 if '' not in sys.path:
     sys.path.insert(0, '')
 
-model = simplelife.build(load_saved=False)
-
-testdata = \
-    str(pathlib.Path(__file__).parents[1].joinpath('data/data_simplelife'))
+testdata = str(pathlib.Path(__file__).parents[1].joinpath('data/data_simplelife'))
 
 
 def test_simpleflie():
+    model = simplelife.build(load_saved=False)
     data = []
     proj = model.Projection
     for i in range(10, 301, 10):
@@ -25,5 +23,6 @@ def test_simpleflie():
         data_saved = pickle.load(file)
 
     assert data == data_saved
+    model.close()
 
 
