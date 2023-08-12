@@ -107,7 +107,7 @@ class VariableType(KeyedOrderedDimension):
 ### AoC Variable Type
 @_dataclass
 class AocType(VariableType): 
-    PnlType: str
+    PnlType: str = ''
 
 
 AocStep = _namedtuple('AocStep', ['AocType', 'Novelty'])
