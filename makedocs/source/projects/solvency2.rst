@@ -5,6 +5,12 @@
 Project **solvency2**
 =====================
 
+.. include:: /banners.rst
+   :start-after: Begin modelx banner
+   :end-before: End modelx banner
+
+|modelx banner|
+
 **solvency2** is a project for building a model to
 calculate life risks of selected policies at various points in their policy periods
 based on Solvency II standard formula.

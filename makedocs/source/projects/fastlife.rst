@@ -5,6 +5,12 @@
 Project **fastlife**
 ======================
 
+.. include:: /banners.rst
+   :start-after: Begin modelx banner
+   :end-before: End modelx banner
+
+|modelx banner|
+
 This project includes the **fastlife** model. The firstlife model
 calculates the present values of the net insurance cashflows.
 The calculation results are the same as the model in :doc:`simplelife`.
@@ -107,7 +113,7 @@ thanks to Binder.
 
 * Introduction to fastlife |binder fastlife_introduction|
 
-.. include:: /binderlinks.rst
+.. include:: /banners.rst
    :start-after: Begin binder banner
    :end-before: End binder banner
 

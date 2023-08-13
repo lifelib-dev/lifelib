@@ -1,7 +1,10 @@
 .. module:: basiclife
+.. include:: /banners.rst
 
 The **basiclife** Library
 ==========================
+
+|modelx banner|
 
 Overview
 ---------

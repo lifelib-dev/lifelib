@@ -6,6 +6,6 @@
 
 *Run this fastlife sample now!* |binder fastlife_pvnetcfs|
 
-.. include:: /binderlinks.rst
+.. include:: /banners.rst
    :start-after: Begin binder fastlife_pvnetcfs
    :end-before: End binder fastlife_pvnetcfs

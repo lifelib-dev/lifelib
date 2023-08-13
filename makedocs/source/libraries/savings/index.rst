@@ -1,7 +1,10 @@
 .. module:: savings
+.. include:: /banners.rst
 
 The **savings** Library
 ==========================
+
+|modelx banner|
 
 Overview
 ---------

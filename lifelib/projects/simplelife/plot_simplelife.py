@@ -6,7 +6,7 @@ Draw a graph of liability cashflows of a simple whole life policy
 
 *Run this sample now!* |binder simplelife_demo|
 
-.. include:: /binderlinks.rst
+.. include:: /banners.rst
    :start-after: Begin binder simplelife_demo
    :end-before: End binder simplelife_demo
 

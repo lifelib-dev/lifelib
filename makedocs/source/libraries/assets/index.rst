@@ -1,7 +1,10 @@
 .. module:: assets
+.. include:: /banners.rst
 
 The **assets** Library
 ==========================
+
+|modelx banner|
 
 Overview
 ---------

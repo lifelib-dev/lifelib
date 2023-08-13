@@ -11,7 +11,7 @@ The live version of the notebook is available online.
 
 *Launch this notebook online!* |binder ifrs17sim_charts_baseline|
 
-.. include:: /binderlinks.rst
+.. include:: /banners.rst
    :start-after: Begin binder ifrs17sim_charts_baseline
    :end-before: End binder ifrs17sim_charts_baseline
 

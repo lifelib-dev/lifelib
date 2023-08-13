@@ -5,6 +5,12 @@
 Project **nestedlife**
 ======================
 
+.. include:: /banners.rst
+   :start-after: Begin modelx banner
+   :end-before: End modelx banner
+
+|modelx banner|
+
 The **nestedlife** project has the same annual projection
 model of basic traditional life policies
 as :mod:`simplelife`, but at each projection step,

@@ -5,6 +5,12 @@
 Project **ifrs17sim**
 =====================
 
+.. include:: /banners.rst
+   :start-after: Begin modelx banner
+   :end-before: End modelx banner
+
+|modelx banner|
+
 **ifrs17sim** is a project for simulating IFRS17
 financial statements on sample insurance contracts.
 
@@ -81,7 +87,7 @@ thanks to Binder.
 * IFRS17 Simulation (Baseline) |binder ifrs17sim_charts_baseline|
 * IFRS17 Simulation (Lapse Scenario) |binder ifrs17sim_charts_lapsescen|
 
-.. include:: /binderlinks.rst
+.. include:: /banners.rst
    :start-after: Begin binder banner
    :end-before: End binder banner
 

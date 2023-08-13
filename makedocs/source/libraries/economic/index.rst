@@ -1,7 +1,10 @@
 .. module:: economic
+.. include:: /banners.rst
 
 The **economic** Library
 ==========================
+
+|modelx banner|
 
 Overview
 ---------

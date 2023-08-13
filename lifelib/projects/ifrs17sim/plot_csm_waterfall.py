@@ -10,7 +10,7 @@ The live version of the notebook is available online.
 
 *Launch this notebook online!* |binder ifrs17sim_csm_waterfall|
 
-.. include:: /binderlinks.rst
+.. include:: /banners.rst
    :start-after: Begin binder ifrs17sim_csm_waterfall
    :end-before: End binder ifrs17sim_csm_waterfall
 

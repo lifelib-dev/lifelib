@@ -5,6 +5,12 @@
 Project **smithwilson**
 =======================
 
+.. include:: /banners.rst
+   :start-after: Begin modelx banner
+   :end-before: End modelx banner
+
+|modelx banner|
+
 The **smithwilson** project includes the **smithwilson** model,
 which extrapolates observed risk-free interest rates using the Smith-Wilson method.
 
@@ -85,7 +91,7 @@ thanks to Binder.
 
 *Launch this sample now!* |binder smithwilson_overview|
 
-.. include:: /binderlinks.rst
+.. include:: /banners.rst
    :start-after: Begin binder banner
    :end-before: End binder banner
 

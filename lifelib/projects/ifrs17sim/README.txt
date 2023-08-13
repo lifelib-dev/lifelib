@@ -10,6 +10,6 @@
 * *Run IFRS17 Simulation (Lapse Scenario) now!*  |binder ifrs17sim_charts_lapsescen|
 
 
-.. include:: /binderlinks.rst
+.. include:: /banners.rst
    :start-after: Begin binder_ifrs17sim
    :end-before: End binder_ifrs17sim

@@ -236,7 +236,7 @@ Updates
   New :doc:`generated_examples/index` pages are added.
 
 
-.. include:: /binderlinks.rst
+.. include:: /banners.rst
    :start-after: Begin binder banner
    :end-before: End binder banner
 

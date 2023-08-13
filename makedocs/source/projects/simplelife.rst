@@ -5,6 +5,12 @@
 Project **simplelife**
 ======================
 
+.. include:: /banners.rst
+   :start-after: Begin modelx banner
+   :end-before: End modelx banner
+
+|modelx banner|
+
 This project includes the **simplelife** model,
 which is an annual projection model of basic traditional life policies.
 The simplelife model is designed in such a way that allows you to
@@ -149,7 +155,7 @@ thanks to Binder.
 
 * simplelife Space Overview |binder simplelife_space_overview|
 
-.. include:: /binderlinks.rst
+.. include:: /banners.rst
    :start-after: Begin binder banner
    :end-before: End binder banner
 

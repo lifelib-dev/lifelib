@@ -1,7 +1,7 @@
 
 .. _notebooks_index:
 
-.. include:: /binderlinks.rst
+.. include:: /banners.rst
 
 Notebooks
 =================

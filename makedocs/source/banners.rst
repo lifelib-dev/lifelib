@@ -78,3 +78,12 @@
 .. End binder smithwilson_overview
 
 .. End binder banner
+
+.. Begin modelx banner
+
+.. |modelx banner| raw:: html
+
+   <a href="https://docs.modelx.io" target="_blank">
+   <img alt="modelx" src="https://img.shields.io/badge/modelx-0080FF" /></a>
+
+.. End modelx banner
