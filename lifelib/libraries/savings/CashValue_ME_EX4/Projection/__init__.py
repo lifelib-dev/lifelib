@@ -716,7 +716,7 @@ def commissions(t):
     return 0.05 * premiums(t)
 
 
-def disc_factors():
+def disc_factors(t):
     """Discount factors.
 
     Vector of the discount factors as a Numpy array. Used for calculating
@@ -726,10 +726,10 @@ def disc_factors():
 
         :func:`disc_rate_mth`
     """
-    return np.array(list((1 + disc_rate_mth()[t])**(-t) for t in range(max_proj_len())))
+    return (1 + disc_rate_mth(t))**(-t)
 
 
-def disc_rate_mth():
+def disc_rate_mth(t):
     """Monthly discount rate
 
     Nummpy array of monthly discount rates from time 0 to :func:`max_proj_len` - 1
@@ -742,7 +742,7 @@ def disc_rate_mth():
         :func:`disc_rate_ann`
 
     """
-    return np.array(list((1 + disc_rate_ann[t//12])**(1/12) - 1 for t in range(max_proj_len())))
+    return (1 + disc_rate_ann[t//12])**(1/12) - 1
 
 
 def duration(t):
@@ -1554,9 +1554,7 @@ def pv_av_change():
         * :func:`proj_len`
 
     """
-    result = np.array(list(av_change(t) for t in range(max_proj_len()))).transpose()
-
-    return result @ disc_factors()[:max_proj_len()]
+    return sum(av_change(t) * disc_factors(t) for t in range(max_proj_len()))
 
 
 def pv_claims(kind=None):
@@ -1572,9 +1570,7 @@ def pv_claims(kind=None):
 
 
     """
-    cl = np.array(list(claims(t, kind) for t in range(max_proj_len()))).transpose()
-
-    return cl @ disc_factors()[:max_proj_len()]
+    return sum(claims(t, kind) * disc_factors(t) for t in range(max_proj_len()))
 
 
 def pv_claims_from_av(kind=None):
@@ -1590,9 +1586,7 @@ def pv_claims_from_av(kind=None):
 
 
     """
-    cl = np.array(list(claims_from_av(t, kind) for t in range(max_proj_len()))).transpose()
-
-    return cl @ disc_factors()[:max_proj_len()]
+    return sum(claims_from_av(t, kind) * disc_factors(t) for t in range(max_proj_len()))
 
 
 def pv_claims_over_av(kind=None):
@@ -1608,9 +1602,7 @@ def pv_claims_over_av(kind=None):
 
 
     """
-    cl = np.array(list(claims_over_av(t, kind) for t in range(max_proj_len()))).transpose()
-
-    return cl @ disc_factors()[:max_proj_len()]
+    return sum(claims_over_av(t, kind) * disc_factors(t) for t in range(max_proj_len()))
 
 
 def pv_commissions():
@@ -1623,9 +1615,7 @@ def pv_commissions():
         * :func:`disc_factors`
 
     """
-    result = np.array(list(commissions(t) for t in range(max_proj_len()))).transpose()
-
-    return result @ disc_factors()[:max_proj_len()]
+    return sum(commissions(t) * disc_factors(t) for t in range(max_proj_len()))
 
 
 def pv_expenses():
@@ -1638,9 +1628,7 @@ def pv_expenses():
         * :func:`disc_factors`
 
     """
-    result = np.array(list(expenses(t) for t in range(max_proj_len()))).transpose()
-
-    return result @ disc_factors()[:max_proj_len()]
+    return sum(expenses(t) * disc_factors(t) for t in range(max_proj_len()))
 
 
 def pv_inv_income():
@@ -1655,9 +1643,7 @@ def pv_inv_income():
         * :func:`disc_factors`
 
     """
-    result = np.array(list(inv_income(t) for t in range(max_proj_len()))).transpose()
-
-    return result @ disc_factors()[:max_proj_len()]
+    return sum(inv_income(t) * disc_factors(t) for t in range(max_proj_len()))
 
 
 def pv_net_cf():
@@ -1694,9 +1680,7 @@ def pv_pols_if():
     It is used as the annuity factor for calculating :func:`net_premium_pp`.
 
     """
-    result = np.array(list(pols_if_at(t, "BEF_DECR") for t in range(max_proj_len()))).transpose()
-
-    return result @ disc_factors()[:max_proj_len()]
+    return sum(pols_if_at(t, "BEF_DECR") * disc_factors(t) for t in range(max_proj_len()))
 
 
 def pv_premiums():
@@ -1709,9 +1693,7 @@ def pv_premiums():
         * :func:`disc_factors`
 
     """
-    result = np.array(list(premiums(t) for t in range(max_proj_len()))).transpose()
-
-    return result @ disc_factors()[:max_proj_len()]
+    return sum(premiums(t) * disc_factors(t) for t in range(max_proj_len()))
 
 
 def result_cf():
