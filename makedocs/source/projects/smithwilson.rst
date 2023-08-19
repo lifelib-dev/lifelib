@@ -6,10 +6,10 @@ Project **smithwilson**
 =======================
 
 .. include:: /banners.rst
-   :start-after: Begin modelx banner
-   :end-before: End modelx banner
+   :start-after: Begin modelx badge
+   :end-before: End modelx badge
 
-|modelx banner|
+|modelx badge|
 
 The **smithwilson** project includes the **smithwilson** model,
 which extrapolates observed risk-free interest rates using the Smith-Wilson method.

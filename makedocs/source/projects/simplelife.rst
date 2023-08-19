@@ -6,10 +6,10 @@ Project **simplelife**
 ======================
 
 .. include:: /banners.rst
-   :start-after: Begin modelx banner
-   :end-before: End modelx banner
+   :start-after: Begin modelx badge
+   :end-before: End modelx badge
 
-|modelx banner|
+|modelx badge|
 
 This project includes the **simplelife** model,
 which is an annual projection model of basic traditional life policies.

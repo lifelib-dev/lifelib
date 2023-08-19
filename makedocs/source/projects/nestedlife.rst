@@ -6,10 +6,10 @@ Project **nestedlife**
 ======================
 
 .. include:: /banners.rst
-   :start-after: Begin modelx banner
-   :end-before: End modelx banner
+   :start-after: Begin modelx badge
+   :end-before: End modelx badge
 
-|modelx banner|
+|modelx badge|
 
 The **nestedlife** project has the same annual projection
 model of basic traditional life policies

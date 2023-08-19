@@ -79,11 +79,11 @@
 
 .. End binder banner
 
-.. Begin modelx banner
+.. Begin modelx badge
 
-.. |modelx banner| raw:: html
+.. |modelx badge| raw:: html
 
    <a href="https://docs.modelx.io" target="_blank">
    <img alt="modelx" src="https://img.shields.io/badge/modelx-0080FF" /></a>
 
-.. End modelx banner
+.. End modelx badge

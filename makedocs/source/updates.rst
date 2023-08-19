@@ -14,6 +14,10 @@ Updates
     Follow <a href="https://www.linkedin.com/company/lifelib" target="_blank">lifelib on LinkedIn</a>
     for more frequent updates.</p>
 
+* *19 August 2023:*
+  lifelib v0.9.2 is released. Now recent modelx models in lifelib are available as self-contained Python packages.
+  See :ref:`Release Notes<relnotes_v0.9.2>` for details.
+
 * *8 July 2023:*
   lifelib v0.9.1 is released.
   a new notebook, :doc:`/libraries/ifrs17a/template_example2` is added in :mod:`~ifrs17a`.
@@ -27,6 +31,7 @@ Updates
   lifelib v0.8.1 is released. A new example, :doc:`/libraries/savings/savings_example4` is available in :mod:`~savings`.
   See :ref:`Release Notes<relnotes_v0.8.1>` for details.
 
+.. Latest Updates End
 
 * *19 Nov 2022:*
   lifelib v0.8.0 is released. New library :mod:`~economic_curves` is available.
@@ -40,8 +45,6 @@ Updates
 
 * *28 Aug 2022:*
   lifelib v0.6.0 is released. See :ref:`Release Notes<relnotes_v0.6.0>` for details.
-
-.. Latest Updates End
 
 * *20 Aug 2022:*
   New video series, *Getting Started with lifelib* available on the :doc:`videos` page.

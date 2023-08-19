@@ -6,10 +6,10 @@ Project **fastlife**
 ======================
 
 .. include:: /banners.rst
-   :start-after: Begin modelx banner
-   :end-before: End modelx banner
+   :start-after: Begin modelx badge
+   :end-before: End modelx badge
 
-|modelx banner|
+|modelx badge|
 
 This project includes the **fastlife** model. The firstlife model
 calculates the present values of the net insurance cashflows.

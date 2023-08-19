@@ -4,7 +4,7 @@
 The **assets** Library
 ==========================
 
-|modelx banner|
+|modelx badge|
 
 Overview
 ---------

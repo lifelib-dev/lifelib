@@ -6,10 +6,10 @@ Project **ifrs17sim**
 =====================
 
 .. include:: /banners.rst
-   :start-after: Begin modelx banner
-   :end-before: End modelx banner
+   :start-after: Begin modelx badge
+   :end-before: End modelx badge
 
-|modelx banner|
+|modelx badge|
 
 **ifrs17sim** is a project for simulating IFRS17
 financial statements on sample insurance contracts.

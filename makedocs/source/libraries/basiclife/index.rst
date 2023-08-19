@@ -4,7 +4,7 @@
 The **basiclife** Library
 ==========================
 
-|modelx banner|
+|modelx badge|
 
 Overview
 ---------

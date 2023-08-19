@@ -6,10 +6,10 @@ Project **solvency2**
 =====================
 
 .. include:: /banners.rst
-   :start-after: Begin modelx banner
-   :end-before: End modelx banner
+   :start-after: Begin modelx badge
+   :end-before: End modelx badge
 
-|modelx banner|
+|modelx badge|
 
 **solvency2** is a project for building a model to
 calculate life risks of selected policies at various points in their policy periods

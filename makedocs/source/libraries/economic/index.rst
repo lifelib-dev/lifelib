@@ -4,7 +4,7 @@
 The **economic** Library
 ==========================
 
-|modelx banner|
+|modelx badge|
 
 Overview
 ---------

@@ -4,7 +4,7 @@
 The **savings** Library
 ==========================
 
-|modelx banner|
+|modelx badge|
 
 Overview
 ---------
