@@ -135,6 +135,23 @@ html_theme_options = {
     ],
     "external_links": [
         {"name": "Discussions", "url": "https://github.com/lifelib-dev/lifelib/discussions"}
+    ],
+    "favicons": [
+        {
+            "rel": "icon",
+            "sizes": "16x16",
+            "href": "lifelib-favicon-16x16.png",
+        },
+        {
+            "rel": "icon",
+            "sizes": "32x32",
+            "href": "lifelib-favicon-32x32.png",
+        },
+        {
+            "rel": "apple-touch-icon",
+            "sizes": "180x180",
+            "href": "lifelib-favicon-32x32.png",
+        },
     ]
 
 }
