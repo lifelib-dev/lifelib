@@ -27,7 +27,7 @@ testdata2 = str(datadir.joinpath('data_nestedlife2'))
     [testdata2, update_model]
 ])
 def test_nestedlife(testdata, func):
-    model = nestedlife.build(load_saved=False)
+    model = nestedlife.build()
 
     data = get_nested(func(model), 'PolsSurr')
 

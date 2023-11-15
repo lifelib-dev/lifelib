@@ -13,7 +13,7 @@ testdata = str(pathlib.Path(__file__).parents[1].joinpath('data/data_simplelife'
 
 
 def test_simpleflie():
-    model = simplelife.build(load_saved=False)
+    model = simplelife.build()
     data = []
     proj = model.Projection
     for i in range(10, 301, 10):

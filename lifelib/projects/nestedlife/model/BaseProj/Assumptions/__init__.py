@@ -13,7 +13,7 @@ for each individual model point.
      BaseProj[style=dotted];
      BaseProj.Assumptions[style=dotted];
      BaseProj <- BaseProj.Assumptions[hstyle=generalization]
-     Proj[label="OuterProj\\n[PolicyID, ScenID=1]", stacked];
+     Proj[label="OuterProj\n[PolicyID, ScenID=1]", stacked];
      Proj <- "OuterProj.Assumptions" [hstyle=composition];
      Proj <- InnerProj [hstyle=composition];
      InnerProj[label="InnerProj[t0]", stacked];
@@ -220,6 +220,6 @@ def SurrRateMult(t):
 
 AsmpLookup = ("Interface", ("...", "Input", "AsmpLookup"), "auto")
 
-AssumptionTables = ("Pickle", 2325085267976)
+AssumptionTables = ("IOSpec", 2556815992400, 2556815992400)
 
-MortalityTables = ("Pickle", 2325079280136)
+MortalityTables = ("IOSpec", 2556818466448, 2556818466448)

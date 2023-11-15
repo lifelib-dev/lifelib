@@ -9,7 +9,7 @@ and the created model is available as ``model`` global variable.
 import os
 import modelx as mx
 
-def build(load_saved=False):
+def build():
     """Build a model and return it.
 
     Read input data from `input.xlsm`, create `Input` space and its
@@ -30,13 +30,8 @@ def build(load_saved=False):
 
     from build_input import build_input
 
-    if load_saved:
-        model = mx.open_model('simplelife.mx')
-        input = model.Input
-    else:
-        model = mx.new_model(name='simplelife')
-        input = build_input(model, 'input.xlsx')
-        model.save('simplelife.mx')
+    model = mx.new_model(name='simplelife')
+    input = build_input(model, 'input.xlsx')
 
     # ------------------------------------------------------------------------
     # Build CommFunc space

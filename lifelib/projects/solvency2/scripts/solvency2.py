@@ -11,7 +11,7 @@ import os
 import modelx as mx
 
 
-def build(load_saved=False):
+def build():
     """Build a model and return it.
 
     Read input data from `input.xlsx`, create `Input` space and its
@@ -33,14 +33,9 @@ def build(load_saved=False):
     from build_input import build_input
     from build_input_scr import build_input_scr
 
-    if load_saved:
-        model = mx.open_model('solvency2.mx')
-        input = model.Input
-    else:
-        model = mx.new_model(name='solvency2')
-        input = build_input(model, 'input.xlsx')
-        build_input_scr(input, 'input_scr.xlsx')
-        model.save('solvency2.mx')
+    model = mx.new_model(name='solvency2')
+    input = build_input(model, 'input.xlsx')
+    build_input_scr(input, 'input_scr.xlsx')
 
     # ------------------------------------------------------------------------
     # Build CommFunc space

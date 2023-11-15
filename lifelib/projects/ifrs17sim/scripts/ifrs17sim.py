@@ -79,7 +79,7 @@ def DiscRate_inner(t):
     
 # %% Code block for build function
 
-def build(load_saved=False):
+def build():
     """Build a model and return it.
 
     Read input data from `input.xlsx`, create `Input` space and its
@@ -100,13 +100,8 @@ def build(load_saved=False):
 
     from build_input import build_input
 
-    if load_saved:
-        model = mx.open_model('ifrs17sim.mx')
-        input = model.Input
-    else:
-        model = mx.new_model(name='ifrs17sim')
-        input = build_input(model, 'input.xlsx')
-        model.save('ifrs17sim.mx')
+    model = mx.new_model(name='ifrs17sim')
+    input = build_input(model, 'input.xlsx')
 
     # ------------------------------------------------------------------------
     # Build CommFunc space

@@ -21,7 +21,7 @@ product specs looked up through :attr:`SpecLookup`.
      default_node_color="#D5E8D4";
      default_linecolor="#628E47";
      node_width=150;
-     Proj[label="OuterProj\\n[PolicyID, ScenID=1]", stacked];
+     Proj[label="OuterProj\n[PolicyID, ScenID=1]", stacked];
      Proj <- Assumptions [hstyle=composition];
      Proj <- Policy [hstyle=composition];
    }
@@ -286,7 +286,7 @@ SumAssured = lambda: PolicyData[PolicyID, 'SumAssured']
 
 LifeTable = ("Interface", ("...", "LifeTable"), "auto")
 
-PolicyData = ("Pickle", 2325087635976)
+PolicyData = ("IOSpec", 2333178458960, 2333178458960)
 
 PremTerm = ("Interface", (".", "PolicyTerm"), "auto")
 

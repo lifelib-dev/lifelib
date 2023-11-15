@@ -2,7 +2,7 @@
 
 The ``LifeTable`` Space provides
 commutation functions and actuarial notations, such as
-:math:`D_{x}` and :math:`\\require{enclose}{}_{f|}\\overline{A}_{x}`.
+:math:`D_{x}` and :math:`\require{enclose}{}_{f|}\overline{A}_{x}`.
 Mortality tables are read from *input.xlsx* into an `ExcelRange`_ object.
 The `ExcelRange`_ object is bound to a Reference, :attr:`MortalityTable`.
 
@@ -219,4 +219,4 @@ IntRate = 0.01
 
 TableID = 1
 
-MortalityTable = ("Pickle", 2325069517000)
+MortalityTable = ("IOSpec", 2333194470416, 2333194470416)
