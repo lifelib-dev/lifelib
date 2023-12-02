@@ -13,7 +13,7 @@ for each individual model point.
      BaseProj[style=dotted];
      BaseProj.Assumptions[style=dotted];
      BaseProj <- BaseProj.Assumptions[hstyle=generalization]
-     Proj[label="OuterProj\n[PolicyID, ScenID=1]", stacked];
+     Proj[label="OuterProj\\n[PolicyID, ScenID=1]", stacked];
      Proj <- "OuterProj.Assumptions" [hstyle=composition];
      Proj <- InnerProj [hstyle=composition];
      InnerProj[label="InnerProj[t0]", stacked];
