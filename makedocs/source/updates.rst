@@ -14,6 +14,9 @@ Updates
     Follow <a href="https://www.linkedin.com/company/lifelib" target="_blank">lifelib on LinkedIn</a>
     for more frequent updates.</p>
 
+* *2 December 2023:*
+  lifelib v0.9.3 is released. See :ref:`Release Notes<relnotes_v0.9.3>` for details.
+
 * *19 August 2023:*
   lifelib v0.9.2 is released. Now recent modelx models in lifelib are available as self-contained Python packages.
   See :ref:`Release Notes<relnotes_v0.9.2>` for details.
