@@ -306,3 +306,7 @@ and Jupyter Notebook session starts in the tab.
 files with ``ipynb`` extension are Jupyter notebooks. By double-clicking one,
 it opens in another tab, and you'll see the same page as you see it online.
 
+.. toctree::
+   :maxdepth: 1
+
+   faq
