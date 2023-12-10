@@ -11,16 +11,7 @@ Projection items are inherited from :mod:`~simplelife.model.BaseProj`
 and the present values of the cashflow items are
 inherited from :mod:`~simplelife.model.BaseProj`.
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     BaseProj[style=dotted]
-     BaseProj <- OuterProj [hstyle=generalization]
-     PresentValue[style=dotted]
-     PresentValue <- OuterProj [hstyle=generalization];
-   }
+.. figure:: /images/projects/simplelife/model/Projection/diagram1.png
 
 .. rubric:: Parameters
 
@@ -48,16 +39,7 @@ cash surrender value rates.
 The :mod:`~simplelife.model.Projection.Assumptions` Space contains Cells to pick up assumption data for
 its model point.
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     node_width=150;
-     Proj[label="Projection\\n[PolicyID, ScenID=1]", stacked];
-     Proj <- Assumptions [hstyle=composition];
-     Proj <- Policy [hstyle=composition];
-   }
+.. figure:: /images/projects/simplelife/model/Projection/diagram2.png
 
 
 

@@ -17,15 +17,7 @@ and in tern Space B is a child of Space A.
 Note that spaces can be directly under their model, in which case the parent
 of the spaces is the model.
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     node_width=70;
-     A <- B[hstyle=composition];
-   }
-
+.. figure:: /images/projects/devguide/diagram1.png
 
 **Inheritance**
 
@@ -35,15 +27,7 @@ In the example diagram below, Space B is derived from Space A, which means
 copies of all the cells, spaces and refs in Space A are included
 in Space B.
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     node_width=70;
-     A[style=dotted]
-     A <- B[hstyle=generalization]
-   }
+.. figure:: /images/projects/devguide/diagram2.png
 
 The Space A above is drawn as a dotted rectangular to indicate that the space acts
 solely as a base space of others, and it's not meant to be directly accessed
@@ -65,15 +49,6 @@ If A is accessed by, for example ``A[1]``, then a dynamic child space is created
 Space A, and in the dynamic child space ``A[1]``,
 Variable ``x`` is available in the child space and it is set to ``1``.
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     node_width=70;
-     model[shape=roundedbox, linecolor="#7B99C5", color="#D4E8FC"]
-     model<- "A[x]"[hstyle=composition];
-     "A[x]" [stacked]
-   }
+.. figure:: /images/projects/devguide/diagram3.png
 
 .. End diagram how-to

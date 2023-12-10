@@ -29,51 +29,14 @@ The composition structure is almost the same as the structure of
 in this model is a child Space of :mod:`~ifrs17sim.model.OuterProj.InnerProj`
 
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     ifrs17sim [shape=roundedbox, linecolor="#7B99C5", color="#D4E8FC", width=96]
-     ifrs17sim <- "OuterProj\n[PolicyID, ScenID=1]" <- "InnerProj[t0]" [hstyle=composition];
-     "OuterProj\n[PolicyID, ScenID=1]" [stacked];
-     "InnerProj[t0]" [stacked];
-     "InnerProj[t0]" <- PV [hstyle=composition]
-     ifrs17sim <- Economic [hstyle=composition];
-     "OuterProj\n[PolicyID, ScenID=1]" <- Policy [hstyle=composition];
-     ifrs17sim <- LifeTable [hstyle=composition];
-     ifrs17sim <- Input [hstyle=composition];
-     ifrs17sim<- BaseProj
-     BaseProj[style=dotted]
-     BaseProj <- Assumptions [hstyle=composition];
-     Assumptions[style=dotted]
-     ifrs17sim<- IFRS
-     IFRS [style=dotted]
-   }
+.. figure:: /images/projects/ifrs17sim/composition.png
 
 Inheritance Structure
 ^^^^^^^^^^^^^^^^^^^^^
 
-.. blockdiag::
+.. figure:: /images/projects/ifrs17sim/inheritance1.png
 
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     IFRS[style=dotted]
-     IFRS <- OuterProj [hstyle=generalization]
-     BaseProj[style=dotted]
-     BaseProj <- OuterProj [hstyle=generalization]
-   }
-
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     BaseProj[style=dotted]
-     BaseProj <- InnerProj[hstyle=generalization]
-   }
-
+.. figure:: /images/projects/ifrs17sim/inheritance2.png
 
 Jupyter Notebooks
 -----------------

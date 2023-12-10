@@ -4,15 +4,7 @@ This Space serves as a base Space for :mod:`~nestedlife.model.OuterProj`
 and :mod:`~nestedlife.model.OuterProj.InnerProj`,
 and it contains Cells to take the present value of projected cashflows.
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     PV[style=dotted]
-     PV <- OuterProj [hstyle=generalization];
-     PV <- InnerProj [hstyle=generalization];
-   }
+.. figure:: /images/projects/nestedlife/model/PV/diagram1.png
 
 """
 

@@ -3,16 +3,8 @@
 This Space serves as a base Space for :mod:`~model.simplelife.Projection`
 Space, and it contains Cells to take the present value of projected cashflows.
 
-.. blockdiag::
+.. figure:: /images/projects/solvency2/model/PV/diagram1.png
 
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     BaseProj[style=dotted]
-     BaseProj <- OuterProj [hstyle=generalization]
-     PresentValue[style=dotted]
-     PresentValue <- OuterProj [hstyle=generalization];
-   }
 
 """
 

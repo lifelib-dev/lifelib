@@ -5,16 +5,7 @@ Space, and it contains Cells for cashflow projection.
 
 .. rubric:: Inheritance Structure
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     BaseProj[style=dotted]
-     BaseProj <- Projection [hstyle=generalization]
-     PV[style=dotted]
-     PV <- Projection [hstyle=generalization];
-   }
+.. figure:: /images/projects/simplelife/model/BaseProj/diagram1.png
 
 
 ``Pols``:

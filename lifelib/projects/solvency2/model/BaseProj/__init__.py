@@ -20,16 +20,7 @@ Attributes:
     pol: Alias to :mod:`~simplelife.model.Projection.Policy` space
     asmp: Alias to :mod:`~simplelife.model.Projection.Assumptions` space
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     BaseProj[style=dotted]
-     BaseProj <- OuterProj [hstyle=generalization]
-     PresentValue[style=dotted]
-     PresentValue <- OuterProj [hstyle=generalization];
-   }
+.. figure:: /images/projects/solvency2/model/BaseProj/diagram1.png
 
 """
 

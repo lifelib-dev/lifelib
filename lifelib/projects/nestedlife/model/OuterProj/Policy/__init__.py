@@ -15,16 +15,7 @@ calculating policy values for the policy from the attributes and
 product specs looked up through :attr:`SpecLookup`.
 
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     node_width=150;
-     Proj[label="OuterProj\\n[PolicyID, ScenID=1]", stacked];
-     Proj <- Assumptions [hstyle=composition];
-     Proj <- Policy [hstyle=composition];
-   }
+.. figure:: /images/projects/nestedlife/model/Policy/diagram1.png
 
 
 .. rubric:: Parameters

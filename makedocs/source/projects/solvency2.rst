@@ -53,56 +53,12 @@ Model Structure
 Composition Structure
 ^^^^^^^^^^^^^^^^^^^^^
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     solvency2 [shape=roundedbox, linecolor="#7B99C5", color="#D4E8FC", width=96];
-     solvency2 <- "SCR_life[t0, PolicyID, ScenID]" <- "Projection[Risk, Shock, Scope]" [hstyle=composition];
-     "SCR_life[t0, PolicyID, ScenID]" [stacked, width=200];
-     "Projection[Risk, Shock, Scope]" [stacked, width=200];
-     solvency2 <- Economic [hstyle=composition];
-     solvency2  <- Assumptions [hstyle=composition];
-     solvency2 <- Policy [hstyle=composition];
-     solvency2 <- LifeTable [hstyle=composition];
-     solvency2 <- Input [hstyle=composition];
-     solvency2 <- PV [hstyle=composition];
-     solvency2 <- BaseProj [hstyle=composition];
-     PV [style=dotted]
-     BaseProj [style=dotted]
-     solvency2 <- Override
-     Override <- Mortality[hstyle=composition]
-     Override <- Lapse[hstyle=composition]
-     Override <- LapseMass[hstyle=composition]
-     Override <- Expense[hstyle=composition]
-   }
+.. figure:: /images/projects/solvency2/composition.png
 
 Inheritance Structure
 ^^^^^^^^^^^^^^^^^^^^^
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     "SCR_life[t0, PolicyID, ScenID]" [width=200]
-     SCR_life <- "SCR_life[t0, PolicyID, ScenID]"[hstyle=generalization]
-     PV <- Projection[hstyle=generalization]
-     BaseProj <- Projection[hstyle=generalization]
-     Override <- Mortality[hstyle=composition]
-     Override <- Lapse[hstyle=composition]
-     Override <- LapseMass[hstyle=composition]
-     Override <- Expense[hstyle=composition]
-     Projection <- "Projection[Risk, Shock, Scope]" [hstyle=generalization]
-     "Projection[Risk, Shock, Scope]" [width=200];
-     Mortality <- "Projection[Risk, Shock, Scope]" [hstyle=generalization, style=dotted]
-     Lapse <- "Projection[Risk, Shock, Scope]" [hstyle=generalization, style=dotted]
-     LapseMass <- "Projection[Risk, Shock, Scope]" [hstyle=generalization, style=dotted]
-     Expense <- "Projection[Risk, Shock, Scope]" [hstyle=generalization, style=dotted]
-     SCR_life, PV, BaseProj, Projection, Mortality, Lapse, LapseMass, Expense [style=dotted]
-   }
-
+.. figure:: /images/projects/solvency2/inheritance.png
 
 Space Details
 -------------

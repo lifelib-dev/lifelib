@@ -48,15 +48,7 @@ the present values of premiums and claims.
 as :attr:`~Projection.pricing_premium_pp` and
 referenced by :func:`Projection.premium_pp`.
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     Base[style=dotted]
-     Base<- Pricing [hstyle=generalization];
-     Base<- Projection [hstyle=generalization];
-   }
+.. figure:: /images/libraries/basiclife/BasicTermASL_ME/diagram1.png
 
 
 Projection Steps

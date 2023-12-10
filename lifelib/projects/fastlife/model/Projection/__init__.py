@@ -16,26 +16,11 @@ Cells for taking present values of cashflows are defined.
 
 .. rubric:: Composition Structure
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     node_width=150;
-     Projection <- Assumptions [hstyle=composition];
-     Projection <- Policy [hstyle=composition];
-   }
+.. figure:: /images/projects/fastlife/model/Projection/diagram1.png
 
 .. rubric:: Inheritance Structure
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     PV[style=dotted]
-     PV<- Projection [hstyle=generalization];
-   }
+.. figure:: /images/projects/fastlife/model/Projection/diagram2.png
 
 .. rubric:: References
 

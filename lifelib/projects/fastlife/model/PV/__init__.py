@@ -3,14 +3,7 @@
 This Space serves as a base Space for :mod:`~fastlife.model.Projection`
 Space, and it contains Cells to take the present value of projected cashflows.
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     PV[style=dotted]
-     PV <- Projection [hstyle=generalization];
-   }
+.. figure:: /images/projects/fastlife/model/PV/diagram1.png
 
 """
 

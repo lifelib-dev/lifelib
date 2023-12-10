@@ -266,15 +266,7 @@ By default, :func:`~model_point` returns the entire :attr:`~model_point_table`::
    def model_point():
        return model_point_table
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     node_width=120;
-     model_point[label="model_point()"];
-     model_point -> model_point_table
-   }
+.. figure:: /images/libraries/basiclife/BasicTerm_ME/diagram1.png
 
 The calculations in :mod:`~basiclife.BasicTerm_ME.Projection` apply to all the model points
 in :attr:`~model_point_table`.
@@ -370,31 +362,12 @@ model points at time ``t`` and returns them in a `Series`_.
 :func:`mort_rate_mth` converts :func:`mort_rate` to the monthly mortality
 rate to be applied during the month starting at time ``t``.
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     node_width=100;
-     mort_rate_mth[label="mort_rate_mth(t)"];
-     mort_rate[label="mort_rate(t)"];
-     mort_table_reindexed[width=150];
-     mort_rate_mth -> mort_rate -> mort_table_reindexed -> mort_table
-   }
+.. figure:: /images/libraries/basiclife/BasicTerm_ME/diagram2.png
 
 The discount rate data is stored in an Excel file named *disc_rate_ann.xlsx*
 under the model folder, and is read into :attr:`disc_rate_ann` as a `Series`_.
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     node_width=120;
-     disc_factors[label="disc_factors(t)"];
-     disc_rate_mth[label="disc_rate_mth(t)"];
-     disc_factors -> disc_rate_mth -> disc_rate_ann
-   }
+.. figure:: /images/libraries/basiclife/BasicTerm_ME/diagram3.png
 
 The lapse by duration is defined by a formula in :func:`lapse_rate`.
 :func:`expense_acq` holds the acquisition expense per policy at `t=0`.

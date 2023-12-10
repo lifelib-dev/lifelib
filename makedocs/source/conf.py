@@ -49,7 +49,6 @@ extensions = [
     'nbsphinx',
     'nbsphinx_link',
     'sphinx_gallery.gen_gallery',
-    'sphinxcontrib.blockdiag',
     'sphinx_design',
     'myst_parser',
     'sphinxcontrib.mermaid'
@@ -283,8 +282,6 @@ sphinx_gallery_conf = {
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning)
 
-# blockdiag_fontpath = 'c:/windows/fonts/calibri.ttf'
-blockdiag_html_image_format = 'SVG'
 
 # https://sphinx-panels.readthedocs.io/en/latest/
 panels_add_bootstrap_css = False

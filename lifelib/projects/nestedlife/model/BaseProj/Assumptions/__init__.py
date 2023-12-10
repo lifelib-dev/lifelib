@@ -4,21 +4,7 @@ This Space holds the outer or inner projection assumptions
 for each individual model point.
 
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     node_width=150;
-     BaseProj[style=dotted];
-     BaseProj.Assumptions[style=dotted];
-     BaseProj <- BaseProj.Assumptions[hstyle=generalization]
-     Proj[label="OuterProj\\n[PolicyID, ScenID=1]", stacked];
-     Proj <- "OuterProj.Assumptions" [hstyle=composition];
-     Proj <- InnerProj [hstyle=composition];
-     InnerProj[label="InnerProj[t0]", stacked];
-     InnerProj <- InnerProj.Assumptions [hstyle=composition];
-   }
+.. figure:: /images/projects/nestedlife/model/Assumptions/diagram1.png
 
 
 .. rubric:: Parameters

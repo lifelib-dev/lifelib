@@ -6,27 +6,9 @@ and it contains Cells for cashflow projection.
 
 .. rubric:: Inheritance Structure
 
-.. blockdiag::
+.. figure:: /images/projects/nestedlife/model/BaseProj/diagram1.png
 
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     BaseProj[style=dotted]
-     BaseProj <- OuterProj [hstyle=generalization]
-     PV[style=dotted]
-     PV <- OuterProj [hstyle=generalization];
-   }
-
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     BaseProj[style=dotted]
-     BaseProj <- InnerProj [hstyle=generalization]
-     PV[style=dotted]
-     PV <- InnerProj [hstyle=generalization];
-   }
+.. figure:: /images/projects/nestedlife/model/BaseProj/diagram2.png
 
 ``Pols``:
     Cells whose names start with ``Pols`` deal with number of policies.

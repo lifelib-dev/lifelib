@@ -4,17 +4,7 @@ This Space is a child Space of :mod:`~simplelife.model.Projection`,
 and it holds assumption parameters and rates used
 by the :mod:`~simplelife.model.Projection` Space.
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     node_width=150;
-     Proj[label="Projection\\n[PolicyID, ScenID=1]", stacked];
-     Proj <- Assumptions [hstyle=composition];
-     Proj <- Policy [hstyle=composition];
-   }
-
+.. figure:: /images/projects/simplelife/model/Assumptions/diagram1.png
 
 .. rubric:: Parameters
 

@@ -106,27 +106,7 @@ Composition Structure
 
 The diagram below shows the spaces in the simplelife model.
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     node_width=150;
-     simplelife [shape=roundedbox, linecolor="#7B99C5", color="#D4E8FC", width=96]
-     Proj [label="Projection\n[PolicyID, ScenID=1]", stacked];
-     simplelife <- Proj [hstyle=composition];
-     Econ[label="Economic[ScenID]", stacked];
-     simplelife <- Econ[hstyle=composition];
-     Proj <- Assumptions [hstyle=composition];
-     Proj <- Policy [hstyle=composition];
-     LifeTable [label="LifeTable\n[Sex, IntRate, TableID]", stacked];
-     simplelife <- LifeTable [hstyle=composition];
-     simplelife <- Input [hstyle=composition];
-     simplelife <- BaseProj
-     BaseProj[style=dotted]
-     simplelife <- PV
-     PV[style=dotted]
-   }
+.. figure:: /images/projects/simplelife/composition.png
 
 Inheritance Structure
 ^^^^^^^^^^^^^^^^^^^^^
@@ -134,16 +114,7 @@ Inheritance Structure
 The :mod:`~simplelife.model.Projection` Space inherits from
 :mod:`~simplelife.model.BaseProj` and :mod:`~simplelife.model.PV`.
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     BaseProj[style=dotted]
-     BaseProj <- Projection [hstyle=generalization]
-     PV[style=dotted]
-     PV<- Projection [hstyle=generalization];
-   }
+.. figure:: /images/projects/simplelife/inheritance.png
 
 Jupyter Notebooks
 -----------------

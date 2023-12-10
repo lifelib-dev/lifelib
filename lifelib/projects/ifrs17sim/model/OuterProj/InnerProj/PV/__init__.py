@@ -6,18 +6,7 @@ and calculates present values of cashflows.
 This Space is parameterized with ``t_rate``, which indicates that
 the discount rates at time ``t_rate`` are used for discounting.
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     ifrs17sim [shape=roundedbox, linecolor="#7B99C5", color="#D4E8FC", width=96]
-     ifrs17sim <- "OuterProj\\n[PolicyID, ScenID=1]" <- "InnerProj[t0]" [hstyle=composition];
-     "OuterProj\\n[PolicyID, ScenID=1]" [stacked];
-     "InnerProj[t0]" [stacked];
-     "PV[t_rate]" [stacked];
-     "InnerProj[t0]" <- "PV[t_rate]" [hstyle=composition]
-   }
+.. figure:: /images/projects/ifrs17sim/model/PV/diagram1.png
 
 """
 

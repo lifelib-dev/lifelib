@@ -72,36 +72,12 @@ Composition Structure
 
 The diagram below shows the spaces in the fastlife model.
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     node_width=150;
-     fastlife [shape=roundedbox, linecolor="#7B99C5", color="#D4E8FC", width=96]
-     fastlife <- Projection [hstyle=composition];
-     Projection <- Assumptions [hstyle=composition];
-     Projection <- Policy [hstyle=composition];
-     fastlife <- PV
-     Econ[label="Economic[ScenID]", stacked];
-     fastlife <- Econ[hstyle=composition];
-     LifeTable [label="LifeTable\n[Sex, IntRate, TableID]", stacked];
-     fastlife <- LifeTable [hstyle=composition];
-     fastlife <- Input [hstyle=composition];
-     PV[style=dotted]
-   }
+.. figure:: /images/projects/fastlife/composition.png
 
 Inheritance Structure
 ^^^^^^^^^^^^^^^^^^^^^
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     PV[style=dotted]
-     PV<- Projection [hstyle=generalization];
-   }
+.. figure:: /images/projects/fastlife/inheritance.png
 
 Jupyter Notebooks
 -----------------

@@ -160,21 +160,7 @@ i.e. the Projection space can have dynamic child spaces, such as
 represents the Projection for each of the model points.
 
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     node_width=120;
-     BasicTerm_S [shape=roundedbox, linecolor="#7B99C5", color="#D4E8FC", width=96]
-     BasicTerm_S <- Projection[hstyle=composition];
-     Projection <- Proj1[hstyle=composition];
-     Projection <- Proj2[hstyle=composition];
-     Projection <- Proj3[hstyle=composition];
-     Proj1[label="Projection[1]" ]
-     Proj2[label="Projection[2]" ]
-     Proj3[label="Projection[...]"]
-   }
+.. figure:: /images/libraries/basiclife/BasicTerm_SE/diagram1.png
 
 .. note::
 
@@ -253,30 +239,12 @@ model point at time ``t``.
 :func:`mort_rate_mth` converts :func:`mort_rate` to the monthly mortality
 rate to be applied during the month starting at time ``t``.
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     node_width=120;
-     mort_rate_mth[label="mort_rate_mth(t)"];
-     mort_rate[label="mort_rate(t)"];
-     mort_rate_mth -> mort_rate -> mort_table
-   }
+.. figure:: /images/libraries/basiclife/BasicTerm_SE/diagram2.png
 
 The discount rate data is stored in an Excel file named *disc_rate_ann.xlsx*
 under the model folder, and is read into :attr:`disc_rate_ann` as a Series.
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     node_width=120;
-     disc_factors[label="disc_factors(t)"];
-     disc_rate_mth[label="disc_rate_mth(t)"];
-     disc_factors -> disc_rate_mth -> disc_rate_ann
-   }
+.. figure:: /images/libraries/basiclife/BasicTerm_SE/diagram3.png
 
 The lapse by duration is defined by a formula in :func:`lapse_rate`.
 :func:`expense_acq` holds the acquisition expense per policy at `t=0`.

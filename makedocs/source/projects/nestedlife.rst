@@ -49,52 +49,14 @@ For example, the expression
 ``nestedlife.OuterProj[1].PV_NetCashflow(0)``
 returns the present value of net cashflows for Policy 1.
 
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-     nestedlife [shape=roundedbox, linecolor="#7B99C5", color="#D4E8FC", width=96]
-     nestedlife <- "OuterProj\n[PolicyID, ScenID=1]" <- "InnerProj[t0]" [hstyle=composition];
-     "OuterProj\n[PolicyID, ScenID=1]" [stacked];
-     "InnerProj[t0]" [stacked];
-     nestedlife <- Economic [hstyle=composition];
-     "OuterProj\n[PolicyID, ScenID=1]" <- Policy [hstyle=composition];
-     nestedlife <- LifeTable [hstyle=composition];
-     nestedlife <- Input [hstyle=composition];
-     nestedlife<- BaseProj
-     BaseProj[style=dotted]
-     BaseProj <- Assumptions [hstyle=composition];
-     Assumptions[style=dotted]
-     nestedlife <- PV;
-     PV[style=dotted];
-
-   }
+.. figure:: /images/projects/nestedlife/composition.png
 
 Inheritance Structure
 ^^^^^^^^^^^^^^^^^^^^^
 
-.. blockdiag::
+.. figure:: /images/projects/nestedlife/inheritance1.png
 
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-
-     BaseProj[style=dotted]
-     BaseProj <- OuterProj [hstyle=generalization]
-     BaseProj <- InnerProj [hstyle=generalization]
-   }
-
-.. blockdiag::
-
-   blockdiag {
-     default_node_color="#D5E8D4";
-     default_linecolor="#628E47";
-
-     PV[style=dotted]
-     PV <- OuterProj [hstyle=generalization]
-     PV <- InnerProj [hstyle=generalization]
-   }
+.. figure:: /images/projects/nestedlife/inheritance2.png
 
 Space Details
 -------------
