@@ -178,7 +178,7 @@ setup(
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['modelx>=0.12.1'],
+    install_requires=['modelx>=0.24.0'],
 
     # If your project only runs on certain Python versions,
     # setting the python_requires argument to the appropriate PEP 440 version
