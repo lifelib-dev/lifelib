@@ -99,6 +99,7 @@ Contribute your excellent work to lifelib and share it with actuaries from all a
       * :ref:`getting-lifelib`
       * :ref:`using-spyder`
       * :ref:`running-notebooks`
+      * :ref:`faq`
 
 
    .. grid-item-card:: :doc:`Libraries<libraries/index>`

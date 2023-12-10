@@ -14,6 +14,9 @@ Updates
     Follow <a href="https://www.linkedin.com/company/lifelib" target="_blank">lifelib on LinkedIn</a>
     for more frequent updates.</p>
 
+* *10 December 2023:*
+  The :ref:`faq` page is added.
+
 * *2 December 2023:*
   lifelib v0.9.3 is released. See :ref:`Release Notes<relnotes_v0.9.3>` for details.
 

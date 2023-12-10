@@ -1,7 +1,7 @@
 ```{eval-rst}
 :html_theme.sidebar_secondary.remove:
 ```
-
+(faq)=
 # FAQ and How-Tos
 
 ```{contents} 
