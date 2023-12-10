@@ -72,7 +72,7 @@ on modelx site to know more about how *Relative Reference* makes lifelib models 
 From this release, models are provided in the form of modelx models,
 which are folders containing files and data to construct models.
 Models are read into IPython sessions by
-`modelx.read_model`_ function. See updated :doc:`/spyder` section for how to read models.
+`modelx.read_model`_ function. See updated :doc:`/quickstart/spyder` section for how to read models.
 
 Python scripts for building models are not provided from this release.
 All the example notebooks now read models using `modelx.read_model`_.

@@ -1,10 +1,7 @@
-Archive
-=======
-
 .. _past-documents:
 
 Past Documents
-------------------
+===============
 
 .. Past Docs Begin
 

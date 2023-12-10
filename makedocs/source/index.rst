@@ -54,7 +54,7 @@ Contribute your excellent work to lifelib and share it with actuaries from all a
       .. card::
          :img-background: /_static/thumb4.png
          :img-alt: Thumbnail for Spyder example
-         :link: spyder
+         :link: quickstart/spyder
          :link-type: doc
 
 .. 1st row: Updates & Quick Start ---------------------------------
@@ -94,7 +94,7 @@ Contribute your excellent work to lifelib and share it with actuaries from all a
       * :ref:`past-documents`
 
 
-   .. grid-item-card:: :doc:`Quick Start<quickstart>`
+   .. grid-item-card:: :doc:`Quick Start<quickstart/index>`
 
       * :ref:`getting-lifelib`
       * :ref:`using-spyder`
@@ -203,7 +203,7 @@ modelx on PyPI             https://pypi.org/project/modelx/
    :maxdepth: 2
 
    about
-   quickstart
+   quickstart/index
    videos
    libraries/index
    download

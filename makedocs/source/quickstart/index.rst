@@ -9,7 +9,7 @@ Quick Start
 Getting lifelib
 ---------------
 
-If you are on Windows, simply download lifelib with WinPython from :doc:`here <download>`.
+If you are on Windows, simply download lifelib with WinPython from :doc:`here </download>`.
 Unzip the file. No installation is required. The file
 contains a custom Python distribution based on `WinPython`_ distribution,
 which includes preinstalled
@@ -279,7 +279,7 @@ Running Notebooks online
 Jupyter Notebook enables you to run Python code in your browser.
 lifelib comes with some Jupyter notebooks, and the quickest way
 to try lifelib is to run the notebooks online.
-Go to :doc:`notebooks` page and click one of the banner links.
+Go to :doc:`/notebooks` page and click one of the banner links.
 The link will take you to a web page where the selected notebook starts loading.
 Once the notebook loads, select **Cell** menu,
 and then select **Run All** to run & build models and get results and draw graphs.
@@ -287,7 +287,7 @@ and then select **Run All** to run & build models and get results and draw graph
 Running Notebooks locally
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Jupyter notebooks on :doc:`notebooks` page are also included in lifelib
+Jupyter notebooks on :doc:`/notebooks` page are also included in lifelib
 projects, and can be executed on your local computer by running
 Jupyter Notebook locally.
 For example, if you create a project folder named ``myifrs17sim`` from

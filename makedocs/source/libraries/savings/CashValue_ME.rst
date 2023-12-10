@@ -385,7 +385,7 @@ Reading the model
 ^^^^^^^^^^^^^^^^^
 
 Create your copy of the *savings* library by following
-the steps on the :doc:`/quickstart` page.
+the steps on the :doc:`/quickstart/index` page.
 The model is saved as the folder named :mod:`~savings.CashValue_ME` in the copied folder.
 
 To read the model from Spyder, right-click on the empty space in *MxExplorer*,
@@ -403,7 +403,7 @@ and :func:`~result_pv` outputs the present values of the cashflows
 by model points.
 Both Cells outputs the results as pandas `DataFrame`_.
 
-By following the same steps explained in the :doc:`/quickstart` page
+By following the same steps explained in the :doc:`/quickstart/index` page
 using this model,
 You can get the results in an *MxConsole* and show
 the results as tables in *MxDataViewer*.

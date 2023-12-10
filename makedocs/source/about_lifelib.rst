@@ -113,7 +113,7 @@ and read the model into the IPython session by `modelx.read_model`_ function.
 You can use any IPython console, but Spyder with the plugin for modelx
 is the recommended IDE as it provides graphical user interface
 to lifelib models. Read more about
-:doc:`/spyder`.
+:doc:`/quickstart/spyder`.
 
 .. _modelx.read_model: https://docs.modelx.io/en/latest/reference/generated/modelx.read_model.html
 
@@ -131,7 +131,7 @@ With a lifelib model, you can:
 - Output results to Pandas objects,
 - Save the model, load it back again, and do much more.
 
-Start from :doc:`quickstart` page.
+Start from :doc:`quickstart/index` page.
 
 
 .. _modelx: http://docs.modelx.io

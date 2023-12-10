@@ -59,8 +59,11 @@ replacing `package` with the name of the package you want to verify:
 ## modelx FAQ and How-Tos
 
 This section provides FAQs and how-to guides specifically for lifelib models built with modelx.
-In the examples throughout this section,
-we use the `BasicTerm_S` model from the `basiclife` library as a reference.
+
+### How do I run sample scripts in this section?
+
+In the examples throughout this section, unless otherwise noted,
+we use the `BasicTerm_S` model from the {mod}`basiclife` library as a reference.
 This model, referred to as `model`, includes the `Projection` space.
 It is assumed that you have already imported modelx, pandas,
 and numpy with the aliases `mx`, `pd`, and `np`, respectively, in these examples.

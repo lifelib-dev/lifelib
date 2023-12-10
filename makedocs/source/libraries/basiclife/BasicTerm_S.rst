@@ -26,7 +26,7 @@ Reading the model
 ^^^^^^^^^^^^^^^^^
 
 Create your copy of the *basiclife* library by following
-the steps on the :doc:`/quickstart` page.
+the steps on the :doc:`/quickstart/index` page.
 The model is saved as the folder named *BasicTerm_S* in the copied folder.
 
 To read the model from Spyder, right-click on the empty space in *MxExplorer*,
@@ -43,7 +43,7 @@ for outputting projection results as listed in the
 and :func:`~Projection.result_pv` outputs the present values of the cashflows.
 Both Cells outputs the results as pandas DataFrame.
 
-See the :doc:`/quickstart` page for how
+See the :doc:`/quickstart/index` page for how
 to get the results in an *MxConsole* and view the results in *MxDataViewer*.
 
 Changing the model point

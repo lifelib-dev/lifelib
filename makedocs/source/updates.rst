@@ -71,7 +71,7 @@ Updates
 
 * *6 Feb 2022:*
   lifelib is now available on `conda-forge <https://conda-forge.org/>`_.
-  The :doc:`manual installation </installation>` page is updated.
+  The :doc:`manual quickstart </quickstart/installation>` page is updated.
 
 * *23 Jan 2022:*
   New blog post, `"Object-oriented actuarial model" <https://modelx.io/blog/2022/01/15/testing-lifelib-on-gpu/>`_,
@@ -173,7 +173,7 @@ Updates
 
 
 * *2 December 2018:*
-  New :doc:`spyder` sub page is added in :doc:`quickstart`.
+  New :doc:`quickstart/spyder` sub page is added in :doc:`quickstart/index`.
 
 * *2 December 2018:*
   modelx v0.0.17 and spyder-modelx v0.0.6 is released.
@@ -233,7 +233,7 @@ Updates
   New :doc:`generated_examples/ifrs17sim/plot_csm_waterfall` sample is added.
 
 * *28 April 2018:*
-  Updated :doc:`quickstart` page.
+  Updated :doc:`quickstart/index` page.
 
 * *21 April 2018:*
   New :doc:`whatsnew` pages are added.

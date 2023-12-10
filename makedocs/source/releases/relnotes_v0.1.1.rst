@@ -43,7 +43,7 @@ to be available.
 The new cashflow models in :mod:`basiclife` are monthly-step models
 and much simpler than the models in :mod:`simplelife` and :mod:`fastlife`.
 See the :mod:`basiclife` page for more details.
-The :doc:`/quickstart` page is also updated
+The :doc:`/quickstart/index` page is also updated
 to use :mod:`basiclife` as the sample library instead of :mod:`simplelife`.
 
 Special thanks to Lewis Fogden (https://digitalactuary.co.uk/).

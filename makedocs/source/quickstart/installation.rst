@@ -127,7 +127,7 @@ Install Spyder plugin for modelx
 
 `Spyder`_ is a popular open-source Python IDE,
 and it allows plugins to be installed to add extra features to itself.
-:doc:`Spyder plugin for modelx </spyder>` enriches user interface to modelx in Spyder.
+:doc:`Spyder plugin for modelx </quickstart/spyder>` enriches user interface to modelx in Spyder.
 The plugin adds custom IPython consoles and GUI widgets for using modelx in Spyder.
 
 .. rubric:: Anaconda environment
