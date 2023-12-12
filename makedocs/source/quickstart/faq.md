@@ -186,6 +186,7 @@ but it can also be applied with any standard libraries or third-party tools, suc
 The key aspect is that the model only needs to store a string representing the file path, 
 making this a flexible method for incorporating external data into your model.
 
+(how-to-import-module)=
 ### How do I import a Python module in a model?
 
 To access a Python module from within the formulas of a modelx model, 
@@ -535,3 +536,59 @@ BasicTerm_S.Projection[1].premiums(t=0)=94.84
 
 If you use modelx from Spyder with modelx plug-in,
 you can do the operations above using GUI in the MxAnalyzer widget.
+
+
+### How do I output results directly to Excel?
+
+To output calculation results directly to Excel, you can use the [`xlwings`](https://www.xlwings.org/) library.
+If xlwings is not already installed in your environment, you can install it using either pip or conda:
+
+- For pip: `pip install xlwings`
+- For conda: `conda install xlwings`
+
+For instance, suppose you want to output the pandas DataFrame returned by `result_pv` to Excel:
+
+```pycon
+>>> model.Projection.result_pv()
+              Premiums       Claims    Expenses  Commissions  Net Cashflow
+PV         8252.085856  5501.194898  755.366026  1084.604270    910.920661
+% Premium     1.000000     0.666643    0.091536     0.131434      0.110387
+```
+
+The following code demonstrates how to achieve this:
+
+```pycon
+>>> @mx.defcells
+... def pv_to_xl():
+...     import xlwings as xw
+...     xw.Book().sheets['Sheet1'].range('A1').value = result_pv()
+
+>>> pv_to_xl.allow_none = True
+
+>>> pv_to_xl()
+```
+
+The list below explains each statement in the sample above:
+
+- Define another cell, `pv_to_xl` that imports xlwings, creates a new Book object and 
+  assigns the DataFrame returned by `result_pv` to the value property
+  or the cell *A1* in *Sheet1*.
+- To avoid error on execution, set `allow_none` property of `pv_to_xl` to `True`.
+- Call `pv_to_xl`. This will start Excel and output the DataFrame in *Sheet1*.
+
+Explanation of the code:
+
+- A new cell, `pv_to_xl`, is defined to import xlwings, create a new Excel Book object,
+  and assign the DataFrame returned by `result_pv()` to cell *A1* in *Sheet1*.
+- The `allow_none` property of `pv_to_xl` is set to `True` to avoid errors opon execution.
+- Calling `pv_to_xl()` opens Excel and outputs the DataFrame into *Sheet1*.
+
+Alternatively, instead of importing `xlwings` within `pv_to_xl`, you can assign it at the parent space level,
+as explained in [this entry](how-to-import-module).
+After executing `pv_to_xl`, it will remember the calculation is complete, 
+and calling it again won't trigger a recalculation unless there's a change in the model that `pv_to_xl` depends on. 
+To manually clear the cached result, use the `clear` method:
+
+```pycon
+>>> pv_to_xl.clear()
+```
