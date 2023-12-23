@@ -14,6 +14,10 @@ Updates
     Follow <a href="https://www.linkedin.com/company/lifelib" target="_blank">lifelib on LinkedIn</a>
     for more frequent updates.</p>
 
+* *23 December 2023:*
+  lifelib :ref:`v0.9.4<relnotes_v0.9.4>` is released. Notebooks can now be opend and run on Google Colab.
+  See :doc:`/notebooks`.
+
 * *10 December 2023:*
   The :ref:`faq` page is added.
 
