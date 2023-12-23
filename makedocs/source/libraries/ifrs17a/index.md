@@ -73,11 +73,22 @@ To create *myifrs17* in the current directory, type:
 
 This library includes the following Jupyter Notebooks:
 
-* {doc}`template_example` 
-* {doc}`template_example2` 
-* {doc}`present_value_example_ep2`
-* {doc}`present_value_example_ep3`
-* {doc}`logic_inspection_example`
+[badge-image]: https://colab.research.google.com/assets/colab-badge.svg "Open In Colab"
+[template_example]: https://colab.research.google.com/github/lifelib-dev/lifelib/blob/current/lifelib/libraries/ifrs17a/template_example.ipynb
+[template_example2]:  https://colab.research.google.com/github/lifelib-dev/lifelib/blob/current/lifelib/libraries/ifrs17a/template_example2.ipynb
+[present_value_example_ep2]:  https://colab.research.google.com/github/lifelib-dev/lifelib/blob/current/lifelib/libraries/ifrs17a/present_value_example_ep2.ipynb
+[present_value_example_ep3]:  https://colab.research.google.com/github/lifelib-dev/lifelib/blob/current/lifelib/libraries/ifrs17a/present_value_example_ep3.ipynb
+[logic_inspection_example]:  https://colab.research.google.com/github/lifelib-dev/lifelib/blob/current/lifelib/libraries/ifrs17a/logic_inspection_example.ipynb
+
+
+|                                  |                                             |
+|----------------------------------|---------------------------------------------|
+| {doc}`template_example`          | [![badge-image]][template_example]          |
+| {doc}`template_example2`         | [![badge-image]][template_example2]         |
+| {doc}`present_value_example_ep2` | [![badge-image]][present_value_example_ep2] |
+| {doc}`present_value_example_ep3` | [![badge-image]][present_value_example_ep3] |
+| {doc}`logic_inspection_example`  | [![badge-image]][logic_inspection_example]  |
+
 
 The first two notebooks run `template.py`, 
 and the next two notebooks run `present_value_ep2.py` and  

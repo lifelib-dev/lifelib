@@ -1,13 +1,10 @@
 .. module:: smithwilson
+.. include:: /banners.rst
 
 .. _project_smithwilson:
 
 Project **smithwilson**
 =======================
-
-.. include:: /banners.rst
-   :start-after: Begin modelx badge
-   :end-before: End modelx badge
 
 |modelx badge|
 
@@ -87,13 +84,9 @@ Jupyter notebook
 -----------------
 
 A live version of the Jupyter notebook below is available online,
-thanks to Binder.
+thanks to Google Colab.
 
-*Launch this sample now!* |binder smithwilson_overview|
-
-.. include:: /banners.rst
-   :start-after: Begin binder banner
-   :end-before: End binder banner
+*Launch this sample now!* |colab smithwilson smithwilson-overview|
 
 .. toctree::
 

@@ -1,5 +1,5 @@
 """
-fastlife: Present values of net cashflows
+fastlife: Present Value of Net Cashflows
 ===============================================
 
 .. seealso::

@@ -227,10 +227,7 @@ Updates
   lifelib v0.0.6 is released. See :ref:`releases` for details.
 
 * *6 May 2018:*
-  :doc:`generated_examples/index` are now executable online in your browser.
-
-  - Run **ifrs17sim** sample now! |binder ifrs17sim_csm_waterfall|
-  - Run **simplelife** sample now! |binder simplelife_demo|
+  :doc:`generated_examples/index` are now executable online.
 
 * *6 May 2018:*
   New :doc:`generated_examples/ifrs17sim/plot_csm_waterfall` sample is added.
@@ -244,10 +241,6 @@ Updates
 * *1 April 2018:*
   New :doc:`generated_examples/index` pages are added.
 
-
-.. include:: /banners.rst
-   :start-after: Begin binder banner
-   :end-before: End binder banner
 
 
 

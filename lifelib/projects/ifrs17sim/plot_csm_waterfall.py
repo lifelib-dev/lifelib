@@ -8,11 +8,9 @@ The script is broken down into pieces of code, and explained in a Jupyter notebo
 
 The live version of the notebook is available online.
 
-*Launch this notebook online!* |binder ifrs17sim_csm_waterfall|
+*Launch this notebook online!* |colab ifrs17sim ifrs17sim_csm_waterfall|
 
 .. include:: /banners.rst
-   :start-after: Begin binder ifrs17sim_csm_waterfall
-   :end-before: End binder ifrs17sim_csm_waterfall
 
 .. seealso::
     * The :mod:`~ifrs17sim` library

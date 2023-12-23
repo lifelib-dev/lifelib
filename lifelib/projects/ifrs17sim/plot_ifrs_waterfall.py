@@ -9,11 +9,9 @@ The script is broken down into pieces of code, and explained in a Jupyter notebo
 
 The live version of the notebook is available online.
 
-*Launch this notebook online!* |binder ifrs17sim_charts_baseline|
+*Launch this notebook online!* |colab ifrs17sim ifrs17sim_charts_baseline|
 
 .. include:: /banners.rst
-   :start-after: Begin binder ifrs17sim_charts_baseline
-   :end-before: End binder ifrs17sim_charts_baseline
 
 .. seealso::
     * The :mod:`~ifrs17sim` library

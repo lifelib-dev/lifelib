@@ -99,7 +99,15 @@ under the path *C:\\path\\to\\your\\*, type below in an IPython console::
 Examples
 -----------
 
+============================= ======================================
+:doc:`savings_example1`       |colab savings savings_example1|
+:doc:`savings_example2`       |colab savings savings_example2|
+:doc:`savings_example3`       |colab savings savings_example3|
+:doc:`savings_example4`       |colab savings savings_example4|
+============================= ======================================
+
 .. toctree::
+   :hidden:
    :maxdepth: 1
 
    savings_example1
@@ -127,7 +135,7 @@ Library Contents
    savings_example2.ipynb                    Jupyter notebook :doc:`savings_example2`
    savings_example3.ipynb                    Jupyter notebook :doc:`savings_example3`
    savings_example4.ipynb                    Jupyter notebook :doc:`savings_example4`
-   generate_100K_model_points.ipynb          Jupyter notebook used for generating the large model point data for :doc:`/libraries/savings/savings_example3`.
+   generate_100K_model_points.ipynb          Jupyter notebook used for generating the large model point data for :doc:`savings_example3`.
    plot_ex1_av_paths.py                      Python script for :doc:`/generated_examples/savings/plot_ex1_av_paths`
    plot_ex1_rand.py                          Python script for :doc:`/generated_examples/savings/plot_ex1_rand`
    plot_ex1_option_value.py                  Python script for :doc:`/generated_examples/savings/plot_ex1_option_value`
