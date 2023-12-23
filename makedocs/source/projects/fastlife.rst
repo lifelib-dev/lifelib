@@ -1,13 +1,10 @@
 .. module:: fastlife
+.. include:: /banners.rst
 
 .. _project_fastlife:
 
 Project **fastlife**
 ======================
-
-.. include:: /banners.rst
-   :start-after: Begin modelx badge
-   :end-before: End modelx badge
 
 |modelx badge|
 
@@ -82,20 +79,16 @@ Inheritance Structure
 Jupyter Notebooks
 -----------------
 
-A live version of the Jupyter notebook below is available online,
-thanks to Binder.
-
-*Launch this sample now!*
-
-* Introduction to fastlife |binder fastlife_introduction|
-
-.. include:: /banners.rst
-   :start-after: Begin binder banner
-   :end-before: End binder banner
+======================================== ======================================================
+:doc:`fastlife-introduction`             |colab fastlife fastlife-introduction|
+:doc:`fastlife-pvnetcfs`                 |colab fastlife fastlife-pvnetcfs|
+======================================== ======================================================
 
 .. toctree::
+   :hidden:
 
    fastlife-introduction
+   fastlife-pvnetcfs
 
 Space Details
 -------------

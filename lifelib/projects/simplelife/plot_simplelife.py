@@ -4,12 +4,9 @@ simplelife: cashflow
 
 Draw a graph of liability cashflows of a simple whole life policy
 
-*Run this sample now!* |binder simplelife_demo|
+*Run this sample now!* |colab simplelife simplelife-demo|
 
 .. include:: /banners.rst
-   :start-after: Begin binder simplelife_demo
-   :end-before: End binder simplelife_demo
-
 
 .. seealso::
     * The :mod:`~simplelife` library

@@ -37,7 +37,12 @@ under the path *C:\\path\\to\\your\\*, type below in an IPython console::
 Jupyter Notebooks
 ------------------------------
 
+=================================== ======================================
+:doc:`hull-white-simulation`        |colab economic hull-white-simulation|
+=================================== ======================================
+
 .. toctree::
+   :hidden:
    :maxdepth: 1
 
    hull-white-simulation

@@ -1,4 +1,5 @@
 .. module:: cluster
+.. include:: /banners.rst
 
 The **cluster** Library
 ==========================
@@ -29,7 +30,13 @@ under the path *C:\\path\\to\\your\\*, type below in an IPython console::
 Jupyter Notebooks
 ------------------------------
 
+=========================================== ===================================================
+:doc:`cluster_model_points`                 |colab cluster cluster_model_points|
+:doc:`generate_model_points_for_cluster`    |colab cluster generate_model_points_for_cluster|
+=========================================== ===================================================
+
 .. toctree::
+   :hidden:
    :maxdepth: 1
 
    cluster_model_points

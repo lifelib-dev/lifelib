@@ -1,13 +1,10 @@
 .. module:: ifrs17sim
+.. include:: /banners.rst
 
 .. _project_ifrs17sim:
 
 Project **ifrs17sim**
 =====================
-
-.. include:: /banners.rst
-   :start-after: Begin modelx badge
-   :end-before: End modelx badge
 
 |modelx badge|
 
@@ -41,20 +38,14 @@ Inheritance Structure
 Jupyter Notebooks
 -----------------
 
-A live version of the Jupyter notebook below is available online,
-thanks to Binder.
-
-*Launch this sample now!*
-
-* CSM waterfalls |binder ifrs17sim_csm_waterfall|
-* IFRS17 Simulation (Baseline) |binder ifrs17sim_charts_baseline|
-* IFRS17 Simulation (Lapse Scenario) |binder ifrs17sim_charts_lapsescen|
-
-.. include:: /banners.rst
-   :start-after: Begin binder banner
-   :end-before: End binder banner
+======================================== ======================================================
+:doc:`ifrs17sim_csm_waterfall`           |colab ifrs17sim ifrs17sim_csm_waterfall|
+:doc:`ifrs17sim_charts_baseline`         |colab ifrs17sim ifrs17sim_charts_baseline|
+:doc:`ifrs17sim_charts_lapsescen`        |colab ifrs17sim ifrs17sim_charts_lapsescen|
+======================================== ======================================================
 
 .. toctree::
+   :hidden:
 
    ifrs17sim_csm_waterfall
    ifrs17sim_charts_baseline

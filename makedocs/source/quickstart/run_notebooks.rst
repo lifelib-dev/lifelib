@@ -1,20 +1,26 @@
+.. include:: /banners.rst
+
 .. _running-notebooks:
 
 Running Notebooks
 -----------------
 
-Running Notebooks online
+Running Notebooks Online
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 Jupyter Notebook enables you to run Python code in your browser.
-lifelib comes with some Jupyter notebooks, and the quickest way
-to try lifelib is to run the notebooks online.
-Go to :doc:`/notebooks` page and click one of the banner links.
-The link will take you to a web page where the selected notebook starts loading.
-Once the notebook loads, select **Cell** menu,
-and then select **Run All** to run & build models and get results and draw graphs.
+lifelib libraries include various Jupyter notebooks,
+which you can run online immediately on Google Colab.
+To do this, go to the :doc:`/notebooks` page,
+and click the |colab badge| that is next to the notebook you with to run.
+This will redirect you to Google Colab, where your selected notebook begins loading.
 
-Running Notebooks locally
+Once the notebook has loaded, select *Runtime* from the menu,
+and then click *Run anyway* when the warning pop-up appears.
+The notebook will then execute from the top to the bottom.
+Feel free to experiment by modifying the code, rerunning it, and observing the output.
+
+Running Notebooks Locally
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Jupyter notebooks on :doc:`/notebooks` page are also included in lifelib

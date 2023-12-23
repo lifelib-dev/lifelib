@@ -63,7 +63,12 @@ under the path *C:\\path\\to\\your\\*, type below in an IPython console::
 Jupyter Notebooks
 ------------------------------
 
+========================= ==================================
+:doc:`generate_bond_data` |colab assets generate_bond_data|
+========================= ==================================
+
 .. toctree::
+   :hidden:
    :maxdepth: 1
 
    generate_bond_data

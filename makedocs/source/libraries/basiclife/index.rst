@@ -81,7 +81,15 @@ under the path *C:\\path\\to\\your\\*, type below in an IPython console::
 Jupyter Notebooks
 ------------------------------
 
+======================================================== ======================================================
+:doc:`generate_model_points`                             |colab basiclife generate_model_points|
+:doc:`generate_model_points_with_duration`               |colab basiclife generate_model_points_with_duration|
+:doc:`generate_model_points_ASL`                         |colab basiclife generate_model_points_ASL|
+:doc:`create_premium_table`                              |colab basiclife create_premium_table|
+======================================================== ======================================================
+
 .. toctree::
+   :hidden:
    :maxdepth: 1
 
    generate_model_points

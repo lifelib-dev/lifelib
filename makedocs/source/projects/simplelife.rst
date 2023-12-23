@@ -1,13 +1,10 @@
 .. module:: simplelife
+.. include:: /banners.rst
 
 .. _project_simplelife:
 
 Project **simplelife**
 ======================
-
-.. include:: /banners.rst
-   :start-after: Begin modelx badge
-   :end-before: End modelx badge
 
 |modelx badge|
 
@@ -119,19 +116,15 @@ The :mod:`~simplelife.model.Projection` Space inherits from
 Jupyter Notebooks
 -----------------
 
-A live version of the Jupyter notebook below is available online,
-thanks to Binder.
-
-*Launch this sample now!*
-
-* simplelife Space Overview |binder simplelife_space_overview|
-
-.. include:: /banners.rst
-   :start-after: Begin binder banner
-   :end-before: End binder banner
+======================================== ======================================================
+:doc:`simplelife-demo`                   |colab simplelife simplelife-demo|
+:doc:`simplelife-space-overview`         |colab simplelife simplelife-space-overview|
+======================================== ======================================================
 
 .. toctree::
+   :hidden:
 
+   simplelife-demo
    simplelife-space-overview
 
 Space Details
