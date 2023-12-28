@@ -794,7 +794,7 @@ def next_anniversary(i, freq_id='ANV'):
     diff_m = (val_y - iss_y) * 12 + val_m - iss_m
     offset_m = (12 // freq) - (diff_m % (12 // freq))
 
-    m = date_(i).to_period('M') + offset_m
+    m = (date_(i).to_period('M') + offset_m).astype('Period[M]')
     d = np.minimum(issue_date().dt.day, m.dt.days_in_month)
     res = m.dt.to_timestamp().dt.to_period('D') - 1 + d
 
