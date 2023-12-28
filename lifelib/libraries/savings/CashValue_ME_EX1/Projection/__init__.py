@@ -582,7 +582,7 @@ def claims(t, kind=None):
         return claim_pp(t, "MATURITY") * pols_maturity(t)
 
     elif kind is None:
-        return sum(claims[t, k] for k in ["DEATH", "LAPSE", "MATURITY"])
+        return sum(claims(t, k) for k in ["DEATH", "LAPSE", "MATURITY"])
 
     else:
         raise ValueError("invalid kind")

@@ -52,7 +52,7 @@ def CommInitPrem():
 
     def get_table_id(pol):
         key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
-        result = AsmpLookup.match("CommInitPrem", key1, key2, key2).value
+        result = _space.AsmpLookup.match("CommInitPrem", key1, key2, key2).value
 
         if result is not None:
             return result
@@ -67,7 +67,7 @@ def CommRenPrem():
 
     def get_table_id(pol):
         key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
-        result = AsmpLookup.match("CommRenPrem", key1, key2, key2).value
+        result = _space.AsmpLookup.match("CommRenPrem", key1, key2, key2).value
 
         if result is not None:
             return result
@@ -82,7 +82,7 @@ def CommRenTerm():
 
     def get_table_id(pol):
         key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
-        result = AsmpLookup.match("CommRenTerm", key1, key2, key2).value
+        result = _space.AsmpLookup.match("CommRenTerm", key1, key2, key2).value
 
         if result is not None:
             return result
@@ -97,7 +97,7 @@ def ExpsAcqAnnPrem():
 
     def get_table_id(pol):
         key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
-        return AsmpLookup.match("ExpsAcqAnnPrem", key1, key2, key2).value
+        return _space.AsmpLookup.match("ExpsAcqAnnPrem", key1, key2, key2).value
 
     return PolicyData().apply(get_table_id, axis=1)
 
@@ -107,7 +107,7 @@ def ExpsAcqPol():
 
     def get_table_id(pol):
         key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
-        return AsmpLookup.match("ExpsAcqPol", key1, key2, key2).value
+        return _space.AsmpLookup.match("ExpsAcqPol", key1, key2, key2).value
 
     return PolicyData().apply(get_table_id, axis=1)
 
@@ -117,7 +117,7 @@ def ExpsAcqSA():
 
     def get_table_id(pol):
         key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
-        return AsmpLookup.match("ExpsAcqSA", key1, key2, key2).value
+        return _space.AsmpLookup.match("ExpsAcqSA", key1, key2, key2).value
 
     return PolicyData().apply(get_table_id, axis=1)
 
@@ -127,7 +127,7 @@ def ExpsMaintAnnPrem():
 
     def get_table_id(pol):
         key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
-        return AsmpLookup.match("ExpsMaintPrem", key1, key2, key2).value
+        return _space.AsmpLookup.match("ExpsMaintPrem", key1, key2, key2).value
 
     return PolicyData().apply(get_table_id, axis=1)
 
@@ -137,7 +137,7 @@ def ExpsMaintPol():
 
     def get_table_id(pol):
         key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
-        return AsmpLookup.match("ExpsMaintPol", key1, key2, key2).value
+        return _space.AsmpLookup.match("ExpsMaintPol", key1, key2, key2).value
 
     return PolicyData().apply(get_table_id, axis=1)
 
@@ -148,7 +148,7 @@ def ExpsMaintSA():
 
     def get_table_id(pol):
         key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
-        return AsmpLookup.match("ExpsMaintSA", key1, key2, key2).value
+        return _space.AsmpLookup.match("ExpsMaintSA", key1, key2, key2).value
 
     return PolicyData().apply(get_table_id, axis=1)
 
@@ -197,7 +197,7 @@ def MortTableID():
 
     def get_table_id(pol):
         key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
-        return AsmpLookup.match("BaseMort", key1, key2, key2).value
+        return _space.AsmpLookup.match("BaseMort", key1, key2, key2).value
 
     result = PolicyData().apply(get_table_id, axis=1)
     result.name = 'MortTableID'
@@ -211,7 +211,7 @@ def MortFactorID():
     def get_factor(pol):
 
         key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
-        table = AsmpLookup.match("MortFactor", key1, key2, key2).value
+        table = _space.AsmpLookup.match("MortFactor", key1, key2, key2).value
 
         if table is None:
             raise ValueError('MortFactor not found')
@@ -226,7 +226,7 @@ def SurrRateID():
     def get_factor(pol):
 
         key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
-        table = AsmpLookup.match("Surrender", key1, key2, key2).value
+        table = _space.AsmpLookup.match("Surrender", key1, key2, key2).value
 
         if table is None:
             raise ValueError('Surrender not found')

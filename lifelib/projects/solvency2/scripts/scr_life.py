@@ -29,7 +29,7 @@ def SCR_life():
     where i, j are a combination of risks
 
     """
-    return sum(Life(r) * Life(c) * Corr(r, c) for r, c in Corr) ** 0.5
+    return sum(Life(r) * Life(c) * Corr(r, c) for r, c in _space.Corr) ** 0.5
 
 
 def Life(risk):
