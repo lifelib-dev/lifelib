@@ -598,7 +598,7 @@ def claims(t, kind=None):
         return claims_from_av(t, "MATURITY")
 
     elif kind is None:
-        return sum(claims[t, k] for k in ["DEATH", "LAPSE", "MATURITY"])
+        return sum(claims(t, k) for k in ["DEATH", "LAPSE", "MATURITY"])
 
     else:
         raise ValueError("invalid kind")

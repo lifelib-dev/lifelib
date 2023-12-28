@@ -92,8 +92,8 @@ def InitSurrCharge():
         prod, polt, gen = pol['Product'], pol['PolicyType'], pol['Gen']
         term = pol['PolicyTerm']
 
-        param1 = SpecLookup.match("SurrChargeParam1", prod, polt, gen).value
-        param2 = SpecLookup.match("SurrChargeParam2", prod, polt, gen).value
+        param1 = _space.SpecLookup.match("SurrChargeParam1", prod, polt, gen).value
+        param2 = _space.SpecLookup.match("SurrChargeParam2", prod, polt, gen).value
 
         if param1 is None or param2 is None:
             raise ValueError('SurrChargeParam not found')
@@ -120,7 +120,7 @@ def IntRate(RateBasis):
 
     def get_value(pol):
 
-        result = SpecLookup.match(basis, 
+        result = _space.SpecLookup.match(basis,
                                   pol["Product"], 
                                   pol["PolicyType"],
                                   pol["Gen"]).value
@@ -174,7 +174,7 @@ def LoadMaintSA():
 
     def get_value(pol):
 
-        result = SpecLookup.match("LoadMaintSA", 
+        result = _space.SpecLookup.match("LoadMaintSA",
                                   pol["Product"], 
                                   pol["PolicyType"],
                                   pol["Gen"]).value
@@ -195,7 +195,7 @@ def LoadMaintSA2():
 
     def get_value(pol):
 
-        result = SpecLookup.match("LoadMaintSA2", 
+        result = _space.SpecLookup.match("LoadMaintSA2",
                                   pol["Product"], 
                                   pol["PolicyType"],
                                   pol["Gen"]).value
@@ -291,7 +291,7 @@ def TableID(RateBasis):
 
     def get_value(pol):
 
-        result = SpecLookup.match(basis, 
+        result = _space.SpecLookup.match(basis,
                                   pol["Product"], 
                                   pol["PolicyType"],
                                   pol["Gen"]).value

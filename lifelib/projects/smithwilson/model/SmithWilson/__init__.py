@@ -73,7 +73,7 @@ def m(i):
     Args:
         i(int): Time index (1, 2, ..., :attr:`N`)
     """
-    return (1 + spot_rates[i-1]) ** (-u[i])
+    return (1 + spot_rates[i-1]) ** (-u(i))
 
 
 def mu(i):
@@ -84,7 +84,7 @@ def mu(i):
     Args:
         i(int): Time index (1, 2, ...)
     """
-    return exp(-UFR * u[i])
+    return exp(-UFR * u(i))
 
 
 def W(i, j):
@@ -111,8 +111,8 @@ def W(i, j):
         i(int): Time index (1, 2, ..., :attr:`N`)
         j(int): Time index (1, 2, ..., :attr:`N`)
     """
-    t = u[i]
-    uj = u[j]
+    t = u(i)
+    uj = u(j)
 
     return exp(-UFR * (t+uj)) * (
             alpha * min(t, uj) - 0.5 * exp(-alpha * max(t, uj)) * (
