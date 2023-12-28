@@ -54,7 +54,7 @@ _spaces = []
 def BaseMortRate(x):
     """Bae mortality rate"""
 
-    table_id = AsmpLookup.match("BaseMort", prod(), polt(), gen()).value
+    table_id = _space.AsmpLookup.match("BaseMort", prod(), polt(), gen()).value
     return MortalityTables[table_id, sex(), x]
 
 
@@ -65,7 +65,7 @@ def CnsmpTax():
 
 def CommInitPrem():
     """Initial commission per premium"""
-    result = AsmpLookup.match("CommInitPrem", prod(), polt(), gen()).value
+    result = _space.AsmpLookup.match("CommInitPrem", prod(), polt(), gen()).value
 
     if result is not None:
         return result
@@ -75,7 +75,7 @@ def CommInitPrem():
 
 def CommRenPrem():
     """Renewal commission per premium"""
-    result = AsmpLookup.match("CommRenPrem", prod(), polt(), gen()).value
+    result = _space.AsmpLookup.match("CommRenPrem", prod(), polt(), gen()).value
 
     if result is not None:
         return  result
@@ -85,7 +85,7 @@ def CommRenPrem():
 
 def CommRenTerm():
     """Renewal commission term"""
-    result = AsmpLookup.match("CommRenTerm", prod(), polt(), gen()).value
+    result = _space.AsmpLookup.match("CommRenTerm", prod(), polt(), gen()).value
 
     if result is not None:
         return result
@@ -95,32 +95,32 @@ def CommRenTerm():
 
 def ExpsAcqAnnPrem():
     """Acquisition expense per annualized premium"""
-    return AsmpLookup.match("ExpsAcqAnnPrem", prod(), polt(), gen()).value
+    return _space.AsmpLookup.match("ExpsAcqAnnPrem", prod(), polt(), gen()).value
 
 
 def ExpsAcqPol():
     """Acquisition expense per policy"""
-    return AsmpLookup.match("ExpsAcqPol", prod(), polt(), gen()).value
+    return _space.AsmpLookup.match("ExpsAcqPol", prod(), polt(), gen()).value
 
 
 def ExpsAcqSA():
     """Acquisition expense per sum assured"""
-    return AsmpLookup.match("ExpsAcqSA", prod(), polt(), gen()).value
+    return _space.AsmpLookup.match("ExpsAcqSA", prod(), polt(), gen()).value
 
 
 def ExpsMaintAnnPrem():
     """Maintenance expense per annualized premium"""
-    return AsmpLookup.match("ExpsMaintPrem", prod(), polt(), gen()).value
+    return _space.AsmpLookup.match("ExpsMaintPrem", prod(), polt(), gen()).value
 
 
 def ExpsMaintPol():
     """Maintenance expense per policy"""
-    return AsmpLookup.match("ExpsMaintPol", prod(), polt(), gen()).value
+    return _space.AsmpLookup.match("ExpsMaintPol", prod(), polt(), gen()).value
 
 
 def ExpsMaintSA():
     """Maintenance expense per sum assured"""
-    return AsmpLookup.match("ExpsMaintSA", prod(), polt(), gen()).value
+    return _space.AsmpLookup.match("ExpsMaintSA", prod(), polt(), gen()).value
 
 
 def InflRate():
@@ -139,7 +139,7 @@ def LastAge():
 
 def MortFactor(y):
     """Mortality factor"""
-    table = AsmpLookup.match("MortFactor", prod(), polt(), gen()).value
+    table = _space.AsmpLookup.match("MortFactor", prod(), polt(), gen()).value
 
     if table is None:
         raise ValueError('MortFactor not found')
@@ -154,7 +154,7 @@ def MortFactor(y):
 
 def MortTable():
     """Mortality Table"""
-    result = AsmpLookup.match("BaseMort", prod(), polt(), gen()).value
+    result = _space.AsmpLookup.match("BaseMort", prod(), polt(), gen()).value
 
     if result is not None:
         return MortalityTables(result).MortalityTable
@@ -164,7 +164,7 @@ def MortTable():
 
 def SurrRate(y):
     """Surrender Rate"""
-    table = AsmpLookup.match("Surrender", prod(), polt(), gen()).value
+    table = _space.AsmpLookup.match("Surrender", prod(), polt(), gen()).value
 
     if table is None:
         raise ValueError('Surrender not found')

@@ -100,8 +100,8 @@ def GrossPremTable():
 def InitSurrCharge():
     """Initial Surrender Charge Rate"""
 
-    param1 = SpecLookup.match("SurrChargeParam1", Product(), PolicyType(), Gen()).value
-    param2 = SpecLookup.match("SurrChargeParam2", Product(), PolicyType(), Gen()).value
+    param1 = _space.SpecLookup.match("SurrChargeParam1", Product(), PolicyType(), Gen()).value
+    param2 = _space.SpecLookup.match("SurrChargeParam2", Product(), PolicyType(), Gen()).value
 
     if param1 is None or param2 is None:
         raise ValueError('SurrChargeParam not found')
@@ -119,7 +119,7 @@ def IntRate(RateBasis):
     else:
         raise ValueError('invalid RateBasis')
 
-    result = SpecLookup.match(basis, Product(), PolicyType(), Gen()).value
+    result = _space.SpecLookup.match(basis, Product(), PolicyType(), Gen()).value
 
     if result is not None:
         return result
@@ -163,7 +163,7 @@ def LoadMaintPremWaiverPrem():
 def LoadMaintSA():
     """Maintenance Loading per Sum Assured during Premium Payment"""
 
-    result = SpecLookup.match("LoadMaintSA", Product(), PolicyType(), Gen()).value
+    result = _space.SpecLookup.match("LoadMaintSA", Product(), PolicyType(), Gen()).value
 
     if result is not None:
         return result
@@ -174,7 +174,7 @@ def LoadMaintSA():
 def LoadMaintSA2():
     """Maintenance Loading per Sum Assured after Premium Payment"""
 
-    result = SpecLookup.match("LoadMaintSA2", Product(), PolicyType(), Gen()).value
+    result = _space.SpecLookup.match("LoadMaintSA2", Product(), PolicyType(), Gen()).value
 
     if result is not None:
         return result
@@ -237,7 +237,7 @@ def TableID(RateBasis):
     else:
         raise ValueError('invalid RateBasis')
 
-    result = SpecLookup.match(basis, Product(), PolicyType(), Gen()).value
+    result = _space.SpecLookup.match(basis, Product(), PolicyType(), Gen()).value
 
     if result is not None:
         return result
