@@ -14,6 +14,9 @@ Updates
     Follow <a href="https://www.linkedin.com/company/lifelib" target="_blank">lifelib on LinkedIn</a>
     for more frequent updates.</p>
 
+* *18 February 2024:*
+  lifelib :ref:`v0.9.5<relnotes_v0.9.5>` is released to support modelx 0.25.0.
+
 * *23 December 2023:*
   lifelib :ref:`v0.9.4<relnotes_v0.9.4>` is released. Notebooks can now be opend and run on Google Colab.
   See :doc:`/notebooks`.
