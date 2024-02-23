@@ -8,7 +8,10 @@ from modelx.serialize.jsonvalues import *
 
 _formula = None
 
-_bases = []
+_bases = [
+    "..BaseProj",
+    "..PV"
+]
 
 _allow_none = None
 

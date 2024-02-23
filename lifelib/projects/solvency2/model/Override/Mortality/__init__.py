@@ -8,7 +8,10 @@ from modelx.serialize.jsonvalues import *
 
 _formula = None
 
-_bases = []
+_bases = [
+    "..BaseProj",
+    "..PV"
+]
 
 _allow_none = None
 
@@ -16,6 +19,13 @@ _spaces = []
 
 # ---------------------------------------------------------------------------
 # Cells
+
+def PolsDeath(t):
+    """Number of policies: Death override"""
+
+    return (PolsIF_Beg1(t) * asmp.BaseMortRate(AttAge(t)) 
+            * asmp.MortFactor(t) * MortRateFactor(t))
+
 
 def MortRateFactor(t):
     """Mortality rate factor applied from time ``t0`` and there after"""
@@ -34,12 +44,5 @@ def MortRateFactor(t):
             return 1
     else:
         return 1
-
-
-def PolsDeath(t):
-    """Number of policies: Death override"""
-
-    return (PolsIF_Beg1(t) * asmp.BaseMortRate(AttAge(t)) 
-            * asmp.MortFactor(t) * MortRateFactor(t))
 
 
