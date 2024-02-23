@@ -189,9 +189,9 @@ Sex = lambda: PolicyData[PolicyID, 'Sex']
 
 AsmpLookup = ("Interface", ("..", "Input", "AsmpLookup"), "auto")
 
-AssumptionTables = ("Pickle", 2325101521608)
+AssumptionTables = ("IOSpec", 1401491065920, 1401491065920)
 
-MortalityTables = ("Pickle", 2325095460104)
+MortalityTables = ("IOSpec", 1401491066256, 1401491066256)
 
 gen = ("Interface", (".", "Gen"), "auto")
 
@@ -201,4 +201,4 @@ prod = ("Interface", (".", "Product"), "auto")
 
 sex = ("Interface", (".", "Sex"), "auto")
 
-PolicyData = ("Pickle", 2325077945160)
+PolicyData = ("IOSpec", 1401484906208, 1401484906208)

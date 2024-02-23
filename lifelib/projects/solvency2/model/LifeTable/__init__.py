@@ -204,4 +204,4 @@ IntRate = 0.01
 
 TableID = 1
 
-MortalityTable = ("Pickle", 2325095460104)
+MortalityTable = ("IOSpec", 1401491066256, 1401491066256)

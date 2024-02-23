@@ -4,17 +4,16 @@ def _formula(Risk='base', Shock=None, Scope=None):
 
 
     if Risk == 'mort' or Risk == 'longev':
-        bases = [_space.model.Override.Mortality, _space]  
-
+        base = _space.model.Override.Mortality
     elif Risk == 'lapse':
         if Shock == 'mass':
-            bases = [_space.model.Override.LapseMass, _space]
+            base = _space.model.Override.LapseMass
         else:
-            bases = [_space.model.Override.Lapse, _space]
+            base = _space.model.Override.Lapse
     elif Risk == 'exps':
-            bases = [_space.model.Override.Expense, _space]   
+            base = _space.model.Override.Expense
     else:
-        bases = [_space]
+        base = _space
 
     refs = {'pol': Policy[PolicyID],
             'asmp': Assumptions[PolicyID],
@@ -22,7 +21,7 @@ def _formula(Risk='base', Shock=None, Scope=None):
             'DiscRate': Economic[ScenID].DiscRate,
             'Factor': _space.model.Input.Factor}
 
-    return {'bases':bases, 'refs': refs}
+    return {'base': base, 'refs': refs}
 
 
 _bases = [

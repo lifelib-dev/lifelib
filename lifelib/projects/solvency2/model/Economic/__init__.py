@@ -47,4 +47,4 @@ ScenID = 1
 
 AsmpLookup = ("Interface", ("..", "Input", "AsmpLookup"), "auto")
 
-Scenarios = ("Pickle", 2325101521416)
+Scenarios = ("IOSpec", 1401491066160, 1401491066160)
