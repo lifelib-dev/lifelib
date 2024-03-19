@@ -88,5 +88,5 @@ An example of this format is the monthly risk free rate published by turopean In
 Occupational Pensions Authority (<https://www.eiopa.europa.eu/tools-and-data/>).
 
 To suggest improving the code/comments etc. in this library
-contact [the original authors](https://github.com/qnity), 
+contact [the original authors](https://github.com/open-source-modelling), 
 or start a discussion at [lifelib Discussions](https://github.com/lifelib-dev/lifelib/discussions).

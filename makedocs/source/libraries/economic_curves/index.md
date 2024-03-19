@@ -15,8 +15,8 @@ in UK and EU countries under the Solvency 2 regime.
 
 ```{seealso}
 This library was based on 
-[insurance_python](https://github.com/qnity/insurance_python), a library in an external project, 
-the [Actuarial Algorithms](https://github.com/qnity), 
+[insurance_python](https://github.com/open-source-modelling/insurance_python), a library in an external project, 
+the [Actuarial Algorithms](https://github.com/open-source-modelling), 
 developed and maintained by Qnity Consultants and Gregor Fabjan.
 ```
 
@@ -92,20 +92,5 @@ Metropolis_Hastings
 [BIS whitepaper]: https://www.bis.org/publ/bppdf/bispap25l.pdf
 [Wiki Black&Sholes]: https://en.wikipedia.org/wiki/Black%E2%80%93Scholes_model
 [Wiki Vasicek]: https://en.wikipedia.org/wiki/Vasicek_model
-
-## Algorithms planned
-
-New suggestions for algorithms are welcome. 
-If anybody is interested in publishing an algorithm they implemented, or help with the project, 
-contact [the original authors](https://github.com/qnity), 
-or start a discussion at [lifelib Discussions](https://github.com/lifelib-dev/lifelib/discussions).
-
-
-| Algorithm              | Source  | Description                                                            |
-| ---------------------- |---------| ---------------------------------------------------------------------- |
-| Matrix on fraction     | TBD     | Heuristics for calculating transition matrices on fractions of power   |
-| G2++ with piec cons vol| TBD     | Calibration of a G2++ model with piecwise constant volatility          |
-| Carter-Lee model       | TBD     | Simple stochastic mortality model                                      |
-| Metropolis-Hastings    | TBD     | Sampling of probability distributions                                  |
 
 
