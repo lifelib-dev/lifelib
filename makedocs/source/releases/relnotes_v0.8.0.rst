@@ -27,8 +27,8 @@ many of which are relevant to regulatory requirements
 in UK and EU countries under the Solvency 2 regime.
 
 This library was based on
-`insurance_python <https://github.com/qnity/insurance_python>`_, a library in an external project,
-the `Actuarial Algorithms <https://github.com/qnity>`_,
+`insurance_python <https://github.com/open-source-modelling/insurance_python>`_, a library in an external project,
+the `Actuarial Algorithms <https://github.com/open-source-modelling>`_,
 developed and maintained by Qnity Consultants and Gregor Fabjan.
 
 See :mod:`~economic_curves` and :ref:`notebooks_economic_curves` for more details.
