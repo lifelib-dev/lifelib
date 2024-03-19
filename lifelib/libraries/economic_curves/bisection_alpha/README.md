@@ -57,5 +57,5 @@ the {doc}`smith_wilson` algorithm.
 They are duplicated to this repository for completeness. 
 
 If there are any inconsistencies or suggestions, raise an [issue](https://github.com/lifelib-dev/lifelib/issues),
-or contact [the original authors](https://github.com/qnity), 
+or contact [the original authors](https://github.com/open-source-modelling), 
 or start a discussion at [lifelib Discussions](https://github.com/lifelib-dev/lifelib/discussions).
