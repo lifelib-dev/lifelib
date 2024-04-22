@@ -43,7 +43,7 @@ in :func:`~basiclife.BasicTermASL_ME.Pricing.model_point`.
 :func:`~basiclife.BasicTermASL_ME.Pricing.premium_pp` calculates
 premiums per 1000 sum assured per payment from
 :func:`~basiclife.BasicTermASL_ME.Base.loading_prem` and
-the present values of premiums and claims.
+the present values of claims over present value of polices in-force for premium payments.
 :func:`Pricing.premium_pp` is brought in to :mod:`~basiclife.BasicTermASL_ME.Projection`
 as :attr:`~Projection.pricing_premium_pp` and
 referenced by :func:`Projection.premium_pp`.
