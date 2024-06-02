@@ -857,34 +857,6 @@ def fixed_params():
     return pd.concat([const_params, run_params, space_params])
 
 
-def formula_option_put(t):
-    """
-        S: prem_to_av
-        X: claims
-        sigma: 0.03
-        r: 0.02
-        q: 0.01
-
-    """
-    mps = model_point_table_ext()
-    cond = mps['policy_term'] * 12 == t
-    mps = mps.loc[cond]
-
-    T = t / 12
-    S = av_at(0, 'BEF_FEE')[:, 1][cond]
-    X = (sum_assured() * pols_maturity(t))[:, 1][cond]
-    sigma = 0.03
-    r = 0.02
-    q = 0.01
-    N = stats.norm.cdf
-    e = np.exp
-
-    d1 = (np.log(S/X) + (r - q + 0.5 * sigma**2) * T) / (sigma * np.sqrt(T))
-    d2 = d1 - sigma * np.sqrt(T)
-
-    return X * e(-r*T) * N(-d2) - S * e(-q*T) * N(-d1)
-
-
 def has_surr_charge():
     """Whether surrender charge applies
 
@@ -985,36 +957,6 @@ def inv_return_mth(t):
 
     fund_indexer = ret_t.columns.get_indexer(model_point()['fund_index'])
     return ret_t.values[np.arange(len(ret_t)), fund_indexer]
-
-
-def inv_return_table():
-    r"""Table of investment return rates
-
-    Returns a Series of monthly investment retuns.
-    The Series is indexed with ``scen_id`` and ``t`` which
-    is inherited from :attr:`std_norm_rand`.
-
-    .. math::
-
-        \exp\left(\left(\mu-\frac{\sigma^{2}}{2}\right)\Delta{t}+\sigma\sqrt{\Delta{t}}\epsilon\right)-1
-
-    where :math:`\mu=2\%`, :math:`\sigma=3\%`, :math:`\Delta{t}=\frac{1}{12}`, and
-    :math:`\epsilon` is a randome number from the standard normal distribution.
-
-    .. seealso::
-
-        * :attr:`std_norm_rand`
-        * :attr:`scen_id`
-
-    """
-    # mu = 0.02
-    # sigma = 0.03
-    # dt = 1/12
-
-    # return np.exp(
-    #     (mu - 0.5 * sigma**2) * dt + sigma * dt**0.5 * std_norm_rand()
-    #     ) - 1
-    return scen_data.scenarios()
 
 
 def is_lapse_dynamic():
@@ -1327,41 +1269,6 @@ def mort_table_id():
     return np.where(model_point()["sex"] == "M", 
                     model_point()["mort_table_male"], 
                     model_point()["mort_table_female"])
-
-
-def mort_table_last_age():
-    """The last age of mortality tables
-
-    Returns the last age whose mortality rates are all 1.
-    If no such age is found, return the last index of the tables
-
-    .. seealso::
-
-        * :attr:`mort_table`
-
-    """
-    for i in mort_table.index:
-        mort_i = mort_table.loc[i]
-        if (mort_i == 1).all():
-            return i
-
-    return i
-
-
-def mort_table_reindexed():
-    """MultiIndexed mortality table
-
-    Returns a Series of mortlity rates reshaped from :attr:`mort_table`.
-    The returned Series is indexed by age and duration capped at 5.
-
-    """
-    result = []
-    for col in mort_table.columns:
-        df = mort_table[[col]]
-        df = df.assign(Duration=int(col)).set_index('Duration', append=True)[col]
-        result.append(df)
-
-    return pd.concat(result)
 
 
 def net_amt_at_risk(t):
@@ -2088,20 +1995,6 @@ def surr_charge_key(t):
         names = ["surr_charge_id", "duration"])
 
 
-def surr_charge_max_idx():
-    """maximum index of surrender charge table
-
-    The maximum index(duration) of :attr:`surr_charge_table`.
-
-    .. seealso::
-
-        * :attr:`surr_charge_rate`
-        * :func:`has_surr_charge`
-
-    """
-    return max(surr_charge_table.index)
-
-
 def surr_charge_rate(t):
     """Surrender charge rate
 
@@ -2124,21 +2017,6 @@ def surr_charge_rate(t):
     return base_data.stacked_surr_charge_tables().reindex(
         surr_charge_key(t), fill_value=0).set_axis(
         model_point().index).values
-
-
-def surr_charge_table_stacked():
-    """Stacked surrender charge table
-
-    :attr:`surr_charge_table` converted to a Series indexed
-    with surrender charge ID and duration.
-
-    .. seealso::
-
-        * :attr:`surr_charge_table`
-        * :func:`surr_charge_rate`
-
-    """
-    return surr_charge_table.stack().reorder_levels([1, 0]).sort_index()
 
 
 # ---------------------------------------------------------------------------

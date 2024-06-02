@@ -1,6 +1,6 @@
 from modelx.serialize.jsonvalues import *
 
-_formula = lambda date_id, sensitivity: None
+_formula = lambda date_id, sens_id: None
 
 _bases = []
 
@@ -17,7 +17,7 @@ def spot_rates():
     file_prefix: str = base_data.const_params().at["int_rate_prefix", "value"]
 
     path = _model.path.parent / dir_name / f"{file_prefix}_{date_id}.xlsx"
-    return pd.read_excel(path, sheet_name=sensitivity, index_col=0)
+    return pd.read_excel(path, sheet_name=sens_id, index_col=0)
 
 
 def forward_rates():
@@ -91,4 +91,4 @@ base_data = ("Interface", ("..", "BaseData"), "auto")
 
 date_id = "202312"
 
-sensitivity = "BASE"
+sens_id = "BASE"
