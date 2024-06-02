@@ -21,8 +21,7 @@ def lapse_tables():
 
 def asmp_file():
 
-    dir_ = input_data.const_params().at["table_dir", "value"]
-    # file = input_data.const_params().at["asmp_file", "value"]
+    dir_ = base_data.const_params().at["table_dir", "value"]
 
     return _model.path.parent / dir_ / ("assumptions_" + date_id + ".xlsx")
 
@@ -51,6 +50,6 @@ def stacked_mort_scalar_tables():
 # ---------------------------------------------------------------------------
 # References
 
-input_data = ("Interface", ("..", "InputData"), "auto")
+base_data = ("Interface", ("..", "BaseData"), "auto")
 
 date_id = "202312"

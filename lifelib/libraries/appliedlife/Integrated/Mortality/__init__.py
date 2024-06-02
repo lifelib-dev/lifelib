@@ -97,8 +97,8 @@ def unified_table():
 
 def mort_file():
 
-    dir_ = input_data.const_params().at["table_dir", "value"]
-    file = input_data.const_params().at["mort_file", "value"]
+    dir_ = base_data.const_params().at["table_dir", "value"]
+    file = base_data.const_params().at["mort_file", "value"]
 
     return _model.path.parent / dir_ / file
 
@@ -110,4 +110,4 @@ def table_last_age():
 # ---------------------------------------------------------------------------
 # References
 
-input_data = ("Interface", ("..", "InputData"), "auto")
+base_data = ("Interface", ("..", "BaseData"), "auto")

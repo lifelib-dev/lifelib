@@ -5,7 +5,7 @@ _name = "Integrated"
 _allow_none = False
 
 _spaces = [
-    "InputData",
+    "BaseData",
     "Mortality",
     "ProductBase",
     "Run",

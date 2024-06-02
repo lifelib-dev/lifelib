@@ -13,8 +13,8 @@ _spaces = []
 
 def spot_rates():
 
-    dir_name: str = input_data.const_params().at["scen_dir", "value"]
-    file_prefix: str = input_data.const_params().at["int_rate_prefix", "value"]
+    dir_name: str = base_data.const_params().at["scen_dir", "value"]
+    file_prefix: str = base_data.const_params().at["int_rate_prefix", "value"]
 
     path = _model.path.parent / dir_name / f"{file_prefix}_{date_id}.xlsx"
     return pd.read_excel(path, sheet_name=sensitivity, index_col=0)
@@ -62,8 +62,8 @@ scen_len = lambda: len(spot_rates())
 
 def index_params():
 
-    dir_name: str = input_data.const_params().at["scen_dir", "value"]
-    file_name: str = input_data.const_params().at["scen_param_file", "value"]
+    dir_name: str = base_data.const_params().at["scen_dir", "value"]
+    file_name: str = base_data.const_params().at["scen_param_file", "value"]
 
     file = _model.path.parent / dir_name / file_name
     df = pd.read_excel(file,
@@ -87,7 +87,7 @@ def mth_index():
 # ---------------------------------------------------------------------------
 # References
 
-input_data = ("Interface", ("..", "InputData"), "auto")
+base_data = ("Interface", ("..", "BaseData"), "auto")
 
 date_id = "202312"
 

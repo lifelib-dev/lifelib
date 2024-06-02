@@ -13,8 +13,8 @@ _spaces = []
 
 def model_point_table():
 
-    dir_name: str = input_data.const_params().at["model_point_dir", "value"]
-    file_name: str = (input_data.const_params().at["model_point_file_stem", "value"]
+    dir_name: str = base_data.const_params().at["model_point_dir", "value"]
+    file_name: str = (base_data.const_params().at["model_point_file_stem", "value"]
                       + "_" + space_name + "_" + date_id + ".csv")
 
     return pd.read_csv(_model.path.parent / dir_name / file_name, index_col="point_id", parse_dates=["entry_date"])
@@ -22,7 +22,7 @@ def model_point_table():
 
 def model_point_table_ext(): 
     return pd.merge(model_point_table().reset_index(), 
-                    input_data.product_params(space_name).reset_index(),
+                    base_data.product_params(space_name).reset_index(),
                     how="left",
                     on=["product_id", "plan_id"]).set_index('point_id')
 
@@ -30,7 +30,7 @@ def model_point_table_ext():
 # ---------------------------------------------------------------------------
 # References
 
-input_data = ("Interface", ("..", "InputData"), "auto")
+base_data = ("Interface", ("..", "BaseData"), "auto")
 
 space_name = "GMXB"
 

@@ -843,16 +843,16 @@ def expenses(t):
 
 def fixed_params():
 
-    params = input_data.param_list()
+    params = base_data.param_list()
 
     const_param_names = (params[params["read_from"] == "CONST"]).index
-    const_params = input_data.const_params()["value"].loc[const_param_names]
+    const_params = base_data.const_params()["value"].loc[const_param_names]
 
     run_param_names = (params[params["read_from"] == "RUN"]).index
-    run_params = input_data.run_params().loc[run_id].loc[run_param_names]
+    run_params = base_data.run_params().loc[run_id].loc[run_param_names]
 
     space_param_names = (params[params["read_from"] == "SPACE"]).index
-    space_params = input_data.space_params().loc[_space.name].loc[space_param_names]
+    space_params = base_data.space_params().loc[_space.name].loc[space_param_names]
 
     return pd.concat([const_params, run_params, space_params])
 
@@ -1263,7 +1263,7 @@ def model_point_table_ext():
 
 
 def mort_last_age():
-    return mortality_data.table_last_age().reindex(mort_table_id()).values
+    return mort_data.table_last_age().reindex(mort_table_id()).values
 
 
 def mort_rate(t):
@@ -1297,14 +1297,14 @@ def mort_rate(t):
     # else:
     #     return pd.Series(0, index=model_point().index).values
 
-    return mortality_data.unified_table().reindex(
+    return mort_data.unified_table().reindex(
         mort_rate_key(t)
         ).values
 
 
 def mort_rate_key(t):
 
-    duration_cap = mortality_data.select_duration_len().reindex(mort_table_id()).values
+    duration_cap = mort_data.select_duration_len().reindex(mort_table_id()).values
 
     return pd.MultiIndex.from_arrays(
         [mort_table_id(), age(t), np.minimum(duration(t), duration_cap)],
@@ -2081,7 +2081,7 @@ def surr_charge_id():
 
 def surr_charge_key(t):
 
-    duration_cap = input_data.surr_charge_len()
+    duration_cap = base_data.surr_charge_len()
 
     return pd.MultiIndex.from_arrays(
         [surr_charge_id(), np.minimum(duration(t), duration_cap)],
@@ -2121,7 +2121,7 @@ def surr_charge_rate(t):
     #     [has_surr_charge() * surr_charge_id(),
     #      np.minimum(duration(t), surr_charge_max_idx())])
 
-    return input_data.stacked_surr_charge_tables().reindex(
+    return base_data.stacked_surr_charge_tables().reindex(
         surr_charge_key(t), fill_value=0).set_axis(
         model_point().index).values
 
@@ -2144,12 +2144,12 @@ def surr_charge_table_stacked():
 # ---------------------------------------------------------------------------
 # References
 
-input_data = ("Interface", ("..", "InputData"), "auto")
+base_data = ("Interface", ("..", "BaseData"), "auto")
 
 model_point_data = ("Interface", ("..", "ModelPoints"), "auto")
 
 scen_data = ("Interface", ("..", "Scenarios"), "auto")
 
-mortality_data = ("Interface", ("..", "Mortality"), "auto")
+mort_data = ("Interface", ("..", "Mortality"), "auto")
 
 asmp_data = ("Interface", ("..", "Assumptions"), "auto")
