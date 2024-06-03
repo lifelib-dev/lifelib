@@ -788,7 +788,7 @@ def duration_mth(t):
     """
 
     if t == 0:
-        return model_point()['duration_mth'].values
+        return duration_mth_init().values
     else:
         return duration_mth(t-1) + 1
 
@@ -1071,7 +1071,7 @@ def maint_fee_rate():
         * :func:`maint_fee`
 
     """
-    return 0
+    return model_point()["maint_fee_rate"].values
 
 
 def margin_expense(t):
@@ -2017,6 +2017,15 @@ def surr_charge_rate(t):
     return base_data.stacked_surr_charge_tables().reindex(
         surr_charge_key(t), fill_value=0).set_axis(
         model_point().index).values
+
+
+def duration_mth_init():
+
+    date_start = fixed_params()["base_date"] + pd.Timedelta(days=1)
+    entry_date = model_point()["entry_date"]
+
+    return (date_start.year * 12 + date_start.month 
+            - entry_date.dt.year * 12 - entry_date.dt.month)
 
 
 # ---------------------------------------------------------------------------
