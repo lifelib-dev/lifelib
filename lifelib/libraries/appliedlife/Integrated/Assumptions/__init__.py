@@ -47,6 +47,14 @@ def stacked_mort_scalar_tables():
     return mort_scalar_tables().stack().swaplevel(0, 1).sort_index()
 
 
+def dyn_lapse_params():
+
+    return pd.read_excel(
+        asmp_file(),
+        sheet_name="DynLapse",
+        index_col=0)
+
+
 # ---------------------------------------------------------------------------
 # References
 

@@ -960,7 +960,7 @@ def inv_return_mth(t):
 
 
 def is_lapse_dynamic():
-    return sim_param_table['is_lapse_dynamic'][sim_id]
+    return fixed_params()["is_lapse_dynamic"]
 
 
 def is_wl():
@@ -1006,8 +1006,16 @@ def lapse_rate(t):
     # else:
     #     return pd.Series(0, index=model_point().index).values
 
-    date_id = fixed_params()["date_id"]
-    return asmp_data(date_id).stacked_lapse_tables().reindex(lapse_rate_key(t)).values
+    # date_id = fixed_params()["date_id"]
+    # return asmp_data(date_id).stacked_lapse_tables().reindex(lapse_rate_key(t)).values
+
+    if is_lapse_dynamic():
+
+        floor = model_point()["dyn_lapse_floor"].values
+        return np.maximum(floor, dyn_lapse_factor(t) * base_lapse_rate(t))
+
+    else:
+        return base_lapse_rate(t)
 
 
 def lapse_rate_key(t):
@@ -1884,6 +1892,7 @@ def result_sample(point_id=1, scen=1):
         "pols_lapse",
         "mort_rate",
         "lapse_rate",
+        "dyn_lapse_factor",
         "blank",
 
         # Economic assumptions
@@ -2026,6 +2035,75 @@ def duration_mth_init():
 
     return (date_start.year * 12 + date_start.month 
             - entry_date.dt.year * 12 - entry_date.dt.month)
+
+
+def base_lapse_rate(t):
+    """Lapse rate
+
+    By default, the lapse rate assumption is defined by duration as::
+
+        max(0.1 - 0.01 * duration(t), 0.02)
+
+    .. seealso::
+
+        :func:`duration`
+
+    """
+    # if has_lapse():
+
+    #     if is_lapse_dynamic():
+    #         factor = csv_pp(t) / sum_assured()
+    #     else:
+    #         factor = 1
+
+    #     return factor * np.maximum(0.1 - 0.01 * duration(t), 0.02)
+    # else:
+    #     return pd.Series(0, index=model_point().index).values
+
+    date_id = fixed_params()["date_id"]
+    return asmp_data(date_id).stacked_lapse_tables().reindex(lapse_rate_key(t)).values
+
+
+def dyn_lapse_factor(t):
+
+    # date_id = fixed_params()["date_id"]
+    # params = asmp_data[date_id].dyn_lapse_params().reindex(model_point()["dyn_lapse_param_id"].values)
+
+    min_ = np.minimum
+    max_ = np.maximum
+
+    def factor_DL001(itm):
+
+        U = dyn_lapse_param()["U"].values
+        L = dyn_lapse_param()["L"].values
+        M = dyn_lapse_param()["M"].values
+        D = dyn_lapse_param()["D"].values
+
+        return min_(U, max_(L, 1 - M * (1/itm - D)))
+
+    def factor_DL002(itm):
+
+        Cap = dyn_lapse_param()["FactorCap"].values
+        Floor = dyn_lapse_param()["FactorFloor"].values
+        Y = dyn_lapse_param()["Y"].values
+        Power = dyn_lapse_param()["Power"].values
+
+        return min_(Cap, max_(Floor, Y * (itm**Power)))
+
+    # return params
+    formula = dyn_lapse_param()["formula_id"]
+    itm = av_pp_at(t, "MID_MTH") / sum_assured()
+
+    return np.where(formula == "DL001", 
+                    factor_DL001(itm), 
+                    np.where(formula == "DL002",
+                              factor_DL002(itm), np.nan))
+
+
+def dyn_lapse_param():
+
+    date_id = fixed_params()["date_id"]
+    return asmp_data[date_id].dyn_lapse_params().reindex(model_point()["dyn_lapse_param_id"].values)
 
 
 # ---------------------------------------------------------------------------
