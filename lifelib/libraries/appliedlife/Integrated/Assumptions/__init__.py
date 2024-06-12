@@ -1,6 +1,6 @@
 from modelx.serialize.jsonvalues import *
 
-_formula = lambda date_id: None
+_formula = lambda asmp_id: None
 
 _bases = []
 

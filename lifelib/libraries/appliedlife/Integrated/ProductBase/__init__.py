@@ -1208,7 +1208,7 @@ def model_point_table_ext():
 
 
     """
-    date_id = fixed_params()["date_id"]
+    date_id = fixed_params()["mp_file_id"]
     return model_point_data(date_id, _space.name).model_point_table_ext()
 
 

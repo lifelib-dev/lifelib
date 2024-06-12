@@ -14,7 +14,7 @@ _spaces = []
 def spot_rates():
 
     dir_name: str = base_data.const_params().at["scen_dir", "value"]
-    file_prefix: str = base_data.const_params().at["int_rate_prefix", "value"]
+    file_prefix: str = base_data.const_params().at["scen_file_prefix", "value"]
 
     path = _model.path.parent / dir_name / f"{file_prefix}_{date_id}.xlsx"
     return pd.read_excel(path, sheet_name=sens_id, index_col=0)

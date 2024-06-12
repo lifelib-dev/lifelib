@@ -1,6 +1,6 @@
 from modelx.serialize.jsonvalues import *
 
-_formula = lambda date_id, space_name: None
+_formula = lambda mp_file_id, space_name: None
 
 _bases = []
 
@@ -14,8 +14,8 @@ _spaces = []
 def model_point_table():
 
     dir_name: str = base_data.const_params().at["model_point_dir", "value"]
-    file_name: str = (base_data.const_params().at["model_point_file_stem", "value"]
-                      + "_" + space_name + "_" + date_id + ".csv")
+    file_name: str = (base_data.const_params().at["model_point_file_prefix", "value"]
+                      + "_" + mp_file_id + "_" + space_name + ".csv")
 
     return pd.read_csv(_model.path.parent / dir_name / file_name, index_col="point_id", parse_dates=["entry_date"])
 
