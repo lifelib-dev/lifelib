@@ -420,6 +420,13 @@ def inflation_rate():
     return 0.01
 
 
+def is_active(t):
+    if duration_mth(t) < 0 or duration_mth(t) > policy_term() * 12:
+        return False
+    else:
+        return True
+
+
 def lapse_rate(t):
     """Lapse rate
 
@@ -564,7 +571,10 @@ def policy_term():
 
 def pols_death(t):
     """Number of death occurring at time t"""
-    return pols_if_at(t, "BEF_DECR") * mort_rate_mth(t)
+    if is_active(t):
+        return pols_if_at(t, "BEF_DECR") * mort_rate_mth(t)
+    else:
+        return 0.0
 
 
 def pols_if(t):
@@ -621,7 +631,10 @@ def pols_if_at(t, timing):
         * :func:`pols_if`
 
     """
-    if timing == "BEF_MAT":
+    if not is_active(t):
+        return 0.0
+
+    elif timing == "BEF_MAT":
 
         if t == 0:
             return pols_if_init()
@@ -660,7 +673,10 @@ def pols_lapse(t):
         * :func:`lapse_rate`
 
     """
-    return (pols_if_at(t, "BEF_DECR") - pols_death(t)) * (1-(1 - lapse_rate(t))**(1/12))
+    if is_active(t):
+        return (pols_if_at(t, "BEF_DECR") - pols_death(t)) * (1-(1 - lapse_rate(t))**(1/12))
+    else:
+        return 0.0
 
 
 def pols_maturity(t):
