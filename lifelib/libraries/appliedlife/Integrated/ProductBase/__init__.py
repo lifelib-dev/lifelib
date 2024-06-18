@@ -1065,7 +1065,7 @@ def maint_fee_pp(t):
         * :func:`av_pp_at`
 
     """
-    return maint_fee_rate() * av_pp_at(t, "BEF_FEE")
+    return maint_fee_rate() / 12 * av_pp_at(t, "BEF_FEE")
 
 
 def maint_fee_rate():
