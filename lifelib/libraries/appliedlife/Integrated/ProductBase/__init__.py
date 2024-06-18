@@ -947,7 +947,7 @@ def inv_return_mth(t):
     """
     date_id = fixed_params()["date_id"]
     sens = fixed_params()["sens_int_rate"]
-    ret_t = scen_data(date_id, sens).scenarios().loc(axis=0)[:, t]
+    ret_t = scen_data(date_id, sens).return_mth().loc(axis=0)[:, t]
 
     ret_t = pd.DataFrame(
             np.tile(ret_t.values, (len(model_point_table_ext()), 1)),
@@ -1877,6 +1877,7 @@ def result_sample(point_id=1, scen=1):
         "blank",
 
         # Per policy Values
+        ["av_pp_at", "BEF_PREM"],
         "premiums",
         "inv_income_pp",
         ["claim_pp", "DEATH"],
@@ -1938,7 +1939,7 @@ def result_sample(point_id=1, scen=1):
 def scen_index():
     date_id = fixed_params()["date_id"]
     sens = fixed_params()["sens_int_rate"]
-    return scen_data(date_id, sens).scenarios().loc(axis=0)[:, 0].index.get_level_values('scen')
+    return scen_data(date_id, sens).return_mth().loc(axis=0)[:, 0].index.get_level_values('scen')
 
 
 def sex():

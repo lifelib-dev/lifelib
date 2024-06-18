@@ -35,7 +35,7 @@ scen_index = lambda: pd.MultiIndex.from_product(
     [range(1, scen_size() + 1), range(12 * scen_len())],
     names=["scen", "t"])
 
-def scenarios():
+def log_return_mth():
 
     # Initialize random number generator
     rng = np.random.default_rng(12345)
@@ -82,6 +82,10 @@ def index_count():
 
 def mth_index():
     return scenarios()
+
+
+def return_mth():
+    return np.exp(log_return_mth()) - 1
 
 
 # ---------------------------------------------------------------------------
