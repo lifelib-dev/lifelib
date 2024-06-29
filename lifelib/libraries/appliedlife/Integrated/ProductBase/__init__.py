@@ -407,6 +407,33 @@ def av_pp_init():
     return model_point()["av_pp_init"].values
 
 
+def base_lapse_rate(t):
+    """Lapse rate
+
+    By default, the lapse rate assumption is defined by duration as::
+
+        max(0.1 - 0.01 * duration(t), 0.02)
+
+    .. seealso::
+
+        :func:`duration`
+
+    """
+    # if has_lapse():
+
+    #     if is_lapse_dynamic():
+    #         factor = csv_pp(t) / sum_assured()
+    #     else:
+    #         factor = 1
+
+    #     return factor * np.maximum(0.1 - 0.01 * duration(t), 0.02)
+    # else:
+    #     return pd.Series(0, index=model_point().index).values
+
+    date_id = fixed_params()["date_id"]
+    return asmp_data(date_id).stacked_lapse_tables().reindex(lapse_rate_key(t)).values
+
+
 def check_av_roll_fwd():
     """Check account value roll-forward
 
@@ -432,6 +459,24 @@ def check_av_roll_fwd():
         * :func:`claims_from_av`
 
     """
+    # for t in range(max_proj_len()):
+
+    #     av = (av_at(t, "BEF_MAT")
+    #           + prem_to_av(t)
+    #           - maint_fee(t)
+    #           - coi(t)
+    #           + inv_income(t)
+    #           - claims_from_av(t, "DEATH")
+    #           - claims_from_av(t, "LAPSE")
+    #           - claims_from_av(t, "MATURITY"))
+
+    #     if np.all(np.isclose(av_at(t+1, "BEF_MAT"), av)):
+    #         continue
+    #     else:
+    #         return False
+
+    # return True
+    cols = []
     for t in range(max_proj_len()):
 
         av = (av_at(t, "BEF_MAT")
@@ -443,12 +488,9 @@ def check_av_roll_fwd():
               - claims_from_av(t, "LAPSE")
               - claims_from_av(t, "MATURITY"))
 
-        if np.all(np.isclose(av_at(t+1, "BEF_MAT"), av)):
-            continue
-        else:
-            return False
+        cols.append(av_at(t+1, "BEF_MAT") - av)
 
-    return True
+    return np.column_stack(cols)
 
 
 def check_margin():
@@ -465,11 +507,26 @@ def check_margin():
         * :func:`margin_mortality`
 
     """
-    res = []
-    for t in range(max_proj_len()):
-        res.append(np.all(np.isclose(net_cf(t), margin_expense(t) + margin_mortality(t))))
+    # res = []
+    # for t in range(max_proj_len()):
+    #     res.append(np.all(np.isclose(net_cf(t), margin_expense(t) + margin_mortality(t))))
 
-    return all(res)
+    # return all(res)
+    cols = []
+    for t in range(max_proj_len()):
+
+        # av = (av_at(t, "BEF_MAT")
+        #       + prem_to_av(t)
+        #       - maint_fee(t)
+        #       - coi(t)
+        #       + inv_income(t)
+        #       - claims_from_av(t, "DEATH")
+        #       - claims_from_av(t, "LAPSE")
+        #       - claims_from_av(t, "MATURITY"))
+
+        cols.append(net_cf(t) - margin_expense(t) - margin_guarantee(t))
+
+    return np.column_stack(cols)
 
 
 def check_pv_net_cf():
@@ -485,10 +542,11 @@ def check_pv_net_cf():
         * :func:`pv_net_cf`
 
     """
-    cfs = np.array(list(net_cf(t) for t in range(max_proj_len()))).transpose()
-    pvs = cfs @ disc_factors()[:max_proj_len()]
+    # cfs = np.array(list(net_cf(t) for t in range(max_proj_len()))).transpose()
+    # pvs = cfs @ disc_factors()[:max_proj_len()]
 
-    return np.all(np.isclose(pvs, pv_net_cf()))
+    # return np.all(np.isclose(pvs, pv_net_cf()))
+    return pv_net_cf() - sum(net_cf(t) * disc_factors(t) for t in range(max_proj_len()))
 
 
 def claim_net_pp(t, kind):
@@ -529,13 +587,19 @@ def claim_pp(t, kind):
     """
 
     if kind == "DEATH":
-        return np.maximum(sum_assured(), av_pp_at(t, "MID_MTH"))
+        return np.where(has_gmdb() == True,
+                        np.maximum(sum_assured(), av_pp_at(t, "MID_MTH")),
+                        av_pp_at(t, "MID_MTH"))
+
+        # return np.maximum(sum_assured(), av_pp_at(t, "MID_MTH"))
 
     elif kind == "LAPSE":
         return av_pp_at(t, "MID_MTH")
 
     elif kind == "MATURITY":
-        return np.maximum(sum_assured(), av_pp_at(t, "BEF_PREM"))
+        return np.where(has_gmab() == True,
+                        np.maximum(sum_assured(), av_pp_at(t, "BEF_PREM")),
+                        av_pp_at(t, "BEF_PREM"))
 
     else:
         raise ValueError("invalid kind")
@@ -793,6 +857,57 @@ def duration_mth(t):
         return duration_mth(t-1) + 1
 
 
+def duration_mth_init():
+
+    date_start = fixed_params()["base_date"] + pd.Timedelta(days=1)
+    entry_date = model_point()["entry_date"]
+
+    return (date_start.year * 12 + date_start.month 
+            - entry_date.dt.year * 12 - entry_date.dt.month)
+
+
+def dyn_lapse_factor(t):
+
+    # date_id = fixed_params()["date_id"]
+    # params = asmp_data[date_id].dyn_lapse_params().reindex(model_point()["dyn_lapse_param_id"].values)
+
+    min_ = np.minimum
+    max_ = np.maximum
+
+    def factor_DL001(itm):
+
+        U = dyn_lapse_param()["U"].values
+        L = dyn_lapse_param()["L"].values
+        M = dyn_lapse_param()["M"].values
+        D = dyn_lapse_param()["D"].values
+
+        return min_(U, max_(L, 1 - M * (1/itm - D)))
+
+    def factor_DL002(itm):
+
+        Cap = dyn_lapse_param()["FactorCap"].values
+        Floor = dyn_lapse_param()["FactorFloor"].values
+        Y = dyn_lapse_param()["Y"].values
+        Power = dyn_lapse_param()["Power"].values
+
+        return min_(Cap, max_(Floor, Y * (itm**Power)))
+
+    # return params
+    formula = dyn_lapse_param()["formula_id"]
+    itm = av_pp_at(t, "MID_MTH") / sum_assured()
+
+    return np.where(formula == "DL001", 
+                    factor_DL001(itm), 
+                    np.where(formula == "DL002",
+                              factor_DL002(itm), np.nan))
+
+
+def dyn_lapse_param():
+
+    date_id = fixed_params()["date_id"]
+    return asmp_data[date_id].dyn_lapse_params().reindex(model_point()["dyn_lapse_param_id"].values)
+
+
 def excel_sample(point_id=1, scen=1):
 
     import xlwings as xw
@@ -855,6 +970,16 @@ def fixed_params():
     space_params = base_data.space_params().loc[_space.name].loc[space_param_names]
 
     return pd.concat([const_params, run_params, space_params])
+
+
+def has_gmab():
+
+    return model_point()["has_gmab"]
+
+
+def has_gmdb():
+
+    return model_point()["has_gmdb"]
 
 
 def has_surr_charge():
@@ -1112,7 +1237,7 @@ def margin_expense(t):
             - expenses(t))
 
 
-def margin_mortality(t):
+def margin_guarantee(t):
     """Mortality margin
 
     Mortality margin is defined :func:`coi` net of :func:`claims_over_av`.
@@ -1126,7 +1251,7 @@ def margin_mortality(t):
         * :func:`claims_over_av`
 
     """
-    return coi(t) - claims_over_av(t, 'DEATH')
+    return coi(t) - claims_over_av(t, 'DEATH') - claims_over_av(t, 'MATURITY')
 
 
 max_proj_len = lambda: max(proj_len())
@@ -2027,84 +2152,6 @@ def surr_charge_rate(t):
     return base_data.stacked_surr_charge_tables().reindex(
         surr_charge_key(t), fill_value=0).set_axis(
         model_point().index).values
-
-
-def duration_mth_init():
-
-    date_start = fixed_params()["base_date"] + pd.Timedelta(days=1)
-    entry_date = model_point()["entry_date"]
-
-    return (date_start.year * 12 + date_start.month 
-            - entry_date.dt.year * 12 - entry_date.dt.month)
-
-
-def base_lapse_rate(t):
-    """Lapse rate
-
-    By default, the lapse rate assumption is defined by duration as::
-
-        max(0.1 - 0.01 * duration(t), 0.02)
-
-    .. seealso::
-
-        :func:`duration`
-
-    """
-    # if has_lapse():
-
-    #     if is_lapse_dynamic():
-    #         factor = csv_pp(t) / sum_assured()
-    #     else:
-    #         factor = 1
-
-    #     return factor * np.maximum(0.1 - 0.01 * duration(t), 0.02)
-    # else:
-    #     return pd.Series(0, index=model_point().index).values
-
-    date_id = fixed_params()["date_id"]
-    return asmp_data(date_id).stacked_lapse_tables().reindex(lapse_rate_key(t)).values
-
-
-def dyn_lapse_factor(t):
-
-    # date_id = fixed_params()["date_id"]
-    # params = asmp_data[date_id].dyn_lapse_params().reindex(model_point()["dyn_lapse_param_id"].values)
-
-    min_ = np.minimum
-    max_ = np.maximum
-
-    def factor_DL001(itm):
-
-        U = dyn_lapse_param()["U"].values
-        L = dyn_lapse_param()["L"].values
-        M = dyn_lapse_param()["M"].values
-        D = dyn_lapse_param()["D"].values
-
-        return min_(U, max_(L, 1 - M * (1/itm - D)))
-
-    def factor_DL002(itm):
-
-        Cap = dyn_lapse_param()["FactorCap"].values
-        Floor = dyn_lapse_param()["FactorFloor"].values
-        Y = dyn_lapse_param()["Y"].values
-        Power = dyn_lapse_param()["Power"].values
-
-        return min_(Cap, max_(Floor, Y * (itm**Power)))
-
-    # return params
-    formula = dyn_lapse_param()["formula_id"]
-    itm = av_pp_at(t, "MID_MTH") / sum_assured()
-
-    return np.where(formula == "DL001", 
-                    factor_DL001(itm), 
-                    np.where(formula == "DL002",
-                              factor_DL002(itm), np.nan))
-
-
-def dyn_lapse_param():
-
-    date_id = fixed_params()["date_id"]
-    return asmp_data[date_id].dyn_lapse_params().reindex(model_point()["dyn_lapse_param_id"].values)
 
 
 # ---------------------------------------------------------------------------
