@@ -66,7 +66,7 @@ def lapse_len():
 
 def mort_scalar_len():
     """Duration length of the mortality scalar table"""
-    return len(mort_scalar())
+    return len(mort_scalar_tables())
 
 
 def stacked_lapse_tables():
