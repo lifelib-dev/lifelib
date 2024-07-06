@@ -213,19 +213,7 @@ def base_lapse_rate(t):
         :func:`duration`
 
     """
-    # if has_lapse():
-
-    #     if is_lapse_dynamic():
-    #         factor = csv_pp(t) / sum_assured()
-    #     else:
-    #         factor = 1
-
-    #     return factor * np.maximum(0.1 - 0.01 * duration(t), 0.02)
-    # else:
-    #     return pd.Series(0, index=model_point().index).values
-
-    asmp_id = fixed_params()["asmp_id"]
-    return asmp_data(asmp_id).stacked_lapse_tables().reindex(lapse_rate_key(t)).values
+    return asmp_data(asmp_id()).stacked_lapse_tables().reindex(lapse_rate_key(t)).values
 
 
 def check_av_roll_fwd():
@@ -698,8 +686,7 @@ def dyn_lapse_factor(t):
 
 def dyn_lapse_param():
 
-    asmp_id = fixed_params()["asmp_id"]
-    return asmp_data[asmp_id].dyn_lapse_params().reindex(model_point()["dyn_lapse_param_id"].values)
+    return asmp_data(asmp_id()).dyn_lapse_params().reindex(model_point()["dyn_lapse_param_id"].values)
 
 
 def excel_sample(point_id=1, scen=1):
@@ -939,8 +926,7 @@ def lapse_rate(t):
 
 def lapse_rate_key(t):
 
-    asmp_id = fixed_params()["asmp_id"]
-    duration_cap = asmp_data(asmp_id).lapse_len()
+    duration_cap = asmp_data(asmp_id()).lapse_len()
 
     return pd.MultiIndex.from_arrays(
         [model_point()["lapse_id"], np.minimum(duration(t), duration_cap)],
@@ -1953,8 +1939,8 @@ def surr_charge_rate(t):
 
 def mort_scalar_key(t):
 
-    asmp_id = fixed_params()["asmp_id"]
-    duration_cap = asmp_data(asmp_id).mort_scalar_len()
+
+    duration_cap = asmp_data(asmp_id()).mort_scalar_len()
 
     return pd.MultiIndex.from_arrays(
         [model_point()["mort_scalar_id"], np.minimum(duration(t), duration_cap)],
@@ -1973,23 +1959,15 @@ def mort_scalar(t):
         :func:`duration`
 
     """
-    # if has_lapse():
-
-    #     if is_lapse_dynamic():
-    #         factor = csv_pp(t) / sum_assured()
-    #     else:
-    #         factor = 1
-
-    #     return factor * np.maximum(0.1 - 0.01 * duration(t), 0.02)
-    # else:
-    #     return pd.Series(0, index=model_point().index).values
-
-    asmp_id = fixed_params()["asmp_id"]
-    return asmp_data(asmp_id).stacked_mort_scalar_tables().reindex(mort_scalar_key(t)).values
+    return asmp_data(asmp_id()).stacked_mort_scalar_tables().reindex(mort_scalar_key(t)).values
 
 
 def mort_rate(t):
     return mort_scalar(t) * base_mort_rate(t)
+
+
+def asmp_id():
+    return fixed_params()["asmp_id"]
 
 
 # ---------------------------------------------------------------------------
