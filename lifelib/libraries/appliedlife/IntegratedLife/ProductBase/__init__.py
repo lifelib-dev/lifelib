@@ -586,10 +586,9 @@ def disc_factors(t):
 
 
 def disc_rate(t):
-    date_id = fixed_params()['date_id']
     scen = fixed_params()['sens_int_rate']
     curr = fixed_params()['currency']
-    return scen_data(date_id, scen).spot_rates().at[t//12, curr]
+    return scen_data(date_id(), scen).spot_rates().at[t//12, curr]
 
 
 def disc_rate_mth(t):
@@ -649,9 +648,6 @@ def duration_mth_init():
 
 
 def dyn_lapse_factor(t):
-
-    # date_id = fixed_params()["date_id"]
-    # params = asmp_data[date_id].dyn_lapse_params().reindex(model_point()["dyn_lapse_param_id"].values)
 
     min_ = np.minimum
     max_ = np.maximum
@@ -851,9 +847,8 @@ def inv_return_mth(t):
         * :attr:`scen_id`
 
     """
-    date_id = fixed_params()["date_id"]
     sens = fixed_params()["sens_int_rate"]
-    ret_t = scen_data(date_id, sens).return_mth().loc(axis=0)[:, t]
+    ret_t = scen_data(date_id(), sens).return_mth().loc(axis=0)[:, t]
 
     ret_t = pd.DataFrame(
             np.tile(ret_t.values, (len(model_point_table_ext()), 1)),
@@ -901,20 +896,6 @@ def lapse_rate(t):
         :func:`duration`
 
     """
-    # if has_lapse():
-
-    #     if is_lapse_dynamic():
-    #         factor = csv_pp(t) / sum_assured()
-    #     else:
-    #         factor = 1
-
-    #     return factor * np.maximum(0.1 - 0.01 * duration(t), 0.02)
-    # else:
-    #     return pd.Series(0, index=model_point().index).values
-
-    # date_id = fixed_params()["date_id"]
-    # return asmp_data(date_id).stacked_lapse_tables().reindex(lapse_rate_key(t)).values
-
     if is_lapse_dynamic():
 
         floor = model_point()["dyn_lapse_floor"].values
@@ -1845,9 +1826,8 @@ def result_sample(point_id=1, scen=1):
 
 
 def scen_index():
-    date_id = fixed_params()["date_id"]
     sens = fixed_params()["sens_int_rate"]
-    return scen_data(date_id, sens).return_mth().loc(axis=0)[:, 0].index.get_level_values('scen')
+    return scen_data(date_id(), sens).return_mth().loc(axis=0)[:, 0].index.get_level_values('scen')
 
 
 def sex():
@@ -1968,6 +1948,10 @@ def mort_rate(t):
 
 def asmp_id():
     return fixed_params()["asmp_id"]
+
+
+def date_id():
+    return fixed_params()["date_id"]
 
 
 # ---------------------------------------------------------------------------
