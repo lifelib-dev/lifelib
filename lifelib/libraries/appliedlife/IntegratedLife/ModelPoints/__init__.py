@@ -16,7 +16,7 @@ Attributes:
 
 Attributes:
 
-    base_data: Reference to the :mod:`~appliedlife.LifeIntegra.BaseData` space
+    base_data: Reference to the :mod:`~appliedlife.IntegratedLife.BaseData` space
 
 """
 
@@ -40,12 +40,12 @@ def model_point_table():
     The model point table is for a product space identified by :attr:`space_name`.
     By default, a CSV file is expected for the model point file.
     The path to the model point file is obtained from the value of the "model_point_dir"
-    parameter in :func:`~appliedlife.LifeIntegra.BaseData.const_params`.
+    parameter in :func:`~appliedlife.IntegratedLife.BaseData.const_params`.
 
     The file name is constructed using a prefix, :attr:`mp_file_id` and :attr:`space_name`,
     all concatenated by underscores, followed by ".csv".
     The prefix is obtained from the value of the "model_point_file_prefix" parameter
-    in :func:`~appliedlife.LifeIntegra.BaseData.const_params`.
+    in :func:`~appliedlife.IntegratedLife.BaseData.const_params`.
     """
     dir_name: str = base_data.const_params().at["model_point_dir", "value"]
     file_name: str = (base_data.const_params().at["model_point_file_prefix", "value"]
@@ -60,7 +60,7 @@ def model_point_table_ext():
     Append product parameter columns to the raw model point table returned by
     :func:`model_point_table`.
     The product parameters are obtained by passing :attr:`space_name` to
-    :func:`~appliedlife.LifeIntegra.BaseData.product_params`.
+    :func:`~appliedlife.IntegratedLife.BaseData.product_params`.
     For each model point row in the raw model point table, a corresponding row that has
     matching "product_id" and "plan_id" values is appended.
     """

@@ -1,10 +1,10 @@
 The **Run** Space
 ==========================
 
-.. automodule:: appliedlife.LifeIntegra.Run
+.. automodule:: appliedlife.IntegratedLife.Run
 
 
 The **GMXB** Space
 ----------------------
 
-.. automodule:: appliedlife.LifeIntegra.Run.GMXB
+.. automodule:: appliedlife.IntegratedLife.Run.GMXB

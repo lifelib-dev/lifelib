@@ -2,7 +2,7 @@
 The **BaseData** Space
 ==========================
 
-.. automodule:: appliedlife.LifeIntegra.BaseData
+.. automodule:: appliedlife.IntegratedLife.BaseData
 
 
 

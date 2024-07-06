@@ -1,7 +1,7 @@
 The **Scenarios** Space
 ==========================
 
-.. automodule:: appliedlife.LifeIntegra.Scenarios
+.. automodule:: appliedlife.IntegratedLife.Scenarios
 
 
 Formulas

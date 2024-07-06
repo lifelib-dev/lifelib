@@ -1,7 +1,7 @@
 The **ModelPoints** Space
 ==========================
 
-.. automodule:: appliedlife.LifeIntegra.ModelPoints
+.. automodule:: appliedlife.IntegratedLife.ModelPoints
 
 
 Formulas

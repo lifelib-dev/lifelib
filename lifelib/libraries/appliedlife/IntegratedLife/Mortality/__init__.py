@@ -4,12 +4,12 @@ The Mortality space reads mortality tables from a mortality file
 and creates a unified mortality table as a pandas Series
 indexed with Table ID, Attained Age and Duration.
 
-This space is referenced as :attr:`~appliedlife.LifeIntegra.ProductBase.mort_data`
-in the :mod:`~appliedlife.LifeIntegra.ProductBase` space.
+This space is referenced as :attr:`~appliedlife.IntegratedLife.ProductBase.mort_data`
+in the :mod:`~appliedlife.IntegratedLife.ProductBase` space.
 
 Attributes:
 
-    base_data: Reference to the :mod:`~appliedlife.LifeIntegra.BaseData` space
+    base_data: Reference to the :mod:`~appliedlife.IntegratedLife.BaseData` space
 
 """
 

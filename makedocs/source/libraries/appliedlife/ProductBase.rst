@@ -2,7 +2,7 @@ The **ProductBase** Space
 ==========================
 
 
-.. automodule:: appliedlife.LifeIntegra.ProductBase
+.. automodule:: appliedlife.IntegratedLife.ProductBase
 
 
 

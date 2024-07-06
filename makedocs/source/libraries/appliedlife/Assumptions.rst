@@ -2,7 +2,7 @@
 The **Assumptions** Space
 ==========================
 
-.. automodule:: appliedlife.LifeIntegra.Assumptions
+.. automodule:: appliedlife.IntegratedLife.Assumptions
 
 
 Formulas

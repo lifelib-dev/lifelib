@@ -2,7 +2,7 @@ The **Mortality** Space
 ==========================
 
 
-.. automodule:: appliedlife.LifeIntegra.Mortality
+.. automodule:: appliedlife.IntegratedLife.Mortality
 
 
 Formulas

@@ -15,7 +15,7 @@ Each product space has product parameters.
 The values of product parameters vary by "product_id" and "plan_id"
 defined for the product space.
 Product parameters are appended to the model point table for the product space
-in :func:`~appliedlife.LifeIntegra.ModelPoints.model_point_table_ext`.
+in :func:`~appliedlife.IntegratedLife.ModelPoints.model_point_table_ext`.
 
 Other spaces reference this space as ``base_data`` as a convention.
 

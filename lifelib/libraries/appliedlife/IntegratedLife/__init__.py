@@ -1,6 +1,6 @@
 from modelx.serialize.jsonvalues import *
 
-_name = "LifeIntegra"
+_name = "IntegratedLife"
 
 _allow_none = False
 

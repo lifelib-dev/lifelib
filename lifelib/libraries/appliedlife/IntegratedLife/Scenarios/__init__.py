@@ -32,7 +32,7 @@ Attributes:
 
 Attributes:
 
-    base_data: Reference to the :mod:`~appliedlife.LifeIntegra.BaseData` space
+    base_data: Reference to the :mod:`~appliedlife.IntegratedLife.BaseData` space
 
 """
 

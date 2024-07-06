@@ -14,10 +14,10 @@ The **appliedlife** Library
 Overview
 -----------
 
-The **appliedlife** library features :mod:`~appliedlife.LifeIntegra`, a comprehensive and practical projection model
+The **appliedlife** library features :mod:`~appliedlife.IntegratedLife`, a comprehensive and practical projection model
 designed for real-world actuarial tasks.
 
-The :mod:`~appliedlife.LifeIntegra` model offers several key features:
+The :mod:`~appliedlife.IntegratedLife` model offers several key features:
 
 * **Multiple Products:** The model currently supports VA GMAB and GMDB products,
   with plans to add more in future releases.
@@ -35,10 +35,10 @@ The :mod:`~appliedlife.LifeIntegra` model offers several key features:
 * **Excel Output:** Output projection results of a sample model point directly
   to Excel using `xlwings`_.
 
-The cashflow logic in :mod:`~appliedlife.LifeIntegra` is based on the :mod:`~savings.CashValue_ME` model
+The cashflow logic in :mod:`~appliedlife.IntegratedLife` is based on the :mod:`~savings.CashValue_ME` model
 from the :mod:`savings` library, with several enhancements.
 
-See :mod:`~appliedlife.LifeIntegra` for more details.
+See :mod:`~appliedlife.IntegratedLife` for more details.
 
 .. _xlwings:
    https://www.xlwings.org/
@@ -56,8 +56,8 @@ under the path *C:\\path\\to\\your\\*, type below in an IPython console::
     >>> lifelib.create("appliedlife", r"C:\path\to\your\applifedlife")
 
 
-:mod:`~appliedlife.LifeIntegra` uses `xlwings`_ in
-:func:`ProductBase.excel_sample <appliedlife.LifeIntegra.ProductBase.excel_sample>`.
+:mod:`~appliedlife.IntegratedLife` uses `xlwings`_ in
+:func:`ProductBase.excel_sample <appliedlife.IntegratedLife.ProductBase.excel_sample>`.
 If not yet installed, install it using ``pip`` or ``conda``.
 
 .. seealso::
@@ -71,7 +71,7 @@ Library Contents
    :hidden:
    :maxdepth: 1
 
-   LifeIntegra
+   IntegratedLife
 
 .. table::
    :widths: 20 80
@@ -79,8 +79,8 @@ Library Contents
    ========================================= ===========================================================================
    File or Folder                            Description
    ========================================= ===========================================================================
-   LifeIntegra                               The :mod:`~appliedlife.LifeIntegra` model.
-   model_parameters.xlsx                     The parameter file of :mod:`~appliedlife.LifeIntegra`
+   IntegratedLife                               The :mod:`~appliedlife.IntegratedLife` model.
+   model_parameters.xlsx                     The parameter file of :mod:`~appliedlife.IntegratedLife`
    input_tables                              Folder containing sample assumptions, mortality tables and product specs
    economic_data                             Folder containing economic data files
    model_point_data                          Folder containing model point files
