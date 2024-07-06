@@ -29,6 +29,7 @@ independent of modelx using modelx's export feature.
 
    basiclife/index.rst
    savings/index.rst
+   appliedlife/index.rst
    assets/index.rst
    ifrs17a/index.md
    economic/index.rst

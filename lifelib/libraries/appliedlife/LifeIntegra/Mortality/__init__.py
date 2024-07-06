@@ -1,3 +1,18 @@
+"""Mortality tables
+
+The Mortality space reads mortality tables from a mortality file
+and creates a unified mortality table as a pandas Series
+indexed with Table ID, Attained Age and Duration.
+
+This space is referenced as :attr:`~appliedlife.LifeIntegra.ProductBase.mort_data`
+in the :mod:`~appliedlife.LifeIntegra.ProductBase` space.
+
+Attributes:
+
+    base_data: Reference to the :mod:`~appliedlife.LifeIntegra.BaseData` space
+
+"""
+
 from modelx.serialize.jsonvalues import *
 
 _formula = None
@@ -12,7 +27,7 @@ _spaces = []
 # Cells
 
 def table_defs():
-
+    """Table definitions"""
     df = pd.read_excel(
         mort_file(), 
         sheet_name="TableDefs",
@@ -22,7 +37,7 @@ def table_defs():
 
 
 def select_table(table_id: str):
-    "Reads a select mortality table with the given table ID"
+    """Reads a select mortality table with the given table ID"""
     df = pd.read_excel(
         mort_file(),
         sheet_name=table_id,
@@ -32,7 +47,7 @@ def select_table(table_id: str):
 
 
 def ultimate_tables():
-    "Reads the ultimate mortality tables"
+    """Reads the ultimate mortality tables"""
     df = pd.read_excel(
         mort_file(),
         sheet_name="Ultimate",
@@ -42,7 +57,7 @@ def ultimate_tables():
 
 
 def select_duration_len():
-
+    """Selection period length"""
     ids = table_defs().index
     dur_len = []
     for id_ in ids:
@@ -55,7 +70,7 @@ def select_duration_len():
 
 
 def merged_table(table_id: str):
-
+    """Merged mortality table for a given table ID"""
     has_select = table_defs().at[table_id, "has_select"]
     has_ultimate = table_defs().at[table_id, "has_ultimate"]
 
@@ -89,6 +104,7 @@ def merged_table(table_id: str):
 
 
 def unified_table():
+    """Unified mortality table"""
     return pd.concat(
         {id_: merged_table(id_) for id_ in table_defs().index},
         names = ["table_id"]
@@ -96,7 +112,7 @@ def unified_table():
 
 
 def mort_file():
-
+    """Mortality table file"""
     dir_ = base_data.const_params().at["table_dir", "value"]
     file = base_data.const_params().at["mort_file", "value"]
 
@@ -104,6 +120,7 @@ def mort_file():
 
 
 def table_last_age():
+    """Mortality table last age"""
     return unified_table().index.to_frame(index=False).groupby("table_id")["att_age"].max()
 
 
