@@ -26,49 +26,6 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
-def table_defs():
-    """Table definitions"""
-    df = pd.read_excel(
-        mort_file(), 
-        sheet_name="TableDefs",
-        index_col=0)
-
-    return df.loc[df["is_used"] == True]
-
-
-def select_table(table_id: str):
-    """Reads a select mortality table with the given table ID"""
-    df = pd.read_excel(
-        mort_file(),
-        sheet_name=table_id,
-        index_col=0)
-    df.columns = range(len(df.columns))
-    return df
-
-
-def ultimate_tables():
-    """Reads the ultimate mortality tables"""
-    df = pd.read_excel(
-        mort_file(),
-        sheet_name="Ultimate",
-        index_col=0)
-    df.index.name = "att_age"
-    return df
-
-
-def select_duration_len():
-    """Selection period length"""
-    ids = table_defs().index
-    dur_len = []
-    for id_ in ids:
-        if table_defs().at[id_, "has_select"]:
-            dur_len.append(len(select_table(id_).columns))
-        else:
-            dur_len.append(0)  # 0 for ultimate only
-
-    return pd.Series(dur_len, index=ids)
-
-
 def merged_table(table_id: str):
     """Merged mortality table for a given table ID"""
     has_select = table_defs().at[table_id, "has_select"]
@@ -103,14 +60,6 @@ def merged_table(table_id: str):
         raise ValueError(f"Table {table_id} neither has select nor ultimate")
 
 
-def unified_table():
-    """Unified mortality table"""
-    return pd.concat(
-        {id_: merged_table(id_) for id_ in table_defs().index},
-        names = ["table_id"]
-        )
-
-
 def mort_file():
     """Mortality table file"""
     dir_ = base_data.const_params().at["table_dir", "value"]
@@ -119,9 +68,60 @@ def mort_file():
     return _model.path.parent / dir_ / file
 
 
+def select_duration_len():
+    """Selection period length"""
+    ids = table_defs().index
+    dur_len = []
+    for id_ in ids:
+        if table_defs().at[id_, "has_select"]:
+            dur_len.append(len(select_table(id_).columns))
+        else:
+            dur_len.append(0)  # 0 for ultimate only
+
+    return pd.Series(dur_len, index=ids)
+
+
+def select_table(table_id: str):
+    """Reads a select mortality table with the given table ID"""
+    df = pd.read_excel(
+        mort_file(),
+        sheet_name=table_id,
+        index_col=0)
+    df.columns = range(len(df.columns))
+    return df
+
+
+def table_defs():
+    """Table definitions"""
+    df = pd.read_excel(
+        mort_file(), 
+        sheet_name="TableDefs",
+        index_col=0)
+
+    return df.loc[df["is_used"] == True]
+
+
 def table_last_age():
     """Mortality table last age"""
     return unified_table().index.to_frame(index=False).groupby("table_id")["att_age"].max()
+
+
+def ultimate_tables():
+    """Reads the ultimate mortality tables"""
+    df = pd.read_excel(
+        mort_file(),
+        sheet_name="Ultimate",
+        index_col=0)
+    df.index.name = "att_age"
+    return df
+
+
+def unified_table():
+    """Unified mortality table"""
+    return pd.concat(
+        {id_: merged_table(id_) for id_ in table_defs().index},
+        names = ["table_id"]
+        )
 
 
 # ---------------------------------------------------------------------------

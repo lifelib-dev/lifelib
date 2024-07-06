@@ -40,6 +40,10 @@ def age_at_entry():
     return model_point()["age_at_entry"].values
 
 
+def asmp_id():
+    return fixed_params()["asmp_id"]
+
+
 def av_at(t, timing):
     """Account value in-force
 
@@ -214,6 +218,42 @@ def base_lapse_rate(t):
 
     """
     return asmp_data(asmp_id()).stacked_lapse_tables().reindex(lapse_rate_key(t)).values
+
+
+def base_mort_rate(t):
+    """Mortality rate to be applied at time t
+
+    Returns a Series of the mortality rates to be applied at time t.
+    The index of the Series is ``point_id``,
+    copied from :func:`model_point`.
+
+    .. seealso::
+
+       * :func:`mort_table_reindexed`
+       * :func:`mort_rate_mth`
+       * :func:`model_point`
+
+    """
+
+    # mi is a MultiIndex whose values are
+    # pairs of age at t and duration at t capped at 5 for all the model points.
+
+    # ``mort_table_reindexed().reindex(mi, fill_value=0)`` returns
+    # a Series of mortality rates whose indexes match the MultiIndex values.
+    # The ``set_axis`` method replace the MultiIndex with ``point_id``
+
+    # if has_mortality():
+
+    #     mi = pd.MultiIndex.from_arrays([age(t), np.minimum(duration(t), 5)])
+    #     return mort_table_reindexed().reindex(
+    #         mi, fill_value=0).set_axis(model_point().index).values
+
+    # else:
+    #     return pd.Series(0, index=model_point().index).values
+
+    return mort_data.unified_table().reindex(
+        mort_rate_key(t)
+        ).values
 
 
 def check_av_roll_fwd():
@@ -569,6 +609,10 @@ def commissions(t):
 def csv_pp(t):
 
     return (1 - surr_charge_rate(t)) * av_pp_at(t, 'MID_MTH')
+
+
+def date_id():
+    return fixed_params()["date_id"]
 
 
 def disc_factors(t):
@@ -1105,40 +1149,8 @@ def mort_last_age():
     return mort_data.table_last_age().reindex(mort_table_id()).values
 
 
-def base_mort_rate(t):
-    """Mortality rate to be applied at time t
-
-    Returns a Series of the mortality rates to be applied at time t.
-    The index of the Series is ``point_id``,
-    copied from :func:`model_point`.
-
-    .. seealso::
-
-       * :func:`mort_table_reindexed`
-       * :func:`mort_rate_mth`
-       * :func:`model_point`
-
-    """
-
-    # mi is a MultiIndex whose values are
-    # pairs of age at t and duration at t capped at 5 for all the model points.
-
-    # ``mort_table_reindexed().reindex(mi, fill_value=0)`` returns
-    # a Series of mortality rates whose indexes match the MultiIndex values.
-    # The ``set_axis`` method replace the MultiIndex with ``point_id``
-
-    # if has_mortality():
-
-    #     mi = pd.MultiIndex.from_arrays([age(t), np.minimum(duration(t), 5)])
-    #     return mort_table_reindexed().reindex(
-    #         mi, fill_value=0).set_axis(model_point().index).values
-
-    # else:
-    #     return pd.Series(0, index=model_point().index).values
-
-    return mort_data.unified_table().reindex(
-        mort_rate_key(t)
-        ).values
+def mort_rate(t):
+    return mort_scalar(t) * base_mort_rate(t)
 
 
 def mort_rate_key(t):
@@ -1160,6 +1172,31 @@ def mort_rate_mth(t):
 
     """
     return 1-(1- mort_rate(t))**(1/12)
+
+
+def mort_scalar(t):
+    """Lapse rate
+
+    By default, the lapse rate assumption is defined by duration as::
+
+        max(0.1 - 0.01 * duration(t), 0.02)
+
+    .. seealso::
+
+        :func:`duration`
+
+    """
+    return asmp_data(asmp_id()).stacked_mort_scalar_tables().reindex(mort_scalar_key(t)).values
+
+
+def mort_scalar_key(t):
+
+
+    duration_cap = asmp_data(asmp_id()).mort_scalar_len()
+
+    return pd.MultiIndex.from_arrays(
+        [model_point()["mort_scalar_id"], np.minimum(duration(t), duration_cap)],
+        names = ["mort_scalar_id", "duration"])
 
 
 def mort_table_id():
@@ -1915,43 +1952,6 @@ def surr_charge_rate(t):
     return base_data.stacked_surr_charge_tables().reindex(
         surr_charge_key(t), fill_value=0).set_axis(
         model_point().index).values
-
-
-def mort_scalar_key(t):
-
-
-    duration_cap = asmp_data(asmp_id()).mort_scalar_len()
-
-    return pd.MultiIndex.from_arrays(
-        [model_point()["mort_scalar_id"], np.minimum(duration(t), duration_cap)],
-        names = ["mort_scalar_id", "duration"])
-
-
-def mort_scalar(t):
-    """Lapse rate
-
-    By default, the lapse rate assumption is defined by duration as::
-
-        max(0.1 - 0.01 * duration(t), 0.02)
-
-    .. seealso::
-
-        :func:`duration`
-
-    """
-    return asmp_data(asmp_id()).stacked_mort_scalar_tables().reindex(mort_scalar_key(t)).values
-
-
-def mort_rate(t):
-    return mort_scalar(t) * base_mort_rate(t)
-
-
-def asmp_id():
-    return fixed_params()["asmp_id"]
-
-
-def date_id():
-    return fixed_params()["date_id"]
 
 
 # ---------------------------------------------------------------------------

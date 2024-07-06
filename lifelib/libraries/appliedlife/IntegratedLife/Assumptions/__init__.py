@@ -34,6 +34,27 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+def asmp_file():
+    """The file path to an assumption file"""
+
+    dir_ = base_data.const_params().at["table_dir", "value"]
+
+    return _model.path.parent / dir_ / ("assumptions_" + asmp_id + ".xlsx")
+
+
+def dyn_lapse_params():
+    """Dynamic lapse parameters"""
+    return pd.read_excel(
+        asmp_file(),
+        sheet_name="DynLapse",
+        index_col=0)
+
+
+def lapse_len():
+    """Duration length of the lapse table"""
+    return len(lapse_tables())
+
+
 def lapse_tables():
     """Lapse ratre assumptions"""
     return pd.read_excel(
@@ -42,12 +63,9 @@ def lapse_tables():
         index_col=0)
 
 
-def asmp_file():
-    """The file path to an assumption file"""
-
-    dir_ = base_data.const_params().at["table_dir", "value"]
-
-    return _model.path.parent / dir_ / ("assumptions_" + asmp_id + ".xlsx")
+def mort_scalar_len():
+    """Duration length of the mortality scalar table"""
+    return len(mort_scalar_tables())
 
 
 def mort_scalar_tables():
@@ -59,16 +77,6 @@ def mort_scalar_tables():
     return df
 
 
-def lapse_len():
-    """Duration length of the lapse table"""
-    return len(lapse_tables())
-
-
-def mort_scalar_len():
-    """Duration length of the mortality scalar table"""
-    return len(mort_scalar_tables())
-
-
 def stacked_lapse_tables():
     """Stacked lapse tables"""
     return lapse_tables().stack().swaplevel(0, 1).sort_index()
@@ -77,14 +85,6 @@ def stacked_lapse_tables():
 def stacked_mort_scalar_tables():
     """Stacked mortality scalar tables"""
     return mort_scalar_tables().stack().swaplevel(0, 1).sort_index()
-
-
-def dyn_lapse_params():
-    """Dynamic lapse parameters"""
-    return pd.read_excel(
-        asmp_file(),
-        sheet_name="DynLapse",
-        index_col=0)
 
 
 # ---------------------------------------------------------------------------

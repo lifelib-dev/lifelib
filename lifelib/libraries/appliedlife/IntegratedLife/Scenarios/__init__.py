@@ -49,23 +49,9 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
-def spot_rates():
-    """Spot interest rates by duration and currency
-
-    Reads annual spot interest rates for multiple currencies from an Excel file,
-    and returns them as a pandas DataFrame.
-    The index and columns of the DataFrame represents duration
-    years and currencies respectively
-
-    The directory of the Excel file is specified by the user as a constant
-    parameter named "scen_dir".
-    """
-
-    dir_name: str = base_data.const_params().at["scen_dir", "value"]
-    file_prefix: str = base_data.const_params().at["scen_file_prefix", "value"]
-
-    path = _model.path.parent / dir_name / f"{file_prefix}_{date_id}.xlsx"
-    return pd.read_excel(path, sheet_name=sens_id, index_col=0)
+def cont_fwd_rates():
+    """Continuous compound forward rates"""
+    return np.log(1 + forward_rates())
 
 
 def forward_rates():
@@ -78,21 +64,36 @@ def forward_rates():
     return df / df.shift(fill_value=1) - 1
 
 
+def index_count():
+    """The number of func indexes"""
+    return index_params().index.size
+
+
+def index_params():
+    """Fund index parameters
+
+    Reads fund index parameters from an Excel file,
+    and returns a DataFrame whose columns represents the parameters,
+    and whose index represents fund index IDs.
+    """
+
+    dir_name: str = base_data.const_params().at["scen_dir", "value"]
+    file_name: str = base_data.const_params().at["scen_param_file", "value"]
+
+    file = _model.path.parent / dir_name / file_name
+    df = pd.read_excel(file,
+                         sheet_name="Params",
+                         index_col=0)
+
+    return df.T.astype(
+        {"currency": "object", 
+         "return": "float64", 
+         "volatility": "float64"})
+
+
 def index_vols():
     """Volatilities of fund indexes"""
     return index_params()["volatility"]
-
-
-def scen_size():
-    """The number of scenarios"""
-    return 100
-
-
-def scen_index():
-    """pandas MultiIndex for the scenarios"""
-    return pd.MultiIndex.from_product(
-    [range(1, scen_size() + 1), range(12 * scen_len())],
-    names=["scen", "t"])
 
 
 def log_return_mth():
@@ -123,43 +124,6 @@ def log_return_mth():
     return pd.DataFrame(result, index=scen_index(), columns=index_params().index)
 
 
-def cont_fwd_rates():
-    """Continuous compound forward rates"""
-    return np.log(1 + forward_rates())
-
-
-def scen_len():
-    """The length of scenarios in years"""
-    return len(spot_rates())
-
-
-def index_params():
-    """Fund index parameters
-
-    Reads fund index parameters from an Excel file,
-    and returns a DataFrame whose columns represents the parameters,
-    and whose index represents fund index IDs.
-    """
-
-    dir_name: str = base_data.const_params().at["scen_dir", "value"]
-    file_name: str = base_data.const_params().at["scen_param_file", "value"]
-
-    file = _model.path.parent / dir_name / file_name
-    df = pd.read_excel(file,
-                         sheet_name="Params",
-                         index_col=0)
-
-    return df.T.astype(
-        {"currency": "object", 
-         "return": "float64", 
-         "volatility": "float64"})
-
-
-def index_count():
-    """The number of func indexes"""
-    return index_params().index.size
-
-
 def mth_index():
     return scenarios()
 
@@ -167,6 +131,42 @@ def mth_index():
 def return_mth():
     """Monthly index returns"""
     return np.exp(log_return_mth()) - 1
+
+
+def scen_index():
+    """pandas MultiIndex for the scenarios"""
+    return pd.MultiIndex.from_product(
+    [range(1, scen_size() + 1), range(12 * scen_len())],
+    names=["scen", "t"])
+
+
+def scen_len():
+    """The length of scenarios in years"""
+    return len(spot_rates())
+
+
+def scen_size():
+    """The number of scenarios"""
+    return 100
+
+
+def spot_rates():
+    """Spot interest rates by duration and currency
+
+    Reads annual spot interest rates for multiple currencies from an Excel file,
+    and returns them as a pandas DataFrame.
+    The index and columns of the DataFrame represents duration
+    years and currencies respectively
+
+    The directory of the Excel file is specified by the user as a constant
+    parameter named "scen_dir".
+    """
+
+    dir_name: str = base_data.const_params().at["scen_dir", "value"]
+    file_prefix: str = base_data.const_params().at["scen_file_prefix", "value"]
+
+    path = _model.path.parent / dir_name / f"{file_prefix}_{date_id}.xlsx"
+    return pd.read_excel(path, sheet_name=sens_id, index_col=0)
 
 
 # ---------------------------------------------------------------------------

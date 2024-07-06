@@ -43,33 +43,11 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
-def run_params():
-    """Run parameters"""
-    return pd.read_excel(_model.path.parent / parameter_file,
-                         sheet_name="RunParams",
-                         index_col="run_id",
-                         dtype={"date_id": object, "asmp_id": object})
-
-
 def const_params():
     """Constant parameters"""
     return pd.read_excel(_model.path.parent / parameter_file,
                          sheet_name="ConstParams",
                          index_col="parameter")
-
-
-def space_params():
-    """Space parameters"""
-    return pd.read_excel(_model.path.parent / parameter_file,
-                         sheet_name="SpaceParams",
-                         index_col="space")
-
-
-def product_params(space_name: str):
-    """Product parameters"""
-    return pd.read_excel(_model.path.parent / parameter_file,
-                         sheet_name=space_name,
-                         index_col=[0, 1])
 
 
 def param_list():
@@ -79,11 +57,26 @@ def param_list():
                          index_col="parameter")
 
 
-def surr_charge_tables():
-    """Surrender charge tables"""
-    dir_ = _model.path.parent / const_params().at["table_dir", "value"]
-    file = const_params().at["spec_tables", "value"]
-    return pd.read_excel(dir_ / file, sheet_name="SurrCharge", index_col=0)
+def product_params(space_name: str):
+    """Product parameters"""
+    return pd.read_excel(_model.path.parent / parameter_file,
+                         sheet_name=space_name,
+                         index_col=[0, 1])
+
+
+def run_params():
+    """Run parameters"""
+    return pd.read_excel(_model.path.parent / parameter_file,
+                         sheet_name="RunParams",
+                         index_col="run_id",
+                         dtype={"date_id": object, "asmp_id": object})
+
+
+def space_params():
+    """Space parameters"""
+    return pd.read_excel(_model.path.parent / parameter_file,
+                         sheet_name="SpaceParams",
+                         index_col="space")
 
 
 def stacked_surr_charge_tables():
@@ -94,6 +87,13 @@ def stacked_surr_charge_tables():
 def surr_charge_len():
     """Duration length of the surrender charge table"""
     return len(surr_charge_tables())
+
+
+def surr_charge_tables():
+    """Surrender charge tables"""
+    dir_ = _model.path.parent / const_params().at["table_dir", "value"]
+    file = const_params().at["spec_tables", "value"]
+    return pd.read_excel(dir_ / file, sheet_name="SurrCharge", index_col=0)
 
 
 # ---------------------------------------------------------------------------
