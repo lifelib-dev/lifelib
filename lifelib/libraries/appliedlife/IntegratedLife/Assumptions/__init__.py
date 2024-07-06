@@ -47,7 +47,7 @@ def asmp_file():
 
     dir_ = base_data.const_params().at["table_dir", "value"]
 
-    return _model.path.parent / dir_ / ("assumptions_" + date_id + ".xlsx")
+    return _model.path.parent / dir_ / ("assumptions_" + asmp_id + ".xlsx")
 
 
 def mort_scalar_tables():
@@ -92,4 +92,4 @@ def dyn_lapse_params():
 
 base_data = ("Interface", ("..", "BaseData"), "auto")
 
-date_id = "202312"
+asmp_id = "202312"

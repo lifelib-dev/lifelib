@@ -224,8 +224,8 @@ def base_lapse_rate(t):
     # else:
     #     return pd.Series(0, index=model_point().index).values
 
-    date_id = fixed_params()["date_id"]
-    return asmp_data(date_id).stacked_lapse_tables().reindex(lapse_rate_key(t)).values
+    asmp_id = fixed_params()["asmp_id"]
+    return asmp_data(asmp_id).stacked_lapse_tables().reindex(lapse_rate_key(t)).values
 
 
 def check_av_roll_fwd():
@@ -698,8 +698,8 @@ def dyn_lapse_factor(t):
 
 def dyn_lapse_param():
 
-    date_id = fixed_params()["date_id"]
-    return asmp_data[date_id].dyn_lapse_params().reindex(model_point()["dyn_lapse_param_id"].values)
+    asmp_id = fixed_params()["asmp_id"]
+    return asmp_data[asmp_id].dyn_lapse_params().reindex(model_point()["dyn_lapse_param_id"].values)
 
 
 def excel_sample(point_id=1, scen=1):
@@ -939,8 +939,8 @@ def lapse_rate(t):
 
 def lapse_rate_key(t):
 
-    date_id = fixed_params()["date_id"]
-    duration_cap = asmp_data(date_id).lapse_len()
+    asmp_id = fixed_params()["asmp_id"]
+    duration_cap = asmp_data(asmp_id).lapse_len()
 
     return pd.MultiIndex.from_arrays(
         [model_point()["lapse_id"], np.minimum(duration(t), duration_cap)],
@@ -1130,8 +1130,8 @@ def model_point_table_ext():
 
 
     """
-    date_id = fixed_params()["mp_file_id"]
-    return model_point_data(date_id, _space.name).model_point_table_ext()
+    mp_file_id = fixed_params()["mp_file_id"]
+    return model_point_data(mp_file_id, _space.name).model_point_table_ext()
 
 
 def mort_last_age():

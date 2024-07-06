@@ -48,7 +48,7 @@ def run_params():
     return pd.read_excel(_model.path.parent / parameter_file,
                          sheet_name="RunParams",
                          index_col="run_id",
-                         dtype={"date_id": object})
+                         dtype={"date_id": object, "asmp_id": object})
 
 
 def const_params():
