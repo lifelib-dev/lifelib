@@ -1048,7 +1048,10 @@ def margin_guarantee(t):
     return coi(t) - claims_over_av(t, 'DEATH') - claims_over_av(t, 'MATURITY')
 
 
-max_proj_len = lambda: max(proj_len())
+def max_proj_len():
+    """Maximum projection length"""
+    return max(proj_len())
+
 
 def model_point():
     """Target model points

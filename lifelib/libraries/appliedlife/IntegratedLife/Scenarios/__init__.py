@@ -83,11 +83,17 @@ def index_vols():
     return index_params()["volatility"]
 
 
-scen_size = lambda: 100
+def scen_size():
+    """The number of scenarios"""
+    return 100
 
-scen_index = lambda: pd.MultiIndex.from_product(
+
+def scen_index():
+    """pandas MultiIndex for the scenarios"""
+    return pd.MultiIndex.from_product(
     [range(1, scen_size() + 1), range(12 * scen_len())],
     names=["scen", "t"])
+
 
 def log_return_mth():
     """Stochastic scenarios of fund indexes as monthly risk-neutral log returns
@@ -117,9 +123,15 @@ def log_return_mth():
     return pd.DataFrame(result, index=scen_index(), columns=index_params().index)
 
 
-cont_fwd_rates = lambda: np.log(1 + forward_rates())
+def cont_fwd_rates():
+    """Continuous compound forward rates"""
+    return np.log(1 + forward_rates())
 
-scen_len = lambda: len(spot_rates())
+
+def scen_len():
+    """The length of scenarios in years"""
+    return len(spot_rates())
+
 
 def index_params():
     """Fund index parameters

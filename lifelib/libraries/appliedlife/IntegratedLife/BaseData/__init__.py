@@ -91,7 +91,10 @@ def stacked_surr_charge_tables():
     return surr_charge_tables().stack().swaplevel(0, 1).sort_index()
 
 
-surr_charge_len = lambda: len(surr_charge_tables())
+def surr_charge_len():
+    """Duration length of the surrender charge table"""
+    return len(surr_charge_tables())
+
 
 # ---------------------------------------------------------------------------
 # References

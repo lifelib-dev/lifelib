@@ -59,9 +59,15 @@ def mort_scalar_tables():
     return df
 
 
-lapse_len = lambda: len(lapse_tables())
+def lapse_len():
+    """Duration length of the lapse table"""
+    return len(lapse_tables())
 
-mort_scalar_len = lambda: len(mort_scalar())
+
+def mort_scalar_len():
+    """Duration length of the mortality scalar table"""
+    return len(mort_scalar())
+
 
 def stacked_lapse_tables():
     """Stacked lapse tables"""
