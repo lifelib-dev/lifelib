@@ -14,6 +14,10 @@ Updates
     Follow <a href="https://www.linkedin.com/company/lifelib" target="_blank">lifelib on LinkedIn</a>
     for more frequent updates.</p>
 
+* *7 July 2024:*
+  lifelib :ref:`v0.10.5<relnotes_v0.10.0>` is released.
+  :mod:`~appliedlife`, a new library for comprehensive production modeling is added.
+
 * *18 February 2024:*
   lifelib :ref:`v0.9.5<relnotes_v0.9.5>` is released to support modelx 0.25.0.
 

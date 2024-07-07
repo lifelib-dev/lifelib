@@ -15,6 +15,7 @@ independent of modelx using modelx's export feature.
    =============================== =============== ===============================================================
    :doc:`basiclife/index`          |modelx badge|  Basic life insurance cashflow models and examples
    :doc:`savings/index`            |modelx badge|  Cashflow models of saving products with cash values
+   :doc:`appliedlife/index`        |modelx badge|  Comprehensive and practical projection model
    :doc:`assets/index`             |modelx badge|  Basic models of bond portfolios
    :doc:`ifrs17a/index`                            IFRS17 calculation model and examples
    :doc:`economic/index`           |modelx badge|  Basic Hull-White model
@@ -29,6 +30,7 @@ independent of modelx using modelx's export feature.
 
    basiclife/index.rst
    savings/index.rst
+   appliedlife/index.rst
    assets/index.rst
    ifrs17a/index.md
    economic/index.rst
