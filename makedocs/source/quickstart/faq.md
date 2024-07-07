@@ -537,7 +537,7 @@ BasicTerm_S.Projection[1].premiums(t=0)=94.84
 If you use modelx from Spyder with modelx plug-in,
 you can do the operations above using GUI in the MxAnalyzer widget.
 
-
+(faq_xlwings)=
 ### How do I output results directly to Excel?
 
 To output calculation results directly to Excel, you can use the [`xlwings`](https://www.xlwings.org/) library.
