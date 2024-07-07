@@ -16,6 +16,8 @@ Projection parameters
    fixed_params
    proj_len
    scen_index
+   asmp_id
+   date_id
 
 
 Model point data
@@ -68,6 +70,7 @@ Assumptions
    inflation_rate
    inflation_factor
    mort_last_age
+   base_mort_rate
    mort_rate
    mort_rate_key
    mort_rate_mth

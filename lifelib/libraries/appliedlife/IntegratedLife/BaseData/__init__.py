@@ -28,6 +28,57 @@ Attributes:
 
     parameter_file: The name of the parameter file
 
+Example:
+
+    The sample code below demonstrates how to examine the contents of
+    :mod:`~appliedlife.IntegratedLife.BaseData`.
+
+    .. code-block:: python
+
+        >>> import modelx as mx
+
+        >>> m = mx.read_model("IntegratedLife")
+
+        >>> m.BaseData.const_params()
+                                             value
+        parameter
+        model_point_dir           model_point_data
+        mp_file_prefix                 model_point
+        asmp_file_prefix               assumptions
+        table_dir                     input_tables
+        scen_dir                     economic_data
+        scen_param_file      index_parameters.xlsx
+        scen_file_prefix                 risk_free
+        mort_file            mortality_tables.xlsx
+        spec_tables       product_spec_tables.xlsx
+
+        >>> m.BaseData.run_params()
+                base_date  ...                                description
+        run_id             ...
+        1      2023-12-31  ...                  New business  in Jan 2024
+        2      2023-12-31  ...                   Base run end of Dec 2023
+        3      2023-12-31  ...  Interest rate sensitivity end of Dec 2023
+        4      2023-12-31  ...  Interest rate sensitivity end of Dec 2023
+        5      2022-12-31  ...                   Base run end of Dec 2022
+
+            [5 rows x 6 columns]
+
+        >>> m.BaseData.space_params()
+               expense_acq  expense_maint currency  is_lapse_dynamic
+        space
+        FIA           5000            500      USD              True
+        GMXB          5000            500      USD              True
+        GLWB          6000            600      USD              True
+
+        >>> m.BaseData.product_params("GMXB")
+                            has_gmdb  has_gmab  ... dyn_lapse_param_id  dyn_lapse_floor
+        product_id plan_id                      ...
+        GMDB       PLAN_A       True     False  ...             DL001A             0.00
+                   PLAN_B       True     False  ...             DL001B             0.00
+        GMAB       PLAN_A       True      True  ...             DL002A             0.03
+                   PLAN_B       True      True  ...             DL002B             0.05
+
+        [4 rows x 16 columns]
 """
 
 from modelx.serialize.jsonvalues import *

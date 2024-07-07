@@ -1,5 +1,16 @@
 """Base projection logic for all products
 
+The :mod:`~appliedlife.IntegratedLife.ProductBase` space
+serves as the base space for concrete product spaces
+defined in the :mod:`~appliedlife.IntegratedLife.Run` space.
+
+This space defines main projection logic that is
+common for all products.
+
+
+.. seealso
+
+    * :mod:`~appliedlife.IntegratedLife.Run.GMXB`
 """
 
 from modelx.serialize.jsonvalues import *
@@ -41,6 +52,7 @@ def age_at_entry():
 
 
 def asmp_id():
+    """Assumption ID"""
     return fixed_params()["asmp_id"]
 
 
@@ -206,7 +218,7 @@ def av_pp_init():
 
 
 def base_lapse_rate(t):
-    """Lapse rate
+    """Base lapse rate
 
     By default, the lapse rate assumption is defined by duration as::
 
@@ -221,7 +233,7 @@ def base_lapse_rate(t):
 
 
 def base_mort_rate(t):
-    """Mortality rate to be applied at time t
+    """Base mortality rate to be applied at time t
 
     Returns a Series of the mortality rates to be applied at time t.
     The index of the Series is ``point_id``,
@@ -234,23 +246,6 @@ def base_mort_rate(t):
        * :func:`model_point`
 
     """
-
-    # mi is a MultiIndex whose values are
-    # pairs of age at t and duration at t capped at 5 for all the model points.
-
-    # ``mort_table_reindexed().reindex(mi, fill_value=0)`` returns
-    # a Series of mortality rates whose indexes match the MultiIndex values.
-    # The ``set_axis`` method replace the MultiIndex with ``point_id``
-
-    # if has_mortality():
-
-    #     mi = pd.MultiIndex.from_arrays([age(t), np.minimum(duration(t), 5)])
-    #     return mort_table_reindexed().reindex(
-    #         mi, fill_value=0).set_axis(model_point().index).values
-
-    # else:
-    #     return pd.Series(0, index=model_point().index).values
-
     return mort_data.unified_table().reindex(
         mort_rate_key(t)
         ).values
@@ -281,23 +276,6 @@ def check_av_roll_fwd():
         * :func:`claims_from_av`
 
     """
-    # for t in range(max_proj_len()):
-
-    #     av = (av_at(t, "BEF_MAT")
-    #           + prem_to_av(t)
-    #           - maint_fee(t)
-    #           - coi(t)
-    #           + inv_income(t)
-    #           - claims_from_av(t, "DEATH")
-    #           - claims_from_av(t, "LAPSE")
-    #           - claims_from_av(t, "MATURITY"))
-
-    #     if np.all(np.isclose(av_at(t+1, "BEF_MAT"), av)):
-    #         continue
-    #     else:
-    #         return False
-
-    # return True
     cols = []
     for t in range(max_proj_len()):
 
@@ -329,23 +307,8 @@ def check_margin():
         * :func:`margin_mortality`
 
     """
-    # res = []
-    # for t in range(max_proj_len()):
-    #     res.append(np.all(np.isclose(net_cf(t), margin_expense(t) + margin_mortality(t))))
-
-    # return all(res)
     cols = []
     for t in range(max_proj_len()):
-
-        # av = (av_at(t, "BEF_MAT")
-        #       + prem_to_av(t)
-        #       - maint_fee(t)
-        #       - coi(t)
-        #       + inv_income(t)
-        #       - claims_from_av(t, "DEATH")
-        #       - claims_from_av(t, "LAPSE")
-        #       - claims_from_av(t, "MATURITY"))
-
         cols.append(net_cf(t) - margin_expense(t) - margin_guarantee(t))
 
     return np.column_stack(cols)
@@ -364,14 +327,11 @@ def check_pv_net_cf():
         * :func:`pv_net_cf`
 
     """
-    # cfs = np.array(list(net_cf(t) for t in range(max_proj_len()))).transpose()
-    # pvs = cfs @ disc_factors()[:max_proj_len()]
-
-    # return np.all(np.isclose(pvs, pv_net_cf()))
     return pv_net_cf() - sum(net_cf(t) * disc_factors(t) for t in range(max_proj_len()))
 
 
 def claim_net_pp(t, kind):
+    """Per policy claim in excess of account value"""
 
     if kind == "DEATH":
         return claim_pp(t, "DEATH") - av_pp_at(t, "MID_MTH")
@@ -589,6 +549,7 @@ def coi_rate(t):
 
 
 def commission_rate():
+    """Commission rate"""
     return model_point()["commission_rate"].values
 
 
@@ -607,11 +568,12 @@ def commissions(t):
 
 
 def csv_pp(t):
-
+    """Cash surrender value per policy"""
     return (1 - surr_charge_rate(t)) * av_pp_at(t, 'MID_MTH')
 
 
 def date_id():
+    """Date ID"""
     return fixed_params()["date_id"]
 
 
@@ -630,6 +592,7 @@ def disc_factors(t):
 
 
 def disc_rate(t):
+    """Discount rate to be applied at time t"""
     scen = fixed_params()['sens_int_rate']
     curr = fixed_params()['currency']
     return scen_data(date_id(), scen).spot_rates().at[t//12, curr]
@@ -648,7 +611,6 @@ def disc_rate_mth(t):
         :func:`disc_rate_ann`
 
     """
-    # return np.array(list((1 + disc_rate_ann[t//12])**(1/12) - 1 for t in range(max_proj_len())))
     return (1 + disc_rate(t))**(1/12) - 1
 
 
@@ -675,7 +637,6 @@ def duration_mth(t):
     .. seealso:: :func:`model_point`
 
     """
-
     if t == 0:
         return duration_mth_init().values
     else:
@@ -683,7 +644,7 @@ def duration_mth(t):
 
 
 def duration_mth_init():
-
+    """Initial duration in month"""
     date_start = fixed_params()["base_date"] + pd.Timedelta(days=1)
     entry_date = model_point()["entry_date"]
 
@@ -692,7 +653,7 @@ def duration_mth_init():
 
 
 def dyn_lapse_factor(t):
-
+    """Dynamic lapse factor"""
     min_ = np.minimum
     max_ = np.maximum
 
@@ -725,12 +686,12 @@ def dyn_lapse_factor(t):
 
 
 def dyn_lapse_param():
-
+    """Dynamic lapse parameters"""
     return asmp_data(asmp_id()).dyn_lapse_params().reindex(model_point()["dyn_lapse_param_id"].values)
 
 
 def excel_sample(point_id=1, scen=1):
-
+    """Output sample cashflows to Excel"""
     import xlwings as xw
     xw.App().books[0].sheets[0]["A1"].value = df = result_sample(point_id, scen)
 
@@ -738,18 +699,12 @@ def excel_sample(point_id=1, scen=1):
 
 
 def expense_acq():
-    """Acquisition expense per policy
-
-    ``5000`` by default.
-    """
+    """Acquisition expense per policy"""
     return fixed_params()["expense_acq"]
 
 
 def expense_maint():
-    """Annual maintenance expense per policy
-
-    ``500`` by default.
-    """
+    """Annual maintenance expense per policy"""
     return fixed_params()["expense_maint"]
 
 
@@ -778,7 +733,7 @@ def expenses(t):
 
 
 def fixed_params():
-
+    """Fixed parameters"""
     params = base_data.param_list()
 
     const_param_names = (params[params["read_from"] == "CONST"]).index
@@ -794,12 +749,12 @@ def fixed_params():
 
 
 def has_gmab():
-
+    """Whether GMAB is attached"""
     return model_point()["has_gmab"]
 
 
 def has_gmdb():
-
+    """Whether GMDB is attached"""
     return model_point()["has_gmdb"]
 
 
@@ -905,6 +860,7 @@ def inv_return_mth(t):
 
 
 def is_lapse_dynamic():
+    """Whether the lapse assumption is dynamic"""
     return fixed_params()["is_lapse_dynamic"]
 
 
@@ -929,17 +885,7 @@ def is_wl():
 
 
 def lapse_rate(t):
-    """Lapse rate
-
-    By default, the lapse rate assumption is defined by duration as::
-
-        max(0.1 - 0.01 * duration(t), 0.02)
-
-    .. seealso::
-
-        :func:`duration`
-
-    """
+    """Lapse rate"""
     if is_lapse_dynamic():
 
         floor = model_point()["dyn_lapse_floor"].values
@@ -950,7 +896,7 @@ def lapse_rate(t):
 
 
 def lapse_rate_key(t):
-
+    """Index keys to retrieve lapse rates for time t"""
     duration_cap = asmp_data(asmp_id()).lapse_len()
 
     return pd.MultiIndex.from_arrays(
@@ -1105,12 +1051,6 @@ def model_point():
 
     """
     mps = model_point_table_ext()
-
-    # idx = pd.MultiIndex.from_product(
-    #         [mps.index, scen_index()],
-    #         names = mps.index.names + scen_index().names
-    #         )
-
     res = pd.DataFrame(
             np.repeat(mps.values, len(scen_index()), axis=0),
             index=model_point_index(),
@@ -1121,6 +1061,7 @@ def model_point():
 
 
 def model_point_index():
+    """Index for model points"""
     mps = model_point_table_ext()
     return pd.MultiIndex.from_product(
             [mps.index, scen_index()],
@@ -1139,22 +1080,23 @@ def model_point_table_ext():
         * :attr:`model_point_table`
         * :attr:`product_spec_table`
 
-
     """
     mp_file_id = fixed_params()["mp_file_id"]
     return model_point_data(mp_file_id, _space.name).model_point_table_ext()
 
 
 def mort_last_age():
+    """The last age of mortality tables"""
     return mort_data.table_last_age().reindex(mort_table_id()).values
 
 
 def mort_rate(t):
+    """Mortality rates for time t"""
     return mort_scalar(t) * base_mort_rate(t)
 
 
 def mort_rate_key(t):
-
+    """Index keys to retrieve mortality rates for time t"""
     duration_cap = mort_data.select_duration_len().reindex(mort_table_id()).values
 
     return pd.MultiIndex.from_arrays(
@@ -1190,7 +1132,7 @@ def mort_scalar(t):
 
 
 def mort_scalar_key(t):
-
+    """Index keys to retrieve mortality scalars for all model points at time t"""
 
     duration_cap = asmp_data(asmp_id()).mort_scalar_len()
 
@@ -1200,6 +1142,7 @@ def mort_scalar_key(t):
 
 
 def mort_table_id():
+    """Mortality table IDs"""
     return np.where(model_point()["sex"] == "M", 
                     model_point()["mort_table_male"], 
                     model_point()["mort_table_female"])
@@ -1429,24 +1372,6 @@ def premium_pp(t):
         * :func:`policy_term`
 
     """
-    # mi is a MultiIndex whose values are
-    # pairs of issue ages and policy terms for all the model points.
-
-    # ``premium_table.reindex(mi)`` returns
-    # a Series of premium rates whose indexes match the MultiIndex values.
-    # The ``set_axis`` method replace the MultiIndex with ``point_id``
-
-    # mi = pd.MultiIndex.from_arrays([age_at_entry(), policy_term()])
-    # prem_rates = premium_table.reindex(mi).set_axis(
-    #     model_point().index)
-    # return np.around(sum_assured() * prem_rates, 2)
-
-    # sp = model_point()['premium_pp'].where((premium_type() == 'SINGLE') & (duration_mth(t) == 0), other=0)
-    # lp = model_point()['premium_pp'].where(
-    #     (premium_type() == 'LEVEL') & (duration_mth(t) < 12 * policy_term()),
-    #     other=0)
-    # return sp + lp
-
     return model_point()['premium_pp'].values * (
         (premium_type() == 'SINGLE') & (duration_mth(t) == 0) |
         (premium_type() == 'LEVEL') & (duration_mth(t) < 12 * policy_term()))
@@ -1511,9 +1436,6 @@ def pv_av_change():
         * :func:`proj_len`
 
     """
-    # result = np.array(list(av_change(t) for t in range(max_proj_len()))).transpose()
-
-    # return result @ disc_factors()[:max_proj_len()]
     return sum(av_change(t) * disc_factors(t) for t in range(max_proj_len()))
 
 
@@ -1530,9 +1452,6 @@ def pv_claims(kind=None):
 
 
     """
-    # cl = np.array(list(claims(t, kind) for t in range(max_proj_len()))).transpose()
-
-    # return cl @ disc_factors()[:max_proj_len()]
     return sum(claims(t, kind) * disc_factors(t) for t in range(max_proj_len()))
 
 
@@ -1549,10 +1468,6 @@ def pv_claims_from_av(kind=None):
 
 
     """
-    # cl = np.array(list(claims_from_av(t, kind) for t in range(max_proj_len()))).transpose()
-
-    # return cl @ disc_factors()[:max_proj_len()]
-
     return sum(claims_from_av(t, kind) * disc_factors(t) for t in range(max_proj_len()))
 
 
@@ -1569,10 +1484,6 @@ def pv_claims_over_av(kind=None):
 
 
     """
-    # cl = np.array(list(claims_over_av(t, kind) for t in range(max_proj_len()))).transpose()
-
-    # return cl @ disc_factors()[:max_proj_len()]
-
     return sum(claims_over_av(t, kind) * disc_factors(t) for t in range(max_proj_len()))
 
 
@@ -1586,9 +1497,6 @@ def pv_commissions():
         * :func:`disc_factors`
 
     """
-    # result = np.array(list(commissions(t) for t in range(max_proj_len()))).transpose()
-
-    # return result @ disc_factors()[:max_proj_len()]
     return sum(commissions(t) * disc_factors(t) for t in range(max_proj_len()))
 
 
@@ -1602,9 +1510,6 @@ def pv_expenses():
         * :func:`disc_factors`
 
     """
-    # result = np.array(list(expenses(t) for t in range(max_proj_len()))).transpose()
-
-    # return result @ disc_factors()[:max_proj_len()]
     return sum(expenses(t) * disc_factors(t) for t in range(max_proj_len()))
 
 
@@ -1620,17 +1525,11 @@ def pv_inv_income():
         * :func:`disc_factors`
 
     """
-    # result = np.array(list(inv_income(t) for t in range(max_proj_len()))).transpose()
-
-    # return result @ disc_factors()[:max_proj_len()]
     return sum(inv_income(t) * disc_factors(t) for t in range(max_proj_len()))
 
 
 def pv_maint_fee():
-    # result = np.array(list(maint_fee(t) for t in range(max_proj_len()))).transpose()
-
-    # return result @ disc_factors()[:max_proj_len()]
-
+    """Present value of maintenance fees"""
     return sum(maint_fee(t) * disc_factors(t) for t in range(max_proj_len()))
 
 
@@ -1668,10 +1567,6 @@ def pv_pols_if():
     It is used as the annuity factor for calculating :func:`net_premium_pp`.
 
     """
-    # result = np.array(list(pols_if_at(t, "BEF_DECR") for t in range(max_proj_len()))).transpose()
-
-    # return result @ disc_factors()[:max_proj_len()]
-
     return sum(pols_if_at(t, "BEF_DECR") * disc_factors(t) for t in range(max_proj_len()))
 
 
@@ -1685,9 +1580,6 @@ def pv_premiums():
         * :func:`disc_factors`
 
     """
-    # result = np.array(list(premiums(t) for t in range(max_proj_len()))).transpose()
-
-    # return result @ disc_factors()[:max_proj_len()]
     return sum(premiums(t) * disc_factors(t) for t in range(max_proj_len()))
 
 
@@ -1772,7 +1664,7 @@ def result_pv():
 
 
 def result_sample(point_id=1, scen=1):
-
+    """Sample projection result for a specific model point and scenario"""
 
     items = [
 
@@ -1922,12 +1814,12 @@ def surr_charge_id():
 
 
 def surr_charge_key(t):
-
+    """Index keys to retrieve surrender charge rates at time t"""
     duration_cap = base_data.surr_charge_len()
 
     return pd.MultiIndex.from_arrays(
         [surr_charge_id(), np.minimum(duration(t), duration_cap)],
-        names = ["surr_charge_id", "duration"])
+        names=["surr_charge_id", "duration"])
 
 
 def surr_charge_rate(t):
@@ -1945,10 +1837,6 @@ def surr_charge_rate(t):
         * :func:`surr_charge_max_idx`
         * :func:`surr_charge_table_stacked`
     """
-    # idx = pd.MultiIndex.from_arrays(
-    #     [has_surr_charge() * surr_charge_id(),
-    #      np.minimum(duration(t), surr_charge_max_idx())])
-
     return base_data.stacked_surr_charge_tables().reindex(
         surr_charge_key(t), fill_value=0).set_axis(
         model_point().index).values

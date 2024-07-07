@@ -160,6 +160,18 @@ but it must not appear more than once in the same sheet.
 
 The ``ParamList`` sheet is for listing all the parameters defined in the three sheets,
 and its ``read_from`` column indicates from what sheet the value of each parameter should be defined.
+However, the following basic parameters should be constant parameters:
+
+* ``table_dir``
+* ``spec_tables``
+* ``asmp_file_prefix``
+* ``model_point_dir``
+* ``mp_file_prefix``
+* ``mort_file``
+* ``scen_dir``
+* ``scen_param_file``
+* ``scen_file_prefix``
+
 For some basic parameters, the ``read_from`` values cannot be changed.
 See :mod:`~appliedlife.IntegratedLife.BaseData` for the complete list of these
 parameters.
@@ -185,7 +197,9 @@ Model Point Files
 By default, sample model point files are stored in
 the *model_point_data* folder in the library.
 Model point files are prepared by user space.
-The file name is constructed using a prefix, :attr:`mp_file_id` and :attr:`space_name`,
+The file name is constructed using a prefix,
+:attr:`~appliedlife.IntegratedLife.ModelPoints.mp_file_id` and
+:attr:`~appliedlife.IntegratedLife.ModelPoints.space_name`,
 all concatenated by underscores, followed by ".csv".
 
 See :mod:`~appliedlife.IntegratedLife.ModelPoints` for more details.
@@ -254,26 +268,110 @@ Reading the model
 
 Create your copy of the *appliedlife* library by following
 the steps on the :doc:`/quickstart/index` page.
-The model is saved as the folder named :mod:`~appliedlife.IntegratedLife` in the copied folder.
+The model is saved as the folder named *IntegratedLife* in the copied folder.
 
-To read the model from Spyder, right-click on the empty space in *MxExplorer*,
+To read the model from Spyder with the modelx plug-in,
+right-click on the empty space in *MxExplorer*,
 and select *Read Model*.
 Click the folder icon on the dialog box and select the
-:mod:`~appliedlife.IntegratedLife` folder.
+*IntegratedLife* folder.
+
+To read the model on IPython console, use the ``read_model`` function in ``modelx``.
+
+.. code-block:: python
+
+    >>> import modelx as mx
+
+    >>> m = mx.read_model("IntegratedLife")
 
 
-Getting the results
+Running the results
 ^^^^^^^^^^^^^^^^^^^^
-By default, the model has Cells
-for outputting projection results as listed in the
-:ref:`basicterm_m-results` section.
-:func:`~result_cf` outputs total cashflows of all the model points,
-and :func:`~result_pv` outputs the present values of the cashflows
-by model points.
-Both Cells outputs the results as pandas `DataFrame`_.
 
-By following the same steps explained in the :doc:`/quickstart/index` page
-using this model,
-You can get the results in an *MxConsole* and show
-the results as tables in *MxDataViewer*.
+To run the model, simply execute result Cells,
+such as :func:`~appliedlife.IntegratedLife.ProductBase.result_pv`,
+of a product space, such as :mod:`~appliedlife.IntegratedLife.Run.GMXB`,
+in a dynamic subspace of :mod:`~appliedlife.IntegratedLife.Run`,
+such as ``Run[1]``,
+where the number in ``[]`` is a specific :attr:`~appliedlife.IntegratedLife.Run.run_id`.
+
+.. code-block:: python
+
+    >>> m.Run(1).GMXB.result_pv()
+
+                     Premiums         Death  ...  Change in AV  Net Cashflow
+    point_id scen                            ...
+    1        1     50000000.0  4.535395e+06  ...  1.141797e+07  6.097680e+06
+             2     50000000.0  4.592794e+06  ...  1.244402e+07  6.732840e+06
+             3     50000000.0  4.514334e+06  ...  1.215701e+07  6.499784e+06
+             4     50000000.0  4.667772e+06  ...  1.250695e+07  6.648902e+06
+             5     50000000.0  4.403177e+06  ...  1.138434e+07  6.107113e+06
+                      ...           ...  ...           ...           ...
+    8        96    32500000.0  3.013149e+06  ...  5.651292e+06 -1.669267e+07
+             97    32500000.0  3.050556e+06  ...  8.690729e+06 -6.839240e+05
+             98    32500000.0  3.013149e+06  ...  3.701018e+06 -1.436214e+07
+             99    32500000.0  3.230455e+06  ...  8.484874e+06  1.174996e+06
+             100   32500000.0  3.013149e+06  ...  7.439794e+06 -1.503688e+06
+
+    [800 rows x 9 columns]
+
+
+
+    >>> m.Run(1).GMXB.result_cf()
+
+             Premiums        Claims      Expenses   Commissions  Net Cashflow
+    0    3.300000e+10  6.885792e+07  4.033333e+08  1.280000e+09  4.305433e+08
+    1    0.000000e+00  6.887329e+07  3.328038e+06  0.000000e+00  2.310506e+07
+    2    0.000000e+00  6.875446e+07  3.322756e+06  0.000000e+00  2.313363e+07
+    3    0.000000e+00  6.868379e+07  3.317490e+06  0.000000e+00  2.311497e+07
+    4    0.000000e+00  6.869832e+07  3.312239e+06  0.000000e+00  2.318471e+07
+    ..            ...           ...           ...           ...           ...
+    116  0.000000e+00  2.288671e+08  1.870365e+06  0.000000e+00  7.103725e+06
+    117  0.000000e+00  2.264772e+08  1.851697e+06  0.000000e+00  7.054587e+06
+    118  0.000000e+00  2.238152e+08  1.833222e+06  0.000000e+00  6.974249e+06
+    119  0.000000e+00  2.216954e+08  1.814959e+06  0.000000e+00  6.897696e+06
+    120  0.000000e+00  2.076927e+10  0.000000e+00  0.000000e+00 -2.087250e+09
+
+    [121 rows x 5 columns]
+
+    >>> m.Run(1).GMXB.result_pols()
+
+              pols_if  pols_maturity  pols_new_biz  pols_death  pols_lapse
+    0        0.000000       0.000000         80000   15.888508  177.398389
+    1    79806.713103       0.000000             0   15.849889  176.849853
+    2    79614.013360       0.000000             0   15.811388  176.251368
+    3    79421.950604       0.000000             0   15.773013  175.675413
+    4    79230.502178       0.000000             0   15.734762  175.131998
+    ..            ...            ...           ...         ...         ...
+    116  40772.225418       0.000000             0   90.248214  350.153733
+    117  40331.823472       0.000000             0   89.268431  346.231945
+    118  39896.323096       0.000000             0   88.299619  341.906948
+    119  39466.116529       0.000000             0   87.342607  337.606448
+    120  39041.167475   39041.167475             0    0.000000    0.000000
+
+    [121 rows x 5 columns]
+
+:func:`~appliedlife.IntegratedLife.ProductBase.result_sample` returns
+the detailed result for a single model point on a single scenario.
+Alternatively, :func:`~appliedlife.IntegratedLife.ProductBase.excel_sample`
+opens Excel and output the sample result on an Excel workbook.
+
+.. code-block:: python
+
+    >>> m.Run(1).GMXB.excel_sample()
+
+           premiums     inv_income  ...  inv_return_mth  disc_rate_mth
+    0    50000000.0   36668.209367  ...        0.000816       0.003883
+    1           0.0 -832902.827593  ...       -0.018567       0.003883
+    2           0.0  136715.311689  ...        0.003113       0.003883
+    3           0.0   15294.022885  ...        0.000348       0.003883
+    4           0.0  125878.367168  ...        0.002869       0.003883
+    ..          ...            ...  ...             ...            ...
+    116         0.0 -223430.982443  ...       -0.007303       0.002830
+    117         0.0  640062.777645  ...        0.021289       0.002830
+    118         0.0   62510.277083  ...        0.002057       0.002830
+    119         0.0 -427654.831703  ...       -0.014189       0.002830
+    120         0.0       0.000000  ...        0.014783       0.002837
+
+    [121 rows x 38 columns]
 

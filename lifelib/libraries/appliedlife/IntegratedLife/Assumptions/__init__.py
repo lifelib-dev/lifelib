@@ -32,9 +32,10 @@ Example:
         >>> m = mx.read_model("IntegratedLife")
 
         >>> m.Assumptions["202312"].asmp_file()
-        WindowsPath('C:/xxx/appliedlife/input_tables/assumptions_202312.xlsx')
+        WindowsPath('C:/Users/User1/appliedlife/input_tables/assumptions_202312.xlsx')
 
         >>> m.Assumptions["202312"].lapse_tables()
+
                   L001  L002  L003  L004
         duration
         0         0.03  0.03  0.01  0.05

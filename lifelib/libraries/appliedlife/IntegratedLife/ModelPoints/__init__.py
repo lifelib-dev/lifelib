@@ -1,9 +1,11 @@
 """Model points
 
-The ModelPoints space represents a set of policy model points.
-This space is parameterized with mp_file_id and space_name,
-and serves as the base space to create its subspaces dynamically
-that correspond to combinations of mp_file_id and space_name values.
+The :mod:`~appliedlife.IntegratedLife.ModelPoints` space represents
+a set of policy model points.
+This space is parameterized with :attr:`mp_file_id` and :attr:`space_name`.
+For each combination of :attr:`mp_file_id` and :attr:`space_name` values,
+a dynamic subspace of this space is created,
+representing a specific set of model points of :attr:`space_name`.
 
 .. rubric:: Parameters
 
@@ -18,6 +20,47 @@ Attributes:
 
     base_data: Reference to the :mod:`~appliedlife.IntegratedLife.BaseData` space
 
+
+Example:
+
+    The sample code below demonstrates how to examine the contents of
+    :mod:`~appliedlife.IntegratedLife.ModelPoints`.
+
+    .. code-block:: python
+
+        >>> import modelx as mx
+
+        >>> m = mx.read_model("IntegratedLife")
+
+        >>> m.ModelPoints["202401NB", "GMXB"].model_point_table()
+
+                 product_id plan_id  ... av_pp_init  accum_prem_init_pp
+        point_id                     ...
+        1              GMDB  PLAN_A  ...          0                   0
+        2              GMDB  PLAN_A  ...          0                   0
+        3              GMDB  PLAN_B  ...          0                   0
+        4              GMDB  PLAN_B  ...          0                   0
+        5              GMAB  PLAN_A  ...          0                   0
+        6              GMAB  PLAN_A  ...          0                   0
+        7              GMAB  PLAN_B  ...          0                   0
+        8              GMAB  PLAN_B  ...          0                   0
+
+        [8 rows x 13 columns]
+
+        >>> m.ModelPoints["202401NB", "GMXB"].model_point_table_ext()
+
+                 product_id plan_id  ... dyn_lapse_param_id  dyn_lapse_floor
+        point_id                     ...
+        1              GMDB  PLAN_A  ...             DL001A             0.00
+        2              GMDB  PLAN_A  ...             DL001A             0.00
+        3              GMDB  PLAN_B  ...             DL001B             0.00
+        4              GMDB  PLAN_B  ...             DL001B             0.00
+        5              GMAB  PLAN_A  ...             DL002A             0.03
+        6              GMAB  PLAN_A  ...             DL002A             0.03
+        7              GMAB  PLAN_B  ...             DL002B             0.05
+        8              GMAB  PLAN_B  ...             DL002B             0.05
+
+        [8 rows x 29 columns]
 """
 
 from modelx.serialize.jsonvalues import *
