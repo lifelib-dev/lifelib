@@ -19,7 +19,7 @@ designed for real-world actuarial tasks.
 
 The :mod:`~appliedlife.IntegratedLife` model offers several key features:
 
-* **Multiple Products:** supports multiple products by inheriting the base logic common to all products.
+* **Multiple Products:** Support multiple products by inheriting the base logic common to all products.
   Currently, the model supports VA GMAB and GMDB products, with plans to add more in future releases.
 
 * **Flexible Input:** Perform projections with various combinations of input data by simply setting parameters.
