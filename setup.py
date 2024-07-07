@@ -14,7 +14,7 @@ from os import path
 DISTNAME = 'lifelib'
 LICENSE = 'MIT License'
 AUTHOR = "lifelib Developers"
-EMAIL = "fumito.ham@gmail.com"
+EMAIL = "admin@lifelib.io"
 URL = "https://lifelib.io"
 
 DESCRIPTION = "Actuarial models in Python"
