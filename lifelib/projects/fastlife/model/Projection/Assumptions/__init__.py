@@ -173,7 +173,7 @@ def LastAge():
 def MortFactor(y):
     """Mortality factor"""
 
-    fac = MortFactorID().apply(lambda facid: AssumptionTables.get((facid, y), np.NaN))
+    fac = MortFactorID().apply(lambda facid: AssumptionTables.get((facid, y), np.nan))
 
     if y == 0 or not fac.isnull().any():
         return fac
@@ -184,7 +184,7 @@ def MortFactor(y):
 def SurrRate(y):
     """Surrender Rate"""
 
-    fac = SurrRateID().apply(lambda surrid: AssumptionTables.get((surrid, y), np.NaN))
+    fac = SurrRateID().apply(lambda surrid: AssumptionTables.get((surrid, y), np.nan))
 
     if y == 0 or not fac.isnull().any():
         return fac
