@@ -743,7 +743,7 @@ def fixed_params():
     run_params = base_data.run_params().loc[run_id].loc[run_param_names]
 
     space_param_names = (params[params["read_from"] == "SPACE"]).index
-    space_params = base_data.space_params().loc[_space.name].loc[space_param_names]
+    space_params = base_data.space_params().loc[_space._name].loc[space_param_names]
 
     return pd.concat([const_params, run_params, space_params])
 
@@ -1082,7 +1082,7 @@ def model_point_table_ext():
 
     """
     mp_file_id = fixed_params()["mp_file_id"]
-    return model_point_data(mp_file_id, _space.name).model_point_table_ext()
+    return model_point_data(mp_file_id, _space._name).model_point_table_ext()
 
 
 def mort_last_age():
@@ -1736,7 +1736,7 @@ def result_sample(point_id=1, scen=1):
         if key == "blank":
             val = [np.nan] * t_len 
         else:
-            cells = _space.cells[name]
+            cells = _space._cells[name]
             if isinstance(cells(0, *args), (np.ndarray, pd.Series)):
                 val = [cells(t, *args)[iloc] for t in range(t_len)]
             else:
