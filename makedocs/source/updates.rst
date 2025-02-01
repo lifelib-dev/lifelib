@@ -14,6 +14,12 @@ Updates
     Follow <a href="https://www.linkedin.com/company/lifelib" target="_blank">lifelib on LinkedIn</a>
     for more frequent updates.</p>
 
+* *1 February 2025:*
+  lifelib :ref:`v0.11.0<relnotes_v0.11.0>` is released.
+  :mod:`~basiclife.BasicTerm_SC`, a new model optimized
+  for generating a compiled model using `Cython <https://cython.org/>`_ with
+  `modelx-cython <https://github.com/fumitoh/modelx-cython>`_ is introduced.
+
 * *15 July 2024:*
   lifelib :ref:`v0.10.1<relnotes_v0.10.0>` is released.
 
@@ -23,6 +29,8 @@ Updates
 
 * *18 February 2024:*
   lifelib :ref:`v0.9.5<relnotes_v0.9.5>` is released to support modelx 0.25.0.
+
+.. Latest Updates End
 
 * *23 December 2023:*
   lifelib :ref:`v0.9.4<relnotes_v0.9.4>` is released. Notebooks can now be opend and run on Google Colab.
@@ -50,8 +58,6 @@ Updates
 * *3 May 2023:*
   lifelib v0.8.1 is released. A new example, :doc:`/libraries/savings/savings_example4` is available in :mod:`~savings`.
   See :ref:`Release Notes<relnotes_v0.8.1>` for details.
-
-.. Latest Updates End
 
 * *19 Nov 2022:*
   lifelib v0.8.0 is released. New library :mod:`~economic_curves` is available.
