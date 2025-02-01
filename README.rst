@@ -68,7 +68,7 @@ By using lifelib, you can enjoy the following advantages:
 
 License
 -------
-Copyright (c) 2018-2024 lifelib Developers
+Copyright (c) 2018-2025 lifelib Developers
 
 lifelib is free software; you can redistribute it and/or
 modify it under the terms of
