@@ -10,7 +10,7 @@ Overview
 ---------
 
 The **basiclife** library is for
-building life insurance projection models.
+building simple life insurance projection models.
 The models in this library project minimum sets of cashflows
 of hypothetical generic plain life policies
 and no specific regulations are assumed.
@@ -25,13 +25,14 @@ The premium amount for each individual model point is calculated
 as the net premium with loadings, where the net premium is calculated
 from the present value of the claims.
 
-The library currently includes 5 basic projection models.
+The library currently includes 6 basic projection models.
 
 .. toctree::
    :maxdepth: 1
 
    BasicTerm_S
    BasicTerm_M
+   BasicTerm_SC
    BasicTerm_SE
    BasicTerm_ME
    BasicTermASL_ME
@@ -47,6 +48,11 @@ for all model points at once. They produce the same results for the same model p
 but it runs slower. It's suitable for validation purposes.
 :mod:`~basiclife.BasicTerm_M` runs fast, but its formulas are expressed as vector operations
 and can be more complex in some places.
+
+The :mod:`~basiclife.BasicTerm_SC` model is a variant of :mod:`~basiclife.BasicTerm_S`
+that is optimized for cythonization
+using modelx-cython. For more details, see :mod:`~basiclife.BasicTerm_SC`.
+
 
 :mod:`~basiclife.BasicTerm_SE` and :mod:`~basiclife.BasicTerm_ME`
 project the cashflows of in-force policies at time 0 as well as
@@ -109,6 +115,7 @@ Library Contents
    =========================================== ===============================================================
    BasicTerm_S                                 The :mod:`~basiclife.BasicTerm_S` model.
    BasicTerm_M                                 The :mod:`~basiclife.BasicTerm_M` model.
+   BasicTerm_SC                                The :mod:`~basiclife.BasicTerm_SC` model.
    BasicTerm_SE                                The :mod:`~basiclife.BasicTerm_SE` model.
    BasicTerm_ME                                The :mod:`~basiclife.BasicTerm_ME` model.
    BasicTermASL_ME                             The :mod:`~basiclife.BasicTermASL_ME` model.
@@ -117,6 +124,9 @@ Library Contents
    generate_model_points.ipynb                 A Jupyter notebook used for generating the sample model points from random numbers for :mod:`~basiclife.BasicTerm_S` and :mod:`~basiclife.BasicTerm_M`.
    generate_model_points_with_duration.ipynb   A Jupyter notebook used for generating the sample model points from random numbers for :mod:`~basiclife.BasicTerm_SE` and :mod:`~basiclife.BasicTerm_ME`.
    generate_model_points_ASL.ipynb             A Jupyter notebook used for generating the sample model points from random numbers for :mod:`~basiclife.BasicTermASL_ME`.
+   run_sc.py                                   A sample script for running the cythonized model of :mod:`~basiclife.BasicTerm_SC`
+   spec.py                                     The spec file for cythonizing :mod:`~basiclife.BasicTerm_SC`
+   sample.py                                   The sample file for cythonizing :mod:`~basiclife.BasicTerm_SC`
    =========================================== ===============================================================
 
 
