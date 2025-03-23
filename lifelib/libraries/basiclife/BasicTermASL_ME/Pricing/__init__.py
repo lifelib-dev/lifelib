@@ -72,6 +72,6 @@ def premium_pp():
         * :func:`~net_premium_rate`
 
     """
-    return np.round_((1 + loading_prem()) * (sum_assured() / 1000) * net_premium_rate(), 2)
+    return np.round((1 + loading_prem()) * (sum_assured() / 1000) * net_premium_rate(), 2)
 
 
