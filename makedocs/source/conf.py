@@ -112,6 +112,7 @@ todo_include_todos = True
 #
 html_theme = "pydata_sphinx_theme"
 html_logo = "images/logo.png"
+html_favicon = "_static/logo.svg"
 
 html_title = "lifelib " + version
 
@@ -135,24 +136,6 @@ html_theme_options = {
     "external_links": [
         {"name": "Discussions", "url": "https://github.com/lifelib-dev/lifelib/discussions"}
     ],
-    "favicons": [
-        {
-            "rel": "icon",
-            "sizes": "16x16",
-            "href": "lifelib-favicon-16x16.png",
-        },
-        {
-            "rel": "icon",
-            "sizes": "32x32",
-            "href": "lifelib-favicon-32x32.png",
-        },
-        {
-            "rel": "apple-touch-icon",
-            "sizes": "180x180",
-            "href": "lifelib-favicon-32x32.png",
-        },
-    ]
-
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -166,9 +149,9 @@ html_last_updated_fmt = '%b %d, %Y'
 
 # Custom sidebar templates, maps document names to template names.
 html_sidebars = {
-    "index": None,
-    "notebooks": None,
-    "generated_examples/**": None
+    "index": [],
+    "notebooks": [],
+    "generated_examples/**": []
 }
 
 # -- Options for HTMLHelp output ------------------------------------------

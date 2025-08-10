@@ -31,7 +31,8 @@ Contribute your excellent work to lifelib and share it with actuaries from all a
          :img-alt: Thumbnail for simplelife example
          :link: generated_examples/index
          :link-type: doc
-
+         :class-card: sd-border-0 sd-bg-transparent
+         :class-body: sd-bg-transparent sd-p-0
 
    .. grid-item::
 
@@ -40,6 +41,8 @@ Contribute your excellent work to lifelib and share it with actuaries from all a
          :img-alt: Thumbnail for savings example
          :link: generated_examples/index
          :link-type: doc
+         :class-card: sd-border-0 sd-bg-transparent
+         :class-body: sd-bg-transparent sd-p-0
 
    .. grid-item::
 
@@ -48,6 +51,8 @@ Contribute your excellent work to lifelib and share it with actuaries from all a
          :img-alt: Thumbnail for cluster notebook
          :link: libraries/cluster/cluster_model_points
          :link-type: doc
+         :class-card: sd-border-0 sd-bg-transparent
+         :class-body: sd-bg-transparent sd-p-0
 
    .. grid-item::
 
@@ -56,6 +61,9 @@ Contribute your excellent work to lifelib and share it with actuaries from all a
          :img-alt: Thumbnail for Spyder example
          :link: quickstart/spyder
          :link-type: doc
+         :class-card: sd-border-0 sd-bg-transparent
+         :class-body: sd-bg-transparent sd-p-0
+
 
 .. 1st row: Updates & Quick Start ---------------------------------
 
