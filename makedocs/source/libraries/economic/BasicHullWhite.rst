@@ -40,4 +40,4 @@ The :mod:`~economic.BasicHullWhite.HullWhite` Space
    :toctree: ../generated/
    :template: llmodule.rst
 
-   ~economic.BasicHullWhite.HullWhite
+   ~HullWhite

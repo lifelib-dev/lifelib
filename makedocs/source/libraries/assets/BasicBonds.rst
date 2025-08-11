@@ -40,4 +40,4 @@ The :mod:`~assets.BasicBonds.Bonds` Space
    :toctree: ../generated/
    :template: llmodule.rst
 
-   ~assets.BasicBonds.Bonds
+   ~Bonds

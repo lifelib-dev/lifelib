@@ -151,6 +151,8 @@ html_last_updated_fmt = '%b %d, %Y'
 html_sidebars = {
     "index": [],
     "notebooks": [],
+    "download": [],
+    "videos": [],
     "generated_examples/**": []
 }
 
