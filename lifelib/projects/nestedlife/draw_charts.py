@@ -97,24 +97,33 @@ def draw_waterfall(df, ax=None, stocks=[0], **kwargs):
     cols = len(df.columns)
     cumsum = df.copy()
     bottom = df.copy()
-    bottom.iloc[:,:] = 0
+    bottom.iloc[:, :] = 0
 
     for c in range(cols):
         if (c + 1) % cols in stocks:
+            # stock items: start from zero
             cumsum.iloc[:, list(range(c + 1))] = 0
             bottom.iloc[:, c] = 0
         else:
+            # flow items: stack on running total
             bottom.iloc[:, c] = cumsum.cumsum(axis=1).iloc[:, c]
 
-    data = df.stack()
-    bottom = bottom.stack().shift(1, axis=0).fillna(0)
+    # Flatten to 1D series in display order
+    heights = df.stack()
+    bases = bottom.stack().shift(1, axis=0).fillna(0)
 
+    # X positions and labels
+    x = np.arange(len(heights))
+    xlabel = [f"{col}({row})" for row, col in heights.index]
+
+    # Colors
     palette = WaterfallColorPalette(df)
-    xlabel = [idx[1] + '(' + str(idx[0]) + ')' for idx in df.stack().index]
-    ax = sns.barplot(data=[[i] for i in data], bottom=list(bottom),
-                     palette=palette.colors,
-                     ax=ax)
-    ax.set_xticklabels(labels=xlabel, rotation='vertical')
+
+    # Draw with matplotlib (avoids seaborn.barplot’s probing logic)
+    ax.bar(x, heights.values, bottom=bases.values, color=palette.colors)
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(xlabel, rotation='vertical')
     if 'title' in kwargs:
         ax.set_title(kwargs['title'])
     ax.get_figure().tight_layout()
