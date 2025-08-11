@@ -14,11 +14,16 @@ Updates
     Follow <a href="https://www.linkedin.com/company/lifelib" target="_blank">lifelib on LinkedIn</a>
     for more frequent updates.</p>
 
+* *10 Aug 2025:*
+  New download available on the :doc:`download` page.
+
 * *1 February 2025:*
   lifelib :ref:`v0.11.0<relnotes_v0.11.0>` is released.
   :mod:`~basiclife.BasicTerm_SC`, a new model optimized
   for generating a compiled model using `Cython <https://cython.org/>`_ with
   `modelx-cython <https://github.com/fumitoh/modelx-cython>`_ is introduced.
+
+.. Latest Updates End
 
 * *15 July 2024:*
   lifelib :ref:`v0.10.1<relnotes_v0.10.0>` is released.
@@ -29,8 +34,6 @@ Updates
 
 * *18 February 2024:*
   lifelib :ref:`v0.9.5<relnotes_v0.9.5>` is released to support modelx 0.25.0.
-
-.. Latest Updates End
 
 * *23 December 2023:*
   lifelib :ref:`v0.9.4<relnotes_v0.9.4>` is released. Notebooks can now be opend and run on Google Colab.
