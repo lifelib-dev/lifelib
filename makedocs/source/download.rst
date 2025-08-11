@@ -1,3 +1,4 @@
+:html_theme.sidebar_secondary.remove:
 
 ========
 Download
@@ -7,7 +8,7 @@ Download lifelib with WinPython.
 
 .. raw:: html
 
-    <a class="btn btn-primary btn-lg" href="https://drive.google.com/u/0/uc?export=download&id=1QyeYSGcNDEsD3gSAmsjJWi9uJA2o-VP_" role="button">Download</a>
+    <a class="btn btn-primary btn-lg" href="https://drive.google.com/u/0/uc?export=download&id=1OsfXa_BjgJMG8Okfc0E22pk8Ldj_C8Vk" role="button">Download</a>
 
 :ref:`Install manually <installation>` if you're a Linux or Mac user.
 
@@ -15,10 +16,41 @@ Download lifelib with WinPython.
 File Information
 ================
 
-Latest release (13 May 2023)
+Latest release (10 Aug 2025)
 ------------------------------
 
-:Downloadable: WPy64-31020-20230513.zip
+:Downloadable: WPy64-31350-20250810.zip
+
+:Base Python Distribution:
+    WinPython64-3.13.5.0slim
+
+    (Python 3.13.5 + Spyder 6.0.7)
+
+:Additional Packages:
+    openpyxl 3.1.5 *(Updated)*
+
+    numpy-financial 1.0.0 *(Updated)*
+
+    modelx 0.28.1 *(Updated)*
+
+    spyder-modelx 0.14.2 *(Updated)*
+
+    spymx-kernels 0.2.3 *(Updated)*
+
+    modelx-cython 0.0.6 *(New)*
+
+    lifelib 0.11.0 *(Updated)*
+
+    QuantLib 1.39 *(Updated)*
+
+
+Past releases
+-------------
+
+13 May 2023
+^^^^^^^^^^^
+
+:Downloadable: `WPy64-31020-20230513.zip`_
 
 :Base Python Distribution:
     WinPython64-3.10.2.0
@@ -40,9 +72,7 @@ Latest release (13 May 2023)
 
     QuantLib 1.26
 
-
-Past releases
--------------
+.. _WPy64-31020-20230513.zip: https://drive.google.com/u/0/uc?export=download&id=1QyeYSGcNDEsD3gSAmsjJWi9uJA2o-VP_
 
 19 Nov 2022
 ^^^^^^^^^^^
