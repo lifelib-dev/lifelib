@@ -178,15 +178,15 @@ def build():
     def proj_params(Risk='base', Shock=None, Scope=None):
 
         if Risk == 'mort' or Risk == 'longev':
-            base = _space.model.Override.Mortality
+            base = _model.Override.Mortality
         
         elif Risk == 'lapse':
             if Shock == 'mass':
-                base = _space.model.Override.LapseMass
+                base = _model.Override.LapseMass
             else:
-                base = _space.model.Override.Lapse
+                base = _model.Override.Lapse
         elif Risk == 'exps':
-                base = _space.model.Override.Expense
+                base = _model.Override.Expense
         else:
             base = _space
     
@@ -194,7 +194,7 @@ def build():
                 'asmp': Assumption[PolicyID],
                 'scen': Economic[ScenID],
                 'DiscRate': Economic[ScenID].DiscRate,
-                'Factor': _space.model.Input.Factor}
+                'Factor': _model.Input.Factor}
         
         return {'base': base, 'refs': refs}
 

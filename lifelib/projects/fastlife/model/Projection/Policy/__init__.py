@@ -92,8 +92,8 @@ def InitSurrCharge():
         prod, polt, gen = pol['Product'], pol['PolicyType'], pol['Gen']
         term = pol['PolicyTerm']
 
-        param1 = _space.SpecLookup.match("SurrChargeParam1", prod, polt, gen).value
-        param2 = _space.SpecLookup.match("SurrChargeParam2", prod, polt, gen).value
+        param1 = _space.SpecLookup("SurrChargeParam1", prod, polt, gen)
+        param2 = _space.SpecLookup("SurrChargeParam2", prod, polt, gen)
 
         if param1 is None or param2 is None:
             raise ValueError('SurrChargeParam not found')
@@ -120,10 +120,10 @@ def IntRate(RateBasis):
 
     def get_value(pol):
 
-        result = _space.SpecLookup.match(basis,
+        result = _space.SpecLookup(basis,
                                   pol["Product"], 
                                   pol["PolicyType"],
-                                  pol["Gen"]).value
+                                  pol["Gen"])
 
         if result is not None:
             return result
@@ -174,10 +174,10 @@ def LoadMaintSA():
 
     def get_value(pol):
 
-        result = _space.SpecLookup.match("LoadMaintSA",
+        result = _space.SpecLookup("LoadMaintSA",
                                   pol["Product"], 
                                   pol["PolicyType"],
-                                  pol["Gen"]).value
+                                  pol["Gen"])
 
         if result is not None:
             return result
@@ -195,10 +195,10 @@ def LoadMaintSA2():
 
     def get_value(pol):
 
-        result = _space.SpecLookup.match("LoadMaintSA2",
+        result = _space.SpecLookup("LoadMaintSA2",
                                   pol["Product"], 
                                   pol["PolicyType"],
-                                  pol["Gen"]).value
+                                  pol["Gen"])
 
         if result is not None:
             return result
@@ -291,10 +291,10 @@ def TableID(RateBasis):
 
     def get_value(pol):
 
-        result = _space.SpecLookup.match(basis,
+        result = _space.SpecLookup(basis,
                                   pol["Product"], 
                                   pol["PolicyType"],
-                                  pol["Gen"]).value
+                                  pol["Gen"])
 
         if result is not None:
             return result
@@ -373,8 +373,20 @@ def PolicyDataExt2():
 
 def SpecLookup(spec, prod=None, polt=None, gen=None):
     """Look up product specs"""
-    return ProductSpec.get((spec, prod, polt, gen), None)
+    # return ProductSpec.get((spec, prod, polt, gen), None)
+    from itertools import combinations
+    key = [prod, polt, gen]
 
+    for match_len in range(3, -1, -1):
+        for idxs in combinations(range(3), match_len):
+            masked = [None] * 3
+            for idx in idxs:
+                masked[idx] = key[idx]
+            value = ProductSpec.get((spec, *masked))
+            if value is not None:
+                return value
+
+    return None
 
 # ---------------------------------------------------------------------------
 # References

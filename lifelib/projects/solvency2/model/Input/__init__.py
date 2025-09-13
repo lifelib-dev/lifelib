@@ -26,22 +26,22 @@ def Factor(risk=None, shock=None, scope=None, extrakey=None):
 # ---------------------------------------------------------------------------
 # References
 
-PolicyData = ("IOSpec", 1401484906208, 1401484906208)
+PolicyData = ("IOSpec", 2715314537776, 2715314537776)
 
-MortalityTables = ("IOSpec", 1401491066256, 1401491066256)
+MortalityTables = ("IOSpec", 2715323893280, 2715323893280)
 
-AssumptionTables = ("IOSpec", 1401491065920, 1401491065920)
+AssumptionTables = ("IOSpec", 2715324588032, 2715324588032)
 
-Scenarios = ("IOSpec", 1401491066160, 1401491066160)
+Scenarios = ("IOSpec", 2715321106752, 2715321106752)
 
-DiscountRate = ("IOSpec", 1401491066112, 1401491066112)
+DiscountRate = ("IOSpec", 2715330669856, 2715330669856)
 
-PremWaiverCost = ("IOSpec", 1401491065968, 1401491065968)
+PremWaiverCost = ("IOSpec", 2715330671248, 2715330671248)
 
-Assumption = ("IOSpec", 1401497101040, 1401497101040)
+Assumption = ("IOSpec", 2715330671296, 2715330671296)
 
-ProductSpec = ("IOSpec", 1401497101232, 1401497101232)
+ProductSpec = ("IOSpec", 2715330671824, 2715330671824)
 
-CorrData = ("IOSpec", 1401497102096, 1401497102096)
+CorrData = ("IOSpec", 2715330672832, 2715330672832)
 
-FactorData = ("IOSpec", 1401497105264, 1401497105264)
+FactorData = ("IOSpec", 2715330673024, 2715330673024)
