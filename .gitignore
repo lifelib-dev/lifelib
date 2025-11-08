@@ -14,6 +14,10 @@ temp[1-9].py
 .tox
 .cache
 .pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+.coverage.*
 
 # due to using PyCharm
 .idea/
