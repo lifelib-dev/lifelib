@@ -95,6 +95,31 @@ lifelib consists of multiple libraries.
 Each library may have additional requirements in addition to the above.
 
 
+Development
+-----------
+
+For developers contributing to lifelib, a Makefile is provided to simplify
+environment setup and common development tasks.
+
+Quick start::
+
+    make init                      # Set up development environment (use Git Bash or WSL if you use a Windows machine)
+    source venv_lifelib/bin/activate  # Activate virtual environment 
+    make test                      # Run tests
+
+Common commands::
+
+    make help              # Show all available commands
+    make install-dev       # Install with dev dependencies
+    make test              # Run tests
+    make test-cov          # Run tests with coverage report
+    make format            # Auto-format code (black, isort)
+    make lint              # Check code quality (flake8)
+    make clean             # Clean generated files
+
+For detailed information, see ``devnotes/MAKEFILE.md`` and ``devnotes/TESTING.md``.
+
+
 Contributors
 ------------
 
