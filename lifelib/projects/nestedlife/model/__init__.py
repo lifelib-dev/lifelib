@@ -4,12 +4,4 @@ _name = "nestedlife"
 
 _allow_none = False
 
-_spaces = [
-    "Input",
-    "LifeTable",
-    "Economic",
-    "BaseProj",
-    "PV",
-    "OuterProj"
-]
-
+_spaces = ["Input", "LifeTable", "Economic", "BaseProj", "PV", "OuterProj"]

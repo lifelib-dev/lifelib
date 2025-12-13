@@ -94,40 +94,47 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+
 def const_params():
     """Constant parameters"""
-    return pd.read_excel(_model.path.parent / parameter_file,
-                         sheet_name="ConstParams",
-                         index_col="parameter")
+    return pd.read_excel(
+        _model.path.parent / parameter_file,
+        sheet_name="ConstParams",
+        index_col="parameter",
+    )
 
 
 def param_list():
     """List of fixed parameters"""
-    return pd.read_excel(_model.path.parent / parameter_file,
-                         sheet_name="ParamList",
-                         index_col="parameter")
+    return pd.read_excel(
+        _model.path.parent / parameter_file,
+        sheet_name="ParamList",
+        index_col="parameter",
+    )
 
 
 def product_params(space_name: str):
     """Product parameters"""
-    return pd.read_excel(_model.path.parent / parameter_file,
-                         sheet_name=space_name,
-                         index_col=[0, 1])
+    return pd.read_excel(
+        _model.path.parent / parameter_file, sheet_name=space_name, index_col=[0, 1]
+    )
 
 
 def run_params():
     """Run parameters"""
-    return pd.read_excel(_model.path.parent / parameter_file,
-                         sheet_name="RunParams",
-                         index_col="run_id",
-                         dtype={"date_id": object, "asmp_id": object})
+    return pd.read_excel(
+        _model.path.parent / parameter_file,
+        sheet_name="RunParams",
+        index_col="run_id",
+        dtype={"date_id": object, "asmp_id": object},
+    )
 
 
 def space_params():
     """Space parameters"""
-    return pd.read_excel(_model.path.parent / parameter_file,
-                         sheet_name="SpaceParams",
-                         index_col="space")
+    return pd.read_excel(
+        _model.path.parent / parameter_file, sheet_name="SpaceParams", index_col="space"
+    )
 
 
 def stacked_surr_charge_tables():

@@ -22,6 +22,7 @@ Attributes:
 
 from modelx.serialize.jsonvalues import *
 
+
 def _formula(t0, PolicyID, ScenID=1):
     pass
 
@@ -30,12 +31,11 @@ _bases = []
 
 _allow_none = None
 
-_spaces = [
-    "Projection"
-]
+_spaces = ["Projection"]
 
 # ---------------------------------------------------------------------------
 # Cells
+
 
 def LapseRisk(shock):
     """The capital requirement for lapse risk for each shock
@@ -45,19 +45,21 @@ def LapseRisk(shock):
             ("up", "down", "mass")
     """
 
-    if shock in ['up', 'down']:
-        return max(NetAstValue() - NetAstValue('lapse', shock), 0)
+    if shock in ["up", "down"]:
+        return max(NetAstValue() - NetAstValue("lapse", shock), 0)
 
-    elif shock == 'mass':
+    elif shock == "mass":
 
         retail_share = 1
         nonretail_share = 1 - retail_share
 
-        retail = NetAstValue() - NetAstValue('lapse', shock) \
-            if retail_share else 0
+        retail = NetAstValue() - NetAstValue("lapse", shock) if retail_share else 0
 
-        nonretail = NetAstValue() - NetAstValue('lapse', shock, 'noretail') \
-            if nonretail_share else 0
+        nonretail = (
+            NetAstValue() - NetAstValue("lapse", shock, "noretail")
+            if nonretail_share
+            else 0
+        )
 
         return max(retail_share * retail + nonretail_share * nonretail, 0)
 
@@ -73,13 +75,13 @@ def Life(risk):
             "longev", "disab", "lapse", "exps", "rev", "cat")
     """
 
-    if risk == 'lapse':
-        return max(LapseRisk(shock) for shock in ['up', 'down', 'mass'])    
+    if risk == "lapse":
+        return max(LapseRisk(shock) for shock in ["up", "down", "mass"])
     else:
         return max(NetAstValue() - NetAstValue(risk), 0)
 
 
-def NetAstValue(risk='base', shock=None, scope=None):
+def NetAstValue(risk="base", shock=None, scope=None):
     """Net value of assets minus liabilities
 
     This formula is simplified and present value of net

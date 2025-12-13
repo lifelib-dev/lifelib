@@ -155,13 +155,14 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+
 def age_at_entry():
     """Age at entry
 
     Returns the age at entry attribute of all model points
     as a numpy array of type *int64*.
     """
-    return model_point_table["age_at_entry"].to_numpy(dtype='int64')
+    return model_point_table["age_at_entry"].to_numpy(dtype="int64")
 
 
 def sex():
@@ -171,7 +172,7 @@ def sex():
     as a numpy array. This is not used by default.
     """
     # Not used
-    return model_point_table['sex'].to_numpy()
+    return model_point_table["sex"].to_numpy()
 
 
 def policy_term():
@@ -180,7 +181,7 @@ def policy_term():
     Returns the policy term attribute of all model points
     as a numpy array of type *int64*.
     """
-    return model_point_table['policy_term'].to_numpy(dtype='int64')
+    return model_point_table["policy_term"].to_numpy(dtype="int64")
 
 
 def policy_count():
@@ -189,7 +190,7 @@ def policy_count():
     Returns the policy count attribute of all model points
     as a numpy array of type *float64*.
     """
-    return model_point_table['policy_count'].to_numpy(dtype='float64')
+    return model_point_table["policy_count"].to_numpy(dtype="float64")
 
 
 def sum_assured():
@@ -198,7 +199,7 @@ def sum_assured():
     Returns the sum assured attribute of all model points
     as a numpy array of type *float64*.
     """
-    return model_point_table['sum_assured'].to_numpy(dtype='float64')
+    return model_point_table["sum_assured"].to_numpy(dtype="float64")
 
 
 def point_id():
@@ -209,7 +210,7 @@ def point_id():
     This attribute is not used, and the index of the numpy array is
     used as the model point identifier.
     """
-    return model_point_table.index.to_numpy(dtype='int64')
+    return model_point_table.index.to_numpy(dtype="int64")
 
 
 def mort_table_array():
@@ -222,9 +223,10 @@ def mort_table_array():
     """
     start_age = mort_table.index[0]
 
-    return np.concatenate( 
+    return np.concatenate(
         (np.full((start_age, len(mort_table.columns)), np.nan), mort_table.to_numpy()),
-        axis=0)
+        axis=0,
+    )
 
 
 def disc_rate_ann_array():

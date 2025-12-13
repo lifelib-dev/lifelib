@@ -39,6 +39,7 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+
 def A_t_T(i, j):
     r""":math:`A(t_i, t_j)` in :math:`P(t_i, t_j)`
 
@@ -50,8 +51,10 @@ def A_t_T(i, j):
     f_t = mkt_fwd(i)
     B = B_t_T(i, j)
 
-    return P_T / P_t * np.exp(
-        B * f_t - sigma**2 / (4*a) * (1 - np.exp(-2*a*t)) * B**2 
+    return (
+        P_T
+        / P_t
+        * np.exp(B * f_t - sigma**2 / (4 * a) * (1 - np.exp(-2 * a * t)) * B**2)
     )
 
 
@@ -61,7 +64,7 @@ def B_t_T(i, j):
     See :meth:`P_t_T`.
     """
     t, T = t_(i), t_(j)
-    return (1 / a) * (1 - np.exp(-a * (T-t)))
+    return (1 / a) * (1 - np.exp(-a * (T - t)))
 
 
 def E_rt():
@@ -100,7 +103,7 @@ def E_rt_s(i, j):
     """
     s, t = t_(i), t_(j)
     r_s = short_rate(i)
-    return r_s * np.exp(-a * (t-s)) + alpha(j) - alpha(i) * np.exp(-a * (t-s))
+    return r_s * np.exp(-a * (t - s)) + alpha(j) - alpha(i) * np.exp(-a * (t - s))
 
 
 def P_t_T(i, j):
@@ -142,7 +145,16 @@ def V_t_T(i, j):
 
     """
     dt = t_(j) - t_(i)
-    return sigma**2 / a**2 * (dt + (2/a)*np.exp(-a*dt) - (1/(2*a))*np.exp(-2*a*dt) - (3/(2*a)))
+    return (
+        sigma**2
+        / a**2
+        * (
+            dt
+            + (2 / a) * np.exp(-a * dt)
+            - (1 / (2 * a)) * np.exp(-2 * a * dt)
+            - (3 / (2 * a))
+        )
+    )
 
 
 def Var_rt():
@@ -175,7 +187,7 @@ def Var_rt_s(i, j):
 
     """
     s, t = t_(i), t_(j)
-    return sigma**2 / (2*a) * (1 - np.exp(-2 * a * (t-s)))
+    return sigma**2 / (2 * a) * (1 - np.exp(-2 * a * (t - s)))
 
 
 def accum_short_rate(i):
@@ -190,8 +202,8 @@ def accum_short_rate(i):
     if i == 0:
         return np.full(scen_size, 0.0)
     else:
-        dt = t_(i) - t_(i-1)
-        return accum_short_rate(i-1) + short_rate(i-1) * dt
+        dt = t_(i) - t_(i - 1)
+        return accum_short_rate(i - 1) + short_rate(i - 1) * dt
 
 
 def accum_short_rate2(i):
@@ -210,16 +222,24 @@ def accum_short_rate2(i):
     if i == 0:
         return np.full(scen_size, 0.0)
     else:
-        t, T = t_(i-1), t_(i)
+        t, T = t_(i - 1), t_(i)
         dt = T - t
-        cov = sigma**2/(2*a**2)*(1 + np.exp(-2*a*dt) -2 * np.exp(-a*dt))
-        z1 = std_norm_rand(seed1)[:, i-1]
-        z2 = std_norm_rand(seed2)[:, i-1]
+        cov = sigma**2 / (2 * a**2) * (1 + np.exp(-2 * a * dt) - 2 * np.exp(-a * dt))
+        z1 = std_norm_rand(seed1)[:, i - 1]
+        z2 = std_norm_rand(seed2)[:, i - 1]
 
-        rho = cov / (Var_rt_s(i-1, i)**0.5 * V_t_T(i-1, i)**0.5)
+        rho = cov / (Var_rt_s(i - 1, i) ** 0.5 * V_t_T(i - 1, i) ** 0.5)
 
-        mean = B_t_T(i-1, i) * (short_rate(i-1) - alpha(i-1)) + np.log(mkt_zcb(i-1)/mkt_zcb(i)) + 0.5*(V_t_T(0, i)-V_t_T(0, i-1))
-        return accum_short_rate2(i-1) + mean + V_t_T(i-1, i)**0.5 * (rho*z1 + (1-rho**2)**0.5*z2)
+        mean = (
+            B_t_T(i - 1, i) * (short_rate(i - 1) - alpha(i - 1))
+            + np.log(mkt_zcb(i - 1) / mkt_zcb(i))
+            + 0.5 * (V_t_T(0, i) - V_t_T(0, i - 1))
+        )
+        return (
+            accum_short_rate2(i - 1)
+            + mean
+            + V_t_T(i - 1, i) ** 0.5 * (rho * z1 + (1 - rho**2) ** 0.5 * z2)
+        )
 
 
 def alpha(i):
@@ -238,7 +258,7 @@ def alpha(i):
 
     """
     t = t_(i)
-    return mkt_fwd(i) + 0.5 * sigma**2 / a**2 * (1 - np.exp(-a*t))**2
+    return mkt_fwd(i) + 0.5 * sigma**2 / a**2 * (1 - np.exp(-a * t)) ** 2
 
 
 def disc_factor(i):
@@ -322,8 +342,8 @@ def mkt_zcb(i):
     if i == 0:
         return 1.0
     else:
-        dt = t_(i) - t_(i-1)
-        return mkt_zcb(i-1) * np.exp(-mkt_fwd(i-1)*dt)
+        dt = t_(i) - t_(i - 1)
+        return mkt_zcb(i - 1) * np.exp(-mkt_fwd(i - 1) * dt)
 
 
 def short_rate(i):
@@ -355,7 +375,10 @@ def short_rate(i):
     if i == 0:
         return np.full(scen_size, mkt_fwd(0))
     else:
-        return E_rt_s(i-1, i) + Var_rt_s(i-1, i)**0.5 * std_norm_rand(seed1)[:, i-1]
+        return (
+            E_rt_s(i - 1, i)
+            + Var_rt_s(i - 1, i) ** 0.5 * std_norm_rand(seed1)[:, i - 1]
+        )
 
 
 def short_rate_paths():
@@ -379,7 +402,7 @@ def std_norm_rand(seed=1234):
 
     size = (scen_size, step_size)
 
-    if hasattr(np.random, 'default_rng'):
+    if hasattr(np.random, "default_rng"):
         gen = np.random.default_rng(seed)
         return gen.standard_normal(size)
     else:
@@ -389,6 +412,7 @@ def std_norm_rand(seed=1234):
 
 t_ = lambda i: i * time_len / step_size
 """time index :math:`t_i`"""
+
 
 def var_short_rate():
     """Variance of generated short rates

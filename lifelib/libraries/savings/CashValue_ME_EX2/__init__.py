@@ -4,8 +4,4 @@ _name = "CashValue_ME_EX2"
 
 _allow_none = False
 
-_spaces = [
-    "Projection",
-    "Summary"
-]
-
+_spaces = ["Projection", "Summary"]

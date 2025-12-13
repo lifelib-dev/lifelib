@@ -221,6 +221,7 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+
 def age(t):
     """The attained age at time t.
 
@@ -317,7 +318,7 @@ def av_change(t):
         * :func:`net_cf`
 
     """
-    return av_at(t+1, 'BEF_MAT') - av_at(t, 'BEF_MAT')
+    return av_at(t + 1, "BEF_MAT") - av_at(t, "BEF_MAT")
 
 
 def av_pp_at(t, timing):
@@ -375,7 +376,7 @@ def av_pp_at(t, timing):
         if t == 0:
             return av_pp_init()
         else:
-            return av_pp_at(t-1, "BEF_INV") + inv_income_pp(t-1)
+            return av_pp_at(t - 1, "BEF_INV") + inv_income_pp(t - 1)
 
     elif timing == "BEF_FEE":
         return av_pp_at(t, "BEF_PREM") + prem_to_av_pp(t)
@@ -434,16 +435,18 @@ def check_av_roll_fwd():
     """
     for t in range(max_proj_len()):
 
-        av = (av_at(t, "BEF_MAT")
-              + prem_to_av(t)
-              - maint_fee(t)
-              - coi(t)
-              + inv_income(t)
-              - claims_from_av(t, "DEATH")
-              - claims_from_av(t, "LAPSE")
-              - claims_from_av(t, "MATURITY"))
+        av = (
+            av_at(t, "BEF_MAT")
+            + prem_to_av(t)
+            - maint_fee(t)
+            - coi(t)
+            + inv_income(t)
+            - claims_from_av(t, "DEATH")
+            - claims_from_av(t, "LAPSE")
+            - claims_from_av(t, "MATURITY")
+        )
 
-        if np.all(np.isclose(av_at(t+1, "BEF_MAT"), av)):
+        if np.all(np.isclose(av_at(t + 1, "BEF_MAT"), av)):
             continue
         else:
             return False
@@ -467,7 +470,9 @@ def check_margin():
     """
     res = []
     for t in range(max_proj_len()):
-        res.append(np.all(np.isclose(net_cf(t), margin_expense(t) + margin_mortality(t))))
+        res.append(
+            np.all(np.isclose(net_cf(t), margin_expense(t) + margin_mortality(t)))
+        )
 
     return all(res)
 
@@ -486,7 +491,7 @@ def check_pv_net_cf():
 
     """
     cfs = np.array(list(net_cf(t) for t in range(max_proj_len()))).transpose()
-    pvs = cfs @ disc_factors()[:max_proj_len()]
+    pvs = cfs @ disc_factors()[: max_proj_len()]
 
     return np.all(np.isclose(pvs, pv_net_cf()))
 
@@ -699,7 +704,7 @@ def coi_rate(t):
         * :func:`coi_rate`
 
     """
-    return 0    #1.1 * mort_rate_mth(t)
+    return 0  # 1.1 * mort_rate_mth(t)
 
 
 def commissions(t):
@@ -726,7 +731,7 @@ def disc_factors(t):
 
         :func:`disc_rate_mth`
     """
-    return (1 + disc_rate_mth(t))**(-t)
+    return (1 + disc_rate_mth(t)) ** (-t)
 
 
 def disc_rate_mth(t):
@@ -742,7 +747,7 @@ def disc_rate_mth(t):
         :func:`disc_rate_ann`
 
     """
-    return (1 + disc_rate_ann[t//12])**(1/12) - 1
+    return (1 + disc_rate_ann[t // 12]) ** (1 / 12) - 1
 
 
 def duration(t):
@@ -751,7 +756,7 @@ def duration(t):
     .. seealso:: :func:`duration_mth`
 
     """
-    return duration_mth(t) //12
+    return duration_mth(t) // 12
 
 
 def duration_mth(t):
@@ -770,9 +775,9 @@ def duration_mth(t):
     """
 
     if t == 0:
-        return model_point()['duration_mth'].values
+        return model_point()["duration_mth"].values
     else:
-        return duration_mth(t-1) + 1
+        return duration_mth(t - 1) + 1
 
 
 def expense_acq():
@@ -811,34 +816,35 @@ def expenses(t):
         * :func:`pols_if_at`
     """
 
-    return expense_acq() * pols_new_biz(t) \
-        + pols_if_at(t, "BEF_DECR") * expense_maint()/12 * inflation_factor(t)
+    return expense_acq() * pols_new_biz(t) + pols_if_at(
+        t, "BEF_DECR"
+    ) * expense_maint() / 12 * inflation_factor(t)
 
 
 def formula_option_put(t):
     """
-        S: prem_to_av
-        X: claims
-        sigma: 0.03
-        r: 0.02
+    S: prem_to_av
+    X: claims
+    sigma: 0.03
+    r: 0.02
 
     """
     mps = model_point_table_ext()
-    cond = mps['policy_term'] * 12 == t
+    cond = mps["policy_term"] * 12 == t
     mps = mps.loc[cond]
 
     T = t / 12
-    S = av_at(0, 'BEF_FEE')[:, 1][cond]
+    S = av_at(0, "BEF_FEE")[:, 1][cond]
     X = (sum_assured() * pols_maturity(t))[:, 1][cond]
     sigma = 0.03
     r = 0.02
     N = stats.norm.cdf
     e = np.exp
 
-    d1 = (np.log(S/X) + (r + 0.5 * sigma**2) * T) / (sigma * np.sqrt(T))
+    d1 = (np.log(S / X) + (r + 0.5 * sigma**2) * T) / (sigma * np.sqrt(T))
     d2 = d1 - sigma * np.sqrt(T)
 
-    return X * e(-r*T) * N(-d2) - S * N(-d1)
+    return X * e(-r * T) * N(-d2) - S * N(-d1)
 
 
 def has_surr_charge():
@@ -854,7 +860,7 @@ def has_surr_charge():
         * :func:`model_point`
 
     """
-    return model_point()['has_surr_charge'].values
+    return model_point()["has_surr_charge"].values
 
 
 def inflation_factor(t):
@@ -865,7 +871,7 @@ def inflation_factor(t):
         * :func:`inflation_rate`
 
     """
-    return (1 + inflation_rate())**(t/12)
+    return (1 + inflation_rate()) ** (t / 12)
 
 
 def inflation_rate():
@@ -897,8 +903,9 @@ def inv_income(t):
         * :func:`pols_lapse`
 
     """
-    return (inv_income_pp(t) * pols_if_at(t+1, "BEF_MAT")
-            + 0.5 * inv_income_pp(t) * (pols_death(t) + pols_lapse(t)))
+    return inv_income_pp(t) * pols_if_at(t + 1, "BEF_MAT") + 0.5 * inv_income_pp(t) * (
+        pols_death(t) + pols_lapse(t)
+    )
 
 
 def inv_income_pp(t):
@@ -954,11 +961,12 @@ def inv_return_table():
     """
     mu = 0.02
     sigma = 0.03
-    dt = 1/12
+    dt = 1 / 12
 
-    return np.tile(np.exp(
-        (mu - 0.5 * sigma**2) * dt + sigma * dt**0.5 * std_norm_rand()) - 1,
-        (point_size(), 1))
+    return np.tile(
+        np.exp((mu - 0.5 * sigma**2) * dt + sigma * dt**0.5 * std_norm_rand()) - 1,
+        (point_size(), 1),
+    )
 
 
 def is_wl():
@@ -978,7 +986,7 @@ def is_wl():
         * :func:`model_point`
 
     """
-    return model_point()['is_wl'].values
+    return model_point()["is_wl"].values
 
 
 def lapse_rate(t):
@@ -1011,7 +1019,7 @@ def load_prem_rate():
         * :func:`premium_pp`
 
     """
-    return model_point()['load_prem_rate'].values
+    return model_point()["load_prem_rate"].values
 
 
 def maint_fee(t):
@@ -1048,7 +1056,7 @@ def maint_fee_rate():
         * :func:`maint_fee`
 
     """
-    return 0    # 0.01 / 12
+    return 0  # 0.01 / 12
 
 
 def margin_expense(t):
@@ -1074,11 +1082,13 @@ def margin_expense(t):
         * :func:`check_margin`
 
     """
-    return (load_prem_rate()* premium_pp(t) * pols_if_at(t, "BEF_DECR")
-            + surr_charge(t)
-            + maint_fee(t)
-            - commissions(t)
-            - expenses(t))
+    return (
+        load_prem_rate() * premium_pp(t) * pols_if_at(t, "BEF_DECR")
+        + surr_charge(t)
+        + maint_fee(t)
+        - commissions(t)
+        - expenses(t)
+    )
 
 
 def margin_mortality(t):
@@ -1095,7 +1105,7 @@ def margin_mortality(t):
         * :func:`claims_over_av`
 
     """
-    return coi(t) - claims_over_av(t, 'DEATH')
+    return coi(t) - claims_over_av(t, "DEATH")
 
 
 max_proj_len = lambda: max(proj_len())
@@ -1106,6 +1116,7 @@ Defined as ``max(proj_len())``
 .. seealso::
     :func:`proj_len`
 """
+
 
 def model_point():
     """Target model points
@@ -1150,15 +1161,12 @@ def model_point():
     mps = model_point_table_ext()
 
     idx = pd.MultiIndex.from_product(
-            [mps.index, scen_index()],
-            names = mps.index.names + scen_index().names
-            )
+        [mps.index, scen_index()], names=mps.index.names + scen_index().names
+    )
 
     res = pd.DataFrame(
-            np.repeat(mps.values, len(scen_index()), axis=0),
-            index=idx,
-            columns=mps.columns
-        )
+        np.repeat(mps.values, len(scen_index()), axis=0), index=idx, columns=mps.columns
+    )
 
     return res.astype(mps.dtypes)
 
@@ -1176,7 +1184,7 @@ def model_point_table_ext():
 
 
     """
-    return model_point_table.join(product_spec_table, on='spec_id')
+    return model_point_table.join(product_spec_table, on="spec_id")
 
 
 def mort_rate(t):
@@ -1217,7 +1225,7 @@ def mort_rate_mth(t):
        * :func:`mort_rate`
 
     """
-    return 1-(1- mort_rate(t))**(1/12)
+    return 1 - (1 - mort_rate(t)) ** (1 / 12)
 
 
 def mort_table_last_age():
@@ -1249,7 +1257,7 @@ def mort_table_reindexed():
     result = []
     for col in mort_table.columns:
         df = mort_table[[col]]
-        df = df.assign(Duration=int(col)).set_index('Duration', append=True)[col]
+        df = df.assign(Duration=int(col)).set_index("Duration", append=True)[col]
         result.append(df)
 
     return pd.concat(result)
@@ -1267,7 +1275,7 @@ def net_amt_at_risk(t):
 
 
     """
-    return np.maximum(sum_assured() - av_pp_at(t, 'BEF_FEE'), 0)
+    return np.maximum(sum_assured() - av_pp_at(t, "BEF_FEE"), 0)
 
 
 def net_cf(t):
@@ -1285,8 +1293,14 @@ def net_cf(t):
         * :func:`commissions`
 
     """
-    return (premiums(t)
-            + inv_income(t) - claims(t) - expenses(t) - commissions(t) - av_change(t))
+    return (
+        premiums(t)
+        + inv_income(t)
+        - claims(t)
+        - expenses(t)
+        - commissions(t)
+        - av_change(t)
+    )
 
 
 def policy_term():
@@ -1296,8 +1310,10 @@ def policy_term():
     :func:`model_point`.
     """
 
-    return (is_wl() * (mort_table_last_age() - age_at_entry()) 
-            + (is_wl() == False) * model_point()["policy_term"].values)
+    return (
+        is_wl() * (mort_table_last_age() - age_at_entry())
+        + (is_wl() == False) * model_point()["policy_term"].values
+    )
 
 
 def pols_death(t):
@@ -1367,7 +1383,7 @@ def pols_if_at(t, timing):
         if t == 0:
             return pols_if_init()
         else:
-            return pols_if_at(t-1, "BEF_DECR") - pols_lapse(t-1) - pols_death(t-1)
+            return pols_if_at(t - 1, "BEF_DECR") - pols_lapse(t - 1) - pols_death(t - 1)
 
     elif timing == "BEF_NB":
 
@@ -1400,7 +1416,9 @@ def pols_lapse(t):
         * :func:`lapse_rate`
 
     """
-    return (pols_if_at(t, "BEF_DECR") - pols_death(t)) * (1-(1 - lapse_rate(t))**(1/12))
+    return (pols_if_at(t, "BEF_DECR") - pols_death(t)) * (
+        1 - (1 - lapse_rate(t)) ** (1 / 12)
+    )
 
 
 def pols_maturity(t):
@@ -1431,7 +1449,7 @@ def pols_new_biz(t):
         * :func:`model_point`
 
     """
-    return model_point()['policy_count'].values * (duration_mth(t) == 0)
+    return model_point()["policy_count"].values * (duration_mth(t) == 0)
 
 
 def prem_to_av(t):
@@ -1446,7 +1464,7 @@ def prem_to_av(t):
         * :func:`pols_if_at`
 
     """
-    return  prem_to_av_pp(t) * pols_if_at(t, "BEF_DECR")
+    return prem_to_av_pp(t) * pols_if_at(t, "BEF_DECR")
 
 
 def prem_to_av_pp(t):
@@ -1491,8 +1509,10 @@ def premium_pp(t):
     #     model_point().index)
     # return np.around(sum_assured() * prem_rates, 2)
 
-    return model_point()['premium_pp'].values * ((premium_type() == 'SINGLE') & (duration_mth(t) == 0) |
-                                                 (premium_type() == 'LEVEL') & (duration_mth(t) < 12 * policy_term()))
+    return model_point()["premium_pp"].values * (
+        (premium_type() == "SINGLE") & (duration_mth(t) == 0)
+        | (premium_type() == "LEVEL") & (duration_mth(t) < 12 * policy_term())
+    )
 
 
 def premium_type():
@@ -1502,7 +1522,7 @@ def premium_type():
     ``"LEVEL"`` if level payment, or ``"SINGLE"`` if single payment.
 
     """
-    return model_point()['premium_type'].values
+    return model_point()["premium_type"].values
 
 
 def premiums(t):
@@ -1662,12 +1682,14 @@ def pv_net_cf():
         * :func:`pv_commissions`
 
     """
-    return (pv_premiums() 
-            + pv_inv_income() 
-            - pv_claims() 
-            - pv_expenses() 
-            - pv_commissions() 
-            - pv_av_change())
+    return (
+        pv_premiums()
+        + pv_inv_income()
+        - pv_claims()
+        - pv_expenses()
+        - pv_commissions()
+        - pv_av_change()
+    )
 
 
 def pv_pols_if():
@@ -1680,7 +1702,9 @@ def pv_pols_if():
     It is used as the annuity factor for calculating :func:`net_premium_pp`.
 
     """
-    return sum(pols_if_at(t, "BEF_DECR") * disc_factors(t) for t in range(max_proj_len()))
+    return sum(
+        pols_if_at(t, "BEF_DECR") * disc_factors(t) for t in range(max_proj_len())
+    )
 
 
 def pv_premiums():
@@ -1716,7 +1740,7 @@ def result_cf():
         "Claims": [sum(claims(t)) for t in t_len],
         "Expenses": [sum(expenses(t)) for t in t_len],
         "Commissions": [sum(commissions(t)) for t in t_len],
-        "Net Cashflow": [sum(net_cf(t)) for t in t_len]
+        "Net Cashflow": [sum(net_cf(t)) for t in t_len],
     }
 
     return pd.DataFrame(data, index=t_len)
@@ -1742,7 +1766,7 @@ def result_pols():
         "pols_maturity": [sum(pols_maturity(t)) for t in t_len],
         "pols_new_biz": [sum(pols_new_biz(t)) for t in t_len],
         "pols_death": [sum(pols_death(t)) for t in t_len],
-        "pols_lapse": [sum(pols_lapse(t)) for t in t_len]
+        "pols_lapse": [sum(pols_lapse(t)) for t in t_len],
     }
 
     return pd.DataFrame(data, index=t_len)
@@ -1762,22 +1786,22 @@ def result_pv():
     """
 
     data = {
-            "Premiums": pv_premiums(), 
-            "Death": pv_claims("DEATH"),
-            "Surrender": pv_claims("LAPSE"),
-            "Maturity": pv_claims("MATURITY"),
-            "Expenses": pv_expenses(), 
-            "Commissions": pv_commissions(), 
-            "Investment Income": pv_inv_income(),
-            "Change in AV": pv_av_change(),
-            "Net Cashflow": pv_net_cf()
-        }
+        "Premiums": pv_premiums(),
+        "Death": pv_claims("DEATH"),
+        "Surrender": pv_claims("LAPSE"),
+        "Maturity": pv_claims("MATURITY"),
+        "Expenses": pv_expenses(),
+        "Commissions": pv_commissions(),
+        "Investment Income": pv_inv_income(),
+        "Change in AV": pv_av_change(),
+        "Net Cashflow": pv_net_cf(),
+    }
 
     return pd.DataFrame(data, index=model_point().index)
 
 
 def scen_index():
-    return pd.Index(range(1, scen_size + 1), name='scen_id')
+    return pd.Index(range(1, scen_size + 1), name="scen_id")
 
 
 def sex():
@@ -1794,7 +1818,7 @@ def sex():
 
 def std_norm_rand():
 
-    if hasattr(np.random, 'default_rng'):
+    if hasattr(np.random, "default_rng"):
 
         gen = np.random.default_rng(1234)
         rnd = gen.standard_normal((scen_size, 242))
@@ -1802,8 +1826,6 @@ def std_norm_rand():
     else:
         np.random.seed(1234)
         rnd = np.random.standard_normal(size=(scen_size, 242))
-
-
 
     return rnd
 
@@ -1814,7 +1836,7 @@ def sum_assured():
     The ``sum_assured`` column of the DataFrame returned by
     :func:`model_point`.
     """
-    return model_point()['sum_assured'].values
+    return model_point()["sum_assured"].values
 
 
 def surr_charge(t):
@@ -1847,7 +1869,7 @@ def surr_charge_id():
         * :func:`has_surr_charge`
 
     """
-    return model_point()['surr_charge_id'].values.astype(str)
+    return model_point()["surr_charge_id"].values.astype(str)
 
 
 def surr_charge_max_idx():
@@ -1880,11 +1902,13 @@ def surr_charge_rate(t):
         * :func:`surr_charge_table_stacked`
     """
     ind_row = np.minimum(duration(t), surr_charge_max_idx())
-    return surr_charge_table.values.flat[surr_charge_table_column() + ind_row * len(surr_charge_table.columns)]
+    return surr_charge_table.values.flat[
+        surr_charge_table_column() + ind_row * len(surr_charge_table.columns)
+    ]
 
 
 def surr_charge_table_column():
-    return surr_charge_table.columns.searchsorted(surr_charge_id(), side='right') - 1
+    return surr_charge_table.columns.searchsorted(surr_charge_id(), side="right") - 1
 
 
 def surr_charge_table_stacked():

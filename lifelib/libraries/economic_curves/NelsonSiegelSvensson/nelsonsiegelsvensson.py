@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.optimize import minimize
 
+
 def NelsonSiegelSvensson(T, beta0, beta1, beta2, beta3, lambda0, lambda1):
     """NelsonSiegelSvensson calculates the interpolated/extrapolated curve at points in the array "T" using the Nelson-Siegel-Svannson algorithm,
     parameterized with parameters beta0, beta1, beta2, beta3, lambda0, lambda1. It returns a numpy ndarray of points.
@@ -19,11 +20,11 @@ def NelsonSiegelSvensson(T, beta0, beta1, beta2, beta3, lambda0, lambda1):
 
     LINK TO SOURCE
     """
-    alpha1 = (1-np.exp(-T/lambda0)) / (T/lambda0)
-    alpha2 = alpha1 - np.exp(-T/lambda0)
-    alpha3 = (1-np.exp(-T/lambda1)) / (T/lambda1) - np.exp(-T/lambda1)
+    alpha1 = (1 - np.exp(-T / lambda0)) / (T / lambda0)
+    alpha2 = alpha1 - np.exp(-T / lambda0)
+    alpha3 = (1 - np.exp(-T / lambda1)) / (T / lambda1) - np.exp(-T / lambda1)
 
-    return beta0 + beta1*alpha1 + beta2*alpha2 + beta3*alpha3
+    return beta0 + beta1 * alpha1 + beta2 * alpha2 + beta3 * alpha3
 
 
 def NSSGoodFit(params, TimeVec, YieldVec):
@@ -38,7 +39,21 @@ def NSSGoodFit(params, TimeVec, YieldVec):
 
     LINK TO SOURCE
     """
-    return np.sum((NelsonSiegelSvensson(TimeVec, params[0], params[1], params[2], params[3], params[4], params[5])-YieldVec)**2)
+    return np.sum(
+        (
+            NelsonSiegelSvensson(
+                TimeVec,
+                params[0],
+                params[1],
+                params[2],
+                params[3],
+                params[4],
+                params[5],
+            )
+            - YieldVec
+        )
+        ** 2
+    )
 
 
 def NSSMinimize(beta0, beta1, beta2, beta3, lambda0, lambda1, TimeVec, YieldVec):
@@ -61,33 +76,13 @@ def NSSMinimize(beta0, beta1, beta2, beta3, lambda0, lambda1, TimeVec, YieldVec)
     https://docs.scipy.org/doc/scipy/reference/optimize.minimize-neldermead.html
     https://en.wikipedia.org/wiki/Nelder%E2%80%93Mead_method"""
 
-
-    opt_sol = minimize(NSSGoodFit, x0=np.array([beta0, beta1, beta2, beta3, lambda0, lambda1]), args = (TimeVec, YieldVec), method="Nelder-Mead")
-    if (opt_sol.success):
+    opt_sol = minimize(
+        NSSGoodFit,
+        x0=np.array([beta0, beta1, beta2, beta3, lambda0, lambda1]),
+        args=(TimeVec, YieldVec),
+        method="Nelder-Mead",
+    )
+    if opt_sol.success:
         return opt_sol.x
     else:
         return []
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

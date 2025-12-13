@@ -5,36 +5,35 @@
 Draw a graph of CSM amortization pattern.
 """
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 import seaborn as sns
+
 sns.set_theme(style="darkgrid")
 
 # %% Draw Actuarl vs Estimated charts
 
+
 def _get_est(inner, item, t0, t_max):
     """Get estimated values for ``item`` (nan for t < t0)."""
     cells = inner[t0].cells[item]
-    return [cells[t] if t >= t0 else np.nan
-            for t in range(t_max)]
+    return [cells[t] if t >= t0 else np.nan for t in range(t_max)]
 
 
 def _get_act(outer, item, t0, t_max):
     """Get actual values for ``item`` (nan for t > t0)."""
     cells = outer.cells[item]
-    return [cells[t] if t <= t0 else np.nan
-            for t in range(t_max)]
+    return [cells[t] if t <= t0 else np.nan for t in range(t_max)]
 
 
 def _get_actest(outer, inner, item, t0_max, t_max):
     """Get a pair of actual and estimated values at t0."""
-    return (_get_act(outer, item, t0_max, t_max),
-            _get_est(inner, item, t0_max, t_max))
+    return (_get_act(outer, item, t0_max, t_max), _get_est(inner, item, t0_max, t_max))
 
 
 def _draw_single_ncf(values, ax, xlim, ls):
     """Draw a plotted line of values."""
-    ax.plot(values, marker='o', linestyle=ls)
+    ax.plot(values, marker="o", linestyle=ls)
     ax.set_xlim(right=xlim, left=-1)
 
 
@@ -48,8 +47,8 @@ def draw_actest(outer, inner, item, act_len, t_max):
     for t0 in range(act_len):
         ax = axs[t0]
         act, est = _get_actest(outer, inner, item, t0, t_max + 1)
-        _draw_single_ncf(est, ax, t_max, ':')
-        _draw_single_ncf(act, ax, t_max, '-')
+        _draw_single_ncf(est, ax, t_max, ":")
+        _draw_single_ncf(act, ax, t_max, "-")
 
 
 def draw_actest_pairs(outer, inner, items, act_len, t_max):
@@ -67,16 +66,19 @@ def draw_actest_pairs(outer, inner, items, act_len, t_max):
         for t0 in range(nrows):
             ax = axs[t0][col]
             act, est = _get_actest(outer, inner, item, t0, t_max + 1)
-            _draw_single_ncf(est, ax, t_max, ':')
-            _draw_single_ncf(act, ax, t_max, '-')
+            _draw_single_ncf(est, ax, t_max, ":")
+            _draw_single_ncf(act, ax, t_max, "-")
+
 
 # %% Waterfall chart functions
+
 
 def get_waterfalldata(space, items, length, reverseitems=[]):
     """Create a DataFrame for drawing waterfall chart"""
 
-    data = type(space.cells)(
-        space.cells, space.cells.impl, keys=items).to_frame(range(length))
+    data = type(space.cells)(space.cells, space.cells.impl, keys=items).to_frame(
+        range(length)
+    )
     for outflow in reverseitems:
         data[outflow] = -1 * data[outflow]
     return data
@@ -123,14 +125,15 @@ def draw_waterfall(df, ax=None, stocks=[0], **kwargs):
     ax.bar(x, heights.values, bottom=bases.values, color=palette.colors)
 
     ax.set_xticks(x)
-    ax.set_xticklabels(xlabel, rotation='vertical')
-    if 'title' in kwargs:
-        ax.set_title(kwargs['title'])
+    ax.set_xticklabels(xlabel, rotation="vertical")
+    if "title" in kwargs:
+        ax.set_title(kwargs["title"])
     ax.get_figure().tight_layout()
     return ax
 
 
 # %% Unused
+
 
 class WaterfallColorPalette:
     """Returns color palette for drawing waterfall bars.
@@ -142,7 +145,7 @@ class WaterfallColorPalette:
         length: the number of bars in an interval. Defaults to the length of
                 `data` columns.
     """
-    
+
     def __init__(self, data, length=None):
 
         self.data = data
@@ -151,7 +154,7 @@ class WaterfallColorPalette:
         else:
             self.length = length
 
-        self.paired = plt.get_cmap('Paired').colors
+        self.paired = plt.get_cmap("Paired").colors
         self.colors = self.set_colors()
 
     def set_colors(self):
@@ -178,6 +181,7 @@ class CustomColorMap:
     Args:
         data: a sequence of bar values.
     """
+
     import math
 
     def __init__(self, data):
@@ -198,14 +202,15 @@ class CustomColorMap:
             absmax = self.posmax if value >= 0 else abs(self.negmin)
 
             idx0 = self.pallen / 2
-            return min(idx0 + math.floor(idx0 * value / absmax),
-                       self.pallen - 1)
+            return min(idx0 + math.floor(idx0 * value / absmax), self.pallen - 1)
 
     def get_colors(self, data):
         idxs = [int(self.get_index(val)) for val in data]
         return [self.palette[i] for i in idxs]
 
+
 # %% Draw stacked bar pair charts
+
 
 def draw_stackedbarpairs(data, ax=None, **kwargs):
     """Draw pairs of stacked bars
@@ -225,24 +230,30 @@ def draw_stackedbarpairs(data, ax=None, **kwargs):
     rbars = data[data >= 0]
     lbars = -1 * data[data < 0]
 
-    rbottom, lbottom = \
-        [bars.fillna(0).cumsum(axis=1).shift(1, axis=1).fillna(0)
-         for bars in [rbars, lbars]]
+    rbottom, lbottom = [
+        bars.fillna(0).cumsum(axis=1).shift(1, axis=1).fillna(0)
+        for bars in [rbars, lbars]
+    ]
 
     def draw_single_bar(data, bottom, ax, n, **kwargs):
         width = 0.4
-        return ax.bar(np.arange(len(data)) + n * (width / 2), 
-                      data, width - 0.05, bottom=bottom, **kwargs)
-    
-    legend = [[],[]]
+        return ax.bar(
+            np.arange(len(data)) + n * (width / 2),
+            data,
+            width - 0.05,
+            bottom=bottom,
+            **kwargs,
+        )
+
+    legend = [[], []]
     for c in data.columns:
         bar = draw_single_bar(rbars[c], rbottom[c], ax, +1, label=c)
         color = bar.patches[0].get_facecolor()
         draw_single_bar(lbars[c], lbottom[c], ax, -1, color=color)
         # legend[0].append(bar)
         # legend[1].append(c)
-    
+
     ax.legend()
 
-    if 'title' in kwargs:
-        ax.set_title(kwargs['title'])
+    if "title" in kwargs:
+        ax.set_title(kwargs["title"])

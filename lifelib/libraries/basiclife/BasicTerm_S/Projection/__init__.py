@@ -194,6 +194,7 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+
 def age(t):
     """The attained age at time t.
 
@@ -234,7 +235,8 @@ def check_pv_net_cf():
     """
 
     import math
-    res = sum(list(net_cf(t) for t in range(proj_len())) * disc_factors()[:proj_len()])
+
+    res = sum(list(net_cf(t) for t in range(proj_len())) * disc_factors()[: proj_len()])
 
     return math.isclose(res, pv_net_cf())
 
@@ -263,7 +265,7 @@ def claims(t):
     return claim_pp(t) * pols_death(t)
 
 
-def commissions(t): 
+def commissions(t):
     """Commissions
 
     By default, 100% premiums for the first year, 0 otherwise.
@@ -287,7 +289,7 @@ def disc_factors():
 
         :func:`disc_rate_mth`
     """
-    return np.array(list((1 + disc_rate_mth()[t])**(-t) for t in range(proj_len())))
+    return np.array(list((1 + disc_rate_mth()[t]) ** (-t) for t in range(proj_len())))
 
 
 def disc_rate_mth():
@@ -303,12 +305,14 @@ def disc_rate_mth():
         :func:`disc_rate_ann`
 
     """
-    return np.array(list((1 + disc_rate_ann[t//12])**(1/12) - 1 for t in range(proj_len())))
+    return np.array(
+        list((1 + disc_rate_ann[t // 12]) ** (1 / 12) - 1 for t in range(proj_len()))
+    )
 
 
 def duration(t):
     """Duration in force in years"""
-    return t//12
+    return t // 12
 
 
 def expense_acq():
@@ -349,7 +353,7 @@ def expenses(t):
        The maintenance expense is also recognized for ``t=0``.
 
     """
-    maint = pols_if(t) * expense_maint()/12 * inflation_factor(t)
+    maint = pols_if(t) * expense_maint() / 12 * inflation_factor(t)
 
     if t == 0:
         return expense_acq() + maint
@@ -365,7 +369,7 @@ def inflation_factor(t):
         * :func:`inflation_rate`
 
     """
-    return (1 + inflation_rate())**(t/12)
+    return (1 + inflation_rate()) ** (t / 12)
 
 
 def inflation_rate():
@@ -446,7 +450,7 @@ def mort_rate(t):
        * :func:`mort_rate_mth`
 
     """
-    return mort_table[str(max(min(5, duration(t)),0))][age(t)]
+    return mort_table[str(max(min(5, duration(t)), 0))][age(t)]
 
 
 def mort_rate_mth(t):
@@ -458,7 +462,7 @@ def mort_rate_mth(t):
        * :func:`mort_rate`
 
     """
-    return 1-(1- mort_rate(t))**(1/12)
+    return 1 - (1 - mort_rate(t)) ** (1 / 12)
 
 
 def net_cf(t):
@@ -527,15 +531,15 @@ def pols_if(t):
         * :func:`pols_maturity`
 
     """
-    if t==0:
+    if t == 0:
         return pols_if_init()
     elif t > policy_term() * 12:
         return 0
     else:
-        return pols_if(t-1) - pols_lapse(t-1) - pols_death(t-1) - pols_maturity(t)
+        return pols_if(t - 1) - pols_lapse(t - 1) - pols_death(t - 1) - pols_maturity(t)
 
 
-def pols_if_init(): 
+def pols_if_init():
     """Initial Number of Policies In-force
 
     Number of in-force policies at time 0 referenced from :func:`pols_if`.
@@ -552,7 +556,7 @@ def pols_lapse(t):
         * :func:`lapse_rate`
 
     """
-    return (pols_if(t) - pols_death(t)) * (1-(1 - lapse_rate(t))**(1/12))
+    return (pols_if(t) - pols_death(t)) * (1 - (1 - lapse_rate(t)) ** (1 / 12))
 
 
 def pols_maturity(t):
@@ -566,7 +570,7 @@ def pols_maturity(t):
     otherwise ``0``.
     """
     if t == policy_term() * 12:
-        return pols_if(t-1) - pols_lapse(t-1) - pols_death(t-1)
+        return pols_if(t - 1) - pols_lapse(t - 1) - pols_death(t - 1)
     else:
         return 0
 
@@ -629,7 +633,9 @@ def pv_claims():
         * :func:`claims`
 
     """
-    return sum(list(claims(t) for t in range(proj_len())) * disc_factors()[:proj_len()])
+    return sum(
+        list(claims(t) for t in range(proj_len())) * disc_factors()[: proj_len()]
+    )
 
 
 def pv_commissions():
@@ -640,7 +646,9 @@ def pv_commissions():
         * :func:`expenses`
 
     """
-    return sum(list(commissions(t) for t in range(proj_len())) * disc_factors()[:proj_len()])
+    return sum(
+        list(commissions(t) for t in range(proj_len())) * disc_factors()[: proj_len()]
+    )
 
 
 def pv_expenses():
@@ -651,7 +659,9 @@ def pv_expenses():
         * :func:`expenses`
 
     """
-    return sum(list(expenses(t) for t in range(proj_len())) * disc_factors()[:proj_len()])
+    return sum(
+        list(expenses(t) for t in range(proj_len())) * disc_factors()[: proj_len()]
+    )
 
 
 def pv_net_cf():
@@ -680,7 +690,9 @@ def pv_pols_if():
     It is used as the annuity factor for calculating :func:`net_premium_pp`.
 
     """
-    return sum(list(pols_if(t) for t in range(proj_len())) * disc_factors()[:proj_len()])
+    return sum(
+        list(pols_if(t) for t in range(proj_len())) * disc_factors()[: proj_len()]
+    )
 
 
 def pv_premiums():
@@ -691,7 +703,9 @@ def pv_premiums():
         * :func:`premiums`
 
     """
-    return sum(list(premiums(t) for t in range(proj_len())) * disc_factors()[:proj_len()])
+    return sum(
+        list(premiums(t) for t in range(proj_len())) * disc_factors()[: proj_len()]
+    )
 
 
 def result_cf():
@@ -714,7 +728,7 @@ def result_cf():
         "Claims": [claims(t) for t in t_len],
         "Expenses": [expenses(t) for t in t_len],
         "Commissions": [commissions(t) for t in t_len],
-        "Net Cashflow": [net_cf(t) for t in t_len]
+        "Net Cashflow": [net_cf(t) for t in t_len],
     }
     return pd.DataFrame.from_dict(data)
 
@@ -737,12 +751,11 @@ def result_pv():
     per_prem = [x / pv_premiums() for x in pvs]
 
     return pd.DataFrame.from_dict(
-            data={"PV": pvs, "% Premium": per_prem},
-            columns=cols,
-            orient='index')
+        data={"PV": pvs, "% Premium": per_prem}, columns=cols, orient="index"
+    )
 
 
-def sex(): 
+def sex():
     """The sex of the selected model point
 
     .. note::

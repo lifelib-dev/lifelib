@@ -12,37 +12,41 @@ of their policies than they are when the account values are smaller than the gua
 The graph shows deterministic lapse rates and policy decrement
 based on the lapse rates. The lates and derement do not vary by scenarios.
 """
+
+import matplotlib.pyplot as plt
+import modelx as mx
 import numpy as np
 import pandas as pd
-import modelx as mx
-import matplotlib.pyplot as plt
 
-
-model = mx.read_model('CashValue_ME_EX2')
+model = mx.read_model("CashValue_ME_EX2")
 proj = model.Projection
 
 pd.Series(proj[4].lapse_rate(t).loc[1][1] for t in range(120)).plot.line(
-    legend=False, grid=True, title='Lapse rate by duration')
+    legend=False, grid=True, title="Lapse rate by duration"
+)
 
 plt.subplots()
-pd.Series(proj[4].pols_if_at(t, 'BEF_DECR').loc[1][1] for t in range(120)).plot.line(
-    legend=False, grid=True, title='Number of policies')
+pd.Series(proj[4].pols_if_at(t, "BEF_DECR").loc[1][1] for t in range(120)).plot.line(
+    legend=False, grid=True, title="Number of policies"
+)
 
-#%%
+# %%
 # The graph below shows lapse rates and policy decrement for the first 100 scenarios,
 # when a dynamic lapse is factored into the assumption.
 # The lapse rates vary by in-the-moneyness of the account value and
 # the number of remaining policies also vary by scenarios.
 
 df = pd.DataFrame({t: proj[5].lapse_rate(t).loc[1][:100] for t in range(120)})
-df.transpose().plot.line(legend=False, grid=True, title='Lapse rate by duration')
+df.transpose().plot.line(legend=False, grid=True, title="Lapse rate by duration")
 
-df = pd.DataFrame({t: proj[5].pols_if_at(t, 'BEF_DECR').loc[1][:100] for t in range(120)})
-df.transpose().plot.line(legend=False, grid=True, title='Number of policies')
+df = pd.DataFrame(
+    {t: proj[5].pols_if_at(t, "BEF_DECR").loc[1][:100] for t in range(120)}
+)
+df.transpose().plot.line(legend=False, grid=True, title="Number of policies")
 
 model.close()
 
-#%%
+# %%
 # .. seealso::
 #
 #    * :doc:`/libraries/savings/savings_example2` notebook in the :mod:`~savings` library

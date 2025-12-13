@@ -1,13 +1,22 @@
 import dataclasses
 import uuid
 from dataclasses import dataclass
-from typing import (TypeVar, Generic, Iterable, Collection)
+from typing import Collection, Generic, Iterable, TypeVar
+
 import pandas as pd
 
-__all__ = ('Guid', 'BaseDatabase', 'INamed', 'IOrdered', 'IKeyedType', 'IDataSet', 'IDataRow')
+__all__ = (
+    "Guid",
+    "BaseDatabase",
+    "INamed",
+    "IOrdered",
+    "IKeyedType",
+    "IDataSet",
+    "IDataRow",
+)
 
-IdentityType = TypeVar('IdentityType')
-StorageType = TypeVar('StorageType')
+IdentityType = TypeVar("IdentityType")
+StorageType = TypeVar("StorageType")
 
 IEnumerable = Iterable
 
@@ -21,6 +30,7 @@ class INamed:
 class IOrdered:
     pass
 
+
 @dataclass
 class IScope(Generic[IdentityType, StorageType]):
     Identiry: IdentityType
@@ -28,7 +38,7 @@ class IScope(Generic[IdentityType, StorageType]):
 
 @dataclass
 class IDataSet:
-    Tables: dict[str, 'pandas.DataFrame']
+    Tables: dict[str, "pandas.DataFrame"]
 
 
 class IDataRow:
@@ -39,10 +49,9 @@ class IKeyedType(type):
     pass
 
 
-
 class _Partition:
 
-    def __init__(self, data: 'BaseDatabase'):
+    def __init__(self, data: "BaseDatabase"):
         self._querysource = data
 
     def GetKeyForInstance(self, PartitionType: IKeyedType, args: Generic):
@@ -52,7 +61,7 @@ class _Partition:
             return uuid.uuid4()
 
         fields = set(f.name for f in dataclasses.fields(PartitionType))
-        fields.remove('Id')
+        fields.remove("Id")
 
         found = False
         for x in partitions:
@@ -119,7 +128,7 @@ class BaseDatabase:
 
     def Update(self, type_: type, data: Collection):
         vals = self._data.setdefault(type_, [])
-        if hasattr(type_, '__eq__'):
+        if hasattr(type_, "__eq__"):
             for x in data:
                 if x not in vals:
                     vals.append(x)
@@ -133,10 +142,3 @@ class BaseDatabase:
         assert len(set(type(x) for x in datalist)) <= 1
         for x in datalist:
             self.Update2(x)
-
-
-
-
-
-
-

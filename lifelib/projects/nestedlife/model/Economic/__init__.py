@@ -55,6 +55,7 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+
 def DiscRate(t):
     return Scenarios[ScenID, "IntRate", t]
 
@@ -63,7 +64,7 @@ def InflFactor(t):
     if t == 0:
         return 1
     else:
-        return InflFactor(t-1) / (1 + AsmpLookup("InflRate"))
+        return InflFactor(t - 1) / (1 + AsmpLookup("InflRate"))
 
 
 def InvstRetRate(t):

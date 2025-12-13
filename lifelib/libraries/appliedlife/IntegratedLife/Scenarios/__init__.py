@@ -147,6 +147,7 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+
 def cont_fwd_rates():
     """Continuous compound forward rates"""
     return np.log(1 + forward_rates())
@@ -179,14 +180,11 @@ def index_params():
     file_name: str = base_data.const_params().at["scen_param_file", "value"]
 
     file = _model.path.parent / dir_name / file_name
-    df = pd.read_excel(file,
-                         sheet_name="Params",
-                         index_col=0)
+    df = pd.read_excel(file, sheet_name="Params", index_col=0)
 
     return df.T.astype(
-        {"currency": "object", 
-         "return": "float64", 
-         "volatility": "float64"})
+        {"currency": "object", "return": "float64", "volatility": "float64"}
+    )
 
 
 def index_vols():
@@ -207,17 +205,19 @@ def log_return_mth():
     rng = np.random.default_rng(12345)
 
     # Define parameters
-    dt = 1/12
-    rf =  cont_fwd_rates()[index_params()["currency"]].loc[np.repeat(cont_fwd_rates().index, 12)]
+    dt = 1 / 12
+    rf = cont_fwd_rates()[index_params()["currency"]].loc[
+        np.repeat(cont_fwd_rates().index, 12)
+    ]
     vols = index_vols().values
-    mean = (rf  - 0.5 * vols**2) * dt
+    mean = (rf - 0.5 * vols**2) * dt
     var = vols * dt**0.5
 
     # Generate
     result = np.zeros((scen_size() * scen_len() * 12, index_count()))
     for i in range(scen_size()):
         scen = rng.normal(loc=mean, scale=var)
-        result[i * scen.shape[0]:(i + 1) * scen.shape[0], 0:scen.shape[1]] = scen
+        result[i * scen.shape[0] : (i + 1) * scen.shape[0], 0 : scen.shape[1]] = scen
 
     return pd.DataFrame(result, index=scen_index(), columns=index_params().index)
 
@@ -234,8 +234,8 @@ def return_mth():
 def scen_index():
     """pandas MultiIndex for the scenarios"""
     return pd.MultiIndex.from_product(
-    [range(1, scen_size() + 1), range(12 * scen_len())],
-    names=["scen", "t"])
+        [range(1, scen_size() + 1), range(12 * scen_len())], names=["scen", "t"]
+    )
 
 
 def scen_len():

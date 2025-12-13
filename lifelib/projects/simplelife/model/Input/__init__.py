@@ -69,6 +69,7 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+
 def AsmpLookup(asmp, prod=None, polt=None, gen=None):
     """Look up assumptions"""
     return Assumption.get((asmp, prod, polt, gen), None)

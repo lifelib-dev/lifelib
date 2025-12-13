@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 
+
 def simulate_Black_Scholes(S0, mu, sigma, T, dt) -> pd.DataFrame:
     """Calculates a temporal series of stock prices using the Black Scholes log normal model and the generated Brownian motion
 
@@ -44,19 +45,24 @@ def simulate_Black_Scholes(S0, mu, sigma, T, dt) -> pd.DataFrame:
           9.5    202.368581
           10.0   262.282989
 
-    For more information see https://en.wikipedia.org/wiki/Black%E2%80%93Scholes_model"""
-    
-    N = int(T / dt) # number of subintervals of length 1/dt between 0 and max modeling time T
+    For more information see https://en.wikipedia.org/wiki/Black%E2%80%93Scholes_model
+    """
 
-    time, delta_t = np.linspace(0, T, num = N+1, retstep = True)
-    
-    S = np.exp((mu - sigma ** 2 / 2) * dt + sigma * np.random.normal(0, np.sqrt(dt), size= N))
+    N = int(
+        T / dt
+    )  # number of subintervals of length 1/dt between 0 and max modeling time T
+
+    time, delta_t = np.linspace(0, T, num=N + 1, retstep=True)
+
+    S = np.exp(
+        (mu - sigma**2 / 2) * dt + sigma * np.random.normal(0, np.sqrt(dt), size=N)
+    )
     S = np.hstack([1, S])
-    S = S0* S.cumprod(axis=0)
+    S = S0 * S.cumprod(axis=0)
 
-    dict = {'Time' : time, 'Stock Price' : S}
+    dict = {"Time": time, "Stock Price": S}
 
-    stock_price_simulation = pd.DataFrame.from_dict(data = dict)
-    stock_price_simulation.set_index('Time', inplace = True)
+    stock_price_simulation = pd.DataFrame.from_dict(data=dict)
+    stock_price_simulation.set_index("Time", inplace=True)
 
     return stock_price_simulation

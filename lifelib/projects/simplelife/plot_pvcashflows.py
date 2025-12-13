@@ -7,15 +7,19 @@ Present values of liability cashflows of a simple whole life policy.
 .. seealso::
     * The :mod:`~simplelife` library
 """
+
 import modelx as mx
+
 proj = mx.read_model("model").Projection
 
-vars = ['PV_PremIncome',
-        'PV_BenefitSurr',
-        'PV_BenefitDeath',
-        'PV_ExpsMaint',
-        'PV_ExpsCommTotal',
-        'PV_ExpsAcq']
+vars = [
+    "PV_PremIncome",
+    "PV_BenefitSurr",
+    "PV_BenefitDeath",
+    "PV_ExpsMaint",
+    "PV_ExpsCommTotal",
+    "PV_ExpsAcq",
+]
 
 polid = 171
 
@@ -29,7 +33,8 @@ cfs = proj[polid].frame[vars].sort_index().dropna()
 ncf = proj[polid].PV_NetCashflow.frame.sort_index()
 
 import seaborn as sns
+
 sns.set_theme(style="darkgrid")
 
-axes = ncf.plot.line(marker='o', color='r')
-cfs.plot(kind='bar', stacked=True, ax=axes)
+axes = ncf.plot.line(marker="o", color="r")
+cfs.plot(kind="bar", stacked=True, ax=axes)

@@ -8,15 +8,16 @@ The graph shows how well the 10,000 random numbers for ``t=0``
 fit the PDF of the standard normal distribution.
 
 """
-import modelx as mx
-import pandas as pd
+
 import matplotlib.pyplot as plt
-from scipy.stats import norm, lognorm
+import modelx as mx
 import numpy as np
+import pandas as pd
+from scipy.stats import lognorm, norm
 
 model = mx.read_model("CashValue_ME_EX1")
 rand_nums = model.Projection.std_norm_rand()
-pv_avs = model.Projection.pv_claims_from_av('MATURITY')
+pv_avs = model.Projection.pv_claims_from_av("MATURITY")
 num_bins = 100
 S0 = 45000000
 sigma = 0.03
@@ -24,10 +25,10 @@ T = 10
 
 fig, ax = plt.subplots()
 n, bins, patches = ax.hist(rand_nums[:, 0], bins=num_bins, density=True)
-ax.plot(bins, norm.pdf(bins), '-')
-fig.suptitle('Standard normal distribution for t=0')
+ax.plot(bins, norm.pdf(bins), "-")
+fig.suptitle("Standard normal distribution for t=0")
 
-#%%
+# %%
 # The distibution of the account value at ``t=120`` follows a log normal distribution.
 # In the expression below, :math:`S_{T}` and :math:`S_{0}` denote the account value
 # at ``t=T=120`` and ``t=0`` respectively.
@@ -48,8 +49,5 @@ fig.suptitle('Standard normal distribution for t=0')
 
 fig, ax = plt.subplots()
 n, bins, patches = ax.hist(pv_avs, bins=num_bins, density=True)
-ax.plot(bins, lognorm.pdf(bins, sigma * T**0.5, scale=S0), '-')
-fig.suptitle('PV of account value at t=120')
-
-
-
+ax.plot(bins, lognorm.pdf(bins, sigma * T**0.5, scale=S0), "-")
+fig.suptitle("PV of account value at t=120")

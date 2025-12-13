@@ -19,7 +19,4 @@ _name = "smithwilson"
 
 _allow_none = False
 
-_spaces = [
-    "SmithWilson"
-]
-
+_spaces = ["SmithWilson"]

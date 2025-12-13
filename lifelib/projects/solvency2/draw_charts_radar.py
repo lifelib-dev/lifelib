@@ -11,17 +11,16 @@ The code in this module is derived from the matplot example,
 See `Matplotlib license <https://matplotlib.org/users/license.html>`_.
 """
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-
-import matplotlib.pyplot as plt
 from matplotlib.path import Path
-from matplotlib.spines import Spine
-from matplotlib.projections.polar import PolarAxes
 from matplotlib.projections import register_projection
+from matplotlib.projections.polar import PolarAxes
+from matplotlib.spines import Spine
 
 
-def radar_factory(num_vars, frame='circle'):
+def radar_factory(num_vars, frame="circle"):
     """Create a radar chart with `num_vars` axes.
 
     This function creates a RadarAxes projection and registers it.
@@ -35,24 +34,24 @@ def radar_factory(num_vars, frame='circle'):
 
     """
     # calculate evenly-spaced axis angles
-    theta = np.linspace(0, 2*np.pi, num_vars, endpoint=False)
+    theta = np.linspace(0, 2 * np.pi, num_vars, endpoint=False)
 
     def draw_poly_patch(self):
         # rotate theta such that the first axis is at the top
         verts = unit_poly_verts(theta + np.pi / 2)
-        return plt.Polygon(verts, closed=True, edgecolor='k')
+        return plt.Polygon(verts, closed=True, edgecolor="k")
 
     def draw_circle_patch(self):
         # unit circle centered on (0.5, 0.5)
         return plt.Circle((0.5, 0.5), 0.5)
 
-    patch_dict = {'polygon': draw_poly_patch, 'circle': draw_circle_patch}
+    patch_dict = {"polygon": draw_poly_patch, "circle": draw_circle_patch}
     if frame not in patch_dict:
-        raise ValueError('unknown value for `frame`: %s' % frame)
+        raise ValueError("unknown value for `frame`: %s" % frame)
 
     class RadarAxes(PolarAxes):
 
-        name = 'radar'
+        name = "radar"
         # use 1 line segment to connect specified points
         RESOLUTION = 1
         # define draw_frame method
@@ -61,7 +60,7 @@ def radar_factory(num_vars, frame='circle'):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             # rotate plot such that the first axis is at the top
-            self.set_theta_zero_location('N')
+            self.set_theta_zero_location("N")
 
         def fill(self, *args, closed=True, **kwargs):
             """Override fill so that line is closed by default"""
@@ -88,13 +87,13 @@ def radar_factory(num_vars, frame='circle'):
             return self.draw_patch()
 
         def _gen_axes_spines(self):
-            if frame == 'circle':
+            if frame == "circle":
                 return super()._gen_axes_spines()
             # The following is a hack to get the spines (i.e. the axes frame)
             # to draw correctly for a polygon frame.
 
             # spine_type must be 'left', 'right', 'top', 'bottom', or `circle`.
-            spine_type = 'circle'
+            spine_type = "circle"
             verts = unit_poly_verts(theta + np.pi / 2)
             # close off polygon by repeating first vertex
             verts.append(verts[0])
@@ -102,7 +101,7 @@ def radar_factory(num_vars, frame='circle'):
 
             spine = Spine(self, spine_type, path)
             spine.set_transform(self.transAxes)
-            return {'polar': spine}
+            return {"polar": spine}
 
     register_projection(RadarAxes)
     return theta
@@ -114,7 +113,7 @@ def unit_poly_verts(theta):
     This polygon is circumscribed by a unit circle centered at (0.5, 0.5)
     """
     x0, y0, r = [0.5] * 3
-    verts = [(r*np.cos(t) + x0, r*np.sin(t) + y0) for t in theta]
+    verts = [(r * np.cos(t) + x0, r * np.sin(t) + y0) for t in theta]
     return verts
 
 
@@ -127,21 +126,22 @@ def get_rgrids(max_value, rgrid_count):
     scale = max_value / (10**digits)
 
     ubound = math.ceil(scale) * (10**digits)
-    step = ubound / (rgrid_count+1)
+    step = ubound / (rgrid_count + 1)
 
-    return list(step * i for i in range(1, rgrid_count+1))
+    return list(step * i for i in range(1, rgrid_count + 1))
 
 
-def draw_radar(df: pd.DataFrame, ax_title=None, fig_title=None,
-               colors=('b', 'r', 'g', 'm', 'y')):
+def draw_radar(
+    df: pd.DataFrame, ax_title=None, fig_title=None, colors=("b", "r", "g", "m", "y")
+):
     """Draw radar chart"""
 
     spoke_count, line_count = df.shape
 
-    theta = radar_factory(spoke_count, frame='polygon')
+    theta = radar_factory(spoke_count, frame="polygon")
     spoke_labels = list(df.index)
 
-    fig, ax = plt.subplots(subplot_kw=dict(projection='radar'))
+    fig, ax = plt.subplots(subplot_kw=dict(projection="radar"))
     fig.subplots_adjust(wspace=0.25, hspace=0.20, top=0.85, bottom=0.05)
 
     if len(colors) < line_count:
@@ -149,9 +149,14 @@ def draw_radar(df: pd.DataFrame, ax_title=None, fig_title=None,
 
     ax.set_rgrids(get_rgrids(df.max().max(), 4))
     if ax_title:
-        ax.set_title(ax_title, weight='normal', size='medium',
-                     position=(0.5, 1.09),
-                     horizontalalignment='center', verticalalignment='center')
+        ax.set_title(
+            ax_title,
+            weight="normal",
+            size="medium",
+            position=(0.5, 1.09),
+            horizontalalignment="center",
+            verticalalignment="center",
+        )
 
     for col, color in zip(df, colors):
         ax.plot(theta, list(df[col]), color=color)
@@ -161,28 +166,35 @@ def draw_radar(df: pd.DataFrame, ax_title=None, fig_title=None,
 
     # add legend relative to top-left plot
     labels = list(df.columns)
-    legend = ax.legend(labels, loc=(0.9, .95),
-                       labelspacing=0.1)
+    legend = ax.legend(labels, loc=(0.9, 0.95), labelspacing=0.1)
 
-    fig.text(0.5, 0.965, fig_title,
-             horizontalalignment='center', color='black', weight='bold',
-             size='large')
+    fig.text(
+        0.5,
+        0.965,
+        fig_title,
+        horizontalalignment="center",
+        color="black",
+        weight="bold",
+        size="large",
+    )
 
     return ax
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
-    data = {'Line 1': [0.88, 1.30, 0.50, 0.03],
-            'Line 2': [0.07, 0.95, 0.04, 0.05],
-            'Line 3': [0.01, 0.02, 0.85, 0.19],
-            'Line 4': [0.02, 0.01, 0.07, 0.60],
-            'Line 5': [0.01, 0.01, 0.02, 0.71]}
+    data = {
+        "Line 1": [0.88, 1.30, 0.50, 0.03],
+        "Line 2": [0.07, 0.95, 0.04, 0.05],
+        "Line 3": [0.01, 0.02, 0.85, 0.19],
+        "Line 4": [0.02, 0.01, 0.07, 0.60],
+        "Line 5": [0.01, 0.01, 0.02, 0.71],
+    }
 
-    index = ['Sulfate', 'Nitrate', 'EC', 'OC1']
+    index = ["Sulfate", "Nitrate", "EC", "OC1"]
 
     df = pd.DataFrame(data=data, index=index)
 
-    draw_radar(df, fig_title='Sample Radar')
+    draw_radar(df, fig_title="Sample Radar")
 
     plt.show()

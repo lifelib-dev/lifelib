@@ -13,6 +13,5 @@ _spaces = [
     "Override",
     "SCR_life",
     "Policy",
-    "Assumptions"
+    "Assumptions",
 ]
-

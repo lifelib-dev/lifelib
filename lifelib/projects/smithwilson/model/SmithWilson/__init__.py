@@ -43,6 +43,7 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+
 def u(i):
     """Time (:math:`u_i`)
 
@@ -73,7 +74,7 @@ def m(i):
     Args:
         i(int): Time index (1, 2, ..., :attr:`N`)
     """
-    return (1 + spot_rates[i-1]) ** (-u(i))
+    return (1 + spot_rates[i - 1]) ** (-u(i))
 
 
 def mu(i):
@@ -114,10 +115,12 @@ def W(i, j):
     t = u(i)
     uj = u(j)
 
-    return exp(-UFR * (t+uj)) * (
-            alpha * min(t, uj) - 0.5 * exp(-alpha * max(t, uj)) * (
-                    exp(alpha*min(t, uj)) - exp(-alpha*min(t, uj))
-            ))
+    return exp(-UFR * (t + uj)) * (
+        alpha * min(t, uj)
+        - 0.5
+        * exp(-alpha * max(t, uj))
+        * (exp(alpha * min(t, uj)) - exp(-alpha * min(t, uj)))
+    )
 
 
 def m_vector():
@@ -125,7 +128,7 @@ def m_vector():
 
     :func:`m` as 1-dimensional :attr:`N` length numpy array.
     """
-    return np.array([m(i) for i in range(1, N+1)])
+    return np.array([m(i) for i in range(1, N + 1)])
 
 
 def mu_vector():
@@ -133,7 +136,7 @@ def mu_vector():
 
     :func:`mu` as 1-dimensional :attr:`N` length numpy array.
     """
-    return np.array([mu(i) for i in range(1, N+1)])
+    return np.array([mu(i) for i in range(1, N + 1)])
 
 
 def W_matrix():
@@ -141,7 +144,7 @@ def W_matrix():
 
     :func:`W` as a 2-dimensional :attr:`N` x :attr:`N` numpy array.
     """
-    return np.array([[W(i, j) for j in range(1, N+1)] for i in range(1, N+1)])
+    return np.array([[W(i, j) for j in range(1, N + 1)] for i in range(1, N + 1)])
 
 
 def zeta_vector():
@@ -164,7 +167,7 @@ def zeta(i):
     Args:
         i(int): Time index (1, 2, ..., :attr:`N`)
     """
-    return zeta_vector()[i-1]
+    return zeta_vector()[i - 1]
 
 
 def P(i):
@@ -185,7 +188,7 @@ def P(i):
     Args:
         i(int): Time index (1, 2, ...)
     """
-    return mu(i) + sum(zeta(j) * W(i, j) for j in range(1, N+1))
+    return mu(i) + sum(zeta(j) * W(i, j) for j in range(1, N + 1))
 
 
 def R(i):

@@ -53,8 +53,9 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+
 def AnnDuenx(x, n, k=1, f=0):
-    """ The present value of an annuity-due.
+    """The present value of an annuity-due.
 
     .. math::
 
@@ -71,10 +72,10 @@ def AnnDuenx(x, n, k=1, f=0):
     if Dx(x) == 0:
         return 0
 
-    result = (Nx(x+f) - Nx(x+f+n)) / Dx(x)
+    result = (Nx(x + f) - Nx(x + f + n)) / Dx(x)
 
     if k > 1:
-        return result - (k-1) / (2*k) * (1 - Dx(x+f+n) / Dx(x))
+        return result - (k - 1) / (2 * k) * (1 - Dx(x + f + n) / Dx(x))
     else:
         return result
 
@@ -90,10 +91,10 @@ def AnnDuex(x, k, f=0):
     if Dx(x) == 0:
         return 0
 
-    result = (Nx(x+f)) / Dx(x)
+    result = (Nx(x + f)) / Dx(x)
 
     if k > 1:
-        return result - (k-1) / (2*k)
+        return result - (k - 1) / (2 * k)
     else:
         return result
 
@@ -109,7 +110,7 @@ def Ax(x, f=0):
     if Dx(x) == 0:
         return 0
     else:
-        return Mx(x+f) / Dx(x)
+        return Mx(x + f) / Dx(x)
 
 
 def Axn(x, n, f=0):
@@ -124,24 +125,22 @@ def Axn(x, n, f=0):
     if Dx(x) == 0:
         return 0
     else:
-        return (Mx(x+f) - Mx(x+f+n)) / Dx(x)
+        return (Mx(x + f) - Mx(x + f + n)) / Dx(x)
 
 
 def Cx(x):
-    """The commutation column :math:`\\overline{C_x}`.
-    """
+    """The commutation column :math:`\\overline{C_x}`."""
 
-    return dx(x) * disc()**(x+1/2)
+    return dx(x) * disc() ** (x + 1 / 2)
 
 
 def Dx(x):
-    """The commutation column :math:`D_{x} = l_{x}v^{x}`.
-    """
+    """The commutation column :math:`D_{x} = l_{x}v^{x}`."""
     return lx(x) * disc() ** x
 
 
 def Exn(x, n):
-    """ The value of an endowment on a person at age ``x``
+    """The value of an endowment on a person at age ``x``
     payable after n years
 
     .. math::
@@ -152,7 +151,7 @@ def Exn(x, n):
     if Dx(x) == 0:
         return 0
     else:
-        return Dx(x+n) / Dx(x)
+        return Dx(x + n) / Dx(x)
 
 
 def Mx(x):
@@ -161,15 +160,15 @@ def Mx(x):
     if x >= 110:
         return Dx(x)
     else:
-        return Mx(x+1) + Cx(x)
+        return Mx(x + 1) + Cx(x)
 
 
 def Nx(x):
     """The commutation column :math:`N_x`."""
-    if x >= 110:    # TODO: Get the last age from the table
+    if x >= 110:  # TODO: Get the last age from the table
         return Dx(x)
     else:
-        return Nx(x+1) + Dx(x)
+        return Nx(x + 1) + Dx(x)
 
 
 def disc():
@@ -183,11 +182,11 @@ def dx(x):
 
 
 def lx(x):
-    """The number of persons remaining at age ``x``. """
+    """The number of persons remaining at age ``x``."""
     if x == 0:
         return 100000
     else:
-        return lx(x-1) - dx(x-1)
+        return lx(x - 1) - dx(x - 1)
 
 
 def qx(x):

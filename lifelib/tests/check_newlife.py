@@ -1,9 +1,8 @@
-import modelx as mx
-import lifelib.projects.simplelife.model
-
-
-
 import pathlib
+
+import modelx as mx
+
+import lifelib.projects.simplelife.model
 
 model_path = pathlib.Path(lifelib.projects.simplelife.model.__file__).parent
 
@@ -17,6 +16,7 @@ def run_newlife():
         print(i, proj(i).PV_NetCashflow(0))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import timeit
-    print(timeit.timeit('run_newlife()', number=1, globals=globals()))
+
+    print(timeit.timeit("run_newlife()", number=1, globals=globals()))

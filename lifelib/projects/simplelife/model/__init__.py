@@ -4,12 +4,4 @@ _name = "simplelife"
 
 _allow_none = False
 
-_spaces = [
-    "Input",
-    "LifeTable",
-    "Economic",
-    "BaseProj",
-    "PV",
-    "Projection"
-]
-
+_spaces = ["Input", "LifeTable", "Economic", "BaseProj", "PV", "Projection"]

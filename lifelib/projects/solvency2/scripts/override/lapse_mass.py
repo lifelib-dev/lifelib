@@ -4,6 +4,7 @@ The formulas in this module overrides cells related to lapse in
 :mod:`projection <solvency2.projection>` module.
 """
 
+
 def BenefitSurr(t):
     """Surrender benefits"""
     return SizeBenefitSurr(t) * (PolsSurr(t) + PolsSurrMass(t))

@@ -1,4 +1,5 @@
-import numpy as np 
+import numpy as np
+
 
 def CorBrownian(mu, E, sampleSize):
     """Algorithm generates samples of increments from a correlated Brownian motion with a given mean and Variance-Covariance matrix (E).
@@ -42,26 +43,31 @@ def CorBrownian(mu, E, sampleSize):
         Returns:
            n x n ndarray lower triangular matrix such that the matrix product between it and its conjugate transpose returns X
 
-        More info on: https://en.wikipedia.org/wiki/Cholesky_decomposition#The_Cholesky.E2.80.93Banachiewicz_and_Cholesky.E2.80.93Crout_algorithms"""
+        More info on: https://en.wikipedia.org/wiki/Cholesky_decomposition#The_Cholesky.E2.80.93Banachiewicz_and_Cholesky.E2.80.93Crout_algorithms
+        """
         L = np.zeros_like(X)
         n = X.shape[0]
 
         for i in range(0, n):
-            for j in range(0, i+1):
+            for j in range(0, i + 1):
                 sum = 0
                 for k in range(0, j):
-                    sum = sum+ L[i, k]*L[j, k]
-                if (i==j):
-                    L[i, j] = np.sqrt(X[i, i]-sum)
+                    sum = sum + L[i, k] * L[j, k]
+                if i == j:
+                    L[i, j] = np.sqrt(X[i, i] - sum)
                 else:
-                    L[i, j] = 1.0/L[j, j] * (X[i, j]-sum)
+                    L[i, j] = 1.0 / L[j, j] * (X[i, j] - sum)
         return L
 
-    dim = E.shape[0]                                         # Guess the number of Brownian motions (dimension) from the size of the Var-Covar matrix
-    Z = np.random.default_rng().normal(0,1,(sampleSize, dim)) # Generate independent increments of a simpleSize dimensional Brownian motion
-    Y = np.zeros((sampleSize, dim))                          # Predefine the final output
-    L = Cholesky(E)                                          # Calculate the square root of the Var-Covar matrix
+    dim = E.shape[
+        0
+    ]  # Guess the number of Brownian motions (dimension) from the size of the Var-Covar matrix
+    Z = np.random.default_rng().normal(
+        0, 1, (sampleSize, dim)
+    )  # Generate independent increments of a simpleSize dimensional Brownian motion
+    Y = np.zeros((sampleSize, dim))  # Predefine the final output
+    L = Cholesky(E)  # Calculate the square root of the Var-Covar matrix
 
-    for iSample in range(sampleSize): # For each sample, calculate mu + L*Z
-        Y[iSample] =np.transpose(mu) +  L @ np.transpose(Z[iSample])     
+    for iSample in range(sampleSize):  # For each sample, calculate mu + L*Z
+        Y[iSample] = np.transpose(mu) + L @ np.transpose(Z[iSample])
     return Y

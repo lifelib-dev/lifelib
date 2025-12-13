@@ -4,7 +4,4 @@ _name = "BasicTerm_S"
 
 _allow_none = False
 
-_spaces = [
-    "Projection"
-]
-
+_spaces = ["Projection"]

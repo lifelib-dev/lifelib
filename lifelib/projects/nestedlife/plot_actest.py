@@ -7,6 +7,7 @@ Lapse assumption changes based on previous year experience.
 .. seealso::
     * The :mod:`~nestedlife` library
 """
+
 import modelx as mx
 
 model = mx.read_model("model")
@@ -30,5 +31,4 @@ inner[3].asmp.SurrRateMult[3] = 1
 
 from draw_charts import draw_actest_pairs
 
-draw_actest_pairs(outer, inner, ['PolsSurr', 'PolsIF_End'], 5, 10)
-
+draw_actest_pairs(outer, inner, ["PolsSurr", "PolsIF_End"], 5, 10)

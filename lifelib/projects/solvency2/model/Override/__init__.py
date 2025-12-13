@@ -6,10 +6,4 @@ _bases = []
 
 _allow_none = None
 
-_spaces = [
-    "Mortality",
-    "Lapse",
-    "LapseMass",
-    "Expense"
-]
-
+_spaces = ["Mortality", "Lapse", "LapseMass", "Expense"]

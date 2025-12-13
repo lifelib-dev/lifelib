@@ -164,6 +164,7 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+
 def age(t):
     """The attained age at time t.
 
@@ -237,7 +238,9 @@ def disc_factors():
 
         :func:`disc_rate_mth`
     """
-    return np.array(list((1 + disc_rate_mth()[t])**(-t) for t in range(max_proj_len())))
+    return np.array(
+        list((1 + disc_rate_mth()[t]) ** (-t) for t in range(max_proj_len()))
+    )
 
 
 def disc_rate_mth():
@@ -253,12 +256,16 @@ def disc_rate_mth():
         :func:`disc_rate_ann`
 
     """
-    return np.array(list((1 + disc_rate_ann[t//12])**(1/12) - 1 for t in range(max_proj_len())))
+    return np.array(
+        list(
+            (1 + disc_rate_ann[t // 12]) ** (1 / 12) - 1 for t in range(max_proj_len())
+        )
+    )
 
 
 def duration(t):
     """Duration in force in years"""
-    return t//12
+    return t // 12
 
 
 def expense_acq():
@@ -299,8 +306,9 @@ def expenses(t):
        The maintenance expense is also recognized for ``t=0``.
 
     """
-    return (t == 0) * expense_acq() * pols_if(t) \
-           + pols_if(t) * expense_maint()/12 * inflation_factor(t)
+    return (t == 0) * expense_acq() * pols_if(t) + pols_if(
+        t
+    ) * expense_maint() / 12 * inflation_factor(t)
 
 
 def inflation_factor(t):
@@ -311,7 +319,7 @@ def inflation_factor(t):
         * :func:`inflation_rate`
 
     """
-    return (1 + inflation_rate())**(t/12)
+    return (1 + inflation_rate()) ** (t / 12)
 
 
 def inflation_rate():
@@ -355,6 +363,7 @@ Defined as ``max(proj_len())``
 .. seealso::
     :func:`proj_len`
 """
+
 
 def model_point():
     """Target model points
@@ -412,7 +421,7 @@ def mort_rate_mth(t):
        * :func:`mort_rate`
 
     """
-    return 1-(1- mort_rate(t))**(1/12)
+    return 1 - (1 - mort_rate(t)) ** (1 / 12)
 
 
 def net_cf(t):
@@ -480,10 +489,10 @@ def pols_if(t):
         * :func:`pols_maturity`
 
     """
-    if t==0:
+    if t == 0:
         return pols_if_init()
     elif t < max_proj_len():
-        return pols_if(t-1) - pols_lapse(t-1) - pols_death(t-1) - pols_maturity(t)
+        return pols_if(t - 1) - pols_lapse(t - 1) - pols_death(t - 1) - pols_maturity(t)
     else:
         raise KeyError("t out of range")
 
@@ -505,7 +514,7 @@ def pols_lapse(t):
         * :func:`lapse_rate`
 
     """
-    return (pols_if(t) - pols_death(t)) * (1-(1 - lapse_rate(t))**(1/12))
+    return (pols_if(t) - pols_death(t)) * (1 - (1 - lapse_rate(t)) ** (1 / 12))
 
 
 def pols_maturity(t):
@@ -518,7 +527,9 @@ def pols_maturity(t):
 
     otherwise ``0``.
     """
-    return (t == policy_term() * 12) * (pols_if(t-1) - pols_lapse(t-1) - pols_death(t-1))
+    return (t == policy_term() * 12) * (
+        pols_if(t - 1) - pols_lapse(t - 1) - pols_death(t - 1)
+    )
 
 
 def premium_pp():
@@ -585,7 +596,7 @@ def pv_claims():
     """
     cl = np.array(list(claims(t) for t in range(max_proj_len()))).transpose()
 
-    return cl @ disc_factors()[:max_proj_len()]
+    return cl @ disc_factors()[: max_proj_len()]
 
 
 def pv_commissions():
@@ -598,7 +609,7 @@ def pv_commissions():
     """
     result = np.array(list(commissions(t) for t in range(max_proj_len()))).transpose()
 
-    return result @ disc_factors()[:max_proj_len()]
+    return result @ disc_factors()[: max_proj_len()]
 
 
 def pv_expenses():
@@ -611,7 +622,7 @@ def pv_expenses():
     """
     result = np.array(list(expenses(t) for t in range(max_proj_len()))).transpose()
 
-    return result @ disc_factors()[:max_proj_len()]
+    return result @ disc_factors()[: max_proj_len()]
 
 
 def pv_net_cf():
@@ -641,7 +652,7 @@ def pv_pols_if():
     """
     result = np.array(list(pols_if(t) for t in range(max_proj_len()))).transpose()
 
-    return result @ disc_factors()[:max_proj_len()]
+    return result @ disc_factors()[: max_proj_len()]
 
 
 def pv_premiums():
@@ -654,7 +665,7 @@ def pv_premiums():
     """
     result = np.array(list(premiums(t) for t in range(max_proj_len()))).transpose()
 
-    return result @ disc_factors()[:max_proj_len()]
+    return result @ disc_factors()[: max_proj_len()]
 
 
 def result_cf():
@@ -677,7 +688,7 @@ def result_cf():
         "Claims": [sum(claims(t)) for t in t_len],
         "Expenses": [sum(expenses(t)) for t in t_len],
         "Commissions": [sum(commissions(t)) for t in t_len],
-        "Net Cashflow": [sum(net_cf(t)) for t in t_len]
+        "Net Cashflow": [sum(net_cf(t)) for t in t_len],
     }
 
     return pd.DataFrame(data, index=t_len)
@@ -696,13 +707,12 @@ def result_pv():
 
     """
 
-
     data = {
         "PV Premiums": pv_premiums(),
         "PV Claims": pv_claims(),
         "PV Expenses": pv_expenses(),
         "PV Commissions": pv_commissions(),
-        "PV Net Cashflow": pv_net_cf()
+        "PV Net Cashflow": pv_net_cf(),
     }
 
     return pd.DataFrame(data, index=model_point().index)

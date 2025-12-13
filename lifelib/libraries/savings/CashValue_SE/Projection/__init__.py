@@ -241,6 +241,7 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+
 def age(t):
     """The attained age at time t.
 
@@ -276,7 +277,7 @@ def av_at(t, timing):
     At each ``t``, the events that change the account value balance
     occur in the following order:
 
-        * Maturity 
+        * Maturity
         * New business and premium payment
         * Fee deduction
 
@@ -337,7 +338,7 @@ def av_change(t):
         * :func:`net_cf`
 
     """
-    return av_at(t+1, 'BEF_MAT') - av_at(t, 'BEF_MAT')
+    return av_at(t + 1, "BEF_MAT") - av_at(t, "BEF_MAT")
 
 
 def av_pp_at(t, timing):
@@ -350,7 +351,7 @@ def av_pp_at(t, timing):
     At each ``t``, the events that change the account value balance
     occur in the following order:
 
-        * Premium payment 
+        * Premium payment
         * Fee deduction
 
     Investment income is assumed to be earned throughout each month,
@@ -364,8 +365,8 @@ def av_pp_at(t, timing):
 
     .. rubric:: BEF_PREM
 
-    Account value before premium payment. 
-    At the start of the projection (i.e. when ``t=0``), 
+    Account value before premium payment.
+    At the start of the projection (i.e. when ``t=0``),
     the account value is set to :func:`av_pp_init`.
 
     .. rubric:: BEF_FEE
@@ -396,7 +397,7 @@ def av_pp_at(t, timing):
         if t == 0:
             return av_pp_init()
         else:
-            return av_pp_at(t-1, "BEF_INV") + inv_income_pp(t-1)
+            return av_pp_at(t - 1, "BEF_INV") + inv_income_pp(t - 1)
 
     elif timing == "BEF_FEE":
         return av_pp_at(t, "BEF_PREM") + prem_to_av_pp(t)
@@ -414,7 +415,7 @@ def av_pp_at(t, timing):
 def av_pp_init():
     """Initial account value per policy
 
-    For existing business at time ``0``, 
+    For existing business at time ``0``,
     returns initial per-policy accout value read from
     the ``av_pp_init`` column in :func:`model_point`.
     For new business, 0 should be entered in the column.
@@ -431,15 +432,15 @@ def av_pp_init():
 def check_av_roll_fwd():
     """Check account value roll-forward
 
-    Returns ``Ture`` if ``av_at(t+1, "BEF_NB")`` equates to 
+    Returns ``Ture`` if ``av_at(t+1, "BEF_NB")`` equates to
     the following expression for all ``t``, otherwise returns ``False``::
 
         av_at(t, "BEF_NB")
               + prem_to_av(t)
-              - maint_fee(t) 
+              - maint_fee(t)
               - coi(t)
               + inv_income(t)
-              - claims_from_av(t, "DEATH") 
+              - claims_from_av(t, "DEATH")
               - claims_from_av(t, "LAPSE")
               - claims_from_av(t, "MATURITY"))
 
@@ -460,17 +461,18 @@ def check_av_roll_fwd():
 
     for t in range(proj_len()):
 
-        av = (av_at(t, "BEF_NB")
-              + prem_to_av(t)
-              - maint_fee(t) 
-              - coi(t)
-              + inv_income(t)
-              - claims_from_av(t, "DEATH") 
-              - claims_from_av(t, "LAPSE")
-              - claims_from_av(t, "MATURITY"))
+        av = (
+            av_at(t, "BEF_NB")
+            + prem_to_av(t)
+            - maint_fee(t)
+            - coi(t)
+            + inv_income(t)
+            - claims_from_av(t, "DEATH")
+            - claims_from_av(t, "LAPSE")
+            - claims_from_av(t, "MATURITY")
+        )
 
-        res.append(math.isclose(av_at(t+1, "BEF_NB") , av))
-
+        res.append(math.isclose(av_at(t + 1, "BEF_NB"), av))
 
     return all(res)
 
@@ -491,6 +493,7 @@ def check_margin():
     """
 
     import math
+
     # res1 = sum(list(net_cf(t) for t in range(proj_len())))
     # res2 = sum(list(margin_expense(t) + margin_mortality(t) for t in range(proj_len())))
 
@@ -517,7 +520,8 @@ def check_pv_net_cf():
     """
 
     import math
-    res = sum(list(net_cf(t) for t in range(proj_len())) * disc_factors()[:proj_len()])
+
+    res = sum(list(net_cf(t) for t in range(proj_len())) * disc_factors()[: proj_len()])
 
     return math.isclose(res, pv_net_cf())
 
@@ -530,7 +534,7 @@ def claim_pp(t, kind):
     it takes a string, which is either ``"DEATH"``, ``"LAPSE"`` or ``"MATURITY"``.
 
     The death benefit as denoted by ``"DEATH"``, is
-    the greater of :func:`sum_assured` and 
+    the greater of :func:`sum_assured` and
     mid-month account value (:func:`av_pp_at(t, "MID_MTH")<av_pp_at>`).
 
     The surrender benefit as denoted by ``"LAPSE"`` and
@@ -584,7 +588,7 @@ def claims(t, kind=None):
         * :func:`claim_pp`
         * :func:`pols_death`
         * :func:`claims_from_av`
-        * :func:`surr_charge`    
+        * :func:`surr_charge`
 
     """
 
@@ -608,7 +612,7 @@ def claims_from_av(t, kind):
     """Account value taken out to pay claim
 
     The part of the claim amount that is paid from account value.
-    The second parameter takes a string indicating the type of the claim, 
+    The second parameter takes a string indicating the type of the claim,
     which is either ``"DEATH"``, ``"LAPSE"`` or ``"MATURITY"``.
 
 
@@ -639,7 +643,7 @@ def claims_from_av(t, kind):
         * :func:`av_pp_at`
         * :func:`pols_death`
         * :func:`pols_lapse`
-        * :func:`pols_maturity`    
+        * :func:`pols_maturity`
 
     """
 
@@ -689,7 +693,7 @@ def coi(t):
 def coi_rate(t):
     """Cost of insurance rate per account value
 
-    The cost of insuranc rate per account value per month. 
+    The cost of insuranc rate per account value per month.
     By default, it is set to 1.1 times the monthly mortality rate.
 
     .. seealso::
@@ -718,7 +722,7 @@ def coi_pp(t):
     return coi_rate(t) * net_amt_at_risk(t)
 
 
-def commissions(t): 
+def commissions(t):
     """Commissions
 
     By default, 5% premiums are paid as commissions.
@@ -741,7 +745,7 @@ def disc_factors():
 
         :func:`disc_rate_mth`
     """
-    return np.array(list((1 + disc_rate_mth()[t])**(-t) for t in range(proj_len())))
+    return np.array(list((1 + disc_rate_mth()[t]) ** (-t) for t in range(proj_len())))
 
 
 def disc_rate_mth():
@@ -757,7 +761,9 @@ def disc_rate_mth():
         :func:`disc_rate_ann`
 
     """
-    return np.array(list((1 + disc_rate_ann[t//12])**(1/12) - 1 for t in range(proj_len())))
+    return np.array(
+        list((1 + disc_rate_ann[t // 12]) ** (1 / 12) - 1 for t in range(proj_len()))
+    )
 
 
 def duration(t):
@@ -784,9 +790,9 @@ def duration_mth(t):
 
     """
     if t == 0:
-        return model_point()['duration_mth']
+        return model_point()["duration_mth"]
     else:
-        return duration_mth(t-1) + 1
+        return duration_mth(t - 1) + 1
 
 
 def expense_acq():
@@ -826,14 +832,15 @@ def expenses(t):
 
     """
 
-    return expense_acq() * pols_new_biz(t) \
-        + pols_if_at(t, "BEF_DECR") * expense_maint()/12 * inflation_factor(t)
+    return expense_acq() * pols_new_biz(t) + pols_if_at(
+        t, "BEF_DECR"
+    ) * expense_maint() / 12 * inflation_factor(t)
 
 
 def has_surr_charge():
     """Whether surrender charge applies
 
-    ``True`` if surrender charge on account value applies upon lapse, 
+    ``True`` if surrender charge on account value applies upon lapse,
     ``False`` if other wise.
     By default, the value is read from the ``has_surr_charge`` column
     in :func:`model_point`.
@@ -843,7 +850,7 @@ def has_surr_charge():
         * :func:`model_point`
 
     """
-    return model_point()['has_surr_charge']
+    return model_point()["has_surr_charge"]
 
 
 def inflation_factor(t):
@@ -854,7 +861,7 @@ def inflation_factor(t):
         * :func:`inflation_rate`
 
     """
-    return (1 + inflation_rate())**(t/12)
+    return (1 + inflation_rate()) ** (t / 12)
 
 
 def inflation_rate():
@@ -886,8 +893,9 @@ def inv_income(t):
         * :func:`pols_lapse`
 
     """
-    return (inv_income_pp(t) * pols_if_at(t+1, "BEF_MAT")
-            + 0.5 * inv_income_pp(t) * (pols_death(t) + pols_lapse(t)))
+    return inv_income_pp(t) * pols_if_at(t + 1, "BEF_MAT") + 0.5 * inv_income_pp(t) * (
+        pols_death(t) + pols_lapse(t)
+    )
 
 
 def inv_income_pp(t):
@@ -925,7 +933,7 @@ def inv_return_table():
     r"""Table of investment return rates
 
     Returns a Series of monthly investment retuns.
-    The Series is indexed with ``scen_id`` and ``t`` which 
+    The Series is indexed with ``scen_id`` and ``t`` which
     is inherited from :attr:`std_norm_rand`.
 
     .. math::
@@ -943,11 +951,9 @@ def inv_return_table():
     """
     mu = 0.02
     sigma = 0.03
-    dt = 1/12
+    dt = 1 / 12
 
-    return np.exp(
-        (mu - 0.5 * sigma**2) * dt + sigma * dt**0.5 * std_norm_rand
-        ) - 1
+    return np.exp((mu - 0.5 * sigma**2) * dt + sigma * dt**0.5 * std_norm_rand) - 1
 
 
 def is_wl():
@@ -967,7 +973,7 @@ def is_wl():
         * :func:`model_point`
 
     """
-    return model_point()['is_wl']
+    return model_point()["is_wl"]
 
 
 def lapse_rate(t):
@@ -989,7 +995,7 @@ def load_prem_rate():
     """Rate of premium loading
 
     This rate times :func:`premium_pp` is collected from each premium
-    and the rest is added to the account value.    
+    and the rest is added to the account value.
 
     By default, the value is read from the ``load_prem_rate`` column
     in :func:`model_point`.
@@ -999,7 +1005,7 @@ def load_prem_rate():
         * :func:`premium_pp`
 
     """
-    return model_point()['load_prem_rate']
+    return model_point()["load_prem_rate"]
 
 
 def maint_fee(t):
@@ -1056,17 +1062,19 @@ def margin_expense(t):
         * :func:`premium_pp`
         * :func:`pols_if_at`
         * :func:`surr_charge`
-        * :func:`maint_fee`        
-        * :func:`commissions`        
-        * :func:`expenses`     
-        * :func:`check_margin`     
+        * :func:`maint_fee`
+        * :func:`commissions`
+        * :func:`expenses`
+        * :func:`check_margin`
 
     """
-    return (load_prem_rate()* premium_pp(t) * pols_if_at(t, "BEF_DECR")
-            + surr_charge(t)
-            + maint_fee(t)
-            - commissions(t)
-            - expenses(t))
+    return (
+        load_prem_rate() * premium_pp(t) * pols_if_at(t, "BEF_DECR")
+        + surr_charge(t)
+        + maint_fee(t)
+        - commissions(t)
+        - expenses(t)
+    )
 
 
 def margin_mortality(t):
@@ -1158,7 +1166,7 @@ def model_point_table_ext():
 
 
     """
-    return model_point_table.join(product_spec_table, on='spec_id')
+    return model_point_table.join(product_spec_table, on="spec_id")
 
 
 def mort_rate(t):
@@ -1170,7 +1178,7 @@ def mort_rate(t):
        * :func:`mort_rate_mth`
 
     """
-    return mort_table[str(max(min(5, duration(t)),0))][age(t)]
+    return mort_table[str(max(min(5, duration(t)), 0))][age(t)]
 
 
 def mort_rate_mth(t):
@@ -1182,14 +1190,14 @@ def mort_rate_mth(t):
        * :func:`mort_rate`
 
     """
-    return 1-(1- mort_rate(t))**(1/12)
+    return 1 - (1 - mort_rate(t)) ** (1 / 12)
 
 
 def mort_table_last_age():
     """The last age of mortality tables
 
     Returns the last age whose mortality rates are all 1.
-    If no such age is found, return the last index of the tables 
+    If no such age is found, return the last index of the tables
 
     .. seealso::
 
@@ -1216,7 +1224,7 @@ def net_amt_at_risk(t):
 
 
     """
-    return max(sum_assured() - av_pp_at(t, 'BEF_FEE'), 0)
+    return max(sum_assured() - av_pp_at(t, "BEF_FEE"), 0)
 
 
 def net_cf(t):
@@ -1236,8 +1244,14 @@ def net_cf(t):
         * :func:`av_change`
 
     """
-    return (premiums(t) 
-            + inv_income(t) - claims(t) - expenses(t) - commissions(t) - av_change(t))
+    return (
+        premiums(t)
+        + inv_income(t)
+        - claims(t)
+        - expenses(t)
+        - commissions(t)
+        - av_change(t)
+    )
 
 
 def policy_term():
@@ -1320,7 +1334,7 @@ def pols_if_at(t, timing):
         if t == 0:
             return pols_if_init()
         else:
-            return pols_if_at(t-1, "BEF_DECR") - pols_lapse(t-1) - pols_death(t-1)
+            return pols_if_at(t - 1, "BEF_DECR") - pols_lapse(t - 1) - pols_death(t - 1)
 
     elif timing == "BEF_NB":
 
@@ -1334,7 +1348,7 @@ def pols_if_at(t, timing):
         raise ValueError("invalid timing")
 
 
-def pols_if_init(): 
+def pols_if_init():
     """Initial number of policies in-force
 
     Number of in-force policies at time 0 referenced from
@@ -1347,7 +1361,7 @@ def pols_if_init():
 
 
 def pols_lapse(t):
-    """Number of lapse 
+    """Number of lapse
 
     Number of policies decreased by lapse during ``t`` and ``t+1``.
 
@@ -1356,7 +1370,9 @@ def pols_lapse(t):
         * :func:`lapse_rate`
 
     """
-    return (pols_if_at(t, "BEF_DECR") - pols_death(t)) * (1-(1 - lapse_rate(t))**(1/12))
+    return (pols_if_at(t, "BEF_DECR") - pols_death(t)) * (
+        1 - (1 - lapse_rate(t)) ** (1 / 12)
+    )
 
 
 def pols_maturity(t):
@@ -1391,7 +1407,7 @@ def pols_new_biz(t):
 
     """
     if duration_mth(t) == 0:
-        return model_point()['policy_count']
+        return model_point()["policy_count"]
     else:
         return 0
 
@@ -1414,7 +1430,7 @@ def prem_to_av(t):
 def prem_to_av_pp(t):
     """Per-policy premium portion put in the account value
 
-    The amount of premium per policy net of loading, 
+    The amount of premium per policy net of loading,
     which is put in the accoutn value.
 
     .. seealso::
@@ -1442,22 +1458,22 @@ def premium_pp(t):
 
 
     """
-    if premium_type() == 'SINGLE':
+    if premium_type() == "SINGLE":
 
         if duration_mth(t) == 0:
-            return model_point()['premium_pp']
+            return model_point()["premium_pp"]
         else:
             return 0
 
-    elif premium_type() == 'LEVEL':
+    elif premium_type() == "LEVEL":
 
         if duration_mth(t) < 12 * policy_term():
-            return model_point()['premium_pp']
+            return model_point()["premium_pp"]
         else:
             return 0
 
     else:
-        raise ValueError('invalid premium type')
+        raise ValueError("invalid premium type")
 
 
 def premium_type():
@@ -1467,7 +1483,7 @@ def premium_type():
     ``"LEVEL"`` if level payment, or ``"SINGLE"`` if single payment.
 
     """
-    return model_point()['premium_type']
+    return model_point()["premium_type"]
 
 
 def premiums(t):
@@ -1512,7 +1528,9 @@ def pv_av_change():
         * :func:`proj_len`
 
     """
-    return sum(list(av_change(t) for t in range(proj_len())) * disc_factors()[:proj_len()])
+    return sum(
+        list(av_change(t) for t in range(proj_len())) * disc_factors()[: proj_len()]
+    )
 
 
 def pv_claims(kind=None):
@@ -1528,7 +1546,9 @@ def pv_claims(kind=None):
 
 
     """
-    return sum(list(claims(t, kind) for t in range(proj_len())) * disc_factors()[:proj_len()])
+    return sum(
+        list(claims(t, kind) for t in range(proj_len())) * disc_factors()[: proj_len()]
+    )
 
 
 def pv_commissions():
@@ -1541,7 +1561,9 @@ def pv_commissions():
         * :func:`disc_factors`
 
     """
-    return sum(list(commissions(t) for t in range(proj_len())) * disc_factors()[:proj_len()])
+    return sum(
+        list(commissions(t) for t in range(proj_len())) * disc_factors()[: proj_len()]
+    )
 
 
 def pv_expenses():
@@ -1554,7 +1576,9 @@ def pv_expenses():
         * :func:`disc_factors`
 
     """
-    return sum(list(expenses(t) for t in range(proj_len())) * disc_factors()[:proj_len()])
+    return sum(
+        list(expenses(t) for t in range(proj_len())) * disc_factors()[: proj_len()]
+    )
 
 
 def pv_inv_income():
@@ -1569,7 +1593,9 @@ def pv_inv_income():
         * :func:`disc_factors`
 
     """
-    return sum(list(inv_income(t) for t in range(proj_len())) * disc_factors()[:proj_len()])
+    return sum(
+        list(inv_income(t) for t in range(proj_len())) * disc_factors()[: proj_len()]
+    )
 
 
 def pv_net_cf():
@@ -1577,7 +1603,7 @@ def pv_net_cf():
 
     Defined as::
 
-        pv_premiums() + pv_inv_income() 
+        pv_premiums() + pv_inv_income()
         - pv_claims() - pv_expenses() - pv_commissions() - pv_av_change()
 
     .. seealso::
@@ -1588,12 +1614,14 @@ def pv_net_cf():
         * :func:`pv_commissions`
 
     """
-    return (pv_premiums() 
-            + pv_inv_income() 
-            - pv_claims() 
-            - pv_expenses() 
-            - pv_commissions() 
-            - pv_av_change())
+    return (
+        pv_premiums()
+        + pv_inv_income()
+        - pv_claims()
+        - pv_expenses()
+        - pv_commissions()
+        - pv_av_change()
+    )
 
 
 def pv_pols_if():
@@ -1606,7 +1634,9 @@ def pv_pols_if():
     It is used as the annuity factor for calculating :func:`net_premium_pp`.
 
     """
-    return sum(list(pols_if(t) for t in range(proj_len())) * disc_factors()[:proj_len()])
+    return sum(
+        list(pols_if(t) for t in range(proj_len())) * disc_factors()[: proj_len()]
+    )
 
 
 def pv_premiums():
@@ -1619,7 +1649,9 @@ def pv_premiums():
         * :func:`disc_factors`
 
     """
-    return sum(list(premiums(t) for t in range(proj_len())) * disc_factors()[:proj_len()])
+    return sum(
+        list(premiums(t) for t in range(proj_len())) * disc_factors()[: proj_len()]
+    )
 
 
 def result_cf():
@@ -1646,7 +1678,7 @@ def result_cf():
         "Commissions": [commissions(t) for t in t_len],
         "Investment Income": [inv_income(t) for t in t_len],
         "Change in AV": [av_change(t) for t in t_len],
-        "Net Cashflow": [net_cf(t) for t in t_len]
+        "Net Cashflow": [net_cf(t) for t in t_len],
     }
     return pd.DataFrame.from_dict(data)
 
@@ -1671,7 +1703,7 @@ def result_pols():
         "pols_maturity": [pols_maturity(t) for t in t_len],
         "pols_new_biz": [pols_new_biz(t) for t in t_len],
         "pols_death": [pols_death(t) for t in t_len],
-        "pols_lapse": [pols_lapse(t) for t in t_len]
+        "pols_lapse": [pols_lapse(t) for t in t_len],
     }
 
     return pd.DataFrame.from_dict(data)
@@ -1690,29 +1722,30 @@ def result_pv():
 
     """
 
-    cols = ["Premiums", 
-            "Death",
-            "Surrender",
-            "Maturity",
-            "Expenses", 
-            "Commissions", 
-            "Net Cashflow"]
+    cols = [
+        "Premiums",
+        "Death",
+        "Surrender",
+        "Maturity",
+        "Expenses",
+        "Commissions",
+        "Net Cashflow",
+    ]
 
-    pvs = [pv_premiums(), 
-           pv_claims("DEATH"),
-           pv_claims("LAPSE"),
-           pv_claims("MATURITY"),
-           pv_expenses(), 
-           pv_commissions(), 
-           pv_net_cf()]
+    pvs = [
+        pv_premiums(),
+        pv_claims("DEATH"),
+        pv_claims("LAPSE"),
+        pv_claims("MATURITY"),
+        pv_expenses(),
+        pv_commissions(),
+        pv_net_cf(),
+    ]
 
-    return pd.DataFrame.from_dict(
-            data={"PV": pvs},
-            columns=cols,
-            orient='index')
+    return pd.DataFrame.from_dict(data={"PV": pvs}, columns=cols, orient="index")
 
 
-def sex(): 
+def sex():
     """The sex of the selected model point
 
     .. note::
@@ -1730,7 +1763,7 @@ def sum_assured():
     The element labeled ``sum_assured`` of the Series returned by
     :func:`model_point`.
     """
-    return model_point()['sum_assured']
+    return model_point()["sum_assured"]
 
 
 def surr_charge(t):
@@ -1788,7 +1821,7 @@ def surr_charge_id():
         * :func:`has_surr_charge`
 
     """
-    return model_point()['surr_charge_id']
+    return model_point()["surr_charge_id"]
 
 
 # ---------------------------------------------------------------------------

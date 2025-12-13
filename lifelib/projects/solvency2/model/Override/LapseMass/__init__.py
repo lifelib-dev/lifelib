@@ -8,10 +8,7 @@ from modelx.serialize.jsonvalues import *
 
 _formula = None
 
-_bases = [
-    "..BaseProj",
-    "..PV"
-]
+_bases = ["..BaseProj", "..PV"]
 
 _allow_none = None
 
@@ -19,6 +16,7 @@ _spaces = []
 
 # ---------------------------------------------------------------------------
 # Cells
+
 
 def BenefitSurr(t):
     """Surrender benefits"""
@@ -35,5 +33,3 @@ def PolsSurrMass(t):
     factor = Factor(Risk, Shock, Scope) if t == t0 else 0
 
     return (PolsIF_Beg(t) + PolsRenewal(t) + PolsNewBiz(t)) * factor
-
-

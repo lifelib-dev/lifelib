@@ -1,11 +1,14 @@
-import sys, os, pickle
-from lifelib.tests.data.generate_testdata import round_signif
-from lifelib.projects.nestedlife.scripts import nestedlife
+import os
+import pickle
+import sys
 
 import numpy as np
 
-if '' not in sys.path:
-    sys.path.insert(0, '')
+from lifelib.projects.nestedlife.scripts import nestedlife
+from lifelib.tests.data.generate_testdata import round_signif
+
+if "" not in sys.path:
+    sys.path.insert(0, "")
 
 # %% Code block for overriding the default model
 
@@ -72,21 +75,17 @@ def get_nested(outer, item):
 
 def save_data(outer, filename):
 
-    data = get_nested(outer, 'PolsSurr')
+    data = get_nested(outer, "PolsSurr")
     filepath = os.path.join(os.path.dirname(__file__), filename)
 
-    with open(filepath, 'wb') as file:
+    with open(filepath, "wb") as file:
         pickle.dump(data, file, protocol=4)
 
 
 def generate_data(model):
-    save_data(set_model(model), 'data_nestedlife1')
-    save_data(update_model(model), 'data_nestedlife2')
+    save_data(set_model(model), "data_nestedlife1")
+    save_data(update_model(model), "data_nestedlife2")
 
 
-if __name__ == '__main__':
-    generate_data(model = nestedlife.build(True))
-
-
-
-
+if __name__ == "__main__":
+    generate_data(model=nestedlife.build(True))

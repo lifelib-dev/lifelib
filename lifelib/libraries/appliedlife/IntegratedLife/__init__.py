@@ -11,7 +11,7 @@ _spaces = [
     "Run",
     "ModelPoints",
     "Scenarios",
-    "Assumptions"
+    "Assumptions",
 ]
 
 # ---------------------------------------------------------------------------

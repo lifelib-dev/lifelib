@@ -19,6 +19,7 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+
 def AccumCF(t):
     """Accumulated cashflows"""
     return -NetInsurAssets(t)
@@ -31,8 +32,7 @@ def AcqPremRatio():
     """
     pvs = InnerProj(0).PV(0)
 
-    return ((pvs.PV_ExpsCommTotal(0) + pvs.PV_ExpsAcq(0))
-            / pvs.PV_PremIncome(0))
+    return (pvs.PV_ExpsCommTotal(0) + pvs.PV_ExpsAcq(0)) / pvs.PV_PremIncome(0)
 
 
 def ActualNetCF(t):
@@ -86,10 +86,15 @@ def CSM(t):
         return max(0, PV_FutureCF(t) - RiskAdjustment(t))
     else:
         # Subsequent recognition (44)
-        return max(0, (CSM(t - 1)
+        return max(
+            0,
+            (
+                CSM(t - 1)
                 + IntAccrCSM(t - 1)
                 + AdjCSM_FlufCF(t - 1)
-                - TransServices(t - 1)))
+                - TransServices(t - 1)
+            ),
+        )
 
 
 def CSM_Unfloored(t):
@@ -99,10 +104,12 @@ def CSM_Unfloored(t):
         return PV_FutureCF(t) - RiskAdjustment(t)
     else:
         # Subsequent recognition (44)
-        return (CSM_Unfloored(t-1)
-                + IntAccrCSM(t-1)
-                + AdjCSM_FlufCF(t-1)
-                - TransServices(t-1))
+        return (
+            CSM_Unfloored(t - 1)
+            + IntAccrCSM(t - 1)
+            + AdjCSM_FlufCF(t - 1)
+            - TransServices(t - 1)
+        )
 
 
 def CovUnitsBeg1(t):
@@ -119,9 +126,7 @@ def EstAcqCashflow(t):
     """Expected Acquisition Cashflow"""
 
     est = InnerProj(t)
-    return (est.ExpsCommInit(t)
-            + est.ExpsCommRen(t)
-            + est.ExpsAcq(t))
+    return est.ExpsCommInit(t) + est.ExpsCommRen(t) + est.ExpsAcq(t)
 
 
 def EstClaim(t):
@@ -138,10 +143,7 @@ def EstExps(t):
     """Expected Expenses"""
 
     est = InnerProj(t)
-    return (est.ExpsTotal(t)
-            - est.ExpsCommInit(t)
-            - est.ExpsCommRen(t)
-            - est.ExpsAcq(t))
+    return est.ExpsTotal(t) - est.ExpsCommInit(t) - est.ExpsCommRen(t) - est.ExpsAcq(t)
 
 
 def EstIntOnCF(t):
@@ -169,11 +171,11 @@ def IncurClaim(t):
 
 def IncurExps(t):
     """Incurred Expenses"""
-    return (ExpsTotal(t) - ExpsCommTotal(t) - ExpsAcq(t))
+    return ExpsTotal(t) - ExpsCommTotal(t) - ExpsAcq(t)
 
 
 def InsServiceResult(t):
-    """Insurance Service Result (80(a), 83-86)"""  
+    """Insurance Service Result (80(a), 83-86)"""
     return InsurRevenue(t) - InsurServiceExps(t)
 
 
@@ -183,30 +185,32 @@ def InsurFinIncomeExps(t):
     Warning:
         Accounting Policy Choice 88(b) not implemented.
     """
-    chg_discrate = (PV_Cashflow(t + 1, t + 1, t + 1)
-                    - PV_Cashflow(t + 1, t + 1, t))
+    chg_discrate = PV_Cashflow(t + 1, t + 1, t + 1) - PV_Cashflow(t + 1, t + 1, t)
 
-    return (EstIntOnCF(t) + chg_discrate 
-            - IntAccrCSM(t) + IntAccumCF(t))
+    return EstIntOnCF(t) + chg_discrate - IntAccrCSM(t) + IntAccumCF(t)
 
 
 def InsurRevenue(t):
     """Insurance Revenue (82-85, B120-B125)"""
-    return (EstClaim(t)
-            + EstExps(t)
-            + RelsRiskAdj(t)
-            + TransServices(t)
-            + AmortAcqCashflow(t)
-            - AdjLCO_FulfCF(t))
+    return (
+        EstClaim(t)
+        + EstExps(t)
+        + RelsRiskAdj(t)
+        + TransServices(t)
+        + AmortAcqCashflow(t)
+        - AdjLCO_FulfCF(t)
+    )
 
 
 def InsurServiceExps(t):
     """Insurance Service Expense (103(b))"""
-    return (IncurClaim(t)
-            + IncurExps(t)
-            + AmortAcqCashflow(t)
-            + Incr_LossComp(t)
-            - AdjLCO_FulfCF(t))
+    return (
+        IncurClaim(t)
+        + IncurExps(t)
+        + AmortAcqCashflow(t)
+        + Incr_LossComp(t)
+        - AdjLCO_FulfCF(t)
+    )
 
 
 def IntAccrCSM(t):
@@ -227,7 +231,7 @@ def LossComp(t):
     """Loss Component"""
     if t == 0:
         # Initial recognition
-        return - min(0, PV_FutureCF(t) - RiskAdjustment(t))
+        return -min(0, PV_FutureCF(t) - RiskAdjustment(t))
     else:
         # Subsequent recognition
         return max(0, LossComp(t - 1) - AdjLCO_FulfCF(t - 1))
@@ -242,11 +246,9 @@ def NetInsurAssets(t):
     """Net Insurance Assets or Liabilities
 
     Warnings:
-        The liabilities for incurred claims are not implemented. 
-    """    
-    return (PV_FutureCF(t)
-            - RiskAdjustment(t)
-            - CSM(t))
+        The liabilities for incurred claims are not implemented.
+    """
+    return PV_FutureCF(t) - RiskAdjustment(t) - CSM(t)
 
 
 def PV_Cashflow(t, t_at, t_rate):
@@ -305,15 +307,10 @@ def RiskAdjustment(t):
 
 
 def TransServices(t):
-    """Transfer of services (44(e)->B119)
-    """
-    csm_pre_rel = (CSM(t)
-                   + IntAccrCSM(t)
-                   + AdjCSM_FlufCF(t))
+    """Transfer of services (44(e)->B119)"""
+    csm_pre_rel = CSM(t) + IntAccrCSM(t) + AdjCSM_FlufCF(t)
 
     diff_covunits = CovUnitsBeg1(t) * (1 + InnerProj(0).scen.DiscRate(t))
     pv_sumcovunits_end = PV_SumCovUnits(t + 1, 0)
 
     return csm_pre_rel * diff_covunits / (diff_covunits + pv_sumcovunits_end)
-
-

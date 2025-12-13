@@ -44,11 +44,12 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+
 def TableLastAge():
     """The last ages of MortalityTables"""
 
     result = MortalityTables().idxmax()
-    result.name = 'TableLastAge'
+    result.name = "TableLastAge"
     return result
 
 

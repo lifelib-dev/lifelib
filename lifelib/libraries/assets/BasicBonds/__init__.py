@@ -1,4 +1,4 @@
-"""Basic 
+"""Basic
 
 foo bar
 """
@@ -9,7 +9,4 @@ _name = "BasicBonds"
 
 _allow_none = False
 
-_spaces = [
-    "Bonds"
-]
-
+_spaces = ["Bonds"]

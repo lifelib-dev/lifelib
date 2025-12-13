@@ -2,27 +2,19 @@ from modelx.serialize.jsonvalues import *
 
 _formula = lambda PolicyID, ScenID=1: None
 
-_bases = [
-    ".IFRS",
-    ".BaseProj"
-]
+_bases = [".IFRS", ".BaseProj"]
 
 _allow_none = None
 
-_spaces = [
-    "InnerProj",
-    "Policy",
-    "Assumptions"
-]
+_spaces = ["InnerProj", "Policy", "Assumptions"]
 
 # ---------------------------------------------------------------------------
 # Cells
 
+
 def IntAccumCF(t):
     """Intrest on accumulated cashflows"""
-    return (AccumCF(t)
-            + PremIncome(t)
-            - ExpsTotal(t)) * DiscRate(t, 0)
+    return (AccumCF(t) + PremIncome(t) - ExpsTotal(t)) * DiscRate(t, 0)
 
 
 def DiscRate(t, dur):
@@ -35,7 +27,7 @@ def DiscRateAdj(t):
     if t == 0:
         return 0
     else:
-        return DiscRateAdj(t-1)
+        return DiscRateAdj(t - 1)
 
 
 # ---------------------------------------------------------------------------

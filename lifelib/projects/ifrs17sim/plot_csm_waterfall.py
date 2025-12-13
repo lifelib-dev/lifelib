@@ -15,21 +15,21 @@ The live version of the notebook is available online.
 .. seealso::
     * The :mod:`~ifrs17sim` library
 """
+
 import modelx as mx
-from draw_charts import draw_waterfall, get_waterfalldata
 import seaborn as sns
+from draw_charts import draw_waterfall, get_waterfalldata
+
 sns.set_theme(style="darkgrid")
 
 model = mx.read_model("model")
 proj = model.OuterProj[1]
 
 csmrf = get_waterfalldata(
-        proj,
-        items=['CSM',
-               'IntAccrCSM',
-               'AdjCSM_FlufCF',
-               'TransServices'],
-        length=15,
-        reverseitems=['TransServices'])
+    proj,
+    items=["CSM", "IntAccrCSM", "AdjCSM_FlufCF", "TransServices"],
+    length=15,
+    reverseitems=["TransServices"],
+)
 
 draw_waterfall(csmrf)

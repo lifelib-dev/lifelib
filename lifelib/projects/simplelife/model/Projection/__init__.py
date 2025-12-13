@@ -59,20 +59,15 @@ from modelx.serialize.jsonvalues import *
 
 _formula = lambda PolicyID, ScenID=1: None
 
-_bases = [
-    ".BaseProj",
-    ".PV"
-]
+_bases = [".BaseProj", ".PV"]
 
 _allow_none = None
 
-_spaces = [
-    "Policy",
-    "Assumptions"
-]
+_spaces = ["Policy", "Assumptions"]
 
 # ---------------------------------------------------------------------------
 # Cells
+
 
 def DiscRate(t):
     """Rates for discount cashflows

@@ -1,12 +1,15 @@
-import sys, os, pickle
-from itertools import  product
+import os
+import pickle
+import sys
+from itertools import product
+
 from lifelib.projects.solvency2.scripts import solvency2
 from lifelib.tests.data import round_signif
 
-filepath = os.path.join(os.path.dirname(__file__), 'data_solvency2')
+filepath = os.path.join(os.path.dirname(__file__), "data_solvency2")
 
-if '' not in sys.path:
-    sys.path.insert(0, '')
+if "" not in sys.path:
+    sys.path.insert(0, "")
 
 
 def generate_data(model):
@@ -18,9 +21,9 @@ def generate_data(model):
 
 
 def save_date(data):
-    with open(filepath, 'wb') as file:
+    with open(filepath, "wb") as file:
         pickle.dump(data, file, protocol=4)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     save_date(generate_data(solvency2.build()))

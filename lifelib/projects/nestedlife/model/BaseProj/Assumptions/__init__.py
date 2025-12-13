@@ -67,6 +67,7 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+
 def BaseMortRate(x):
     """Bae mortality rate"""
 
@@ -86,7 +87,7 @@ def CommInitPrem():
     if result is not None:
         return result
     else:
-        raise ValueError('CommInitPrem not found')
+        raise ValueError("CommInitPrem not found")
 
 
 def CommRenPrem():
@@ -94,9 +95,9 @@ def CommRenPrem():
     result = _space.AsmpLookup.match("CommRenPrem", prod(), polt(), gen()).value
 
     if result is not None:
-        return  result
+        return result
     else:
-        raise ValueError('CommRenPrem not found')
+        raise ValueError("CommRenPrem not found")
 
 
 def CommRenTerm():
@@ -106,7 +107,7 @@ def CommRenTerm():
     if result is not None:
         return result
     else:
-        raise ValueError('CommRenTerm not found')
+        raise ValueError("CommRenTerm not found")
 
 
 def ExpsAcqAnnPrem():
@@ -158,12 +159,12 @@ def MortFactor(y):
     table = _space.AsmpLookup.match("MortFactor", prod(), polt(), gen()).value
 
     if table is None:
-        raise ValueError('MortFactor not found')
+        raise ValueError("MortFactor not found")
 
     result = AssumptionTables.get((table, y), None)
 
     if result is None:
-        return MortFactor(y-1)
+        return MortFactor(y - 1)
     else:
         return result
 
@@ -175,7 +176,7 @@ def MortTable():
     if result is not None:
         return MortalityTables(result).MortalityTable
     else:
-        raise ValueError('MortTable not found')
+        raise ValueError("MortTable not found")
 
 
 def SurrRate(y):
@@ -183,12 +184,12 @@ def SurrRate(y):
     table = _space.AsmpLookup.match("Surrender", prod(), polt(), gen()).value
 
     if table is None:
-        raise ValueError('Surrender not found')
+        raise ValueError("Surrender not found")
 
-    result =  AssumptionTables.get((table, y), None)
+    result = AssumptionTables.get((table, y), None)
 
     if result is None:
-        return SurrRate(y-1)
+        return SurrRate(y - 1)
     else:
         return result
 
@@ -198,7 +199,7 @@ def SurrRateMult(t):
     if t == 0:
         return 1
     else:
-        return SurrRateMult(t-1)
+        return SurrRateMult(t - 1)
 
 
 # ---------------------------------------------------------------------------

@@ -35,29 +35,26 @@ Reference: *Options, Futures, and Other Derivatives* by John C.Hull
 
 
 """
-import modelx as mx
-import pandas as pd
+
 import matplotlib.pyplot as plt
-from scipy.stats import norm, lognorm
+import modelx as mx
 import numpy as np
+import pandas as pd
+from scipy.stats import lognorm, norm
 
 ex1 = mx.read_model("CashValue_ME_EX1").Projection
 ex2 = mx.read_model("CashValue_ME_EX2").Projection
 
 ex1.model_point_table = ex1.model_point_moneyness
 ex2.model_point_table = ex2.model_point_moneyness
-S0 = ex1.model_point_table['premium_pp'] * ex1.model_point_table['policy_count']
+S0 = ex1.model_point_table["premium_pp"] * ex1.model_point_table["policy_count"]
 
 fig, ax = plt.subplots()
-ax.scatter(S0, ex1.formula_option_put(120), s= 10, alpha=1, label='No dividends')
-ax.scatter(S0, ex2.formula_option_put(120), alpha=0.5, label='With dividends')
+ax.scatter(S0, ex1.formula_option_put(120), s=10, alpha=1, label="No dividends")
+ax.scatter(S0, ex2.formula_option_put(120), alpha=0.5, label="With dividends")
 ax.legend()
 ax.grid(True)
-fig.suptitle('TVOG by ITM')
+fig.suptitle("TVOG by ITM")
 
 ex1.model.close()
 ex2.model.close()
-
-
-
-

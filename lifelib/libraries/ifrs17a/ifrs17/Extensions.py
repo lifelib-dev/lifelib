@@ -1,4 +1,3 @@
-
 def GetElementOrDefault(array: list, index: int):
     return array[min(index, len(array) - 1)] if array else 0
 

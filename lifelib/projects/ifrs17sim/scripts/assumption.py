@@ -65,6 +65,7 @@ policy_attrs = []
 
 # #--- Mortality ---
 
+
 def MortTable():
     """Mortality Table"""
     result = asmp.BaseMort.match(prod, polt, gen).value
@@ -72,7 +73,7 @@ def MortTable():
     if result is not None:
         return MortalityTables(result).MortalityTable
     else:
-        raise ValueError('MortTable not found')
+        raise ValueError("MortTable not found")
 
 
 def LastAge():
@@ -82,7 +83,7 @@ def LastAge():
         if BaseMortRate(x) == 1:
             return x
         x += 1
-            
+
 
 def BaseMortRate(x):
     """Bae mortality rate"""
@@ -94,14 +95,15 @@ def MortFactor(y):
     table = asmp.MortFactor.match(prod, polt, gen).value
 
     if table is None:
-        raise ValueError('MortFactor not found')
+        raise ValueError("MortFactor not found")
 
     result = asmp_tbl.cells[table](y)
 
     if result is None:
-        return MortFactor(y-1)
+        return MortFactor(y - 1)
     else:
         return result
+
 
 # --- Surrender Rates ---
 def SurrRate(y):
@@ -109,14 +111,15 @@ def SurrRate(y):
     table = asmp.Surrender.match(prod, polt, gen).value
 
     if table is None:
-        raise ValueError('Surrender not found')
+        raise ValueError("Surrender not found")
 
-    result =  asmp_tbl.cells[table](y)
+    result = asmp_tbl.cells[table](y)
 
     if result is None:
-        return SurrRate(y-1)
+        return SurrRate(y - 1)
     else:
         return result
+
 
 # --- Commissions ---
 def CommInitPrem():
@@ -126,7 +129,7 @@ def CommInitPrem():
     if result is not None:
         return result
     else:
-        raise ValueError('CommInitPrem not found')
+        raise ValueError("CommInitPrem not found")
 
 
 def CommRenPrem():
@@ -134,9 +137,10 @@ def CommRenPrem():
     result = asmp.CommRenPrem.match(prod, polt, gen).value
 
     if result is not None:
-        return  result
+        return result
     else:
-        raise ValueError('CommRenPrem not found')
+        raise ValueError("CommRenPrem not found")
+
 
 def CommRenTerm():
     """Renewal commission term"""
@@ -145,55 +149,45 @@ def CommRenTerm():
     if result is not None:
         return result
     else:
-        raise ValueError('CommRenTerm not found')
+        raise ValueError("CommRenTerm not found")
+
 
 # # --- Expenses ---
 def ExpsAcqSA():
     """Acquisition expense per sum assured"""
     return asmp.ExpsAcqSA.match(prod, polt, gen).value
 
+
 def ExpsAcqAnnPrem():
     """Acquisition expense per annualized premium"""
     return asmp.ExpsAcqAnnPrem.match(prod, polt, gen).value
+
 
 def ExpsAcqPol():
     """Acquisition expense per policy"""
     return asmp.ExpsAcqPol.match(prod, polt, gen).value
 
+
 def ExpsMaintSA():
     """Maintenance expense per sum assured"""
     return asmp.ExpsMaintSA.match(prod, polt, gen).value
+
 
 def ExpsMaintAnnPrem():
     """Maintenance expense per annualized premium"""
     return asmp.ExpsMaintPrem.match(prod, polt, gen).value
 
+
 def ExpsMaintPol():
     """Maintenance expense per policy"""
     return asmp.ExpsMaintPol.match(prod, polt, gen).value
+
 
 def CnsmpTax():
     """Consumption tax rate"""
     return asmp.CnsmpTax()
 
+
 def InflRate():
     """Inflation rate"""
     return asmp.InflRate()
-
-
-
-
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-

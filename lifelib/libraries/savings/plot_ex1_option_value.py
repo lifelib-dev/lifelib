@@ -32,27 +32,26 @@ Reference: *Options, Futures, and Other Derivatives* by John C.Hull
 
 
 """
-import modelx as mx
-import pandas as pd
+
 import matplotlib.pyplot as plt
-from scipy.stats import norm, lognorm
+import modelx as mx
 import numpy as np
+import pandas as pd
+from scipy.stats import lognorm, norm
 
 model = mx.read_model("CashValue_ME_EX1")
 proj = model.Projection
 proj.model_point_table = proj.model_point_moneyness
-monte_carlo = pd.Series(proj.pv_claims_over_av('MATURITY'), index=proj.model_point().index)
+monte_carlo = pd.Series(
+    proj.pv_claims_over_av("MATURITY"), index=proj.model_point().index
+)
 monte_carlo = list(np.average(monte_carlo[i]) for i in range(1, 10))
-S0 = proj.model_point_table['premium_pp'] * proj.model_point_table['policy_count']
+S0 = proj.model_point_table["premium_pp"] * proj.model_point_table["policy_count"]
 
-    
+
 fig, ax = plt.subplots()
-ax.scatter(S0, monte_carlo, s= 10, alpha=1, label='Monte Carlo')
-ax.scatter(S0, proj.formula_option_put(120), alpha=0.5, label='Black-Scholes-Merton')
+ax.scatter(S0, monte_carlo, s=10, alpha=1, label="Monte Carlo")
+ax.scatter(S0, proj.formula_option_put(120), alpha=0.5, label="Black-Scholes-Merton")
 ax.legend()
 ax.grid(True)
-fig.suptitle('TVOG by ITM')
-
-
-
-
+fig.suptitle("TVOG by ITM")

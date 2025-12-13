@@ -14,20 +14,17 @@ Fulfilment CF, CSM, Cash balances
 import draw_charts
 import modelx as mx
 import seaborn as sns
+
 sns.set_theme(style="darkgrid")
 
 model = mx.read_model("model")
 proj = model.OuterProj[171]
 
 
-ifrsbs = proj.cells['CSM',
-                    'PV_FutureCF',
-                    'AccumCF'].to_frame(range(10))
+ifrsbs = proj.cells["CSM", "PV_FutureCF", "AccumCF"].to_frame(range(10))
 
-ifrsbs.columns = ['CSM', 'FCF', 'Cash']
-ifrsbs['FCF'] = -1 * ifrsbs['FCF']
-ifrsbs['Cash'] = -1 * ifrsbs['Cash']
+ifrsbs.columns = ["CSM", "FCF", "Cash"]
+ifrsbs["FCF"] = -1 * ifrsbs["FCF"]
+ifrsbs["Cash"] = -1 * ifrsbs["Cash"]
 
-draw_charts.draw_stackedbarpairs(ifrsbs,
-                                 title='Fulfilment CF and CSM')
-
+draw_charts.draw_stackedbarpairs(ifrsbs, title="Fulfilment CF and CSM")

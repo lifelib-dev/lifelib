@@ -147,6 +147,7 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+
 def age(i):
     """The attained age at :func:`date_(i)<date_>`.
 
@@ -175,7 +176,7 @@ def age_at_entry():
 def check_pay_count():
     """Check :func:`pay_count`.
 
-    Return :obj:`True` if, for all model points, the sum of the 
+    Return :obj:`True` if, for all model points, the sum of the
     numbers of past and future premium payments
     equates to :func:`payment_term` times :func:`payment_freq`.
     Th numbers of future payments are calculated
@@ -198,7 +199,11 @@ def check_pay_count():
     paid = payment_term() * 12 <= duration_m(0)
     not_started = duration_m(0) < 0
 
-    past = (duration_m(0) // (12 // payment_freq()) + 1).mask(not_started, 0).mask(paid, payment_term() * payment_freq())
+    past = (
+        (duration_m(0) // (12 // payment_freq()) + 1)
+        .mask(not_started, 0)
+        .mask(paid, payment_term() * payment_freq())
+    )
 
     # return not (pays.sum(axis=1) - payment_freq() * payment_term()).any()
 
@@ -216,7 +221,7 @@ def claim_pp(i):
 def claims(i):
     """Claims
 
-    Claims incurred during the period from :func:`date_(i)<date_>` + 1 
+    Claims incurred during the period from :func:`date_(i)<date_>` + 1
     to :func:`date_(i+1)<date_>` defined as::
 
         claim_pp(i) * pols_death(i)
@@ -242,7 +247,9 @@ def commissions(i):
         * :func:`duration_y`
 
     """
-    return (duration_y(i) == 0) * premiums(i, 'LAST') + (duration_y(i+1) == 0) * premiums(i, 'NEXT')
+    return (duration_y(i) == 0) * premiums(i, "LAST") + (
+        duration_y(i + 1) == 0
+    ) * premiums(i, "NEXT")
 
 
 def date_(i):
@@ -274,7 +281,7 @@ def date_(i):
     if i == 0:
         return pd.Timestamp(date_init)
     else:
-        return date_(i-1) + offset(i-1)
+        return date_(i - 1) + offset(i - 1)
 
 
 def disc_factors():
@@ -289,7 +296,9 @@ def disc_factors():
         * :func:`months_`
         * :func:`max_proj_len`
     """
-    return np.array(list((1 + disc_rate(i))**(-months_(i)/12) for i in range(max_proj_len())))
+    return np.array(
+        list((1 + disc_rate(i)) ** (-months_(i) / 12) for i in range(max_proj_len()))
+    )
 
 
 def disc_factors_prem(j):
@@ -298,7 +307,7 @@ def disc_factors_prem(j):
     Returns a 2D numpy array. The array contains
     discount factors for discounting premiums of each model point.
     The timings of premium cashflows are
-    adjusted by :func:`payment_lag`. 
+    adjusted by :func:`payment_lag`.
     Since :func:`payment_lag` differs by model point,
     :func:`disc_factors_prem` returns a 2D array by model point
     and by time index ``i``.
@@ -336,11 +345,11 @@ def disc_factors_prem(j):
     """
 
     data = []
-    for i in range(max_proj_len()):    
+    for i in range(max_proj_len()):
 
-        last = last_part(i) if j == 'NEXT' else 0
+        last = last_part(i) if j == "NEXT" else 0
         t = (months_(i) + last + payment_lag(i, j)) / 12
-        data.append((1 + disc_rate(i))**(-t))
+        data.append((1 + disc_rate(i)) ** (-t))
 
     return np.array(data).transpose()
 
@@ -353,7 +362,7 @@ def disc_rate(i):
     The discount rate is read from :attr:`disc_rate_ann`.
     If the number of years elapsed from :attr:`date_init` changes
     during the period, discount rates read from :attr:`disc_rate_ann`
-    are prorated.    
+    are prorated.
 
     .. seealso::
 
@@ -363,13 +372,13 @@ def disc_rate(i):
 
     """
     y0 = months_(i) // 12
-    y1 = months_(i+1) // 12
+    y1 = months_(i + 1) // 12
 
     if y0 == y1:
         return disc_rate_ann[y0]
     else:
         m0 = y1 * 12 - months_(i)
-        m1 = months_(i+1) - y1 * 12
+        m1 = months_(i + 1) - y1 * 12
         m = months_in_step(i)
         return disc_rate_ann[y0] * m0 / m + disc_rate_ann[y1] * m1 / m
 
@@ -379,22 +388,22 @@ def duration_m(i):
 
     Returns durations at period ``i`` in months of all model points
     as a Series indexed with model point ID.
-    :func:`duration_m(i)<duration_m>` is calculated 
+    :func:`duration_m(i)<duration_m>` is calculated
     from :func:`date_(i)<date_>` and :func:`issue_date`.
-    :func:`duration_m` is 0 in the issue month. 
+    :func:`duration_m` is 0 in the issue month.
 
     Negative values of :func:`duration_m` indicate future new business
     policies. For example, If the :func:`duration_m` is
     -15 at time 0, the model point is issued 15 months later.
 
-    .. seealso:: 
+    .. seealso::
 
         * :func:`issue_date`
         * :func:`date_`
     """
     iss = issue_date()
 
-    return  date_(i).year * 12 + date_(i).month - iss.dt.year * 12 - iss.dt.month
+    return date_(i).year * 12 + date_(i).month - iss.dt.year * 12 - iss.dt.month
 
 
 def duration_y(i):
@@ -447,8 +456,9 @@ def expenses(i):
 
     period = last_part(i).where(is_maturing(i), months_in_step(i))
 
-    return (expense_acq() * pols_new_biz(i) 
-            + expense_maint() * period / 12 * pols_if_avg(i) * inflation_factor(i))
+    return expense_acq() * pols_new_biz(
+        i
+    ) + expense_maint() * period / 12 * pols_if_avg(i) * inflation_factor(i)
 
 
 def inflation_factor(i):
@@ -464,7 +474,7 @@ def inflation_factor(i):
         * :func:`months_in_step`
 
     """
-    return (1 + inflation_rate())**(months_in_step(i)/12)
+    return (1 + inflation_rate()) ** (months_in_step(i) / 12)
 
 
 def inflation_rate():
@@ -511,7 +521,7 @@ def is_maturing(i):
         * :func:`policy_term`
     """
     polt = policy_term() * 12
-    return (duration_m(i) < polt) & (polt <= duration_m(i+1))
+    return (duration_m(i) < polt) & (polt <= duration_m(i + 1))
 
 
 def is_paying(i):
@@ -538,7 +548,7 @@ def issue_date():
     The ``issue_age`` column of the DataFrame returned by
     :func:`model_point`.
     """
-    return model_point()['issue_date']
+    return model_point()["issue_date"]
 
 
 def lapse_rate(i):
@@ -556,17 +566,17 @@ def lapse_rate(i):
     return np.maximum(0.1 - 0.02 * duration_y(i), 0.02)
 
 
-def last_part(i, freq_id='ANV'):
+def last_part(i, freq_id="ANV"):
     """Length of time till next anniversary in step ``i``
 
     When ``freq_id`` takes its default value 'ANV',
     :func:`last_part` returns and a Series indexed with model point ID
     that indicates for each model point the length of time in months
     until the next policy anniversary in step ``i``.
-    The decimal fraction of the length, if any, represents 
+    The decimal fraction of the length, if any, represents
     the proportion of the number of days befor anniversary
     in the anniversary months.
-    The measured part corresponds to the remaining 
+    The measured part corresponds to the remaining
     policy year the model point is in at :func:`date_(i)<date_>`.
     If no policy anniversary is in Step ``i``,
     then :func:`months_in_step(i)<months_in_step>` is returned.
@@ -583,7 +593,9 @@ def last_part(i, freq_id='ANV'):
     anv = next_anniversary(i, freq_id)
     diff_m = anv.dt.year * 12 + anv.dt.month - date_(i).year * 12 - date_(i).month
     stub_m = (anv.dt.day - 1) / anv.dt.days_in_month
-    return (diff_m - 1 + stub_m).mask(date_(i+1) < next_anniversary(i, freq_id), months_in_step(i))
+    return (diff_m - 1 + stub_m).mask(
+        date_(i + 1) < next_anniversary(i, freq_id), months_in_step(i)
+    )
 
 
 def loading_prem():
@@ -660,9 +672,9 @@ def month_to_step(m):
     if m == 0:
         return 0
     else:
-        i = month_to_step(m-1)
-        while True:  
-            m_i  = step_to_month(i)
+        i = month_to_step(m - 1)
+        while True:
+            m_i = step_to_month(i)
             if m <= m_i:
                 break
             i += 1
@@ -683,7 +695,7 @@ def months_(i):
     if i == 0:
         return 0
     else:
-        return months_(i-1) + months_in_step(i-1)
+        return months_(i - 1) + months_in_step(i - 1)
 
 
 def months_in_step(i):
@@ -696,7 +708,12 @@ def months_in_step(i):
 
         * :func:`date_`
     """
-    return date_(i+1).year * 12 + date_(i+1).month - date_(i).year * 12 - date_(i).month
+    return (
+        date_(i + 1).year * 12
+        + date_(i + 1).month
+        - date_(i).year * 12
+        - date_(i).month
+    )
 
 
 def mort_rate(i):
@@ -712,8 +729,9 @@ def mort_rate(i):
        * :func:`model_point`
     """
     mi = pd.MultiIndex.from_arrays([age(i), np.minimum(duration_y(i), 5)])
-    return mort_table_reindexed().reindex(
-        mi, fill_value=0).set_axis(model_point().index)
+    return (
+        mort_table_reindexed().reindex(mi, fill_value=0).set_axis(model_point().index)
+    )
 
 
 def mort_table_reindexed():
@@ -726,7 +744,7 @@ def mort_table_reindexed():
     result = []
     for col in mort_table.columns:
         df = mort_table[[col]]
-        df = df.assign(Duration=int(col)).set_index('Duration', append=True)[col]
+        df = df.assign(Duration=int(col)).set_index("Duration", append=True)[col]
         result.append(df)
 
     return pd.concat(result)
@@ -755,16 +773,16 @@ def net_premium_rate():
     .. note::
        This cells is implmented in the ``Pricing`` subspace.
     """
-    raise NotImplementedError('net_premium_rate must be implemented in sub spaces')
+    raise NotImplementedError("net_premium_rate must be implemented in sub spaces")
 
 
-def next_anniversary(i, freq_id='ANV'):
+def next_anniversary(i, freq_id="ANV"):
     """Nex anniversary dates
 
     Returns a Series of the next anniversary dates for all the model points.
 
     When the second parameter ``freq_id`` is ommitted or takes the default
-    value of 'ANV', 
+    value of 'ANV',
     the next anniversary date for each model point is calculated
     as the first policy anniversary date that comes after :func:`date_(i)<date_>`.
 
@@ -780,12 +798,12 @@ def next_anniversary(i, freq_id='ANV'):
         * :func:`payment_freq`
 
     """
-    if freq_id == 'ANV':
+    if freq_id == "ANV":
         freq = 1
-    elif freq_id == 'PREM':
+    elif freq_id == "PREM":
         freq = payment_freq()
     else:
-        raise ValueError('invalid freq_id')
+        raise ValueError("invalid freq_id")
 
     iss = issue_date()
     iss_y, iss_m = iss.dt.year, iss.dt.month
@@ -794,9 +812,9 @@ def next_anniversary(i, freq_id='ANV'):
     diff_m = (val_y - iss_y) * 12 + val_m - iss_m
     offset_m = (12 // freq) - (diff_m % (12 // freq))
 
-    m = (date_(i).to_period('M') + offset_m).astype('Period[M]')
+    m = (date_(i).to_period("M") + offset_m).astype("Period[M]")
     d = np.minimum(issue_date().dt.day, m.dt.days_in_month)
-    res = m.dt.to_timestamp().dt.to_period('D') - 1 + d
+    res = m.dt.to_timestamp().dt.to_period("D") - 1 + d
 
     return res.dt.to_timestamp()
 
@@ -816,7 +834,7 @@ def next_part(i):
 
         * :func:`last_part`
         * :func:`next_anniversary`
-        * :func:`months_in_step`    
+        * :func:`months_in_step`
     """
 
     return months_in_step(i) - last_part(i)
@@ -826,7 +844,7 @@ def offset(i):
     """Time interval in step ``i``
 
     This cells if for controlling the number of months in step ``i``.
-    Step ``i`` is from one day after :func:`date_(i)<date_>` to 
+    Step ``i`` is from one day after :func:`date_(i)<date_>` to
     :func:`date_(i+1)<date_>`.
     This cells should return an object of a sub calass of pandas `DateOffset`_,
     such as `MonthEnd`_ and `YearEnd`_ object.
@@ -835,7 +853,7 @@ def offset(i):
 
     To set the length of step ``i`` to ``N`` monthhs,
     offset(i) should return ``pd.offsets.MonthEnd(N)``.
-    To set the length to 1 year, 
+    To set the length to 1 year,
     offset(i) should return ``pd.offsets.Year(1)``.
 
     By default, the formula is set so that the model
@@ -871,10 +889,10 @@ def offset(i):
 def pay_count(i, j=None):
     """Number of premium payments in step ``i``
 
-    The number of premium payments in step ``i`` 
+    The number of premium payments in step ``i``
     (from 1 day after :func:`date_(i)<date_>` to :func:`date_(i+1)<date_>`).
     If 'LAST' is passed to ``j``, only the payments
-    in step ``i`` during the last policy period 
+    in step ``i`` during the last policy period
     (the year that the policy is in at :func:`date_(i)<date_>`)
     is counted.
     If 'NEXT' is passed to ``j``, only the payments
@@ -893,19 +911,23 @@ def pay_count(i, j=None):
         * :func:`duration_y`
     """
     if j is None:
-        return pay_count(i, 'LAST') + pay_count(i, 'NEXT')
+        return pay_count(i, "LAST") + pay_count(i, "NEXT")
 
     else:
-        paid_next = (duration_m(i+1) % 12) // (12 // payment_freq()) + 1
+        paid_next = (duration_m(i + 1) % 12) // (12 // payment_freq()) + 1
 
-        if j == 'LAST':
+        if j == "LAST":
             paid_last = (duration_m(i) % 12) // (12 // payment_freq()) + 1
-            paid_next = paid_next.where(duration_y(i) == duration_y(i+1), payment_freq())
+            paid_next = paid_next.where(
+                duration_y(i) == duration_y(i + 1), payment_freq()
+            )
 
             return is_paying(i) * (paid_next - paid_last)
 
-        elif j == 'NEXT':
-            return is_paying(i+1) * paid_next.where(duration_y(i) != duration_y(i+1), 0)
+        elif j == "NEXT":
+            return is_paying(i + 1) * paid_next.where(
+                duration_y(i) != duration_y(i + 1), 0
+            )
 
 
 def payment_freq():
@@ -915,7 +937,7 @@ def payment_freq():
     :func:`model_point`, which indicates the number of payments
     in a year of each model point.
     """
-    return model_point()['payment_freq']
+    return model_point()["payment_freq"]
 
 
 def payment_lag(i, j):
@@ -929,7 +951,7 @@ def payment_lag(i, j):
 
     where ``pay_interval`` is defined as ``12 // payment_freq()``.
 
-    If 'NEXT' is passed to ``j``, returns the average time in months from 
+    If 'NEXT' is passed to ``j``, returns the average time in months from
     the next anniversary date to a premium payment after the policy anniversary.
     Defined as::
 
@@ -944,14 +966,17 @@ def payment_lag(i, j):
     max = np.maximum
     pay_interval = 12 // payment_freq()
 
-    if j == 'LAST':
-        return last_part(i, freq_id='PREM') + max(pay_count(i, 'LAST') - 1, 0) * pay_interval / 2
+    if j == "LAST":
+        return (
+            last_part(i, freq_id="PREM")
+            + max(pay_count(i, "LAST") - 1, 0) * pay_interval / 2
+        )
 
-    elif j == 'NEXT':
-        return max(pay_count(i, 'NEXT') - 1, 0) * pay_interval / 2
+    elif j == "NEXT":
+        return max(pay_count(i, "NEXT") - 1, 0) * pay_interval / 2
 
     else:
-        raise ValueError('invalid j')
+        raise ValueError("invalid j")
 
 
 def payment_term():
@@ -960,7 +985,7 @@ def payment_term():
     The ``payment_term`` column of the DataFrame returned by
     :func:`model_point`.
     """
-    return model_point()['payment_term']
+    return model_point()["payment_term"]
 
 
 def policy_term():
@@ -979,20 +1004,20 @@ def pols_death(i, j=None):
     """
 
     if j is None:
-        return pols_death(i, 'LAST') + pols_death(i, 'NEXT')
+        return pols_death(i, "LAST") + pols_death(i, "NEXT")
 
-    elif j == 'LAST':
+    elif j == "LAST":
 
-        mort = 1 - (1 - mort_rate(i))**(last_part(i) / 12)
+        mort = 1 - (1 - mort_rate(i)) ** (last_part(i) / 12)
         return pols_if_at(i, "BEG_STEP") * mort
 
-    elif j == 'NEXT':
+    elif j == "NEXT":
 
-        mort = 1 - (1 - mort_rate(i+1))**(next_part(i) / 12)
+        mort = 1 - (1 - mort_rate(i + 1)) ** (next_part(i) / 12)
         return pols_if_at(i, "AFT_NB") * mort
 
     else:
-        raise ValueError('invalid j')
+        raise ValueError("invalid j")
 
 
 def pols_if(i):
@@ -1005,7 +1030,7 @@ def pols_if(i):
         * :func:`pols_if_at`
 
     """
-    return pols_if_at(i, 'BEG_STEP')
+    return pols_if_at(i, "BEG_STEP")
 
 
 def pols_if_at(i, timing):
@@ -1063,24 +1088,24 @@ def pols_if_at(i, timing):
         * :func:`pols_new_biz`
 
     """
-    if timing == 'BEG_STEP':
+    if timing == "BEG_STEP":
 
         if i == 0:
             return pols_if_init()
         else:
-            return pols_if_at(i-1, 'DECR_NEXT')
+            return pols_if_at(i - 1, "DECR_NEXT")
 
-    elif timing == 'DECR_LAST':
-        return pols_if_at(i, 'BEG_STEP') - pols_lapse(i, 'LAST') - pols_death(i, 'LAST')
+    elif timing == "DECR_LAST":
+        return pols_if_at(i, "BEG_STEP") - pols_lapse(i, "LAST") - pols_death(i, "LAST")
 
-    elif timing == 'AFT_MAT':
-        return pols_if_at(i, 'DECR_LAST') - pols_maturity(i)
+    elif timing == "AFT_MAT":
+        return pols_if_at(i, "DECR_LAST") - pols_maturity(i)
 
-    elif timing == 'AFT_NB':
-        return pols_if_at(i, 'AFT_MAT') + pols_new_biz(i)
+    elif timing == "AFT_NB":
+        return pols_if_at(i, "AFT_MAT") + pols_new_biz(i)
 
-    elif timing == 'DECR_NEXT':
-        return pols_if_at(i, 'AFT_NB') - pols_lapse(i, 'NEXT') - pols_death(i, 'NEXT')
+    elif timing == "DECR_NEXT":
+        return pols_if_at(i, "AFT_NB") - pols_lapse(i, "NEXT") - pols_death(i, "NEXT")
 
     else:
         raise ValueError("invalid timing")
@@ -1097,8 +1122,8 @@ def pols_if_avg(i):
     defined as the mean of :func:`pols_if_at(i, 'BEG_STEP')<pols_if_at>` and
     :func:`pols_if_at(i, 'DECR_LAST')<pols_if_at>`.
     """
-    existing = (pols_if_at(i, 'BEG_STEP') + pols_if_at(i+1, 'BEG_STEP')) / 2
-    maturing = (pols_if_at(i, 'BEG_STEP') + pols_if_at(i, 'DECR_LAST')) / 2
+    existing = (pols_if_at(i, "BEG_STEP") + pols_if_at(i + 1, "BEG_STEP")) / 2
+    maturing = (pols_if_at(i, "BEG_STEP") + pols_if_at(i, "DECR_LAST")) / 2
 
     return existing.mask(is_maturing(i), maturing)
 
@@ -1118,7 +1143,7 @@ def pols_if_pay(i, j):
     Returns a Series each of whose elements represents
     the number of policies in-force adjusted for :func:`payment_lag`.
     If 'LAST' is passed to ``j``, returns the number of in-force
-    policies at :func:`payment_lag(i, 'LAST')<payment_lag>` months 
+    policies at :func:`payment_lag(i, 'LAST')<payment_lag>` months
     past :func:`date_(i)<date_>`.
 
     If 'NEXT' is passed to ``j``, returns the number of in-force
@@ -1133,25 +1158,25 @@ def pols_if_pay(i, j):
     """
     dt = payment_lag(i, j) / 12
 
-    if j == 'LAST':
+    if j == "LAST":
         disc = (1 - mort_rate(i)) * (1 - lapse_rate(i))
         return pols_if_at(i, "BEG_STEP") * disc**dt
 
-    elif j == 'NEXT':
-        disc = (1 - mort_rate(i+1)) * (1 - lapse_rate(i+1))
+    elif j == "NEXT":
+        disc = (1 - mort_rate(i + 1)) * (1 - lapse_rate(i + 1))
         return pols_if_at(i, "AFT_NB") * disc**dt
 
     else:
-        raise ValueError('invalid j')
+        raise ValueError("invalid j")
 
 
 def pols_lapse(i, j=None):
     """Number of lapse in step ``i``
 
-    By default, returns a Series each of whose elements represents 
+    By default, returns a Series each of whose elements represents
     the number of policies lapsed during step ``i`` for each model point.
     If 'LAST' is passed to ``j``, only lapse before the next anniversary
-    in step ``i`` is counted. If 'NEXT' is passed to ``j``, 
+    in step ``i`` is counted. If 'NEXT' is passed to ``j``,
     only lapse after the next anniversary is counted.
 
     Args:
@@ -1165,27 +1190,27 @@ def pols_lapse(i, j=None):
         * :func:`last_part`
     """
     if j is None:
-        return pols_lapse(i, 'LAST') + pols_lapse(i, 'NEXT')
+        return pols_lapse(i, "LAST") + pols_lapse(i, "NEXT")
 
-    elif j == 'LAST':
+    elif j == "LAST":
 
-        lapse = 1 - (1 - lapse_rate(i))**(last_part(i) / 12)
-        return (pols_if_at(i, "BEG_STEP") - pols_death(i, 'LAST')) * lapse
+        lapse = 1 - (1 - lapse_rate(i)) ** (last_part(i) / 12)
+        return (pols_if_at(i, "BEG_STEP") - pols_death(i, "LAST")) * lapse
 
-    elif j == 'NEXT':
+    elif j == "NEXT":
 
-        lapse = 1 - (1 - lapse_rate(i+1))**(next_part(i) / 12)
-        return (pols_if_at(i, "AFT_NB") - pols_death(i, 'NEXT')) * lapse
+        lapse = 1 - (1 - lapse_rate(i + 1)) ** (next_part(i) / 12)
+        return (pols_if_at(i, "AFT_NB") - pols_death(i, "NEXT")) * lapse
 
     else:
-        raise ValueError('invalid j')
+        raise ValueError("invalid j")
 
 
 def pols_maturity(i):
     """Number of maturing policies
 
-    Returns a Series each of whose elements represent 
-    the number of policies maturing in step ``i`` for a model point. 
+    Returns a Series each of whose elements represent
+    the number of policies maturing in step ``i`` for a model point.
     Maturity occurs when
     :func:`duration_m` equals 12 times :func:`policy_term`.
     The amount is equal to :func:`pols_if_at(t, "DECR_LAST")<pols_if_at>`.
@@ -1213,14 +1238,15 @@ def pols_new_biz(i):
 
     The numbers of new business policies
     are read from the ``policy_count`` column in
-    :func:`model_point`. 
+    :func:`model_point`.
 
     .. seealso::
         * :func:`model_point`
         * :func:`duration_m`
     """
-    return model_point()['policy_count'].where(
-        (duration_m(i) < 0) & (duration_m(i+1) >= 0), other=0)
+    return model_point()["policy_count"].where(
+        (duration_m(i) < 0) & (duration_m(i + 1) >= 0), other=0
+    )
 
 
 def premium_pp():
@@ -1228,7 +1254,7 @@ def premium_pp():
 
     This cells is defined in sub spaces.
     """
-    raise NotImplementedError('premium_pp must be implemented in sub spaces')
+    raise NotImplementedError("premium_pp must be implemented in sub spaces")
 
 
 def premiums(i, j=None):
@@ -1248,13 +1274,13 @@ def premiums(i, j=None):
         * :func:`pay_count`
     """
     if j is None:
-        return premiums(i, 'LAST') + premiums(i, 'NEXT')
+        return premiums(i, "LAST") + premiums(i, "NEXT")
 
-    elif j == 'LAST' or j == 'NEXT':
+    elif j == "LAST" or j == "NEXT":
         return premium_pp() * pay_count(i, j) * pols_if_pay(i, j)
 
     else:
-        raise ValueError('invalid j')
+        raise ValueError("invalid j")
 
 
 def proj_len():
@@ -1292,7 +1318,7 @@ def pv_claims():
     """
     cl = np.array(list(claims(t) for t in range(max_proj_len()))).transpose()
 
-    return cl @ disc_factors()[:max_proj_len()]
+    return cl @ disc_factors()[: max_proj_len()]
 
 
 def pv_commissions():
@@ -1307,7 +1333,7 @@ def pv_commissions():
     """
     result = np.array(list(commissions(t) for t in range(max_proj_len()))).transpose()
 
-    return result @ disc_factors()[:max_proj_len()]
+    return result @ disc_factors()[: max_proj_len()]
 
 
 def pv_expenses():
@@ -1322,7 +1348,7 @@ def pv_expenses():
     """
     result = np.array(list(expenses(t) for t in range(max_proj_len()))).transpose()
 
-    return result @ disc_factors()[:max_proj_len()]
+    return result @ disc_factors()[: max_proj_len()]
 
 
 def pv_net_cf():
@@ -1351,7 +1377,7 @@ def pv_pols_if():
     """
     result = np.array(list(pols_if(i) for i in range(max_proj_len()))).transpose()
 
-    return result @ disc_factors()[:max_proj_len()]
+    return result @ disc_factors()[: max_proj_len()]
 
 
 def pv_pols_if_pay():
@@ -1367,14 +1393,17 @@ def pv_pols_if_pay():
         * :func:`pols_if_pay`
         * :func:`disc_factors_prem`
     """
+
     def pols(j):
         data = []
-        for i in range(max_proj_len()):    
+        for i in range(max_proj_len()):
             data.append(pay_count(i, j) * pols_if_pay(i, j))
 
         return np.array(data).transpose()
 
-    dprems = pols('LAST') * disc_factors_prem('LAST') + pols('NEXT') * disc_factors_prem('NEXT')
+    dprems = pols("LAST") * disc_factors_prem("LAST") + pols(
+        "NEXT"
+    ) * disc_factors_prem("NEXT")
 
     return dprems.sum(axis=1)
 
@@ -1389,10 +1418,14 @@ def pv_premiums():
         * :func:`premiums`
         * :func:`disc_factors_prem`
     """
-    last_y = np.array(list(premiums(i, 'LAST') for i in range(max_proj_len()))).transpose()
-    next_y = np.array(list(premiums(i, 'NEXT') for i in range(max_proj_len()))).transpose()
+    last_y = np.array(
+        list(premiums(i, "LAST") for i in range(max_proj_len()))
+    ).transpose()
+    next_y = np.array(
+        list(premiums(i, "NEXT") for i in range(max_proj_len()))
+    ).transpose()
 
-    total = last_y * disc_factors_prem('LAST') + next_y * disc_factors_prem('NEXT')
+    total = last_y * disc_factors_prem("LAST") + next_y * disc_factors_prem("NEXT")
 
     return total.sum(axis=1)
 
@@ -1407,7 +1440,9 @@ def result_cells(name, point_id=None, j=None):
     part of ``name`` are aggregated.
     """
     args = () if j is None else (j,)
-    res = pd.DataFrame({i: getattr(_space, name)(i, *args) for i in range(max_proj_len())})
+    res = pd.DataFrame(
+        {i: getattr(_space, name)(i, *args) for i in range(max_proj_len())}
+    )
 
     return res if point_id is None else res.loc[point_id]
 
@@ -1431,7 +1466,7 @@ def result_cf():
         "Claims": [sum(claims(t)) for t in t_len],
         "Expenses": [sum(expenses(t)) for t in t_len],
         "Commissions": [sum(commissions(t)) for t in t_len],
-        "Net Cashflow": [sum(net_cf(t)) for t in t_len]
+        "Net Cashflow": [sum(net_cf(t)) for t in t_len],
     }
 
     return pd.DataFrame(data, index=t_len)
@@ -1457,7 +1492,7 @@ def result_pols():
         "pols_maturity": [sum(pols_maturity(t)) for t in t_len],
         "pols_new_biz": [sum(pols_new_biz(t)) for t in t_len],
         "pols_death": [sum(pols_death(t)) for t in t_len],
-        "pols_lapse": [sum(pols_lapse(t)) for t in t_len]
+        "pols_lapse": [sum(pols_lapse(t)) for t in t_len],
     }
 
     return pd.DataFrame(data, index=t_len)
@@ -1480,7 +1515,7 @@ def result_pv():
         "PV Claims": pv_claims(),
         "PV Expenses": pv_expenses(),
         "PV Commissions": pv_commissions(),
-        "PV Net Cashflow": pv_net_cf()
+        "PV Net Cashflow": pv_net_cf(),
     }
     return pd.DataFrame(data, index=model_point().index)
 
@@ -1510,7 +1545,7 @@ def step_to_month(i):
     if i == 0:
         return 0
     else:
-        return step_to_month(i-1) + months_in_step(i-1)
+        return step_to_month(i - 1) + months_in_step(i - 1)
 
 
 def sum_assured():

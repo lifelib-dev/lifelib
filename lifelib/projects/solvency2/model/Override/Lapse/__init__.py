@@ -8,10 +8,7 @@ from modelx.serialize.jsonvalues import *
 
 _formula = None
 
-_bases = [
-    "..BaseProj",
-    "..PV"
-]
+_bases = ["..BaseProj", "..PV"]
 
 _allow_none = None
 
@@ -19,6 +16,7 @@ _spaces = []
 
 # ---------------------------------------------------------------------------
 # Cells
+
 
 def PolsSurr(t):
     """Number of policies: Surrender override"""
@@ -28,13 +26,12 @@ def PolsSurr(t):
 def SurrRate(t):
     """Surrender rate reflecting up/down lapse shocks"""
 
-    limit = Factor(Risk, Shock, Scope, 'limit')
+    limit = Factor(Risk, Shock, Scope, "limit")
 
-    if Shock == 'up':
+    if Shock == "up":
         return min(asmp.SurrRate(t) * (1 + SurrRateShock(t)), limit)
-    elif Shock == 'down':
-        return max(asmp.SurrRate(t) * (1 - SurrRateShock(t)), 
-                   asmp.SurrRate(t) - limit)
+    elif Shock == "down":
+        return max(asmp.SurrRate(t) * (1 - SurrRateShock(t)), asmp.SurrRate(t) - limit)
     else:
         raise ValueError
 
@@ -46,5 +43,3 @@ def SurrRateShock(t):
         return Factor(Risk, Shock, Scope)
     else:
         return 0
-
-

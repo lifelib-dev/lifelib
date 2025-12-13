@@ -42,6 +42,7 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+
 def CnsmpTax():
     """Consumption tax rate"""
     return AsmpLookup("CnsmpTax")
@@ -51,13 +52,13 @@ def CommInitPrem():
     """Initial commission per premium"""
 
     def get_table_id(pol):
-        key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
+        key1, key2, key3 = pol["Product"], pol["PolicyType"], pol["Gen"]
         result = _space.AsmpLookup("CommInitPrem", key1, key2, key2)
 
         if result is not None:
             return result
         else:
-            raise ValueError('CommInitPrem not found')
+            raise ValueError("CommInitPrem not found")
 
     return PolicyData().apply(get_table_id, axis=1)
 
@@ -66,13 +67,13 @@ def CommRenPrem():
     """Renewal commission per premium"""
 
     def get_table_id(pol):
-        key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
+        key1, key2, key3 = pol["Product"], pol["PolicyType"], pol["Gen"]
         result = _space.AsmpLookup("CommRenPrem", key1, key2, key2)
 
         if result is not None:
             return result
         else:
-            raise ValueError('CommRenPrem not found')
+            raise ValueError("CommRenPrem not found")
 
     return PolicyData().apply(get_table_id, axis=1)
 
@@ -81,13 +82,13 @@ def CommRenTerm():
     """Renewal commission term"""
 
     def get_table_id(pol):
-        key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
+        key1, key2, key3 = pol["Product"], pol["PolicyType"], pol["Gen"]
         result = _space.AsmpLookup("CommRenTerm", key1, key2, key2)
 
         if result is not None:
             return result
         else:
-            raise ValueError('CommRenTerm not found')
+            raise ValueError("CommRenTerm not found")
 
     return PolicyData().apply(get_table_id, axis=1)
 
@@ -96,7 +97,7 @@ def ExpsAcqAnnPrem():
     """Acquisition expense per annualized premium"""
 
     def get_table_id(pol):
-        key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
+        key1, key2, key3 = pol["Product"], pol["PolicyType"], pol["Gen"]
         return _space.AsmpLookup("ExpsAcqAnnPrem", key1, key2, key2)
 
     return PolicyData().apply(get_table_id, axis=1)
@@ -106,7 +107,7 @@ def ExpsAcqPol():
     """Acquisition expense per policy"""
 
     def get_table_id(pol):
-        key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
+        key1, key2, key3 = pol["Product"], pol["PolicyType"], pol["Gen"]
         return _space.AsmpLookup("ExpsAcqPol", key1, key2, key2)
 
     return PolicyData().apply(get_table_id, axis=1)
@@ -116,7 +117,7 @@ def ExpsAcqSA():
     """Acquisition expense per sum assured"""
 
     def get_table_id(pol):
-        key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
+        key1, key2, key3 = pol["Product"], pol["PolicyType"], pol["Gen"]
         return _space.AsmpLookup("ExpsAcqSA", key1, key2, key2)
 
     return PolicyData().apply(get_table_id, axis=1)
@@ -126,7 +127,7 @@ def ExpsMaintAnnPrem():
     """Maintenance expense per annualized premium"""
 
     def get_table_id(pol):
-        key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
+        key1, key2, key3 = pol["Product"], pol["PolicyType"], pol["Gen"]
         return _space.AsmpLookup("ExpsMaintPrem", key1, key2, key2)
 
     return PolicyData().apply(get_table_id, axis=1)
@@ -136,7 +137,7 @@ def ExpsMaintPol():
     """Maintenance expense per policy"""
 
     def get_table_id(pol):
-        key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
+        key1, key2, key3 = pol["Product"], pol["PolicyType"], pol["Gen"]
         return _space.AsmpLookup("ExpsMaintPol", key1, key2, key2)
 
     return PolicyData().apply(get_table_id, axis=1)
@@ -145,9 +146,8 @@ def ExpsMaintPol():
 def ExpsMaintSA():
     """Maintenance expense per sum assured"""
 
-
     def get_table_id(pol):
-        key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
+        key1, key2, key3 = pol["Product"], pol["PolicyType"], pol["Gen"]
         return _space.AsmpLookup("ExpsMaintSA", key1, key2, key2)
 
     return PolicyData().apply(get_table_id, axis=1)
@@ -163,9 +163,9 @@ def LastAge():
 
     keys = pd.concat([MortTableID(), sex()], axis=1)
 
-    result = keys.join(TableLastAge(), on=['MortTableID', 'Sex'])['TableLastAge']
+    result = keys.join(TableLastAge(), on=["MortTableID", "Sex"])["TableLastAge"]
 
-    result.name = 'LastAge'
+    result.name = "LastAge"
 
     return result
 
@@ -178,7 +178,7 @@ def MortFactor(y):
     if y == 0 or not fac.isnull().any():
         return fac
     else:
-        return fac.mask(fac.isnull(), MortFactor(y-1))
+        return fac.mask(fac.isnull(), MortFactor(y - 1))
 
 
 def SurrRate(y):
@@ -189,18 +189,18 @@ def SurrRate(y):
     if y == 0 or not fac.isnull().any():
         return fac
     else:
-        return fac.mask(fac.isnull(), SurrRate(y-1))
+        return fac.mask(fac.isnull(), SurrRate(y - 1))
 
 
 def MortTableID():
     """Mortality Table"""
 
     def get_table_id(pol):
-        key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
+        key1, key2, key3 = pol["Product"], pol["PolicyType"], pol["Gen"]
         return _space.AsmpLookup("BaseMort", key1, key2, key2)
 
     result = PolicyData().apply(get_table_id, axis=1)
-    result.name = 'MortTableID'
+    result.name = "MortTableID"
 
     return result
 
@@ -210,11 +210,11 @@ def MortFactorID():
 
     def get_factor(pol):
 
-        key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
+        key1, key2, key3 = pol["Product"], pol["PolicyType"], pol["Gen"]
         table = _space.AsmpLookup("MortFactor", key1, key2, key2)
 
         if table is None:
-            raise ValueError('MortFactor not found')
+            raise ValueError("MortFactor not found")
 
         return table
 
@@ -225,11 +225,11 @@ def SurrRateID():
 
     def get_factor(pol):
 
-        key1, key2, key3 = pol['Product'], pol['PolicyType'], pol['Gen']
+        key1, key2, key3 = pol["Product"], pol["PolicyType"], pol["Gen"]
         table = _space.AsmpLookup("Surrender", key1, key2, key2)
 
         if table is None:
-            raise ValueError('Surrender not found')
+            raise ValueError("Surrender not found")
 
         return table
 
@@ -239,6 +239,7 @@ def SurrRateID():
 def AsmpLookup(asmp, prod=None, polt=None, gen=None):
     """Look up assumptions"""
     from itertools import combinations
+
     key = [prod, polt, gen]
 
     for match_len in range(3, -1, -1):

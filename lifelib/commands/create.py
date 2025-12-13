@@ -1,16 +1,15 @@
-import sys
-import os.path
 import argparse
+import os.path
 import shutil
-from lifelib._dirs import (TEMPLATES, DEFAULT_TEMPLATE)
+import sys
+
+from lifelib._dirs import DEFAULT_TEMPLATE, TEMPLATES
 
 
 def get_argparser():
     parse = argparse.ArgumentParser(description="Create a new project.")
-    parse.add_argument('proj_dir',
-                       help="Path to the project folder")
-    parse.add_argument('--template', default=DEFAULT_TEMPLATE,
-                       help="Name of a library")
+    parse.add_argument("proj_dir", help="Path to the project folder")
+    parse.add_argument("--template", default=DEFAULT_TEMPLATE, help="Name of a library")
     return parse
 
 
@@ -19,12 +18,12 @@ def main(argv=sys.argv[1:]):
 
     args = vars(get_argparser().parse_args(argv))
 
-    if args['template'] not in TEMPLATES:
-        raise ValueError("Template %s not found" % args['template'])
+    if args["template"] not in TEMPLATES:
+        raise ValueError("Template %s not found" % args["template"])
     else:
-        template = args['template']
+        template = args["template"]
 
-    create(template, args['proj_dir'])
+    create(template, args["proj_dir"])
 
     return 0
 
@@ -48,5 +47,5 @@ def create(template=DEFAULT_TEMPLATE, path=None):
     shutil.copytree(tpath, proj_dir)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))

@@ -59,10 +59,7 @@ _bases = []
 
 _allow_none = None
 
-_spaces = [
-    "GMXB",
-    "GLWB"
-]
+_spaces = ["GMXB", "GLWB"]
 
 # ---------------------------------------------------------------------------
 # References

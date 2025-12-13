@@ -41,14 +41,13 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+
 def AccumCF(t):
     """Accumulated cashflows"""
     if t == 0:
         return 0
     else:
-        return (AccumCF(t-1)
-                + IntAccumCF(t-1)
-                + NetInsurCF(t-1))
+        return AccumCF(t - 1) + IntAccumCF(t - 1) + NetInsurCF(t - 1)
 
 
 def AttAge(t):
@@ -108,21 +107,23 @@ def BenefitSurr(t):
 
 def BenefitTotal(t):
     """Benefit Total"""
-    return (BenefitMat(t)
-            + BenefitDeath(t)
-            + BenefitAccDth(t)
-            + BenefitSurr(t)
-            + BenefitAnn(t)
-            + BenefitAccHosp(t)
-            + BenefitSickHosp(t)
-            + BenefitSurg(t)
-            + BenefitLiving(t)
-            + BenefitOther(t))
+    return (
+        BenefitMat(t)
+        + BenefitDeath(t)
+        + BenefitAccDth(t)
+        + BenefitSurr(t)
+        + BenefitAnn(t)
+        + BenefitAccHosp(t)
+        + BenefitSickHosp(t)
+        + BenefitSurg(t)
+        + BenefitLiving(t)
+        + BenefitOther(t)
+    )
 
 
 def ChangeRsrv(t):
     """Change in reserve"""
-    return ReserveTotal_End(t+1) - ReserveTotal_End(t)
+    return ReserveTotal_End(t + 1) - ReserveTotal_End(t)
 
 
 def ExpsAcq(t):
@@ -167,11 +168,7 @@ def ExpsOther(t):
 
 def ExpsTotal(t):
     """Total expenses"""
-    return (ExpsCommInit(t)
-            + ExpsCommRen(t)
-            + ExpsAcq(t)
-            + ExpsMaint(t)
-            + ExpsOther(t))
+    return ExpsCommInit(t) + ExpsCommRen(t) + ExpsAcq(t) + ExpsMaint(t) + ExpsOther(t)
 
 
 def IncomeTotal(t):
@@ -191,9 +188,7 @@ def InsurIF_End(t):
 
 def IntAccumCF(t):
     """Intrest on accumulated cashflows"""
-    return (AccumCF(t)
-            + PremIncome(t)
-            - ExpsTotal(t)) * DiscRate(t)
+    return (AccumCF(t) + PremIncome(t) - ExpsTotal(t)) * DiscRate(t)
 
 
 def InvstIncome(t):
@@ -203,9 +198,7 @@ def InvstIncome(t):
 
 def NetInsurCF(t):
     """Net liability cashflow"""
-    return (PremIncome(t)
-            - BenefitTotal(t)
-            - ExpsTotal(t))
+    return PremIncome(t) - BenefitTotal(t) - ExpsTotal(t)
 
 
 def PolsAccDeath(t):
@@ -246,9 +239,9 @@ def PolsIF_Beg1(t):
 def PolsIF_End(t):
     """Number of policies: End of period"""
     if t == 0:
-        return 0 # pol.PolicyCount
+        return 0  # pol.PolicyCount
     else:
-        return PolsIF_Beg1(t-1) - PolsDeath(t-1) - PolsSurr(t-1)
+        return PolsIF_Beg1(t - 1) - PolsDeath(t - 1) - PolsSurr(t - 1)
 
 
 def PolsLiving(t):
@@ -302,11 +295,9 @@ def PremIncome(t):
 def ProfitBefTax(t):
     """Profit before Tax"""
 
-    return (PremIncome(t)
-            + InvstIncome(t)
-            - BenefitTotal(t)
-            - ExpsTotal(t)
-            - ChangeRsrv(t))
+    return (
+        PremIncome(t) + InvstIncome(t) - BenefitTotal(t) - ExpsTotal(t) - ChangeRsrv(t)
+    )
 
 
 def ReserveHospRsrvEnd(t):
@@ -321,9 +312,7 @@ def ReservePremRsrvEnd(t):
 
 def ReserveTotal_End(t):
     """Total reserve: End of period"""
-    return (ReservePremRsrvEnd(t)
-            + ReserveUernPremEnd(t)
-            + ReserveHospRsrvEnd(t))
+    return ReservePremRsrvEnd(t) + ReserveUernPremEnd(t) + ReserveHospRsrvEnd(t)
 
 
 def ReserveUernPremEnd(t):
@@ -383,16 +372,15 @@ def SizeBenefitSurg(t):
 
 def SizeBenefitSurr(t):
     """Surrender benefit per policy"""
-    return SizeSumAssured(t) * (pol.CashValueRate(t)
-                                + pol.CashValueRate(t+1)) / 2
+    return SizeSumAssured(t) * (pol.CashValueRate(t) + pol.CashValueRate(t + 1)) / 2
 
 
 def SizeExpsAcq(t):
     """Acquisition expense per policy at time t"""
     if t == 0:
-        return (SizeAnnPrem(t) * asmp.ExpsAcqAnnPrem()
-                + (SizeSumAssured(t) * asmp.ExpsAcqSA() + asmp.ExpsAcqPol())
-                * InflFactor(t) / InflFactor(0))
+        return SizeAnnPrem(t) * asmp.ExpsAcqAnnPrem() + (
+            SizeSumAssured(t) * asmp.ExpsAcqSA() + asmp.ExpsAcqPol()
+        ) * InflFactor(t) / InflFactor(0)
     else:
         return 0
 
@@ -417,9 +405,9 @@ def SizeExpsCommRen(t):
 
 def SizeExpsMaint(t):
     """Maintenance expense per policy at time t"""
-    return (SizeAnnPrem(t) * asmp.ExpsMaintAnnPrem()
-            + (SizeSumAssured(t) * asmp.ExpsMaintSA() + asmp.ExpsMaintPol())
-            * InflFactor(t))
+    return SizeAnnPrem(t) * asmp.ExpsMaintAnnPrem() + (
+        SizeSumAssured(t) * asmp.ExpsMaintSA() + asmp.ExpsMaintPol()
+    ) * InflFactor(t)
 
 
 def SizeExpsOther(t):
@@ -439,36 +427,33 @@ def SizePremium(t):
 
 def SizeReservePremRsrvAftMat(t):
     """Premium reserve per policy: After maturity"""
-    return SizeSumAssured(t) * pol.ReserveNLP_Rate('VAL', t)
+    return SizeSumAssured(t) * pol.ReserveNLP_Rate("VAL", t)
 
 
 def SizeReservePremRsrvEnd(t):
     """Premium reserve per policy: End of period"""
-    return SizeSumAssured(t) * pol.ReserveNLP_Rate('VAL', t)
+    return SizeSumAssured(t) * pol.ReserveNLP_Rate("VAL", t)
 
 
 def SizeReserveTotalAftMat(t):
     """Total reserve per policy: After maturity"""
-    return (SizeReservePremRsrvAftMat(t)
-           + SizeReserveUernPremAftMat(t))
+    return SizeReservePremRsrvAftMat(t) + SizeReserveUernPremAftMat(t)
 
 
 def SizeReserveUernPremAftMat(t):
     """Unearned premium: After maturity"""
-    return 0 # SizeSumAssured(t) * polset.UnernPremRate(polset, tt, True)
+    return 0  # SizeSumAssured(t) * polset.UnernPremRate(polset, tt, True)
 
 
 def SizeReserveUernPremEnd(t):
     """Unearned reserve per policy: End of period"""
-    return 0 # SizeSumAssured(t) * pol.UnernPremRate(polset, tt)
+    return 0  # SizeSumAssured(t) * pol.UnernPremRate(polset, tt)
 
 
 def SizeSumAssured(t):
     """Sum assured per policy at time ``t``"""
-    return  pol.SumAssured()
+    return pol.SumAssured()
 
 
 def last_t():
     return min(asmp.LastAge() - pol.IssueAge(), pol.PolicyTerm())
-
-

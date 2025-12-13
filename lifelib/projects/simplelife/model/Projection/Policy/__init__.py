@@ -56,14 +56,15 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+
 def AnnPremRate():
     """Annualized Premium Rate per Sum Assured"""
-    return GrossPremRate() * (1/10 if PremFreq() == 0 else PremFreq())
+    return GrossPremRate() * (1 / 10 if PremFreq() == 0 else PremFreq())
 
 
 def CashValueRate(t):
     """Cash Value Rate per Sum Assured"""
-    return max(ReserveNLP_Rate('PREM', t) - SurrCharge(t), 0)
+    return max(ReserveNLP_Rate("PREM", t) - SurrCharge(t), 0)
 
 
 def GrossPremRate():
@@ -77,17 +78,36 @@ def GrossPremRate():
 
     x, n, m = IssueAge(), PolicyTerm(), PremTerm()
 
-    comf = LifeTable[Sex(), IntRate('PREM'), TableID('PREM')]
+    comf = LifeTable[Sex(), IntRate("PREM"), TableID("PREM")]
 
-    if Product() == 'TERM' or Product() == 'WL':
-        return (comf.Axn(x, n) + alpha + gamma * comf.AnnDuenx(x, n, PremFreq())
-                + gamma2 * comf.AnnDuenx(x, n-m, 1, m)) / (1-beta-delta) / PremFreq() / comf.AnnDuenx(x, m, PremFreq())
+    if Product() == "TERM" or Product() == "WL":
+        return (
+            (
+                comf.Axn(x, n)
+                + alpha
+                + gamma * comf.AnnDuenx(x, n, PremFreq())
+                + gamma2 * comf.AnnDuenx(x, n - m, 1, m)
+            )
+            / (1 - beta - delta)
+            / PremFreq()
+            / comf.AnnDuenx(x, m, PremFreq())
+        )
 
-    elif Product() == 'ENDW':
-        return (comf.Exn(x, n) + comf.Axn(x, n) + alpha + gamma * comf.AnnDuenx(x, n, PremFreq())
-                + gamma2 * comf.AnnDuenx(x, n-m, 1, m)) / (1-beta-delta) / PremFreq() / comf.AnnDuenx(x, m, PremFreq())
+    elif Product() == "ENDW":
+        return (
+            (
+                comf.Exn(x, n)
+                + comf.Axn(x, n)
+                + alpha
+                + gamma * comf.AnnDuenx(x, n, PremFreq())
+                + gamma2 * comf.AnnDuenx(x, n - m, 1, m)
+            )
+            / (1 - beta - delta)
+            / PremFreq()
+            / comf.AnnDuenx(x, m, PremFreq())
+        )
     else:
-        raise ValueError('invalid product')
+        raise ValueError("invalid product")
 
 
 def GrossPremTable():
@@ -98,11 +118,15 @@ def GrossPremTable():
 def InitSurrCharge():
     """Initial Surrender Charge Rate"""
 
-    param1 = _space.SpecLookup.match("SurrChargeParam1", Product(), PolicyType(), Gen()).value
-    param2 = _space.SpecLookup.match("SurrChargeParam2", Product(), PolicyType(), Gen()).value
+    param1 = _space.SpecLookup.match(
+        "SurrChargeParam1", Product(), PolicyType(), Gen()
+    ).value
+    param2 = _space.SpecLookup.match(
+        "SurrChargeParam2", Product(), PolicyType(), Gen()
+    ).value
 
     if param1 is None or param2 is None:
-        raise ValueError('SurrChargeParam not found')
+        raise ValueError("SurrChargeParam not found")
 
     return param1 + param2 * min(PolicyTerm() / 10, 1)
 
@@ -110,19 +134,19 @@ def InitSurrCharge():
 def IntRate(RateBasis):
     """Interest Rate"""
 
-    if RateBasis == 'PREM':
-        basis = 'IntRatePrem'
-    elif RateBasis == 'VAL':
-        basis = 'IntRateVal'
+    if RateBasis == "PREM":
+        basis = "IntRatePrem"
+    elif RateBasis == "VAL":
+        basis = "IntRateVal"
     else:
-        raise ValueError('invalid RateBasis')
+        raise ValueError("invalid RateBasis")
 
     result = _space.SpecLookup.match(basis, Product(), PolicyType(), Gen()).value
 
     if result is not None:
         return result
     else:
-        raise ValueError('invalid RateBais')
+        raise ValueError("invalid RateBais")
 
 
 def LoadAcqSA():
@@ -144,7 +168,7 @@ def LoadMaintPrem():
         return (param + min(10, PolicyTerm())) / 100
 
     else:
-        raise ValueError('LoadMaintPrem parameters not found')
+        raise ValueError("LoadMaintPrem parameters not found")
 
 
 def LoadMaintPremWaiverPrem():
@@ -161,23 +185,27 @@ def LoadMaintPremWaiverPrem():
 def LoadMaintSA():
     """Maintenance Loading per Sum Assured during Premium Payment"""
 
-    result = _space.SpecLookup.match("LoadMaintSA", Product(), PolicyType(), Gen()).value
+    result = _space.SpecLookup.match(
+        "LoadMaintSA", Product(), PolicyType(), Gen()
+    ).value
 
     if result is not None:
         return result
     else:
-        raise ValueError('lookup failed')
+        raise ValueError("lookup failed")
 
 
 def LoadMaintSA2():
     """Maintenance Loading per Sum Assured after Premium Payment"""
 
-    result = _space.SpecLookup.match("LoadMaintSA2", Product(), PolicyType(), Gen()).value
+    result = _space.SpecLookup.match(
+        "LoadMaintSA2", Product(), PolicyType(), Gen()
+    ).value
 
     if result is not None:
         return result
     else:
-        raise ValueError('lookup failed')
+        raise ValueError("lookup failed")
 
 
 def NetPremRate(basis):
@@ -188,14 +216,18 @@ def NetPremRate(basis):
 
     x, n, m = IssueAge(), PolicyTerm(), PremTerm()
 
-    if Product() == 'TERM' or Product() == 'WL':
-        return (comf.Axn(x, n) + gamma2 * comf.AnnDuenx(x, n-m, 1, m)) / comf.AnnDuenx(x, n)
+    if Product() == "TERM" or Product() == "WL":
+        return (
+            comf.Axn(x, n) + gamma2 * comf.AnnDuenx(x, n - m, 1, m)
+        ) / comf.AnnDuenx(x, n)
 
-    elif Product() == 'ENDW':
-        return (comf.Axn(x, n) + gamma2 * comf.AnnDuenx(x, n-m, 1, m)) / comf.AnnDuenx(x, n)
+    elif Product() == "ENDW":
+        return (
+            comf.Axn(x, n) + gamma2 * comf.AnnDuenx(x, n - m, 1, m)
+        ) / comf.AnnDuenx(x, n)
 
     else:
-        raise ValueError('invalid product')
+        raise ValueError("invalid product")
 
 
 def ReserveNLP_Rate(basis, t):
@@ -208,10 +240,13 @@ def ReserveNLP_Rate(basis, t):
     x, n, m = IssueAge(), PolicyTerm(), PremTerm()
 
     if t <= m:
-        return lt.Axn(x+t, n-t) + gamma2 * lt.AnnDuenx(x+t, n-m, 1, m-t) \
-                - NetPremRate(basis) * lt.AnnDuenx(x+t, m-t)
+        return (
+            lt.Axn(x + t, n - t)
+            + gamma2 * lt.AnnDuenx(x + t, n - m, 1, m - t)
+            - NetPremRate(basis) * lt.AnnDuenx(x + t, m - t)
+        )
     else:
-        return lt.Axn(x+t, n-t) + gamma2 * lt.AnnDuenx(x+t, n-m, 1, m-t)
+        return lt.Axn(x + t, n - t) + gamma2 * lt.AnnDuenx(x + t, n - m, 1, m - t)
 
 
 def ReserveRate():
@@ -228,19 +263,19 @@ def SurrCharge(t):
 def TableID(RateBasis):
     """Mortality Table ID"""
 
-    if RateBasis == 'PREM':
+    if RateBasis == "PREM":
         basis = "MortTablePrem"
-    elif RateBasis == 'VAL':
+    elif RateBasis == "VAL":
         basis = "MortTableVal"
     else:
-        raise ValueError('invalid RateBasis')
+        raise ValueError("invalid RateBasis")
 
     result = _space.SpecLookup.match(basis, Product(), PolicyType(), Gen()).value
 
     if result is not None:
         return result
     else:
-        raise ValueError('invalid RateBais')
+        raise ValueError("invalid RateBais")
 
 
 def UernPremRate():
@@ -248,27 +283,27 @@ def UernPremRate():
     return None
 
 
-Product = lambda: PolicyData[PolicyID, 'Product']
+Product = lambda: PolicyData[PolicyID, "Product"]
 
-PolicyType = lambda: PolicyData[PolicyID, 'PolicyType']
+PolicyType = lambda: PolicyData[PolicyID, "PolicyType"]
 
-Gen = lambda: PolicyData[PolicyID, 'Gen']
+Gen = lambda: PolicyData[PolicyID, "Gen"]
 
-Channel = lambda: PolicyData[PolicyID, 'Channel']
+Channel = lambda: PolicyData[PolicyID, "Channel"]
 
-Sex = lambda: PolicyData[PolicyID, 'Sex']
+Sex = lambda: PolicyData[PolicyID, "Sex"]
 
-Duration = lambda: PolicyData[PolicyID, 'Duration']
+Duration = lambda: PolicyData[PolicyID, "Duration"]
 
-IssueAge = lambda: PolicyData[PolicyID, 'IssueAge']
+IssueAge = lambda: PolicyData[PolicyID, "IssueAge"]
 
-PremFreq = lambda: PolicyData[PolicyID, 'PremFreq']
+PremFreq = lambda: PolicyData[PolicyID, "PremFreq"]
 
-PolicyTerm = lambda: PolicyData[PolicyID, 'PolicyTerm']
+PolicyTerm = lambda: PolicyData[PolicyID, "PolicyTerm"]
 
-PolicyCount = lambda: PolicyData[PolicyID, 'PolicyCount']
+PolicyCount = lambda: PolicyData[PolicyID, "PolicyCount"]
 
-SumAssured = lambda: PolicyData[PolicyID, 'SumAssured']
+SumAssured = lambda: PolicyData[PolicyID, "SumAssured"]
 
 # ---------------------------------------------------------------------------
 # References

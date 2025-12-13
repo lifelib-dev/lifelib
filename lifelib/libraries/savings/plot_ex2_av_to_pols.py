@@ -21,9 +21,10 @@ show the distributions of the two factors.
 # https://matplotlib.org/stable/gallery/lines_bars_and_markers/scatter_hist.html
 # See accompanying LICENSE_MATPLOT.txt for its terms of conditions.
 
-import numpy as np
 import matplotlib.pyplot as plt
 import modelx as mx
+import numpy as np
+
 
 def scatter_hist(x, y, ax, ax_histx, ax_histy):
     # no labels
@@ -35,15 +36,15 @@ def scatter_hist(x, y, ax, ax_histx, ax_histy):
 
     def get_bins(data, binsize):
         ub, lb = np.max(data), np.min(data)
-        binwidth = ((ub - lb) / binsize)
+        binwidth = (ub - lb) / binsize
         return np.arange(lb, ub + binwidth, binwidth)
 
     xbins = get_bins(x, 100)
     ybins = get_bins(y, 100)
     ax_histx.hist(x, bins=xbins)
-    ax_histy.hist(y, bins=ybins, orientation='horizontal')
-    
-    
+    ax_histy.hist(y, bins=ybins, orientation="horizontal")
+
+
 # definitions for the axes
 left, width = 0.1, 0.65
 bottom, height = 0.1, 0.65
@@ -61,9 +62,9 @@ ax_histx = fig.add_axes(rect_histx, sharex=ax)
 ax_histy = fig.add_axes(rect_histy, sharey=ax)
 ax.grid(True), ax_histx.grid(True), ax_histy.grid(True)
 
-m = mx.read_model('CashValue_ME_EX2')
+m = mx.read_model("CashValue_ME_EX2")
 
-x = m.Projection[5].claims_from_av(120, 'MATURITY')
+x = m.Projection[5].claims_from_av(120, "MATURITY")
 y = m.Projection[5].pols_maturity(120)
 
 # use the previously defined function

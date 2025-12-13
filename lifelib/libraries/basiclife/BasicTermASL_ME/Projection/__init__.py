@@ -21,9 +21,7 @@ from modelx.serialize.jsonvalues import *
 
 _formula = None
 
-_bases = [
-    ".Base"
-]
+_bases = [".Base"]
 
 _allow_none = None
 
@@ -31,6 +29,7 @@ _spaces = []
 
 # ---------------------------------------------------------------------------
 # Cells
+
 
 def premium_pp():
     """Premium per policy

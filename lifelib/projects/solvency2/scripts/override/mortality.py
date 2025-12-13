@@ -4,19 +4,20 @@ The formulas in this module overrides cells related to mortality in
 :mod:`projection <solvency2.projection>` module.
 """
 
+
 def MortRateFactor(t):
     """Mortality rate factor applied from time ``t0`` and there after"""
-    if t >= t0:        
-        
+    if t >= t0:
+
         if AttAge(t) < asmp.LastAge():
-            
-            if Risk == 'mort':
+
+            if Risk == "mort":
                 return 1 + Factor(Risk, Shock, Scope)
-            elif Risk == 'longev':
+            elif Risk == "longev":
                 return 1 - Factor(Risk, Shock, Scope)
             else:
                 ValueError("invalid Risk: %s" % Risk)
-            
+
         else:
             return 1
     else:
@@ -25,6 +26,10 @@ def MortRateFactor(t):
 
 def PolsDeath(t):
     """Number of policies: Death override"""
-    
-    return (PolsIF_Beg1(t) * asmp.BaseMortRate(AttAge(t)) 
-            * asmp.MortFactor(t) * MortRateFactor(t))
+
+    return (
+        PolsIF_Beg1(t)
+        * asmp.BaseMortRate(AttAge(t))
+        * asmp.MortFactor(t)
+        * MortRateFactor(t)
+    )

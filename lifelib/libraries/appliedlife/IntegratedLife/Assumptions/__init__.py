@@ -68,6 +68,7 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+
 def asmp_file():
     """The file path to an assumption file
 
@@ -89,10 +90,7 @@ def asmp_file():
 
 def dyn_lapse_params():
     """Dynamic lapse parameters"""
-    return pd.read_excel(
-        asmp_file(),
-        sheet_name="DynLapse",
-        index_col=0)
+    return pd.read_excel(asmp_file(), sheet_name="DynLapse", index_col=0)
 
 
 def lapse_len():
@@ -102,10 +100,7 @@ def lapse_len():
 
 def lapse_tables():
     """Lapse rate assumptions"""
-    return pd.read_excel(
-        asmp_file(),
-        sheet_name="Lapse",
-        index_col=0)
+    return pd.read_excel(asmp_file(), sheet_name="Lapse", index_col=0)
 
 
 def mort_scalar_len():
@@ -115,10 +110,7 @@ def mort_scalar_len():
 
 def mort_scalar_tables():
     """Mortality scalar tables"""
-    df = pd.read_excel(
-        asmp_file(),
-        sheet_name="Mortality",
-        index_col=0)
+    df = pd.read_excel(asmp_file(), sheet_name="Mortality", index_col=0)
     return df
 
 

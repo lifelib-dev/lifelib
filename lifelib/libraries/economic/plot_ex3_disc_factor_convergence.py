@@ -13,8 +13,9 @@ As Balaraman's study shows, the convergence gets worse as :math:`\sigma/a` gets 
     * :doc:`/libraries/economic/hull-white-simulation` notebook in the :mod:`~economic` library
 
 """
-import modelx as mx
+
 import matplotlib.pyplot as plt
+import modelx as mx
 
 HW = mx.read_model("BasicHullWhite").HullWhite
 
@@ -22,15 +23,23 @@ fig, axs = plt.subplots(2, 2, sharex=True, sharey=True)
 fig.suptitle(r"$a=$" + str(HW.a))
 for sigma, (h, v) in zip([0.05, 0.075, 0.1, 0.125], [(0, 0), (0, 1), (1, 0), (1, 1)]):
     HW.sigma = sigma
-    axs[h, v].set_title(r"$\sigma=$" + str(sigma) +  r", $\sigma/a=$" + "%.2f" % (sigma/HW.a))
-    axs[h, v].plot(range(HW.step_size+1), [HW.mkt_zcb(i) for i in range(HW.step_size+1)], "b-")
-    axs[h, v].plot(range(HW.step_size+1), HW.mean_disc_factor(), "r--")
+    axs[h, v].set_title(
+        r"$\sigma=$" + str(sigma) + r", $\sigma/a=$" + "%.2f" % (sigma / HW.a)
+    )
+    axs[h, v].plot(
+        range(HW.step_size + 1), [HW.mkt_zcb(i) for i in range(HW.step_size + 1)], "b-"
+    )
+    axs[h, v].plot(range(HW.step_size + 1), HW.mean_disc_factor(), "r--")
 
 fig, axs = plt.subplots(2, 2, sharex=True, sharey=True)
 fig.suptitle(r"$\sigma=$" + str(HW.sigma))
 HW.sigma = 0.1
 for a, (h, v) in zip([0.05, 0.1, 0.15, 0.2], [(0, 0), (0, 1), (1, 0), (1, 1)]):
     HW.a = a
-    axs[h, v].set_title(r"$a=$" + str(a) +  r", $\sigma/a=$" + "%.2f" % (HW.sigma/HW.a))
-    axs[h, v].plot(range(HW.step_size+1), [HW.mkt_zcb(i) for i in range(HW.step_size+1)], "b-")
-    axs[h, v].plot(range(HW.step_size+1), HW.mean_disc_factor(), "r--")
+    axs[h, v].set_title(
+        r"$a=$" + str(a) + r", $\sigma/a=$" + "%.2f" % (HW.sigma / HW.a)
+    )
+    axs[h, v].plot(
+        range(HW.step_size + 1), [HW.mkt_zcb(i) for i in range(HW.step_size + 1)], "b-"
+    )
+    axs[h, v].plot(range(HW.step_size + 1), HW.mean_disc_factor(), "r--")

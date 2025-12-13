@@ -22,13 +22,15 @@ def SWCalibrate(r, M, ufr, alpha):
     For more information see https://www.eiopa.europa.eu/sites/default/files/risk_free_interest_rate/12092019-technical_documentation.pdf
     """
     C = np.identity(M.size)
-    p = (1+r) **(-M)  # Transform rates to implied market prices of a ZCB bond
-    d = np.exp(-np.log(1+ufr) * M)    # Calculate vector d described in paragraph 138
-    Q = np.diag(d) @ C                  # Matrix Q described in paragraph 139
-    q = C.transpose() @ d                         # Vector q described in paragraph 139
-    H = SWHeart(M, M, alpha) # Heart of the Wilson function from paragraph 132
+    p = (1 + r) ** (-M)  # Transform rates to implied market prices of a ZCB bond
+    d = np.exp(-np.log(1 + ufr) * M)  # Calculate vector d described in paragraph 138
+    Q = np.diag(d) @ C  # Matrix Q described in paragraph 139
+    q = C.transpose() @ d  # Vector q described in paragraph 139
+    H = SWHeart(M, M, alpha)  # Heart of the Wilson function from paragraph 132
 
-    return np.linalg.inv(Q.transpose() @ H @ Q) @ (p-q)          # Calibration vector b from paragraph 149
+    return np.linalg.inv(Q.transpose() @ H @ Q) @ (
+        p - q
+    )  # Calibration vector b from paragraph 149
 
 
 def SWExtrapolate(M_Target, M_Obs, b, ufr, alpha):
@@ -50,11 +52,20 @@ def SWExtrapolate(M_Target, M_Obs, b, ufr, alpha):
     For more information see https://www.eiopa.europa.eu/sites/default/files/risk_free_interest_rate/12092019-technical_documentation.pdf
     """
     C = np.identity(M_Obs.size)
-    d = np.exp(-np.log(1+ufr) * M_Obs)     # Calculate vector d described in paragraph 138
-    Q = np.diag(d) @ C                     # Matrix Q described in paragraph 139
-    H = SWHeart(M_Target, M_Obs, alpha)    # Heart of the Wilson function from paragraph 132
-    p = np.exp(-np.log(1+ufr)* M_Target) + np.diag(np.exp(-np.log(1+ufr) * M_Target)) @ H @ Q @ b # Discount pricing function for targeted maturities from paragraph 147
-    return p ** (-1/ M_Target) -1   # Convert obtained prices to rates and return prices
+    d = np.exp(
+        -np.log(1 + ufr) * M_Obs
+    )  # Calculate vector d described in paragraph 138
+    Q = np.diag(d) @ C  # Matrix Q described in paragraph 139
+    H = SWHeart(
+        M_Target, M_Obs, alpha
+    )  # Heart of the Wilson function from paragraph 132
+    p = (
+        np.exp(-np.log(1 + ufr) * M_Target)
+        + np.diag(np.exp(-np.log(1 + ufr) * M_Target)) @ H @ Q @ b
+    )  # Discount pricing function for targeted maturities from paragraph 147
+    return (
+        p ** (-1 / M_Target) - 1
+    )  # Convert obtained prices to rates and return prices
 
 
 def SWHeart(u, v, alpha):
@@ -77,6 +88,9 @@ def SWHeart(u, v, alpha):
     """
     u_Mat = np.tile(u, [v.size, 1]).transpose()
     v_Mat = np.tile(v, [u.size, 1])
-    return 0.5 * (alpha * (u_Mat + v_Mat) + np.exp(-alpha * (u_Mat + v_Mat)) - alpha * np.absolute(
-        u_Mat - v_Mat) - np.exp(
-        -alpha * np.absolute(u_Mat - v_Mat)))  # Heart of the Wilson function from paragraph 132
+    return 0.5 * (
+        alpha * (u_Mat + v_Mat)
+        + np.exp(-alpha * (u_Mat + v_Mat))
+        - alpha * np.absolute(u_Mat - v_Mat)
+        - np.exp(-alpha * np.absolute(u_Mat - v_Mat))
+    )  # Heart of the Wilson function from paragraph 132

@@ -11,6 +11,7 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+
 def result():
 
     data = {sim: Proj[sim].monte_carlo() for sim in range(1, 6)}

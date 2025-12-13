@@ -89,12 +89,13 @@ Scenarios
 
 
 """
-import sys
+
 import os.path as path
+import sys
 import time
 from textwrap import dedent
 
-default_input = path.join(path.abspath(path.dirname(__file__)), 'input.xlsx')
+default_input = path.join(path.abspath(path.dirname(__file__)), "input.xlsx")
 
 
 class _PrintElapsedTime:
@@ -103,13 +104,12 @@ class _PrintElapsedTime:
         self.last_time = time.time()
 
     def set_start(self, msg):
-        print(msg, end='', file=sys.stderr)
+        print(msg, end="", file=sys.stderr)
         self.last_time = time.time()
 
     def print_time(self, msg):
         this_time = time.time()
-        print(msg, "({:.2f}secs)".format(this_time - self.last_time),
-              file=sys.stderr)
+        print(msg, "({:.2f}secs)".format(this_time - self.last_time), file=sys.stderr)
         self.last_time = this_time
 
 
@@ -129,7 +129,7 @@ def build_input(model, input_file=default_input):
         input_file(str): Path to the Excel input file.
     """
 
-    inp = model.new_space(name='Input')
+    inp = model.new_space(name="Input")
     inp.allow_none = True
     print_time = True
 
@@ -137,118 +137,130 @@ def build_input(model, input_file=default_input):
 
     if print_time:
         timestamp = _PrintElapsedTime()
-        timestamp.set_start('Loading PolicyData...')
+        timestamp.set_start("Loading PolicyData...")
 
     policydata = inp.new_space_from_excel(
         book=input_file,
-        range_='B7:O307',
-        sheet='PolicyData',
-        name='PolicyData',
+        range_="B7:O307",
+        sheet="PolicyData",
+        name="PolicyData",
         names_row=0,
         param_cols=[0],
         space_param_order=[0],
-        cells_param_order=[])
+        cells_param_order=[],
+    )
 
     if print_time:
-        timestamp.print_time('Done.')
-        timestamp.set_start('Loading MortalityTables...')
+        timestamp.print_time("Done.")
+        timestamp.set_start("Loading MortalityTables...")
 
     mortbl = inp.new_space_from_excel(
         book=input_file,
-        range_='E4:Q137',
-        sheet='Mortality',
-        name='MortalityTables',
+        range_="E4:Q137",
+        sheet="Mortality",
+        name="MortalityTables",
         names_row=0,
         param_cols=[0],
         names_col=0,
         param_rows=[1, 2],
         space_param_order=[1],
-        cells_param_order=[2, 0])
+        cells_param_order=[2, 0],
+    )
 
     if print_time:
-        timestamp.print_time('Done.')
-        timestamp.set_start('Loading ProductSpec...')
+        timestamp.print_time("Done.")
+        timestamp.set_start("Loading ProductSpec...")
 
     inp.new_space_from_excel(
         book=input_file,
-        range_='B7:V22',
-        sheet='ProductSpec',
-        name='ProductSpec',
+        range_="B7:V22",
+        sheet="ProductSpec",
+        name="ProductSpec",
         names_row=0,
         param_cols=[0, 1, 2],
-        cells_param_order=[0, 1, 2])
+        cells_param_order=[0, 1, 2],
+    )
 
     if print_time:
-        timestamp.print_time('Done.')
-        timestamp.set_start('Loading OtherParam1...')
+        timestamp.print_time("Done.")
+        timestamp.set_start("Loading OtherParam1...")
 
     inp.new_cells_from_excel(
         book=input_file,
-        range_='C6:D9',
-        sheet='OtherParams',
+        range_="C6:D9",
+        sheet="OtherParams",
         names_row=0,
         param_cols=[0],
-        param_order=[0])
+        param_order=[0],
+    )
 
     if print_time:
-        timestamp.print_time('Done.')
-        timestamp.set_start('Loading OtherParams2...')
+        timestamp.print_time("Done.")
+        timestamp.set_start("Loading OtherParams2...")
 
     inp.new_cells_from_excel(
         book=input_file,
-        range_='G6:H9',
-        sheet='OtherParams',
+        range_="G6:H9",
+        sheet="OtherParams",
         names_row=0,
         param_cols=[0],
-        param_order=[0])
+        param_order=[0],
+    )
 
     if print_time:
-        timestamp.print_time('Done.')
-        timestamp.set_start('Loading Assumption...')
+        timestamp.print_time("Done.")
+        timestamp.set_start("Loading Assumption...")
 
     inp.new_space_from_excel(
         book=input_file,
-        range_='B7:T17',
-        sheet='Assumption',
-        name='Assumption',
+        range_="B7:T17",
+        sheet="Assumption",
+        name="Assumption",
         names_row=0,
         param_cols=[0, 1, 2],
-        cells_param_order=[0, 1, 2])
+        cells_param_order=[0, 1, 2],
+    )
 
     if print_time:
-        timestamp.print_time('Done.')
-        timestamp.set_start('Loading AssumptionTables...')
+        timestamp.print_time("Done.")
+        timestamp.set_start("Loading AssumptionTables...")
 
     inp.new_space_from_excel(
         book=input_file,
-        range_='B7:J27',
-        sheet='AssumptionTables',
-        name='AssumptionTables',
+        range_="B7:J27",
+        sheet="AssumptionTables",
+        name="AssumptionTables",
         names_row=0,
         param_cols=[0],
-        cells_param_order=[0])
+        cells_param_order=[0],
+    )
 
     if print_time:
-        timestamp.print_time('Done.')
-        timestamp.set_start('Loading Scenarios...')
+        timestamp.print_time("Done.")
+        timestamp.set_start("Loading Scenarios...")
 
     scenarios = inp.new_space_from_excel(
         book=input_file,
-        range_='A3:C1513',
-        sheet='Scenarios',
-        name='Scenarios',
+        range_="A3:C1513",
+        sheet="Scenarios",
+        name="Scenarios",
         names_row=0,
         param_cols=[0, 1],
         space_param_order=[0],
-        cells_param_order=[1])
+        cells_param_order=[1],
+    )
 
     if print_time:
-        timestamp.print_time('Done.')
+        timestamp.print_time("Done.")
 
-    print(dedent("""\
+    print(
+        dedent(
+            """\
         Input space and its sub spaces are saved in '[project name].mx'.
         You can load input data from the saved file instead of 'input.xlsx'
-        by passing 'load_saved=True' to simplelife.build function."""),
-          file=sys.stderr)
+        by passing 'load_saved=True' to simplelife.build function."""
+        ),
+        file=sys.stderr,
+    )
 
     return inp

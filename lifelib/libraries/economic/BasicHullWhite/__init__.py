@@ -4,7 +4,4 @@ _name = "BasicHullWhite"
 
 _allow_none = False
 
-_spaces = [
-    "HullWhite"
-]
-
+_spaces = ["HullWhite"]

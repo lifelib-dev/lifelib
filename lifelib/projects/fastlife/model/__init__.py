@@ -4,13 +4,7 @@ _name = "fastlife"
 
 _allow_none = False
 
-_spaces = [
-    "Input",
-    "LifeTable",
-    "Economic",
-    "PV",
-    "Projection"
-]
+_spaces = ["Input", "LifeTable", "Economic", "PV", "Projection"]
 
 # ---------------------------------------------------------------------------
 # References

@@ -76,6 +76,7 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+
 def model_point_table():
     """Reads a raw model point table from a file and returns it.
 
@@ -91,10 +92,20 @@ def model_point_table():
     in :func:`~appliedlife.IntegratedLife.BaseData.const_params`.
     """
     dir_name: str = base_data.const_params().at["model_point_dir", "value"]
-    file_name: str = (base_data.const_params().at["mp_file_prefix", "value"]
-                      + "_" + mp_file_id + "_" + space_name + ".csv")
+    file_name: str = (
+        base_data.const_params().at["mp_file_prefix", "value"]
+        + "_"
+        + mp_file_id
+        + "_"
+        + space_name
+        + ".csv"
+    )
 
-    return pd.read_csv(_model.path.parent / dir_name / file_name, index_col="point_id", parse_dates=["entry_date"])
+    return pd.read_csv(
+        _model.path.parent / dir_name / file_name,
+        index_col="point_id",
+        parse_dates=["entry_date"],
+    )
 
 
 def model_point_table_ext():
@@ -107,10 +118,12 @@ def model_point_table_ext():
     For each model point row in the raw model point table, a corresponding row that has
     matching "product_id" and "plan_id" values is appended.
     """
-    return pd.merge(model_point_table().reset_index(), 
-                    base_data.product_params(space_name).reset_index(),
-                    how="left",
-                    on=["product_id", "plan_id"]).set_index('point_id')
+    return pd.merge(
+        model_point_table().reset_index(),
+        base_data.product_params(space_name).reset_index(),
+        how="left",
+        on=["product_id", "plan_id"],
+    ).set_index("point_id")
 
 
 # ---------------------------------------------------------------------------

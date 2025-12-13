@@ -22,6 +22,7 @@ drawn from the standard normal distribution.
 
 
 """
+
 import modelx as mx
 import pandas as pd
 
@@ -29,12 +30,10 @@ model = mx.read_model("CashValue_ME_EX1")
 proj = model.Projection
 av = proj.av_pp_at
 
-avs = list(av(t, 'BEF_FEE') for t in range(proj.max_proj_len()))
+avs = list(av(t, "BEF_FEE") for t in range(proj.max_proj_len()))
 df = pd.DataFrame(avs)[1]
 
 for scen_size in [100, 1000]:
     df[range(1, scen_size + 1)].plot.line(
-        legend=False, grid=True, title="%s scenarios" % scen_size)
-
-
-
+        legend=False, grid=True, title="%s scenarios" % scen_size
+    )

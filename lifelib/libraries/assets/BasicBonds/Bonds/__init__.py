@@ -97,6 +97,7 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+
 def cashflows(bond_id):
     """Returns the cashflows of the selected bond.
 
@@ -107,7 +108,7 @@ def cashflows(bond_id):
 
     result = [0] * step_size()
     leg = fixed_rate_bond(bond_id).cashflows()
-    i = 0   # cashflow index
+    i = 0  # cashflow index
 
     for t in range(step_size()):
 
@@ -115,16 +116,15 @@ def cashflows(bond_id):
 
             if i > 0:
                 # Check if cashflow dates are in order.
-                assert leg[i-1].date() <= leg[i].date()
+                assert leg[i - 1].date() <= leg[i].date()
 
-            if date_(t) <= leg[i].date() < date_(t+1):
+            if date_(t) <= leg[i].date() < date_(t + 1):
                 result[t] += leg[i].amount()
 
-            elif date_(t+1) <= leg[i].date():
+            elif date_(t + 1) <= leg[i].date():
                 break
 
             i += 1
-
 
     return result
 
@@ -161,7 +161,7 @@ def date_(i):
         return ql.Date(date_init, "%Y-%m-%d")
 
     else:
-        return date_(i-1) + ql.Period('1Y')
+        return date_(i - 1) + ql.Period("1Y")
 
 
 def fixed_rate_bond(bond_id):
@@ -187,27 +187,27 @@ def fixed_rate_bond(bond_id):
 
     """
 
-    settlement_days = bond_data.loc[bond_id]['settlement_days']
-    face_value = bond_data.loc[bond_id]['face_value']
-    coupons = [bond_data.loc[bond_id]['coupon_rate']]
+    settlement_days = bond_data.loc[bond_id]["settlement_days"]
+    face_value = bond_data.loc[bond_id]["face_value"]
+    coupons = [bond_data.loc[bond_id]["coupon_rate"]]
 
     bond = ql.FixedRateBond(
-        int(settlement_days), 
-        float(face_value), 
+        int(settlement_days),
+        float(face_value),
         schedule(bond_id),
-        coupons, 
-        ql.Actual360(), # DayCount
-        ql.Unadjusted)
+        coupons,
+        ql.Actual360(),  # DayCount
+        ql.Unadjusted,
+    )
 
-    spread = bond_data.loc[bond_id]['z_spread']
+    spread = bond_data.loc[bond_id]["z_spread"]
     spread = ql.QuoteHandle(ql.SimpleQuote(spread))
     disc_curve = ql.ZeroSpreadedTermStructure(
-        ql.YieldTermStructureHandle(riskfree_curve()), spread,
-        ql.Compounded, ql.Annual)
+        ql.YieldTermStructureHandle(riskfree_curve()), spread, ql.Compounded, ql.Annual
+    )
 
     # Set discount curve
-    bondEngine = ql.DiscountingBondEngine(
-        ql.YieldTermStructureHandle(disc_curve))
+    bondEngine = ql.DiscountingBondEngine(ql.YieldTermStructureHandle(disc_curve))
     bond.setPricingEngine(bondEngine)
 
     return bond
@@ -223,16 +223,16 @@ def redemptions(bond_id):
 
     result = [0] * step_size()
     leg = fixed_rate_bond(bond_id).redemptions()
-    i = 0   # cashflow index
+    i = 0  # cashflow index
 
     for t in range(step_size()):
 
         while i < len(leg):
 
-            if date_(t) <= leg[i].date() < date_(t+1):
+            if date_(t) <= leg[i].date() < date_(t + 1):
                 result[t] += leg[i].amount()
 
-            elif date_(t+1) <= leg[i].date():
+            elif date_(t + 1) <= leg[i].date():
                 break
 
             i += 1
@@ -267,18 +267,20 @@ def riskfree_curve():
     """
     ql.Settings.instance().evaluationDate = date_(0)
 
-    spot_dates = [date_(0)] + list(date_(0) + ql.Period(dur) for dur in zero_curve.index)
+    spot_dates = [date_(0)] + list(
+        date_(0) + ql.Period(dur) for dur in zero_curve.index
+    )
     spot_rates = [0] + list(zero_curve)
 
     return ql.ZeroCurve(
         spot_dates,
-        spot_rates, 
-        ql.Actual360(),                                 # dayCount
-        ql.UnitedStates(ql.UnitedStates.Settlement),    # calendar
-        ql.Linear(),                                    # Interpolator
-        ql.Compounded,                                  # compounding
-        ql.Annual                                       # frequency
-        )
+        spot_rates,
+        ql.Actual360(),  # dayCount
+        ql.UnitedStates(ql.UnitedStates.Settlement),  # calendar
+        ql.Linear(),  # Interpolator
+        ql.Compounded,  # compounding
+        ql.Annual,  # frequency
+    )
 
 
 def schedule(bond_id):
@@ -296,26 +298,26 @@ def schedule(bond_id):
 
 
     """
-    d = bond_data.loc[bond_id]['issue_date']
+    d = bond_data.loc[bond_id]["issue_date"]
     issue_date = ql.Date(d.day, d.month, d.year)
 
-    d = bond_data.loc[bond_id]['maturity_date']
+    d = bond_data.loc[bond_id]["maturity_date"]
     maturity_date = ql.Date(d.day, d.month, d.year)
 
-    tenor  = ql.Period(
-        ql.Semiannual if bond_data.loc[bond_id]['tenor'] == '6Y' else ql.Annual)
-
+    tenor = ql.Period(
+        ql.Semiannual if bond_data.loc[bond_id]["tenor"] == "6Y" else ql.Annual
+    )
 
     return ql.Schedule(
-        issue_date, 
-        maturity_date, 
-        tenor, 
-        ql.UnitedStates(ql.UnitedStates.Settlement),    # calendar
-        ql.Unadjusted,                                  # convention
-        ql.Unadjusted ,                 # terminationDateConvention
-        ql.DateGeneration.Backward,     # rule
-        False   # endOfMonth
-        )
+        issue_date,
+        maturity_date,
+        tenor,
+        ql.UnitedStates(ql.UnitedStates.Settlement),  # calendar
+        ql.Unadjusted,  # convention
+        ql.Unadjusted,  # terminationDateConvention
+        ql.DateGeneration.Backward,  # rule
+        False,  # endOfMonth
+    )
 
 
 def step_size():
@@ -343,10 +345,13 @@ def z_spread_recalc(bond_id):
     This is for testing that the calculated Z-spread matches the input in :attr:`bond_data`.
     """
     return ql.BondFunctions.zSpread(
-        fixed_rate_bond(bond_id), 
-        fixed_rate_bond(bond_id).cleanPrice(), 
+        fixed_rate_bond(bond_id),
+        fixed_rate_bond(bond_id).cleanPrice(),
         riskfree_curve(),
-        ql.Thirty360(), ql.Compounded, ql.Annual)
+        ql.Thirty360(),
+        ql.Compounded,
+        ql.Annual,
+    )
 
 
 def market_values():
@@ -359,8 +364,8 @@ def market_values():
     bond = fixed_rate_bond
 
     return list(
-        bond(i).notional() * bond(i).cleanPrice() / 100 
-        for i in bond_data.index)
+        bond(i).notional() * bond(i).cleanPrice() / 100 for i in bond_data.index
+    )
 
 
 # ---------------------------------------------------------------------------

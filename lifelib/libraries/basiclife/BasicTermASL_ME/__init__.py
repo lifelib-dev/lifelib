@@ -4,9 +4,4 @@ _name = "BasicTermASL_ME"
 
 _allow_none = False
 
-_spaces = [
-    "Base",
-    "Projection",
-    "Pricing"
-]
-
+_spaces = ["Base", "Projection", "Pricing"]

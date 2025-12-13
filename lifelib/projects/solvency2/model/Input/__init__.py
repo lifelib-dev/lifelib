@@ -11,12 +11,13 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+
 def AsmpLookup(asmp, prod=None, polt=None, gen=None):
-    return  Assumption.get((asmp, prod, polt, gen), None)
+    return Assumption.get((asmp, prod, polt, gen), None)
 
 
 def SpecLookup(spec, prod=None, polt=None, gen=None):
-    return  ProductSpec.get((spec, prod, polt, gen), None)
+    return ProductSpec.get((spec, prod, polt, gen), None)
 
 
 def Factor(risk=None, shock=None, scope=None, extrakey=None):

@@ -6,8 +6,11 @@ which creates a model from source modules and return it.
 If this module is run as a script, the :py:func:`build` function is called
 and the created model is available as ``model`` global variable.
 """
+
 import os
+
 import modelx as mx
+
 
 def build():
     """Build a model and return it.
@@ -30,72 +33,77 @@ def build():
 
     from build_input import build_input
 
-    model = mx.new_model(name='simplelife')
-    input = build_input(model, 'input.xlsx')
+    model = mx.new_model(name="simplelife")
+    input = build_input(model, "input.xlsx")
 
     # ------------------------------------------------------------------------
     # Build CommFunc space
 
-    lifetable_refs = {'Input': input}
+    lifetable_refs = {"Input": input}
 
     def lifetable_params(Sex, IntRate, TableID):
-        refs={'MortalityTable': Input.MortalityTables(TableID).MortalityTable}
-        return {'refs': refs}
+        refs = {"MortalityTable": Input.MortalityTables(TableID).MortalityTable}
+        return {"refs": refs}
 
     lifetable = model.import_module(
-        module='lifetable',
-        name='LifeTable',
+        module="lifetable",
+        name="LifeTable",
         formula=lifetable_params,
-        refs=lifetable_refs)
+        refs=lifetable_refs,
+    )
 
     # ------------------------------------------------------------------------
     # Build Policy space
 
     from policy import policy_attrs
 
-    policy_refs = {'PolicyData': input.PolicyData,
-                   'ProductSpec': input.ProductSpec,
-                   'LifeTable': lifetable,
-                   'PolicyAttrs': policy_attrs}
+    policy_refs = {
+        "PolicyData": input.PolicyData,
+        "ProductSpec": input.ProductSpec,
+        "LifeTable": lifetable,
+        "PolicyAttrs": policy_attrs,
+    }
 
     def policy_params(PolicyID):
         refs = {attr: PolicyData[PolicyID].cells[attr]() for attr in PolicyAttrs}
-        alias = {'PremTerm': refs['PolicyTerm'],
-                 'x': refs['IssueAge'],
-                 'm': refs['PolicyTerm'],
-                 'n': refs['PolicyTerm']}
+        alias = {
+            "PremTerm": refs["PolicyTerm"],
+            "x": refs["IssueAge"],
+            "m": refs["PolicyTerm"],
+            "n": refs["PolicyTerm"],
+        }
 
         refs.update(alias)
-        return {'refs': refs}
+        return {"refs": refs}
 
     policy = model.import_module(
-        module='policy',
-        name='Policy',
-        formula=policy_params,
-        refs=policy_refs)
+        module="policy", name="Policy", formula=policy_params, refs=policy_refs
+    )
 
     # ------------------------------------------------------------------------
     # Build Assumption space
 
-    asmp_refs = {'Policy': policy,
-                 'ProductSpec': input.ProductSpec,
-                 'MortalityTables': input.MortalityTables,
-                 'asmp': input.Assumption,
-                 'asmp_tbl': input.AssumptionTables}
+    asmp_refs = {
+        "Policy": policy,
+        "ProductSpec": input.ProductSpec,
+        "MortalityTables": input.MortalityTables,
+        "asmp": input.Assumption,
+        "asmp_tbl": input.AssumptionTables,
+    }
 
     def asmp_params(PolicyID):
-        refs = {'pol': Policy[PolicyID]}
-        alias = {'prod': refs['pol'].Product,
-                 'polt': refs['pol'].PolicyType,
-                 'gen': refs['pol'].Gen}
+        refs = {"pol": Policy[PolicyID]}
+        alias = {
+            "prod": refs["pol"].Product,
+            "polt": refs["pol"].PolicyType,
+            "gen": refs["pol"].Gen,
+        }
         refs.update(alias)
-        return {'refs': refs}
+        return {"refs": refs}
 
     asmp = model.import_module(
-        module='assumption',
-        name='Assumption',
-        formula=asmp_params,
-        refs=asmp_refs)
+        module="assumption", name="Assumption", formula=asmp_params, refs=asmp_refs
+    )
 
     asmp.allow_none = True
 
@@ -103,50 +111,43 @@ def build():
     # Build Assumption space
 
     def econ_params(ScenID):
-        refs = {'Scenario': Input.Scenarios[ScenID]}
-        return {'refs': refs}
+        refs = {"Scenario": Input.Scenarios[ScenID]}
+        return {"refs": refs}
 
     economic = model.import_module(
-        module='economic',
-        name='Economic',
+        module="economic",
+        name="Economic",
         formula=econ_params,
-        refs={'asmp': asmp,
-              'Input': input})
+        refs={"asmp": asmp, "Input": input},
+    )
 
     # ------------------------------------------------------------------------
     # Build Projection space
 
-    projbase = model.import_module(
-        module='projection',
-        name='BaseProj')
+    projbase = model.import_module(module="projection", name="BaseProj")
 
-    pvmixin = model.import_module(
-        module='present_value',
-        name='PV')
+    pvmixin = model.import_module(module="present_value", name="PV")
 
-    proj_refs = {'Policy': policy,
-                 'Assumption': asmp,
-                 'Economic': economic}
+    proj_refs = {"Policy": policy, "Assumption": asmp, "Economic": economic}
 
     def proj_params(PolicyID, ScenID=1):
-        refs = {'pol': Policy[PolicyID],
-                'asmp': Assumption[PolicyID],
-                'scen': Economic[ScenID],
-                'DiscRate': Economic[ScenID].DiscRate}
-        return {'refs': refs}
+        refs = {
+            "pol": Policy[PolicyID],
+            "asmp": Assumption[PolicyID],
+            "scen": Economic[ScenID],
+            "DiscRate": Economic[ScenID].DiscRate,
+        }
+        return {"refs": refs}
 
     proj = model.new_space(
-        name='Projection',
+        name="Projection",
         bases=[projbase, pvmixin],
         formula=proj_params,
-        refs=proj_refs)
+        refs=proj_refs,
+    )
 
     return model
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     model = build()
-
-
-
-

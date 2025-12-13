@@ -20,6 +20,7 @@ Attributes:
 
 """
 
+
 def SCR_life():
     r"""The capital requirement for life underwriting risk
 
@@ -40,8 +41,8 @@ def Life(risk):
             "longev", "disab", "lapse", "exps", "rev", "cat")
     """
 
-    if risk == 'lapse':
-        return max(LapseRisk(shock) for shock in ['up', 'down', 'mass'])    
+    if risk == "lapse":
+        return max(LapseRisk(shock) for shock in ["up", "down", "mass"])
     else:
         return max(NetAstValue() - NetAstValue(risk), 0)
 
@@ -53,28 +54,30 @@ def LapseRisk(shock):
         shock: string that represents each lapse shock
             ("up", "down", "mass")
     """
-    
-    if shock in ['up', 'down']:
-        return max(NetAstValue() - NetAstValue('lapse', shock), 0)
-    
-    elif shock == 'mass':
-        
+
+    if shock in ["up", "down"]:
+        return max(NetAstValue() - NetAstValue("lapse", shock), 0)
+
+    elif shock == "mass":
+
         retail_share = 1
         nonretail_share = 1 - retail_share
-        
-        retail = NetAstValue() - NetAstValue('lapse', shock) \
-            if retail_share else 0
-                
-        nonretail = NetAstValue() - NetAstValue('lapse', shock, 'noretail') \
-            if nonretail_share else 0
-        
+
+        retail = NetAstValue() - NetAstValue("lapse", shock) if retail_share else 0
+
+        nonretail = (
+            NetAstValue() - NetAstValue("lapse", shock, "noretail")
+            if nonretail_share
+            else 0
+        )
+
         return max(retail_share * retail + nonretail_share * nonretail, 0)
 
     else:
         raise ValueError("Unknown shock: %s" % shock)
 
 
-def NetAstValue(risk='base', shock=None, scope=None):
+def NetAstValue(risk="base", shock=None, scope=None):
     """Net value of assets minus liabilities
 
     This formula is simplified and present value of net

@@ -2,9 +2,7 @@ from modelx.serialize.jsonvalues import *
 
 _formula = None
 
-_bases = [
-    "..BaseProj.Assumptions"
-]
+_bases = ["..BaseProj.Assumptions"]
 
 _allow_none = None
 

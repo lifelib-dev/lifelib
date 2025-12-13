@@ -222,6 +222,7 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+
 def age(t):
     """The attained age at time t.
 
@@ -262,7 +263,8 @@ def check_pv_net_cf():
     """
 
     import math
-    res = sum(list(net_cf(t) for t in range(proj_len())) * disc_factors()[:proj_len()])
+
+    res = sum(list(net_cf(t) for t in range(proj_len())) * disc_factors()[: proj_len()])
 
     return math.isclose(res, pv_net_cf())
 
@@ -291,7 +293,7 @@ def claims(t):
     return claim_pp(t) * pols_death(t)
 
 
-def commissions(t): 
+def commissions(t):
     """Commissions
 
     By default, 100% premiums for the first year, 0 otherwise.
@@ -315,7 +317,7 @@ def disc_factors():
 
         :func:`disc_rate_mth`
     """
-    return np.array(list((1 + disc_rate_mth()[t])**(-t) for t in range(proj_len())))
+    return np.array(list((1 + disc_rate_mth()[t]) ** (-t) for t in range(proj_len())))
 
 
 def disc_rate_mth():
@@ -331,7 +333,9 @@ def disc_rate_mth():
         :func:`disc_rate_ann`
 
     """
-    return np.array(list((1 + disc_rate_ann[t//12])**(1/12) - 1 for t in range(proj_len())))
+    return np.array(
+        list((1 + disc_rate_ann[t // 12]) ** (1 / 12) - 1 for t in range(proj_len()))
+    )
 
 
 def duration(t):
@@ -358,9 +362,9 @@ def duration_mth(t):
 
     """
     if t == 0:
-        return model_point()['duration_mth']
+        return model_point()["duration_mth"]
     else:
-        return duration_mth(t-1) + 1
+        return duration_mth(t - 1) + 1
 
 
 def expense_acq():
@@ -400,8 +404,9 @@ def expenses(t):
 
     """
 
-    return expense_acq() * pols_new_biz(t) \
-        + pols_if_at(t, "BEF_DECR") * expense_maint()/12 * inflation_factor(t)
+    return expense_acq() * pols_new_biz(t) + pols_if_at(
+        t, "BEF_DECR"
+    ) * expense_maint() / 12 * inflation_factor(t)
 
 
 def inflation_factor(t):
@@ -412,7 +417,7 @@ def inflation_factor(t):
         * :func:`inflation_rate`
 
     """
-    return (1 + inflation_rate())**(t/12)
+    return (1 + inflation_rate()) ** (t / 12)
 
 
 def inflation_rate():
@@ -505,7 +510,7 @@ def mort_rate(t):
        * :func:`mort_rate_mth`
 
     """
-    return mort_table[str(max(min(5, duration(t)),0))][age(t)]
+    return mort_table[str(max(min(5, duration(t)), 0))][age(t)]
 
 
 def mort_rate_mth(t):
@@ -517,7 +522,7 @@ def mort_rate_mth(t):
        * :func:`mort_rate`
 
     """
-    return 1-(1- mort_rate(t))**(1/12)
+    return 1 - (1 - mort_rate(t)) ** (1 / 12)
 
 
 def net_cf(t):
@@ -639,7 +644,7 @@ def pols_if_at(t, timing):
         if t == 0:
             return pols_if_init()
         else:
-            return pols_if_at(t-1, "BEF_DECR") - pols_lapse(t-1) - pols_death(t-1)
+            return pols_if_at(t - 1, "BEF_DECR") - pols_lapse(t - 1) - pols_death(t - 1)
 
     elif timing == "BEF_NB":
 
@@ -653,7 +658,7 @@ def pols_if_at(t, timing):
         raise ValueError("invalid timing")
 
 
-def pols_if_init(): 
+def pols_if_init():
     """Initial number of policies in-force
 
     Number of in-force policies at time 0 referenced from
@@ -674,7 +679,9 @@ def pols_lapse(t):
 
     """
     if is_active(t):
-        return (pols_if_at(t, "BEF_DECR") - pols_death(t)) * (1-(1 - lapse_rate(t))**(1/12))
+        return (pols_if_at(t, "BEF_DECR") - pols_death(t)) * (
+            1 - (1 - lapse_rate(t)) ** (1 / 12)
+        )
     else:
         return 0.0
 
@@ -711,7 +718,7 @@ def pols_new_biz(t):
 
     """
     if duration_mth(t) == 0:
-        return model_point()['policy_count']
+        return model_point()["policy_count"]
     else:
         return 0
 
@@ -775,7 +782,9 @@ def pv_claims():
         * :func:`claims`
 
     """
-    return sum(list(claims(t) for t in range(proj_len())) * disc_factors()[:proj_len()])
+    return sum(
+        list(claims(t) for t in range(proj_len())) * disc_factors()[: proj_len()]
+    )
 
 
 def pv_commissions():
@@ -786,7 +795,9 @@ def pv_commissions():
         * :func:`expenses`
 
     """
-    return sum(list(commissions(t) for t in range(proj_len())) * disc_factors()[:proj_len()])
+    return sum(
+        list(commissions(t) for t in range(proj_len())) * disc_factors()[: proj_len()]
+    )
 
 
 def pv_expenses():
@@ -797,7 +808,9 @@ def pv_expenses():
         * :func:`expenses`
 
     """
-    return sum(list(expenses(t) for t in range(proj_len())) * disc_factors()[:proj_len()])
+    return sum(
+        list(expenses(t) for t in range(proj_len())) * disc_factors()[: proj_len()]
+    )
 
 
 def pv_net_cf():
@@ -829,7 +842,9 @@ def pv_pols_if():
     It is used as the annuity factor for calculating :func:`net_premium_pp`.
 
     """
-    return sum(list(pols_if(t) for t in range(proj_len())) * disc_factors()[:proj_len()])
+    return sum(
+        list(pols_if(t) for t in range(proj_len())) * disc_factors()[: proj_len()]
+    )
 
 
 def pv_premiums():
@@ -840,7 +855,9 @@ def pv_premiums():
         * :func:`premiums`
 
     """
-    return sum(list(premiums(t) for t in range(proj_len())) * disc_factors()[:proj_len()])
+    return sum(
+        list(premiums(t) for t in range(proj_len())) * disc_factors()[: proj_len()]
+    )
 
 
 def result_cf():
@@ -863,7 +880,7 @@ def result_cf():
         "Claims": [claims(t) for t in t_len],
         "Expenses": [expenses(t) for t in t_len],
         "Commissions": [commissions(t) for t in t_len],
-        "Net Cashflow": [net_cf(t) for t in t_len]
+        "Net Cashflow": [net_cf(t) for t in t_len],
     }
     return pd.DataFrame.from_dict(data)
 
@@ -888,7 +905,7 @@ def result_pols():
         "pols_maturity": [pols_maturity(t) for t in t_len],
         "pols_new_biz": [pols_new_biz(t) for t in t_len],
         "pols_death": [pols_death(t) for t in t_len],
-        "pols_lapse": [pols_lapse(t) for t in t_len]
+        "pols_lapse": [pols_lapse(t) for t in t_len],
     }
 
     return pd.DataFrame.from_dict(data)
@@ -910,13 +927,10 @@ def result_pv():
     cols = ["Premiums", "Claims", "Expenses", "Commissions", "Net Cashflow"]
     pvs = [pv_premiums(), pv_claims(), pv_expenses(), pv_commissions(), pv_net_cf()]
 
-    return pd.DataFrame.from_dict(
-            data={"PV": pvs},
-            columns=cols,
-            orient='index')
+    return pd.DataFrame.from_dict(data={"PV": pvs}, columns=cols, orient="index")
 
 
-def sex(): 
+def sex():
     """The sex of the selected model point
 
     .. note::

@@ -20,14 +20,13 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+
 def InterestNetCF(t):
     """Interest accreted on pv of net cashflows"""
     if t > last_t:
         return 0
     else:
-        return (PV_NetCashflow(t)
-                - PremIncome(t)
-                + ExpsTotal(t)) * DiscRate(t)
+        return (PV_NetCashflow(t) - PremIncome(t) + ExpsTotal(t)) * DiscRate(t)
 
 
 def PV_BenefitDeath(t):
@@ -35,7 +34,7 @@ def PV_BenefitDeath(t):
     if t > last_t:
         return 0
     else:
-        return (-BenefitDeath(t) + PV_BenefitDeath(t+1)) / (1 + DiscRate(t))
+        return (-BenefitDeath(t) + PV_BenefitDeath(t + 1)) / (1 + DiscRate(t))
 
 
 def PV_BenefitMat(t):
@@ -43,7 +42,7 @@ def PV_BenefitMat(t):
     if t > last_t:
         return 0
     else:
-        return (-BenefitMat(t) + PV_BenefitMat(t+1)) / (1 + DiscRate(t))
+        return (-BenefitMat(t) + PV_BenefitMat(t + 1)) / (1 + DiscRate(t))
 
 
 def PV_BenefitSurr(t):
@@ -51,18 +50,18 @@ def PV_BenefitSurr(t):
     if t > last_t:
         return 0
     else:
-        return (-BenefitSurr(t) + PV_BenefitSurr(t+1)) / (1 + DiscRate(t))
+        return (-BenefitSurr(t) + PV_BenefitSurr(t + 1)) / (1 + DiscRate(t))
 
 
 def PV_BenefitTotal(t):
     """Present value of total benefits"""
 
-    exist = (t <= last_t())
+    exist = t <= last_t()
 
     if not exist.any():
         return 0
     else:
-        result = (-BenefitTotal(t) + PV_BenefitTotal(t+1)) / (1 + DiscRate(t))
+        result = (-BenefitTotal(t) + PV_BenefitTotal(t + 1)) / (1 + DiscRate(t))
         result.name = "PV_BenefitTotal"
         return result
 
@@ -76,7 +75,7 @@ def PV_ExpsAcq(t):
     if t > last_t:
         return 0
     else:
-        return - ExpsAcq(t) + PV_ExpsAcq(t+1) / (1 + DiscRate(t))
+        return -ExpsAcq(t) + PV_ExpsAcq(t + 1) / (1 + DiscRate(t))
 
 
 def PV_ExpsCommTotal(t):
@@ -84,7 +83,7 @@ def PV_ExpsCommTotal(t):
     if t > last_t:
         return 0
     else:
-        return - ExpsCommTotal(t) + PV_ExpsCommTotal(t+1) / (1 + DiscRate(t))
+        return -ExpsCommTotal(t) + PV_ExpsCommTotal(t + 1) / (1 + DiscRate(t))
 
 
 def PV_ExpsMaint(t):
@@ -92,27 +91,25 @@ def PV_ExpsMaint(t):
     if t > last_t:
         return 0
     else:
-        return - ExpsMaint(t) + PV_ExpsMaint(t+1) / (1 + DiscRate(t))
+        return -ExpsMaint(t) + PV_ExpsMaint(t + 1) / (1 + DiscRate(t))
 
 
 def PV_ExpsTotal(t):
     """Present value of total expenses"""
 
-    exist = (t <= last_t())
+    exist = t <= last_t()
 
     if not exist.any():
         return 0
     else:
-        result = exist * (-ExpsTotal(t)) + PV_ExpsTotal(t+1) / (1 + DiscRate(t))
+        result = exist * (-ExpsTotal(t)) + PV_ExpsTotal(t + 1) / (1 + DiscRate(t))
         result.name = "PV_ExpsTotal"
         return result
 
 
 def PV_NetCashflow(t):
     """Present value of net cashflow"""
-    return (PV_PremIncome(t)
-            + PV_ExpsTotal(t)
-            + PV_BenefitTotal(t))
+    return PV_PremIncome(t) + PV_ExpsTotal(t) + PV_BenefitTotal(t)
 
 
 def PV_NetCashflowForCheck(t):
@@ -120,21 +117,23 @@ def PV_NetCashflowForCheck(t):
     if t > last_t:
         return 0
     else:
-        return (PremIncome(t)
-                - ExpsTotal(t)
-                - BenefitTotal(t) / (1 + DiscRate(t))
-                + PV_NetCashflow(t+1) / (1 + DiscRate(t)))
+        return (
+            PremIncome(t)
+            - ExpsTotal(t)
+            - BenefitTotal(t) / (1 + DiscRate(t))
+            + PV_NetCashflow(t + 1) / (1 + DiscRate(t))
+        )
 
 
 def PV_PremIncome(t):
     """Present value of premium income"""
 
-    exist = (t <= last_t())
+    exist = t <= last_t()
 
     if not exist.any():
         return 0
     else:
-        result = exist * PremIncome(t) + PV_PremIncome(t+1) / (1 + DiscRate(t))
+        result = exist * PremIncome(t) + PV_PremIncome(t + 1) / (1 + DiscRate(t))
         result.name = "PV_PremIncome"
         return result
 
@@ -144,8 +143,7 @@ def PV_SumInsurIF(t):
     if t > last_t:
         return 0
     else:
-        return InsurIF_Beg1(t) + PV_SumInsurIF(t+1) / (1 + DiscRate(t))
+        return InsurIF_Beg1(t) + PV_SumInsurIF(t + 1) / (1 + DiscRate(t))
 
 
 last_t = lambda: None
-

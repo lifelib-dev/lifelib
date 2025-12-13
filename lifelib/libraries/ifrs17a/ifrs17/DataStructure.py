@@ -1,10 +1,10 @@
-from functools import (
-    total_ordering as _total_ordering,
-    cached_property as _cached_property
-)
 import dataclasses as _dataclasses
-from dataclasses import (dataclass as _dataclass, field as _field)
 from collections import namedtuple as _namedtuple
+from dataclasses import dataclass as _dataclass
+from dataclasses import field as _field
+from functools import cached_property as _cached_property
+from functools import total_ordering as _total_ordering
+
 from .BaseClasses import *
 from .Consts import *
 from .Enums import *
@@ -12,6 +12,7 @@ from .Enums import *
 # Data Infrastructure
 
 ## Base Interfaces
+
 
 @_dataclass
 class IKeyed(metaclass=IKeyedType):
@@ -35,6 +36,7 @@ class IWithYearMonthAndScenario(IWithYearAndMonth):
 
 
 ## Abstract Classes
+
 
 class KeyedRecord(IKeyed):
     pass
@@ -69,6 +71,7 @@ class HierarchicalDimensionWithLevel:
 
 ## Amount Type
 
+
 @_dataclass
 class AmountType(KeyedOrderedDimensionWithExternalId):
     Parent: str
@@ -87,7 +90,7 @@ class RiskDriver(KeyedOrderedDimension):
 
 ## Estimate Type
 @_dataclass
-class EstimateType(KeyedOrderedDimensionWithExternalId): 
+class EstimateType(KeyedOrderedDimensionWithExternalId):
     InputSource: InputSource
     StructureType: StructureType
     PeriodType: PeriodType
@@ -106,11 +109,11 @@ class VariableType(KeyedOrderedDimension):
 
 ### AoC Variable Type
 @_dataclass
-class AocType(VariableType): 
-    PnlType: str = ''
+class AocType(VariableType):
+    PnlType: str = ""
 
 
-AocStep = _namedtuple('AocStep', ['AocType', 'Novelty'])
+AocStep = _namedtuple("AocStep", ["AocType", "Novelty"])
 
 
 class PnlVariableType(VariableType):
@@ -159,14 +162,17 @@ class LiabilityType(KeyedDimension):
 
 ## OCI Type
 
+
 class OciType(KeyedDimension):
     pass
 
 
 ## Profitability
 
+
 class Profitability(KeyedDimension):
     pass
+
 
 ## Partner
 
@@ -174,13 +180,16 @@ class Profitability(KeyedDimension):
 class Partner(KeyedDimension):
     pass
 
+
 ## Credit Risk Rating
 
 
 class CreditRiskRating(KeyedDimension):
     pass
 
+
 ## Reporting Node
+
 
 @_dataclass
 class ReportingNode(KeyedDimension):
@@ -223,7 +232,7 @@ class ExchangeRate(KeyedRecord, IWithYearMonthAndScenario):
 
 
 @_dataclass
-class CreditDefaultRate(KeyedRecord, IWithYearMonthAndScenario): 
+class CreditDefaultRate(KeyedRecord, IWithYearMonthAndScenario):
 
     CreditRiskRating: str
     Year: int
@@ -242,8 +251,9 @@ class YieldCurve(KeyedRecord, IWithYearMonthAndScenario):
     Values: list[float]
     # Scenario: str = ''
 
+
 @_dataclass
-class PartnerRating(KeyedRecord, IWithYearMonthAndScenario): 
+class PartnerRating(KeyedRecord, IWithYearMonthAndScenario):
 
     Partner: str
     CreditRiskRating: str
@@ -256,7 +266,7 @@ class PartnerRating(KeyedRecord, IWithYearMonthAndScenario):
 @_dataclass
 class IfrsPartition(IKeyed):
     ReportingNode: str
-    Scenario: str = ''
+    Scenario: str = ""
 
 
 class PartitionByReportingNode(IfrsPartition):
@@ -274,18 +284,28 @@ class PartitionByReportingNodeAndPeriod(IfrsPartition):
 
     def __eq__(self, other):
         return (self.Id, self.ReportingNode, self.Scenario, self.Year, self.Month) == (
-            other.Id, other.ReportingNode, other.Scenario, other.Year, other.Month)
+            other.Id,
+            other.ReportingNode,
+            other.Scenario,
+            other.Year,
+            other.Month,
+        )
 
     def __lt__(self, other):
-        return ((self.Id, self.ReportingNode, self.Scenario, self.Year, self.Month) < (
-            other.Id, other.ReportingNode, other.Scenario, other.Year, other.Month))
+        return (self.Id, self.ReportingNode, self.Scenario, self.Year, self.Month) < (
+            other.Id,
+            other.ReportingNode,
+            other.Scenario,
+            other.Year,
+            other.Month,
+        )
 
 
 # Policy-related Data Structures
 
 
 @_dataclass
-class DataNode(KeyedDimension, IPartitioned): 
+class DataNode(KeyedDimension, IPartitioned):
 
     Partition: Guid
     ContractualCurrency: str
@@ -296,13 +316,13 @@ class DataNode(KeyedDimension, IPartitioned):
 
 
 @_dataclass
-class Portfolio(DataNode): 
+class Portfolio(DataNode):
     pass
 
 
 @_dataclass
 class InsurancePortfolio(Portfolio):
-    pass 
+    pass
 
 
 @_dataclass
@@ -323,12 +343,12 @@ class GroupOfContract(DataNode):
 
 
 @_dataclass(eq=False)
-class GroupOfInsuranceContract(GroupOfContract): 
+class GroupOfInsuranceContract(GroupOfContract):
     pass
     # [Immutable]
 
     #  TODO: for the case of internal reinsurance the Partner would be the reporting node, hence not null.
-    #  If this is true we need the [Required] attribute here, add some validation at dataNode import 
+    #  If this is true we need the [Required] attribute here, add some validation at dataNode import
     #  and to add logic in the GetNonPerformanceRiskRate method in ImportStorage.
 
 
@@ -338,13 +358,13 @@ class GroupOfReinsuranceContract(GroupOfContract):
 
 
 @_dataclass
-class DataNodeState(KeyedRecord, IPartitioned, IWithYearMonthAndScenario): 
+class DataNodeState(KeyedRecord, IPartitioned, IWithYearMonthAndScenario):
 
     Partition: Guid
     DataNode: str
     Year: int
-    Month: int      # = DefaultDataNodeActivationMonth
-    State: State    # = State.Active
+    Month: int  # = DefaultDataNodeActivationMonth
+    State: State  # = State.Active
     # Scenario: str = ''
 
 
@@ -374,7 +394,10 @@ class InterDataNodeParameter(DataNodeParameter):
 
     def __eq__(self, other):
         return (self.LinkedDataNode, self.ReinsuranceCoverage, self.Scenario) == (
-            other.LinkedDataNode, other.ReinsuranceCoverage, other.Scenario)
+            other.LinkedDataNode,
+            other.ReinsuranceCoverage,
+            other.Scenario,
+        )
 
 
 @_dataclass
@@ -410,6 +433,7 @@ class DataNodeData:
 
 ## Variables
 
+
 @_dataclass
 class BaseVariableIdentity:
     DataNode: str
@@ -434,10 +458,20 @@ class RawVariable(BaseDataRecord):
 class IfrsVariable(BaseDataRecord):
     Value: float
     EstimateType: str
-    EconomicBasis: str = _field(default='')
+    EconomicBasis: str = _field(default="")
 
     def __hash__(self):
-        return hash((self.DataNode, self.AocType, self.Novelty, self.AmountType, self.AccidentYear, self.EstimateType, self.EconomicBasis))
+        return hash(
+            (
+                self.DataNode,
+                self.AocType,
+                self.Novelty,
+                self.AmountType,
+                self.AccidentYear,
+                self.EstimateType,
+                self.EconomicBasis,
+            )
+        )
 
     def __eq__(self, other):
         if eq := self.Id == other.Id:
@@ -445,12 +479,32 @@ class IfrsVariable(BaseDataRecord):
         return eq
 
     def __lt__(self, other):
-        return ((self.DataNode, self.AocType, self.Novelty, self.AmountType, self.AccidentYear, self.EstimateType, self.EconomicBasis, self.Id) < (
-            other.DataNode, other.AocType, other.Novelty, other.AmountType, other.AccidentYear, other.EstimateType, other.EconomicBasis, self.Id))
+        return (
+            self.DataNode,
+            self.AocType,
+            self.Novelty,
+            self.AmountType,
+            self.AccidentYear,
+            self.EstimateType,
+            self.EconomicBasis,
+            self.Id,
+        ) < (
+            other.DataNode,
+            other.AocType,
+            other.Novelty,
+            other.AmountType,
+            other.AccidentYear,
+            other.EstimateType,
+            other.EconomicBasis,
+            self.Id,
+        )
+
 
 # Import Identity
 
-ImportIdentityTuple = _namedtuple('ImportIdentityTuple', ['DataNode', 'AocType', 'Novelty'])
+ImportIdentityTuple = _namedtuple(
+    "ImportIdentityTuple", ["DataNode", "AocType", "Novelty"]
+)
 
 
 @_total_ordering
@@ -458,7 +512,7 @@ ImportIdentityTuple = _namedtuple('ImportIdentityTuple', ['DataNode', 'AocType',
 class ImportIdentity(BaseVariableIdentity):
 
     IsReinsurance: bool = False
-    ValuationApproach: str = ''
+    ValuationApproach: str = ""
     ProjectionPeriod: int = 0
     ImportScope: ImportScope = None
 
@@ -467,40 +521,52 @@ class ImportIdentity(BaseVariableIdentity):
 
     def __eq__(self, other):
         return (self.DataNode, self.AocType, self.Novelty) == (
-            other.DataNode, other.AocType, other.Novelty)
+            other.DataNode,
+            other.AocType,
+            other.Novelty,
+        )
 
     def __lt__(self, other):
-        return ((self.DataNode, self.AocType, self.Novelty) < (
-            other.DataNode, other.AocType, other.Novelty))
+        return (self.DataNode, self.AocType, self.Novelty) < (
+            other.DataNode,
+            other.AocType,
+            other.Novelty,
+        )
 
     @_cached_property
     def AocStep(self) -> AocStep:
         return AocStep(self.AocType, self.Novelty)
 
     @classmethod
-    def from_iv(cls, iv) -> 'ImportIdentity':
-        return cls(
-            DataNode=iv.DataNode,
-            AocType=iv.AocType,
-            Novelty=iv.Novelty)
+    def from_iv(cls, iv) -> "ImportIdentity":
+        return cls(DataNode=iv.DataNode, AocType=iv.AocType, Novelty=iv.Novelty)
 
     @classmethod
-    def from_rv(cls, rv) -> 'ImportIdentity':
-        return cls(
-            DataNode=rv.DataNode,
-            AocType=rv.AocType,
-            Novelty=rv.Novelty)
+    def from_rv(cls, rv) -> "ImportIdentity":
+        return cls(DataNode=rv.DataNode, AocType=rv.AocType, Novelty=rv.Novelty)
 
     def to_tuple(self):
-        return ImportIdentityTuple(DataNode=self.DataNode, AocType=self.AocType, Novelty=self.Novelty)
+        return ImportIdentityTuple(
+            DataNode=self.DataNode, AocType=self.AocType, Novelty=self.Novelty
+        )
 
     def to_dict(self):
-        return {'DataNode': self.DataNode, 'AocType': self.AocType, 'Novelty': self.Novelty}
+        return {
+            "DataNode": self.DataNode,
+            "AocType": self.AocType,
+            "Novelty": self.Novelty,
+        }
 
-    def copy(self, DataNode:str=None, Novelty:str=None, AocType: str=None, IsReinsurance=None):
+    def copy(
+        self,
+        DataNode: str = None,
+        Novelty: str = None,
+        AocType: str = None,
+        IsReinsurance=None,
+    ):
         other = _dataclasses.replace(self)
-        if 'AocStep' in other.__dict__:
-            del other.__dict__['AocStep']
+        if "AocStep" in other.__dict__:
+            del other.__dict__["AocStep"]
         if DataNode is not None:
             other.DataNode = DataNode
         if AocType is not None:
@@ -515,6 +581,7 @@ class ImportIdentity(BaseVariableIdentity):
 
 # Args
 
+
 @_dataclass(frozen=True, eq=True, unsafe_hash=True)
 class Args:
     ReportingNode: str
@@ -527,7 +594,3 @@ class Args:
 @_dataclass(frozen=True, eq=True, unsafe_hash=True)
 class ImportArgs(Args):
     ImportFormat: ImportFormats
-
-
-
-

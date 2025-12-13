@@ -1,9 +1,9 @@
-import modelx as mx
-import lifelib.projects.simplelife.model
-import lifelib.projects.fastlife.model
-
-
 import pathlib
+
+import modelx as mx
+
+import lifelib.projects.fastlife.model
+import lifelib.projects.simplelife.model
 
 simplepath = pathlib.Path(lifelib.projects.simplelife.model.__file__).parent
 fastpath = pathlib.Path(lifelib.projects.fastlife.model.__file__).parent

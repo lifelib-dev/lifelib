@@ -1,10 +1,1 @@
-
-{"spaces":
-     {"Projection":
-          {"cells_params":
-               {"t":
-                    {"size": 241}
-                }
-           }
-      }
- }
+{"spaces": {"Projection": {"cells_params": {"t": {"size": 241}}}}}
