@@ -10,8 +10,6 @@ Projection parameters
 ----------------------
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
 
    fixed_params
    proj_len
@@ -24,8 +22,6 @@ Model point data
 ------------------
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
 
    model_point
    model_point_index
@@ -53,8 +49,6 @@ Assumptions
 -------------
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
 
    base_lapse_rate
    is_lapse_dynamic
@@ -81,8 +75,6 @@ Policy values
 ---------------
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
 
    claim_net_pp
    claim_pp
@@ -97,8 +89,6 @@ Policy decrement
 ------------------
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
 
    pols_if
    pols_if_at
@@ -114,8 +104,6 @@ Account Value
 --------------
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
 
    inv_income
    inv_income_pp
@@ -136,8 +124,6 @@ Cashflows
 -----------
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
 
    claims
    claims_from_av
@@ -153,8 +139,6 @@ Margin Analysis
 ----------------
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
 
    margin_expense
    margin_guarantee
@@ -164,8 +148,6 @@ Present values
 ---------------
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
 
    pv_av_change
    pv_claims
@@ -184,8 +166,6 @@ Results and output
 --------------------
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
 
    result_pv
    result_cf
@@ -198,9 +178,209 @@ Validation
 -----------
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
 
    check_av_roll_fwd
    check_margin
    check_pv_net_cf
+
+
+Cells Descriptions
+------------------
+
+.. autofunction:: fixed_params
+
+.. autofunction:: proj_len
+
+.. autofunction:: scen_index
+
+.. autofunction:: asmp_id
+
+.. autofunction:: date_id
+
+.. autofunction:: model_point
+
+.. autofunction:: model_point_index
+
+.. autofunction:: model_point_table_ext
+
+.. autofunction:: age
+
+.. autofunction:: sex
+
+.. autofunction:: age_at_entry
+
+.. autofunction:: av_pp_init
+
+.. autofunction:: commission_rate
+
+.. autofunction:: duration
+
+.. autofunction:: duration_mth
+
+.. autofunction:: duration_mth_init
+
+.. autofunction:: has_gmab
+
+.. autofunction:: has_gmdb
+
+.. autofunction:: has_surr_charge
+
+.. autofunction:: is_wl
+
+.. autofunction:: maint_fee_rate
+
+.. autofunction:: policy_term
+
+.. autofunction:: premium_type
+
+.. autofunction:: sum_assured
+
+.. autofunction:: surr_charge_id
+
+.. autofunction:: base_lapse_rate
+
+.. autofunction:: is_lapse_dynamic
+
+.. autofunction:: dyn_lapse_param
+
+.. autofunction:: dyn_lapse_factor
+
+.. autofunction:: lapse_rate_key
+
+.. autofunction:: lapse_rate
+
+.. autofunction:: disc_factors
+
+.. autofunction:: disc_rate
+
+.. autofunction:: disc_rate_mth
+
+.. autofunction:: expense_acq
+
+.. autofunction:: expense_maint
+
+.. autofunction:: inflation_rate
+
+.. autofunction:: inflation_factor
+
+.. autofunction:: mort_last_age
+
+.. autofunction:: base_mort_rate
+
+.. autofunction:: mort_rate
+
+.. autofunction:: mort_rate_key
+
+.. autofunction:: mort_rate_mth
+
+.. autofunction:: mort_table_id
+
+.. autofunction:: claim_net_pp
+
+.. autofunction:: claim_pp
+
+.. autofunction:: coi_pp
+
+.. autofunction:: coi_rate
+
+.. autofunction:: premium_pp
+
+.. autofunction:: surr_charge_key
+
+.. autofunction:: surr_charge_rate
+
+.. autofunction:: pols_if
+
+.. autofunction:: pols_if_at
+
+.. autofunction:: pols_if_init
+
+.. autofunction:: pols_lapse
+
+.. autofunction:: pols_death
+
+.. autofunction:: pols_maturity
+
+.. autofunction:: pols_new_biz
+
+.. autofunction:: inv_income
+
+.. autofunction:: inv_income_pp
+
+.. autofunction:: inv_return_mth
+
+.. autofunction:: av_at
+
+.. autofunction:: av_change
+
+.. autofunction:: av_pp_at
+
+.. autofunction:: csv_pp
+
+.. autofunction:: coi
+
+.. autofunction:: maint_fee
+
+.. autofunction:: maint_fee_pp
+
+.. autofunction:: net_amt_at_risk
+
+.. autofunction:: prem_to_av
+
+.. autofunction:: prem_to_av_pp
+
+.. autofunction:: claims
+
+.. autofunction:: claims_from_av
+
+.. autofunction:: claims_over_av
+
+.. autofunction:: commissions
+
+.. autofunction:: expenses
+
+.. autofunction:: surr_charge
+
+.. autofunction:: net_cf
+
+.. autofunction:: margin_expense
+
+.. autofunction:: margin_guarantee
+
+.. autofunction:: pv_av_change
+
+.. autofunction:: pv_claims
+
+.. autofunction:: pv_claims_from_av
+
+.. autofunction:: pv_claims_over_av
+
+.. autofunction:: pv_commissions
+
+.. autofunction:: pv_expenses
+
+.. autofunction:: pv_inv_income
+
+.. autofunction:: pv_maint_fee
+
+.. autofunction:: pv_net_cf
+
+.. autofunction:: pv_pols_if
+
+.. autofunction:: pv_premiums
+
+.. autofunction:: result_pv
+
+.. autofunction:: result_cf
+
+.. autofunction:: result_pols
+
+.. autofunction:: result_sample
+
+.. autofunction:: excel_sample
+
+.. autofunction:: check_av_roll_fwd
+
+.. autofunction:: check_margin
+
+.. autofunction:: check_pv_net_cf

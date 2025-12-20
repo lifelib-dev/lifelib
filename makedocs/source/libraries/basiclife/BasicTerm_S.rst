@@ -106,8 +106,7 @@ indexed with ``t`` denote the sums of the flows from ``t`` til ``t+1``.
 Balance items indexed with ``t`` denote the amount at ``t``.
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
     ~proj_len
 
@@ -120,8 +119,7 @@ under the model folder.
 
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
    ~model_point
    ~sex
@@ -157,8 +155,7 @@ The maintenance expense inflates at a constant rate
 of inflation given as :func:`inflation_rate`.
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
    ~mort_rate
    ~mort_rate_mth
@@ -187,8 +184,7 @@ net premiums equates to the present values of claims.
 This product is assumed to have no surrender value.
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
    ~claim_pp
    ~net_premium_pp
@@ -205,8 +201,7 @@ At the end of the policy term the remaining number of policies
 mature.
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
    ~pols_death
    ~pols_if
@@ -227,8 +222,7 @@ year and 0 afterwards.
 
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
    ~claims
    ~commissions
@@ -246,8 +240,7 @@ the present values of the cashflows indicated by the rest of their names.
 in calculating :func:`net_premium_pp`.
 
 .. autosummary::
-  :toctree: ../generated/
-  :template: mxbase.rst
+
 
   ~pv_claims
   ~pv_commissions
@@ -293,10 +286,94 @@ and also their percentages against the present value of premiums as a DataFrame:
 
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
    ~result_cf
    ~result_pv
 
+
+
+
+Cells Descriptions
+------------------
+
+.. autofunction:: proj_len
+
+.. autofunction:: model_point
+
+.. autofunction:: sex
+
+.. autofunction:: sum_assured
+
+.. autofunction:: policy_term
+
+.. autofunction:: age
+
+.. autofunction:: age_at_entry
+
+.. autofunction:: duration
+
+.. autofunction:: mort_rate
+
+.. autofunction:: mort_rate_mth
+
+.. autofunction:: disc_factors
+
+.. autofunction:: disc_rate_mth
+
+.. autofunction:: lapse_rate
+
+.. autofunction:: expense_acq
+
+.. autofunction:: expense_maint
+
+.. autofunction:: inflation_factor
+
+.. autofunction:: inflation_rate
+
+.. autofunction:: claim_pp
+
+.. autofunction:: net_premium_pp
+
+.. autofunction:: loading_prem
+
+.. autofunction:: premium_pp
+
+.. autofunction:: pols_death
+
+.. autofunction:: pols_if
+
+.. autofunction:: pols_if_init
+
+.. autofunction:: pols_lapse
+
+.. autofunction:: pols_maturity
+
+.. autofunction:: claims
+
+.. autofunction:: commissions
+
+.. autofunction:: premiums
+
+.. autofunction:: expenses
+
+.. autofunction:: net_cf
+
+.. autofunction:: pv_claims
+
+.. autofunction:: pv_commissions
+
+.. autofunction:: pv_expenses
+
+.. autofunction:: pv_net_cf
+
+.. autofunction:: pv_pols_if
+
+.. autofunction:: pv_premiums
+
+.. autofunction:: check_pv_net_cf
+
+.. autofunction:: result_cf
+
+.. autofunction:: result_pv
 

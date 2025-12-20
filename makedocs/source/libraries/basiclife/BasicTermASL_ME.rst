@@ -172,8 +172,7 @@ Projection parameters
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
     ~date_
     ~months_
@@ -187,8 +186,7 @@ Model point data
 ^^^^^^^^^^^^^^^^^^
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
     ~age
     ~age_at_entry
@@ -207,8 +205,7 @@ Assumptions
 ^^^^^^^^^^^^^
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
     ~mort_rate
     ~mort_table_reindexed
@@ -227,8 +224,7 @@ Policy attributes
 ^^^^^^^^^^^^^^^^^^^
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
     ~claim_pp
     ~loading_prem
@@ -247,8 +243,7 @@ Policy decrement
 ^^^^^^^^^^^^^^^^^
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
     ~pols_death
     ~pols_if
@@ -264,8 +259,7 @@ Cashflows
 ^^^^^^^^^^^^^
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
     ~premiums
     ~claims
@@ -277,8 +271,7 @@ Present values
 ^^^^^^^^^^^^^^^^
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
     ~pv_claims
     ~pv_commissions
@@ -292,8 +285,7 @@ Results
 ^^^^^^^^^^^^
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
     ~result_cells
     ~result_cf
@@ -304,8 +296,7 @@ Validation
 ^^^^^^^^^^^^
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
     ~check_pay_count
 
@@ -319,8 +310,7 @@ The :mod:`~basiclife.BasicTermASL_ME.Pricing` space
 .. automodule:: basiclife.BasicTermASL_ME.Pricing
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
     ~model_point
     ~premium_pp
@@ -334,12 +324,158 @@ The :mod:`~basiclife.BasicTermASL_ME.Projection` space
 .. automodule:: basiclife.BasicTermASL_ME.Projection
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
     ~premium_pp
 
 
 
 
+
+
+
+Cells Descriptions
+------------------
+
+.. autofunction:: date_
+
+.. autofunction:: months_
+
+.. autofunction:: months_in_step
+
+.. autofunction:: step_to_month
+
+.. autofunction:: max_proj_len
+
+.. autofunction:: month_to_step
+
+.. autofunction:: offset
+
+.. autofunction:: age
+
+.. autofunction:: age_at_entry
+
+.. autofunction:: issue_date
+
+.. autofunction:: model_point
+
+.. autofunction:: duration_m
+
+.. autofunction:: duration_y
+
+.. autofunction:: sex
+
+.. autofunction:: sum_assured
+
+.. autofunction:: policy_term
+
+.. autofunction:: payment_freq
+
+.. autofunction:: payment_lag
+
+.. autofunction:: payment_term
+
+.. autofunction:: mort_rate
+
+.. autofunction:: mort_table_reindexed
+
+.. autofunction:: expense_acq
+
+.. autofunction:: expense_maint
+
+.. autofunction:: inflation_factor
+
+.. autofunction:: inflation_rate
+
+.. autofunction:: lapse_rate
+
+.. autofunction:: proj_len
+
+.. autofunction:: disc_factors
+
+.. autofunction:: disc_factors_prem
+
+.. autofunction:: disc_rate
+
+.. autofunction:: claim_pp
+
+.. autofunction:: loading_prem
+
+.. autofunction:: premium_pp
+
+.. autofunction:: is_active
+
+.. autofunction:: is_paying
+
+.. autofunction:: is_maturing
+
+.. autofunction:: last_part
+
+.. autofunction:: next_part
+
+.. autofunction:: next_anniversary
+
+.. autofunction:: net_premium_rate
+
+.. autofunction:: pay_count
+
+.. autofunction:: pols_death
+
+.. autofunction:: pols_if
+
+.. autofunction:: pols_if_at
+
+.. autofunction:: pols_if_avg
+
+.. autofunction:: pols_if_init
+
+.. autofunction:: pols_lapse
+
+.. autofunction:: pols_maturity
+
+.. autofunction:: pols_new_biz
+
+.. autofunction:: pols_if_pay
+
+.. autofunction:: premiums
+
+.. autofunction:: claims
+
+.. autofunction:: commissions
+
+.. autofunction:: expenses
+
+.. autofunction:: net_cf
+
+.. autofunction:: pv_claims
+
+.. autofunction:: pv_commissions
+
+.. autofunction:: pv_expenses
+
+.. autofunction:: pv_net_cf
+
+.. autofunction:: pv_pols_if
+
+.. autofunction:: pv_pols_if_pay
+
+.. autofunction:: pv_premiums
+
+.. autofunction:: result_cells
+
+.. autofunction:: result_cf
+
+.. autofunction:: result_pols
+
+.. autofunction:: result_pv
+
+.. autofunction:: check_pay_count
+
+.. autofunction:: model_point
+
+.. autofunction:: premium_pp
+
+.. autofunction:: net_premium_rate
+
+.. autofunction:: premium_pp
 

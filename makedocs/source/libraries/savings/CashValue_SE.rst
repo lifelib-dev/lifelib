@@ -225,8 +225,7 @@ indexed with ``t`` denote the sums of the flows from ``t`` til ``t+1``.
 Balance items indexed with ``t`` denote the amount at ``t``.
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
     ~proj_len
 
@@ -246,8 +245,7 @@ and referenced from :func:`model_point`.
 .. figure:: /images/libraries/savings/CashValue_SE/diagram2.png
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
    ~model_point
    ~model_point_table_ext
@@ -291,8 +289,7 @@ The maintenance expense inflates at a constant rate
 of inflation given as :func:`inflation_rate`.
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
    ~mort_table_last_age
    ~mort_rate
@@ -318,8 +315,7 @@ or the monthly premium amount if the model point represents
 level premium policies (i.e. :func:`premium_type` is ``"LEVEL"``).
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
    ~claim_pp
    ~premium_pp
@@ -377,8 +373,7 @@ from time ``t-1`` to time ``t``.
 
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
    ~pols_death
    ~pols_if
@@ -423,8 +418,7 @@ for policies exiting by lapse and death during the month.
 .. figure:: /images/libraries/av_pp_at.png
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
    ~inv_income
    ~inv_income_pp
@@ -458,8 +452,7 @@ By default, commissions are defined as 5% premiums.
 
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
    ~surr_charge
    ~claims
@@ -480,8 +473,7 @@ The mortality margin is defined :func:`coi` net of :func:`claims_over_av`.
 
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
    ~margin_expense
    ~margin_mortality
@@ -497,8 +489,7 @@ the present values of the cashflows indicated by the rest of their names.
 in :mod:`~savings.CashValue_SE` and :mod:`~basiclife.BasicTerm_ME`.
 
 .. autosummary::
-  :toctree: ../generated/
-  :template: mxbase.rst
+
 
   ~pv_claims
   ~pv_commissions
@@ -544,11 +535,167 @@ as a DataFrame::
 
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
    ~result_cf
    ~result_pv
    ~result_pols
 
+
+
+
+Cells Descriptions
+------------------
+
+.. autofunction:: proj_len
+
+.. autofunction:: model_point
+
+.. autofunction:: model_point_table_ext
+
+.. autofunction:: sex
+
+.. autofunction:: sum_assured
+
+.. autofunction:: policy_term
+
+.. autofunction:: age
+
+.. autofunction:: age_at_entry
+
+.. autofunction:: duration
+
+.. autofunction:: duration_mth
+
+.. autofunction:: has_surr_charge
+
+.. autofunction:: is_wl
+
+.. autofunction:: load_prem_rate
+
+.. autofunction:: surr_charge_id
+
+.. autofunction:: premium_type
+
+.. autofunction:: av_pp_init
+
+.. autofunction:: mort_table_last_age
+
+.. autofunction:: mort_rate
+
+.. autofunction:: mort_rate_mth
+
+.. autofunction:: disc_factors
+
+.. autofunction:: disc_rate_mth
+
+.. autofunction:: lapse_rate
+
+.. autofunction:: expense_acq
+
+.. autofunction:: expense_maint
+
+.. autofunction:: inflation_factor
+
+.. autofunction:: inflation_rate
+
+.. autofunction:: claim_pp
+
+.. autofunction:: premium_pp
+
+.. autofunction:: maint_fee_rate
+
+.. autofunction:: coi_rate
+
+.. autofunction:: surr_charge_rate
+
+.. autofunction:: pols_death
+
+.. autofunction:: pols_if
+
+.. autofunction:: pols_if_at
+
+.. autofunction:: pols_if_init
+
+.. autofunction:: pols_lapse
+
+.. autofunction:: pols_maturity
+
+.. autofunction:: pols_new_biz
+
+.. autofunction:: inv_income
+
+.. autofunction:: inv_income_pp
+
+.. autofunction:: inv_return_mth
+
+.. autofunction:: inv_return_table
+
+.. autofunction:: av_pp_at
+
+.. autofunction:: net_amt_at_risk
+
+.. autofunction:: coi_pp
+
+.. autofunction:: prem_to_av_pp
+
+.. autofunction:: maint_fee_pp
+
+.. autofunction:: av_at
+
+.. autofunction:: prem_to_av
+
+.. autofunction:: claims_from_av
+
+.. autofunction:: claims_over_av
+
+.. autofunction:: coi
+
+.. autofunction:: maint_fee
+
+.. autofunction:: av_change
+
+.. autofunction:: check_av_roll_fwd
+
+.. autofunction:: surr_charge
+
+.. autofunction:: claims
+
+.. autofunction:: commissions
+
+.. autofunction:: premiums
+
+.. autofunction:: expenses
+
+.. autofunction:: net_cf
+
+.. autofunction:: margin_expense
+
+.. autofunction:: margin_mortality
+
+.. autofunction:: check_margin
+
+.. autofunction:: pv_claims
+
+.. autofunction:: pv_commissions
+
+.. autofunction:: pv_expenses
+
+.. autofunction:: pv_net_cf
+
+.. autofunction:: pv_pols_if
+
+.. autofunction:: pv_premiums
+
+.. autofunction:: pv_av_change
+
+.. autofunction:: pv_inv_income
+
+.. autofunction:: check_pv_net_cf
+
+.. autofunction:: result_cf
+
+.. autofunction:: result_pv
+
+.. autofunction:: result_pols
 
