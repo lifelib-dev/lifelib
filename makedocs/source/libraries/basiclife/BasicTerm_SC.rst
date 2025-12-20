@@ -203,8 +203,7 @@ The model point data is stored in an Excel file named *model_point_table.xlsx*
 under the library directory.
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
    ~age_at_entry
    ~sex
@@ -226,8 +225,7 @@ The discount rate data is stored in *disc_rate_ann.xlsx* under the model folder
 and read into :attr:`disc_rate_ann` as a Series, which is then converted into a NumPy array.
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
    ~mort_table_array
    ~disc_rate_ann_array
@@ -248,8 +246,7 @@ Flows that accumulate throughout period ``t`` (until ``t+1``) have indices ``t``
 while balance items indexed by ``t`` represent the value at that exact time.
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
    ~proj_len
    ~duration
@@ -261,8 +258,7 @@ The same *model_point_table.xlsx* file under the model folder is referenced to o
 model point data such as ages, sum assured, and terms.
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
    ~age
    ~age_at_entry
@@ -288,8 +284,7 @@ and :func:`expense_maint` is the annual maintenance expense per policy,
 inflated at a constant rate (:func:`inflation_rate`).
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
    ~mort_rate
    ~mort_rate_mth
@@ -313,8 +308,7 @@ where the net premium is set so that the present value of net premiums equals
 the present value of claims. This product has no surrender value.
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
    ~claim_pp
    ~net_premium_pp
@@ -329,8 +323,7 @@ policies decrease by lapses and deaths each month, and any remaining policies at
 the end of the policy term reach maturity and exit.
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
    ~pols_death
    ~pols_if
@@ -346,8 +339,7 @@ commissions, premiums, and claims. Commissions are assumed to be 100% of premium
 the first policy year and zero afterward.
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
    ~claims
    ~commissions
@@ -363,8 +355,7 @@ Although :func:`pols_if` is not itself a cashflow, it is used as an annuity fact
 in :func:`net_premium_pp`.
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
    ~pv_claims
    ~pv_commissions
@@ -406,8 +397,103 @@ along with each flow’s percentage relative to the present value of premiums::
     % Premium     1.000000     0.666641    0.090682     0.131436      0.111241
 
 .. autosummary::
-   :toctree: ../generated/
-   :template: mxbase.rst
+
 
    ~result_cf
    ~result_pv
+
+Cells Descriptions
+------------------
+
+.. autofunction:: age_at_entry
+
+.. autofunction:: sex
+
+.. autofunction:: policy_term
+
+.. autofunction:: policy_count
+
+.. autofunction:: point_id
+
+.. autofunction:: sum_assured
+
+.. autofunction:: mort_table_array
+
+.. autofunction:: disc_rate_ann_array
+
+.. autofunction:: proj_len
+
+.. autofunction:: duration
+
+.. autofunction:: age
+
+.. autofunction:: age_at_entry
+
+.. autofunction:: sex
+
+.. autofunction:: sum_assured
+
+.. autofunction:: policy_term
+
+.. autofunction:: mort_rate
+
+.. autofunction:: mort_rate_mth
+
+.. autofunction:: disc_factor
+
+.. autofunction:: disc_rate_mth
+
+.. autofunction:: lapse_rate
+
+.. autofunction:: expense_acq
+
+.. autofunction:: expense_maint
+
+.. autofunction:: inflation_factor
+
+.. autofunction:: inflation_rate
+
+.. autofunction:: claim_pp
+
+.. autofunction:: net_premium_pp
+
+.. autofunction:: loading_prem
+
+.. autofunction:: premium_pp
+
+.. autofunction:: pols_death
+
+.. autofunction:: pols_if
+
+.. autofunction:: pols_if_init
+
+.. autofunction:: pols_lapse
+
+.. autofunction:: pols_maturity
+
+.. autofunction:: claims
+
+.. autofunction:: commissions
+
+.. autofunction:: premiums
+
+.. autofunction:: expenses
+
+.. autofunction:: net_cf
+
+.. autofunction:: pv_claims
+
+.. autofunction:: pv_commissions
+
+.. autofunction:: pv_expenses
+
+.. autofunction:: pv_net_cf
+
+.. autofunction:: pv_pols_if
+
+.. autofunction:: pv_premiums
+
+.. autofunction:: check_pv_net_cf
+
+.. autofunction:: result_cf
+
