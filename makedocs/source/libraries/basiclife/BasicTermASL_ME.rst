@@ -337,6 +337,8 @@ The :mod:`~basiclife.BasicTermASL_ME.Projection` space
 Cells Descriptions
 ------------------
 
+.. py:currentmodule:: basiclife.BasicTermASL_ME.Base
+
 .. autofunction:: date_
 
 .. autofunction:: months_
@@ -471,11 +473,15 @@ Cells Descriptions
 
 .. autofunction:: check_pay_count
 
+.. py:currentmodule:: basiclife.BasicTermASL_ME.Pricing
+
 .. autofunction:: model_point
 
 .. autofunction:: premium_pp
 
 .. autofunction:: net_premium_rate
+
+.. py:currentmodule:: basiclife.BasicTermASL_ME.Projection
 
 .. autofunction:: premium_pp
 

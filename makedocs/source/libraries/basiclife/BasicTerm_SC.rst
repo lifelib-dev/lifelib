@@ -405,6 +405,8 @@ along with each flow’s percentage relative to the present value of premiums::
 Cells Descriptions
 ------------------
 
+.. py:currentmodule:: basiclife.BasicTerm_SC.Data
+
 .. autofunction:: age_at_entry
 
 .. autofunction:: sex
@@ -420,6 +422,8 @@ Cells Descriptions
 .. autofunction:: mort_table_array
 
 .. autofunction:: disc_rate_ann_array
+
+.. py:currentmodule:: basiclife.BasicTerm_SC.Projection
 
 .. autofunction:: proj_len
 
