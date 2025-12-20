@@ -43,7 +43,6 @@ Homepage = "https://lifelib.io"
 [project.optional-dependencies]
 test = [
     "pytest>=7.0",
-    "pytest-cov>=4.0",
     "pytest-xdist>=3.0",
     "pandas",
     "numpy>=1.16.5",
@@ -51,7 +50,6 @@ test = [
 ]
 dev = [
     "pytest>=7.0",
-    "pytest-cov>=4.0",
     "pytest-xdist>=3.0",
     "pandas",
     "numpy>=1.16.5",
@@ -68,10 +66,6 @@ addopts = [
     "--strict-markers",
     "--strict-config",
     "--showlocals",
-    "--cov=lifelib",
-    "--cov-report=term-missing:skip-covered",
-    "--cov-report=html",
-    "--cov-report=xml",
 ]
 testpaths = [
     "lifelib/tests",
@@ -96,33 +90,6 @@ markers = [
     "integration: marks tests as integration tests",
     "unit: marks tests as unit tests",
 ]
-
-[tool.coverage.run]
-source = ["lifelib"]
-omit = [
-    "*/tests/*",
-    "*/test_*.py",
-    "*/__pycache__/*",
-    "*/site-packages/*",
-]
-branch = true
-
-[tool.coverage.report]
-exclude_lines = [
-    "pragma: no cover",
-    "def __repr__",
-    "raise AssertionError",
-    "raise NotImplementedError",
-    "if __name__ == .__main__.:",
-    "if TYPE_CHECKING:",
-    "if typing.TYPE_CHECKING:",
-    "@abstractmethod",
-]
-precision = 2
-show_missing = true
-
-[tool.coverage.html]
-directory = "htmlcov"
 
 [tool.black]
 line-length = 88
