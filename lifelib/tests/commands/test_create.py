@@ -1,5 +1,6 @@
 import os.path
 import sys
+import pathlib
 import shutil
 import math
 import modelx as mx
@@ -23,6 +24,10 @@ def test_argparser(argv):
     assert args.template == 'basiclife' and args.proj_dir == tempdir
 
 
+def list_files(root):
+    return sorted(p.relative_to(root) for p in root.rglob('*.py') if p.is_file())
+
+
 @pytest.mark.parametrize('argv', [
     [],
     ['--template', 'basiclife']
@@ -33,14 +38,7 @@ def test_main(argv, tmp_path):
     argv.append(tempdir)
     cmd.main(argv)
 
-    while True:
-        try:
-            shutil.rmtree(tempdir)
-            break
-        except (PermissionError, OSError):
-            pass
-
-    assert True
+    assert list_files(pathlib.Path(tempdir))
 
 
 @pytest.mark.parametrize(
