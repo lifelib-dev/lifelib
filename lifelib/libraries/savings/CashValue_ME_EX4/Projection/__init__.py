@@ -1847,7 +1847,7 @@ def surr_charge_id():
         * :func:`has_surr_charge`
 
     """
-    return model_point()['surr_charge_id'].values.astype(str)
+    return model_point()['surr_charge_id'].fillna('NA').values.astype(str)
 
 
 def surr_charge_max_idx():

@@ -1788,7 +1788,7 @@ def surr_charge_rate(t):
         * :func:`surr_charge_table_stacked`
     """
     idx = pd.MultiIndex.from_arrays(
-        [has_surr_charge() * surr_charge_id(),
+        [surr_charge_id().where(has_surr_charge()),
          np.minimum(duration(t), surr_charge_max_idx())])
 
     return surr_charge_table_stacked().reindex(idx, fill_value=0).set_axis(
