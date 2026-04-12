@@ -4,7 +4,7 @@ import pickle
 import pathlib
 import modelx as mx
 
-import lifelib.projects.solvency2.model as solvency2
+import lifelib.libraries.solvency2.model as solvency2
 from lifelib.tests.data.generate_testdata_solvency2 import generate_data
 
 

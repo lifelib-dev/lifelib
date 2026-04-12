@@ -1,4 +1,4 @@
-.. py:currentmodule:: lifelib.projects
+.. py:currentmodule:: lifelib.libraries
 
 ==========
 What's New

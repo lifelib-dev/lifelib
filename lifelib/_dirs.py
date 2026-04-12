@@ -5,7 +5,6 @@ _here = os.path.abspath(os.path.dirname(__file__))
 
 TEMPLATE_DIRS = [
     os.path.join(_here, 'libraries'),
-    os.path.join(_here, 'projects')
 ]
 
 # dict of library paths

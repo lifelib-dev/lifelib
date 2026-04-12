@@ -5,10 +5,10 @@ import filecmp
 import pytest
 
 import lifelib
-import lifelib.projects.simplelife.scripts as simplelife
-import lifelib.projects.nestedlife.scripts as nestedlife
-import lifelib.projects.ifrs17sim.scripts as ifrs17sim
-import lifelib.projects.solvency2.scripts as solvency2
+import lifelib.libraries.simplelife.scripts as simplelife
+import lifelib.libraries.nestedlife.scripts as nestedlife
+import lifelib.libraries.ifrs17sim.scripts as ifrs17sim
+import lifelib.libraries.solvency2.scripts as solvency2
 
 simplepath = simplelife.__path__[0]
 nestedpath = nestedlife.__path__[0]

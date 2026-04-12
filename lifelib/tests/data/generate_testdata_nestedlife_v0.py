@@ -1,6 +1,6 @@
 import sys, os, pickle
 from lifelib.tests.data.generate_testdata import round_signif
-from lifelib.projects.nestedlife.scripts import nestedlife
+from lifelib.libraries.nestedlife.scripts import nestedlife
 
 import numpy as np
 

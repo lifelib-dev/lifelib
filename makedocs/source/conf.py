@@ -25,7 +25,6 @@ sys.path.insert(0, os.path.abspath(here + "../.."))
 
 # Insert project path in sys.path so that each directory under
 # the path is interpreted as the top level package in the API reference.
-sys.path.insert(0, os.path.abspath(here + "/../../lifelib/projects"))
 sys.path.insert(0, os.path.abspath(here + "/../../lifelib/libraries"))
 sys.path.insert(0, '')  # Add the current folder at front.
 
@@ -244,16 +243,16 @@ from sphinx_gallery.sorting import ExplicitOrder, FileNameSortKey
 sphinx_gallery_conf = {
     # path to your examples scripts
     'ignore_pattern': '^(?!.*plot_)',
-    'examples_dirs': '../../lifelib/projects',
+    'examples_dirs': '../../lifelib/libraries',
     'subsection_order': ExplicitOrder(
-        ['../../lifelib/projects/savings',
-         '../../lifelib/projects/economic',
-         '../../lifelib/projects/fastlife',
-         '../../lifelib/projects/simplelife',
-         '../../lifelib/projects/nestedlife',
-         '../../lifelib/projects/ifrs17sim',
-         '../../lifelib/projects/solvency2',
-         '../../lifelib/projects/smithwilson']),
+        ['../../lifelib/libraries/savings',
+         '../../lifelib/libraries/economic',
+         '../../lifelib/libraries/fastlife',
+         '../../lifelib/libraries/simplelife',
+         '../../lifelib/libraries/nestedlife',
+         '../../lifelib/libraries/ifrs17sim',
+         '../../lifelib/libraries/solvency2',
+         '../../lifelib/libraries/smithwilson']),
     # path where to save gallery generated examples
     'gallery_dirs': 'generated_examples',
     # Suppress warning:

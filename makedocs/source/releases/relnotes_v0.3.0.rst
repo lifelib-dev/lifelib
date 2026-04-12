@@ -46,7 +46,7 @@ Fixes and Updates
     * :func:`basiclife.BasicTerm_SE.Projection.pols_lapse`
     * :func:`basiclife.BasicTerm_ME.Projection.pols_lapse`
 
-.. currentmodule:: lifelib.projects
+.. currentmodule:: lifelib.libraries
 
 * The base spaces of
   :mod:`ifrs17sim.model.OuterProj` are now in the order of
