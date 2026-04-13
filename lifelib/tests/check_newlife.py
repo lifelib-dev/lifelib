@@ -1,11 +1,11 @@
 import modelx as mx
-import lifelib.projects.simplelife.model
+import lifelib.libraries.simplelife.model
 
 
 
 import pathlib
 
-model_path = pathlib.Path(lifelib.projects.simplelife.model.__file__).parent
+model_path = pathlib.Path(lifelib.libraries.simplelife.model.__file__).parent
 
 
 model = mx.read_model(model_path)

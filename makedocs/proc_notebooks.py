@@ -22,7 +22,7 @@ def proc_simplelife(node):
 
     src = re.sub(
         "import simplelife",
-        "import lifelib.projects.simplelife.simplelife as simplelife",
+        "import lifelib.libraries.simplelife.simplelife as simplelife",
         node['source']
     )
     node['source'] = src
@@ -42,12 +42,12 @@ def proc_ifrs17sim(node):
     )
     src = re.sub(
         "import ifrs17sim",
-        "import lifelib.projects.ifrs17sim.ifrs17sim as ifrs17sim",
+        "import lifelib.libraries.ifrs17sim.ifrs17sim as ifrs17sim",
         src
     )
     src = re.sub(
         "from draw_charts import draw_waterfall",
-        "from lifelib.projects.ifrs17sim.draw_charts import draw_waterfall",
+        "from lifelib.libraries.ifrs17sim.draw_charts import draw_waterfall",
         src
     )
     node['source'] = src
@@ -128,37 +128,37 @@ entries = [
      "is_target": lambda node: True,
      "proc": lambda node: None},
 
-    {"dir": "projects",
+    {"dir": "libraries",
      "project": "fastlife",
      "notebook": "fastlife-introduction.ipynb",
      "is_target": lambda node: True,
      "proc": lambda node: None},
 
-    {"dir": "projects",
+    {"dir": "libraries",
      "project": "simplelife",
      "notebook": "simplelife-space-overview.ipynb",
      "is_target": is_target_simplelife,
      "proc": lambda node: None},
 
-    {"dir": "projects",
+    {"dir": "libraries",
      "project": "ifrs17sim",
      "notebook": "ifrs17sim_csm_waterfall.ipynb",
      "is_target": is_target_ifrs17sim,
      "proc": proc_ifrs17sim},
 
-    {"dir": "projects",
+    {"dir": "libraries",
      "project": "ifrs17sim",
      "notebook": "ifrs17sim_charts_baseline.ipynb",
      "is_target": is_target_ifrs17sim,
      "proc": proc_ifrs17sim},
 
-    {"dir": "projects",
+    {"dir": "libraries",
      "project": "ifrs17sim",
      "notebook": "ifrs17sim_charts_lapsescen.ipynb",
      "is_target": is_target_ifrs17sim,
      "proc": proc_ifrs17sim},
 
-    {"dir": "projects",
+    {"dir": "libraries",
      "project": "smithwilson",
      "notebook": "smithwilson-overview.ipynb",
      "is_target": lambda node: True,
@@ -219,36 +219,6 @@ def prepare_models():
 
 def remove_notebooks():
 
-    for nbdir in (thisdir + "/source/libraries/notebooks",
-                  thisdir + "/source/projects/notebooks"):
-        if os.path.exists(nbdir):
-            shutil.rmtree(nbdir)
-
-
-# For sphinx-gallery, copy libraries to projects dir.
-def copy_libraries():
-    libs_dir = thisdir + '/../lifelib/libraries'
-    projs_dir = thisdir + '/../lifelib/projects'
-    for lib in pathlib.Path(libs_dir).iterdir():
-        if lib.is_dir() and (lib / 'README.txt').exists():
-            shutil.copytree(lib.as_posix(), projs_dir + '/' + lib.name)
-
-
-def remove_libraries():
-    libs_dir = thisdir + '/../lifelib/libraries'
-    projs_dir = thisdir + '/../lifelib/projects'
-    for lib in pathlib.Path(libs_dir).iterdir():
-        if lib.is_dir() and (lib / 'README.txt').exists():
-            target = projs_dir + '/' + lib.name
-            if os.path.exists(target):
-                shutil.rmtree(target)
-
-
-if __name__ == "__main__":
-    arg = sys.argv[1]
-    if arg == "prepare":
-        copy_libraries()
-    elif arg == "remove":
-        remove_libraries()
-    else:
-        raise KeyError
+    nbdir = thisdir + "/source/libraries/notebooks"
+    if os.path.exists(nbdir):
+        shutil.rmtree(nbdir)

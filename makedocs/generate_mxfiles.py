@@ -7,7 +7,7 @@ if sys.path[0] != '':
 
 from lifelib import TEMPLATES
 
-modules = [importlib.import_module('lifelib.projects.' + name + '.' + name)
+modules = [importlib.import_module('lifelib.libraries.' + name + '.' + name)
            for name in TEMPLATES]
 
 for module in modules:

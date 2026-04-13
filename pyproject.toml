@@ -70,7 +70,6 @@ addopts = [
 testpaths = [
     "lifelib/tests",
     "lifelib/libraries/*/tests",
-    "lifelib/projects/*/tests",
 ]
 pythonpath = [
     "."

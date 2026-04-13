@@ -4,7 +4,7 @@ import pickle
 import pathlib
 import modelx as mx
 
-import lifelib.projects.simplelife.model as simplelife
+import lifelib.libraries.simplelife.model as simplelife
 from lifelib.tests.data.generate_testdata import round_signif
 
 testdata = str(pathlib.Path(__file__).parents[1].joinpath('data/data_simplelife'))

@@ -6,7 +6,7 @@ import modelx as mx
 
 import pytest
 
-import lifelib.projects.nestedlife.model as model_module
+import lifelib.libraries.nestedlife.model as model_module
 from lifelib.tests.data.generate_testdata_nestedlife import (
     round_signif,
     get_nested,

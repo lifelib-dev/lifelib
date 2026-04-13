@@ -1,12 +1,12 @@
 import modelx as mx
-import lifelib.projects.simplelife.model
-import lifelib.projects.fastlife.model
+import lifelib.libraries.simplelife.model
+import lifelib.libraries.fastlife.model
 
 
 import pathlib
 
-simplepath = pathlib.Path(lifelib.projects.simplelife.model.__file__).parent
-fastpath = pathlib.Path(lifelib.projects.fastlife.model.__file__).parent
+simplepath = pathlib.Path(lifelib.libraries.simplelife.model.__file__).parent
+fastpath = pathlib.Path(lifelib.libraries.fastlife.model.__file__).parent
 
 
 def test_fastlife():

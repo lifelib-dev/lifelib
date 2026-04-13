@@ -204,7 +204,6 @@ setup(
     package_data={
         'lifelib': get_package_data([
             path.join(here, 'lifelib', 'libraries'),
-            path.join(here, 'lifelib', 'projects')
         ]),
     },
 
