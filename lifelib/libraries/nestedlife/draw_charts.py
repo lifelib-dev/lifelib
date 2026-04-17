@@ -75,8 +75,7 @@ def draw_actest_pairs(outer, inner, items, act_len, t_max):
 def get_waterfalldata(space, items, length, reverseitems=[]):
     """Create a DataFrame for drawing waterfall chart"""
 
-    data = type(space.cells)(
-        space.cells, space.cells.impl, keys=items).to_frame(range(length))
+    data = space.cells.__getitem__(items).to_frame(*range(length))
     for outflow in reverseitems:
         data[outflow] = -1 * data[outflow]
     return data
