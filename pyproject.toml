@@ -43,6 +43,7 @@ Homepage = "https://lifelib.io"
 [project.optional-dependencies]
 test = [
     "pytest>=7.0",
+    "pytest-cov>=4.0",
     "pytest-xdist>=3.0",
     "pandas",
     "numpy>=1.16.5",
@@ -50,6 +51,7 @@ test = [
 ]
 dev = [
     "pytest>=7.0",
+    "pytest-cov>=4.0",
     "pytest-xdist>=3.0",
     "pandas",
     "numpy>=1.16.5",
