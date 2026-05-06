@@ -35,6 +35,7 @@ for cells in vars:
     list(proj.cells[cells](t) for t in range(50))
 
 df = proj.frame[vars].sort_index().dropna().droplevel(['x', 'y', 'basis'])
+df.index = df.index.astype(int)
 
 df[vars[1:]] = df[vars[1:]].mul(-1)   # Change outflows to negatives
 df.plot(kind='bar', stacked=True, ax=ax, title='Insurance Cashflows')
