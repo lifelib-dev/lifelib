@@ -25,7 +25,7 @@ _is_cached = False
 
 def map_to_policies(series):
     index_names = series.index.names
-    target = Input.PolicyData2()[index_names]
+    target = input_.policy_data()[index_names]
 
     if isinstance(series.index, pd.MultiIndex):
         new_index = pd.MultiIndex.from_frame(target)

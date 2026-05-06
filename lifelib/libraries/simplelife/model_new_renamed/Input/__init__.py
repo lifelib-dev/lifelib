@@ -3,9 +3,9 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""Input from files
+"""input_ from files
 
-The ``Input`` Space includes References that hold input values read from
+The ``input_`` Space includes References that hold input values read from
 the Excel input file, *input.xlsx*.
 It also includes a few Cells to loock up values from the Referneces.
 
@@ -20,7 +20,7 @@ and their associated named ranges in *input.xlsx*.
  References            Named ranges
 ==================== ====================
 PolicyData             PolicyData
-MortalityTables        MortalityTables
+mortality_tables        mortality_tables
 AssumptionTables       AsmpByDuration
 Scenarios              Scenarios
 DiscountRate           LargePolDiscount
@@ -40,8 +40,8 @@ Attributes:
     Assumption: `ExcelRange`_ object holding the data of the assumption table.
         The data is read from *AssumptionTable* range in *input.xlsx*.
 
-    MortalityTables: `ExcelRange`_ object holding the data of mortality Tables.
-        The data is read from *MortalityTables* range in *input.xlsx*.
+    mortality_tables: `ExcelRange`_ object holding the data of mortality Tables.
+        The data is read from *mortality_tables* range in *input.xlsx*.
 
     AssumptionTables: `ExcelRange`_ object holding the data of assumptions by duration.
         The data is read from *AsmpByDuration* range in *input.xlsx*.
@@ -74,15 +74,15 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
-def InputWorkbook():
+def input_workbook():
     return openpyxl.load_workbook(
-        _model.path.parent / InputFileName,
+        _model.path.parent / input_file_name,
         data_only=True)
 
 
-def PolicyData2():
+def policy_data():
 
-    # wb = InputWorkbook()
+    # wb = input_workbook()
 
     # sheet_name, cell_range = next(wb.defined_names["PolicyData"].destinations)
     # ws = wb[sheet_name]
@@ -96,11 +96,11 @@ def PolicyData2():
     return get_named_range_as_df('PolicyData', index_len=1)
 
 
-def MortalityTables2():
+def mortality_tables():
 
-    wb = InputWorkbook()
+    wb = input_workbook()
 
-    sheet_name, cell_range = next(wb.defined_names["MortalityTables"].destinations)
+    sheet_name, cell_range = next(wb.defined_names["MortalityTables2"].destinations)
     ws = wb[sheet_name]
 
     rows = list(ws[cell_range.replace('$', '')])
@@ -133,9 +133,9 @@ def MortalityTables2():
     return df
 
 
-def AssumptionTables2():
+def assumption_tables():
 
-    # wb = InputWorkbook()
+    # wb = input_workbook()
 
     # sheet_name, cell_range = next(wb.defined_names["AsmpByDuration"].destinations)
     # ws = wb[sheet_name]
@@ -151,7 +151,7 @@ def AssumptionTables2():
 
 def get_named_range_as_df(name, index_len=0):
 
-    wb = InputWorkbook()
+    wb = input_workbook()
 
     sheet_name, cell_range = next(wb.defined_names[name].destinations)
     ws = wb[sheet_name]
@@ -171,9 +171,9 @@ def get_named_range_as_df(name, index_len=0):
 
 _is_cached = False
 
-def Scenarios2():
+def scenarios():
 
-    # wb = InputWorkbook()
+    # wb = input_workbook()
 
     # sheet_name, cell_range = next(wb.defined_names["PolicyData"].destinations)
     # ws = wb[sheet_name]
@@ -189,7 +189,7 @@ def Scenarios2():
 
 def get_named_range_as_dict(name):
 
-    wb = InputWorkbook()
+    wb = input_workbook()
 
     sheet_name, cell_range = next(wb.defined_names[name].destinations)
     ws = wb[sheet_name]
@@ -201,31 +201,31 @@ def get_named_range_as_dict(name):
 
 _is_cached = False
 
-def DiscountRate2():
+def discount_rate():
     table = get_named_range_as_dict('LargePolDiscount')
 
     bins = [-np.inf] + list(table.keys())[:-1] + [np.inf]
     vals = list(table.values())
 
     return pd.cut(
-         PolicyData2()['SumAssured'],
+         policy_data()['SumAssured'],
          bins=bins,
          labels=vals,
          right=False,        # left-closed: [x, y)
      ).astype(float)
 
 
-def PremWaiverCost2():
+def prem_waiver_cost():
 
     return get_named_range_as_dict('PremiumWaiverCost')
 
 
-def Assumption2(name):
+def assumption(name):
 
     return get_param_series('AssumptionTable', name)
 
 
-def ProductSpec2(name):
+def product_spec(name):
     return get_param_series('ProductSpecTable', name)
 
 
@@ -249,13 +249,13 @@ def get_param_series(range_name, col_name):
 
 _is_cached = False
 
-def ConstParams():
+def const_params():
     return get_named_range_as_dict('ConstParams')
 
 
 # ---------------------------------------------------------------------------
 # References
 
-InputFileName = "input.xlsx"
+input_file_name = "input.xlsx"
 
 openpyxl = ("Module", "openpyxl")

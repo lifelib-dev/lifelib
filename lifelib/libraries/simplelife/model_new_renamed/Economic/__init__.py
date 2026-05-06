@@ -21,16 +21,16 @@ This Space is included in:
 
 .. rubric:: Parameters
 
-``Economic`` Space is parameterized with :attr:`ScenID`::
+``Economic`` Space is parameterized with :attr:`scen_id`::
 
         >>> simplelife.Economic.parameters
         ('ScenID',)
 
-Each ItemSpace represents economic scenarios for a specific :attr:`ScenID`.
-For example, ``Economic[1]`` contains economic scenarios for ScenID 1.
+Each ItemSpace represents economic scenarios for a specific :attr:`scen_id`.
+For example, ``Economic[1]`` contains economic scenarios for scen_id 1.
 
 Attributes:
-    ScenID(:obj:`int`): Scenario ID
+    scen_id(:obj:`int`): Scenario ID
 
 .. rubric:: References
 
@@ -42,14 +42,14 @@ Example:
 
     An example of ``Economic`` in the :mod:`simplelife` model::
 
-        >>> simplelife.Economic[1].DiscRate(0)
+        >>> simplelife.Economic[1].disc_rate_mth(0)
         0.015
 
 """
 
 from modelx.serialize.jsonvalues import *
 
-_formula = lambda ScenID: None
+_formula = lambda scen_id: None
 
 _bases = []
 
@@ -60,22 +60,22 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
-def DiscRate(t):
+def disc_rate_mth(t):
     """Rates for discount cashflows"""
-    return Input.Scenarios2()['IntRate'].at[(ScenID, t)]
+    return input_.scenarios()['IntRate'].at[(scen_id, t)]
 
 
-def InvstRetRate(t):
+def invst_ret_rate(t):
     """Rate of investment return
 
-    Set equal to the :func:`DiscRate`
+    Set equal to the :func:`disc_rate_mth`
     """
-    return DiscRate(t)
+    return disc_rate_mth(t)
 
 
 # ---------------------------------------------------------------------------
 # References
 
-ScenID = 1
+scen_id = 1
 
-Input = ("Interface", ("..", "Input"), "auto")
+input_ = ("Interface", ("..", "Input"), "auto")

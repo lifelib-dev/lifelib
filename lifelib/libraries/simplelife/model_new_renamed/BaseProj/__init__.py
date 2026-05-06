@@ -58,7 +58,7 @@ def accum_cf(t):
 
 def age(t):
     """Attained age at time ``t``"""
-    return pol.IssueAge()[PolicyID] + t
+    return pol.issue_age()[idx] + t
 
 
 def benefit_acc_dth(t):
@@ -251,7 +251,7 @@ def pols_if_beg1(t):
 def pols_if(t):
     """Number of policies: End of period"""
     if t == 0:
-        return 0 # pol.PolicyCount
+        return 0 # pol.policy_count
     else:
         return pols_if_beg1(t-1) - pols_death(t-1) - pols_lapse(t-1)
 
@@ -263,7 +263,7 @@ def pols_living(t):
 
 def pols_maturity(t):
     """Number of policies: Maturity"""
-    if t == pol.PolicyTerm()[PolicyID]:
+    if t == pol.policy_term()[idx]:
         return pols_if(t)
     else:
         return 0
@@ -271,7 +271,7 @@ def pols_maturity(t):
 
 def pols_if_init(t):
     """Number of policies: New business"""
-    return pol.PolicyCount()[PolicyID] if t == 0 else 0
+    return pol.policy_count()[idx] if t == 0 else 0
 
 
 def pols_other(t):
@@ -395,8 +395,8 @@ def size_benefit_surr(t):
 def expense_acq(t):
     """Acquisition expense per policy at time t"""
     if t == 0:
-        return (size_ann_prem(t) * asmp.ExpsAcqAnnPrem()[PolicyID]
-                + (sum_assured(t) * asmp.ExpsAcqSA()[PolicyID] + asmp.ExpsAcqPol()[PolicyID])
+        return (size_ann_prem(t) * asmp.exps_acq_ann_prem()[idx]
+                + (sum_assured(t) * asmp.exps_acq_sa()[idx] + asmp.exps_acq_pol()[idx])
                 * inflation_factor(t) / inflation_factor(0))
     else:
         return 0
@@ -405,7 +405,7 @@ def expense_acq(t):
 def size_exps_comm_init(t):
     """Initial commission per policy at time t"""
     if t == 0:
-        return premium_pp(t) * asmp.CommInitPrem()[PolicyID] * (1 + asmp.CnsmpTax())
+        return premium_pp(t) * asmp.comm_init_prem()[idx] * (1 + asmp.cnsmp_tax())
     else:
         return 0
 
@@ -414,16 +414,16 @@ def size_exps_comm_ren(t):
     """Renewal commission per policy at time t"""
     if t == 0:
         return 0
-    elif t < asmp.CommRenTerm()[PolicyID]:
-        return premium_pp(t) * asmp.CommRenPrem()[PolicyID] * (1 + asmp.CnsmpTax())
+    elif t < asmp.comm_ren_term()[idx]:
+        return premium_pp(t) * asmp.comm_ren_prem()[idx] * (1 + asmp.cnsmp_tax())
     else:
         return 0
 
 
 def expense_maint(t):
     """Maintenance expense per policy at time t"""
-    return (size_ann_prem(t) * asmp.ExpsMaintAnnPrem()[PolicyID]
-            + (sum_assured(t) * asmp.ExpsMaintSA()[PolicyID] + asmp.ExpsMaintPol()[PolicyID])
+    return (size_ann_prem(t) * asmp.exps_maint_ann_prem()[idx]
+            + (sum_assured(t) * asmp.exps_maint_sa()[idx] + asmp.exps_maint_pol()[idx])
             * inflation_factor(t))
 
 
@@ -434,12 +434,12 @@ def size_exps_other(t):
 
 def size_invst_income(t):
     """Investment Income per policy from t to t+1"""
-    return (size_reserve_total_aft_mat(t) + premium_pp(t)) * InvstRetRate(t)
+    return (size_reserve_total_aft_mat(t) + premium_pp(t)) * invst_ret_rate(t)
 
 
 def premium_pp(t):
     """Premium income per policy from t to t+1"""
-    return sum_assured(t) * gross_prem_rate() * pol.PremFreq()[PolicyID]
+    return sum_assured(t) * gross_prem_rate() * pol.prem_freq()[idx]
 
 
 def size_reserve_prem_rsrv_aft_mat(t):
@@ -470,43 +470,43 @@ def size_reserve_uern_prem_end(t):
 
 def sum_assured(t):
     """Sum assured per policy at time ``t``"""
-    return  pol.SumAssured()[PolicyID]
+    return  pol.sum_assured()[idx]
 
 
 def proj_len():
-    return min(last_age() - pol.IssueAge()[PolicyID], 
-               pol.PolicyTerm()[PolicyID])
+    return min(last_age() - pol.issue_age()[idx], 
+               pol.policy_term()[idx])
 
 
 def mort_rate(x):
     """Bae mortality rate"""
 
-    return asmp.MortalityTables()[x, asmp.MortArrayIndex()[PolicyID]]
+    return asmp.mortality_tables()[x, asmp.mort_array_index()[idx]]
 
 
 def gross_prem_rate():
     """Gross Premium Rate per Sum Assured per payment"""
 
-    alpha = pol.LoadAcqSA()[PolicyID]
-    beta = pol.LoadMaintPrem()[PolicyID]
-    gamma = pol.LoadMaintSA()[PolicyID]
-    gamma2 = pol.LoadMaintSA2()[PolicyID]
-    delta = pol.LoadMaintPremWaiverPrem()[PolicyID]
+    alpha = pol.load_acq_sa()[idx]
+    beta = pol.load_maint_prem()[idx]
+    gamma = pol.load_maint_sa()[idx]
+    gamma2 = pol.load_maint_sa2()[idx]
+    delta = pol.load_maint_prem_waiver_prem()[idx]
 
-    x, n, m = pol.IssueAge()[PolicyID], pol.PolicyTerm()[PolicyID], pol.PremTerm()[PolicyID]
+    x, n, m = pol.issue_age()[idx], pol.policy_term()[idx], pol.prem_term()[idx]
 
-    freq = pol.PremFreq()[PolicyID]
+    freq = pol.prem_freq()[idx]
 
     comf = comm_table[
-        pol.Sex()[PolicyID], 
-        pol.IntRate(RateBasisID.PREM)[PolicyID], 
-        pol.TableID(RateBasisID.PREM)[PolicyID]]
+        pol.sex()[idx], 
+        pol.int_rate(RateBasisID.PREM)[idx], 
+        pol.table_id(RateBasisID.PREM)[idx]]
 
-    if pol.Product()[PolicyID] == ProductID.TERM or pol.Product()[PolicyID] == ProductID.WL:
+    if pol.product()[idx] == ProductID.TERM or pol.product()[idx] == ProductID.WL:
         return (comf.Axn(x, n) + alpha + gamma * comf.AnnDuenx(x, n, freq)
                 + gamma2 * comf.AnnDuenx(x, n-m, 1, m)) / (1-beta-delta) / freq / comf.AnnDuenx(x, m, freq)
 
-    elif pol.Product()[PolicyID] == ProductID.ENDW:
+    elif pol.product()[idx] == ProductID.ENDW:
         return (comf.Exn(x, n) + comf.Axn(x, n) + alpha + gamma * comf.AnnDuenx(x, n, freq)
                 + gamma2 * comf.AnnDuenx(x, n-m, 1, m)) / (1-beta-delta) / freq / comf.AnnDuenx(x, m, freq)
     else:
@@ -515,17 +515,17 @@ def gross_prem_rate():
 
 def mort_factor(y):
     """Mortality factor"""
-    return asmp.AsmpTables()[min(y, asmp.AsmpTableLen() - 1), asmp.MortFactorIndex()[PolicyID]]
+    return asmp.asmp_tables()[min(y, asmp.asmp_table_len() - 1), asmp.mort_factor_index()[idx]]
 
 
 def lapse_rate(y):
     """Surrender Rate"""
-    return asmp.AsmpTables()[min(y, asmp.AsmpTableLen() - 1), asmp.LapseRateIndex()[PolicyID]]
+    return asmp.asmp_tables()[min(y, asmp.asmp_table_len() - 1), asmp.lapse_rate_index()[idx]]
 
 
 def ann_prem_rate():
     """Annualized Premium Rate per Sum Assured"""
-    return gross_prem_rate() * (1/10 if pol.PremFreq()[PolicyID] == 0 else pol.PremFreq()[PolicyID])
+    return gross_prem_rate() * (1/10 if pol.prem_freq()[idx] == 0 else pol.prem_freq()[idx])
 
 
 def cash_value_rate(t):
@@ -536,25 +536,25 @@ def cash_value_rate(t):
 def net_prem_rate(basis):
     """Net Premium Rate"""
 
-    gamma2 = pol.LoadMaintSA2()[PolicyID]
-    # comf = LifeTable[Sex(), IntRate(basis), TableID(basis)]
+    gamma2 = pol.load_maint_sa2()[idx]
+    # comf = life_table[sex(), int_rate(basis), table_id(basis)]
 
 
     comf = comm_table[
-        pol.Sex()[PolicyID], 
-        pol.IntRate(basis)[PolicyID], 
-        pol.TableID(basis)[PolicyID]]
+        pol.sex()[idx], 
+        pol.int_rate(basis)[idx], 
+        pol.table_id(basis)[idx]]
 
 
-    # x, n, m = IssueAge(), PolicyTerm(), PremTerm()
+    # x, n, m = issue_age(), policy_term(), prem_term()
 
-    x, n, m = pol.IssueAge()[PolicyID], pol.PolicyTerm()[PolicyID], pol.PremTerm()[PolicyID]
+    x, n, m = pol.issue_age()[idx], pol.policy_term()[idx], pol.prem_term()[idx]
 
 
-    if pol.Product()[PolicyID] == ProductID.TERM or pol.Product()[PolicyID] == ProductID.WL:
+    if pol.product()[idx] == ProductID.TERM or pol.product()[idx] == ProductID.WL:
         return (comf.Axn(x, n) + gamma2 * comf.AnnDuenx(x, n-m, 1, m)) / comf.AnnDuenx(x, n)
 
-    elif pol.Product()[PolicyID] == ProductID.ENDW:
+    elif pol.product()[idx] == ProductID.ENDW:
         return (comf.Axn(x, n) + gamma2 * comf.AnnDuenx(x, n-m, 1, m)) / comf.AnnDuenx(x, n)
 
     else:
@@ -564,16 +564,16 @@ def net_prem_rate(basis):
 def reserve_nlp_rate(basis, t):
     """Net level premium reserve rate"""
 
-    gamma2 = pol.LoadMaintSA2()[PolicyID]
+    gamma2 = pol.load_maint_sa2()[idx]
 
-    # lt = LifeTable[Sex(), IntRate(basis), TableID(basis)]
+    # lt = life_table[sex(), int_rate(basis), table_id(basis)]
     comf = comm_table[
-        pol.Sex()[PolicyID], 
-        pol.IntRate(basis)[PolicyID], 
-        pol.TableID(basis)[PolicyID]]
+        pol.sex()[idx], 
+        pol.int_rate(basis)[idx], 
+        pol.table_id(basis)[idx]]
 
 
-    x, n, m = pol.IssueAge()[PolicyID], pol.PolicyTerm()[PolicyID], pol.PremTerm()[PolicyID]
+    x, n, m = pol.issue_age()[idx], pol.policy_term()[idx], pol.prem_term()[idx]
 
     if t <= m:
         return comf.Axn(x+t, n-t) + gamma2 * comf.AnnDuenx(x+t, n-m, 1, m-t) \
@@ -584,8 +584,8 @@ def reserve_nlp_rate(basis, t):
 
 def surr_charge(t):
     """Surrender Charge Rate per Sum Assured"""
-    m = pol.PremTerm()[PolicyID]
-    return pol.InitSurrCharge()[PolicyID] * max((min(m, 10) - t) / min(m, 10), 0)
+    m = pol.prem_term()[idx]
+    return pol.init_surr_charge()[idx] * max((min(m, 10) - t) / min(m, 10), 0)
 
 
 def last_age():
@@ -602,10 +602,10 @@ def inflation_factor(t):
     if t == 0:
         return 1
     else:
-        return inflation_factor(t-1) / (1 + asmp.InflRate())
+        return inflation_factor(t-1) / (1 + asmp.inflation_rate())
 
 
 def disc_rate_mth(t):
-    return scen.DiscRate(t)
+    return scen.disc_rate_mth(t)
 
 

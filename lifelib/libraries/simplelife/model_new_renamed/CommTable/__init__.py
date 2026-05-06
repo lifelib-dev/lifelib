@@ -220,9 +220,9 @@ def qx(x):
 def MortalityRates():
 
 
-    pos = list((t, getattr(SexID, s)) for t, s in MortalityTables2().columns).index((Table, Sex))
+    pos = list((t, getattr(SexID, s)) for t, s in mortality_tables().columns).index((Table, Sex))
 
-    return MortalityTables2().iloc[:, pos]
+    return mortality_tables().iloc[:, pos]
 
 
 # ---------------------------------------------------------------------------
@@ -234,6 +234,6 @@ IntRate = 0.01
 
 TableID = 1
 
-MortalityTables2 = ("Interface", ("..", "Input", "MortalityTables2"), "absolute")
+mortality_tables = ("Interface", ("..", "Input", "mortality_tables"), "absolute")
 
 pol = ("Interface", ("..", "PolicyAttrs"), "auto")

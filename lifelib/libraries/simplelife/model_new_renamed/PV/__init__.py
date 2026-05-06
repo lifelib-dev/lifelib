@@ -25,92 +25,92 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
-def InterestNetCF(t):
+def interest_net_cf(t):
     """Interest accreted on pv of net cashflows"""
     if t > proj_len():
         return 0
     else:
-        return (PV_NetCashflow(t)
+        return (pv_net_cf(t)
                 - premiums(t)
                 + expenses(t)) * disc_rate_mth(t)
 
 
-def PV_BenefitDeath(t):
+def pv_claims(t):
     """Present value of death benefits"""
     if t > proj_len():
         return 0
     else:
-        return (-claims(t) + PV_BenefitDeath(t+1)) / (1 + disc_rate_mth(t))
+        return (-claims(t) + pv_claims(t+1)) / (1 + disc_rate_mth(t))
 
 
-def PV_BenefitMat(t):
+def pv_benefit_mat(t):
     """Present value of matuirty benefits"""
     if t > proj_len():
         return 0
     else:
-        return (-benefit_mat(t) + PV_BenefitMat(t+1)) / (1 + disc_rate_mth(t))
+        return (-benefit_mat(t) + pv_benefit_mat(t+1)) / (1 + disc_rate_mth(t))
 
 
-def PV_BenefitSurr(t):
+def pv_benefit_surr(t):
     """Present value of surrender benefits"""
     if t > proj_len():
         return 0
     else:
-        return (-benefit_surr(t) + PV_BenefitSurr(t+1)) / (1 + disc_rate_mth(t))
+        return (-benefit_surr(t) + pv_benefit_surr(t+1)) / (1 + disc_rate_mth(t))
 
 
-def PV_BenefitTotal(t):
+def pv_benefit_total(t):
     """Present value of total benefits"""
     if t > proj_len():
         return 0
     else:
-        return (-benefit_total(t) + PV_BenefitTotal(t+1)) / (1 + disc_rate_mth(t))
+        return (-benefit_total(t) + pv_benefit_total(t+1)) / (1 + disc_rate_mth(t))
 
 
-def PV_Check(t):
-    return PV_NetCashflow(t) - PV_NetCashflowForCheck(t)
+def pv_check(t):
+    return pv_net_cf(t) - pv_net_cf_for_check(t)
 
 
-def PV_ExpsAcq(t):
+def pv_exps_acq(t):
     """Present value of acquisition expenses"""
     if t > proj_len():
         return 0
     else:
-        return - exps_acq(t) + PV_ExpsAcq(t+1) / (1 + disc_rate_mth(t))
+        return - exps_acq(t) + pv_exps_acq(t+1) / (1 + disc_rate_mth(t))
 
 
-def PV_ExpsCommTotal(t):
+def pv_commissions(t):
     """Present value of commission expenses"""
     if t > proj_len():
         return 0
     else:
-        return - commissions(t) + PV_ExpsCommTotal(t+1) / (1 + disc_rate_mth(t))
+        return - commissions(t) + pv_commissions(t+1) / (1 + disc_rate_mth(t))
 
 
-def PV_ExpsMaint(t):
+def pv_exps_maint(t):
     """Present value of maintenance expenses"""
     if t > proj_len():
         return 0
     else:
-        return - exps_maint(t) + PV_ExpsMaint(t+1) / (1 + disc_rate_mth(t))
+        return - exps_maint(t) + pv_exps_maint(t+1) / (1 + disc_rate_mth(t))
 
 
-def PV_ExpsTotal(t):
+def pv_expenses(t):
     """Present value of total expenses"""
     if t > proj_len():
         return 0
     else:
-        return - expenses(t) + PV_ExpsTotal(t+1) / (1 + disc_rate_mth(t))
+        return - expenses(t) + pv_expenses(t+1) / (1 + disc_rate_mth(t))
 
 
-def PV_NetCashflow(t):
+def pv_net_cf(t):
     """Present value of net cashflow"""
-    return (PV_PremIncome(t)
-            + PV_ExpsTotal(t)
-            + PV_BenefitTotal(t))
+    return (pv_premiums(t)
+            + pv_expenses(t)
+            + pv_benefit_total(t))
 
 
-def PV_NetCashflowForCheck(t):
+def pv_net_cf_for_check(t):
     """Present value of net cashflow"""
     if t > proj_len():
         return 0
@@ -118,22 +118,22 @@ def PV_NetCashflowForCheck(t):
         return (premiums(t)
                 - expenses(t)
                 - benefit_total(t) / (1 + disc_rate_mth(t))
-                + PV_NetCashflow(t+1) / (1 + disc_rate_mth(t)))
+                + pv_net_cf(t+1) / (1 + disc_rate_mth(t)))
 
 
-def PV_PremIncome(t):
+def pv_premiums(t):
     """Present value of premium income"""
     if t > proj_len():
         return 0
     else:
-        return premiums(t) + PV_PremIncome(t+1) / (1 + disc_rate_mth(t))
+        return premiums(t) + pv_premiums(t+1) / (1 + disc_rate_mth(t))
 
 
-def PV_SumInsurIF(t):
+def pv_sum_insur_if(t):
     """Present value of insurance in-force"""
     if t > proj_len():
         return 0
     else:
-        return insur_if_beg1(t) + PV_SumInsurIF(t+1) / (1 + disc_rate_mth(t))
+        return insur_if_beg1(t) + pv_sum_insur_if(t+1) / (1 + disc_rate_mth(t))
 
 

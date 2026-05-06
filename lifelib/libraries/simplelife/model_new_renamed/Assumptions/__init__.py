@@ -14,14 +14,14 @@ by the :mod:`~simplelife.model.Projection` Space.
 .. rubric:: Parameters
 
 Since :mod:`~simplelife.model.Projection` is parameterized with
-:attr:`PolicyID` and :attr:`ScenID`, this Space is also
+:attr:`idx` and :attr:`scen_id`, this Space is also
 parameterized as a child space of :mod:`~simplelife.model.Projection`.
-For example, ``simplelife.Projection[1].Assumptions.ExpsMaintSA()``
+For example, ``simplelife.Projection[1].Assumptions.exps_maint_sa()``
 represents the expense maintenance per sum assured for Policy 1.
 
 Attributes:
-    PolicyID(:obj:`int`): Policy ID
-    ScenID(:obj:`int`, optional): Scenario ID, defaults to 1.
+    idx(:obj:`int`): Policy ID
+    scen_id(:obj:`int`, optional): Scenario ID, defaults to 1.
 
 .. rubric:: References
 
@@ -30,13 +30,13 @@ Attributes:
         Excel range *AssumptionTable* in *input.xlsx*.
 
     MortalityTable: `ExcelRange`_ object holding mortality tables.
-        The data is read from *MortalityTables* range in *input.xlsx*.
+        The data is read from *mortality_tables* range in *input.xlsx*.
 
-    prod: Alias for :func:`simplelife.Projection.Policy.Product`
-    polt: Alias for :func:`simplelife.Projection.Policy.PolicyType`
-    gen: Alias for :func:`simplelife.Projection.Policy.Gen`
-    sex: Alias for :func:`simplelife.Projection.Policy.Sex`
-    AsmpLookup: Alias for :func:`simplelife.Input.AsmpLookup`
+    prod: Alias for :func:`simplelife.Projection.Policy.product`
+    polt: Alias for :func:`simplelife.Projection.Policy.policy_type`
+    gen: Alias for :func:`simplelife.Projection.Policy.gen`
+    sex: Alias for :func:`simplelife.Projection.Policy.sex`
+    asmp_lookup: Alias for :func:`simplelife.input_.asmp_lookup`
 
 .. _ExcelRange:
    https://docs.modelx.io/en/latest/reference/dataclient.html#excelrange
@@ -60,160 +60,160 @@ _spaces = [
 # ---------------------------------------------------------------------------
 # Cells
 
-def BaseMortRate(x):
+def mort_rate(x):
     """Bae mortality rate"""
 
-    return _space.AsmpLookup
+    return _space.asmp_lookup
 
-    table_id = _space.AsmpLookup.match("BaseMort", prod(), polt(), gen()).value
-    return MortalityTables[table_id, sex(), x]
+    table_id = _space.asmp_lookup.match("BaseMort", prod(), polt(), gen()).value
+    return mortality_tables[table_id, sex(), x]
 
 
-def CnsmpTax():
+def cnsmp_tax():
     """Consumption tax rate"""
-    # return AsmpLookup("CnsmpTax")
-    # return pandas_to_array(map_to_policies(Input.Assumption2('CnsmpTax')))
-    return Input.ConstParams()['CnsmpTax']
+    # return asmp_lookup("CnsmpTax")
+    # return pandas_to_array(map_to_policies(input_.assumption('CnsmpTax')))
+    return input_.const_params()['CnsmpTax']
 
 
-def CommInitPrem():
+def comm_init_prem():
     """Initial commission per premium"""
-    # result = _space.AsmpLookup.match("CommInitPrem", prod(), polt(), gen()).value
+    # result = _space.asmp_lookup.match("CommInitPrem", prod(), polt(), gen()).value
 
     # if result is not None:
     #     return result
     # else:
-    #     raise ValueError('CommInitPrem not found')
+    #     raise ValueError('comm_init_prem not found')
 
-    return pandas_to_array(map_to_policies(Input.Assumption2('CommInitPrem')))
+    return pandas_to_array(map_to_policies(input_.assumption('CommInitPrem')))
 
 
-def CommRenPrem():
+def comm_ren_prem():
     """Renewal commission per premium"""
-    # result = _space.AsmpLookup.match("CommRenPrem", prod(), polt(), gen()).value
+    # result = _space.asmp_lookup.match("CommRenPrem", prod(), polt(), gen()).value
 
     # if result is not None:
     #     return  result
     # else:
-    #     raise ValueError('CommRenPrem not found')
+    #     raise ValueError('comm_ren_prem not found')
 
-    return pandas_to_array(map_to_policies(Input.Assumption2('CommRenPrem')))
+    return pandas_to_array(map_to_policies(input_.assumption('CommRenPrem')))
 
 
-def CommRenTerm():
+def comm_ren_term():
     """Renewal commission term"""
-    # result = _space.AsmpLookup.match("CommRenTerm", prod(), polt(), gen()).value
+    # result = _space.asmp_lookup.match("CommRenTerm", prod(), polt(), gen()).value
 
     # if result is not None:
     #     return result
     # else:
-    #     raise ValueError('CommRenTerm not found')
+    #     raise ValueError('comm_ren_term not found')
 
-    return pandas_to_array(map_to_policies(Input.Assumption2('CommRenTerm')))
+    return pandas_to_array(map_to_policies(input_.assumption('CommRenTerm')))
 
 
-def ExpsAcqAnnPrem():
+def exps_acq_ann_prem():
     """Acquisition expense per annualized premium"""
-    # return _space.AsmpLookup.match("ExpsAcqAnnPrem", prod(), polt(), gen()).value
+    # return _space.asmp_lookup.match("ExpsAcqAnnPrem", prod(), polt(), gen()).value
 
-    return pandas_to_array(map_to_policies(Input.Assumption2('ExpsAcqAnnPrem')))
+    return pandas_to_array(map_to_policies(input_.assumption('ExpsAcqAnnPrem')))
 
 
-def ExpsAcqPol():
+def exps_acq_pol():
     """Acquisition expense per policy"""
-    # return _space.AsmpLookup.match("ExpsAcqPol", prod(), polt(), gen()).value
-    return pandas_to_array(map_to_policies(Input.Assumption2('ExpsAcqPol')))
+    # return _space.asmp_lookup.match("ExpsAcqPol", prod(), polt(), gen()).value
+    return pandas_to_array(map_to_policies(input_.assumption('ExpsAcqPol')))
 
 
-def ExpsAcqSA():
+def exps_acq_sa():
     """Acquisition expense per sum assured"""
-    # return _space.AsmpLookup.match("ExpsAcqSA", prod(), polt(), gen()).value
-    return pandas_to_array(map_to_policies(Input.Assumption2('ExpsAcqSA')))
+    # return _space.asmp_lookup.match("ExpsAcqSA", prod(), polt(), gen()).value
+    return pandas_to_array(map_to_policies(input_.assumption('ExpsAcqSA')))
 
 
-def ExpsMaintAnnPrem():
+def exps_maint_ann_prem():
     """Maintenance expense per annualized premium"""
-    # return _space.AsmpLookup.match("ExpsMaintPrem", prod(), polt(), gen()).value
-    return pandas_to_array(map_to_policies(Input.Assumption2('ExpsMaintPrem')))
+    # return _space.asmp_lookup.match("ExpsMaintPrem", prod(), polt(), gen()).value
+    return pandas_to_array(map_to_policies(input_.assumption('ExpsMaintPrem')))
 
 
-def ExpsMaintPol():
+def exps_maint_pol():
     """Maintenance expense per policy"""
-    # return _space.AsmpLookup.match("ExpsMaintPol", prod(), polt(), gen()).value
-    return pandas_to_array(map_to_policies(Input.Assumption2('ExpsMaintPol')))
+    # return _space.asmp_lookup.match("ExpsMaintPol", prod(), polt(), gen()).value
+    return pandas_to_array(map_to_policies(input_.assumption('ExpsMaintPol')))
 
 
-def ExpsMaintSA():
+def exps_maint_sa():
     """Maintenance expense per sum assured"""
-    # return _space.AsmpLookup.match("ExpsMaintSA", prod(), polt(), gen()).value
-    return pandas_to_array(map_to_policies(Input.Assumption2('ExpsMaintSA')))
+    # return _space.asmp_lookup.match("ExpsMaintSA", prod(), polt(), gen()).value
+    return pandas_to_array(map_to_policies(input_.assumption('ExpsMaintSA')))
 
 
-def InflRate():
+def inflation_rate():
     """Inflation rate"""
-    # return AsmpLookup("InflRate")
-    # return pandas_to_array(map_to_policies(Input.Assumption2('InflRate')))
-    return Input.ConstParams()['InflRate']
+    # return asmp_lookup("InflRate")
+    # return pandas_to_array(map_to_policies(input_.assumption('InflRate')))
+    return input_.const_params()['InflRate']
 
 
-def MortalityTables():
+def mortality_tables():
     """Mortality Table"""
 
-    tables = Input.MortalityTables2()
+    tables = input_.mortality_tables()
     # return tables.to_numpy() if return_array else tables
     return pandas_to_array(tables)
 
 
-def MortTableIndex():
-    # s = Input.Assumption2('BaseMort')
+def mort_table_index():
+    # s = input_.assumption('BaseMort')
 
     # return s.reindex(pd.MultiIndex.from_frame(
-    #     Input.PolicyData2()[s.index.names]))
-    return map_to_policies(Input.Assumption2('BaseMort'))
+    #     input_.policy_data()[s.index.names]))
+    return map_to_policies(input_.assumption('BaseMort'))
 
 
-def MortArrayIndex():
+def mort_array_index():
 
-    columns = Input.MortalityTables2().columns
+    columns = input_.mortality_tables().columns
 
-    # Get the column positions in Input.MortalityTables for each (MortID, Sex) pair
+    # Get the column positions in input_.mortality_tables for each (MortID, sex) pair
     return columns.get_indexer(
-        pd.MultiIndex.from_arrays([MortTableIndex(), Input.PolicyData2()['Sex']])
+        pd.MultiIndex.from_arrays([mort_table_index(), input_.policy_data()['Sex']])
     )
 
 
-def AsmpTables():
-    return pandas_to_array(Input.AssumptionTables2())
+def asmp_tables():
+    return pandas_to_array(input_.assumption_tables())
 
 
-def MortFactorIndex():
+def mort_factor_index():
 
 
-    key_to_idx = {getattr(AsmpID, v): i for i, v in enumerate(Input.AssumptionTables2().columns)}
+    key_to_idx = {getattr(AsmpID, v): i for i, v in enumerate(input_.assumption_tables().columns)}
 
-    indexes = Input.Assumption2('MortFactor').map(lambda s: getattr(AsmpID, s)).map(key_to_idx)
-
-    return pandas_to_array(map_to_policies(indexes))
-
-
-def LapseRateIndex():
-
-
-    key_to_idx = {getattr(AsmpID, v): i for i, v in enumerate(Input.AssumptionTables2().columns)}
-
-    indexes = Input.Assumption2('Surrender').map(lambda s: getattr(AsmpID, s)).map(key_to_idx)
+    indexes = input_.assumption('MortFactor').map(lambda s: getattr(AsmpID, s)).map(key_to_idx)
 
     return pandas_to_array(map_to_policies(indexes))
 
 
-def AsmpTableLen():
-    return len(AsmpTables())
+def lapse_rate_index():
+
+
+    key_to_idx = {getattr(AsmpID, v): i for i, v in enumerate(input_.assumption_tables().columns)}
+
+    indexes = input_.assumption('Surrender').map(lambda s: getattr(AsmpID, s)).map(key_to_idx)
+
+    return pandas_to_array(map_to_policies(indexes))
+
+
+def asmp_table_len():
+    return len(asmp_tables())
 
 
 # ---------------------------------------------------------------------------
 # References
 
-AsmpLookup = ("Pickle", 3243921299984)
+asmp_lookup = ("Pickle", 3243921299984)
 
 gen = ("Pickle", 3243927593488)
 
@@ -223,6 +223,6 @@ prod = ("Pickle", 3243947842704)
 
 sex = ("Pickle", 3243910623568)
 
-Input = ("Interface", ("..", "Input"), "auto")
+input_ = ("Interface", ("..", "Input"), "auto")
 
 return_array = True

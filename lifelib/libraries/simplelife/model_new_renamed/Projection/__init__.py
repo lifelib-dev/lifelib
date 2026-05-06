@@ -20,18 +20,18 @@ inherited from :mod:`~simplelife.model.BaseProj`.
 
 .. rubric:: Parameters
 
-This Space is parametrized with ``PolicyID`` and ``ScenID``::
+This Space is parametrized with ``idx`` and ``scen_id``::
 
     >>> simplelife.Projection.parameters
     ('PolicyID', 'ScenID')
 
 Calling this space with a pair of integers returns the ItemSpace
-for the policy ID and scenario ID. ``ScenID`` has a default value of 1,
+for the policy ID and scenario ID. ``scen_id`` has a default value of 1,
 so for example ``Projection[1]`` represents the Projection Space for Policy 1.
 
 Attributes:
-    PolicyID(:obj:`int`): Policy ID
-    ScenID(:obj:`int`, optional): Scenario ID, defaults to 1.
+    idx(:obj:`int`): Policy ID
+    scen_id(:obj:`int`, optional): Scenario ID, defaults to 1.
 
 .. rubric:: Composition Structure
 
@@ -62,7 +62,7 @@ Attributes:
 
 from modelx.serialize.jsonvalues import *
 
-_formula = lambda PolicyID, ScenID=1: None
+_formula = lambda idx, scen_id=1: None
 
 _bases = [
     ".BaseProj",
