@@ -25,7 +25,7 @@ idx = 170
 for cells in vars:
     list(proj[idx].cells[cells](t) for t in range(50))
 
-cfs = proj[idx].frame[vars].sort_index().dropna()
+cfs = proj[idx].frame[vars].sort_index().dropna().droplevel(['x', 'y', 'basis'])
 
 [proj[idx].pv_net_cf[t] for t in range(50)]
 
