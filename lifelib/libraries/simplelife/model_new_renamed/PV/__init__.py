@@ -31,8 +31,8 @@ def InterestNetCF(t):
         return 0
     else:
         return (PV_NetCashflow(t)
-                - PremIncome(t)
-                + ExpsTotal(t)) * DiscRate(t)
+                - premiums(t)
+                + expenses(t)) * disc_rate_mth(t)
 
 
 def PV_BenefitDeath(t):
@@ -40,7 +40,7 @@ def PV_BenefitDeath(t):
     if t > proj_len():
         return 0
     else:
-        return (-BenefitDeath(t) + PV_BenefitDeath(t+1)) / (1 + DiscRate(t))
+        return (-claims(t) + PV_BenefitDeath(t+1)) / (1 + disc_rate_mth(t))
 
 
 def PV_BenefitMat(t):
@@ -48,7 +48,7 @@ def PV_BenefitMat(t):
     if t > proj_len():
         return 0
     else:
-        return (-BenefitMat(t) + PV_BenefitMat(t+1)) / (1 + DiscRate(t))
+        return (-benefit_mat(t) + PV_BenefitMat(t+1)) / (1 + disc_rate_mth(t))
 
 
 def PV_BenefitSurr(t):
@@ -56,7 +56,7 @@ def PV_BenefitSurr(t):
     if t > proj_len():
         return 0
     else:
-        return (-BenefitSurr(t) + PV_BenefitSurr(t+1)) / (1 + DiscRate(t))
+        return (-benefit_surr(t) + PV_BenefitSurr(t+1)) / (1 + disc_rate_mth(t))
 
 
 def PV_BenefitTotal(t):
@@ -64,7 +64,7 @@ def PV_BenefitTotal(t):
     if t > proj_len():
         return 0
     else:
-        return (-BenefitTotal(t) + PV_BenefitTotal(t+1)) / (1 + DiscRate(t))
+        return (-benefit_total(t) + PV_BenefitTotal(t+1)) / (1 + disc_rate_mth(t))
 
 
 def PV_Check(t):
@@ -76,7 +76,7 @@ def PV_ExpsAcq(t):
     if t > proj_len():
         return 0
     else:
-        return - ExpsAcq(t) + PV_ExpsAcq(t+1) / (1 + DiscRate(t))
+        return - exps_acq(t) + PV_ExpsAcq(t+1) / (1 + disc_rate_mth(t))
 
 
 def PV_ExpsCommTotal(t):
@@ -84,7 +84,7 @@ def PV_ExpsCommTotal(t):
     if t > proj_len():
         return 0
     else:
-        return - ExpsCommTotal(t) + PV_ExpsCommTotal(t+1) / (1 + DiscRate(t))
+        return - commissions(t) + PV_ExpsCommTotal(t+1) / (1 + disc_rate_mth(t))
 
 
 def PV_ExpsMaint(t):
@@ -92,7 +92,7 @@ def PV_ExpsMaint(t):
     if t > proj_len():
         return 0
     else:
-        return - ExpsMaint(t) + PV_ExpsMaint(t+1) / (1 + DiscRate(t))
+        return - exps_maint(t) + PV_ExpsMaint(t+1) / (1 + disc_rate_mth(t))
 
 
 def PV_ExpsTotal(t):
@@ -100,7 +100,7 @@ def PV_ExpsTotal(t):
     if t > proj_len():
         return 0
     else:
-        return - ExpsTotal(t) + PV_ExpsTotal(t+1) / (1 + DiscRate(t))
+        return - expenses(t) + PV_ExpsTotal(t+1) / (1 + disc_rate_mth(t))
 
 
 def PV_NetCashflow(t):
@@ -115,10 +115,10 @@ def PV_NetCashflowForCheck(t):
     if t > proj_len():
         return 0
     else:
-        return (PremIncome(t)
-                - ExpsTotal(t)
-                - BenefitTotal(t) / (1 + DiscRate(t))
-                + PV_NetCashflow(t+1) / (1 + DiscRate(t)))
+        return (premiums(t)
+                - expenses(t)
+                - benefit_total(t) / (1 + disc_rate_mth(t))
+                + PV_NetCashflow(t+1) / (1 + disc_rate_mth(t)))
 
 
 def PV_PremIncome(t):
@@ -126,7 +126,7 @@ def PV_PremIncome(t):
     if t > proj_len():
         return 0
     else:
-        return PremIncome(t) + PV_PremIncome(t+1) / (1 + DiscRate(t))
+        return premiums(t) + PV_PremIncome(t+1) / (1 + disc_rate_mth(t))
 
 
 def PV_SumInsurIF(t):
@@ -134,6 +134,6 @@ def PV_SumInsurIF(t):
     if t > proj_len():
         return 0
     else:
-        return InsurIF_Beg1(t) + PV_SumInsurIF(t+1) / (1 + DiscRate(t))
+        return insur_if_beg1(t) + PV_SumInsurIF(t+1) / (1 + disc_rate_mth(t))
 
 
