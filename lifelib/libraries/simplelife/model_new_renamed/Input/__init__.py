@@ -100,7 +100,7 @@ def mortality_tables():
 
     wb = input_workbook()
 
-    sheet_name, cell_range = next(wb.defined_names["MortalityTables2"].destinations)
+    sheet_name, cell_range = next(wb.defined_names["MortalityTables"].destinations)
     ws = wb[sheet_name]
 
     rows = list(ws[cell_range.replace('$', '')])

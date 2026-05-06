@@ -214,10 +214,10 @@ def lx(x):
 
 def qx(x):
     """Probability that a person at age ``x`` will die in one year."""
-    return MortalityRates()[x]
+    return mortality_rates()[x]
 
 
-def MortalityRates():
+def mortality_rates():
 
 
     pos = list((t, getattr(SexID, s)) for t, s in mortality_tables().columns).index((Table, Sex))
