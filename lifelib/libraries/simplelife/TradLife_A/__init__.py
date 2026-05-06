@@ -5,7 +5,7 @@
 
 from modelx.serialize.jsonvalues import *
 
-_name = "simplelife"
+_name = "TradLife_A"
 
 _allow_none = False
 
