@@ -40,7 +40,7 @@ Attributes:
     life_table: :mod:`~simplelife.model.life_table` Space
     PolicyData: `ExcelRange`_ object holding data read from the
         Excel range *PolicyData* in *input.xlsx*.
-    SpecLookup: :func:`~simplelife.model.input_.SpecLookup`
+    SpecLookup: :func:`~simplelife.model.input_data.SpecLookup`
     prem_term: Alias for :func:`policy_term`
 
 .. _ExcelRange:
@@ -91,7 +91,7 @@ def int_rate(basis):
         RateBasisID.VAL: 'IntRateVal'}.get(basis, None)
 
     return pandas_to_array(
-        map_to_policies(input_.product_spec(col)))
+        map_to_policies(input_data.product_spec(col)))
 
 
 def load_acq_sa():
@@ -121,13 +121,13 @@ def load_maint_prem_waiver_prem():
     # else:
     #     return 0.002
 
-    table = input_.prem_waiver_cost()
+    table = input_data.prem_waiver_cost()
 
     bins = [-np.inf] + list(table.keys())[:-1] + [np.inf]
     vals = list(table.values())
 
     return pandas_to_array(pd.cut(
-         input_.policy_data()['PolicyTerm'],
+         input_data.policy_data()['PolicyTerm'],
          bins=bins,
          labels=vals,
          right=False,        # left-closed: [x, y)
@@ -138,14 +138,14 @@ def load_maint_sa():
     """Maintenance Loading per Sum Assured during Premium Payment"""
 
     return pandas_to_array(
-        map_to_policies(input_.product_spec('LoadMaintSA')))
+        map_to_policies(input_data.product_spec('LoadMaintSA')))
 
 
 def load_maint_sa2():
     """Maintenance Loading per Sum Assured during Premium Payment"""
 
     return pandas_to_array(
-        map_to_policies(input_.product_spec('LoadMaintSA2')))
+        map_to_policies(input_data.product_spec('LoadMaintSA2')))
 
 
 def reserve_rate():
@@ -175,7 +175,7 @@ def table_id(basis):
         RateBasisID.VAL: 'MortTableVal'}.get(basis, None)
 
     return pandas_to_array(
-        map_to_policies(input_.product_spec(col)))
+        map_to_policies(input_data.product_spec(col)))
 
 
 def uern_prem_rate():
@@ -191,11 +191,11 @@ def product():
     #     'WL': ProductID.WL,
     #     'ENDW': ProductID.ENDW
     #     }
-    return pandas_to_array(input_.policy_data()['Product'].map(lambda s: getattr(ProductID, s)))
+    return pandas_to_array(input_data.policy_data()['Product'].map(lambda s: getattr(ProductID, s)))
 
 
 def policy_type():
-    return pandas_to_array(input_.policy_data()['PolType'])
+    return pandas_to_array(input_data.policy_data()['PolType'])
 
 
 gen = lambda: PolicyData[idx, 'Gen']
@@ -204,65 +204,65 @@ channel = lambda: PolicyData[idx, 'Channel']
 
 def sex():
 
-    return pandas_to_array(input_.policy_data()['Sex'].map(lambda s: getattr(SexID, s)))
+    return pandas_to_array(input_data.policy_data()['Sex'].map(lambda s: getattr(SexID, s)))
 
 
 duration = lambda: PolicyData[idx, 'Duration']
 
 def issue_age():
 
-    return pandas_to_array(input_.policy_data()['IssueAge'])
+    return pandas_to_array(input_data.policy_data()['IssueAge'])
 
 
 def prem_freq(): 
-   return pandas_to_array(input_.policy_data()['PremFreq'])
+   return pandas_to_array(input_data.policy_data()['PremFreq'])
 
 
 def policy_term():
 
-    return pandas_to_array(input_.policy_data()['PolicyTerm'])
+    return pandas_to_array(input_data.policy_data()['PolicyTerm'])
 
 
 def policy_count():
-    return pandas_to_array(input_.policy_data()['PolicyCount'])
+    return pandas_to_array(input_data.policy_data()['PolicyCount'])
 
 
 def sum_assured():
-    return pandas_to_array(input_.policy_data()['SumAssured'])
+    return pandas_to_array(input_data.policy_data()['SumAssured'])
 
 
 def load_acq_sa_param1():
-    # return input_.product_spec('LoadAcqSAParam2')
+    # return input_data.product_spec('LoadAcqSAParam2')
     return pandas_to_array(
-        map_to_policies(input_.product_spec('LoadAcqSAParam1')))
+        map_to_policies(input_data.product_spec('LoadAcqSAParam1')))
 
 
 def load_acq_sa_param2():
-    # return input_.product_spec('LoadAcqSAParam2')
+    # return input_data.product_spec('LoadAcqSAParam2')
     return pandas_to_array(
-        map_to_policies(input_.product_spec('LoadAcqSAParam2')))
+        map_to_policies(input_data.product_spec('LoadAcqSAParam2')))
 
 
 def load_maint_prem_param1():
-    # return input_.product_spec('LoadAcqSAParam2')
+    # return input_data.product_spec('LoadAcqSAParam2')
     return pandas_to_array(
-        map_to_policies(input_.product_spec('LoadMaintPremParam1')))
+        map_to_policies(input_data.product_spec('LoadMaintPremParam1')))
 
 
 def load_maint_prem_param2():
-    # return input_.product_spec('LoadAcqSAParam2')
+    # return input_data.product_spec('LoadAcqSAParam2')
     return pandas_to_array(
-        map_to_policies(input_.product_spec('LoadMaintPremParam2')))
+        map_to_policies(input_data.product_spec('LoadMaintPremParam2')))
 
 
 def surr_charge_param1():
     return pandas_to_array(
-        map_to_policies(input_.product_spec('SurrChargeParam1')))
+        map_to_policies(input_data.product_spec('SurrChargeParam1')))
 
 
 def surr_charge_param2():
     return pandas_to_array(
-        map_to_policies(input_.product_spec('SurrChargeParam2')))
+        map_to_policies(input_data.product_spec('SurrChargeParam2')))
 
 
 # ---------------------------------------------------------------------------
@@ -270,7 +270,7 @@ def surr_charge_param2():
 
 life_table = ("Interface", ("..", "CommTable"), "auto")
 
-input_ = ("Interface", ("..", "Input"), "auto")
+input_data = ("Interface", ("..", "InputData"), "auto")
 
 prem_term = ("Interface", (".", "policy_term"), "auto")
 

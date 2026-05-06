@@ -62,7 +62,7 @@ _spaces = []
 
 def disc_rate_mth(t):
     """Rates for discount cashflows"""
-    return input_.scenarios()['IntRate'].at[(scen_id, t)]
+    return input_data.scenarios()['IntRate'].at[(scen_id, t)]
 
 
 def invst_ret_rate(t):
@@ -78,4 +78,4 @@ def invst_ret_rate(t):
 
 scen_id = 1
 
-input_ = ("Interface", ("..", "Input"), "auto")
+input_data = ("Interface", ("..", "InputData"), "auto")

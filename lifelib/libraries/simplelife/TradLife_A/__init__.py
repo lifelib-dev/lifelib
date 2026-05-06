@@ -10,7 +10,7 @@ _name = "TradLife_A"
 _allow_none = False
 
 _spaces = [
-    "Input",
+    "InputData",
     "Economic",
     "BaseProj",
     "PV",

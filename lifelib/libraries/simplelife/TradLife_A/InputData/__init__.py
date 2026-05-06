@@ -3,9 +3,9 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""input_ from files
+"""input_data from files
 
-The ``input_`` Space includes References that hold input values read from
+The ``input_data`` Space includes References that hold input values read from
 the Excel input file, *input.xlsx*.
 It also includes a few Cells to loock up values from the Referneces.
 

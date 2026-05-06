@@ -234,6 +234,6 @@ IntRate = 0.01
 
 TableID = 1
 
-mortality_tables = ("Interface", ("..", "Input", "mortality_tables"), "absolute")
+mortality_tables = ("Interface", ("..", "InputData", "mortality_tables"), "absolute")
 
 pol = ("Interface", ("..", "PolicyAttrs"), "auto")
