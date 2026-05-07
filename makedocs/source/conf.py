@@ -248,6 +248,7 @@ sphinx_gallery_conf = {
         ['../../lifelib/libraries/savings',
          '../../lifelib/libraries/economic',
          '../../lifelib/libraries/fastlife',
+         '../../lifelib/libraries/annuallife',
          '../../lifelib/libraries/simplelife',
          '../../lifelib/libraries/nestedlife',
          '../../lifelib/libraries/ifrs17sim',
