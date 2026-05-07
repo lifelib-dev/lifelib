@@ -1,12 +1,15 @@
 # The **InputData** Space
 
 
-```{automodule} annuallife.TradLife_A.InputData
+```{eval-rst}
+.. automodule:: annuallife.TradLife_A.InputData
 ```
 
 ## Formulas
 
 ```{eval-rst}
+.. currentmodule:: annuallife.TradLife_A.InputData
+
 .. autosummary::
 
    ~input_workbook
@@ -26,41 +29,33 @@
 
 ## Cells Descriptions
 
-```{autofunction} input_workbook
-```
+```{eval-rst}
+.. currentmodule:: annuallife.TradLife_A.InputData
 
-```{autofunction} policy_data
-```
+.. autofunction:: input_workbook
 
-```{autofunction} mortality_tables
-```
+.. autofunction:: policy_data
 
-```{autofunction} assumption_tables
-```
+.. autofunction:: mortality_tables
 
-```{autofunction} scenarios
-```
+.. autofunction:: assumption_tables
 
-```{autofunction} discount_rate
-```
+.. autofunction:: scenarios
 
-```{autofunction} prem_waiver_cost
-```
+.. autofunction:: discount_rate
 
-```{autofunction} assumption
-```
+.. autofunction:: prem_waiver_cost
 
-```{autofunction} product_spec
-```
+.. autofunction:: assumption
 
-```{autofunction} const_params
-```
+.. autofunction:: product_spec
 
-```{autofunction} get_named_range_as_df
-```
+.. autofunction:: const_params
 
-```{autofunction} get_named_range_as_dict
-```
+.. autofunction:: get_named_range_as_df
 
-```{autofunction} get_param_series
+.. autofunction:: get_named_range_as_dict
+
+.. autofunction:: get_param_series
+
 ```

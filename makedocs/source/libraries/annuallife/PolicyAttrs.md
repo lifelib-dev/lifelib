@@ -1,12 +1,15 @@
 # The **PolicyAttrs** Space
 
 
-```{automodule} annuallife.TradLife_A.PolicyAttrs
+```{eval-rst}
+.. automodule:: annuallife.TradLife_A.PolicyAttrs
 ```
 
 ## Formulas
 
 ```{eval-rst}
+.. currentmodule:: annuallife.TradLife_A.PolicyAttrs
+
 .. autosummary::
 
    ~product
@@ -41,86 +44,63 @@
 
 ## Cells Descriptions
 
-```{autofunction} product
-```
+```{eval-rst}
+.. currentmodule:: annuallife.TradLife_A.PolicyAttrs
 
-```{autofunction} policy_type
-```
+.. autofunction:: product
 
-```{autofunction} sex
-```
+.. autofunction:: policy_type
 
-```{autofunction} issue_age
-```
+.. autofunction:: sex
 
-```{autofunction} prem_freq
-```
+.. autofunction:: issue_age
 
-```{autofunction} policy_term
-```
+.. autofunction:: prem_freq
 
-```{autofunction} policy_count
-```
+.. autofunction:: policy_term
 
-```{autofunction} sum_assured
-```
+.. autofunction:: policy_count
 
-```{autofunction} gen
-```
+.. autofunction:: sum_assured
 
-```{autofunction} channel
-```
+.. autofunction:: gen
 
-```{autofunction} duration
-```
+.. autofunction:: channel
 
-```{autofunction} gross_prem_table
-```
+.. autofunction:: duration
 
-```{autofunction} init_surr_charge
-```
+.. autofunction:: gross_prem_table
 
-```{autofunction} int_rate
-```
+.. autofunction:: init_surr_charge
 
-```{autofunction} load_acq_sa
-```
+.. autofunction:: int_rate
 
-```{autofunction} load_maint_prem
-```
+.. autofunction:: load_acq_sa
 
-```{autofunction} load_maint_prem_waiver_prem
-```
+.. autofunction:: load_maint_prem
 
-```{autofunction} load_maint_sa
-```
+.. autofunction:: load_maint_prem_waiver_prem
 
-```{autofunction} load_maint_sa2
-```
+.. autofunction:: load_maint_sa
 
-```{autofunction} reserve_rate
-```
+.. autofunction:: load_maint_sa2
 
-```{autofunction} table_id
-```
+.. autofunction:: reserve_rate
 
-```{autofunction} uern_prem_rate
-```
+.. autofunction:: table_id
 
-```{autofunction} load_acq_sa_param1
-```
+.. autofunction:: uern_prem_rate
 
-```{autofunction} load_acq_sa_param2
-```
+.. autofunction:: load_acq_sa_param1
 
-```{autofunction} load_maint_prem_param1
-```
+.. autofunction:: load_acq_sa_param2
 
-```{autofunction} load_maint_prem_param2
-```
+.. autofunction:: load_maint_prem_param1
 
-```{autofunction} surr_charge_param1
-```
+.. autofunction:: load_maint_prem_param2
 
-```{autofunction} surr_charge_param2
+.. autofunction:: surr_charge_param1
+
+.. autofunction:: surr_charge_param2
+
 ```

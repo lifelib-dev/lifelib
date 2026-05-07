@@ -1,12 +1,15 @@
 # The **Assumptions** Space
 
 
-```{automodule} annuallife.TradLife_A.Assumptions
+```{eval-rst}
+.. automodule:: annuallife.TradLife_A.Assumptions
 ```
 
 ## Formulas
 
 ```{eval-rst}
+.. currentmodule:: annuallife.TradLife_A.Assumptions
+
 .. autosummary::
 
    ~mort_rate
@@ -32,59 +35,45 @@
 
 ## Cells Descriptions
 
-```{autofunction} mort_rate
-```
+```{eval-rst}
+.. currentmodule:: annuallife.TradLife_A.Assumptions
 
-```{autofunction} cnsmp_tax
-```
+.. autofunction:: mort_rate
 
-```{autofunction} comm_init_prem
-```
+.. autofunction:: cnsmp_tax
 
-```{autofunction} comm_ren_prem
-```
+.. autofunction:: comm_init_prem
 
-```{autofunction} comm_ren_term
-```
+.. autofunction:: comm_ren_prem
 
-```{autofunction} exps_acq_ann_prem
-```
+.. autofunction:: comm_ren_term
 
-```{autofunction} exps_acq_pol
-```
+.. autofunction:: exps_acq_ann_prem
 
-```{autofunction} exps_acq_sa
-```
+.. autofunction:: exps_acq_pol
 
-```{autofunction} exps_maint_ann_prem
-```
+.. autofunction:: exps_acq_sa
 
-```{autofunction} exps_maint_pol
-```
+.. autofunction:: exps_maint_ann_prem
 
-```{autofunction} exps_maint_sa
-```
+.. autofunction:: exps_maint_pol
 
-```{autofunction} inflation_rate
-```
+.. autofunction:: exps_maint_sa
 
-```{autofunction} mortality_tables
-```
+.. autofunction:: inflation_rate
 
-```{autofunction} mort_table_index
-```
+.. autofunction:: mortality_tables
 
-```{autofunction} mort_array_index
-```
+.. autofunction:: mort_table_index
 
-```{autofunction} asmp_tables
-```
+.. autofunction:: mort_array_index
 
-```{autofunction} mort_factor_index
-```
+.. autofunction:: asmp_tables
 
-```{autofunction} lapse_rate_index
-```
+.. autofunction:: mort_factor_index
 
-```{autofunction} asmp_table_len
+.. autofunction:: lapse_rate_index
+
+.. autofunction:: asmp_table_len
+
 ```

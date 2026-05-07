@@ -1,12 +1,15 @@
 # The **PV** Space
 
 
-```{automodule} annuallife.TradLife_A.PV
+```{eval-rst}
+.. automodule:: annuallife.TradLife_A.PV
 ```
 
 ## Formulas
 
 ```{eval-rst}
+.. currentmodule:: annuallife.TradLife_A.PV
+
 .. autosummary::
 
    ~interest_net_cf
@@ -27,44 +30,35 @@
 
 ## Cells Descriptions
 
-```{autofunction} interest_net_cf
-```
+```{eval-rst}
+.. currentmodule:: annuallife.TradLife_A.PV
 
-```{autofunction} pv_premiums
-```
+.. autofunction:: interest_net_cf
 
-```{autofunction} pv_claims
-```
+.. autofunction:: pv_premiums
 
-```{autofunction} pv_benefit_mat
-```
+.. autofunction:: pv_claims
 
-```{autofunction} pv_benefit_surr
-```
+.. autofunction:: pv_benefit_mat
 
-```{autofunction} pv_benefit_total
-```
+.. autofunction:: pv_benefit_surr
 
-```{autofunction} pv_exps_acq
-```
+.. autofunction:: pv_benefit_total
 
-```{autofunction} pv_commissions
-```
+.. autofunction:: pv_exps_acq
 
-```{autofunction} pv_exps_maint
-```
+.. autofunction:: pv_commissions
 
-```{autofunction} pv_expenses
-```
+.. autofunction:: pv_exps_maint
 
-```{autofunction} pv_net_cf
-```
+.. autofunction:: pv_expenses
 
-```{autofunction} pv_net_cf_for_check
-```
+.. autofunction:: pv_net_cf
 
-```{autofunction} pv_check
-```
+.. autofunction:: pv_net_cf_for_check
 
-```{autofunction} pv_sum_insur_if
+.. autofunction:: pv_check
+
+.. autofunction:: pv_sum_insur_if
+
 ```

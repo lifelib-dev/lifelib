@@ -1,5 +1,6 @@
 # The **Projection** Space
 
 
-```{automodule} annuallife.TradLife_A.Projection
+```{eval-rst}
+.. automodule:: annuallife.TradLife_A.Projection
 ```

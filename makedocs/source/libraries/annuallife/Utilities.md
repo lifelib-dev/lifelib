@@ -1,12 +1,15 @@
 # The **Utilities** Space
 
 
-```{automodule} annuallife.TradLife_A.Utilities
+```{eval-rst}
+.. automodule:: annuallife.TradLife_A.Utilities
 ```
 
 ## Formulas
 
 ```{eval-rst}
+.. currentmodule:: annuallife.TradLife_A.Utilities
+
 .. autosummary::
 
    ~pandas_to_array
@@ -15,8 +18,11 @@
 
 ## Cells Descriptions
 
-```{autofunction} pandas_to_array
-```
+```{eval-rst}
+.. currentmodule:: annuallife.TradLife_A.Utilities
 
-```{autofunction} map_to_policies
+.. autofunction:: pandas_to_array
+
+.. autofunction:: map_to_policies
+
 ```

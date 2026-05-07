@@ -8,7 +8,7 @@
 |modelx badge|
 
 ```{warning}
-:mod:`annuallife` is in its active development phase, and its contents are
+{mod}`annuallife` is in its active development phase, and its contents are
 subject to change.
 ```
 

@@ -1,12 +1,15 @@
 # The **BaseProj** Space
 
 
-```{automodule} annuallife.TradLife_A.BaseProj
+```{eval-rst}
+.. automodule:: annuallife.TradLife_A.BaseProj
 ```
 
 ## Formulas
 
 ```{eval-rst}
+.. currentmodule:: annuallife.TradLife_A.BaseProj
+
 .. autosummary::
 
    ~accum_cf
@@ -101,266 +104,183 @@
 
 ## Cells Descriptions
 
-```{autofunction} accum_cf
-```
+```{eval-rst}
+.. currentmodule:: annuallife.TradLife_A.BaseProj
 
-```{autofunction} age
-```
+.. autofunction:: accum_cf
 
-```{autofunction} benefit_acc_dth
-```
+.. autofunction:: age
 
-```{autofunction} benefit_acc_hosp
-```
+.. autofunction:: benefit_acc_dth
 
-```{autofunction} benefit_ann
-```
+.. autofunction:: benefit_acc_hosp
 
-```{autofunction} claims
-```
+.. autofunction:: benefit_ann
 
-```{autofunction} benefit_living
-```
+.. autofunction:: claims
 
-```{autofunction} benefit_mat
-```
+.. autofunction:: benefit_living
 
-```{autofunction} benefit_other
-```
+.. autofunction:: benefit_mat
 
-```{autofunction} benefit_sick_hosp
-```
+.. autofunction:: benefit_other
 
-```{autofunction} benefit_surg
-```
+.. autofunction:: benefit_sick_hosp
 
-```{autofunction} benefit_surr
-```
+.. autofunction:: benefit_surg
 
-```{autofunction} benefit_total
-```
+.. autofunction:: benefit_surr
 
-```{autofunction} change_rsrv
-```
+.. autofunction:: benefit_total
 
-```{autofunction} exps_acq
-```
+.. autofunction:: change_rsrv
 
-```{autofunction} exps_acq_total
-```
+.. autofunction:: exps_acq
 
-```{autofunction} exps_comm_init
-```
+.. autofunction:: exps_acq_total
 
-```{autofunction} exps_comm_ren
-```
+.. autofunction:: exps_comm_init
 
-```{autofunction} commissions
-```
+.. autofunction:: exps_comm_ren
 
-```{autofunction} exps_maint
-```
+.. autofunction:: commissions
 
-```{autofunction} exps_maint_total
-```
+.. autofunction:: exps_maint
 
-```{autofunction} exps_other
-```
+.. autofunction:: exps_maint_total
 
-```{autofunction} expenses
-```
+.. autofunction:: exps_other
 
-```{autofunction} income_total
-```
+.. autofunction:: expenses
 
-```{autofunction} insur_if_beg1
-```
+.. autofunction:: income_total
 
-```{autofunction} insur_if_end
-```
+.. autofunction:: insur_if_beg1
 
-```{autofunction} int_accum_cf
-```
+.. autofunction:: insur_if_end
 
-```{autofunction} invst_income
-```
+.. autofunction:: int_accum_cf
 
-```{autofunction} net_cf
-```
+.. autofunction:: invst_income
 
-```{autofunction} pols_acc_death
-```
+.. autofunction:: net_cf
 
-```{autofunction} pols_acc_hosp
-```
+.. autofunction:: pols_acc_death
 
-```{autofunction} pols_annuity
-```
+.. autofunction:: pols_acc_hosp
 
-```{autofunction} pols_death
-```
+.. autofunction:: pols_annuity
 
-```{autofunction} pols_if_aft_mat
-```
+.. autofunction:: pols_death
 
-```{autofunction} pols_if_beg
-```
+.. autofunction:: pols_if_aft_mat
 
-```{autofunction} pols_if_beg1
-```
+.. autofunction:: pols_if_beg
 
-```{autofunction} pols_if
-```
+.. autofunction:: pols_if_beg1
 
-```{autofunction} pols_living
-```
+.. autofunction:: pols_if
 
-```{autofunction} pols_maturity
-```
+.. autofunction:: pols_living
 
-```{autofunction} pols_if_init
-```
+.. autofunction:: pols_maturity
 
-```{autofunction} pols_other
-```
+.. autofunction:: pols_if_init
 
-```{autofunction} pols_renewal
-```
+.. autofunction:: pols_other
 
-```{autofunction} pols_sick_hosp
-```
+.. autofunction:: pols_renewal
 
-```{autofunction} pols_surg
-```
+.. autofunction:: pols_sick_hosp
 
-```{autofunction} pols_lapse
-```
+.. autofunction:: pols_surg
 
-```{autofunction} premiums
-```
+.. autofunction:: pols_lapse
 
-```{autofunction} profit_bef_tax
-```
+.. autofunction:: premiums
 
-```{autofunction} reserve_hosp_rsrv_end
-```
+.. autofunction:: profit_bef_tax
 
-```{autofunction} reserve_prem_rsrv_end
-```
+.. autofunction:: reserve_hosp_rsrv_end
 
-```{autofunction} reserve_total_end
-```
+.. autofunction:: reserve_prem_rsrv_end
 
-```{autofunction} reserve_uern_prem_end
-```
+.. autofunction:: reserve_total_end
 
-```{autofunction} size_ann_prem
-```
+.. autofunction:: reserve_uern_prem_end
 
-```{autofunction} size_benefit_acc_dth
-```
+.. autofunction:: size_ann_prem
 
-```{autofunction} size_benefit_acc_hosp
-```
+.. autofunction:: size_benefit_acc_dth
 
-```{autofunction} size_benefit_ann
-```
+.. autofunction:: size_benefit_acc_hosp
 
-```{autofunction} claim_pp
-```
+.. autofunction:: size_benefit_ann
 
-```{autofunction} size_benefit_living
-```
+.. autofunction:: claim_pp
 
-```{autofunction} size_benefit_mat
-```
+.. autofunction:: size_benefit_living
 
-```{autofunction} size_benefit_other
-```
+.. autofunction:: size_benefit_mat
 
-```{autofunction} size_benefit_sick_hosp
-```
+.. autofunction:: size_benefit_other
 
-```{autofunction} size_benefit_surg
-```
+.. autofunction:: size_benefit_sick_hosp
 
-```{autofunction} size_benefit_surr
-```
+.. autofunction:: size_benefit_surg
 
-```{autofunction} expense_acq
-```
+.. autofunction:: size_benefit_surr
 
-```{autofunction} size_exps_comm_init
-```
+.. autofunction:: expense_acq
 
-```{autofunction} size_exps_comm_ren
-```
+.. autofunction:: size_exps_comm_init
 
-```{autofunction} expense_maint
-```
+.. autofunction:: size_exps_comm_ren
 
-```{autofunction} size_exps_other
-```
+.. autofunction:: expense_maint
 
-```{autofunction} size_invst_income
-```
+.. autofunction:: size_exps_other
 
-```{autofunction} premium_pp
-```
+.. autofunction:: size_invst_income
 
-```{autofunction} size_reserve_prem_rsrv_aft_mat
-```
+.. autofunction:: premium_pp
 
-```{autofunction} size_reserve_prem_rsrv_end
-```
+.. autofunction:: size_reserve_prem_rsrv_aft_mat
 
-```{autofunction} size_reserve_total_aft_mat
-```
+.. autofunction:: size_reserve_prem_rsrv_end
 
-```{autofunction} size_reserve_uern_prem_aft_mat
-```
+.. autofunction:: size_reserve_total_aft_mat
 
-```{autofunction} size_reserve_uern_prem_end
-```
+.. autofunction:: size_reserve_uern_prem_aft_mat
 
-```{autofunction} sum_assured
-```
+.. autofunction:: size_reserve_uern_prem_end
 
-```{autofunction} proj_len
-```
+.. autofunction:: sum_assured
 
-```{autofunction} mort_rate
-```
+.. autofunction:: proj_len
 
-```{autofunction} gross_prem_rate
-```
+.. autofunction:: mort_rate
 
-```{autofunction} mort_factor
-```
+.. autofunction:: gross_prem_rate
 
-```{autofunction} lapse_rate
-```
+.. autofunction:: mort_factor
 
-```{autofunction} ann_prem_rate
-```
+.. autofunction:: lapse_rate
 
-```{autofunction} cash_value_rate
-```
+.. autofunction:: ann_prem_rate
 
-```{autofunction} net_prem_rate
-```
+.. autofunction:: cash_value_rate
 
-```{autofunction} reserve_nlp_rate
-```
+.. autofunction:: net_prem_rate
 
-```{autofunction} surr_charge
-```
+.. autofunction:: reserve_nlp_rate
 
-```{autofunction} last_age
-```
+.. autofunction:: surr_charge
 
-```{autofunction} inflation_factor
-```
+.. autofunction:: last_age
 
-```{autofunction} disc_rate_mth
+.. autofunction:: inflation_factor
+
+.. autofunction:: disc_rate_mth
+
 ```

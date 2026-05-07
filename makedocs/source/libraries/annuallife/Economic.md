@@ -1,12 +1,15 @@
 # The **Economic** Space
 
 
-```{automodule} annuallife.TradLife_A.Economic
+```{eval-rst}
+.. automodule:: annuallife.TradLife_A.Economic
 ```
 
 ## Formulas
 
 ```{eval-rst}
+.. currentmodule:: annuallife.TradLife_A.Economic
+
 .. autosummary::
 
    ~disc_rate_mth
@@ -15,8 +18,11 @@
 
 ## Cells Descriptions
 
-```{autofunction} disc_rate_mth
-```
+```{eval-rst}
+.. currentmodule:: annuallife.TradLife_A.Economic
 
-```{autofunction} invst_ret_rate
+.. autofunction:: disc_rate_mth
+
+.. autofunction:: invst_ret_rate
+
 ```
