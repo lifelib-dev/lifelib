@@ -3,12 +3,11 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""Commutation functions and actuarial notations
+r"""Commutation functions and actuarial notations
 
 The ``LifeTable`` Space provides
 commutation functions and actuarial notations, such as
-:math:`D_{x}` and :math:`
-equire{enclose}{}_{f|}\overline{A}_{x}`.
+:math:`D_{x}` and :math:`\require{enclose}{}_{f|}\overline{A}_{x}`.
 Mortality tables are read from *input.xlsx* into an `ExcelRange`_ object.
 The `ExcelRange`_ object is bound to a Reference, :attr:`MortalityTable`.
 
