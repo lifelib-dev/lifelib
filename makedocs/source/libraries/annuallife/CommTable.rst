@@ -1,14 +1,11 @@
-# The **CommTable** Space
+The **CommTable** Space
+=======================
 
-
-```{eval-rst}
 .. automodule:: annuallife.TradLife_A.CommTable
-```
 
-## Formulas
 
-```{eval-rst}
-.. currentmodule:: annuallife.TradLife_A.CommTable
+Formulas
+-------------
 
 .. autosummary::
 
@@ -26,12 +23,10 @@
    ~lx
    ~qx
    ~mortality_rates
-```
 
-## Cells Descriptions
 
-```{eval-rst}
-.. currentmodule:: annuallife.TradLife_A.CommTable
+Cells Descriptions
+------------------
 
 .. autofunction:: AnnDuenx
 
@@ -60,5 +55,3 @@
 .. autofunction:: qx
 
 .. autofunction:: mortality_rates
-
-```

@@ -1,14 +1,11 @@
-# The **BaseProj** Space
+The **BaseProj** Space
+======================
 
-
-```{eval-rst}
 .. automodule:: annuallife.TradLife_A.BaseProj
-```
 
-## Formulas
 
-```{eval-rst}
-.. currentmodule:: annuallife.TradLife_A.BaseProj
+Formulas
+-------------
 
 .. autosummary::
 
@@ -100,12 +97,10 @@
    ~last_age
    ~inflation_factor
    ~disc_rate_mth
-```
 
-## Cells Descriptions
 
-```{eval-rst}
-.. currentmodule:: annuallife.TradLife_A.BaseProj
+Cells Descriptions
+------------------
 
 .. autofunction:: accum_cf
 
@@ -282,5 +277,3 @@
 .. autofunction:: inflation_factor
 
 .. autofunction:: disc_rate_mth
-
-```

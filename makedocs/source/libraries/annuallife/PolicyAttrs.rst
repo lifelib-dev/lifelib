@@ -1,14 +1,11 @@
-# The **PolicyAttrs** Space
+The **PolicyAttrs** Space
+=========================
 
-
-```{eval-rst}
 .. automodule:: annuallife.TradLife_A.PolicyAttrs
-```
 
-## Formulas
 
-```{eval-rst}
-.. currentmodule:: annuallife.TradLife_A.PolicyAttrs
+Formulas
+-------------
 
 .. autosummary::
 
@@ -40,12 +37,10 @@
    ~load_maint_prem_param2
    ~surr_charge_param1
    ~surr_charge_param2
-```
 
-## Cells Descriptions
 
-```{eval-rst}
-.. currentmodule:: annuallife.TradLife_A.PolicyAttrs
+Cells Descriptions
+------------------
 
 .. autofunction:: product
 
@@ -102,5 +97,3 @@
 .. autofunction:: surr_charge_param1
 
 .. autofunction:: surr_charge_param2
-
-```

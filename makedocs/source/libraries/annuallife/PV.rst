@@ -1,14 +1,11 @@
-# The **PV** Space
+The **PV** Space
+================
 
-
-```{eval-rst}
 .. automodule:: annuallife.TradLife_A.PV
-```
 
-## Formulas
 
-```{eval-rst}
-.. currentmodule:: annuallife.TradLife_A.PV
+Formulas
+-------------
 
 .. autosummary::
 
@@ -26,12 +23,10 @@
    ~pv_net_cf_for_check
    ~pv_check
    ~pv_sum_insur_if
-```
 
-## Cells Descriptions
 
-```{eval-rst}
-.. currentmodule:: annuallife.TradLife_A.PV
+Cells Descriptions
+------------------
 
 .. autofunction:: interest_net_cf
 
@@ -60,5 +55,3 @@
 .. autofunction:: pv_check
 
 .. autofunction:: pv_sum_insur_if
-
-```

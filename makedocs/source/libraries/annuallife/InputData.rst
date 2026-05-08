@@ -1,14 +1,11 @@
-# The **InputData** Space
+The **InputData** Space
+=======================
 
-
-```{eval-rst}
 .. automodule:: annuallife.TradLife_A.InputData
-```
 
-## Formulas
 
-```{eval-rst}
-.. currentmodule:: annuallife.TradLife_A.InputData
+Formulas
+-------------
 
 .. autosummary::
 
@@ -25,12 +22,10 @@
    ~get_named_range_as_df
    ~get_named_range_as_dict
    ~get_param_series
-```
 
-## Cells Descriptions
 
-```{eval-rst}
-.. currentmodule:: annuallife.TradLife_A.InputData
+Cells Descriptions
+------------------
 
 .. autofunction:: input_workbook
 
@@ -57,5 +52,3 @@
 .. autofunction:: get_named_range_as_dict
 
 .. autofunction:: get_param_series
-
-```

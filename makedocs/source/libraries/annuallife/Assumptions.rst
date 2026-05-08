@@ -1,14 +1,11 @@
-# The **Assumptions** Space
+The **Assumptions** Space
+=========================
 
-
-```{eval-rst}
 .. automodule:: annuallife.TradLife_A.Assumptions
-```
 
-## Formulas
 
-```{eval-rst}
-.. currentmodule:: annuallife.TradLife_A.Assumptions
+Formulas
+-------------
 
 .. autosummary::
 
@@ -31,12 +28,10 @@
    ~mort_factor_index
    ~lapse_rate_index
    ~asmp_table_len
-```
 
-## Cells Descriptions
 
-```{eval-rst}
-.. currentmodule:: annuallife.TradLife_A.Assumptions
+Cells Descriptions
+------------------
 
 .. autofunction:: mort_rate
 
@@ -75,5 +70,3 @@
 .. autofunction:: lapse_rate_index
 
 .. autofunction:: asmp_table_len
-
-```
