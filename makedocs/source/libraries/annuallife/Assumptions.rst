@@ -24,6 +24,7 @@ Formulas
    ~mortality_tables
    ~mort_table_index
    ~mort_array_index
+   ~last_mort_age
    ~asmp_tables
    ~mort_factor_index
    ~lapse_rate_index
@@ -62,6 +63,8 @@ Cells Descriptions
 .. autofunction:: mort_table_index
 
 .. autofunction:: mort_array_index
+
+.. autofunction:: last_mort_age
 
 .. autofunction:: asmp_tables
 
