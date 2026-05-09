@@ -474,7 +474,7 @@ def sum_assured(t):
 
 
 def proj_len():
-    return min(last_age() - pol.issue_age()[idx], 
+    return min(last_mort_age() - pol.issue_age()[idx],
                pol.policy_term()[idx])
 
 
@@ -588,13 +588,9 @@ def surr_charge(t):
     return pol.init_surr_charge()[idx] * max((min(m, 10) - t) / min(m, 10), 0)
 
 
-def last_age():
-    """Age at which mortality becomes 1"""
-    x = 0
-    while True:
-        if mort_rate(x) == 1:
-            return x
-        x += 1
+def last_mort_age():
+    """Age at which mortality becomes 1 for this policy"""
+    return asmp.last_mort_age()[idx]
 
 
 def inflation_factor(t):
