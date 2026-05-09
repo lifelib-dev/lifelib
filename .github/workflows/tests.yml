@@ -39,6 +39,13 @@ jobs:
       run: |
         python -m pip install --upgrade pip setuptools wheel
         pip install -e .[test]
+    - name: Install modelx from GitHub (for serializer_7 support)
+      # TradLife_A is serialized with modelx serializer_version 7, which is
+      # available on the modelx main branch but not yet released to PyPI
+      # (latest PyPI release ships up to serializer_6). Override the modelx
+      # pulled from PyPI with the main-branch build.
+      run: |
+        pip install --force-reinstall --no-deps "modelx @ git+https://github.com/fumitoh/modelx.git@main"
 
     - name: Run tests with pytest
       run: |

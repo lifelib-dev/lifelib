@@ -133,6 +133,18 @@
       <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
     </a>
 
+.. |colab annuallife tradlife_a-demo| raw:: html
+
+    <a target="_blank" href="https://colab.research.google.com/github/lifelib-dev/lifelib/blob/current/lifelib/libraries/annuallife/tradlife_a-demo.ipynb">
+      <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+    </a>
+
+.. |colab annuallife tradlife_a-space-overview| raw:: html
+
+    <a target="_blank" href="https://colab.research.google.com/github/lifelib-dev/lifelib/blob/current/lifelib/libraries/annuallife/tradlife_a-space-overview.ipynb">
+      <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+    </a>
+
 .. |colab ifrs17sim ifrs17sim_csm_waterfall| raw:: html
 
     <a target="_blank" href="https://colab.research.google.com/github/lifelib-dev/lifelib/blob/current/lifelib/libraries/ifrs17sim/ifrs17sim_csm_waterfall.ipynb">
