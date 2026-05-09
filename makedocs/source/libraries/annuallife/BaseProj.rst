@@ -94,7 +94,7 @@ Formulas
    ~net_prem_rate
    ~reserve_nlp_rate
    ~surr_charge
-   ~last_age
+   ~last_mort_age
    ~inflation_factor
    ~disc_rate_mth
 
@@ -272,7 +272,7 @@ Cells Descriptions
 
 .. autofunction:: surr_charge
 
-.. autofunction:: last_age
+.. autofunction:: last_mort_age
 
 .. autofunction:: inflation_factor
 

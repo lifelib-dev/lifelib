@@ -12,6 +12,7 @@ Formulas
    ~input_workbook
    ~policy_data
    ~mortality_tables
+   ~mort_table_last_ages
    ~assumption_tables
    ~scenarios
    ~discount_rate
@@ -32,6 +33,8 @@ Cells Descriptions
 .. autofunction:: policy_data
 
 .. autofunction:: mortality_tables
+
+.. autofunction:: mort_table_last_ages
 
 .. autofunction:: assumption_tables
 
