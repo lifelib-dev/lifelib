@@ -25,8 +25,8 @@ Formulas
    ~change_rsrv
    ~exps_acq
    ~exps_acq_total
-   ~exps_comm_init
-   ~exps_comm_ren
+   ~commissions_init
+   ~commissions_ren
    ~commissions
    ~exps_maint
    ~exps_maint_total
@@ -72,8 +72,8 @@ Formulas
    ~claims_surg_pp
    ~claims_surr_pp
    ~expense_acq_pp
-   ~exps_comm_init_pp
-   ~exps_comm_ren_pp
+   ~commissions_init_pp
+   ~commissions_ren_pp
    ~expense_maint_pp
    ~exps_other_pp
    ~invst_income_pp
@@ -134,9 +134,9 @@ Cells Descriptions
 
 .. autofunction:: exps_acq_total
 
-.. autofunction:: exps_comm_init
+.. autofunction:: commissions_init
 
-.. autofunction:: exps_comm_ren
+.. autofunction:: commissions_ren
 
 .. autofunction:: commissions
 
@@ -228,9 +228,9 @@ Cells Descriptions
 
 .. autofunction:: expense_acq_pp
 
-.. autofunction:: exps_comm_init_pp
+.. autofunction:: commissions_init_pp
 
-.. autofunction:: exps_comm_ren_pp
+.. autofunction:: commissions_ren_pp
 
 .. autofunction:: expense_maint_pp
 

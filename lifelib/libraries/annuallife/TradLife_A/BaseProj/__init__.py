@@ -24,7 +24,7 @@ Space, and it contains Cells for cashflow projection.
 
 ``Exps``:
     Cells whose names start with ``Exps`` represents expense cashflows.
-    For example, ``exps_comm_ren`` means the renewal commission cashflow.
+    For example, ``exps_maint`` means the maintenance expense cashflow.
 
 ``Claims``:
     Cells whose names start with ``Claims`` represent benefit cashflows.
@@ -140,19 +140,19 @@ def exps_acq_total(t):
     return commissions(t) + exps_acq(t)
 
 
-def exps_comm_init(t):
+def commissions_init(t):
     """Initial commissions"""
-    return exps_comm_init_pp(t) * pols_if_beg1(t)
+    return commissions_init_pp(t) * pols_if_beg1(t)
 
 
-def exps_comm_ren(t):
+def commissions_ren(t):
     """Renewal commissions"""
-    return exps_comm_ren_pp(t) * pols_if_beg1(t)
+    return commissions_ren_pp(t) * pols_if_beg1(t)
 
 
 def commissions(t):
     """Commissions Total"""
-    return exps_comm_init(t) + exps_comm_ren(t)
+    return commissions_init(t) + commissions_ren(t)
 
 
 def exps_maint(t):
@@ -172,8 +172,8 @@ def exps_other(t):
 
 def expenses(t):
     """Total expenses"""
-    return (exps_comm_init(t)
-            + exps_comm_ren(t)
+    return (commissions_init(t)
+            + commissions_ren(t)
             + exps_acq(t)
             + exps_maint(t)
             + exps_other(t))
@@ -402,7 +402,7 @@ def expense_acq_pp(t):
         return 0
 
 
-def exps_comm_init_pp(t):
+def commissions_init_pp(t):
     """Initial commission per policy at time t"""
     if t == 0:
         return premium_pp(t) * asmp.comm_init_prem()[idx] * (1 + asmp.cnsmp_tax())
@@ -410,7 +410,7 @@ def exps_comm_init_pp(t):
         return 0
 
 
-def exps_comm_ren_pp(t):
+def commissions_ren_pp(t):
     """Renewal commission per policy at time t"""
     if t == 0:
         return 0
