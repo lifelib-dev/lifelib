@@ -32,7 +32,7 @@ def remove_duplicates(input_list: list) -> list:
 
 def replace_nan(df):
     float_cols = df.select_dtypes(include=['float64']).columns
-    str_cols = df.select_dtypes(include=['object']).columns
+    str_cols = df.select_dtypes(include=['object', 'str']).columns
 
     df.loc[:, float_cols] = df.loc[:, float_cols].fillna(0)
     df.loc[:, str_cols] = df.loc[:, str_cols].fillna('')
