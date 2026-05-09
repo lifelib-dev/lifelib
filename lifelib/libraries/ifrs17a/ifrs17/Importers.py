@@ -600,9 +600,9 @@ def _FormatCashflow(target: IfrsDatabase, dataSet: IDataSet):
 
     # Replace nan to '' or 0
     if 'Scenario' in dataSet.Tables['Main'].columns:
-        dataSet.Tables['Main']['Scenario'].fillna('', inplace=True)
+        dataSet.Tables['Main'].fillna({'Scenario': ''}, inplace=True)
     if 'AccidentYear' in dataSet.Tables['Cashflow'].columns:
-        dataSet.Tables['Cashflow']['AccidentYear'].fillna(0, inplace=True)
+        dataSet.Tables['Cashflow'].fillna({'AccidentYear': 0}, inplace=True)
 
     args = target.GetArgsFromMain(PartitionByReportingNodeAndPeriod, dataSet)
     args = dataclasses.replace(args, ImportFormat=ImportFormats.Cashflow)
@@ -676,7 +676,7 @@ def ParseActualsToWorkspace(dataSet: IDataSet, args: ImportArgs, target: IfrsDat
 def _FormatActual(target: IfrsDatabase, dataSet: IDataSet):
 
     if 'AccidentYear' in dataSet.Tables['Actual'].columns:
-        dataSet.Tables['Actual']['AccidentYear'].fillna(0, inplace=True)
+        dataSet.Tables['Actual'].fillna({'AccidentYear': 0}, inplace=True)
 
     args = target.GetArgsFromMain(PartitionByReportingNodeAndPeriod, dataSet)
     args = dataclasses.replace(args, ImportFormat=ImportFormats.Actual)
@@ -744,9 +744,11 @@ def _FormatSimpleValue(target: IfrsDatabase, dataSet: IDataSet):
 
     # Replace nan to '' or 0
     if 'Scenario' in dataSet.Tables['Main'].columns:
-        dataSet.Tables['Main']['Scenario'].fillna('', inplace=True)
-    for col, nul in [('AccidentYear', 0), ('AmountType', ''), ('EconomicBasis', '')]:
-        dataSet.Tables['SimpleValue'][col].fillna(nul, inplace=True)
+        dataSet.Tables['Main'].fillna({'Scenario': ''}, inplace=True)
+    dataSet.Tables['SimpleValue'].fillna(
+        {'AccidentYear': 0, 'AmountType': '', 'EconomicBasis': ''},
+        inplace=True,
+    )
 
     args = target.GetArgsFromMain(PartitionByReportingNodeAndPeriod, dataSet)
     args = dataclasses.replace(args, ImportFormat=ImportFormats.SimpleValue)
@@ -763,8 +765,9 @@ IfrsDatabase.DefineFormat(ImportFormats.SimpleValue, _FormatSimpleValue)
 
 def _FormatOpening(target: IfrsDatabase, dataSet: IDataSet):
 
-    dataSet.Tables['Opening']['AccidentYear'].fillna(0, inplace=True)
-    dataSet.Tables['Opening']['AmountType'].fillna('', inplace=True)
+    dataSet.Tables['Opening'].fillna(
+        {'AccidentYear': 0, 'AmountType': ''}, inplace=True
+    )
 
     args = target.GetArgsFromMain(PartitionByReportingNodeAndPeriod, dataSet)
     args = dataclasses.replace(args, ImportFormat=ImportFormats.Opening)
