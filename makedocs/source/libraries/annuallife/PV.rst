@@ -11,10 +11,10 @@ Formulas
 
    ~interest_net_cf
    ~pv_premiums
+   ~pv_claims_death
+   ~pv_claims_mat
+   ~pv_claims_surr
    ~pv_claims
-   ~pv_benefit_mat
-   ~pv_benefit_surr
-   ~pv_benefit_total
    ~pv_exps_acq
    ~pv_commissions
    ~pv_exps_maint
@@ -32,13 +32,13 @@ Cells Descriptions
 
 .. autofunction:: pv_premiums
 
+.. autofunction:: pv_claims_death
+
+.. autofunction:: pv_claims_mat
+
+.. autofunction:: pv_claims_surr
+
 .. autofunction:: pv_claims
-
-.. autofunction:: pv_benefit_mat
-
-.. autofunction:: pv_benefit_surr
-
-.. autofunction:: pv_benefit_total
 
 .. autofunction:: pv_exps_acq
 

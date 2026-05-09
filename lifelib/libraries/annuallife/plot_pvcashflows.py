@@ -12,8 +12,8 @@ import modelx as mx
 proj = mx.read_model("TradLife_A").Projection
 
 vars = ['pv_premiums',
-        'pv_benefit_surr',
-        'pv_claims',
+        'pv_claims_surr',
+        'pv_claims_death',
         'pv_exps_maint',
         'pv_commissions',
         'pv_exps_acq']

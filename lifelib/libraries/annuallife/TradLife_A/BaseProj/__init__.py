@@ -18,17 +18,17 @@ Space, and it contains Cells for cashflow projection.
     For example, ``pols_death(t)`` represents number of deaths between
     time ``t`` and ``t+1``.
 
-``Size``:
-    Cells whose names start with ``Size`` represents an amount per policy.
-    For example, ``claim_pp`` represents sum assured per policy.
+``_pp``:
+    Cells whose names end with ``_pp`` represent an amount per policy.
+    For example, ``claims_death_pp`` represents the death benefit per policy.
 
 ``Exps``:
     Cells whose names start with ``Exps`` represents expense cashflows.
     For example, ``exps_comm_ren`` means the renewal commission cashflow.
 
-``Benefit``:
-    Cells whose names start with ``Benefit`` represents benefit cashflows.
-    For example, ``claims(t)`` death benefits incurred
+``Claims``:
+    Cells whose names start with ``Claims`` represent benefit cashflows.
+    For example, ``claims_death(t)`` is the death benefit incurred
     between ``t`` and ``t+1``.
 
 """
@@ -61,68 +61,68 @@ def age(t):
     return pol.issue_age()[idx] + t
 
 
-def benefit_acc_dth(t):
+def claims_acc_dth(t):
     """Accidental death benefits"""
-    return size_benefit_acc_dth(t) * pols_acc_death(t)
+    return claims_acc_dth_pp(t) * pols_acc_death(t)
 
 
-def benefit_acc_hosp(t):
+def claims_acc_hosp(t):
     """Accidental hospitalization benefits"""
-    return size_benefit_acc_hosp(t) * pols_acc_hosp(t)
+    return claims_acc_hosp_pp(t) * pols_acc_hosp(t)
 
 
-def benefit_ann(t):
+def claims_ann(t):
     """Annuity benefits"""
-    return size_benefit_ann(t) * pols_annuity(t)
+    return claims_ann_pp(t) * pols_annuity(t)
+
+
+def claims_death(t):
+    """Death benefits"""
+    return claims_death_pp(t) * pols_death(t)
+
+
+def claims_living(t):
+    """Living benefits"""
+    return claims_living_pp(t) * pols_living(t)
+
+
+def claims_mat(t):
+    """Matuirty benefits"""
+    return claims_mat_pp(t) * pols_maturity(t)
+
+
+def claims_other(t):
+    """Other benefits"""
+    return claims_other_pp(t) * pols_other(t)
+
+
+def claims_sick_hosp(t):
+    """Sickness hospitalization benefits"""
+    return claims_sick_hosp_pp(t) * pols_sick_hosp(t)
+
+
+def claims_surg(t):
+    """Surgery benefits"""
+    return claims_surg_pp(t) * pols_surg(t)
+
+
+def claims_surr(t):
+    """Surrender benefits"""
+    return claims_surr_pp(t) * pols_lapse(t)
 
 
 def claims(t):
-    """Death benefits"""
-    return claim_pp(t) * pols_death(t)
-
-
-def benefit_living(t):
-    """Living benefits"""
-    return size_benefit_living(t) * pols_living(t)
-
-
-def benefit_mat(t):
-    """Matuirty benefits"""
-    return size_benefit_mat(t) * pols_maturity(t)
-
-
-def benefit_other(t):
-    """Other benefits"""
-    return size_benefit_other(t) * pols_other(t)
-
-
-def benefit_sick_hosp(t):
-    """Sickness hospitalization benefits"""
-    return size_benefit_sick_hosp(t) * pols_sick_hosp(t)
-
-
-def benefit_surg(t):
-    """Surgery benefits"""
-    return size_benefit_surg(t) * pols_surg(t)
-
-
-def benefit_surr(t):
-    """Surrender benefits"""
-    return size_benefit_surr(t) * pols_lapse(t)
-
-
-def benefit_total(t):
-    """Benefit Total"""
-    return (benefit_mat(t)
-            + claims(t)
-            + benefit_acc_dth(t)
-            + benefit_surr(t)
-            + benefit_ann(t)
-            + benefit_acc_hosp(t)
-            + benefit_sick_hosp(t)
-            + benefit_surg(t)
-            + benefit_living(t)
-            + benefit_other(t))
+    """Claims Total"""
+    return (claims_mat(t)
+            + claims_death(t)
+            + claims_acc_dth(t)
+            + claims_surr(t)
+            + claims_ann(t)
+            + claims_acc_hosp(t)
+            + claims_sick_hosp(t)
+            + claims_surg(t)
+            + claims_living(t)
+            + claims_other(t))
 
 
 def change_rsrv(t):
@@ -132,7 +132,7 @@ def change_rsrv(t):
 
 def exps_acq(t):
     """Acquisition expenses"""
-    return expense_acq(t) * (pols_if_init(t) + pols_renewal(t))
+    return expense_acq_pp(t) * (pols_if_init(t) + pols_renewal(t))
 
 
 def exps_acq_total(t):
@@ -142,12 +142,12 @@ def exps_acq_total(t):
 
 def exps_comm_init(t):
     """Initial commissions"""
-    return size_exps_comm_init(t) * pols_if_beg1(t)
+    return exps_comm_init_pp(t) * pols_if_beg1(t)
 
 
 def exps_comm_ren(t):
     """Renewal commissions"""
-    return size_exps_comm_ren(t) * pols_if_beg1(t)
+    return exps_comm_ren_pp(t) * pols_if_beg1(t)
 
 
 def commissions(t):
@@ -157,7 +157,7 @@ def commissions(t):
 
 def exps_maint(t):
     """Maintenance expenses"""
-    return expense_maint(t) * pols_if_beg1(t)
+    return expense_maint_pp(t) * pols_if_beg1(t)
 
 
 def exps_maint_total(t):
@@ -203,13 +203,13 @@ def int_accum_cf(t):
 
 def invst_income(t):
     """Investment income"""
-    return size_invst_income(t) * pols_if_beg1(t)
+    return invst_income_pp(t) * pols_if_beg1(t)
 
 
 def net_cf(t):
     """Net liability cashflow"""
     return (premiums(t)
-            - benefit_total(t)
+            - claims(t)
             - expenses(t))
 
 
@@ -309,7 +309,7 @@ def profit_bef_tax(t):
 
     return (premiums(t)
             + invst_income(t)
-            - benefit_total(t)
+            - claims(t)
             - expenses(t)
             - change_rsrv(t))
 
@@ -321,7 +321,7 @@ def reserve_hosp_rsrv_end(t):
 
 def reserve_prem_rsrv_end(t):
     """Premium reserve: End of period"""
-    return size_reserve_prem_rsrv_end(t) * pols_if(t)
+    return reserve_prem_rsrv_end_pp(t) * pols_if(t)
 
 
 def reserve_total_end(t):
@@ -336,73 +336,73 @@ def reserve_uern_prem_end(t):
     return 0
 
 
-def size_ann_prem(t):
+def ann_prem_pp(t):
     """Annualized premium per policy at time ``t``"""
     return sum_assured(t) * ann_prem_rate()
 
 
-def size_benefit_acc_dth(t):
+def claims_acc_dth_pp(t):
     """Accidental death benefit per policy"""
     return 0
 
 
-def size_benefit_acc_hosp(t):
+def claims_acc_hosp_pp(t):
     """Accidental hospitalization benefit per policy"""
     return 0
 
 
-def size_benefit_ann(t):
+def claims_ann_pp(t):
     """Annuity benefit per policy"""
     return 0
 
 
-def claim_pp(t):
+def claims_death_pp(t):
     """Death benefit per policy"""
     return sum_assured(t)
 
 
-def size_benefit_living(t):
+def claims_living_pp(t):
     """Living benefit per policy"""
     return 0
 
 
-def size_benefit_mat(t):
+def claims_mat_pp(t):
     """Maturity benefit per policy"""
     return 0
 
 
-def size_benefit_other(t):
+def claims_other_pp(t):
     """Other benefit per policy"""
     return 0
 
 
-def size_benefit_sick_hosp(t):
+def claims_sick_hosp_pp(t):
     """Sickness hospitalization benefit per policy"""
     return 0
 
 
-def size_benefit_surg(t):
+def claims_surg_pp(t):
     """Surgery benefit per policy"""
     return 0
 
 
-def size_benefit_surr(t):
+def claims_surr_pp(t):
     """Surrender benefit per policy"""
     return sum_assured(t) * (cash_value_rate(t)
                                 + cash_value_rate(t+1)) / 2
 
 
-def expense_acq(t):
+def expense_acq_pp(t):
     """Acquisition expense per policy at time t"""
     if t == 0:
-        return (size_ann_prem(t) * asmp.exps_acq_ann_prem()[idx]
+        return (ann_prem_pp(t) * asmp.exps_acq_ann_prem()[idx]
                 + (sum_assured(t) * asmp.exps_acq_sa()[idx] + asmp.exps_acq_pol()[idx])
                 * inflation_factor(t) / inflation_factor(0))
     else:
         return 0
 
 
-def size_exps_comm_init(t):
+def exps_comm_init_pp(t):
     """Initial commission per policy at time t"""
     if t == 0:
         return premium_pp(t) * asmp.comm_init_prem()[idx] * (1 + asmp.cnsmp_tax())
@@ -410,7 +410,7 @@ def size_exps_comm_init(t):
         return 0
 
 
-def size_exps_comm_ren(t):
+def exps_comm_ren_pp(t):
     """Renewal commission per policy at time t"""
     if t == 0:
         return 0
@@ -420,21 +420,21 @@ def size_exps_comm_ren(t):
         return 0
 
 
-def expense_maint(t):
+def expense_maint_pp(t):
     """Maintenance expense per policy at time t"""
-    return (size_ann_prem(t) * asmp.exps_maint_ann_prem()[idx]
+    return (ann_prem_pp(t) * asmp.exps_maint_ann_prem()[idx]
             + (sum_assured(t) * asmp.exps_maint_sa()[idx] + asmp.exps_maint_pol()[idx])
             * inflation_factor(t))
 
 
-def size_exps_other(t):
+def exps_other_pp(t):
     """Other expenses per policy at time t"""
     return 0
 
 
-def size_invst_income(t):
+def invst_income_pp(t):
     """Investment Income per policy from t to t+1"""
-    return (size_reserve_total_aft_mat(t) + premium_pp(t)) * invst_ret_rate(t)
+    return (reserve_total_aft_mat_pp(t) + premium_pp(t)) * invst_ret_rate(t)
 
 
 def premium_pp(t):
@@ -442,28 +442,28 @@ def premium_pp(t):
     return sum_assured(t) * gross_prem_rate() * pol.prem_freq()[idx]
 
 
-def size_reserve_prem_rsrv_aft_mat(t):
+def reserve_prem_rsrv_aft_mat_pp(t):
     """Premium reserve per policy: After maturity"""
     return sum_assured(t) * pol.ReserveNLP_Rate('VAL', t)
 
 
-def size_reserve_prem_rsrv_end(t):
+def reserve_prem_rsrv_end_pp(t):
     """Premium reserve per policy: End of period"""
     return sum_assured(t) * pol.ReserveNLP_Rate('VAL', t)
 
 
-def size_reserve_total_aft_mat(t):
+def reserve_total_aft_mat_pp(t):
     """Total reserve per policy: After maturity"""
-    return (size_reserve_prem_rsrv_aft_mat(t)
-           + size_reserve_uern_prem_aft_mat(t))
+    return (reserve_prem_rsrv_aft_mat_pp(t)
+           + reserve_uern_prem_aft_mat_pp(t))
 
 
-def size_reserve_uern_prem_aft_mat(t):
+def reserve_uern_prem_aft_mat_pp(t):
     """Unearned premium: After maturity"""
     return 0 # sum_assured(t) * polset.UnernPremRate(polset, tt, True)
 
 
-def size_reserve_uern_prem_end(t):
+def reserve_uern_prem_end_pp(t):
     """Unearned reserve per policy: End of period"""
     return 0 # sum_assured(t) * pol.UnernPremRate(polset, tt)
 
@@ -498,8 +498,8 @@ def gross_prem_rate():
     freq = pol.prem_freq()[idx]
 
     comf = comm_table[
-        pol.sex()[idx], 
-        pol.int_rate(RateBasisID.PREM)[idx], 
+        pol.sex()[idx],
+        pol.int_rate(RateBasisID.PREM)[idx],
         pol.table_id(RateBasisID.PREM)[idx]]
 
     if pol.product()[idx] == ProductID.TERM or pol.product()[idx] == ProductID.WL:
@@ -541,8 +541,8 @@ def net_prem_rate(basis):
 
 
     comf = comm_table[
-        pol.sex()[idx], 
-        pol.int_rate(basis)[idx], 
+        pol.sex()[idx],
+        pol.int_rate(basis)[idx],
         pol.table_id(basis)[idx]]
 
 
@@ -568,8 +568,8 @@ def reserve_nlp_rate(basis, t):
 
     # lt = life_table[sex(), int_rate(basis), table_id(basis)]
     comf = comm_table[
-        pol.sex()[idx], 
-        pol.int_rate(basis)[idx], 
+        pol.sex()[idx],
+        pol.int_rate(basis)[idx],
         pol.table_id(basis)[idx]]
 
 
@@ -603,5 +603,4 @@ def inflation_factor(t):
 
 def disc_rate_mth(t):
     return scen.disc_rate_mth(t)
-
 
