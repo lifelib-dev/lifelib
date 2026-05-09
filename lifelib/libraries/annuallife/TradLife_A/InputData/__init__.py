@@ -133,6 +133,16 @@ def mortality_tables():
     return df
 
 
+def mort_table_last_ages():
+    """First Age (the row index) at which mortality reaches 1, per column.
+
+    Returns a Series indexed by ``mortality_tables().columns``
+    (a MultiIndex of (MortTable, Sex)) with the Age value from the row index.
+    """
+    df = mortality_tables()
+    return (df == 1).idxmax()
+
+
 def assumption_tables():
 
     # wb = input_workbook()

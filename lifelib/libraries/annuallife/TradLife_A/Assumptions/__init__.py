@@ -182,6 +182,18 @@ def mort_array_index():
     )
 
 
+def last_mort_age():
+    """Last mortality age (first age where mortality reaches 1) per policy."""
+
+    last_ages = input_data.mort_table_last_ages()
+    keys = pd.MultiIndex.from_arrays(
+        [mort_table_index(), input_data.policy_data()['Sex']]
+    )
+    result = pd.Series(last_ages.reindex(keys).values,
+                       index=input_data.policy_data().index)
+    return pandas_to_array(result)
+
+
 def asmp_tables():
     return pandas_to_array(input_data.assumption_tables())
 
