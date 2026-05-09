@@ -11,17 +11,17 @@ Formulas
 
    ~accum_cf
    ~age
-   ~benefit_acc_dth
-   ~benefit_acc_hosp
-   ~benefit_ann
+   ~claims_acc_dth
+   ~claims_acc_hosp
+   ~claims_ann
+   ~claims_death
+   ~claims_living
+   ~claims_mat
+   ~claims_other
+   ~claims_sick_hosp
+   ~claims_surg
+   ~claims_surr
    ~claims
-   ~benefit_living
-   ~benefit_mat
-   ~benefit_other
-   ~benefit_sick_hosp
-   ~benefit_surg
-   ~benefit_surr
-   ~benefit_total
    ~change_rsrv
    ~exps_acq
    ~exps_acq_total
@@ -60,29 +60,29 @@ Formulas
    ~reserve_prem_rsrv_end
    ~reserve_total_end
    ~reserve_uern_prem_end
-   ~size_ann_prem
-   ~size_benefit_acc_dth
-   ~size_benefit_acc_hosp
-   ~size_benefit_ann
-   ~claim_pp
-   ~size_benefit_living
-   ~size_benefit_mat
-   ~size_benefit_other
-   ~size_benefit_sick_hosp
-   ~size_benefit_surg
-   ~size_benefit_surr
-   ~expense_acq
-   ~size_exps_comm_init
-   ~size_exps_comm_ren
-   ~expense_maint
-   ~size_exps_other
-   ~size_invst_income
+   ~ann_prem_pp
+   ~claims_acc_dth_pp
+   ~claims_acc_hosp_pp
+   ~claims_ann_pp
+   ~claims_death_pp
+   ~claims_living_pp
+   ~claims_mat_pp
+   ~claims_other_pp
+   ~claims_sick_hosp_pp
+   ~claims_surg_pp
+   ~claims_surr_pp
+   ~expense_acq_pp
+   ~exps_comm_init_pp
+   ~exps_comm_ren_pp
+   ~expense_maint_pp
+   ~exps_other_pp
+   ~invst_income_pp
    ~premium_pp
-   ~size_reserve_prem_rsrv_aft_mat
-   ~size_reserve_prem_rsrv_end
-   ~size_reserve_total_aft_mat
-   ~size_reserve_uern_prem_aft_mat
-   ~size_reserve_uern_prem_end
+   ~reserve_prem_rsrv_aft_mat_pp
+   ~reserve_prem_rsrv_end_pp
+   ~reserve_total_aft_mat_pp
+   ~reserve_uern_prem_aft_mat_pp
+   ~reserve_uern_prem_end_pp
    ~sum_assured
    ~proj_len
    ~mort_rate
@@ -106,27 +106,27 @@ Cells Descriptions
 
 .. autofunction:: age
 
-.. autofunction:: benefit_acc_dth
+.. autofunction:: claims_acc_dth
 
-.. autofunction:: benefit_acc_hosp
+.. autofunction:: claims_acc_hosp
 
-.. autofunction:: benefit_ann
+.. autofunction:: claims_ann
+
+.. autofunction:: claims_death
+
+.. autofunction:: claims_living
+
+.. autofunction:: claims_mat
+
+.. autofunction:: claims_other
+
+.. autofunction:: claims_sick_hosp
+
+.. autofunction:: claims_surg
+
+.. autofunction:: claims_surr
 
 .. autofunction:: claims
-
-.. autofunction:: benefit_living
-
-.. autofunction:: benefit_mat
-
-.. autofunction:: benefit_other
-
-.. autofunction:: benefit_sick_hosp
-
-.. autofunction:: benefit_surg
-
-.. autofunction:: benefit_surr
-
-.. autofunction:: benefit_total
 
 .. autofunction:: change_rsrv
 
@@ -204,51 +204,51 @@ Cells Descriptions
 
 .. autofunction:: reserve_uern_prem_end
 
-.. autofunction:: size_ann_prem
+.. autofunction:: ann_prem_pp
 
-.. autofunction:: size_benefit_acc_dth
+.. autofunction:: claims_acc_dth_pp
 
-.. autofunction:: size_benefit_acc_hosp
+.. autofunction:: claims_acc_hosp_pp
 
-.. autofunction:: size_benefit_ann
+.. autofunction:: claims_ann_pp
 
-.. autofunction:: claim_pp
+.. autofunction:: claims_death_pp
 
-.. autofunction:: size_benefit_living
+.. autofunction:: claims_living_pp
 
-.. autofunction:: size_benefit_mat
+.. autofunction:: claims_mat_pp
 
-.. autofunction:: size_benefit_other
+.. autofunction:: claims_other_pp
 
-.. autofunction:: size_benefit_sick_hosp
+.. autofunction:: claims_sick_hosp_pp
 
-.. autofunction:: size_benefit_surg
+.. autofunction:: claims_surg_pp
 
-.. autofunction:: size_benefit_surr
+.. autofunction:: claims_surr_pp
 
-.. autofunction:: expense_acq
+.. autofunction:: expense_acq_pp
 
-.. autofunction:: size_exps_comm_init
+.. autofunction:: exps_comm_init_pp
 
-.. autofunction:: size_exps_comm_ren
+.. autofunction:: exps_comm_ren_pp
 
-.. autofunction:: expense_maint
+.. autofunction:: expense_maint_pp
 
-.. autofunction:: size_exps_other
+.. autofunction:: exps_other_pp
 
-.. autofunction:: size_invst_income
+.. autofunction:: invst_income_pp
 
 .. autofunction:: premium_pp
 
-.. autofunction:: size_reserve_prem_rsrv_aft_mat
+.. autofunction:: reserve_prem_rsrv_aft_mat_pp
 
-.. autofunction:: size_reserve_prem_rsrv_end
+.. autofunction:: reserve_prem_rsrv_end_pp
 
-.. autofunction:: size_reserve_total_aft_mat
+.. autofunction:: reserve_total_aft_mat_pp
 
-.. autofunction:: size_reserve_uern_prem_aft_mat
+.. autofunction:: reserve_uern_prem_aft_mat_pp
 
-.. autofunction:: size_reserve_uern_prem_end
+.. autofunction:: reserve_uern_prem_end_pp
 
 .. autofunction:: sum_assured
 

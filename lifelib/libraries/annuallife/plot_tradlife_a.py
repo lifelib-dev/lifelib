@@ -25,8 +25,8 @@ ax = pd.DataFrame(data).plot.line(marker='o', color='r')
 # Draw components of net cashflows
 
 vars = ['premiums',
-        'benefit_surr',
-        'claims',
+        'claims_surr',
+        'claims_death',
         'exps_maint',
         'commissions',
         'exps_acq']

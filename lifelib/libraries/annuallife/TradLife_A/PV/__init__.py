@@ -35,36 +35,36 @@ def interest_net_cf(t):
                 + expenses(t)) * disc_rate_mth(t)
 
 
-def pv_claims(t):
+def pv_claims_death(t):
     """Present value of death benefits"""
     if t > proj_len():
         return 0
     else:
-        return (-claims(t) + pv_claims(t+1)) / (1 + disc_rate_mth(t))
+        return (-claims_death(t) + pv_claims_death(t+1)) / (1 + disc_rate_mth(t))
 
 
-def pv_benefit_mat(t):
+def pv_claims_mat(t):
     """Present value of matuirty benefits"""
     if t > proj_len():
         return 0
     else:
-        return (-benefit_mat(t) + pv_benefit_mat(t+1)) / (1 + disc_rate_mth(t))
+        return (-claims_mat(t) + pv_claims_mat(t+1)) / (1 + disc_rate_mth(t))
 
 
-def pv_benefit_surr(t):
+def pv_claims_surr(t):
     """Present value of surrender benefits"""
     if t > proj_len():
         return 0
     else:
-        return (-benefit_surr(t) + pv_benefit_surr(t+1)) / (1 + disc_rate_mth(t))
+        return (-claims_surr(t) + pv_claims_surr(t+1)) / (1 + disc_rate_mth(t))
 
 
-def pv_benefit_total(t):
+def pv_claims(t):
     """Present value of total benefits"""
     if t > proj_len():
         return 0
     else:
-        return (-benefit_total(t) + pv_benefit_total(t+1)) / (1 + disc_rate_mth(t))
+        return (-claims(t) + pv_claims(t+1)) / (1 + disc_rate_mth(t))
 
 
 def pv_check(t):
@@ -107,7 +107,7 @@ def pv_net_cf(t):
     """Present value of net cashflow"""
     return (pv_premiums(t)
             + pv_expenses(t)
-            + pv_benefit_total(t))
+            + pv_claims(t))
 
 
 def pv_net_cf_for_check(t):
@@ -117,7 +117,7 @@ def pv_net_cf_for_check(t):
     else:
         return (premiums(t)
                 - expenses(t)
-                - benefit_total(t) / (1 + disc_rate_mth(t))
+                - claims(t) / (1 + disc_rate_mth(t))
                 + pv_net_cf(t+1) / (1 + disc_rate_mth(t)))
 
 
@@ -135,5 +135,4 @@ def pv_sum_insur_if(t):
         return 0
     else:
         return insur_if_beg1(t) + pv_sum_insur_if(t+1) / (1 + disc_rate_mth(t))
-
 
