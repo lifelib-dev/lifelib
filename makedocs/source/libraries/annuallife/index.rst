@@ -17,8 +17,7 @@ Overview
 The **annuallife** library is the updated successor of the legacy
 :ref:`project_simplelife` project. It packages
 :mod:`~annuallife.TradLife_A`, an annual projection model of basic
-traditional life policies, alongside the original intermediate
-:mod:`~annuallife.model_new` snapshot from which it was derived.
+traditional life policies.
 
 :mod:`~annuallife.TradLife_A` projects life insurance cashflows and their
 present values for policies represented by model points. Projected items
@@ -90,7 +89,6 @@ Library Contents
    File or Folder                         Description
    ====================================== ==========================================================================
    ``TradLife_A``                         The :mod:`~annuallife.TradLife_A` model.
-   ``model_new``                          The intermediate backup model that ``TradLife_A`` was derived from.
    ``input.xlsx``                         Excel workbook holding policy data, assumptions, mortality tables, scenarios and product specs.
    ``plot_tradlife_a.py``                 sphinx-gallery plot script that renders the cashflow chart.
    ``plot_pvcashflows.py``                sphinx-gallery plot script that renders present-value cashflows.
