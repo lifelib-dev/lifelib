@@ -60,15 +60,6 @@ _spaces = [
 # ---------------------------------------------------------------------------
 # Cells
 
-def mort_rate(x):
-    """Bae mortality rate"""
-
-    return _space.asmp_lookup
-
-    table_id = _space.asmp_lookup.match("BaseMort", prod(), polt(), gen()).value
-    return mortality_tables[table_id, sex(), x]
-
-
 def cnsmp_tax():
     """Consumption tax rate"""
     return input_data.const_params()['CnsmpTax']
