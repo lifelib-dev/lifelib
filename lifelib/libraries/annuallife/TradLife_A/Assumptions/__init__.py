@@ -71,88 +71,56 @@ def mort_rate(x):
 
 def cnsmp_tax():
     """Consumption tax rate"""
-    # return asmp_lookup("CnsmpTax")
-    # return pandas_to_array(map_to_policies(input_data.assumption('CnsmpTax')))
     return input_data.const_params()['CnsmpTax']
 
 
 def comm_init_prem():
     """Initial commission per premium"""
-    # result = _space.asmp_lookup.match("CommInitPrem", prod(), polt(), gen()).value
-
-    # if result is not None:
-    #     return result
-    # else:
-    #     raise ValueError('comm_init_prem not found')
-
     return pandas_to_array(map_to_policies(input_data.assumption('CommInitPrem')))
 
 
 def comm_ren_prem():
     """Renewal commission per premium"""
-    # result = _space.asmp_lookup.match("CommRenPrem", prod(), polt(), gen()).value
-
-    # if result is not None:
-    #     return  result
-    # else:
-    #     raise ValueError('comm_ren_prem not found')
-
     return pandas_to_array(map_to_policies(input_data.assumption('CommRenPrem')))
 
 
 def comm_ren_term():
     """Renewal commission term"""
-    # result = _space.asmp_lookup.match("CommRenTerm", prod(), polt(), gen()).value
-
-    # if result is not None:
-    #     return result
-    # else:
-    #     raise ValueError('comm_ren_term not found')
-
     return pandas_to_array(map_to_policies(input_data.assumption('CommRenTerm')))
 
 
 def exps_acq_ann_prem():
     """Acquisition expense per annualized premium"""
-    # return _space.asmp_lookup.match("ExpsAcqAnnPrem", prod(), polt(), gen()).value
-
     return pandas_to_array(map_to_policies(input_data.assumption('ExpsAcqAnnPrem')))
 
 
 def exps_acq_pol():
     """Acquisition expense per policy"""
-    # return _space.asmp_lookup.match("ExpsAcqPol", prod(), polt(), gen()).value
     return pandas_to_array(map_to_policies(input_data.assumption('ExpsAcqPol')))
 
 
 def exps_acq_sa():
     """Acquisition expense per sum assured"""
-    # return _space.asmp_lookup.match("ExpsAcqSA", prod(), polt(), gen()).value
     return pandas_to_array(map_to_policies(input_data.assumption('ExpsAcqSA')))
 
 
 def exps_maint_ann_prem():
     """Maintenance expense per annualized premium"""
-    # return _space.asmp_lookup.match("ExpsMaintPrem", prod(), polt(), gen()).value
     return pandas_to_array(map_to_policies(input_data.assumption('ExpsMaintPrem')))
 
 
 def exps_maint_pol():
     """Maintenance expense per policy"""
-    # return _space.asmp_lookup.match("ExpsMaintPol", prod(), polt(), gen()).value
     return pandas_to_array(map_to_policies(input_data.assumption('ExpsMaintPol')))
 
 
 def exps_maint_sa():
     """Maintenance expense per sum assured"""
-    # return _space.asmp_lookup.match("ExpsMaintSA", prod(), polt(), gen()).value
     return pandas_to_array(map_to_policies(input_data.assumption('ExpsMaintSA')))
 
 
 def inflation_rate():
     """Inflation rate"""
-    # return asmp_lookup("InflRate")
-    # return pandas_to_array(map_to_policies(input_data.assumption('InflRate')))
     return input_data.const_params()['InflRate']
 
 

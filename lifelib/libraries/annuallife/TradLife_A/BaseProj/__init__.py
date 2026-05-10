@@ -537,19 +537,13 @@ def net_prem_rate(basis):
     """Net Premium Rate"""
 
     gamma2 = pol.load_maint_sa2()[idx]
-    # comf = life_table[sex(), int_rate(basis), table_id(basis)]
-
 
     comf = comm_table[
         pol.sex()[idx],
         pol.int_rate(basis)[idx],
         pol.table_id(basis)[idx]]
 
-
-    # x, n, m = issue_age(), policy_term(), prem_term()
-
     x, n, m = pol.issue_age()[idx], pol.policy_term()[idx], pol.prem_term()[idx]
-
 
     if pol.product()[idx] == ProductID.TERM or pol.product()[idx] == ProductID.WL:
         return (comf.Axn(x, n) + gamma2 * comf.AnnDuenx(x, n-m, 1, m)) / comf.AnnDuenx(x, n)
@@ -566,12 +560,10 @@ def reserve_nlp_rate(basis, t):
 
     gamma2 = pol.load_maint_sa2()[idx]
 
-    # lt = life_table[sex(), int_rate(basis), table_id(basis)]
     comf = comm_table[
         pol.sex()[idx],
         pol.int_rate(basis)[idx],
         pol.table_id(basis)[idx]]
-
 
     x, n, m = pol.issue_age()[idx], pol.policy_term()[idx], pol.prem_term()[idx]
 

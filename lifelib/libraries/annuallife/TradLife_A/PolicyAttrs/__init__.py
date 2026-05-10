@@ -71,12 +71,6 @@ def gross_prem_table():
 def init_surr_charge():
     """Initial Surrender Charge Rate"""
 
-    # param1 = _space.SpecLookup.match("SurrChargeParam1", product(), policy_type(), gen()).value
-    # param2 = _space.SpecLookup.match("SurrChargeParam2", product(), policy_type(), gen()).value
-
-    # if param1 is None or param2 is None:
-    #     raise ValueError('SurrChargeParam not found')
-
     param1 = surr_charge_param1()
     param2 = surr_charge_param2()
 
@@ -114,13 +108,6 @@ def load_maint_prem():
 def load_maint_prem_waiver_prem():
     """Maintenance Loading per Gross Premium for Premium Waiver"""
 
-    # if prem_term() < 5:
-    #     return 0.0005
-    # elif prem_term() < 10:
-    #     return 0.001
-    # else:
-    #     return 0.002
-
     table = input_data.prem_waiver_cost()
 
     bins = [-np.inf] + list(table.keys())[:-1] + [np.inf]
@@ -155,20 +142,6 @@ def reserve_rate():
 
 def table_id(basis):
     """Mortality Table ID"""
-
-    # if RateBasis == 'PREM':
-    #     basis = "MortTablePrem"
-    # elif RateBasis == 'VAL':
-    #     basis = "MortTableVal"
-    # else:
-    #     raise ValueError('invalid RateBasis')
-
-    # result = _space.SpecLookup.match(basis, product(), policy_type(), gen()).value
-
-    # if result is not None:
-    #     return result
-    # else:
-    #     raise ValueError('invalid RateBais')
 
     col = {
         RateBasisID.PREM: 'MortTablePrem',
