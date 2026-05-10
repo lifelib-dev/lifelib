@@ -225,16 +225,6 @@ def asmp_table_len():
 # ---------------------------------------------------------------------------
 # References
 
-asmp_lookup = ("Pickle", 3243921299984)
-
-gen = ("Pickle", 3243927593488)
-
-polt = ("Pickle", 3243947836816)
-
-prod = ("Pickle", 3243947842704)
-
-sex = ("Pickle", 3243910623568)
-
 input_data = ("Interface", ("..", "InputData"), "auto")
 
 return_array = True
