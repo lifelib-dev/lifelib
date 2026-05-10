@@ -118,7 +118,7 @@ def load_maint_prem_waiver_prem():
          bins=bins,
          labels=vals,
          right=False,        # left-closed: [x, y)
-     )) #.astype(float)
+     ))
 
 
 def load_maint_sa():
@@ -157,13 +157,6 @@ def uern_prem_rate():
 
 
 def product():
-    # return getattr(ProductID, 'TERM')
-
-    # prod_str_to_int = {
-    #     'TERM': ProductID.TERM,
-    #     'WL': ProductID.WL,
-    #     'ENDW': ProductID.ENDW
-    #     }
     return pandas_to_array(input_data.policy_data()['Product'].map(lambda s: getattr(ProductID, s)))
 
 
@@ -205,25 +198,21 @@ def sum_assured():
 
 
 def load_acq_sa_param1():
-    # return input_data.product_spec('LoadAcqSAParam2')
     return pandas_to_array(
         map_to_policies(input_data.product_spec('LoadAcqSAParam1')))
 
 
 def load_acq_sa_param2():
-    # return input_data.product_spec('LoadAcqSAParam2')
     return pandas_to_array(
         map_to_policies(input_data.product_spec('LoadAcqSAParam2')))
 
 
 def load_maint_prem_param1():
-    # return input_data.product_spec('LoadAcqSAParam2')
     return pandas_to_array(
         map_to_policies(input_data.product_spec('LoadMaintPremParam1')))
 
 
 def load_maint_prem_param2():
-    # return input_data.product_spec('LoadAcqSAParam2')
     return pandas_to_array(
         map_to_policies(input_data.product_spec('LoadMaintPremParam2')))
 

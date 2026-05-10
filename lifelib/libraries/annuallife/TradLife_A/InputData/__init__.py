@@ -82,17 +82,6 @@ def input_workbook():
 
 def policy_data():
 
-    # wb = input_workbook()
-
-    # sheet_name, cell_range = next(wb.defined_names["PolicyData"].destinations)
-    # ws = wb[sheet_name]
-
-    # rows = list(ws[cell_range.replace('$', '')])
-    # headers = [cell.value for cell in rows[0]]
-    # data = [[cell.value for cell in row] for row in rows[1:]]
-
-    # return pd.DataFrame(data, columns=headers).set_index(headers[0])
-
     return get_named_range_as_df('PolicyData', index_len=1)
 
 
@@ -145,17 +134,6 @@ def mort_table_last_ages():
 
 def assumption_tables():
 
-    # wb = input_workbook()
-
-    # sheet_name, cell_range = next(wb.defined_names["AsmpByDuration"].destinations)
-    # ws = wb[sheet_name]
-
-    # rows = list(ws[cell_range.replace('$', '')])
-    # headers = [cell.value for cell in rows[0]]
-    # data = [[cell.value for cell in row] for row in rows[1:]]
-
-    # return pd.DataFrame(data, columns=headers).set_index(headers[0])
-
     return get_named_range_as_df('AsmpByDuration', index_len=1)
 
 
@@ -182,17 +160,6 @@ def get_named_range_as_df(name, index_len=0):
 _is_cached = False
 
 def scenarios():
-
-    # wb = input_workbook()
-
-    # sheet_name, cell_range = next(wb.defined_names["PolicyData"].destinations)
-    # ws = wb[sheet_name]
-
-    # rows = list(ws[cell_range.replace('$', '')])
-    # headers = [cell.value for cell in rows[0]]
-    # data = [[cell.value for cell in row] for row in rows[1:]]
-
-    # return pd.DataFrame(data, columns=headers).set_index(headers[0])
 
     return get_named_range_as_df('Scenarios', index_len=2)
 
