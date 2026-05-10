@@ -128,15 +128,10 @@ def mortality_tables():
     """Mortality Table"""
 
     tables = input_data.mortality_tables()
-    # return tables.to_numpy() if return_array else tables
     return pandas_to_array(tables)
 
 
 def mort_table_index():
-    # s = input_data.assumption('BaseMort')
-
-    # return s.reindex(pd.MultiIndex.from_frame(
-    #     input_data.policy_data()[s.index.names]))
     return map_to_policies(input_data.assumption('BaseMort'))
 
 
