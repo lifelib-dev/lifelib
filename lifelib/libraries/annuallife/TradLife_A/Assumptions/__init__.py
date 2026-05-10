@@ -5,41 +5,43 @@
 
 """Assumption input and calculations for individual policies.
 
-This Space is a child Space of :mod:`~simplelife.model.Projection`,
-and it holds assumption parameters and rates used
-by the :mod:`~simplelife.model.Projection` Space.
+This Space holds assumption parameters and rates used by
+:mod:`~annuallife.TradLife_A.Projection` and its base spaces.
 
-.. figure:: /images/projects/simplelife/model/Assumptions/diagram1.png
-
-.. rubric:: Parameters
-
-Since :mod:`~simplelife.model.Projection` is parameterized with
-:attr:`idx` and :attr:`scen_id`, this Space is also
-parameterized as a child space of :mod:`~simplelife.model.Projection`.
-For example, ``simplelife.Projection[1].Assumptions.exps_maint_sa()``
-represents the expense maintenance per sum assured for Policy 1.
-
-Attributes:
-    idx(:obj:`int`): Policy ID
-    scen_id(:obj:`int`, optional): Scenario ID, defaults to 1.
+Most cells in this Space return per-policy NumPy arrays whose layout
+matches the rows of
+:func:`~annuallife.TradLife_A.InputData.policy_data`, so callers index
+into them with the integer policy index ``idx``. A few cells, such as
+:func:`asmp_tables` and :func:`mortality_tables`, return tables shared
+across all policies.
 
 .. rubric:: References
 
 Attributes:
-    AssumptionTables: `ExcelRange`_ object holding data read from the
-        Excel range *AssumptionTable* in *input.xlsx*.
+    input_data: Alias for :mod:`~annuallife.TradLife_A.InputData`.
+        Per-policy assumptions are read from the ``AssumptionTable``
+        range in *input.xlsx* via
+        :func:`~annuallife.TradLife_A.InputData.assumption`,
+        and mortality / lapse tables from
+        :func:`~annuallife.TradLife_A.InputData.assumption_tables` and
+        :func:`~annuallife.TradLife_A.InputData.mortality_tables`.
 
-    MortalityTable: `ExcelRange`_ object holding mortality tables.
-        The data is read from *mortality_tables* range in *input.xlsx*.
+    return_array(:obj:`bool`): When ``True`` (the default), helper
+        functions inherited from
+        :mod:`~annuallife.TradLife_A.Utilities` return NumPy arrays
+        instead of pandas objects.
 
-    prod: Alias for :func:`simplelife.Projection.Policy.product`
-    polt: Alias for :func:`simplelife.Projection.Policy.policy_type`
-    gen: Alias for :func:`simplelife.Projection.Policy.gen`
-    sex: Alias for :func:`simplelife.Projection.Policy.sex`
-    asmp_lookup: Alias for :func:`simplelife.input_data.asmp_lookup`
+.. rubric:: Inherited helpers
 
-.. _ExcelRange:
-   https://docs.modelx.io/en/latest/reference/dataclient.html#excelrange
+Inherited from :mod:`~annuallife.TradLife_A.Utilities`:
+
+* :func:`~annuallife.TradLife_A.Utilities.pandas_to_array`
+* :func:`~annuallife.TradLife_A.Utilities.map_to_policies`
+
+.. rubric:: Child spaces
+
+* :mod:`~annuallife.TradLife_A.Assumptions.AsmpID`: Enum-style codes
+  identifying entries in the ``AsmpByDuration`` table.
 
 """
 
@@ -61,7 +63,13 @@ _spaces = [
 # Cells
 
 def mort_rate(x):
-    """Bae mortality rate"""
+    """Base mortality rate at age ``x``.
+
+    Stub kept for compatibility with the legacy :mod:`simplelife` API.
+    The annual model resolves base mortality rates through
+    :func:`~annuallife.TradLife_A.BaseProj.mort_rate`, which indexes
+    :func:`mortality_tables` using :func:`mort_array_index`.
+    """
 
     return _space.asmp_lookup
 
@@ -125,17 +133,34 @@ def inflation_rate():
 
 
 def mortality_tables():
-    """Mortality Table"""
+    """Mortality tables read from *input.xlsx*.
+
+    Returns the full mortality-table block from the ``MortalityTables``
+    range as a 2-D NumPy array (when ``return_array`` is ``True``),
+    where rows are indexed by age and columns by ``(MortTable, Sex)``.
+    """
 
     tables = input_data.mortality_tables()
     return pandas_to_array(tables)
 
 
 def mort_table_index():
+    """Per-policy mortality table identifier.
+
+    Maps the ``BaseMort`` assumption keyed by the model point lookup
+    (product, policy type, gen) to each row of
+    :func:`~annuallife.TradLife_A.InputData.policy_data`.
+    """
     return map_to_policies(input_data.assumption('BaseMort'))
 
 
 def mort_array_index():
+    """Per-policy column index into :func:`mortality_tables`.
+
+    Returns a 1-D integer array of column positions in
+    :func:`~annuallife.TradLife_A.InputData.mortality_tables` for each
+    policy's ``(mort_table_index, sex)`` pair.
+    """
 
     columns = input_data.mortality_tables().columns
 
@@ -146,7 +171,7 @@ def mort_array_index():
 
 
 def last_mort_age():
-    """Last mortality age (first age where mortality reaches 1) per policy."""
+    """Last mortality age per policy (first age where mortality reaches 1)."""
 
     last_ages = input_data.mort_table_last_ages()
     keys = pd.MultiIndex.from_arrays(
@@ -158,10 +183,24 @@ def last_mort_age():
 
 
 def asmp_tables():
+    """Assumption tables by duration.
+
+    Returns the ``AsmpByDuration`` range from *input.xlsx* as a 2-D
+    NumPy array indexed by duration (rows) and assumption ID (columns).
+    Used by :func:`~annuallife.TradLife_A.BaseProj.mort_factor` and
+    :func:`~annuallife.TradLife_A.BaseProj.lapse_rate` together with
+    :func:`mort_factor_index` and :func:`lapse_rate_index`.
+    """
     return pandas_to_array(input_data.assumption_tables())
 
 
 def mort_factor_index():
+    """Per-policy column index into :func:`asmp_tables` for mortality factors.
+
+    Resolves each policy's ``MortFactor`` assumption (referencing an
+    :mod:`~annuallife.TradLife_A.Assumptions.AsmpID`) to its column
+    position in the ``AsmpByDuration`` table.
+    """
 
 
     key_to_idx = {getattr(AsmpID, v): i for i, v in enumerate(input_data.assumption_tables().columns)}
@@ -172,6 +211,12 @@ def mort_factor_index():
 
 
 def lapse_rate_index():
+    """Per-policy column index into :func:`asmp_tables` for lapse rates.
+
+    Resolves each policy's ``Surrender`` assumption (referencing an
+    :mod:`~annuallife.TradLife_A.Assumptions.AsmpID`) to its column
+    position in the ``AsmpByDuration`` table.
+    """
 
 
     key_to_idx = {getattr(AsmpID, v): i for i, v in enumerate(input_data.assumption_tables().columns)}
@@ -182,6 +227,7 @@ def lapse_rate_index():
 
 
 def asmp_table_len():
+    """Number of rows (durations) in :func:`asmp_tables`."""
     return len(asmp_tables())
 
 

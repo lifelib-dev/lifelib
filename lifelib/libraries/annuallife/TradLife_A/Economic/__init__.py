@@ -3,46 +3,38 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""Economic scenarios
+"""Economic scenarios.
 
-The ``Economic`` spaces provides economic assumptions such as
-interest rate scenarios.
-
-This Space is included in:
-
-* :mod:`simplelife`
-* :mod:`nestedlife`
-* :mod:`ifrs17sim`
-* :mod:`solvency2`
-
-
-.. _ExcelRange:
-   https://docs.modelx.io/en/latest/reference/dataclient.html#excelrange
+The ``Economic`` Space provides economic assumptions, such as
+scenario interest rates used to discount cashflows.
 
 .. rubric:: Parameters
 
-``Economic`` Space is parameterized with :attr:`scen_id`::
+``Economic`` is parameterized with :attr:`scen_id`::
 
-        >>> simplelife.Economic.parameters
-        ('ScenID',)
+        >>> m.Economic.parameters
+        ('scen_id',)
 
-Each ItemSpace represents economic scenarios for a specific :attr:`scen_id`.
-For example, ``Economic[1]`` contains economic scenarios for scen_id 1.
+Each ItemSpace represents economic scenarios for a specific
+:attr:`scen_id`. For example, ``Economic[1]`` contains economic
+scenarios for ``scen_id`` 1.
 
 Attributes:
-    scen_id(:obj:`int`): Scenario ID
+    scen_id(:obj:`int`): Scenario ID.
 
 .. rubric:: References
 
 Attributes:
-    Scenario: `ExcelRange`_ object holding the data of interest rate
-        assumptions. The data is read from *Scenarios* range in *input.xlsx*.
+    input_data: Alias for :mod:`~annuallife.TradLife_A.InputData`.
+        Scenario interest rates are read from the ``Scenarios`` range
+        in *input.xlsx* through
+        :func:`~annuallife.TradLife_A.InputData.scenarios`.
 
 Example:
 
-    An example of ``Economic`` in the :mod:`simplelife` model::
+    An example of ``Economic`` in :mod:`~annuallife.TradLife_A`::
 
-        >>> simplelife.Economic[1].disc_rate_mth(0)
+        >>> m.Economic[1].disc_rate_mth(0)
         0.015
 
 """
@@ -61,14 +53,20 @@ _spaces = []
 # Cells
 
 def disc_rate_mth(t):
-    """Rates for discount cashflows"""
+    """Discount rate at time ``t``.
+
+    Read from the ``Scenarios`` range in *input.xlsx* (column
+    ``IntRate``) through
+    :func:`~annuallife.TradLife_A.InputData.scenarios`,
+    keyed by the current :attr:`scen_id` and ``t``.
+    """
     return input_data.scenarios()['IntRate'].at[(scen_id, t)]
 
 
 def invst_ret_rate(t):
-    """Rate of investment return
+    """Rate of investment return at time ``t``.
 
-    Set equal to the :func:`disc_rate_mth`
+    Set equal to :func:`disc_rate_mth`.
     """
     return disc_rate_mth(t)
 

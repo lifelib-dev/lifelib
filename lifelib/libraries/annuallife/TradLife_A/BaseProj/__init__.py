@@ -3,33 +3,44 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""Base Space for the :mod:`~simplelife.model.Projection` Space.
+"""Base Space for the :mod:`~annuallife.TradLife_A.Projection` Space.
 
-This Space serves as a base Space for :mod:`~simplelife.model.Projection`
-Space, and it contains Cells for cashflow projection.
+This Space serves as a base Space for
+:mod:`~annuallife.TradLife_A.Projection`,
+and it contains Cells for cashflow projection.
 
-.. rubric:: Inheritance Structure
+Cells in this Space follow these naming conventions:
 
-.. figure:: /images/projects/simplelife/model/BaseProj/diagram1.png
-
-
-``Pols``:
-    Cells whose names start with ``Pols`` deal with number of policies.
+``pols_``:
+    Cells whose names start with ``pols_`` deal with number of policies.
     For example, ``pols_death(t)`` represents number of deaths between
     time ``t`` and ``t+1``.
 
 ``_pp``:
     Cells whose names end with ``_pp`` represent an amount per policy.
-    For example, ``claims_death_pp`` represents the death benefit per policy.
+    For example, ``claims_death_pp`` represents the death benefit per
+    policy.
 
-``Exps``:
-    Cells whose names start with ``Exps`` represents expense cashflows.
+``exps_``:
+    Cells whose names start with ``exps_`` represent expense cashflows.
     For example, ``exps_maint`` means the maintenance expense cashflow.
 
-``Claims``:
-    Cells whose names start with ``Claims`` represent benefit cashflows.
-    For example, ``claims_death(t)`` is the death benefit incurred
-    between ``t`` and ``t+1``.
+``claims_``:
+    Cells whose names start with ``claims_`` represent benefit
+    cashflows. For example, ``claims_death(t)`` is the death benefit
+    incurred between ``t`` and ``t+1``.
+
+The cells in this Space resolve their references through
+:mod:`~annuallife.TradLife_A.Projection`:
+
+* ``pol`` -> :mod:`~annuallife.TradLife_A.PolicyAttrs`
+* ``asmp`` -> :mod:`~annuallife.TradLife_A.Assumptions`
+* ``scen`` -> :mod:`~annuallife.TradLife_A.Economic`
+* ``comm_table`` -> :mod:`~annuallife.TradLife_A.CommTable`
+
+The integer ``idx`` from the enclosing
+:mod:`~annuallife.TradLife_A.Projection` ItemSpace is used to index into
+the per-policy NumPy arrays returned by ``pol`` and ``asmp``.
 
 """
 
@@ -87,7 +98,7 @@ def claims_living(t):
 
 
 def claims_mat(t):
-    """Matuirty benefits"""
+    """Maturity benefits"""
     return claims_mat_pp(t) * pols_maturity(t)
 
 
@@ -112,7 +123,7 @@ def claims_surr(t):
 
 
 def claims(t):
-    """Claims Total"""
+    """Total benefits"""
     return (claims_mat(t)
             + claims_death(t)
             + claims_acc_dth(t)
@@ -195,7 +206,7 @@ def insur_if_end(t):
 
 
 def int_accum_cf(t):
-    """Intrest on accumulated cashflows"""
+    """Interest on accumulated cashflows"""
     return (accum_cf(t)
             + premiums(t)
             - expenses(t)) * disc_rate_mth(t)
@@ -234,7 +245,7 @@ def pols_death(t):
 
 
 def pols_if_aft_mat(t):
-    """Number of policies: Maturity"""
+    """Number of policies: After maturity"""
     return pols_if(t) - pols_maturity(t)
 
 
@@ -474,12 +485,18 @@ def sum_assured(t):
 
 
 def proj_len():
+    """Projection length in years for the selected policy.
+
+    The projection ends at whichever comes first: the age at which
+    base mortality reaches 1 (returned by :func:`last_mort_age`),
+    or the end of the policy term.
+    """
     return min(last_mort_age() - pol.issue_age()[idx],
                pol.policy_term()[idx])
 
 
 def mort_rate(x):
-    """Bae mortality rate"""
+    """Base mortality rate at age ``x``"""
 
     return asmp.mortality_tables()[x, asmp.mort_array_index()[idx]]
 
@@ -581,12 +598,21 @@ def surr_charge(t):
 
 
 def last_mort_age():
-    """Age at which mortality becomes 1 for this policy"""
+    """Age at which the base mortality rate reaches 1 for this policy.
+
+    Refers to
+    :func:`~annuallife.TradLife_A.Assumptions.last_mort_age` for the
+    selected policy.
+    """
     return asmp.last_mort_age()[idx]
 
 
 def inflation_factor(t):
-    """Inflation factors to adjust expense cashflows"""
+    """Inflation factor at time ``t`` used to adjust expense cashflows.
+
+    Compounded from :func:`~annuallife.TradLife_A.Assumptions.inflation_rate`
+    starting from ``inflation_factor(0) = 1``.
+    """
     if t == 0:
         return 1
     else:
@@ -594,6 +620,11 @@ def inflation_factor(t):
 
 
 def disc_rate_mth(t):
+    """Discount rate at time ``t``.
+
+    Refers to
+    :func:`Economic[scen_id].disc_rate_mth<annuallife.TradLife_A.Economic.disc_rate_mth>`.
+    """
     return scen.disc_rate_mth(t)
 
 

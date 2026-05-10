@@ -3,61 +3,54 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""Commutation functions and actuarial notations
+"""Commutation functions and actuarial notations.
 
-The ``LifeTable`` Space provides
-commutation functions and actuarial notations, such as
-:math:`D_{x}` and :math:`\\require{enclose}{}_{f|}\\overline{A}_{x}`.
-Mortality tables are read from *input.xlsx* into an `ExcelRange`_ object.
-The `ExcelRange`_ object is bound to a Reference, :attr:`MortalityTable`.
-
-This Space is included in:
-
-* :mod:`simplelife`
-* :mod:`nestedlife`
-* :mod:`ifrs17sim`
-* :mod:`solvency2`
-
-.. _ExcelRange:
-   https://docs.modelx.io/en/latest/reference/dataclient.html#excelrange
+The :mod:`~annuallife.TradLife_A.CommTable` Space provides commutation
+functions and actuarial notations, such as :math:`D_{x}` and
+:math:`\\require{enclose}{}_{f|}\\overline{A}_{x}`.
+Mortality tables are read from the ``MortalityTables`` range in
+*input.xlsx* through
+:func:`~annuallife.TradLife_A.InputData.mortality_tables` and indexed
+through :func:`mortality_rates`.
 
 .. rubric:: Parameters
 
-``LifeTable`` Space is parameterized with :attr:`Sex`,
-:attr:`IntRate` and :attr:`TableID`::
+This Space is parameterized with :attr:`Sex`, :attr:`IntRate` and
+:attr:`TableID`::
 
-        >>> simplelife.LifeTable.parameters
-        ('Sex', 'IntRate', 'TableID')
+        >>> m.CommTable.parameters
+        ('Sex', 'IntRate', 'Table')
 
-Each ItemSpace represents commutations functions actuarial notations
+Each ItemSpace represents commutation functions and actuarial notations
 for a combination of :attr:`Sex`, :attr:`IntRate` and :attr:`TableID`.
-For example, ``LifeTable['M', 0.03, 1]`` contains commutation functions
-and actuarial notations for Male, the interest rate of 3%, mortality table 1.
-
+For example, ``CommTable[SexID.M, 0.03, 1]`` contains commutation
+functions and actuarial notations for Male, an interest rate of 3% and
+mortality table 1.
 
 Attributes:
-    Sex(:obj:`str`): 'M' or 'F' to indicate male or female column in the mortality table.
+    Sex: A :mod:`~annuallife.TradLife_A.Enums.SexID` code identifying
+        the column in the mortality table.
     IntRate(:obj:`float`): The constant interest rate for discounting.
-    TableID(:obj:`int`): The identifier of the mortality table
-
+    Table: Identifier of the mortality table within
+        :func:`~annuallife.TradLife_A.InputData.mortality_tables`.
 
 .. rubric:: References
 
 Attributes:
-    MortalityTable: `ExcelRange`_ object holding mortality tables.
-        The data is read from *MortalityTables* range in *input.xlsx*.
+    mortality_tables: Alias for
+        :func:`~annuallife.TradLife_A.InputData.mortality_tables`.
+    pol: Alias for :mod:`~annuallife.TradLife_A.PolicyAttrs`.
 
 Example:
 
-    An example of ``LifeTable`` in the :mod:`simplelife` model::
+    An example of :mod:`~annuallife.TradLife_A.CommTable`::
 
-        >>> simplelife.LifeTable['M', 0.03, 1].AnnDuenx(40, 10)
+        >>> m.CommTable[SexID.M, 0.03, 1].AnnDuenx(40, 10)
         8.725179890621531
 
 External Links:
     * `International actuarial notation by F.S.Perryman <https://www.casact.org/pubs/proceed/proceed49/49123.pdf>`_
     * `Actuarial notations on Wikipedia <https://en.wikipedia.org/wiki/Actuarial_notation>`_
-
 
 """
 
@@ -217,8 +210,12 @@ def qx(x):
 
 
 def mortality_rates():
+    """Mortality rates for the selected ``Sex`` and ``Table``.
 
-
+    Selects the column of :func:`~annuallife.TradLife_A.InputData.mortality_tables`
+    matching this Space's :attr:`Table` and :attr:`Sex` parameters and
+    returns the resulting per-age mortality rate Series.
+    """
     pos = list((t, getattr(SexID, s)) for t, s in mortality_tables().columns).index((Table, Sex))
 
     return mortality_tables().iloc[:, pos]
