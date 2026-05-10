@@ -604,3 +604,4 @@ def inflation_factor(t):
 def disc_rate_mth(t):
     return scen.disc_rate_mth(t)
 
+
