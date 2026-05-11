@@ -62,21 +62,6 @@ _spaces = [
 # ---------------------------------------------------------------------------
 # Cells
 
-def mort_rate(x):
-    """Base mortality rate at age ``x``.
-
-    Stub kept for compatibility with the legacy :mod:`simplelife` API.
-    The annual model resolves base mortality rates through
-    :func:`~annuallife.TradLife_A.BaseProj.mort_rate`, which indexes
-    :func:`mortality_tables` using :func:`mort_array_index`.
-    """
-
-    return _space.asmp_lookup
-
-    table_id = _space.asmp_lookup.match("BaseMort", prod(), polt(), gen()).value
-    return mortality_tables[table_id, sex(), x]
-
-
 def cnsmp_tax():
     """Consumption tax rate"""
     return input_data.const_params()['CnsmpTax']
