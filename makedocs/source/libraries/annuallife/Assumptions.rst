@@ -9,7 +9,6 @@ Formulas
 
 .. autosummary::
 
-   ~mort_rate
    ~cnsmp_tax
    ~comm_init_prem
    ~comm_ren_prem
@@ -33,8 +32,6 @@ Formulas
 
 Cells Descriptions
 ------------------
-
-.. autofunction:: mort_rate
 
 .. autofunction:: cnsmp_tax
 

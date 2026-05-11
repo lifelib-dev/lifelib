@@ -5,10 +5,18 @@
 
 """Present Value mix-in Space
 
-This Space serves as a base Space for :mod:`~simplelife.model.Projection`
-Space, and it contains Cells to take the present value of projected cashflows.
+This Space serves as a base Space for
+:mod:`~annuallife.TradLife_A.Projection`,
+and it contains Cells that take the present value of projected
+cashflows produced by :mod:`~annuallife.TradLife_A.BaseProj`.
 
-.. figure:: /images/projects/simplelife/model/PV/diagram1.png
+Each present-value cell is defined recursively in ``t``: the recursion
+terminates at ``t > proj_len()`` by returning ``0``, where
+:func:`~annuallife.TradLife_A.BaseProj.proj_len` is the projection
+length for the selected policy. Discounting uses the
+:func:`~annuallife.TradLife_A.BaseProj.disc_rate_mth` cell that resolves
+to :func:`~annuallife.TradLife_A.Economic.disc_rate_mth` for the
+selected scenario.
 
 """
 
@@ -44,7 +52,7 @@ def pv_claims_death(t):
 
 
 def pv_claims_mat(t):
-    """Present value of matuirty benefits"""
+    """Present value of maturity benefits"""
     if t > proj_len():
         return 0
     else:
@@ -68,6 +76,11 @@ def pv_claims(t):
 
 
 def pv_check(t):
+    """Difference between :func:`pv_net_cf` and :func:`pv_net_cf_for_check`.
+
+    Used as a numerical sanity check; should be zero (within floating
+    point error) at every ``t``.
+    """
     return pv_net_cf(t) - pv_net_cf_for_check(t)
 
 
@@ -111,7 +124,12 @@ def pv_net_cf(t):
 
 
 def pv_net_cf_for_check(t):
-    """Present value of net cashflow"""
+    """Present value of net cashflow computed recursively for validation.
+
+    An alternative recursive definition of :func:`pv_net_cf` used by
+    :func:`pv_check` to verify that the closed-form sum and the
+    recursion agree.
+    """
     if t > proj_len():
         return 0
     else:

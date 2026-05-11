@@ -3,61 +3,40 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""input_data from files
+"""Input data loaded from *input.xlsx*.
 
-The ``input_data`` Space includes References that hold input values read from
-the Excel input file, *input.xlsx*.
-It also includes a few Cells to loock up values from the Referneces.
+The :mod:`~annuallife.TradLife_A.InputData` Space contains Cells that
+load values from named ranges in the Excel input file, *input.xlsx*,
+and helper Cells that turn those ranges into pandas objects ready for
+the rest of the model.
 
-The References in this Space refer to `ExcelRange`_ objects.
-The `ExcelRange` objects hold values read from ranges in the input
-Excel file, *input.xlsx*. `ExcelRange`_ objects are Python's mapping objects,
-so they support most methods that :obj:`dict` has, and can be
-converted to :obj:`dict`. The table below lists the References
-and their associated named ranges in *input.xlsx*.
+Per-policy attributes, assumption tables, scenarios, mortality tables
+and product specs are loaded on demand by the cells listed below. The
+workbook itself is opened lazily by :func:`input_workbook`.
 
-==================== ====================
- References            Named ranges
-==================== ====================
-PolicyData             PolicyData
-mortality_tables        mortality_tables
-AssumptionTables       AsmpByDuration
-Scenarios              Scenarios
-DiscountRate           LargePolDiscount
-==================== ====================
+The table below lists the cells and the Excel named ranges they read.
 
+============================== =====================  ==========================================
+ Cell                           Named range            Purpose
+============================== =====================  ==========================================
+:func:`policy_data`            ``PolicyData``         Per-policy attributes for model points.
+:func:`product_spec`           ``ProductSpecTable``   Per-product loading and rate tables.
+:func:`assumption`             ``AssumptionTable``    Lookup table of assumption keys.
+:func:`assumption_tables`      ``AsmpByDuration``     Duration-based mortality / lapse tables.
+:func:`mortality_tables`       ``MortalityTables``    Mortality tables keyed by Sex / Table.
+:func:`scenarios`              ``Scenarios``          Scenario interest-rate paths.
+:func:`discount_rate`          ``LargePolDiscount``   Premium discount by sum-assured band.
+:func:`prem_waiver_cost`       ``PremiumWaiverCost``  Premium-waiver cost lookup.
+:func:`const_params`           ``ConstParams``        Scalar parameters used across the model.
+============================== =====================  ==========================================
 
-.. rubric:: References in this Space
+.. rubric:: References
 
 Attributes:
-    PolicyData: `ExcelRange`_ object holding policy data. The data
-        is read from *PolicyData* range in *input.xlsx*.
-
-
-    ProductSpec: `ExcelRange`_ object holding the data of product specs.
-        The data is read from *ProductSpecTable* range in *input.xlsx*.
-
-    Assumption: `ExcelRange`_ object holding the data of the assumption table.
-        The data is read from *AssumptionTable* range in *input.xlsx*.
-
-    mortality_tables: `ExcelRange`_ object holding the data of mortality Tables.
-        The data is read from *mortality_tables* range in *input.xlsx*.
-
-    AssumptionTables: `ExcelRange`_ object holding the data of assumptions by duration.
-        The data is read from *AsmpByDuration* range in *input.xlsx*.
-
-    Scenarios: `ExcelRange`_ object holding the data of economic scenarios.
-        The data is read from *Scenarios* range in *input.xlsx*.
-
-    DiscountRate: `ExcelRange`_ object holding the data of premium discount.
-        The data is read from *LargePolDiscount* range in *input.xlsx*.
-
-
-.. _ExcelRange:
-   https://docs.modelx.io/en/latest/reference/dataclient.html#excelrange
-
-.. _mapping:
-   https://docs.python.org/3/glossary.html#term-mapping
+    input_file_name(:obj:`str`): Name of the Excel workbook to read.
+        Defaults to ``"input.xlsx"`` and is resolved relative to the
+        parent directory of the model.
+    openpyxl: The :mod:`openpyxl` module used to open the workbook.
 
 """
 
@@ -75,18 +54,33 @@ _spaces = []
 # Cells
 
 def input_workbook():
+    """Open and return the input Excel workbook.
+
+    Loads the workbook named :attr:`input_file_name` from the parent
+    directory of the model with ``data_only=True``, so that formula
+    cells return their last cached values.
+    """
     return openpyxl.load_workbook(
         _model.path.parent / input_file_name,
         data_only=True)
 
 
 def policy_data():
+    """Policy data table.
 
+    Returns the ``PolicyData`` named range as a ``DataFrame``, indexed by
+    the first column (the policy ID).
+    """
     return get_named_range_as_df('PolicyData', index_len=1)
 
 
 def mortality_tables():
+    """Mortality tables.
 
+    Reads the ``MortalityTables`` named range, which has a two-row
+    header of ``(MortTable, Sex)`` and an age column, and returns a
+    ``DataFrame`` indexed by age with a ``MultiIndex`` over the columns.
+    """
     wb = input_workbook()
 
     sheet_name, cell_range = next(wb.defined_names["MortalityTables"].destinations)
@@ -133,12 +127,22 @@ def mort_table_last_ages():
 
 
 def assumption_tables():
+    """Assumption tables by duration.
 
+    Returns the ``AsmpByDuration`` named range as a ``DataFrame``,
+    indexed by the first column (typically duration).
+    """
     return get_named_range_as_df('AsmpByDuration', index_len=1)
 
 
 def get_named_range_as_df(name, index_len=0):
+    """Read an Excel named range as a ``DataFrame``.
 
+    Args:
+        name(:obj:`str`): The Excel defined-name to read.
+        index_len(:obj:`int`, optional): Number of leading columns to
+            use as the DataFrame index. Defaults to 0 (no index column).
+    """
     wb = input_workbook()
 
     sheet_name, cell_range = next(wb.defined_names[name].destinations)
@@ -160,12 +164,20 @@ def get_named_range_as_df(name, index_len=0):
 _is_cached = False
 
 def scenarios():
+    """Economic scenarios.
 
+    Returns the ``Scenarios`` named range as a ``DataFrame``, indexed by
+    the first two columns (scenario ID and time).
+    """
     return get_named_range_as_df('Scenarios', index_len=2)
 
 
 def get_named_range_as_dict(name):
+    """Read a two-column Excel named range as a :obj:`dict`.
 
+    The first column of the range becomes the dict keys and the second
+    column becomes the values.
+    """
     wb = input_workbook()
 
     sheet_name, cell_range = next(wb.defined_names[name].destinations)
@@ -179,6 +191,12 @@ def get_named_range_as_dict(name):
 _is_cached = False
 
 def discount_rate():
+    """Per-policy premium discount based on sum-assured bands.
+
+    Reads the ``LargePolDiscount`` named range, builds the breakpoints
+    of the sum-assured bands and returns a ``Series`` aligned with
+    :func:`policy_data` giving the discount that applies to each policy.
+    """
     table = get_named_range_as_dict('LargePolDiscount')
 
     bins = [-np.inf] + list(table.keys())[:-1] + [np.inf]
@@ -193,21 +211,42 @@ def discount_rate():
 
 
 def prem_waiver_cost():
+    """Premium-waiver cost lookup as a :obj:`dict`.
 
+    Returns the ``PremiumWaiverCost`` named range, mapping the upper
+    bound of a policy-term band to its premium-waiver loading.
+    """
     return get_named_range_as_dict('PremiumWaiverCost')
 
 
 def assumption(name):
+    """Lookup column ``name`` of the ``AssumptionTable`` range.
 
+    Returns a ``Series`` keyed by the lookup levels (such as
+    ``Product``, ``PolType``, ``Gen``) that are not entirely empty
+    for column ``name``.
+    """
     return get_param_series('AssumptionTable', name)
 
 
 def product_spec(name):
+    """Lookup column ``name`` of the ``ProductSpecTable`` range.
+
+    Returns a ``Series`` keyed by the lookup levels (such as
+    ``Product``, ``PolType``, ``Gen``) that are not entirely empty
+    for column ``name``.
+    """
     return get_param_series('ProductSpecTable', name)
 
 
 def get_param_series(range_name, col_name):
+    """Helper that reads column ``col_name`` from ``range_name`` as a ``Series``.
 
+    The named range is loaded via :func:`get_named_range_as_df` with the
+    first three columns used as a `MultiIndex`. Any index level that is
+    entirely empty for ``col_name`` is dropped, and a partially empty
+    level raises :class:`ValueError`.
+    """
     df = get_named_range_as_df(range_name, index_len=3)[col_name].dropna()
 
     levels_to_drop = []
@@ -227,6 +266,7 @@ def get_param_series(range_name, col_name):
 _is_cached = False
 
 def const_params():
+    """Scalar parameters from the ``ConstParams`` named range as a :obj:`dict`."""
     return get_named_range_as_dict('ConstParams')
 
 

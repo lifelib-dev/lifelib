@@ -3,6 +3,20 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
+"""Sex codes.
+
+Integer codes used to identify the sex column of a mortality table.
+Returned per policy by :func:`~annuallife.TradLife_A.PolicyAttrs.sex`
+and consumed by the indexing logic in
+:func:`~annuallife.TradLife_A.Assumptions.mort_array_index` and
+:func:`~annuallife.TradLife_A.CommTable.mortality_rates`.
+
+Members:
+    M(:obj:`int`): Male.
+    F(:obj:`int`): Female.
+
+"""
+
 from modelx.serialize.jsonvalues import *
 
 _formula = None
