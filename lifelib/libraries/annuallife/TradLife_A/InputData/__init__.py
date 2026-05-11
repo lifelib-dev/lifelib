@@ -68,7 +68,7 @@ def input_workbook():
 def policy_data():
     """Policy data table.
 
-    Returns the ``PolicyData`` named range as a `DataFrame`_, indexed by
+    Returns the ``PolicyData`` named range as a ``DataFrame``, indexed by
     the first column (the policy ID).
     """
     return get_named_range_as_df('PolicyData', index_len=1)
@@ -79,7 +79,7 @@ def mortality_tables():
 
     Reads the ``MortalityTables`` named range, which has a two-row
     header of ``(MortTable, Sex)`` and an age column, and returns a
-    `DataFrame`_ indexed by age with a ``MultiIndex`` over the columns.
+    ``DataFrame`` indexed by age with a ``MultiIndex`` over the columns.
     """
     wb = input_workbook()
 
@@ -129,14 +129,14 @@ def mort_table_last_ages():
 def assumption_tables():
     """Assumption tables by duration.
 
-    Returns the ``AsmpByDuration`` named range as a `DataFrame`_,
+    Returns the ``AsmpByDuration`` named range as a ``DataFrame``,
     indexed by the first column (typically duration).
     """
     return get_named_range_as_df('AsmpByDuration', index_len=1)
 
 
 def get_named_range_as_df(name, index_len=0):
-    """Read an Excel named range as a `DataFrame`_.
+    """Read an Excel named range as a ``DataFrame``.
 
     Args:
         name(:obj:`str`): The Excel defined-name to read.
@@ -166,7 +166,7 @@ _is_cached = False
 def scenarios():
     """Economic scenarios.
 
-    Returns the ``Scenarios`` named range as a `DataFrame`_, indexed by
+    Returns the ``Scenarios`` named range as a ``DataFrame``, indexed by
     the first two columns (scenario ID and time).
     """
     return get_named_range_as_df('Scenarios', index_len=2)
@@ -194,7 +194,7 @@ def discount_rate():
     """Per-policy premium discount based on sum-assured bands.
 
     Reads the ``LargePolDiscount`` named range, builds the breakpoints
-    of the sum-assured bands and returns a `Series`_ aligned with
+    of the sum-assured bands and returns a ``Series`` aligned with
     :func:`policy_data` giving the discount that applies to each policy.
     """
     table = get_named_range_as_dict('LargePolDiscount')
@@ -222,7 +222,7 @@ def prem_waiver_cost():
 def assumption(name):
     """Lookup column ``name`` of the ``AssumptionTable`` range.
 
-    Returns a `Series`_ keyed by the lookup levels (such as
+    Returns a ``Series`` keyed by the lookup levels (such as
     ``Product``, ``PolType``, ``Gen``) that are not entirely empty
     for column ``name``.
     """
@@ -232,7 +232,7 @@ def assumption(name):
 def product_spec(name):
     """Lookup column ``name`` of the ``ProductSpecTable`` range.
 
-    Returns a `Series`_ keyed by the lookup levels (such as
+    Returns a ``Series`` keyed by the lookup levels (such as
     ``Product``, ``PolType``, ``Gen``) that are not entirely empty
     for column ``name``.
     """
@@ -240,7 +240,7 @@ def product_spec(name):
 
 
 def get_param_series(range_name, col_name):
-    """Helper that reads column ``col_name`` from ``range_name`` as a `Series`_.
+    """Helper that reads column ``col_name`` from ``range_name`` as a ``Series``.
 
     The named range is loaded via :func:`get_named_range_as_df` with the
     first three columns used as a `MultiIndex`. Any index level that is
