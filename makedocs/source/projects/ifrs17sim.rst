@@ -8,6 +8,12 @@ Project **ifrs17sim**
 
 |modelx badge|
 
+.. warning::
+
+   :mod:`ifrs17sim` is obsolete and will be replaced in a future release,
+   because the model is based on :mod:`simplelife`,
+   which has been superseded by :mod:`annuallife`.
+
 **ifrs17sim** is a project for simulating IFRS17
 financial statements on sample insurance contracts.
 

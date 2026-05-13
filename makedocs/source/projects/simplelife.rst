@@ -8,6 +8,11 @@ Project **simplelife**
 
 |modelx badge|
 
+.. warning::
+
+   :mod:`simplelife` has been superseded by :mod:`annuallife`,
+   and will be removed in a future release.
+
 This project includes the **simplelife** model,
 which is an annual projection model of basic traditional life policies.
 The simplelife model is designed in such a way that allows you to
