@@ -11,6 +11,12 @@ Project **nestedlife**
 
 |modelx badge|
 
+.. warning::
+
+   :mod:`nestedlife` is obsolete and will be replaced in a future release,
+   because the model is based on :mod:`simplelife`,
+   which has been superseded by :mod:`annuallife`.
+
 The **nestedlife** project has the same annual projection
 model of basic traditional life policies
 as :mod:`simplelife`, but at each projection step,

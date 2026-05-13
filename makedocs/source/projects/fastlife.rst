@@ -8,6 +8,12 @@ Project **fastlife**
 
 |modelx badge|
 
+.. warning::
+
+   :mod:`fastlife` is obsolete and will be replaced in a future release,
+   because the model is based on :mod:`simplelife`,
+   which has been superseded by :mod:`annuallife`.
+
 This project includes the **fastlife** model. The firstlife model
 calculates the present values of the net insurance cashflows.
 The calculation results are the same as the model in :doc:`simplelife`.
