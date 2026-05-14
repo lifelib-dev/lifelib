@@ -12,4 +12,4 @@ Steps to update binder branch (https://stackoverflow.com/questions/18115411/how-
 
     > git checkout master projects
 
-* Run makedocs/generate_mxfiles.py to update mx files.
+* Run doc/generate_mxfiles.py to update mx files.
