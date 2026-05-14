@@ -38,7 +38,7 @@ lifelib/
 
 ## Documentation
 
-- RST files in `makedocs/source/`
+- RST files in `doc/source/`
 - Generated examples from Jupyter notebooks
 - API documentation auto-generated from docstrings
 
