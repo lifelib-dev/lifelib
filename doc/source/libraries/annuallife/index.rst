@@ -70,6 +70,11 @@ to the library folder and use modelx's ``read_model`` function::
 
     >>> m = mx.read_model("TradLife_A")
 
+More detailed instructions on how to read, run and inspect the model
+are described in the
+:ref:`Basic Usage <tradlife_a-basic-usage>` section
+of the :mod:`~annuallife.TradLife_A` documentation.
+
 
 Library Contents
 ------------------

@@ -260,6 +260,8 @@ The sheet name is used as a key when determining interest rate sensitivity.
 See :mod:`~appliedlife.IntegratedLife.Scenarios` for more details.
 
 
+.. _integratedlife-basic-usage:
+
 Basic Usage
 -----------
 

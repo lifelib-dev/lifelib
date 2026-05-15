@@ -19,6 +19,8 @@ The premium amount for each individual model point is calculated as the net prem
 where the net premium is calculated from the present value of the claims.
 
 
+.. _basicterm_s-basic-usage:
+
 Basic Usage
 -----------
 

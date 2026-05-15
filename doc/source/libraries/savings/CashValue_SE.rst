@@ -133,6 +133,8 @@ The order and timing of the cashflows are as follows:
 .. figure:: /images/libraries/av_pp_at.png
 
 
+.. _cashvalue_se-basic-usage:
+
 Basic Usage
 -----------
 
