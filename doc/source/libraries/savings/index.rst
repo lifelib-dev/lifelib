@@ -95,6 +95,12 @@ under the path *C:\\path\\to\\your\\*, type below in an IPython console::
 
     >>> lifelib.create("savings", r"C:\path\to\your\savings")
 
+More detailed instructions on how to read, run and inspect each model
+are described in the *Basic Usage* section of the documentation for the
+individual models:
+:ref:`CashValue_SE <cashvalue_se-basic-usage>` and
+:ref:`CashValue_ME <cashvalue_me-basic-usage>`.
+
 
 Examples
 -----------

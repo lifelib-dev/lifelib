@@ -225,6 +225,8 @@ The premium rates are stored in *premium_table.xlsx* in the model folder
 and read into :attr:`premium_table` as a Series.
 
 
+.. _basicterm_me-basic-usage:
+
 Basic Usage
 -----------
 

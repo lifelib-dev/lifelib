@@ -83,6 +83,15 @@ under the path *C:\\path\\to\\your\\*, type below in an IPython console::
 
     >>> lifelib.create("basiclife", r"C:\path\to\your\basiclife")
 
+More detailed instructions on how to read, run and inspect each model
+are described in the *Basic Usage* section of the documentation for the
+individual models:
+:ref:`BasicTerm_S <basicterm_s-basic-usage>`,
+:ref:`BasicTerm_M <basicterm_m-basic-usage>`,
+:ref:`BasicTerm_SC <basicterm_sc-basic-usage>`,
+:ref:`BasicTerm_SE <basicterm_se-basic-usage>` and
+:ref:`BasicTerm_ME <basicterm_me-basic-usage>`.
+
 
 Jupyter Notebooks
 ------------------------------

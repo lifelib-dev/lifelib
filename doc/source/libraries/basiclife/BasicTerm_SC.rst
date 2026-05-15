@@ -52,6 +52,8 @@ to make its cythonized model run faster:
   to look up the value of the selected model point in the arrays of policy attributes.
 
 
+.. _basicterm_sc-basic-usage:
+
 Basic Usage
 -----------
 
