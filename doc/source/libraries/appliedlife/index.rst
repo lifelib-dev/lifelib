@@ -55,6 +55,11 @@ under the path *C:\\path\\to\\your\\*, type below in an IPython console::
 
     >>> lifelib.create("appliedlife", r"C:\path\to\your\applifedlife")
 
+More detailed instructions on how to read, run and inspect the model
+are described in the
+:ref:`Basic Usage <integratedlife-basic-usage>` section
+of the :mod:`~appliedlife.IntegratedLife` documentation.
+
 
 :mod:`~appliedlife.IntegratedLife` uses `xlwings`_ in
 :func:`ProductBase.excel_sample <appliedlife.IntegratedLife.ProductBase.excel_sample>`.

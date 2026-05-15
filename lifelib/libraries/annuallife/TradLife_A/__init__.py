@@ -113,6 +113,8 @@ in :mod:`~annuallife.TradLife_A.InputData`:
    :func:`~annuallife.TradLife_A.InputData.const_params`           ``ConstParams``        Scalar parameters used across the model
    ============================================================== ====================== =========================================
 
+.. _tradlife_a-basic-usage:
+
 Basic Usage
 -----------
 

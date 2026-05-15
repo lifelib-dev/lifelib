@@ -377,6 +377,8 @@ operation:
    dtype: float64
 
 
+.. _cashvalue_me-basic-usage:
+
 Basic Usage
 -----------
 
