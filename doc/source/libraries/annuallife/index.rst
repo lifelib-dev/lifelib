@@ -91,7 +91,7 @@ Library Contents
    ``TradLife_A``                         The :mod:`~annuallife.TradLife_A` model.
    ``input.xlsx``                         Excel workbook holding policy data, assumptions, mortality tables, scenarios and product specs.
    ``plot_tradlife_a.py``                 sphinx-gallery plot script that renders the cashflow chart.
-   ``plot_pvcashflows.py``                sphinx-gallery plot script that renders present-value cashflows.
+   ``plot_pvcashflows_tradlife_a.py``     sphinx-gallery plot script that renders present-value cashflows.
    ``tradlife_a-demo.ipynb``              Jupyter notebook demonstrating cashflow projection.
    ``tradlife_a-space-overview.ipynb``    Tutorial notebook on the space tree of :mod:`~annuallife.TradLife_A`.
    ====================================== ==========================================================================

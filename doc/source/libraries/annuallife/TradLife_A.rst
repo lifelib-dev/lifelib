@@ -176,6 +176,6 @@ optionally ``scen_id``):
     >>> m.Projection[0].claims(0)               # Death claims at t=0
 
 
-The plot scripts ``plot_tradlife_a.py`` and ``plot_pvcashflows.py``
+The plot scripts ``plot_tradlife_a.py`` and ``plot_pvcashflows_tradlife_a.py``
 in the library folder demonstrate how to produce stacked-bar charts of
 the cashflow components and their present values.
