@@ -4,15 +4,6 @@ The **Economic** Space
 .. automodule:: annuallife.TradLife_A.Economic
 
 
-Formulas
--------------
-
-.. autosummary::
-
-   ~disc_rate_mth
-   ~invst_ret_rate
-
-
 Cells Descriptions
 ------------------
 

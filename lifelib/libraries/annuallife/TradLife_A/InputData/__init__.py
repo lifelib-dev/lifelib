@@ -30,13 +30,71 @@ The table below lists the cells and the Excel named ranges they read.
 :func:`const_params`           ``ConstParams``        Scalar parameters used across the model.
 ============================== =====================  ==========================================
 
-.. rubric:: References
+Parameters and References
+-------------------------
 
 Attributes:
     input_file_name(:obj:`str`): Name of the Excel workbook to read.
         Defaults to ``"input.xlsx"`` and is resolved relative to the
         parent directory of the model.
     openpyxl: The :mod:`openpyxl` module used to open the workbook.
+
+
+Cells Summary
+-------------
+
+Workbook
+^^^^^^^^
+
+Opens the Excel input workbook lazily; every other cell reads from it.
+
+.. autosummary::
+
+   ~input_workbook
+
+
+Input Tables
+^^^^^^^^^^^^
+
+Named ranges loaded as pandas objects: policy data, mortality and
+assumption tables, scenarios, discount and premium-waiver lookups and
+the scalar constants.
+
+.. autosummary::
+
+   ~policy_data
+   ~mortality_tables
+   ~mort_table_last_ages
+   ~assumption_tables
+   ~scenarios
+   ~discount_rate
+   ~prem_waiver_cost
+   ~const_params
+
+
+Lookups
+^^^^^^^
+
+Column lookups into the assumption and product-specification tables,
+keyed by the model point lookup levels.
+
+.. autosummary::
+
+   ~assumption
+   ~product_spec
+
+
+Helpers
+^^^^^^^
+
+Generic readers that turn a named range into a ``DataFrame``, a
+``dict`` or a keyed ``Series``.
+
+.. autosummary::
+
+   ~get_named_range_as_df
+   ~get_named_range_as_dict
+   ~get_param_series
 
 """
 

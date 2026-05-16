@@ -3,9 +3,11 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""Space for cashflow projection.
+"""Per-policy cashflow projection and present values for one model point and scenario.
 
-This Space is for projecting cashflows of individual model points.
+This is the user-facing Space of :mod:`~annuallife.TradLife_A`: each
+ItemSpace ``Projection[idx, scen_id]`` projects the cashflows and
+their present values for one policy under one scenario.
 
 .. rubric:: Inheritance Structure
 
@@ -16,7 +18,8 @@ The projection cells are inherited from
 :mod:`~annuallife.TradLife_A.BaseProj`, and the present values of those
 cashflow items are inherited from :mod:`~annuallife.TradLife_A.PV`.
 
-.. rubric:: Parameters
+Parameters and References
+-------------------------
 
 This Space is parameterized with ``idx`` and ``scen_id``::
 

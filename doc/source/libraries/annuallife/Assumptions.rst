@@ -4,36 +4,8 @@ The **Assumptions** Space
 .. automodule:: annuallife.TradLife_A.Assumptions
 
 
-Formulas
--------------
-
-.. autosummary::
-
-   ~cnsmp_tax
-   ~comm_init_prem
-   ~comm_ren_prem
-   ~comm_ren_term
-   ~exps_acq_ann_prem
-   ~exps_acq_pol
-   ~exps_acq_sa
-   ~exps_maint_ann_prem
-   ~exps_maint_pol
-   ~exps_maint_sa
-   ~inflation_rate
-   ~mortality_tables
-   ~mort_table_index
-   ~mort_array_index
-   ~last_mort_age
-   ~asmp_tables
-   ~mort_factor_index
-   ~lapse_rate_index
-   ~asmp_table_len
-
-
 Cells Descriptions
 ------------------
-
-.. autofunction:: cnsmp_tax
 
 .. autofunction:: comm_init_prem
 
@@ -52,6 +24,8 @@ Cells Descriptions
 .. autofunction:: exps_maint_pol
 
 .. autofunction:: exps_maint_sa
+
+.. autofunction:: cnsmp_tax
 
 .. autofunction:: inflation_rate
 

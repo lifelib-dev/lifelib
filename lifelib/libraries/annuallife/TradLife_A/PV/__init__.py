@@ -3,12 +3,11 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""Present Value mix-in Space
+"""Present values of the projected cashflows for a single traditional life policy.
 
-This Space serves as a base Space for
-:mod:`~annuallife.TradLife_A.Projection`,
-and it contains Cells that take the present value of projected
-cashflows produced by :mod:`~annuallife.TradLife_A.BaseProj`.
+This Space defines the Cells that discount the cashflows projected in
+:mod:`~annuallife.TradLife_A.BaseProj` back to time 0. It is one of the
+base Spaces inherited by :mod:`~annuallife.TradLife_A.Projection`.
 
 Each present-value cell is defined recursively in ``t``: the recursion
 terminates at ``t > proj_len()`` by returning ``0``, where
@@ -17,6 +16,71 @@ length for the selected policy. Discounting uses the
 :func:`~annuallife.TradLife_A.BaseProj.disc_rate_mth` cell that resolves
 to :func:`~annuallife.TradLife_A.Economic.disc_rate_mth` for the
 selected scenario.
+
+
+Cells Summary
+-------------
+
+Premiums and Claims
+^^^^^^^^^^^^^^^^^^^
+
+Present value of premium income and of the claim cashflows by cause.
+
+.. autosummary::
+
+   ~pv_premiums
+   ~pv_claims_death
+   ~pv_claims_mat
+   ~pv_claims_surr
+   ~pv_claims
+
+
+Expenses and Commissions
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Present value of acquisition, maintenance and total expenses and of
+commissions.
+
+.. autosummary::
+
+   ~pv_exps_acq
+   ~pv_commissions
+   ~pv_exps_maint
+   ~pv_expenses
+
+
+Net Cashflow
+^^^^^^^^^^^^
+
+Present value of the net liability cashflow and the interest accreted
+on it.
+
+.. autosummary::
+
+   ~pv_net_cf
+   ~interest_net_cf
+
+
+Validation
+^^^^^^^^^^
+
+An alternative recursive net-cashflow present value and the check
+that it agrees with :func:`pv_net_cf`.
+
+.. autosummary::
+
+   ~pv_net_cf_for_check
+   ~pv_check
+
+
+Exposure
+^^^^^^^^
+
+Present value of the insurance in force.
+
+.. autosummary::
+
+   ~pv_sum_insur_if
 
 """
 

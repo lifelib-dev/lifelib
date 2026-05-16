@@ -4,54 +4,33 @@ The **CommTable** Space
 .. automodule:: annuallife.TradLife_A.CommTable
 
 
-Formulas
--------------
-
-.. autosummary::
-
-   ~AnnDuenx
-   ~AnnDuex
-   ~Ax
-   ~Axn
-   ~Cx
-   ~Dx
-   ~Exn
-   ~Mx
-   ~Nx
-   ~disc
-   ~dx
-   ~lx
-   ~qx
-   ~mortality_rates
-
-
 Cells Descriptions
 ------------------
 
-.. autofunction:: AnnDuenx
+.. autofunction:: lx
 
-.. autofunction:: AnnDuex
+.. autofunction:: dx
 
-.. autofunction:: Ax
+.. autofunction:: qx
 
-.. autofunction:: Axn
+.. autofunction:: mortality_rates
 
-.. autofunction:: Cx
+.. autofunction:: disc
 
 .. autofunction:: Dx
 
-.. autofunction:: Exn
+.. autofunction:: Cx
 
 .. autofunction:: Mx
 
 .. autofunction:: Nx
 
-.. autofunction:: disc
+.. autofunction:: Ax
 
-.. autofunction:: dx
+.. autofunction:: Axn
 
-.. autofunction:: lx
+.. autofunction:: Exn
 
-.. autofunction:: qx
+.. autofunction:: AnnDuenx
 
-.. autofunction:: mortality_rates
+.. autofunction:: AnnDuex

@@ -13,7 +13,8 @@ Mortality tables are read from the ``MortalityTables`` range in
 :func:`~annuallife.TradLife_A.InputData.mortality_tables` and indexed
 through :func:`mortality_rates`.
 
-.. rubric:: Parameters
+Parameters and References
+-------------------------
 
 This Space is parameterized with :attr:`Sex`, :attr:`IntRate` and
 :attr:`TableID`::
@@ -50,6 +51,64 @@ Example:
 External Links:
     * `International actuarial notation by F.S.Perryman <https://www.casact.org/pubs/proceed/proceed49/49123.pdf>`_
     * `Actuarial notations on Wikipedia <https://en.wikipedia.org/wiki/Actuarial_notation>`_
+
+
+Cells Summary
+-------------
+
+Life Table
+^^^^^^^^^^
+
+The underlying life-table columns — survivors, deaths, mortality
+probability and the per-age mortality rates selected for this Space's
+sex and table.
+
+.. autosummary::
+
+   ~lx
+   ~dx
+   ~qx
+   ~mortality_rates
+
+
+Commutation Columns
+^^^^^^^^^^^^^^^^^^^
+
+The discount factor and the commutation columns :math:`D_x`,
+:math:`C_x`, :math:`M_x` and :math:`N_x` built from the life table.
+
+.. autosummary::
+
+   ~disc
+   ~Dx
+   ~Cx
+   ~Mx
+   ~Nx
+
+
+Assurances and Endowments
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Present values of whole-life and term assurances and of pure
+endowments.
+
+.. autosummary::
+
+   ~Ax
+   ~Axn
+   ~Exn
+
+
+Annuities
+^^^^^^^^^
+
+Present values of temporary and lifetime annuities-due, with optional
+split payments and deferment.
+
+.. autosummary::
+
+   ~AnnDuenx
+   ~AnnDuex
 
 """
 
