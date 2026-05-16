@@ -138,9 +138,10 @@ present-value counterparts share the same parameter scope.
 
 .. mermaid::
 
-    graph BT
-        BaseProj --> Projection
-        PV --> Projection
+    %%{init: {"class": {"hideEmptyMembersBox": true}}}%%
+    classDiagram
+        BaseProj <|-- Projection
+        PV <|-- Projection
 
 :mod:`~annuallife.TradLife_A.Assumptions` and
 :mod:`~annuallife.TradLife_A.PolicyAttrs` inherit from
@@ -149,9 +150,10 @@ present-value counterparts share the same parameter scope.
 
 .. mermaid::
 
-    graph BT
-        Utilities --> Assumptions
-        Utilities --> PolicyAttrs
+    %%{init: {"class": {"hideEmptyMembersBox": true}}}%%
+    classDiagram
+        Utilities <|-- Assumptions
+        Utilities <|-- PolicyAttrs
 
 Cross-space references
 ^^^^^^^^^^^^^^^^^^^^^^
