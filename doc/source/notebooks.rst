@@ -88,6 +88,16 @@ Click |colab badge| to open and run them on Google Colab.
 :doc:`libraries/cluster/generate_model_points_for_cluster`    |colab cluster generate_model_points_for_cluster|
 ============================================================= ===================================================
 
+.. _notebooks_annuallife:
+
+:mod:`annuallife` Notebooks
+---------------------------
+
+================================================================================== ==============================================
+:doc:`TradLife_A Demo <libraries/annuallife/tradlife_a-demo>`                       |colab annuallife tradlife_a-demo|
+:doc:`TradLife_A Space Overview <libraries/annuallife/tradlife_a-space-overview>`   |colab annuallife tradlife_a-space-overview|
+================================================================================== ==============================================
+
 .. _notebooks_fastlife:
 
 :mod:`fastlife` Notebooks
@@ -97,16 +107,6 @@ Click |colab badge| to open and run them on Google Colab.
 :doc:`projects/fastlife-introduction`        |colab fastlife fastlife-introduction|
 :doc:`projects/fastlife-pvnetcfs`            |colab fastlife fastlife-pvnetcfs|
 ============================================ =========================================
-
-.. _notebooks_simplelife:
-
-:mod:`simplelife` Notebooks
----------------------------
-
-========================================================================= ==============================================
-:doc:`simplelife Demo <projects/simplelife-demo>`                         |colab simplelife simplelife-demo|
-:doc:`simplelife Space Overview <projects/simplelife-space-overview>`     |colab simplelife simplelife-space-overview|
-========================================================================= ==============================================
 
 .. _notebooks_ifrs17sim:
 

@@ -242,14 +242,13 @@ autodoc_member_order = 'bysource'
 from sphinx_gallery.sorting import ExplicitOrder, FileNameSortKey
 sphinx_gallery_conf = {
     # path to your examples scripts
-    'ignore_pattern': '^(?!.*plot_)',
+    'ignore_pattern': '^(?!.*plot_)|simplelife',
     'examples_dirs': '../../lifelib/libraries',
     'subsection_order': ExplicitOrder(
         ['../../lifelib/libraries/savings',
          '../../lifelib/libraries/economic',
-         '../../lifelib/libraries/fastlife',
          '../../lifelib/libraries/annuallife',
-         '../../lifelib/libraries/simplelife',
+         '../../lifelib/libraries/fastlife',
          '../../lifelib/libraries/nestedlife',
          '../../lifelib/libraries/ifrs17sim',
          '../../lifelib/libraries/solvency2',
