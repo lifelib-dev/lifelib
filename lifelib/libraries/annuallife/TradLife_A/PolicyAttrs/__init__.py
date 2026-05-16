@@ -20,7 +20,8 @@ Most cells return per-policy NumPy arrays whose layout matches the rows
 of :func:`~annuallife.TradLife_A.InputData.policy_data`, so callers
 index into them with the integer policy index ``idx``.
 
-.. rubric:: References
+Parameters and References
+-------------------------
 
 Attributes:
     input_data: Alias for :mod:`~annuallife.TradLife_A.InputData`.
@@ -41,6 +42,93 @@ Inherited from :mod:`~annuallife.TradLife_A.Utilities`:
 
 * :func:`~annuallife.TradLife_A.Utilities.pandas_to_array`
 * :func:`~annuallife.TradLife_A.Utilities.map_to_policies`
+
+
+Cells Summary
+-------------
+
+Policy Attributes
+^^^^^^^^^^^^^^^^^
+
+Model point attributes read directly from
+:func:`~annuallife.TradLife_A.InputData.policy_data` for each policy.
+
+.. autosummary::
+
+   ~product
+   ~policy_type
+   ~sex
+   ~issue_age
+   ~prem_freq
+   ~policy_term
+   ~policy_count
+   ~sum_assured
+   ~gen
+   ~channel
+   ~duration
+
+
+Product Bases
+^^^^^^^^^^^^^
+
+Per-policy interest rate and mortality table identifiers, selected by
+rate basis (premium or valuation).
+
+.. autosummary::
+
+   ~int_rate
+   ~table_id
+
+
+Loadings
+^^^^^^^^
+
+Per-policy acquisition and maintenance loadings used by
+:func:`~annuallife.TradLife_A.BaseProj.gross_prem_rate`, together with
+the raw ``ProductSpecTable`` parameters they are built from.
+
+.. autosummary::
+
+   ~load_acq_sa
+   ~load_acq_sa_param1
+   ~load_acq_sa_param2
+   ~load_maint_prem
+   ~load_maint_prem_param1
+   ~load_maint_prem_param2
+   ~load_maint_prem_waiver_prem
+   ~load_maint_sa
+   ~load_maint_sa2
+
+
+Surrender Charges
+^^^^^^^^^^^^^^^^^
+
+The per-policy initial surrender charge rate and the raw
+``ProductSpecTable`` parameters it is built from.
+
+.. autosummary::
+
+   ~init_surr_charge
+   ~surr_charge_param1
+   ~surr_charge_param2
+
+
+Misc
+^^^^
+
+Placeholder cells reserved for future use.
+
+.. warning::
+
+   :func:`gross_prem_table`, :func:`reserve_rate` and
+   :func:`uern_prem_rate` are placeholders that currently return
+   ``None`` and are to be implemented.
+
+.. autosummary::
+
+   ~gross_prem_table
+   ~reserve_rate
+   ~uern_prem_rate
 
 """
 
@@ -162,16 +250,23 @@ def policy_type():
     return pandas_to_array(input_data.policy_data()['PolType'])
 
 
-gen = lambda: PolicyData[idx, 'Gen']
+def gen():
+    """Per-policy generation (cohort) identifier."""
+    return PolicyData[idx, 'Gen']
 
-channel = lambda: PolicyData[idx, 'Channel']
+
+def channel():
+    """Per-policy distribution channel."""
+    return PolicyData[idx, 'Channel']
 
 def sex():
     """Per-policy sex as a :mod:`~annuallife.TradLife_A.Enums.SexID` code."""
     return pandas_to_array(input_data.policy_data()['Sex'].map(lambda s: getattr(SexID, s)))
 
 
-duration = lambda: PolicyData[idx, 'Duration']
+def duration():
+    """Per-policy elapsed policy duration in years."""
+    return PolicyData[idx, 'Duration']
 
 def issue_age():
     """Per-policy issue age in years."""

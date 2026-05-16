@@ -12,17 +12,20 @@ model point. It is the base Space inherited by
 :mod:`~annuallife.TradLife_A.Projection`, which parameterizes these
 Cells by policy and scenario.
 
+Parameters and References
+-------------------------
+
 The following references are defined in this Space and inherited by
-:mod:`~annuallife.TradLife_A.Projection`:
+:mod:`~annuallife.TradLife_A.Projection`. The integer ``idx`` from the
+enclosing :mod:`~annuallife.TradLife_A.Projection` ItemSpace is used to
+index into the per-policy NumPy arrays returned by ``pol`` and
+``asmp``.
 
-* ``pol`` -> :mod:`~annuallife.TradLife_A.PolicyAttrs`
-* ``asmp`` -> :mod:`~annuallife.TradLife_A.Assumptions`
-* ``scen`` -> :mod:`~annuallife.TradLife_A.Economic`
-* ``comm_table`` -> :mod:`~annuallife.TradLife_A.CommTable`
-
-The integer ``idx`` from the enclosing
-:mod:`~annuallife.TradLife_A.Projection` ItemSpace is used to index into
-the per-policy NumPy arrays returned by ``pol`` and ``asmp``.
+Attributes:
+    pol: Alias for :mod:`~annuallife.TradLife_A.PolicyAttrs`.
+    asmp: Alias for :mod:`~annuallife.TradLife_A.Assumptions`.
+    scen: Alias for :mod:`~annuallife.TradLife_A.Economic`.
+    comm_table: Alias for :mod:`~annuallife.TradLife_A.CommTable`.
 
 
 Cells Summary

@@ -15,7 +15,8 @@ into them with the integer policy index ``idx``. A few cells, such as
 :func:`asmp_tables` and :func:`mortality_tables`, return tables shared
 across all policies.
 
-.. rubric:: References
+Parameters and References
+-------------------------
 
 Attributes:
     input_data: Alias for :mod:`~annuallife.TradLife_A.InputData`.
@@ -42,6 +43,77 @@ Inherited from :mod:`~annuallife.TradLife_A.Utilities`:
 
 * :mod:`~annuallife.TradLife_A.Assumptions.AsmpID`: Enum-style codes
   identifying entries in the ``AsmpByDuration`` table.
+
+
+Cells Summary
+-------------
+
+Commission Assumptions
+^^^^^^^^^^^^^^^^^^^^^^
+
+Per-policy initial and renewal commission rates and the renewal
+commission term.
+
+.. autosummary::
+
+   ~comm_init_prem
+   ~comm_ren_prem
+   ~comm_ren_term
+
+
+Expense Assumptions
+^^^^^^^^^^^^^^^^^^^
+
+Per-policy acquisition and maintenance expense assumptions, expressed
+per annualized premium, per policy and per sum assured.
+
+.. autosummary::
+
+   ~exps_acq_ann_prem
+   ~exps_acq_pol
+   ~exps_acq_sa
+   ~exps_maint_ann_prem
+   ~exps_maint_pol
+   ~exps_maint_sa
+
+
+Tax and Inflation Assumptions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The consumption tax rate and the expense inflation rate.
+
+.. autosummary::
+
+   ~cnsmp_tax
+   ~inflation_rate
+
+
+Mortality
+^^^^^^^^^
+
+The mortality-table block and the per-policy indices that select each
+policy's base mortality rates and its last mortality age.
+
+.. autosummary::
+
+   ~mortality_tables
+   ~mort_table_index
+   ~mort_array_index
+   ~last_mort_age
+
+
+Mortality Factor and Lapse
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The assumption-by-duration table and the per-policy indices that
+select mortality factors and lapse rates, together with its row count.
+
+.. autosummary::
+
+   ~asmp_tables
+   ~mort_factor_index
+   ~lapse_rate_index
+   ~asmp_table_len
 
 """
 

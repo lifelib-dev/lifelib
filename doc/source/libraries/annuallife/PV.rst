@@ -4,31 +4,8 @@ The **PV** Space
 .. automodule:: annuallife.TradLife_A.PV
 
 
-Formulas
--------------
-
-.. autosummary::
-
-   ~interest_net_cf
-   ~pv_premiums
-   ~pv_claims_death
-   ~pv_claims_mat
-   ~pv_claims_surr
-   ~pv_claims
-   ~pv_exps_acq
-   ~pv_commissions
-   ~pv_exps_maint
-   ~pv_expenses
-   ~pv_net_cf
-   ~pv_net_cf_for_check
-   ~pv_check
-   ~pv_sum_insur_if
-
-
 Cells Descriptions
 ------------------
-
-.. autofunction:: interest_net_cf
 
 .. autofunction:: pv_premiums
 
@@ -49,6 +26,8 @@ Cells Descriptions
 .. autofunction:: pv_expenses
 
 .. autofunction:: pv_net_cf
+
+.. autofunction:: interest_net_cf
 
 .. autofunction:: pv_net_cf_for_check
 

@@ -16,6 +16,18 @@ The cells in this Space rely on a ``return_array`` reference, which is
 defined by the inheriting space (``True`` to convert results to NumPy
 arrays, ``False`` to keep them as pandas objects).
 
+
+Cells Summary
+-------------
+
+Helpers that convert pandas objects to per-policy NumPy arrays and
+reindex assumption tables onto the policy data.
+
+.. autosummary::
+
+   ~pandas_to_array
+   ~map_to_policies
+
 """
 
 from modelx.serialize.jsonvalues import *
@@ -39,6 +51,8 @@ def pandas_to_array(df_or_series):
     :mod:`~annuallife.TradLife_A.PolicyAttrs`), the input is converted
     via :meth:`~pandas.Series.to_numpy`. Otherwise the original pandas
     object is returned unchanged.
+
+    This is an uncached cell, so it is recomputed on every call.
     """
     return df_or_series.to_numpy() if return_array else df_or_series
 
@@ -54,6 +68,8 @@ def map_to_policies(series):
     ``PolType``, ``Gen``), and returns a Series whose index matches
     ``policy_data`` so it aligns with the per-policy NumPy arrays used
     elsewhere in the model.
+
+    This is an uncached cell, so it is recomputed on every call.
     """
     index_names = series.index.names
     target = input_data.policy_data()[index_names]

@@ -3,12 +3,14 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""Economic scenarios.
+"""Scenario economic rates for a single traditional life projection.
 
-The ``Economic`` Space provides economic assumptions, such as
-scenario interest rates used to discount cashflows.
+The ``Economic`` Space provides the per-scenario interest rates used
+to discount cashflows and to credit investment return, read from
+*input.xlsx*.
 
-.. rubric:: Parameters
+Parameters and References
+-------------------------
 
 ``Economic`` is parameterized with :attr:`scen_id`::
 
@@ -36,6 +38,18 @@ Example:
 
         >>> m.Economic[1].disc_rate_mth(0)
         0.015
+
+
+Cells Summary
+-------------
+
+The discount rate and the investment return rate for the selected
+scenario at time ``t``.
+
+.. autosummary::
+
+   ~disc_rate_mth
+   ~invst_ret_rate
 
 """
 
