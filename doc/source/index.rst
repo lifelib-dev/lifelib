@@ -137,8 +137,8 @@ Contribute your excellent work to lifelib and share it with actuaries from all a
 
       * :ref:`savings_examples`
       * :ref:`economic_examples`
+      * :ref:`annuallife_examples`
       * :ref:`fastlife_examples`
-      * :ref:`simplelife_examples`
       * :ref:`nestedlife_examples`
       * :ref:`ifrs17sim_examples`
       * :ref:`solvency2_examples`
@@ -153,8 +153,8 @@ Contribute your excellent work to lifelib and share it with actuaries from all a
       * :ref:`notebooks_economic`
       * :ref:`notebooks_economic_curves`
       * :ref:`notebooks_cluster`
+      * :ref:`notebooks_annuallife`
       * :ref:`notebooks_fastlife`
-      * :ref:`notebooks_simplelife`
       * :ref:`notebooks_ifrs17sim`
       * :ref:`notebooks_smithwilson`
 
