@@ -14,6 +14,12 @@ Updates
     Follow <a href="https://www.linkedin.com/company/lifelib" target="_blank">lifelib on LinkedIn</a>
     for more frequent updates.</p>
 
+* *17 May 2026:*
+  lifelib :ref:`v0.12.0<relnotes_v0.12.0>` is released.
+  :mod:`~annuallife`, a new library featuring the
+  :mod:`~annuallife.TradLife_A` traditional life projection model, is added.
+  :mod:`~simplelife` and its dependent projects are now deprecated.
+
 * *10 Aug 2025:*
   New download available on the :doc:`download` page.
 
