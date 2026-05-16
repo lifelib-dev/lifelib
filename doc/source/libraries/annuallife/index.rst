@@ -6,32 +6,33 @@ The **annuallife** Library
 
 |modelx badge|
 
-.. warning::
-
-   :mod:`annuallife` is in its active development phase, and its contents are
-   subject to change.
-
 Overview
 -----------
 
-The **annuallife** library is the updated successor of the legacy
-:ref:`project_simplelife` project. It packages
-:mod:`~annuallife.TradLife_A`, an annual projection model of basic
-traditional life policies.
+The **annuallife** library packages :mod:`~annuallife.TradLife_A`, an
+annual new business projection model of basic traditional life policies,
+covering term, whole life and endowment products, built with modelx.
 
-:mod:`~annuallife.TradLife_A` projects life insurance cashflows and their
+:mod:`~annuallife.TradLife_A` projects liability cashflows and their
 present values for policies represented by model points. Projected items
 include:
 
-* Premium income,
+* Premiums,
 * Commissions and expenses,
-* Benefit outgo.
+* Claims.
 
-Cells for investment income, change in reserve and profits are included
-but not tested.
+Premiums are calculated using commutation functions.
 
-Compared with the original *simplelife* model, :mod:`~annuallife.TradLife_A`
-introduces:
+Cells for investment income reserves are defined but not implemented.
+
+See :mod:`~annuallife.TradLife_A` for more details.
+
+Successor of simplelife
+^^^^^^^^^^^^^^^^^^^^^^^
+
+The **annuallife** library is the updated successor of the legacy
+:ref:`project_simplelife` project. Compared with the original
+*simplelife* model, :mod:`~annuallife.TradLife_A` introduces:
 
 * **Snake-case cell and reference names** following the
   :mod:`basiclife.BasicTerm_SC` naming convention
@@ -45,8 +46,6 @@ introduces:
 * **A renamed input space.** The space holding *input.xlsx*-backed
   References is now ``InputData`` and is referenced as ``input_data``
   by the rest of the model.
-
-See :mod:`~annuallife.TradLife_A` for more details.
 
 How to Use the Library
 ------------------------------
