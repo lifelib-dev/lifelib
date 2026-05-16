@@ -3,32 +3,14 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""Base Space for the :mod:`~annuallife.TradLife_A.Projection` Space.
+"""Core annual cashflow projection logic for a single traditional life policy.
 
-This Space serves as a base Space for
-:mod:`~annuallife.TradLife_A.Projection`,
-and it contains Cells for cashflow projection.
-
-Cells in this Space follow these naming conventions:
-
-``pols_``:
-    Cells whose names start with ``pols_`` deal with number of policies.
-    For example, ``pols_death(t)`` represents number of deaths between
-    time ``t`` and ``t+1``.
-
-``_pp``:
-    Cells whose names end with ``_pp`` represent an amount per policy.
-    For example, ``claims_death_pp`` represents the death benefit per
-    policy.
-
-``exps_``:
-    Cells whose names start with ``exps_`` represent expense cashflows.
-    For example, ``exps_maint`` means the maintenance expense cashflow.
-
-``claims_``:
-    Cells whose names start with ``claims_`` represent benefit
-    cashflows. For example, ``claims_death(t)`` is the death benefit
-    incurred between ``t`` and ``t+1``.
+This Space defines the period-by-period Cells that project policy
+decrement, benefits, premiums, commissions, expenses, investment
+income, reserves and the resulting net cashflow and profit for one
+model point. It is the base Space inherited by
+:mod:`~annuallife.TradLife_A.Projection`, which parameterizes these
+Cells by policy and scenario.
 
 The following references are defined in this Space and inherited by
 :mod:`~annuallife.TradLife_A.Projection`:
@@ -41,6 +23,230 @@ The following references are defined in this Space and inherited by
 The integer ``idx`` from the enclosing
 :mod:`~annuallife.TradLife_A.Projection` ItemSpace is used to index into
 the per-policy NumPy arrays returned by ``pol`` and ``asmp``.
+
+
+Cells Summary
+-------------
+
+Projection Parameters
+^^^^^^^^^^^^^^^^^^^^^
+
+Parameters that define the scope of the projection for the selected
+policy, such as its length and the attained age.
+
+.. autosummary::
+
+   ~proj_len
+   ~age
+   ~last_mort_age
+
+
+Assumptions
+^^^^^^^^^^^
+
+Cells that retrieve or derive the actuarial and economic assumptions
+applied to the selected policy: mortality, lapse, premium and reserve
+rates, surrender charge, inflation and discounting.
+
+.. autosummary::
+
+   ~mort_rate
+   ~mort_factor
+   ~lapse_rate
+   ~gross_prem_rate
+   ~ann_prem_rate
+   ~net_prem_rate
+   ~reserve_nlp_rate
+   ~cash_value_rate
+   ~surr_charge
+   ~inflation_factor
+   ~disc_rate_mth
+
+
+Policy Decrement
+^^^^^^^^^^^^^^^^
+
+The number of in-force policies and the movements (new business,
+death, surrender, maturity and rider exposures) that change it over
+the projection. Cells whose names start with ``pols_`` deal with
+numbers of policies.
+
+.. autosummary::
+
+   ~pols_if_init
+   ~pols_renewal
+   ~pols_if_beg
+   ~pols_if_beg1
+   ~pols_if
+   ~pols_if_aft_mat
+   ~pols_death
+   ~pols_lapse
+   ~pols_maturity
+   ~pols_annuity
+   ~pols_living
+   ~pols_acc_death
+   ~pols_acc_hosp
+   ~pols_sick_hosp
+   ~pols_surg
+   ~pols_other
+
+
+Policy Values
+^^^^^^^^^^^^^
+
+The sum assured for the selected policy and the insurance in force at
+the beginning and the end of the period.
+
+.. autosummary::
+
+   ~sum_assured
+   ~insur_if_beg1
+   ~insur_if_end
+
+
+Claims
+^^^^^^
+
+Aggregate benefit cashflows by cause, each shown together with its
+per-policy amount. Cells whose names start with ``claims_`` represent
+benefit cashflows for the period from ``t`` to ``t+1``, and those
+ending with ``_pp`` are the corresponding benefit per policy.
+
+.. autosummary::
+
+   ~claims
+   ~claims_death
+   ~claims_death_pp
+   ~claims_mat
+   ~claims_mat_pp
+   ~claims_surr
+   ~claims_surr_pp
+   ~claims_ann
+   ~claims_ann_pp
+   ~claims_acc_dth
+   ~claims_acc_dth_pp
+   ~claims_acc_hosp
+   ~claims_acc_hosp_pp
+   ~claims_sick_hosp
+   ~claims_sick_hosp_pp
+   ~claims_surg
+   ~claims_surg_pp
+   ~claims_living
+   ~claims_living_pp
+   ~claims_other
+   ~claims_other_pp
+
+
+Premiums
+^^^^^^^^
+
+Premium income with its per-policy and annualized amounts, and the
+total income for the period.
+
+.. autosummary::
+
+   ~premiums
+   ~premium_pp
+   ~ann_prem_pp
+   ~income_total
+
+
+Investment Income
+^^^^^^^^^^^^^^^^^
+
+Investment income earned on accumulated funds, with the corresponding
+per-policy amount.
+
+.. warning::
+
+   Investment income depends on reserve balances that are not yet
+   fully implemented (see the warning in the Reserves subsection);
+   the values produced are provisional and subject to change.
+
+.. autosummary::
+
+   ~invst_income
+   ~invst_income_pp
+
+
+Commissions and Expenses
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Acquisition, maintenance and other expense cashflows together with
+initial and renewal commissions, each with its per-policy amount.
+Cells whose names start with ``exps_`` represent expense cashflows.
+
+.. autosummary::
+
+   ~expenses
+   ~exps_acq
+   ~exps_acq_total
+   ~expense_acq_pp
+   ~exps_maint
+   ~exps_maint_total
+   ~expense_maint_pp
+   ~exps_other
+   ~exps_other_pp
+   ~commissions
+   ~commissions_init
+   ~commissions_init_pp
+   ~commissions_ren
+   ~commissions_ren_pp
+
+
+Reserves
+^^^^^^^^
+
+End-of-period reserve balances, their per-policy and after-maturity
+components, and the change in reserve over the period.
+
+.. warning::
+
+   Reserve calculations are not yet fully implemented. The
+   hospitalization reserve and the unearned premium reserve currently
+   return placeholder zeros and are to be implemented.
+
+.. autosummary::
+
+   ~reserve_prem_rsrv_end
+   ~reserve_prem_rsrv_end_pp
+   ~reserve_prem_rsrv_aft_mat_pp
+   ~reserve_uern_prem_end
+   ~reserve_uern_prem_end_pp
+   ~reserve_uern_prem_aft_mat_pp
+   ~reserve_hosp_rsrv_end
+   ~reserve_total_end
+   ~reserve_total_aft_mat_pp
+   ~change_rsrv
+
+
+Net Cashflows
+^^^^^^^^^^^^^
+
+The net liability cashflow and the accumulated cashflows with
+interest.
+
+.. autosummary::
+
+   ~net_cf
+   ~accum_cf
+   ~int_accum_cf
+
+
+Profits
+^^^^^^^
+
+Profit before tax for the period.
+
+.. warning::
+
+   Profit before tax depends on the change in reserves, which is not
+   yet fully implemented (see the warning in the Reserves subsection);
+   the values produced are provisional and subject to change.
+
+.. autosummary::
+
+   ~profit_bef_tax
 
 """
 
