@@ -34,8 +34,8 @@ Attributes:
 
 .. rubric:: References
 
-The following references are resolved in this Space and its base
-Spaces:
+The following references are inherited from
+:mod:`~annuallife.TradLife_A.BaseProj`:
 
 Attributes:
     pol: Alias for :mod:`~annuallife.TradLife_A.PolicyAttrs`.
@@ -57,14 +57,3 @@ _bases = [
 _allow_none = None
 
 _spaces = []
-
-# ---------------------------------------------------------------------------
-# References
-
-scen = ("Interface", ("..", "Economic"), "auto")
-
-asmp = ("Interface", ("..", "Assumptions"), "auto")
-
-pol = ("Interface", ("..", "PolicyAttrs"), "auto")
-
-comm_table = ("Interface", ("..", "CommTable"), "auto")

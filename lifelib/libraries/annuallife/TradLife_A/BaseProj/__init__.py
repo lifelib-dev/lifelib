@@ -30,7 +30,7 @@ Cells in this Space follow these naming conventions:
     cashflows. For example, ``claims_death(t)`` is the death benefit
     incurred between ``t`` and ``t+1``.
 
-The cells in this Space resolve their references through
+The following references are defined in this Space and inherited by
 :mod:`~annuallife.TradLife_A.Projection`:
 
 * ``pol`` -> :mod:`~annuallife.TradLife_A.PolicyAttrs`
@@ -628,3 +628,13 @@ def disc_rate_mth(t):
     return scen.disc_rate_mth(t)
 
 
+# ---------------------------------------------------------------------------
+# References
+
+scen = ("Interface", ("..", "Economic"), "auto")
+
+asmp = ("Interface", ("..", "Assumptions"), "auto")
+
+pol = ("Interface", ("..", "PolicyAttrs"), "auto")
+
+comm_table = ("Interface", ("..", "CommTable"), "auto")
