@@ -39,7 +39,6 @@ Attributes:
 Attributes:
     mortality_tables: Alias for
         :func:`~annuallife.TradLife_A.InputData.mortality_tables`.
-    pol: Alias for :mod:`~annuallife.TradLife_A.PolicyAttrs`.
 
 Example:
 
@@ -231,5 +230,3 @@ IntRate = 0.01
 TableID = 1
 
 mortality_tables = ("Interface", ("..", "InputData", "mortality_tables"), "absolute")
-
-pol = ("Interface", ("..", "PolicyAttrs"), "auto")

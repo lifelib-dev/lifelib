@@ -29,7 +29,6 @@ Attributes:
         :func:`~annuallife.TradLife_A.InputData.policy_data`,
         and product specs from
         :func:`~annuallife.TradLife_A.InputData.product_spec`.
-    life_table: Alias for :mod:`~annuallife.TradLife_A.CommTable`.
     prem_term: Alias for :func:`policy_term`.
     return_array(:obj:`bool`): When ``True`` (the default), helper
         functions inherited from
@@ -237,8 +236,6 @@ def surr_charge_param2():
 
 # ---------------------------------------------------------------------------
 # References
-
-life_table = ("Interface", ("..", "CommTable"), "auto")
 
 input_data = ("Interface", ("..", "InputData"), "auto")
 
