@@ -276,5 +276,9 @@ panels_add_bootstrap_css = False
 # Fix mermaid
 nbsphinx_requirejs_path = ''
 
+# sphinxcontrib-mermaid defaults to 11.2.0; the class-diagram v3 renderer and
+# its hideEmptyMembersBox option require >= 11.4.0.
+mermaid_version = "11.4.1"
+
 def setup(app):
     app.add_css_file("custom-style.css")
