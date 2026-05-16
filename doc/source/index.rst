@@ -112,6 +112,7 @@ Contribute your excellent work to lifelib and share it with actuaries from all a
 
    .. grid-item-card:: :doc:`Libraries<libraries/index>`
 
+      * :doc:`libraries/annuallife/index`
       * :doc:`libraries/basiclife/index`
       * :doc:`libraries/savings/index`
       * :doc:`libraries/appliedlife/index`
