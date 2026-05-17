@@ -11,7 +11,7 @@ Each project template is called a "library" and is designed to be easily extende
 ## Key Technologies
 
 - **Python**: 3.7+
-- **modelx**: Core dependency for model development (>=0.26.0)
+- **modelx**: Core dependency for model development (>=0.31.0)
 - **pandas**: Data manipulation
 - **numpy**: Numerical computations
 - **openpyxl**: Excel file handling

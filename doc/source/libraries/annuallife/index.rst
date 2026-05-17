@@ -74,6 +74,21 @@ are described in the
 :ref:`Basic Usage <tradlife_a-basic-usage>` section
 of the :mod:`~annuallife.TradLife_A` documentation.
 
+Older modelx versions
+^^^^^^^^^^^^^^^^^^^^^
+
+:mod:`~annuallife.TradLife_A` is saved in the modelx serializer
+version 7 format and requires **modelx v0.31.0 or newer**.
+
+For users whose ``modelx`` is older than v0.31.0, the library also
+includes ``TradLife_A_mx30``, a copy of :mod:`~annuallife.TradLife_A`
+saved in the older serializer version 6 format. It is the same model
+and reads its data from the same *input.xlsx*. Read it instead with::
+
+    >>> import modelx as mx
+
+    >>> m = mx.read_model("TradLife_A_mx30")
+
 
 Library Contents
 ------------------
@@ -93,6 +108,7 @@ Library Contents
    File or Folder                         Description
    ====================================== ==========================================================================
    ``TradLife_A``                         The :mod:`~annuallife.TradLife_A` model.
+   ``TradLife_A_mx30``                    Copy of :mod:`~annuallife.TradLife_A` saved in the modelx serializer version 6 format, for ``modelx`` older than v0.31.0.
    ``input.xlsx``                         Excel workbook holding policy data, assumptions, mortality tables, scenarios and product specs.
    ``plot_tradlife_a.py``                 sphinx-gallery plot script that renders the cashflow chart.
    ``plot_pvcashflows_tradlife_a.py``     sphinx-gallery plot script that renders present-value cashflows.
