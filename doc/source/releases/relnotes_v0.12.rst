@@ -39,6 +39,15 @@ Changes
 * Python 3.14 is added to the supported Python versions, and
   Python 3.7 and 3.8 are no longer supported.
 
+* lifelib now requires ``modelx`` v0.31.0 or newer, because
+  :mod:`~annuallife.TradLife_A` is saved in the modelx serializer
+  version 7 format introduced in modelx v0.31.0.
+
+* A copy of :mod:`~annuallife.TradLife_A` saved in the older serializer
+  version 6 format, ``TradLife_A_mx30``, is added to the
+  :mod:`~annuallife` library so that the model can still be read by
+  users whose ``modelx`` is older than v0.31.0.
+
 Fixes
 ------------
 

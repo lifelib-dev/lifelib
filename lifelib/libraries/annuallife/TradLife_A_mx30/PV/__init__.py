@@ -1,0 +1,216 @@
+"""Present values of the projected cashflows for a single traditional life policy.
+
+This Space defines the Cells that discount the cashflows projected in
+:mod:`~annuallife.TradLife_A.BaseProj` back to time 0. It is one of the
+base Spaces inherited by :mod:`~annuallife.TradLife_A.Projection`.
+
+Each present-value cell is defined recursively in ``t``: the recursion
+terminates at ``t > proj_len()`` by returning ``0``, where
+:func:`~annuallife.TradLife_A.BaseProj.proj_len` is the projection
+length for the selected policy. Discounting uses the
+:func:`~annuallife.TradLife_A.BaseProj.disc_rate_mth` cell that resolves
+to :func:`~annuallife.TradLife_A.Economic.disc_rate_mth` for the
+selected scenario.
+
+
+Cells Summary
+-------------
+
+Premiums and Claims
+^^^^^^^^^^^^^^^^^^^
+
+Present value of premium income and of the claim cashflows by cause.
+
+.. autosummary::
+
+   ~pv_premiums
+   ~pv_claims_death
+   ~pv_claims_mat
+   ~pv_claims_surr
+   ~pv_claims
+
+
+Expenses and Commissions
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Present value of acquisition, maintenance and total expenses and of
+commissions.
+
+.. autosummary::
+
+   ~pv_exps_acq
+   ~pv_commissions
+   ~pv_exps_maint
+   ~pv_expenses
+
+
+Net Cashflow
+^^^^^^^^^^^^
+
+Present value of the net liability cashflow and the interest accreted
+on it.
+
+.. autosummary::
+
+   ~pv_net_cf
+   ~interest_net_cf
+
+
+Validation
+^^^^^^^^^^
+
+An alternative recursive net-cashflow present value and the check
+that it agrees with :func:`pv_net_cf`.
+
+.. autosummary::
+
+   ~pv_net_cf_for_check
+   ~pv_check
+
+
+Exposure
+^^^^^^^^
+
+Present value of the insurance in force.
+
+.. autosummary::
+
+   ~pv_sum_insur_if
+
+"""
+
+from modelx.serialize.jsonvalues import *
+
+_formula = None
+
+_bases = []
+
+_allow_none = None
+
+_spaces = []
+
+# ---------------------------------------------------------------------------
+# Cells
+
+def interest_net_cf(t):
+    """Interest accreted on pv of net cashflows"""
+    if t > proj_len():
+        return 0
+    else:
+        return (pv_net_cf(t)
+                - premiums(t)
+                + expenses(t)) * disc_rate_mth(t)
+
+
+def pv_claims_death(t):
+    """Present value of death benefits"""
+    if t > proj_len():
+        return 0
+    else:
+        return (-claims_death(t) + pv_claims_death(t+1)) / (1 + disc_rate_mth(t))
+
+
+def pv_claims_mat(t):
+    """Present value of maturity benefits"""
+    if t > proj_len():
+        return 0
+    else:
+        return (-claims_mat(t) + pv_claims_mat(t+1)) / (1 + disc_rate_mth(t))
+
+
+def pv_claims_surr(t):
+    """Present value of surrender benefits"""
+    if t > proj_len():
+        return 0
+    else:
+        return (-claims_surr(t) + pv_claims_surr(t+1)) / (1 + disc_rate_mth(t))
+
+
+def pv_claims(t):
+    """Present value of total benefits"""
+    if t > proj_len():
+        return 0
+    else:
+        return (-claims(t) + pv_claims(t+1)) / (1 + disc_rate_mth(t))
+
+
+def pv_check(t):
+    """Difference between :func:`pv_net_cf` and :func:`pv_net_cf_for_check`.
+
+    Used as a numerical sanity check; should be zero (within floating
+    point error) at every ``t``.
+    """
+    return pv_net_cf(t) - pv_net_cf_for_check(t)
+
+
+def pv_exps_acq(t):
+    """Present value of acquisition expenses"""
+    if t > proj_len():
+        return 0
+    else:
+        return - exps_acq(t) + pv_exps_acq(t+1) / (1 + disc_rate_mth(t))
+
+
+def pv_commissions(t):
+    """Present value of commission expenses"""
+    if t > proj_len():
+        return 0
+    else:
+        return - commissions(t) + pv_commissions(t+1) / (1 + disc_rate_mth(t))
+
+
+def pv_exps_maint(t):
+    """Present value of maintenance expenses"""
+    if t > proj_len():
+        return 0
+    else:
+        return - exps_maint(t) + pv_exps_maint(t+1) / (1 + disc_rate_mth(t))
+
+
+def pv_expenses(t):
+    """Present value of total expenses"""
+    if t > proj_len():
+        return 0
+    else:
+        return - expenses(t) + pv_expenses(t+1) / (1 + disc_rate_mth(t))
+
+
+def pv_net_cf(t):
+    """Present value of net cashflow"""
+    return (pv_premiums(t)
+            + pv_expenses(t)
+            + pv_claims(t))
+
+
+def pv_net_cf_for_check(t):
+    """Present value of net cashflow computed recursively for validation.
+
+    An alternative recursive definition of :func:`pv_net_cf` used by
+    :func:`pv_check` to verify that the closed-form sum and the
+    recursion agree.
+    """
+    if t > proj_len():
+        return 0
+    else:
+        return (premiums(t)
+                - expenses(t)
+                - claims(t) / (1 + disc_rate_mth(t))
+                + pv_net_cf(t+1) / (1 + disc_rate_mth(t)))
+
+
+def pv_premiums(t):
+    """Present value of premium income"""
+    if t > proj_len():
+        return 0
+    else:
+        return premiums(t) + pv_premiums(t+1) / (1 + disc_rate_mth(t))
+
+
+def pv_sum_insur_if(t):
+    """Present value of insurance in-force"""
+    if t > proj_len():
+        return 0
+    else:
+        return insur_if_beg1(t) + pv_sum_insur_if(t+1) / (1 + disc_rate_mth(t))
+
+
