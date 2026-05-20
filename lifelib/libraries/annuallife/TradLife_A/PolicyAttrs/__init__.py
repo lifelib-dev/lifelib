@@ -31,10 +31,6 @@ Attributes:
         and product specs from
         :func:`~annuallife.TradLife_A.InputData.product_spec`.
     prem_term: Alias for :func:`policy_term`.
-    return_array(:obj:`bool`): When ``True`` (the default), helper
-        functions inherited from
-        :mod:`~annuallife.TradLife_A.Utilities` return NumPy arrays
-        instead of pandas objects.
 
 .. rubric:: Inherited helpers
 
@@ -42,6 +38,7 @@ Inherited from :mod:`~annuallife.TradLife_A.Utilities`:
 
 * :func:`~annuallife.TradLife_A.Utilities.pandas_to_array`
 * :func:`~annuallife.TradLife_A.Utilities.map_to_policies`
+* :attr:`~annuallife.TradLife_A.Utilities.return_array`
 
 
 Cells Summary
@@ -335,5 +332,3 @@ def surr_charge_param2():
 input_data = ("Interface", ("..", "InputData"), "auto")
 
 prem_term = ("Interface", (".", "policy_term"), "auto")
-
-return_array = True
