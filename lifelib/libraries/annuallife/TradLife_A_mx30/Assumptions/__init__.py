@@ -22,17 +22,13 @@ Attributes:
         :func:`~annuallife.TradLife_A.InputData.assumption_tables` and
         :func:`~annuallife.TradLife_A.InputData.mortality_tables`.
 
-    return_array(:obj:`bool`): When ``True`` (the default), helper
-        functions inherited from
-        :mod:`~annuallife.TradLife_A.Utilities` return NumPy arrays
-        instead of pandas objects.
-
 .. rubric:: Inherited helpers
 
 Inherited from :mod:`~annuallife.TradLife_A.Utilities`:
 
 * :func:`~annuallife.TradLife_A.Utilities.pandas_to_array`
 * :func:`~annuallife.TradLife_A.Utilities.map_to_policies`
+* :attr:`~annuallife.TradLife_A.Utilities.return_array`
 
 .. rubric:: Child spaces
 
@@ -287,5 +283,3 @@ def asmp_table_len():
 # References
 
 input_data = ("Interface", ("..", "InputData"), "auto")
-
-return_array = True

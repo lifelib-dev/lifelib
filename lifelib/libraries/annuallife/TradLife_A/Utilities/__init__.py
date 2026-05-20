@@ -12,9 +12,15 @@ This Space is used as a base Space (``_bases``) for
 per-policy values by mapping pandas tables onto the rows of the policy
 data.
 
-The cells in this Space rely on a ``return_array`` reference, which is
-defined by the inheriting space (``True`` to convert results to NumPy
-arrays, ``False`` to keep them as pandas objects).
+Parameters and References
+-------------------------
+
+Attributes:
+    return_array(:obj:`bool`): When ``True`` (the default), helper
+        functions defined in this Space return NumPy arrays instead of
+        pandas objects. Inherited by
+        :mod:`~annuallife.TradLife_A.Assumptions` and
+        :mod:`~annuallife.TradLife_A.PolicyAttrs`.
 
 
 Cells Summary
@@ -86,3 +92,7 @@ def map_to_policies(series):
 
 _is_cached = False
 
+# ---------------------------------------------------------------------------
+# References
+
+return_array = True
