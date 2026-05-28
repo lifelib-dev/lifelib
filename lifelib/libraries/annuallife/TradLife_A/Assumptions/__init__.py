@@ -8,12 +8,80 @@
 This Space holds assumption parameters and rates used by
 :mod:`~annuallife.TradLife_A.Projection` and its base spaces.
 
-Most cells in this Space return per-policy NumPy arrays whose layout
-matches the rows of
-:func:`~annuallife.TradLife_A.InputData.policy_data`, so callers index
-into them with the integer policy index ``idx``. A few cells, such as
-:func:`asmp_tables` and :func:`mortality_tables`, return tables shared
-across all policies.
+The main role of this Space is to associate assumption data sourced
+from :mod:`~annuallife.TradLife_A.InputData` with the model points
+held in
+:func:`~annuallife.TradLife_A.InputData.policy_data`, and to expose
+the resulting per-policy values as 1-D :mod:`numpy` arrays whose
+layout matches the rows of ``policy_data``. Callers therefore index
+into them with the integer policy index ``idx``. A few cells, such
+as :func:`asmp_tables` and :func:`mortality_tables`, return tables
+shared across all policies.
+
+The association is carried out by chaining two helper cells inherited
+from the :mod:`~annuallife.TradLife_A.Utilities` base Space:
+
+* :func:`~annuallife.TradLife_A.Utilities.map_to_policies` reindexes
+  an assumption ``Series`` keyed by lookup columns (e.g. ``Product``,
+  ``PolType``, ``Gen``) onto the rows of ``policy_data``, so the
+  result has one entry per policy.
+* :func:`~annuallife.TradLife_A.Utilities.pandas_to_array` then
+  converts that ``Series`` (or a ``DataFrame``, for table-returning
+  cells) into a NumPy array when
+  :attr:`~annuallife.TradLife_A.Utilities.return_array` is ``True``
+  (the default). When ``return_array`` is ``False`` the pandas
+  object is passed through unchanged, which is convenient for
+  inspection and debugging.
+
+A typical per-policy Cells in this Space therefore implements the
+following pipeline:
+
+.. mermaid::
+
+    graph LR
+        A["input_data.assumption(key)<br/>pandas Series keyed by<br/>(Product, PolType, Gen)"]
+        --> B["map_to_policies<br/>reindex onto policy_data rows"]
+        B --> C["pandas_to_array<br/>convert when return_array=True"]
+        C --> D["1-D NumPy array<br/>indexed by policy idx"]
+
+For example, :func:`comm_init_prem` is implemented as
+``pandas_to_array(map_to_policies(input_data.assumption('CommInitPrem')))``,
+and most other per-policy cells in this Space follow the same
+pattern.
+
+The three steps can also be executed individually on a console,
+which is useful for inspecting the intermediate pandas objects::
+
+    >>> asmp = m.Assumptions
+
+    >>> # Step 1: raw assumption Series keyed by lookup columns
+    >>> s = asmp.input_data.assumption('CommInitPrem')
+    >>> s
+    Product
+    TERM    0.2
+    WL      0.5
+    ENDW    0.5
+    Name: CommInitPrem, dtype: float64
+
+    >>> # Step 2: reindex onto the rows of policy_data
+    >>> mapped = asmp.map_to_policies(s)
+    >>> mapped.head()
+    Policy
+    1    0.2
+    2    0.2
+    3    0.2
+    4    0.2
+    5    0.2
+    Name: CommInitPrem, dtype: float64
+    >>> len(mapped)
+    300
+
+    >>> # Step 3: convert to a 1-D NumPy array (return_array is True)
+    >>> asmp.pandas_to_array(mapped)
+    array([0.2, 0.2, 0.2, ..., 0.5, 0.5, 0.5])
+
+Composing the three calls is exactly what :func:`comm_init_prem`
+returns.
 
 Parameters and References
 -------------------------
