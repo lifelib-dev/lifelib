@@ -40,8 +40,8 @@ following pipeline:
 
     graph LR
         A["input_data.assumption(key)<br/>pandas Series keyed by<br/>(Product, PolType, Gen)"]
-        --> B["map_to_policies<br/>reindex onto policy_data rows"]
-        B --> C["pandas_to_array<br/>convert when return_array=True"]
+        --> B["map_to_policies<br/>reindex onto<br/>policy_data rows"]
+        B --> C["pandas_to_array<br/>convert when<br/>return_array=True"]
         C --> D["1-D NumPy array<br/>indexed by policy idx"]
 
 For example, :func:`comm_init_prem` is implemented as

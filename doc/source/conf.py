@@ -280,5 +280,11 @@ nbsphinx_requirejs_path = ''
 # its hideEmptyMembersBox option require >= 11.4.0.
 mermaid_version = "11.4.1"
 
+# sphinxcontrib-mermaid 2.0.x forces svg { height: 500px; width: 100% }, which
+# stretches the SVG to a 500px height regardless of content. Letting height
+# auto-size preserves the natural aspect ratio so labels stay inside their
+# rectangles.
+mermaid_height = "auto"
+
 def setup(app):
     app.add_css_file("custom-style.css")
