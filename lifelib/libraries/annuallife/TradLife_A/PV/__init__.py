@@ -98,7 +98,15 @@ _spaces = []
 # Cells
 
 def interest_net_cf(t):
-    """Interest accreted on pv of net cashflows"""
+    """Interest accreted on pv of net cashflows
+
+    .. seealso::
+
+        * :func:`pv_net_cf`
+        * :func:`~annuallife.TradLife_A.BaseProj.premiums`
+        * :func:`~annuallife.TradLife_A.BaseProj.expenses`
+        * :func:`~annuallife.TradLife_A.BaseProj.disc_rate_mth`
+    """
     if t > proj_len():
         return 0
     else:
@@ -108,7 +116,13 @@ def interest_net_cf(t):
 
 
 def pv_claims_death(t):
-    """Present value of death benefits"""
+    """Present value of death benefits
+
+    .. seealso::
+
+        * :func:`pv_claims`
+        * :func:`~annuallife.TradLife_A.BaseProj.claims_death`
+    """
     if t > proj_len():
         return 0
     else:
@@ -116,7 +130,13 @@ def pv_claims_death(t):
 
 
 def pv_claims_mat(t):
-    """Present value of maturity benefits"""
+    """Present value of maturity benefits
+
+    .. seealso::
+
+        * :func:`pv_claims`
+        * :func:`~annuallife.TradLife_A.BaseProj.claims_mat`
+    """
     if t > proj_len():
         return 0
     else:
@@ -124,7 +144,13 @@ def pv_claims_mat(t):
 
 
 def pv_claims_surr(t):
-    """Present value of surrender benefits"""
+    """Present value of surrender benefits
+
+    .. seealso::
+
+        * :func:`pv_claims`
+        * :func:`~annuallife.TradLife_A.BaseProj.claims_surr`
+    """
     if t > proj_len():
         return 0
     else:
@@ -132,7 +158,15 @@ def pv_claims_surr(t):
 
 
 def pv_claims(t):
-    """Present value of total benefits"""
+    """Present value of total benefits
+
+    .. seealso::
+
+        * :func:`pv_claims_death`
+        * :func:`pv_claims_mat`
+        * :func:`pv_claims_surr`
+        * :func:`~annuallife.TradLife_A.BaseProj.claims`
+    """
     if t > proj_len():
         return 0
     else:
@@ -144,12 +178,23 @@ def pv_check(t):
 
     Used as a numerical sanity check; should be zero (within floating
     point error) at every ``t``.
+
+    .. seealso::
+
+        * :func:`pv_net_cf`
+        * :func:`pv_net_cf_for_check`
     """
     return pv_net_cf(t) - pv_net_cf_for_check(t)
 
 
 def pv_exps_acq(t):
-    """Present value of acquisition expenses"""
+    """Present value of acquisition expenses
+
+    .. seealso::
+
+        * :func:`pv_expenses`
+        * :func:`~annuallife.TradLife_A.BaseProj.exps_acq`
+    """
     if t > proj_len():
         return 0
     else:
@@ -157,7 +202,13 @@ def pv_exps_acq(t):
 
 
 def pv_commissions(t):
-    """Present value of commission expenses"""
+    """Present value of commission expenses
+
+    .. seealso::
+
+        * :func:`pv_expenses`
+        * :func:`~annuallife.TradLife_A.BaseProj.commissions`
+    """
     if t > proj_len():
         return 0
     else:
@@ -165,7 +216,13 @@ def pv_commissions(t):
 
 
 def pv_exps_maint(t):
-    """Present value of maintenance expenses"""
+    """Present value of maintenance expenses
+
+    .. seealso::
+
+        * :func:`pv_expenses`
+        * :func:`~annuallife.TradLife_A.BaseProj.exps_maint`
+    """
     if t > proj_len():
         return 0
     else:
@@ -173,7 +230,15 @@ def pv_exps_maint(t):
 
 
 def pv_expenses(t):
-    """Present value of total expenses"""
+    """Present value of total expenses
+
+    .. seealso::
+
+        * :func:`pv_exps_acq`
+        * :func:`pv_commissions`
+        * :func:`pv_exps_maint`
+        * :func:`~annuallife.TradLife_A.BaseProj.expenses`
+    """
     if t > proj_len():
         return 0
     else:
@@ -181,7 +246,17 @@ def pv_expenses(t):
 
 
 def pv_net_cf(t):
-    """Present value of net cashflow"""
+    """Present value of net cashflow
+
+    .. seealso::
+
+        * :func:`pv_premiums`
+        * :func:`pv_expenses`
+        * :func:`pv_claims`
+        * :func:`pv_net_cf_for_check`
+        * :func:`pv_check`
+        * :func:`interest_net_cf`
+    """
     return (pv_premiums(t)
             + pv_expenses(t)
             + pv_claims(t))
@@ -193,6 +268,14 @@ def pv_net_cf_for_check(t):
     An alternative recursive definition of :func:`pv_net_cf` used by
     :func:`pv_check` to verify that the closed-form sum and the
     recursion agree.
+
+    .. seealso::
+
+        * :func:`pv_net_cf`
+        * :func:`pv_check`
+        * :func:`~annuallife.TradLife_A.BaseProj.premiums`
+        * :func:`~annuallife.TradLife_A.BaseProj.expenses`
+        * :func:`~annuallife.TradLife_A.BaseProj.claims`
     """
     if t > proj_len():
         return 0
@@ -204,7 +287,13 @@ def pv_net_cf_for_check(t):
 
 
 def pv_premiums(t):
-    """Present value of premium income"""
+    """Present value of premium income
+
+    .. seealso::
+
+        * :func:`pv_net_cf`
+        * :func:`~annuallife.TradLife_A.BaseProj.premiums`
+    """
     if t > proj_len():
         return 0
     else:
@@ -212,7 +301,13 @@ def pv_premiums(t):
 
 
 def pv_sum_insur_if(t):
-    """Present value of insurance in-force"""
+    """Present value of insurance in-force
+
+    .. seealso::
+
+        * :func:`~annuallife.TradLife_A.BaseProj.insur_if_beg1`
+        * :func:`~annuallife.TradLife_A.BaseProj.sum_assured`
+    """
     if t > proj_len():
         return 0
     else:
