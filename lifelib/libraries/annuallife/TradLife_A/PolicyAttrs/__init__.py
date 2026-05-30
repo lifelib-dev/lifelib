@@ -8,7 +8,7 @@
 This Space holds policy attributes and policy-level values used by
 :mod:`~annuallife.TradLife_A.Projection` and its base spaces.
 
-The main role of this Space is to associate per-policy data sourced
+The main role of this Space is to associate product specs sourced
 from :mod:`~annuallife.TradLife_A.InputData` with the model points
 held in
 :func:`~annuallife.TradLife_A.InputData.policy_data`, and to expose
