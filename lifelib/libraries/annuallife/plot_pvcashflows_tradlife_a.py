@@ -36,4 +36,5 @@ import seaborn as sns
 sns.set_theme(style="darkgrid")
 
 axes = ncf.plot.line(marker='o', color='r')
+cfs[vars[1:]] = cfs[vars[1:]].mul(-1)   # Change outflows to negatives
 cfs.plot(kind='bar', stacked=True, ax=axes)
