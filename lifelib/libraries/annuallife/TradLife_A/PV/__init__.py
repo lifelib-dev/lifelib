@@ -126,7 +126,7 @@ def pv_claims_death(t):
     if t > proj_len():
         return 0
     else:
-        return (-claims_death(t) + pv_claims_death(t+1)) / (1 + disc_rate_mth(t))
+        return (claims_death(t) + pv_claims_death(t+1)) / (1 + disc_rate_mth(t))
 
 
 def pv_claims_mat(t):
@@ -140,7 +140,7 @@ def pv_claims_mat(t):
     if t > proj_len():
         return 0
     else:
-        return (-claims_mat(t) + pv_claims_mat(t+1)) / (1 + disc_rate_mth(t))
+        return (claims_mat(t) + pv_claims_mat(t+1)) / (1 + disc_rate_mth(t))
 
 
 def pv_claims_surr(t):
@@ -154,7 +154,7 @@ def pv_claims_surr(t):
     if t > proj_len():
         return 0
     else:
-        return (-claims_surr(t) + pv_claims_surr(t+1)) / (1 + disc_rate_mth(t))
+        return (claims_surr(t) + pv_claims_surr(t+1)) / (1 + disc_rate_mth(t))
 
 
 def pv_claims(t):
@@ -170,7 +170,7 @@ def pv_claims(t):
     if t > proj_len():
         return 0
     else:
-        return (-claims(t) + pv_claims(t+1)) / (1 + disc_rate_mth(t))
+        return (claims(t) + pv_claims(t+1)) / (1 + disc_rate_mth(t))
 
 
 def pv_check(t):
@@ -198,7 +198,7 @@ def pv_exps_acq(t):
     if t > proj_len():
         return 0
     else:
-        return - exps_acq(t) + pv_exps_acq(t+1) / (1 + disc_rate_mth(t))
+        return exps_acq(t) + pv_exps_acq(t+1) / (1 + disc_rate_mth(t))
 
 
 def pv_commissions(t):
@@ -212,7 +212,7 @@ def pv_commissions(t):
     if t > proj_len():
         return 0
     else:
-        return - commissions(t) + pv_commissions(t+1) / (1 + disc_rate_mth(t))
+        return commissions(t) + pv_commissions(t+1) / (1 + disc_rate_mth(t))
 
 
 def pv_exps_maint(t):
@@ -226,7 +226,7 @@ def pv_exps_maint(t):
     if t > proj_len():
         return 0
     else:
-        return - exps_maint(t) + pv_exps_maint(t+1) / (1 + disc_rate_mth(t))
+        return exps_maint(t) + pv_exps_maint(t+1) / (1 + disc_rate_mth(t))
 
 
 def pv_expenses(t):
@@ -242,7 +242,7 @@ def pv_expenses(t):
     if t > proj_len():
         return 0
     else:
-        return - expenses(t) + pv_expenses(t+1) / (1 + disc_rate_mth(t))
+        return expenses(t) + pv_expenses(t+1) / (1 + disc_rate_mth(t))
 
 
 def pv_net_cf(t):
@@ -258,8 +258,8 @@ def pv_net_cf(t):
         * :func:`interest_net_cf`
     """
     return (pv_premiums(t)
-            + pv_expenses(t)
-            + pv_claims(t))
+            - pv_expenses(t)
+            - pv_claims(t))
 
 
 def pv_net_cf_for_check(t):
