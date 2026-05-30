@@ -8,17 +8,111 @@
 This Space holds policy attributes and policy-level values used by
 :mod:`~annuallife.TradLife_A.Projection` and its base spaces.
 
-Some Cells in this Space, such as :func:`product` and :func:`issue_age`,
-retrieve attributes for the model points from
-:func:`~annuallife.TradLife_A.InputData.policy_data`. Other Cells,
-such as those used by
-:func:`~annuallife.TradLife_A.BaseProj.gross_prem_rate`, derive
-policy-level values from product specs looked up through
-:func:`~annuallife.TradLife_A.InputData.product_spec`.
+The main role of this Space is to associate per-policy data sourced
+from :mod:`~annuallife.TradLife_A.InputData` with the model points
+held in
+:func:`~annuallife.TradLife_A.InputData.policy_data`, and to expose
+the resulting per-policy values as 1-D :mod:`numpy` arrays whose
+layout matches the rows of ``policy_data``. Callers therefore index
+into them with the integer policy index ``idx``.
 
-Most cells return per-policy NumPy arrays whose layout matches the rows
-of :func:`~annuallife.TradLife_A.InputData.policy_data`, so callers
-index into them with the integer policy index ``idx``.
+The Cells fall into two groups by their data source:
+
+* **Model point attributes**, such as :func:`product`,
+  :func:`issue_age` and :func:`sum_assured`, read a column directly
+  from :func:`~annuallife.TradLife_A.InputData.policy_data` and
+  convert it to a NumPy array.
+* **Product-level values**, such as :func:`int_rate`,
+  :func:`table_id` and :func:`load_acq_sa_param1`, look up a column
+  in :func:`~annuallife.TradLife_A.InputData.product_spec` keyed by
+  product attributes (e.g. ``Product``, ``PolType``, ``Gen``) and
+  reindex it onto the rows of ``policy_data`` before converting it
+  to a NumPy array. These Cells are typically used to build the
+  loadings and rates consumed by
+  :func:`~annuallife.TradLife_A.BaseProj.gross_prem_rate`.
+
+Both groups end with the same array-conversion step. The reindexing
+and conversion are performed by helper Cells inherited from the
+:mod:`~annuallife.TradLife_A.Utilities` base Space:
+
+* :func:`~annuallife.TradLife_A.Utilities.map_to_policies` reindexes
+  a ``Series`` keyed by lookup columns onto the rows of
+  ``policy_data``, so the result has one entry per policy.
+* :func:`~annuallife.TradLife_A.Utilities.pandas_to_array` then
+  converts that ``Series`` into a NumPy array when
+  :attr:`~annuallife.TradLife_A.Utilities.return_array` is ``True``
+  (the default). When ``return_array`` is ``False`` the pandas
+  object is passed through unchanged, which is convenient for
+  inspection and debugging.
+
+The two pipelines are illustrated below:
+
+.. mermaid::
+
+    graph LR
+        A1["policy_data()['col']<br/>pandas Series<br/>indexed by Policy"]
+        A2["product_spec(name)<br/>pandas Series keyed by<br/>(Product, PolType, Gen)"]
+        A2 --> B["map_to_policies<br/>reindex onto<br/>policy_data rows"]
+        A1 --> C["pandas_to_array<br/>convert when<br/>return_array=True"]
+        B --> C
+        C --> D["1-D NumPy array<br/>indexed by policy idx"]
+
+For example, :func:`issue_age` is implemented as
+``pandas_to_array(input_data.policy_data()['IssueAge'])`` (top
+branch), while :func:`load_acq_sa_param1` is implemented as
+``pandas_to_array(map_to_policies(input_data.product_spec('LoadAcqSAParam1')))``
+(bottom branch).
+
+The steps can also be executed individually on a console, which is
+useful for inspecting the intermediate pandas objects::
+
+    >>> pol = m.PolicyAttrs
+
+    >>> # Model-point attribute: pick a column from policy_data
+    >>> s = pol.input_data.policy_data()['IssueAge']
+    >>> s.head()
+    Policy
+    1    30
+    2    30
+    3    31
+    4    31
+    5    32
+    Name: IssueAge, dtype: int64
+    >>> len(s)
+    300
+
+    >>> # Convert to a 1-D NumPy array (return_array is True)
+    >>> pol.pandas_to_array(s)
+    array([30, 30, 31, ..., 78, 79, 79])
+
+    >>> # Product-level value: look up a column in product_spec
+    >>> ps = pol.input_data.product_spec('LoadAcqSAParam1')
+    >>> ps
+    Product
+    TERM    0.00
+    WL      0.02
+    ENDW    0.02
+    Name: LoadAcqSAParam1, dtype: float64
+
+    >>> # Reindex onto the rows of policy_data
+    >>> mapped = pol.map_to_policies(ps)
+    >>> mapped.head()
+    Policy
+    1    0.0
+    2    0.0
+    3    0.0
+    4    0.0
+    5    0.0
+    Name: LoadAcqSAParam1, dtype: float64
+    >>> len(mapped)
+    300
+
+    >>> # Convert to a 1-D NumPy array
+    >>> pol.pandas_to_array(mapped)
+    array([0.  , 0.  , 0.  , ..., 0.02, 0.02, 0.02])
+
+Composing these calls is exactly what :func:`issue_age` and
+:func:`load_acq_sa_param1` return.
 
 Parameters and References
 -------------------------
