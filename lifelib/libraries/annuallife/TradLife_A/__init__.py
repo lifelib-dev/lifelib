@@ -203,8 +203,10 @@ through a Cells in :mod:`~annuallife.TradLife_A.InputData`.
    named ranges and the helpers that turn them into :mod:`pandas`
    objects.
 
-``PolicyData``
-^^^^^^^^^^^^^^
+Model point data
+^^^^^^^^^^^^^^^^
+
+Named range: ``PolicyData``
 
 Per-policy attributes for the model points the projection runs over.
 One row per policy, loaded by
@@ -248,8 +250,10 @@ the ``Policy`` column.
    * - ``SumAssured``
      - Sum assured per policy.
 
-``ProductSpecTable``
-^^^^^^^^^^^^^^^^^^^^
+Product specifications
+^^^^^^^^^^^^^^^^^^^^^^
+
+Named range: ``ProductSpecTable``
 
 Per-product specification table holding loading parameters, surrender
 charges and the mortality, interest and lapse references used on the
@@ -264,40 +268,48 @@ each column as a Series keyed by ``Product`` / ``PolType`` / ``Gen``.
    * - Column
      - Description
    * - ``Product``, ``PolType``, ``Gen``
-     - Lookup levels. ``Product`` matches ``Product`` in ``PolicyData``;
+     - Lookup keys. ``Product`` matches ``Product`` in ``PolicyData``;
        ``PolType`` and ``Gen`` are optional refinements and may be left
        blank for product-wide entries.
-   * - ``LoadAcqSAParam1``, ``LoadAcqSAParam2``
-     - Linear parameters of the sum-assured-based acquisition loading
-       (see :func:`~annuallife.TradLife_A.PolicyAttrs.load_acq_sa`).
+   * - ``LoadAcqSAParam<N>``
+     - Linear parameters of the sum-assured-based acquisition loading,
+       with ``N`` = 1, 2 (see
+       :func:`~annuallife.TradLife_A.PolicyAttrs.load_acq_sa`).
    * - ``LoadMaintSA``, ``LoadMaintSA2``
      - Sum-assured-based maintenance loadings during and after the
        premium-paying period.
-   * - ``LoadMaintPremParam1``, ``LoadMaintPremParam2``
-     - Linear parameters of the premium-based maintenance loading
-       (see :func:`~annuallife.TradLife_A.PolicyAttrs.load_maint_prem`).
-   * - ``SurrChargeParam1``, ``SurrChargeParam2``
-     - Parameters of the initial surrender charge (see
-       :func:`~annuallife.TradLife_A.PolicyAttrs.init_surr_charge`).
-   * - ``MortTablePrem``, ``MortTableVal``
-     - Mortality table IDs (columns of ``MortalityTables``) used on the
-       premium and valuation bases.
-   * - ``IntRatePrem``, ``IntRateVal``
-     - Interest rates used on the premium and valuation bases.
-   * - ``LapseRatePrem``, ``LapseRateVal``
-     - Annual lapse rates used on the premium and valuation bases.
+   * - ``LoadMaintPremParam<N>``
+     - Linear parameters of the premium-based maintenance loading,
+       with ``N`` = 1, 2 (see
+       :func:`~annuallife.TradLife_A.PolicyAttrs.load_maint_prem`).
+   * - ``SurrChargeParam<N>``
+     - Parameters of the initial surrender charge, with ``N`` = 1, 2
+       (see :func:`~annuallife.TradLife_A.PolicyAttrs.init_surr_charge`).
+   * - ``MortTable<Basis>``
+     - Mortality table ID (column of ``MortalityTables``) for
+       ``<Basis>``, where ``Basis`` is ``Prem`` (premium basis) or
+       ``Val`` (valuation basis).
+   * - ``IntRate<Basis>``
+     - Interest rate for ``<Basis>``; ``Basis`` as above.
+   * - ``LapseRate<Basis>``
+     - Annual lapse rate for ``<Basis>``; ``Basis`` as above.
    * - ``Hsx``, ``Tsx``, ``Hax``, ``Tax``
      - Optional commutation-function parameters for products that need
        them (left blank for products that do not).
 
-``AssumptionTable``
-^^^^^^^^^^^^^^^^^^^
+Assumption parameters
+^^^^^^^^^^^^^^^^^^^^^
 
-Per-product assumption set. Read column-by-column by
+Named range: ``AssumptionTable``
+
+Table of actuarial assumption parameters — mortality and lapse
+references, commission rates, expense factors, and tax/inflation
+rates — keyed by ``Product`` / ``PolType`` / ``Gen``. Read
+column-by-column by
 :func:`~annuallife.TradLife_A.InputData.assumption`, which returns each
-column as a Series keyed by ``Product`` / ``PolType`` / ``Gen``. Rows
-are sparse: a product-level row sets the defaults, and more specific
-(``PolType`` / ``Gen``) rows override individual columns.
+column as a Series. Rows are sparse: a product-level row sets the
+defaults, and more specific (``PolType`` / ``Gen``) rows override
+individual columns.
 
 .. list-table::
    :header-rows: 1
@@ -306,7 +318,7 @@ are sparse: a product-level row sets the defaults, and more specific
    * - Column
      - Description
    * - ``Product``, ``PolType``, ``Gen``
-     - Lookup levels for the assumption set.
+     - Lookup keys for the assumption set.
    * - ``BaseMort``
      - Base mortality table ID (column of ``MortalityTables``).
    * - ``MortFactor``
@@ -325,21 +337,26 @@ are sparse: a product-level row sets the defaults, and more specific
        premium.
    * - ``CommRenTerm``
      - Number of renewal years over which ``CommRenPrem`` applies.
-   * - ``ExpsAcqSA``, ``ExpsAcqAnnPrem``, ``ExpsAcqPol``
-     - Acquisition expense factors per sum assured, per annualised
-       premium and per policy.
-   * - ``ExpsMaintSA``, ``ExpsMaintPrem``, ``ExpsMaintPol``
-     - Maintenance expense factors per sum assured, per premium and per
-       policy.
+   * - ``ExpsAcq<Unit>``
+     - Acquisition expense factor per ``<Unit>``, where ``Unit`` is
+       ``SA`` (per sum assured), ``AnnPrem`` (per annualised premium),
+       or ``Pol`` (per policy).
+   * - ``ExpsMaint<Unit>``
+     - Maintenance expense factor per ``<Unit>``, where ``Unit`` is
+       ``SA`` (per sum assured), ``Prem`` (per premium), or ``Pol``
+       (per policy).
    * - ``InflRate``
      - Expense inflation rate applied to maintenance expenses.
    * - ``CnsmpTax``
      - Consumption-tax rate applied to expenses.
 
-``AsmpByDuration``
-^^^^^^^^^^^^^^^^^^
+Assumptions by duration
+^^^^^^^^^^^^^^^^^^^^^^^
 
-Duration-indexed assumption tables. Read by
+Named range: ``AsmpByDuration``
+
+Duration-indexed tables of mortality factors, morbidity rates, and
+lapse rates. Read by
 :func:`~annuallife.TradLife_A.InputData.assumption_tables`, which
 returns a ``DataFrame`` indexed by ``Year``. Columns of this range are
 referenced by name from ``AssumptionTable`` (e.g. ``MortFactor`` and
@@ -353,18 +370,20 @@ referenced by name from ``AssumptionTable`` (e.g. ``MortFactor`` and
      - Description
    * - ``Year``
      - Policy duration in years; becomes the DataFrame index.
-   * - ``MortAsmp1``, ``MortAsmp2``
-     - Duration-based mortality-factor tables selectable from
-       ``MortFactor`` in ``AssumptionTable``.
-   * - ``Morb1`` ... ``Morb5``
-     - Duration-based morbidity-rate tables (defined for future use;
-       not consumed by the current projection Cells).
-   * - ``LapseRate1``
-     - Duration-based lapse-rate table selectable from ``Surrender`` in
-       ``AssumptionTable``.
+   * - ``MortAsmp<N>``
+     - Duration-based mortality-factor tables (``N`` = 1, 2) selectable
+       from ``MortFactor`` in ``AssumptionTable``.
+   * - ``Morb<N>``
+     - Duration-based morbidity-rate tables (``N`` = 1..5; defined for
+       future use, not consumed by the current projection Cells).
+   * - ``LapseRate<N>``
+     - Duration-based lapse-rate tables (``N`` = 1) selectable from
+       ``Surrender`` in ``AssumptionTable``.
 
-``MortalityTables``
-^^^^^^^^^^^^^^^^^^^
+Mortality tables
+^^^^^^^^^^^^^^^^
+
+Named range: ``MortalityTables``
 
 Mortality rates by attained age and (mortality table ID, sex), with a
 two-row header (``MortTable`` over ``Sex``). Read by
@@ -389,12 +408,13 @@ returns a ``DataFrame`` indexed by age with a column ``MultiIndex`` of
    * - Cell value
      - Annual mortality rate for the (table, sex, age).
 
-``Scenarios``
-^^^^^^^^^^^^^
+Economic scenarios
+^^^^^^^^^^^^^^^^^^
 
-Economic scenarios. Read by
-:func:`~annuallife.TradLife_A.InputData.scenarios`, which returns a
-``DataFrame`` indexed by ``(ScenID, Year)``.
+Named range: ``Scenarios``
+
+Read by :func:`~annuallife.TradLife_A.InputData.scenarios`, which
+returns a ``DataFrame`` indexed by ``(ScenID, Year)``.
 
 .. list-table::
    :header-rows: 1
@@ -410,11 +430,13 @@ Economic scenarios. Read by
    * - ``IntRate``
      - Annual interest rate at time ``Year`` under scenario ``ScenID``.
 
-``LargePolDiscount``
-^^^^^^^^^^^^^^^^^^^^
+Large-policy premium discount
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Two-column named range mapping sum-assured bands to a premium discount.
-Read as a :obj:`dict` and turned into a per-policy ``Series`` by
+Named range: ``LargePolDiscount``
+
+Two-column range mapping sum-assured bands to a premium discount. Read
+as a :obj:`dict` and turned into a per-policy ``Series`` by
 :func:`~annuallife.TradLife_A.InputData.discount_rate`, which uses the
 keys as left-closed band boundaries.
 
@@ -431,11 +453,13 @@ keys as left-closed band boundaries.
      - Premium discount applied to policies whose ``SumAssured`` falls
        in that band.
 
-``PremiumWaiverCost``
-^^^^^^^^^^^^^^^^^^^^^
+Premium-waiver cost
+^^^^^^^^^^^^^^^^^^^
 
-Two-column named range mapping policy-term bands to a premium-waiver
-loading. Read as a :obj:`dict` by
+Named range: ``PremiumWaiverCost``
+
+Two-column range mapping policy-term bands to a premium-waiver loading.
+Read as a :obj:`dict` by
 :func:`~annuallife.TradLife_A.InputData.prem_waiver_cost`.
 
 .. list-table::
@@ -450,12 +474,13 @@ loading. Read as a :obj:`dict` by
    * - Second column
      - Premium-waiver cost loading for that band.
 
-``ConstParams``
-^^^^^^^^^^^^^^^
+Constant parameters
+^^^^^^^^^^^^^^^^^^^
 
-Two-column named range of scalar parameters used across the model.
-Read as a :obj:`dict` by
-:func:`~annuallife.TradLife_A.InputData.const_params`.
+Named range: ``ConstParams``
+
+Two-column range of scalar parameters used across the model. Read as a
+:obj:`dict` by :func:`~annuallife.TradLife_A.InputData.const_params`.
 
 .. list-table::
    :header-rows: 1
