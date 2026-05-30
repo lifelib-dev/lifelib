@@ -58,7 +58,7 @@ def pandas_to_array(df_or_series):
     via :meth:`~pandas.Series.to_numpy`. Otherwise the original pandas
     object is returned unchanged.
 
-    This is an uncached cell, so it is recomputed on every call.
+    This is an uncached Cells, so it is recomputed on every call.
     """
     return df_or_series.to_numpy() if return_array else df_or_series
 
@@ -75,7 +75,7 @@ def map_to_policies(series):
     ``policy_data`` so it aligns with the per-policy NumPy arrays used
     elsewhere in the model.
 
-    This is an uncached cell, so it is recomputed on every call.
+    This is an uncached Cells, so it is recomputed on every call.
     """
     index_names = series.index.names
     target = input_data.policy_data()[index_names]
