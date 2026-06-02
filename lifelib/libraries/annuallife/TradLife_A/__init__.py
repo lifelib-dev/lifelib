@@ -35,14 +35,14 @@ proceeds as follows.
 .. mermaid::
 
     graph LR
-        Projection --> Economic
-        Projection --> Assumptions
         Projection --> PolicyAttrs
+        Projection --> Assumptions
         Projection --> CommTable
-        Economic --> InputData
-        Assumptions --> InputData
+        Projection --> Economic
         PolicyAttrs --> InputData
+        Assumptions --> InputData
         CommTable --> InputData
+        Economic --> InputData
 
 * The data is read into the model from the input file in
   :mod:`~annuallife.TradLife_A.InputData`, and held there as
@@ -135,14 +135,6 @@ Inheritance
 :mod:`~annuallife.TradLife_A.BaseProj` and
 :mod:`~annuallife.TradLife_A.PV`, so projection cells and their
 present-value counterparts share the same parameter scope.
-
-.. mermaid::
-
-    %%{init: {"class": {"hideEmptyMembersBox": true}}}%%
-    classDiagram
-        BaseProj <|-- Projection
-        PV <|-- Projection
-
 :mod:`~annuallife.TradLife_A.Assumptions` and
 :mod:`~annuallife.TradLife_A.PolicyAttrs` inherit from
 :mod:`~annuallife.TradLife_A.Utilities`, which contributes the
@@ -152,6 +144,8 @@ present-value counterparts share the same parameter scope.
 
     %%{init: {"class": {"hideEmptyMembersBox": true}}}%%
     classDiagram
+        BaseProj <|-- Projection
+        PV <|-- Projection
         Utilities <|-- Assumptions
         Utilities <|-- PolicyAttrs
 

@@ -8,12 +8,12 @@ The **TradLife_A** Model
    :maxdepth: 1
 
    InputData
+   PolicyAttrs
+   Assumptions
+   CommTable
    Economic
    BaseProj
    PV
    Projection
-   Assumptions
-   PolicyAttrs
    Utilities
-   CommTable
    Enums
