@@ -760,7 +760,61 @@ def cash_value_rate(t):
 
 
 def net_prem_rate(basis):
-    """Net Premium Rate"""
+    r"""Net level premium rate per Sum Assured.
+
+    The level annual net premium per unit Sum Assured that, at policy
+    issue, balances the present value of the obligations against the
+    present value of an annuity-due over the policy term. Let
+
+    * :math:`x` = :func:`~annuallife.TradLife_A.PolicyAttrs.issue_age`,
+    * :math:`n` = :func:`~annuallife.TradLife_A.PolicyAttrs.policy_term`,
+    * :math:`m` = :func:`~annuallife.TradLife_A.PolicyAttrs.prem_term`,
+    * :math:`\gamma_{2}` =
+      :func:`~annuallife.TradLife_A.PolicyAttrs.load_maint_sa2`, the
+      maintenance-expense loading per unit Sum Assured charged after
+      the premium-paying period.
+
+    The premium is
+
+    .. math::
+
+        \require{enclose}
+        P \;=\;
+        \frac{\overline{A}^{1}_{x:\enclose{actuarial}{n}}
+              + \gamma_{2}\,{}_{m|}\ddot{a}_{x:\enclose{actuarial}{n-m}}}
+             {\ddot{a}_{x:\enclose{actuarial}{n}}}.
+
+    The numerator is the present value at issue of the modelled
+    obligations:
+
+    * :math:`\overline{A}^{1}_{x:\enclose{actuarial}{n}}` — present value
+      of the death benefit (1 per unit Sum Assured) over the policy
+      term :math:`n`.
+    * :math:`\gamma_{2}\,{}_{m|}\ddot{a}_{x:\enclose{actuarial}{n-m}}` —
+      present value of the post-premium maintenance expenses: an
+      annuity-due of :math:`\gamma_{2}` for :math:`n-m` years, deferred
+      to policy time :math:`m`.
+
+    The denominator :math:`\ddot{a}_{x:\enclose{actuarial}{n}}` is the
+    present value of an annuity-due of 1 per year over the full policy
+    term :math:`n` — note that premiums are annuitised here over
+    :math:`n`, not over the premium-paying term :math:`m`.
+
+    The same formula is used for the ``TERM``, ``WL`` and ``ENDW``
+    products in
+    :class:`~annuallife.TradLife_A.Enums.ProductID.ProductID`; any other
+    value raises ``ValueError('invalid product')``. Commutation
+    functions are taken from
+    :mod:`~annuallife.TradLife_A.CommTable`, indexed by the policy's
+    sex together with the interest-rate and mortality-table ids
+    selected by ``basis``. See :func:`reserve_nlp_rate` for the
+    prospective reserve built from this premium.
+
+    Args:
+        basis: A :class:`~annuallife.TradLife_A.Enums.RateBasisID.RateBasisID`
+            value selecting the interest-rate and mortality-table id
+            used to look up the commutation table.
+    """
 
     gamma2 = pol.load_maint_sa2()[idx]
 
@@ -782,7 +836,63 @@ def net_prem_rate(basis):
 
 
 def reserve_nlp_rate(basis, t):
-    """Net level premium reserve rate"""
+    r"""Net level premium reserve rate per Sum Assured.
+
+    The prospective net-level-premium reserve at duration ``t``, expressed
+    per unit Sum Assured. Let
+
+    * :math:`x` = :func:`~annuallife.TradLife_A.PolicyAttrs.issue_age`,
+    * :math:`n` = :func:`~annuallife.TradLife_A.PolicyAttrs.policy_term`,
+    * :math:`m` = :func:`~annuallife.TradLife_A.PolicyAttrs.prem_term`,
+    * :math:`\gamma_{2}` =
+      :func:`~annuallife.TradLife_A.PolicyAttrs.load_maint_sa2`, the
+      maintenance-expense loading per unit Sum Assured charged after the
+      premium-paying period,
+    * :math:`P` = :func:`net_prem_rate` evaluated on the same ``basis``.
+
+    The reserve at duration ``t`` is then
+
+    .. math::
+
+        \require{enclose}
+        {}_{t}V =
+        \begin{cases}
+        \overline{A}^{1}_{x+t:\enclose{actuarial}{n-t}}
+        + \gamma_{2}\,{}_{m-t|}\ddot{a}_{x+t:\enclose{actuarial}{n-m}}
+        - P\,\ddot{a}_{x+t:\enclose{actuarial}{m-t}}, & 0 \le t \le m, \\[4pt]
+        \overline{A}^{1}_{x+t:\enclose{actuarial}{n-t}}
+        + \gamma_{2}\,{}_{m-t|}\ddot{a}_{x+t:\enclose{actuarial}{n-m}},
+        & t > m.
+        \end{cases}
+
+    The three terms have the usual prospective interpretation:
+
+    * :math:`\overline{A}^{1}_{x+t:\enclose{actuarial}{n-t}}` — present
+      value of the death benefit (1 per unit Sum Assured) payable over
+      the remaining policy term :math:`n-t`.
+    * :math:`\gamma_{2}\,{}_{m-t|}\ddot{a}_{x+t:\enclose{actuarial}{n-m}}`
+      — present value of the post-premium maintenance expenses: an
+      annuity-due of :math:`\gamma_{2}` for :math:`n-m` years, deferred
+      to policy time :math:`m`. Once :math:`t>m` the deferral
+      :math:`m-t` is negative; under the commutation-column expression
+      :math:`(N_{x+m}-N_{x+n})/D_{x+t}` it still picks out the payments
+      at ages :math:`x+m,\dots,x+n-1`.
+    * :math:`P\,\ddot{a}_{x+t:\enclose{actuarial}{m-t}}` — present
+      value of the remaining net premiums over the residual premium
+      term :math:`m-t`. This term vanishes for :math:`t>m`.
+
+    The premium :math:`P` itself satisfies the equivalence relation
+    :math:`{}_{0}V=0` (see :func:`net_prem_rate`). Commutation functions
+    are taken from :mod:`~annuallife.TradLife_A.CommTable`, indexed by
+    the policy's sex together with the interest-rate and mortality-table
+    ids selected by ``basis``.
+
+    Args:
+        basis: A :class:`~annuallife.TradLife_A.Enums.RateBasisID.RateBasisID`
+            value selecting the interest-rate and mortality-table id
+            used to look up the commutation table.
+        t: Elapsed duration in years from policy issue.
+    """
 
     gamma2 = pol.load_maint_sa2()[idx]
 
