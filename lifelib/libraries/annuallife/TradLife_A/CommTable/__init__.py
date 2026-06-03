@@ -38,7 +38,8 @@ Attributes:
 .. rubric:: References
 
 Attributes:
-    mortality_tables: Alias for
+    input_data: Alias for :mod:`~annuallife.TradLife_A.InputData`. The
+        mortality tables are read through
         :func:`~annuallife.TradLife_A.InputData.mortality_tables`.
 
 Example:
@@ -274,9 +275,10 @@ def mortality_rates():
     matching this Space's :attr:`Table` and :attr:`Sex` parameters and
     returns the resulting per-age mortality rate Series.
     """
-    pos = list((t, getattr(SexID, s)) for t, s in mortality_tables().columns).index((Table, Sex))
+    mortality_tables = input_data.mortality_tables()
+    pos = list((t, getattr(SexID, s)) for t, s in mortality_tables.columns).index((Table, Sex))
 
-    return mortality_tables().iloc[:, pos]
+    return mortality_tables.iloc[:, pos]
 
 
 # ---------------------------------------------------------------------------
@@ -288,4 +290,4 @@ IntRate = 0.01
 
 TableID = 1
 
-mortality_tables = ("Interface", ("..", "InputData", "mortality_tables"), "absolute")
+input_data = ("Interface", ("..", "InputData"), "auto")

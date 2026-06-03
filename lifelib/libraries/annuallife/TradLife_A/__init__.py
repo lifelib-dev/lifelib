@@ -161,12 +161,12 @@ spaces resolve a number of References to other spaces:
 * ``comm_table`` -> :mod:`~annuallife.TradLife_A.CommTable`
 
 :mod:`~annuallife.TradLife_A.Economic`,
-:mod:`~annuallife.TradLife_A.Assumptions` and
-:mod:`~annuallife.TradLife_A.PolicyAttrs` each reference the
-:mod:`~annuallife.TradLife_A.InputData` space as ``input_data``, while
-:mod:`~annuallife.TradLife_A.CommTable` references the
-:func:`~annuallife.TradLife_A.InputData.mortality_tables` cells defined
-in :mod:`~annuallife.TradLife_A.InputData` as ``mortality_tables``.
+:mod:`~annuallife.TradLife_A.Assumptions`,
+:mod:`~annuallife.TradLife_A.PolicyAttrs` and
+:mod:`~annuallife.TradLife_A.CommTable` each reference the
+:mod:`~annuallife.TradLife_A.InputData` space as ``input_data``.
+:mod:`~annuallife.TradLife_A.CommTable` reads its mortality tables
+through :func:`~annuallife.TradLife_A.InputData.mortality_tables`.
 
 .. mermaid::
 
@@ -178,7 +178,7 @@ in :mod:`~annuallife.TradLife_A.InputData` as ``mortality_tables``.
         Economic -- input_data --> InputData
         Assumptions -- input_data --> InputData
         PolicyAttrs -- input_data --> InputData
-        CommTable -- mortality_tables --> InputData
+        CommTable -- input_data --> InputData
 
 Input File
 ----------
