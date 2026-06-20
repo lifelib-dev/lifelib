@@ -20,11 +20,85 @@ _spaces = []
 # Cells
 
 def pols_if(t):
-    """Number of policies: End of period"""
+    """Number of policies: End of period.
+
+    The inner projection is anchored at the valuation time ``t0`` (where
+    this returns the outer projection's in-force) and is defined only for
+    ``t >= t0``. Present values are taken at ``t0`` (e.g.
+    :func:`~annuallife.TradLife_A.PV.pv_net_cf` at ``t0``), so the
+    ``t < t0`` region is never reached in normal use; evaluating any
+    in-force cell there would recurse without terminating.
+    """
     if t == t0:
         return _space._parent._parent.pols_if(t) #_parent._parent # pol.policy_count
     else:
         return pols_if_beg1(t-1) - pols_death(t-1) - pols_lapse(t-1)
+
+
+def pols_lapse_mass(t):
+    """Number of policies that instantly surrender under the mass-lapse shock.
+
+    Solvency II models mass lapse as an instantaneous discontinuance at
+    the valuation time ``t0`` rather than an elevated surrender rate
+    spread over the year. At ``t == t0`` a segment-dependent fraction
+    (the ``LAPSE`` / ``MASS`` factor from the ``LifeShocks`` input,
+    selected by :func:`~annuallife.TradLife_A.PolicyAttrs.segment`) of
+    the policies in force at the beginning of the period instantly
+    surrenders. The amount is removed from :func:`pols_if_beg1` so those
+    policies neither pay premiums nor are exposed to mortality or ongoing
+    lapse during the period, and is added to the surrender benefit in
+    :func:`claims_surr`. It is zero for every other risk / shock and for
+    ``t != t0``.
+
+    Mirrors ``Override.LapseMass.PolsSurrMass`` in the ``solvency2``
+    library.
+    """
+    if t == t0 and risk == LifeRiskID.LAPSE and shock == LapseShockID.MASS:
+        factor = asmp.life_shock_param(risk, shock, pol.segment()[idx])
+    else:
+        factor = 0
+
+    return (pols_if_beg(t) + pols_renewal(t) + pols_if_init(t)) * factor
+
+
+def pols_if_beg1(t):
+    """Number of policies: Beginning of period 1.
+
+    Overrides the base cell to remove the instantaneous mass-lapse
+    surrenders (:func:`pols_lapse_mass`) from the in-force at the start
+    of the period, so the mass lapsers drop out instantly under the
+    Solvency II mass-lapse shock. Identical to the base cell for every
+    other risk / shock, where :func:`pols_lapse_mass` is zero.
+    """
+    return pols_if_beg(t) + pols_renewal(t) + pols_if_init(t) - pols_lapse_mass(t)
+
+
+def claims_surr_mass_pp(t):
+    """Surrender benefit per policy for the instantaneous mass-lapse surrenders.
+
+    The ongoing surrenders are assumed to occur throughout the period, so
+    :func:`~annuallife.TradLife_A.BaseProj.claims_surr_pp` pays the
+    mid-period average of the cash value at ``t`` and ``t+1``. The
+    mass-lapse surrenders, by contrast, occur instantaneously at the
+    valuation time, so the benefit is the cash value at time ``t`` only
+    (:func:`~annuallife.TradLife_A.BaseProj.cash_value_rate` at ``t``).
+    """
+    return sum_assured(t) * cash_value_rate(t)
+
+
+def claims_surr(t):
+    """Surrender benefits.
+
+    Overrides the base cell so the surrender benefit is paid on both the
+    ongoing surrenders (:func:`pols_lapse`) and the instantaneous
+    mass-lapse surrenders (:func:`pols_lapse_mass`). The ongoing
+    surrenders receive the mid-period average cash value
+    (:func:`~annuallife.TradLife_A.BaseProj.claims_surr_pp`), while the
+    mass-lapse surrenders receive the cash value at time ``t``
+    (:func:`claims_surr_mass_pp`).
+    """
+    return (claims_surr_pp(t) * pols_lapse(t)
+            + claims_surr_mass_pp(t) * pols_lapse_mass(t))
 
 
 def lapse_rate(t):
@@ -43,11 +117,10 @@ def lapse_rate(t):
         return max(shock_factor * base_lapse_rate(t), base_lapse_rate(t) - shock_limit)
 
     elif shock == LapseShockID.MASS:
-        if t == t0:
-            shock_lapse = asmp.life_shock_param(risk, shock, pol.segment()[idx])
-            return shock_lapse
-        else:
-            return base_lapse_rate(t)
+        # The mass-lapse shock is an instantaneous discontinuance at t0
+        # modelled by pols_lapse_mass / pols_if_beg1, not an elevated
+        # surrender rate; ongoing surrenders stay at the base rate.
+        return base_lapse_rate(t)
 
     else:
         raise ValueError(f'invalid lapse shock id: {shock}')
