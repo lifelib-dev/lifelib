@@ -935,7 +935,7 @@ def inflation_factor(t):
     if t == 0:
         return 1
     else:
-        return inflation_factor(t-1) / (1 + asmp.inflation_rate())
+        return inflation_factor(t-1) * (1 + asmp.inflation_rate())
 
 
 def disc_rate_mth(t):
