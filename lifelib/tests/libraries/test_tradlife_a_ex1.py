@@ -57,8 +57,13 @@ UNSHOCKED_RISKS = ["DISAB", "REV", "CAT"]
 
 @pytest.fixture(scope="module")
 def ex1_model():
-    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
-        tmp = pathlib.Path(tmp)
+    # tempfile.mkdtemp() + shutil.rmtree(ignore_errors=True) is the
+    # version-agnostic equivalent of
+    # TemporaryDirectory(ignore_cleanup_errors=...), which is only
+    # available on Python 3.10+. ignore_errors tolerates lingering file
+    # handles on Windows.
+    tmp = pathlib.Path(tempfile.mkdtemp())
+    try:
         shutil.copytree(TRADLIFE_A_EX1_MODEL, tmp / "TradLife_A_EX1")
         shutil.copy(TRADLIFE_A_EX1_INPUT, tmp / "input.xlsx")
         model = modelx.read_model(tmp / "TradLife_A_EX1")
@@ -66,6 +71,8 @@ def ex1_model():
             yield model
         finally:
             model.close()
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
 
 
 @pytest.mark.parametrize("idx", IDXS)
