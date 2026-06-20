@@ -117,6 +117,25 @@ def commissions_ren_pp(t):
         return base_commissions_ren_pp(t)
 
 
+def inflation_rate():
+    """Expense inflation rate with the expense-inflation shock applied.
+
+    Under the ``EXPS`` risk the base expense inflation rate is increased
+    by the ``INFL`` factor read from the ``LifeShocks`` input via
+    :func:`~annuallife.TradLife_A.Assumptions.life_shock_param` (a +1
+    percentage-point stress to the annual expense inflation rate). The
+    inherited :func:`~annuallife.TradLife_A.BaseProj.inflation_factor`
+    then compounds at this stressed rate, so future expense cashflows
+    inflate faster. For any other risk the base rate is returned
+    unchanged.
+    """
+    if risk == LifeRiskID.EXPS:
+        return asmp.inflation_rate() + asmp.life_shock_param(risk, extra_key=ExtraKeyID.INFL)
+
+    else:
+        return asmp.inflation_rate()
+
+
 # ---------------------------------------------------------------------------
 # References
 

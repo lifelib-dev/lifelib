@@ -970,13 +970,24 @@ def last_mort_age():
 def inflation_factor(t):
     """Inflation factor at time ``t`` used to adjust expense cashflows.
 
-    Compounded from :func:`~annuallife.TradLife_A.Assumptions.inflation_rate`
-    starting from ``inflation_factor(0) = 1``.
+    Compounded from :func:`inflation_rate` starting from
+    ``inflation_factor(0) = 1``.
     """
     if t == 0:
         return 1
     else:
-        return inflation_factor(t-1) * (1 + asmp.inflation_rate())
+        return inflation_factor(t-1) * (1 + inflation_rate())
+
+
+def inflation_rate():
+    """Annual expense inflation rate driving :func:`inflation_factor`.
+
+    Returns the base (unshocked) expense inflation rate from
+    :func:`~annuallife.TradLife_A.Assumptions.inflation_rate`. Overridden
+    in :mod:`~annuallife.TradLife_A.Projection.InnerProj` to apply the
+    expense-inflation life shock.
+    """
+    return asmp.inflation_rate()
 
 
 def disc_rate_mth(t):
