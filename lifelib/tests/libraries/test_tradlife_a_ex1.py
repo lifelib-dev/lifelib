@@ -11,6 +11,11 @@ worst of the up/down/mass shocks (mirroring ``SCR_life.Life`` /
 the life-risk correlation matrix forwarded by ``Assumptions.life_corr``
 (mirroring ``SCR_life.SCR_life``).
 
+``Projection.risk_margin(t)`` is the Solvency II risk margin: the
+cost-of-capital rate forwarded by ``Assumptions.coc_rate`` (read from the
+``CoCRate`` row of ``ConstParams``) applied to the projected
+``risk_life`` and discounted to ``t``.
+
 Because ``TradLife_A_EX1`` reads ``input.xlsx`` from its parent directory
 (``_model.path.parent / input_file_name``), we copy both the model and
 the workbook into a temporary directory so the model loads from a
@@ -173,3 +178,46 @@ def test_risk_life_at_least_largest_subrisk(ex1_model, idx):
     risks = list(ex1_model.InputData.life_corr_data().index)
     worst = max(proj.risk_life_sub(0, r) for r in risks)
     assert proj.risk_life(0) >= worst - 1e-9
+
+
+# ---------------------------------------------------------------------------
+# coc_rate / risk_margin
+
+def test_coc_rate_forwards_input_data(ex1_model):
+    """Assumptions.coc_rate forwards ConstParams['CoCRate'] as a native float."""
+    coc = ex1_model.Assumptions.coc_rate()
+    assert type(coc) is float  # native float for Cython, not numpy
+    assert coc == ex1_model.InputData.const_params()["CoCRate"]
+    assert coc == pytest.approx(0.06)
+
+
+@pytest.mark.parametrize("idx", IDXS)
+def test_risk_margin_equals_closed_form(ex1_model, idx):
+    """risk_margin(0) = CoC * sum_s risk_life(s) / prod_{u<=s}(1 + r_u)."""
+    proj = ex1_model.Projection[idx]
+    coc = ex1_model.Assumptions.coc_rate()
+    discount = 1.0
+    expected = 0.0
+    for s in range(proj.proj_len() + 1):
+        discount *= 1 + proj.disc_rate_mth(s)
+        expected += proj.risk_life(s) / discount
+    expected *= coc
+    assert math.isclose(proj.risk_margin(0), expected, rel_tol=1e-9, abs_tol=1e-9)
+
+
+@pytest.mark.parametrize("idx", IDXS)
+def test_risk_margin_recursion(ex1_model, idx):
+    """risk_margin(t) = (CoC*risk_life(t) + risk_margin(t+1)) / (1 + r_t)."""
+    proj = ex1_model.Projection[idx]
+    coc = ex1_model.Assumptions.coc_rate()
+    expected = (coc * proj.risk_life(0)
+                + proj.risk_margin(1)) / (1 + proj.disc_rate_mth(0))
+    assert math.isclose(proj.risk_margin(0), expected, rel_tol=1e-9, abs_tol=1e-9)
+
+
+@pytest.mark.parametrize("idx", IDXS)
+def test_risk_margin_terminal_zero_and_nonnegative(ex1_model, idx):
+    """Beyond the projection it is zero, and it is never negative."""
+    proj = ex1_model.Projection[idx]
+    assert proj.risk_margin(proj.proj_len() + 1) == 0
+    assert proj.risk_margin(0) >= 0
