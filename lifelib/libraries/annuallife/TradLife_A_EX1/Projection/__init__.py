@@ -147,10 +147,15 @@ def risk_life(t):
 
     where ``i`` and ``j`` range over the life sub-risks and
     :math:`Corr_{i,j}` is the correlation coefficient between them,
-    supplied by :func:`~annuallife.TradLife_A.Assumptions.life_corr`.
+    supplied per pair by
+    :func:`~annuallife.TradLife_A.Assumptions.life_corr`.
 
     This mirrors ``SCR_life.SCR_life`` in the ``solvency2`` library,
-    parameterized by the valuation time ``t``.
+    parameterized by the valuation time ``t``. The aggregation is kept on
+    native scalar types (a tuple of integer risk codes, with
+    :func:`risk_life_sub` and
+    :func:`~annuallife.TradLife_A.Assumptions.life_corr` returning
+    :obj:`float`) so the Space stays efficient when compiled with Cython.
 
     Args:
         t: Valuation time at which the inner projections are anchored.
@@ -160,9 +165,11 @@ def risk_life(t):
         * :func:`risk_life_sub`
         * :func:`~annuallife.TradLife_A.Assumptions.life_corr`
     """
-    corr = asmp.life_corr()
-    return sum(risk_life_sub(t, i) * risk_life_sub(t, j) * corr[i, j]
-               for i, j in corr) ** 0.5
+    risks = (LifeRiskID.MORT, LifeRiskID.LONGV, LifeRiskID.DISAB,
+             LifeRiskID.LAPSE, LifeRiskID.EXPS, LifeRiskID.REV,
+             LifeRiskID.CAT)
+    return sum(risk_life_sub(t, i) * risk_life_sub(t, j) * asmp.life_corr(i, j)
+               for i in risks for j in risks) ** 0.5
 
 
 # ---------------------------------------------------------------------------

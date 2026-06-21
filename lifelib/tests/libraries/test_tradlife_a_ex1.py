@@ -138,14 +138,16 @@ def test_risk_life_sub_base_is_zero(ex1_model, idx):
 # life_corr: correlation forwarded from InputData by Assumptions
 
 def test_life_corr_forwards_input_data(ex1_model):
-    """Assumptions.life_corr forwards the full LifeCorr matrix as a dict."""
+    """Assumptions.life_corr returns each LifeCorr coefficient as a native float."""
     corr_df = ex1_model.InputData.life_corr_data()
-    life_corr = ex1_model.Assumptions.life_corr()
-    assert isinstance(life_corr, dict)
-    assert len(life_corr) == corr_df.size  # full n x n matrix
+    asmp = ex1_model.Assumptions
     for i in corr_df.index:
         for j in corr_df.columns:
-            assert life_corr[i, j] == corr_df.at[i, j]
+            coef = asmp.life_corr(i, j)
+            # native float (not numpy.float64 / dict) keeps Projection
+            # on native scalar types for Cython.
+            assert type(coef) is float
+            assert coef == corr_df.at[i, j]
 
 
 # ---------------------------------------------------------------------------
