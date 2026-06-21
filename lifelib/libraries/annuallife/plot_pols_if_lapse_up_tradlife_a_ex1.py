@@ -7,17 +7,20 @@ this chart shows how the number of policies in force runs off, projected
 by the :mod:`~annuallife` ``TradLife_A_EX1`` model.
 
 The bold black line is the number of policies in force in the *outer*
-projection (:func:`~annuallife.TradLife_A.Projection.pols_if`). Each thin
-coloured line is the in-force of an *inner* projection under the Solvency
-II lapse-up shock (``InnerProj[t0, LAPSE, UP]``), anchored at a valuation
-time ``t0`` that ranges from 0 to the end of the projection. Every inner
-line branches off the outer curve at its own ``t0`` (the colour key) and
-then declines faster, because the lapse-up shock raises the surrender
-rate.
+projection (:func:`~annuallife.TradLife_A.Projection.pols_if_beg1`). Each
+thin coloured line is the in-force of an *inner* projection under the
+Solvency II lapse-up shock (``InnerProj[t0, LAPSE, UP]``), anchored at a
+valuation time ``t0`` that ranges from 0 to the end of the projection.
+Every inner line branches off the outer curve at its own ``t0`` (the
+colour key) and then declines faster, because the lapse-up shock raises
+the surrender rate.
 
-Because :func:`~annuallife.TradLife_A.Projection.pols_if` is an
-end-of-period count, it is zero at ``t = 0`` and the in-force first
-appears at ``t = 1``, so the chart starts at ``t = 1``.
+The in-force shown is the beginning-of-period count
+:func:`~annuallife.TradLife_A.Projection.pols_if_beg1`, which already
+includes the new business written at ``t = 0`` and so starts at the full
+policy count (rather than
+:func:`~annuallife.TradLife_A.Projection.pols_if`, the end-of-period
+count, which is zero at ``t = 0``).
 
 .. seealso::
     * The :mod:`~annuallife` library
@@ -46,19 +49,18 @@ def draw(name, idx):
     fig.suptitle('Policies in force under the lapse-up shock')
 
     # Inner projections under the lapse-up shock, one per valuation time
-    # t0 = 0 .. last_t - 1, coloured by t0. Plotting starts at t=1 since
-    # pols_if (an end-of-period count) is zero at t=0.
+    # t0 = 0 .. last_t - 1, coloured by t0.
     cmap = plt.get_cmap('viridis')
     for t0 in range(0, last_t):
         inner = proj.InnerProj[t0, LifeRiskID.LAPSE, LapseShockID.UP]
-        ts = range(max(t0, 1), last_t + 1)
-        ax.plot(list(ts), [inner.pols_if(t) for t in ts],
+        ts = range(t0, last_t + 1)
+        ax.plot(list(ts), [inner.pols_if_beg1(t) for t in ts],
                 color=cmap(t0 / max(last_t - 1, 1)),
                 linewidth=0.8, alpha=0.7)
 
-    # Outer projection in force, drawn on top (from t=1).
-    ts = range(1, last_t + 1)
-    (outer_line,) = ax.plot(list(ts), [proj.pols_if(t) for t in ts],
+    # Outer projection in force, drawn on top.
+    ts = range(0, last_t + 1)
+    (outer_line,) = ax.plot(list(ts), [proj.pols_if_beg1(t) for t in ts],
                             color='black', linewidth=2.5, zorder=3)
 
     sm = cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(0, max(last_t - 1, 1)))
