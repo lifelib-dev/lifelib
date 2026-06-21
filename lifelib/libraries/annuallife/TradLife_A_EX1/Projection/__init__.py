@@ -21,12 +21,16 @@ cashflow items are inherited from :mod:`~annuallife.TradLife_A.PV`.
 .. rubric:: Cells
 
 In addition to the inherited cashflow and present-value Cells, this
-Space defines :func:`risk_life`, the Solvency II life underwriting
-capital requirement for each life sub-risk. It is the loss in the value
-of in-force, i.e. the baseline less the stressed present value of
-:func:`~annuallife.TradLife_A.PV.pv_net_cf`, taken from the inner
-projection :mod:`~annuallife.TradLife_A.Projection.InnerProj`. It
-mirrors ``SCR_life.Life`` in the ``solvency2`` library.
+Space defines the Solvency II life underwriting capital requirements.
+:func:`risk_life_sub` returns the requirement for each individual life
+sub-risk — the baseline less the stressed present value of
+:func:`~annuallife.TradLife_A.PV.pv_net_cf` from the inner projection
+:mod:`~annuallife.TradLife_A.Projection.InnerProj`, floored at zero —
+and :func:`risk_life` aggregates them with the life-risk correlation
+matrix supplied by
+:func:`~annuallife.TradLife_A.Assumptions.life_corr`. They mirror
+``SCR_life.Life`` and ``SCR_life.SCR_life`` in the ``solvency2``
+library.
 
 Parameters and References
 -------------------------
@@ -76,17 +80,17 @@ _spaces = [
 # ---------------------------------------------------------------------------
 # Cells
 
-def risk_life(t, risk):
-    r"""Life underwriting capital requirement for ``risk`` at valuation time ``t``.
+def risk_life_sub(t, risk):
+    r"""Life underwriting capital requirement for sub-risk ``risk`` at time ``t``.
 
-    The capital requirement for a life sub-risk is the loss in the value
-    of in-force business caused by applying the prescribed Solvency II
-    life stress: the baseline present value of net cashflows less the
-    stressed present value, floored at zero.
+    The capital requirement for a single life sub-risk is the loss in the
+    value of in-force business caused by applying the prescribed
+    Solvency II life stress: the baseline present value of net cashflows
+    less the stressed present value, floored at zero.
 
     .. math::
 
-        \mathrm{risk\_life}(t, risk) =
+        \mathrm{risk\_life\_sub}(t, risk) =
         \max\left(\mathrm{pv\_net\_cf}_{base}(t)
         - \mathrm{pv\_net\_cf}_{risk}(t),\; 0\right)
 
@@ -96,6 +100,9 @@ def risk_life(t, risk):
     (baseline) run, while ``InnerProj[t, risk]`` applies the life shock
     selected by ``risk``. For the lapse risk the requirement is the worst
     loss across the three prescribed lapse shocks (up, down and mass).
+
+    The individual sub-risk requirements are aggregated into the total
+    life underwriting requirement by :func:`risk_life`.
 
     This mirrors ``SCR_life.Life`` (and, for the lapse shocks,
     ``SCR_life.LapseRisk``) in the ``solvency2`` library, with
@@ -110,6 +117,7 @@ def risk_life(t, risk):
 
     .. seealso::
 
+        * :func:`risk_life`
         * :func:`~annuallife.TradLife_A.PV.pv_net_cf`
         * :mod:`~annuallife.TradLife_A.Projection.InnerProj`
     """
@@ -123,6 +131,45 @@ def risk_life(t, risk):
                           LapseShockID.MASS))
     else:
         return max(base_pv - InnerProj[t, risk].pv_net_cf(t), 0)
+
+
+def risk_life(t):
+    r"""Aggregated life underwriting capital requirement at valuation time ``t``.
+
+    The individual life sub-risk requirements :func:`risk_life_sub` are
+    combined with the prescribed life-risk correlation matrix:
+
+    .. math::
+
+        \mathrm{risk\_life}(t) =
+        \sqrt{\sum_{i,j} Corr_{i,j}\,
+        \mathrm{risk\_life\_sub}(t, i)\,\mathrm{risk\_life\_sub}(t, j)}
+
+    where ``i`` and ``j`` range over the life sub-risks and
+    :math:`Corr_{i,j}` is the correlation coefficient between them,
+    supplied per pair by
+    :func:`~annuallife.TradLife_A.Assumptions.life_corr`.
+
+    This mirrors ``SCR_life.SCR_life`` in the ``solvency2`` library,
+    parameterized by the valuation time ``t``. The aggregation is kept on
+    native scalar types (a tuple of integer risk codes, with
+    :func:`risk_life_sub` and
+    :func:`~annuallife.TradLife_A.Assumptions.life_corr` returning
+    :obj:`float`) so the Space stays efficient when compiled with Cython.
+
+    Args:
+        t: Valuation time at which the inner projections are anchored.
+
+    .. seealso::
+
+        * :func:`risk_life_sub`
+        * :func:`~annuallife.TradLife_A.Assumptions.life_corr`
+    """
+    risks = (LifeRiskID.MORT, LifeRiskID.LONGV, LifeRiskID.DISAB,
+             LifeRiskID.LAPSE, LifeRiskID.EXPS, LifeRiskID.REV,
+             LifeRiskID.CAT)
+    return sum(risk_life_sub(t, i) * risk_life_sub(t, j) * asmp.life_corr(i, j)
+               for i in risks for j in risks) ** 0.5
 
 
 # ---------------------------------------------------------------------------

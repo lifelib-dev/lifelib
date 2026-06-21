@@ -356,6 +356,26 @@ def life_shock_param(risk, shock=0, scope=0, extra_key=0):
     return input_data.life_shock_data()[risk, shock, scope, extra_key]
 
 
+def life_corr(risk_i, risk_j):
+    """Correlation coefficient between two life underwriting sub-risks.
+
+    Forwards a single coefficient from the correlation matrix read by
+    :func:`~annuallife.TradLife_A.InputData.life_corr_data`. The two
+    risks are taken as integer parameters and a plain :obj:`float` is
+    returned (rather than a :obj:`dict` or :class:`~pandas.DataFrame`) so
+    that the consuming :func:`~annuallife.TradLife_A.Projection.risk_life`
+    cell stays on native scalar types, which matters when the projection
+    is compiled with Cython.
+
+    Args:
+        risk_i: A :class:`~annuallife.TradLife_A.Enums.LifeRiskID.LifeRiskID`
+            code for the first sub-risk.
+        risk_j: A :class:`~annuallife.TradLife_A.Enums.LifeRiskID.LifeRiskID`
+            code for the second sub-risk.
+    """
+    return float(input_data.life_corr_data().at[risk_i, risk_j])
+
+
 # ---------------------------------------------------------------------------
 # References
 
