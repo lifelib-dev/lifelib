@@ -30,7 +30,10 @@ and :func:`risk_life` aggregates them with the life-risk correlation
 matrix supplied by
 :func:`~annuallife.TradLife_A.Assumptions.life_corr`. They mirror
 ``SCR_life.Life`` and ``SCR_life.SCR_life`` in the ``solvency2``
-library.
+library. Building on these, :func:`risk_margin` is the Solvency II risk
+margin: the cost-of-capital rate
+:func:`~annuallife.TradLife_A.Assumptions.coc_rate` applied to the
+projected :func:`risk_life` and discounted to ``t``.
 
 Parameters and References
 -------------------------
@@ -170,6 +173,53 @@ def risk_life(t):
              LifeRiskID.CAT)
     return sum(risk_life_sub(t, i) * risk_life_sub(t, j) * asmp.life_corr(i, j)
                for i in risks for j in risks) ** 0.5
+
+
+def risk_margin(t):
+    r"""Solvency II risk margin at valuation time ``t``.
+
+    The risk margin is the cost of holding the future life underwriting
+    capital over the run-off of the in-force business: the
+    cost-of-capital rate
+    :func:`~annuallife.TradLife_A.Assumptions.coc_rate` applied to each
+    future aggregated life SCR :func:`risk_life`, discounted to ``t``.
+
+    .. math::
+
+        \mathrm{risk\_margin}(t) = \mathrm{CoC}
+        \sum_{s=t}^{\mathrm{proj\_len}}
+        \frac{\mathrm{risk\_life}(s)}
+        {\prod_{u=t}^{s}\left(1 + \mathrm{disc\_rate\_mth}(u)\right)}
+
+    The cost of capital for the capital held over year ``[s, s+1]`` is
+    taken to be incurred at ``s + 1``, so each ``risk_life(s)`` is
+    discounted by ``s - t + 1`` periods (the standard EIOPA convention).
+    This is evaluated by the recursion
+
+    .. math::
+
+        \mathrm{risk\_margin}(t) =
+        \frac{\mathrm{CoC}\cdot\mathrm{risk\_life}(t)
+        + \mathrm{risk\_margin}(t + 1)}
+        {1 + \mathrm{disc\_rate\_mth}(t)}
+
+    which terminates at ``0`` once ``t`` is beyond
+    :func:`~annuallife.TradLife_A.BaseProj.proj_len`. At ``t = 0`` it is
+    the risk margin at the valuation date.
+
+    Args:
+        t: Valuation time at which the risk margin is evaluated.
+
+    .. seealso::
+
+        * :func:`risk_life`
+        * :func:`~annuallife.TradLife_A.Assumptions.coc_rate`
+    """
+    if t > proj_len():
+        return 0
+    else:
+        return (asmp.coc_rate() * risk_life(t)
+                + risk_margin(t + 1)) / (1 + disc_rate_mth(t))
 
 
 # ---------------------------------------------------------------------------

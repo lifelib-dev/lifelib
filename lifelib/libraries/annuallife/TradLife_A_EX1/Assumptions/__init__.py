@@ -144,12 +144,14 @@ per annualized premium, per policy and per sum assured.
 Tax and Inflation Assumptions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The consumption tax rate and the expense inflation rate.
+The consumption tax rate, the expense inflation rate and the
+cost-of-capital rate for the Solvency II risk margin.
 
 .. autosummary::
 
    ~cnsmp_tax
    ~inflation_rate
+   ~coc_rate
 
 
 Mortality
@@ -201,6 +203,18 @@ _spaces = [
 def cnsmp_tax():
     """Consumption tax rate"""
     return input_data.const_params()['CnsmpTax']
+
+
+def coc_rate():
+    """Cost-of-capital rate for the Solvency II risk margin.
+
+    Forwards the ``CoCRate`` scalar from the ``ConstParams`` named range
+    (read by :func:`~annuallife.TradLife_A.InputData.const_params`) to the
+    projection, where it is used by
+    :func:`~annuallife.TradLife_A.Projection.risk_margin`. The value is a
+    native :obj:`float` (e.g. ``0.06`` for 6%).
+    """
+    return input_data.const_params()['CoCRate']
 
 
 def comm_init_prem():
