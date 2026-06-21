@@ -16,8 +16,8 @@ then declines faster, because the lapse-up shock raises the surrender
 rate.
 
 Because :func:`~annuallife.TradLife_A.Projection.pols_if` is an
-end-of-period count, every line is zero at ``t = 0`` and the in-force
-first appears at ``t = 1``.
+end-of-period count, it is zero at ``t = 0`` and the in-force first
+appears at ``t = 1``, so the chart starts at ``t = 1``.
 
 .. seealso::
     * The :mod:`~annuallife` library
@@ -46,17 +46,18 @@ def draw(name, idx):
     fig.suptitle('Policies in force under the lapse-up shock')
 
     # Inner projections under the lapse-up shock, one per valuation time
-    # t0 = 0 .. last_t - 1, coloured by t0.
+    # t0 = 0 .. last_t - 1, coloured by t0. Plotting starts at t=1 since
+    # pols_if (an end-of-period count) is zero at t=0.
     cmap = plt.get_cmap('viridis')
     for t0 in range(0, last_t):
         inner = proj.InnerProj[t0, LifeRiskID.LAPSE, LapseShockID.UP]
-        ts = range(t0, last_t + 1)
+        ts = range(max(t0, 1), last_t + 1)
         ax.plot(list(ts), [inner.pols_if(t) for t in ts],
                 color=cmap(t0 / max(last_t - 1, 1)),
                 linewidth=0.8, alpha=0.7)
 
-    # Outer projection in force, drawn on top.
-    ts = range(0, last_t + 1)
+    # Outer projection in force, drawn on top (from t=1).
+    ts = range(1, last_t + 1)
     (outer_line,) = ax.plot(list(ts), [proj.pols_if(t) for t in ts],
                             color='black', linewidth=2.5, zorder=3)
 
