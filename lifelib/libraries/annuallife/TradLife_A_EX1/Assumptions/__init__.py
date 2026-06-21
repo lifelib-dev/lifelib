@@ -356,6 +356,21 @@ def life_shock_param(risk, shock=0, scope=0, extra_key=0):
     return input_data.life_shock_data()[risk, shock, scope, extra_key]
 
 
+def life_corr():
+    """Life underwriting risk correlation coefficients.
+
+    Forwards the correlation matrix read by
+    :func:`~annuallife.TradLife_A.InputData.life_corr_data` to the
+    projection as a :obj:`dict` keyed by pairs of
+    :class:`~annuallife.TradLife_A.Enums.LifeRiskID.LifeRiskID` codes,
+    ``{(risk_i, risk_j): coefficient}``. It is consumed by
+    :func:`~annuallife.TradLife_A.Projection.risk_life` to aggregate the
+    life sub-risk capital requirements.
+    """
+    corr = input_data.life_corr_data()
+    return {(i, j): corr.at[i, j] for i in corr.index for j in corr.columns}
+
+
 # ---------------------------------------------------------------------------
 # References
 

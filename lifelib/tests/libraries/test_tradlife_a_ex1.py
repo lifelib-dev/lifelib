@@ -1,11 +1,15 @@
-"""Tests for ``risk_life`` in the ``TradLife_A_EX1`` Solvency II model.
+"""Tests for ``risk_life_sub`` / ``risk_life`` in the ``TradLife_A_EX1`` model.
 
-``Projection.risk_life(t, risk)`` is the life underwriting capital
-requirement for each life sub-risk: the baseline less the stressed
-present value of ``pv_net_cf`` taken from the inner projection
-``InnerProj``, floored at zero, with the lapse risk taking the worst of
-the up/down/mass shocks. This mirrors ``SCR_life.Life`` / ``LapseRisk``
-in the ``solvency2`` library.
+``Projection.risk_life_sub(t, risk)`` is the Solvency II life
+underwriting capital requirement for each life sub-risk: the baseline
+less the stressed present value of ``pv_net_cf`` taken from the inner
+projection ``InnerProj``, floored at zero, with the lapse risk taking the
+worst of the up/down/mass shocks (mirroring ``SCR_life.Life`` /
+``LapseRisk`` in the ``solvency2`` library).
+
+``Projection.risk_life(t)`` aggregates those sub-risk requirements with
+the life-risk correlation matrix forwarded by ``Assumptions.life_corr``
+(mirroring ``SCR_life.SCR_life``).
 
 Because ``TradLife_A_EX1`` reads ``input.xlsx`` from its parent directory
 (``_model.path.parent / input_file_name``), we copy both the model and
@@ -75,18 +79,21 @@ def ex1_model():
         shutil.rmtree(tmp, ignore_errors=True)
 
 
+# ---------------------------------------------------------------------------
+# risk_life_sub: per-sub-risk capital requirement
+
 @pytest.mark.parametrize("idx", IDXS)
 @pytest.mark.parametrize("risk_name", SHOCKED_RISKS + UNSHOCKED_RISKS + ["LAPSE"])
-def test_risk_life_is_nonnegative(ex1_model, idx, risk_name):
+def test_risk_life_sub_is_nonnegative(ex1_model, idx, risk_name):
     """The max(., 0) floor makes every requirement non-negative."""
     proj = ex1_model.Projection[idx]
     risk = getattr(ex1_model.Enums.LifeRiskID, risk_name)
-    assert proj.risk_life(0, risk) >= 0
+    assert proj.risk_life_sub(0, risk) >= 0
 
 
 @pytest.mark.parametrize("idx", IDXS)
 @pytest.mark.parametrize("risk_name", SHOCKED_RISKS)
-def test_risk_life_equals_floored_difference(ex1_model, idx, risk_name):
+def test_risk_life_sub_equals_floored_difference(ex1_model, idx, risk_name):
     """For a non-lapse risk: max(baseline_pv - stressed_pv, 0)."""
     proj = ex1_model.Projection[idx]
     risk = getattr(ex1_model.Enums.LifeRiskID, risk_name)
@@ -94,20 +101,20 @@ def test_risk_life_equals_floored_difference(ex1_model, idx, risk_name):
     stressed_pv = proj.InnerProj[0, risk].pv_net_cf(0)
     expected = max(base_pv - stressed_pv, 0)
     assert math.isclose(
-        proj.risk_life(0, risk), expected, rel_tol=1e-9, abs_tol=1e-9)
+        proj.risk_life_sub(0, risk), expected, rel_tol=1e-9, abs_tol=1e-9)
 
 
 @pytest.mark.parametrize("idx", IDXS)
 @pytest.mark.parametrize("risk_name", UNSHOCKED_RISKS)
-def test_risk_life_zero_for_unshocked_risks(ex1_model, idx, risk_name):
+def test_risk_life_sub_zero_for_unshocked_risks(ex1_model, idx, risk_name):
     """Risks InnerProj does not model leave pv_net_cf unchanged -> 0."""
     proj = ex1_model.Projection[idx]
     risk = getattr(ex1_model.Enums.LifeRiskID, risk_name)
-    assert proj.risk_life(0, risk) == 0
+    assert proj.risk_life_sub(0, risk) == 0
 
 
 @pytest.mark.parametrize("idx", IDXS)
-def test_risk_life_lapse_is_worst_shock(ex1_model, idx):
+def test_risk_life_sub_lapse_is_worst_shock(ex1_model, idx):
     """The lapse requirement is the worst loss over up/down/mass shocks."""
     proj = ex1_model.Projection[idx]
     risk = ex1_model.Enums.LifeRiskID.LAPSE
@@ -117,11 +124,50 @@ def test_risk_life_lapse_is_worst_shock(ex1_model, idx):
         max(base_pv - proj.InnerProj[0, risk, s].pv_net_cf(0), 0)
         for s in (shock.UP, shock.DOWN, shock.MASS))
     assert math.isclose(
-        proj.risk_life(0, risk), expected, rel_tol=1e-9, abs_tol=1e-9)
+        proj.risk_life_sub(0, risk), expected, rel_tol=1e-9, abs_tol=1e-9)
 
 
 @pytest.mark.parametrize("idx", IDXS)
-def test_risk_life_base_is_zero(ex1_model, idx):
+def test_risk_life_sub_base_is_zero(ex1_model, idx):
     """The unstressed baseline has no capital requirement."""
     proj = ex1_model.Projection[idx]
-    assert proj.risk_life(0, ex1_model.Enums.LifeRiskID.BASE) == 0
+    assert proj.risk_life_sub(0, ex1_model.Enums.LifeRiskID.BASE) == 0
+
+
+# ---------------------------------------------------------------------------
+# life_corr: correlation forwarded from InputData by Assumptions
+
+def test_life_corr_forwards_input_data(ex1_model):
+    """Assumptions.life_corr forwards the full LifeCorr matrix as a dict."""
+    corr_df = ex1_model.InputData.life_corr_data()
+    life_corr = ex1_model.Assumptions.life_corr()
+    assert isinstance(life_corr, dict)
+    assert len(life_corr) == corr_df.size  # full n x n matrix
+    for i in corr_df.index:
+        for j in corr_df.columns:
+            assert life_corr[i, j] == corr_df.at[i, j]
+
+
+# ---------------------------------------------------------------------------
+# risk_life: aggregated life underwriting capital requirement
+
+@pytest.mark.parametrize("idx", IDXS)
+def test_risk_life_aggregates_subrisks(ex1_model, idx):
+    """risk_life(t) = sqrt(sum_ij corr_ij * sub_i * sub_j) over all risks."""
+    proj = ex1_model.Projection[idx]
+    corr_df = ex1_model.InputData.life_corr_data()
+    risks = list(corr_df.index)
+    sub = {r: proj.risk_life_sub(0, r) for r in risks}
+    expected = math.sqrt(
+        sum(sub[i] * sub[j] * corr_df.at[i, j]
+            for i in risks for j in risks))
+    assert math.isclose(proj.risk_life(0), expected, rel_tol=1e-9, abs_tol=1e-9)
+
+
+@pytest.mark.parametrize("idx", IDXS)
+def test_risk_life_at_least_largest_subrisk(ex1_model, idx):
+    """Diversified total is never below the worst single sub-risk."""
+    proj = ex1_model.Projection[idx]
+    risks = list(ex1_model.InputData.life_corr_data().index)
+    worst = max(proj.risk_life_sub(0, r) for r in risks)
+    assert proj.risk_life(0) >= worst - 1e-9
