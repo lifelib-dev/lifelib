@@ -5,181 +5,32 @@
 
 """Assumption input and calculations for individual policies.
 
-This Space holds assumption parameters and rates used by
-:mod:`~annuallife.TradLife_A.Projection` and its base spaces.
-
-The main role of this Space is to associate assumption data sourced
-from :mod:`~annuallife.TradLife_A.InputData` with the model points
-held in
-:func:`~annuallife.TradLife_A.InputData.policy_data`, and to expose
-the resulting per-policy values as 1-D :mod:`numpy` arrays whose
-layout matches the rows of ``policy_data``. Callers therefore index
-into them with the integer policy index ``idx``. A few cells, such
-as :func:`asmp_tables` and :func:`mortality_tables`, return tables
-shared across all policies.
-
-The association is carried out by chaining two helper cells inherited
-from the :mod:`~annuallife.TradLife_A.Utilities` base Space:
-
-* :func:`~annuallife.TradLife_A.Utilities.map_to_policies` reindexes
-  an assumption ``Series`` keyed by lookup columns (e.g. ``Product``,
-  ``PolType``, ``Gen``) onto the rows of ``policy_data``, so the
-  result has one entry per policy.
-* :func:`~annuallife.TradLife_A.Utilities.pandas_to_array` then
-  converts that ``Series`` (or a ``DataFrame``, for table-returning
-  cells) into a NumPy array when
-  :attr:`~annuallife.TradLife_A.Utilities.return_array` is ``True``
-  (the default). When ``return_array`` is ``False`` the pandas
-  object is passed through unchanged, which is convenient for
-  inspection and debugging.
-
-A typical per-policy Cells in this Space therefore implements the
-following pipeline:
-
-.. mermaid::
-
-    graph LR
-        A["input_data.assumption(key)<br/>pandas Series keyed by<br/>(Product, PolType, Gen)"]
-        --> B["map_to_policies<br/>reindex onto<br/>policy_data rows"]
-        B --> C["pandas_to_array<br/>convert when<br/>return_array=True"]
-        C --> D["1-D NumPy array<br/>indexed by policy idx"]
-
-For example, :func:`comm_init_prem` is implemented as
-``pandas_to_array(map_to_policies(input_data.assumption('CommInitPrem')))``,
-and most other per-policy cells in this Space follow the same
-pattern.
-
-The three steps can also be executed individually on a console,
-which is useful for inspecting the intermediate pandas objects::
-
-    >>> asmp = m.Assumptions
-
-    >>> # Step 1: raw assumption Series keyed by lookup columns
-    >>> s = asmp.input_data.assumption('CommInitPrem')
-    >>> s
-    Product
-    TERM    0.2
-    WL      0.5
-    ENDW    0.5
-    Name: CommInitPrem, dtype: float64
-
-    >>> # Step 2: reindex onto the rows of policy_data
-    >>> mapped = asmp.map_to_policies(s)
-    >>> mapped.head()
-    Policy
-    1    0.2
-    2    0.2
-    3    0.2
-    4    0.2
-    5    0.2
-    Name: CommInitPrem, dtype: float64
-    >>> len(mapped)
-    300
-
-    >>> # Step 3: convert to a 1-D NumPy array (return_array is True)
-    >>> asmp.pandas_to_array(mapped)
-    array([0.2, 0.2, 0.2, ..., 0.5, 0.5, 0.5])
-
-Composing the three calls is exactly what :func:`comm_init_prem`
-returns.
-
-Parameters and References
--------------------------
-
-Attributes:
-    input_data: Alias for :mod:`~annuallife.TradLife_A.InputData`.
-        Per-policy assumptions are read from the ``AssumptionTable``
-        range in *input.xlsx* via
-        :func:`~annuallife.TradLife_A.InputData.assumption`,
-        and mortality / lapse tables from
-        :func:`~annuallife.TradLife_A.InputData.assumption_tables` and
-        :func:`~annuallife.TradLife_A.InputData.mortality_tables`.
-
-.. rubric:: Inherited helpers
-
-Inherited from :mod:`~annuallife.TradLife_A.Utilities`:
-
-* :func:`~annuallife.TradLife_A.Utilities.pandas_to_array`
-* :func:`~annuallife.TradLife_A.Utilities.map_to_policies`
-* :attr:`~annuallife.TradLife_A.Utilities.return_array`
-
-.. rubric:: Child spaces
-
-* :mod:`~annuallife.TradLife_A.Assumptions.AsmpID`: Enum-style codes
-  identifying entries in the ``AsmpByDuration`` table.
-
+This Space is :mod:`TradLife_A.Assumptions <annuallife.TradLife_A.Assumptions>` with additional
+Cells that supply the Solvency II life-risk parameters. The per-policy
+assumption pipeline (``map_to_policies`` then ``pandas_to_array``) and
+all the existing assumption Cells are unchanged; see
+:mod:`TradLife_A.Assumptions <annuallife.TradLife_A.Assumptions>` for them.
 
 Cells Summary
 -------------
 
-Commission Assumptions
-^^^^^^^^^^^^^^^^^^^^^^
-
-Per-policy initial and renewal commission rates and the renewal
-commission term.
-
-.. autosummary::
-
-   ~comm_init_prem
-   ~comm_ren_prem
-   ~comm_ren_term
-
-
-Expense Assumptions
-^^^^^^^^^^^^^^^^^^^
-
-Per-policy acquisition and maintenance expense assumptions, expressed
-per annualized premium, per policy and per sum assured.
-
-.. autosummary::
-
-   ~exps_acq_ann_prem
-   ~exps_acq_pol
-   ~exps_acq_sa
-   ~exps_maint_ann_prem
-   ~exps_maint_pol
-   ~exps_maint_sa
-
-
-Tax and Inflation Assumptions
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The consumption tax rate, the expense inflation rate and the
-cost-of-capital rate for the Solvency II risk margin.
-
-.. autosummary::
-
-   ~cnsmp_tax
-   ~inflation_rate
-   ~coc_rate
-
-
-Mortality
+New Cells
 ^^^^^^^^^
 
-The mortality-table block and the per-policy indices that select each
-policy's base mortality rates and its last mortality age.
+:func:`life_shock_param` forwards a life-shock factor from
+:func:`~annuallife.TradLife_A_EX1.InputData.life_shock_data`, keyed by the
+``(risk, shock, scope, extra_key)`` codes. :func:`life_corr` forwards a
+single life-risk correlation coefficient from
+:func:`~annuallife.TradLife_A_EX1.InputData.life_corr_data` as a native
+:obj:`float`. :func:`coc_rate` forwards the cost-of-capital rate
+(``CoCRate``) used by
+:func:`~annuallife.TradLife_A_EX1.Projection.risk_margin`.
 
 .. autosummary::
 
-   ~mortality_tables
-   ~mort_table_index
-   ~mort_array_index
-   ~last_mort_age
-
-
-Mortality Factor and Lapse
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The assumption-by-duration table and the per-policy indices that
-select mortality factors and lapse rates, together with its row count.
-
-.. autosummary::
-
-   ~asmp_tables
-   ~mort_factor_index
-   ~lapse_rate_index
-   ~asmp_table_len
+   ~life_shock_param
+   ~life_corr
+   ~coc_rate
 
 """
 
@@ -209,9 +60,9 @@ def coc_rate():
     """Cost-of-capital rate for the Solvency II risk margin.
 
     Forwards the ``CoCRate`` scalar from the ``ConstParams`` named range
-    (read by :func:`~annuallife.TradLife_A.InputData.const_params`) to the
+    (read by :func:`~annuallife.TradLife_A_EX1.InputData.const_params`) to the
     projection, where it is used by
-    :func:`~annuallife.TradLife_A.Projection.risk_margin`. The value is a
+    :func:`~annuallife.TradLife_A_EX1.Projection.risk_margin`. The value is a
     native :obj:`float` (e.g. ``0.06`` for 6%).
     """
     return input_data.const_params()['CoCRate']
@@ -284,7 +135,7 @@ def mort_table_index():
 
     Maps the ``BaseMort`` assumption keyed by the model point lookup
     (product, policy type, gen) to each row of
-    :func:`~annuallife.TradLife_A.InputData.policy_data`.
+    :func:`TradLife_A.InputData.policy_data <annuallife.TradLife_A.InputData.policy_data>`.
     """
     return map_to_policies(input_data.assumption('BaseMort'))
 
@@ -293,7 +144,7 @@ def mort_array_index():
     """Per-policy column index into :func:`mortality_tables`.
 
     Returns a 1-D integer array of column positions in
-    :func:`~annuallife.TradLife_A.InputData.mortality_tables` for each
+    :func:`TradLife_A.InputData.mortality_tables <annuallife.TradLife_A.InputData.mortality_tables>` for each
     policy's ``(mort_table_index, sex)`` pair.
     """
 
@@ -322,8 +173,8 @@ def asmp_tables():
 
     Returns the ``AsmpByDuration`` range from *input.xlsx* as a 2-D
     NumPy array indexed by duration (rows) and assumption ID (columns).
-    Used by :func:`~annuallife.TradLife_A.BaseProj.mort_factor` and
-    :func:`~annuallife.TradLife_A.BaseProj.lapse_rate` together with
+    Used by :func:`TradLife_A.BaseProj.mort_factor <annuallife.TradLife_A.BaseProj.mort_factor>` and
+    :func:`TradLife_A.BaseProj.lapse_rate <annuallife.TradLife_A.BaseProj.lapse_rate>` together with
     :func:`mort_factor_index` and :func:`lapse_rate_index`.
     """
     return pandas_to_array(input_data.assumption_tables())
@@ -333,7 +184,7 @@ def mort_factor_index():
     """Per-policy column index into :func:`asmp_tables` for mortality factors.
 
     Resolves each policy's ``MortFactor`` assumption (referencing an
-    :mod:`~annuallife.TradLife_A.Assumptions.AsmpID`) to its column
+    :mod:`TradLife_A.Assumptions.AsmpID <annuallife.TradLife_A.Assumptions.AsmpID>`) to its column
     position in the ``AsmpByDuration`` table.
     """
 
@@ -349,7 +200,7 @@ def lapse_rate_index():
     """Per-policy column index into :func:`asmp_tables` for lapse rates.
 
     Resolves each policy's ``Surrender`` assumption (referencing an
-    :mod:`~annuallife.TradLife_A.Assumptions.AsmpID`) to its column
+    :mod:`TradLife_A.Assumptions.AsmpID <annuallife.TradLife_A.Assumptions.AsmpID>`) to its column
     position in the ``AsmpByDuration`` table.
     """
 
@@ -367,6 +218,21 @@ def asmp_table_len():
 
 
 def life_shock_param(risk, shock=0, scope=0, extra_key=0):
+    """Life shock factor for the given risk / shock / scope / extra key.
+
+    Forwards a single value from
+    :func:`~annuallife.TradLife_A_EX1.InputData.life_shock_data`, the
+    ``LifeShocks`` input keyed by the ``(risk, shock, scope, extra_key)``
+    integer codes. Arguments left at their default ``0`` select the entry
+    with no shock / scope / extra qualifier.
+
+    Args:
+        risk: A ``LifeRiskID`` code for the life sub-risk.
+        shock: A ``LapseShockID`` code (lapse risk only); defaults to 0.
+        scope: A ``LapseScopeID`` code; defaults to 0.
+        extra_key: An ``ExtraKeyID`` code (e.g. ``LIMIT``, ``INFL``);
+            defaults to 0.
+    """
     return input_data.life_shock_data()[risk, shock, scope, extra_key]
 
 
@@ -374,17 +240,17 @@ def life_corr(risk_i, risk_j):
     """Correlation coefficient between two life underwriting sub-risks.
 
     Forwards a single coefficient from the correlation matrix read by
-    :func:`~annuallife.TradLife_A.InputData.life_corr_data`. The two
+    :func:`~annuallife.TradLife_A_EX1.InputData.life_corr_data`. The two
     risks are taken as integer parameters and a plain :obj:`float` is
     returned (rather than a :obj:`dict` or :class:`~pandas.DataFrame`) so
-    that the consuming :func:`~annuallife.TradLife_A.Projection.risk_life`
+    that the consuming :func:`~annuallife.TradLife_A_EX1.Projection.risk_life`
     cell stays on native scalar types, which matters when the projection
     is compiled with Cython.
 
     Args:
-        risk_i: A :class:`~annuallife.TradLife_A.Enums.LifeRiskID.LifeRiskID`
+        risk_i: A ``LifeRiskID``
             code for the first sub-risk.
-        risk_j: A :class:`~annuallife.TradLife_A.Enums.LifeRiskID.LifeRiskID`
+        risk_j: A ``LifeRiskID``
             code for the second sub-risk.
     """
     return float(input_data.life_corr_data().at[risk_i, risk_j])

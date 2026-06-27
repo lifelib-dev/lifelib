@@ -5,221 +5,24 @@
 
 """Policy attributes and policy values.
 
-This Space holds policy attributes and policy-level values used by
-:mod:`~annuallife.TradLife_A.Projection` and its base spaces.
-
-The main role of this Space is to associate product specs sourced
-from :mod:`~annuallife.TradLife_A.InputData` with the model points
-held in
-:func:`~annuallife.TradLife_A.InputData.policy_data`, and to expose
-the resulting per-policy values as 1-D :mod:`numpy` arrays whose
-layout matches the rows of ``policy_data``. Callers therefore index
-into them with the integer policy index ``idx``.
-
-The Cells fall into two groups by their data source:
-
-* **Model point attributes**, such as :func:`product`,
-  :func:`issue_age` and :func:`sum_assured`, read a column directly
-  from :func:`~annuallife.TradLife_A.InputData.policy_data` and
-  convert it to a NumPy array.
-* **Product-level values**, such as :func:`int_rate`,
-  :func:`table_id` and :func:`load_acq_sa_param1`, look up a column
-  in :func:`~annuallife.TradLife_A.InputData.product_spec` keyed by
-  product attributes (e.g. ``Product``, ``PolType``, ``Gen``) and
-  reindex it onto the rows of ``policy_data`` before converting it
-  to a NumPy array. These Cells are typically used to build the
-  loadings and rates consumed by
-  :func:`~annuallife.TradLife_A.BaseProj.gross_prem_rate`.
-
-Both groups end with the same array-conversion step. The reindexing
-and conversion are performed by helper Cells inherited from the
-:mod:`~annuallife.TradLife_A.Utilities` base Space:
-
-* :func:`~annuallife.TradLife_A.Utilities.map_to_policies` reindexes
-  a ``Series`` keyed by lookup columns onto the rows of
-  ``policy_data``, so the result has one entry per policy.
-* :func:`~annuallife.TradLife_A.Utilities.pandas_to_array` then
-  converts that ``Series`` into a NumPy array when
-  :attr:`~annuallife.TradLife_A.Utilities.return_array` is ``True``
-  (the default). When ``return_array`` is ``False`` the pandas
-  object is passed through unchanged, which is convenient for
-  inspection and debugging.
-
-The two pipelines are illustrated below:
-
-.. mermaid::
-
-    graph LR
-        A1["policy_data()['col']<br/>pandas Series<br/>indexed by Policy"]
-        A2["product_spec(name)<br/>pandas Series keyed by<br/>(Product, PolType, Gen)"]
-        A2 --> B["map_to_policies<br/>reindex onto<br/>policy_data rows"]
-        A1 --> C["pandas_to_array<br/>convert when<br/>return_array=True"]
-        B --> C
-        C --> D["1-D NumPy array<br/>indexed by policy idx"]
-
-For example, :func:`issue_age` is implemented as
-``pandas_to_array(input_data.policy_data()['IssueAge'])`` (top
-branch), while :func:`load_acq_sa_param1` is implemented as
-``pandas_to_array(map_to_policies(input_data.product_spec('LoadAcqSAParam1')))``
-(bottom branch).
-
-The steps can also be executed individually on a console, which is
-useful for inspecting the intermediate pandas objects::
-
-    >>> pol = m.PolicyAttrs
-
-    >>> # Model-point attribute: pick a column from policy_data
-    >>> s = pol.input_data.policy_data()['IssueAge']
-    >>> s.head()
-    Policy
-    1    30
-    2    30
-    3    31
-    4    31
-    5    32
-    Name: IssueAge, dtype: int64
-    >>> len(s)
-    300
-
-    >>> # Convert to a 1-D NumPy array (return_array is True)
-    >>> pol.pandas_to_array(s)
-    array([30, 30, 31, ..., 78, 79, 79])
-
-    >>> # Product-level value: look up a column in product_spec
-    >>> ps = pol.input_data.product_spec('LoadAcqSAParam1')
-    >>> ps
-    Product
-    TERM    0.00
-    WL      0.02
-    ENDW    0.02
-    Name: LoadAcqSAParam1, dtype: float64
-
-    >>> # Reindex onto the rows of policy_data
-    >>> mapped = pol.map_to_policies(ps)
-    >>> mapped.head()
-    Policy
-    1    0.0
-    2    0.0
-    3    0.0
-    4    0.0
-    5    0.0
-    Name: LoadAcqSAParam1, dtype: float64
-    >>> len(mapped)
-    300
-
-    >>> # Convert to a 1-D NumPy array
-    >>> pol.pandas_to_array(mapped)
-    array([0.  , 0.  , 0.  , ..., 0.02, 0.02, 0.02])
-
-Composing these calls is exactly what :func:`issue_age` and
-:func:`load_acq_sa_param1` return.
-
-Parameters and References
--------------------------
-
-Attributes:
-    input_data: Alias for :mod:`~annuallife.TradLife_A.InputData`.
-        Per-policy attributes are read from the ``PolicyData`` range
-        in *input.xlsx* via
-        :func:`~annuallife.TradLife_A.InputData.policy_data`,
-        and product specs from
-        :func:`~annuallife.TradLife_A.InputData.product_spec`.
-    prem_term: Alias for :func:`policy_term`.
-
-.. rubric:: Inherited helpers
-
-Inherited from :mod:`~annuallife.TradLife_A.Utilities`:
-
-* :func:`~annuallife.TradLife_A.Utilities.pandas_to_array`
-* :func:`~annuallife.TradLife_A.Utilities.map_to_policies`
-* :attr:`~annuallife.TradLife_A.Utilities.return_array`
-
+This Space is :mod:`TradLife_A.PolicyAttrs <annuallife.TradLife_A.PolicyAttrs>` with one addition
+for the Solvency II lapse stress; all other Cells are unchanged, see
+:mod:`TradLife_A.PolicyAttrs <annuallife.TradLife_A.PolicyAttrs>`.
 
 Cells Summary
 -------------
 
-Policy Attributes
-^^^^^^^^^^^^^^^^^
+New Cells
+^^^^^^^^^
 
-Model point attributes read directly from
-:func:`~annuallife.TradLife_A.InputData.policy_data` for each policy.
-
-.. autosummary::
-
-   ~product
-   ~policy_type
-   ~sex
-   ~issue_age
-   ~prem_freq
-   ~policy_term
-   ~policy_count
-   ~sum_assured
-   ~gen
-   ~channel
-   ~duration
-
-
-Product Bases
-^^^^^^^^^^^^^
-
-Per-policy interest rate and mortality table identifiers, selected by
-rate basis (premium or valuation).
+:func:`segment` returns the per-policy lapse-risk segment as a
+``LapseScopeID`` code (currently ``RETAIL`` for every policy). It selects
+the mass-lapse factor applied by
+:func:`~annuallife.TradLife_A_EX1.Projection.InnerProj.pols_lapse_mass`.
 
 .. autosummary::
 
-   ~int_rate
-   ~table_id
-
-
-Loadings
-^^^^^^^^
-
-Per-policy acquisition and maintenance loadings used by
-:func:`~annuallife.TradLife_A.BaseProj.gross_prem_rate`, together with
-the raw ``ProductSpecTable`` parameters they are built from.
-
-.. autosummary::
-
-   ~load_acq_sa
-   ~load_acq_sa_param1
-   ~load_acq_sa_param2
-   ~load_maint_prem
-   ~load_maint_prem_param1
-   ~load_maint_prem_param2
-   ~load_maint_prem_waiver_prem
-   ~load_maint_sa
-   ~load_maint_sa2
-
-
-Surrender Charges
-^^^^^^^^^^^^^^^^^
-
-The per-policy initial surrender charge rate and the raw
-``ProductSpecTable`` parameters it is built from.
-
-.. autosummary::
-
-   ~init_surr_charge
-   ~surr_charge_param1
-   ~surr_charge_param2
-
-
-Misc
-^^^^
-
-Placeholder cells reserved for future use.
-
-.. warning::
-
-   :func:`gross_prem_table`, :func:`reserve_rate` and
-   :func:`uern_prem_rate` are placeholders that currently return
-   ``None`` and are to be implemented.
-
-.. autosummary::
-
-   ~gross_prem_table
-   ~reserve_rate
-   ~uern_prem_rate
+   ~segment
 
 """
 
@@ -332,12 +135,12 @@ def uern_prem_rate():
 
 
 def product():
-    """Per-policy product type as a :mod:`~annuallife.TradLife_A.Enums.ProductID` code."""
+    """Per-policy product type as a :mod:`TradLife_A.Enums.ProductID <annuallife.TradLife_A.Enums.ProductID>` code."""
     return pandas_to_array(input_data.policy_data()['Product'].map(lambda s: getattr(ProductID, s)))
 
 
 def policy_type():
-    """Per-policy policy type from the ``PolType`` column of :func:`~annuallife.TradLife_A.InputData.policy_data`."""
+    """Per-policy policy type from the ``PolType`` column of :func:`TradLife_A.InputData.policy_data <annuallife.TradLife_A.InputData.policy_data>`."""
     return pandas_to_array(input_data.policy_data()['PolType'])
 
 
@@ -352,7 +155,7 @@ def channel():
 
 
 def sex():
-    """Per-policy sex as a :mod:`~annuallife.TradLife_A.Enums.SexID` code."""
+    """Per-policy sex as a :mod:`TradLife_A.Enums.SexID <annuallife.TradLife_A.Enums.SexID>` code."""
     return pandas_to_array(input_data.policy_data()['Sex'].map(lambda s: getattr(SexID, s)))
 
 
@@ -423,6 +226,13 @@ def surr_charge_param2():
 
 
 def segment():
+    """Per-policy lapse-risk segment as a ``LapseScopeID`` code.
+
+    Returns a 1-D array, one entry per policy, giving the lapse-risk
+    segment that selects the mass-lapse factor applied by
+    :func:`~annuallife.TradLife_A_EX1.Projection.InnerProj.pols_lapse_mass`.
+    Every policy is currently assigned ``LapseScopeID.RETAIL``.
+    """
     return pandas_to_array(pd.Series(LapseScopeID.RETAIL, index=input_data.policy_data().index))
 
 

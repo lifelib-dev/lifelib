@@ -27,6 +27,22 @@ Cells for investment income reserves are defined but not implemented.
 
 See :mod:`~annuallife.TradLife_A` for more details.
 
+Nested projection example
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The library also packages :mod:`~annuallife.TradLife_A_EX1`, an example
+model that demonstrates how to build a **nested projection** in modelx —
+a projection that, at each step, runs further inner projections. The
+technique is illustrated with a Solvency II life-risk SCR and risk-margin
+calculation built on :mod:`~annuallife.TradLife_A`, but the focus is the
+nested-projection pattern rather than the Solvency II implementation
+itself.
+
+:mod:`~annuallife.TradLife_A_EX1` reuses the structure, assumptions and
+input data of :mod:`~annuallife.TradLife_A`; only the spaces that change
+are documented on its page. See :mod:`~annuallife.TradLife_A_EX1` for the
+list of updates from :mod:`~annuallife.TradLife_A`.
+
 Successor of simplelife
 ^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -98,23 +114,29 @@ Library Contents
    :maxdepth: 1
 
    TradLife_A
+   TradLife_A_EX1
    tradlife_a-demo
    tradlife_a-space-overview
 
 .. table::
    :widths: 25 75
 
-   ====================================== ==========================================================================
-   File or Folder                         Description
-   ====================================== ==========================================================================
-   ``TradLife_A``                         The :mod:`~annuallife.TradLife_A` model.
-   ``TradLife_A_mx30``                    Copy of :mod:`~annuallife.TradLife_A` saved in the modelx serializer version 6 format, for ``modelx`` older than v0.31.0.
-   ``input.xlsx``                         Excel workbook holding policy data, assumptions, mortality tables, scenarios and product specs.
-   ``plot_tradlife_a.py``                 sphinx-gallery plot script that renders the cashflow chart.
-   ``plot_pvcashflows_tradlife_a.py``     sphinx-gallery plot script that renders present-value cashflows.
-   ``tradlife_a-demo.ipynb``              Jupyter notebook demonstrating cashflow projection.
-   ``tradlife_a-space-overview.ipynb``    Tutorial notebook on the space tree of :mod:`~annuallife.TradLife_A`.
-   ====================================== ==========================================================================
+   ============================================= ==========================================================================
+   File or Folder                                Description
+   ============================================= ==========================================================================
+   ``TradLife_A``                                The :mod:`~annuallife.TradLife_A` model.
+   ``TradLife_A_EX1``                            The :mod:`~annuallife.TradLife_A_EX1` model, a Solvency II life-risk extension of :mod:`~annuallife.TradLife_A`.
+   ``TradLife_A_mx30``                           Copy of :mod:`~annuallife.TradLife_A` saved in the modelx serializer version 6 format, for ``modelx`` older than v0.31.0.
+   ``input.xlsx``                                Excel workbook holding policy data, assumptions, mortality tables, scenarios and product specs. It also holds the ``LifeShocks``, ``LifeCorr`` and ``CoCRate`` inputs read by :mod:`~annuallife.TradLife_A_EX1`.
+   ``plot_tradlife_a.py``                        Python script for :doc:`/generated_examples/annuallife/plot_tradlife_a`
+   ``plot_pvcashflows_tradlife_a.py``            Python script for :doc:`/generated_examples/annuallife/plot_pvcashflows_tradlife_a`
+   ``plot_scr_cashflows_tradlife_a_ex1.py``      Python script for :doc:`/generated_examples/annuallife/plot_scr_cashflows_tradlife_a_ex1`
+   ``plot_scr_radar_tradlife_a_ex1.py``          Python script for :doc:`/generated_examples/annuallife/plot_scr_radar_tradlife_a_ex1`
+   ``plot_pols_if_lapse_up_tradlife_a_ex1.py``   Python script for :doc:`/generated_examples/annuallife/plot_pols_if_lapse_up_tradlife_a_ex1`
+   ``draw_charts_radar.py``                      Helper module providing ``draw_radar`` for the radar plot script.
+   ``tradlife_a-demo.ipynb``                     Jupyter notebook demonstrating cashflow projection.
+   ``tradlife_a-space-overview.ipynb``           Tutorial notebook on the space tree of :mod:`~annuallife.TradLife_A`.
+   ============================================= ==========================================================================
 
 
 Jupyter Notebooks

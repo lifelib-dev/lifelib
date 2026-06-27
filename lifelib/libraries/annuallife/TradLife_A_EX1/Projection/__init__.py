@@ -3,65 +3,41 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""Per-policy cashflow projection and present values for one model point and scenario.
+"""Per-policy projection, present values and Solvency II life-risk results.
 
-This is the user-facing Space of :mod:`~annuallife.TradLife_A`: each
-ItemSpace ``Projection[idx, scen_id]`` projects the cashflows and
-their present values for one policy under one scenario.
+This Space is :mod:`TradLife_A.Projection <annuallife.TradLife_A.Projection>` with the Solvency
+II life-risk outputs added and a new inner projection child Space. The
+parameters (``idx``, ``scen_id``), the inherited cashflow Cells (from
+:mod:`TradLife_A.BaseProj <annuallife.TradLife_A.BaseProj>`) and present-value Cells (from
+:mod:`TradLife_A.PV <annuallife.TradLife_A.PV>`) are unchanged; see
+:mod:`TradLife_A.Projection <annuallife.TradLife_A.Projection>`.
 
-.. rubric:: Inheritance Structure
+.. rubric:: New child Space
 
-The ``Projection`` Space inherits its contents from its base Spaces,
-:mod:`~annuallife.TradLife_A.BaseProj` and
-:mod:`~annuallife.TradLife_A.PV`.
-The projection cells are inherited from
-:mod:`~annuallife.TradLife_A.BaseProj`, and the present values of those
-cashflow items are inherited from :mod:`~annuallife.TradLife_A.PV`.
+:mod:`~annuallife.TradLife_A_EX1.Projection.InnerProj` re-runs the
+cashflows under a single prescribed life stress, anchored at a valuation
+time ``t0``.
 
-.. rubric:: Cells
+Cells Summary
+-------------
 
-In addition to the inherited cashflow and present-value Cells, this
-Space defines the Solvency II life underwriting capital requirements.
-:func:`risk_life_sub` returns the requirement for each individual life
-sub-risk — the baseline less the stressed present value of
-:func:`~annuallife.TradLife_A.PV.pv_net_cf` from the inner projection
-:mod:`~annuallife.TradLife_A.Projection.InnerProj`, floored at zero —
-and :func:`risk_life` aggregates them with the life-risk correlation
-matrix supplied by
-:func:`~annuallife.TradLife_A.Assumptions.life_corr`. They mirror
-``SCR_life.Life`` and ``SCR_life.SCR_life`` in the ``solvency2``
-library. Building on these, :func:`risk_margin` is the Solvency II risk
-margin: the cost-of-capital rate
-:func:`~annuallife.TradLife_A.Assumptions.coc_rate` applied to the
-projected :func:`risk_life` and discounted to ``t``.
+New Cells
+^^^^^^^^^
 
-Parameters and References
--------------------------
+:func:`risk_life_sub` is the capital requirement for a single life
+sub-risk -- the loss in :func:`TradLife_A.PV.pv_net_cf <annuallife.TradLife_A.PV.pv_net_cf>` under
+the stress, floored at zero. :func:`risk_life` aggregates the sub-risks
+with the correlation matrix from
+:func:`~annuallife.TradLife_A_EX1.Assumptions.life_corr`.
+:func:`risk_margin` is the Solvency II risk margin: the cost-of-capital
+rate :func:`~annuallife.TradLife_A_EX1.Assumptions.coc_rate` applied to
+the projected :func:`risk_life`, discounted to ``t``.
 
-This Space is parameterized with ``idx`` and ``scen_id``::
+.. autosummary::
 
-    >>> m.Projection.parameters
-    ('idx', 'scen_id')
-
-Calling this Space with a pair of integers returns the ItemSpace for
-the policy index and scenario ID. ``scen_id`` has a default value of 1,
-so for example ``Projection[0]`` represents the Projection Space for
-the first policy under scenario 1.
-
-Attributes:
-    idx(:obj:`int`): 0-based policy index into the policy data array.
-    scen_id(:obj:`int`, optional): Scenario ID, defaults to 1.
-
-.. rubric:: References
-
-The following references are inherited from
-:mod:`~annuallife.TradLife_A.BaseProj`:
-
-Attributes:
-    pol: Alias for :mod:`~annuallife.TradLife_A.PolicyAttrs`.
-    asmp: Alias for :mod:`~annuallife.TradLife_A.Assumptions`.
-    scen: Alias for :mod:`~annuallife.TradLife_A.Economic`.
-    comm_table: Alias for :mod:`~annuallife.TradLife_A.CommTable`.
+   ~risk_life_sub
+   ~risk_life
+   ~risk_margin
 
 """
 
@@ -98,7 +74,7 @@ def risk_life_sub(t, risk):
         - \mathrm{pv\_net\_cf}_{risk}(t),\; 0\right)
 
     Both present values are taken at the valuation time ``t`` from the
-    inner projection :mod:`~annuallife.TradLife_A.Projection.InnerProj`,
+    inner projection :mod:`~annuallife.TradLife_A_EX1.Projection.InnerProj`,
     which is anchored at ``t``. ``InnerProj[t]`` is the unstressed
     (baseline) run, while ``InnerProj[t, risk]`` applies the life shock
     selected by ``risk``. For the lapse risk the requirement is the worst
@@ -109,20 +85,20 @@ def risk_life_sub(t, risk):
 
     This mirrors ``SCR_life.Life`` (and, for the lapse shocks,
     ``SCR_life.LapseRisk``) in the ``solvency2`` library, with
-    :func:`~annuallife.TradLife_A.PV.pv_net_cf` standing in for the net
+    :func:`TradLife_A.PV.pv_net_cf <annuallife.TradLife_A.PV.pv_net_cf>` standing in for the net
     asset value.
 
     Args:
         t: Valuation time at which the inner projection is anchored.
-        risk: A :class:`~annuallife.TradLife_A.Enums.LifeRiskID.LifeRiskID`
+        risk: A ``LifeRiskID``
             value selecting the life sub-risk (e.g. ``MORT``, ``LONGV``,
             ``LAPSE``, ``EXPS``).
 
     .. seealso::
 
         * :func:`risk_life`
-        * :func:`~annuallife.TradLife_A.PV.pv_net_cf`
-        * :mod:`~annuallife.TradLife_A.Projection.InnerProj`
+        * :func:`TradLife_A.PV.pv_net_cf <annuallife.TradLife_A.PV.pv_net_cf>`
+        * :mod:`~annuallife.TradLife_A_EX1.Projection.InnerProj`
     """
     base_pv = InnerProj[t].pv_net_cf(t)
 
@@ -151,13 +127,13 @@ def risk_life(t):
     where ``i`` and ``j`` range over the life sub-risks and
     :math:`Corr_{i,j}` is the correlation coefficient between them,
     supplied per pair by
-    :func:`~annuallife.TradLife_A.Assumptions.life_corr`.
+    :func:`~annuallife.TradLife_A_EX1.Assumptions.life_corr`.
 
     This mirrors ``SCR_life.SCR_life`` in the ``solvency2`` library,
     parameterized by the valuation time ``t``. The aggregation is kept on
     native scalar types (a tuple of integer risk codes, with
     :func:`risk_life_sub` and
-    :func:`~annuallife.TradLife_A.Assumptions.life_corr` returning
+    :func:`~annuallife.TradLife_A_EX1.Assumptions.life_corr` returning
     :obj:`float`) so the Space stays efficient when compiled with Cython.
 
     Args:
@@ -166,7 +142,7 @@ def risk_life(t):
     .. seealso::
 
         * :func:`risk_life_sub`
-        * :func:`~annuallife.TradLife_A.Assumptions.life_corr`
+        * :func:`~annuallife.TradLife_A_EX1.Assumptions.life_corr`
     """
     risks = (LifeRiskID.MORT, LifeRiskID.LONGV, LifeRiskID.DISAB,
              LifeRiskID.LAPSE, LifeRiskID.EXPS, LifeRiskID.REV,
@@ -181,7 +157,7 @@ def risk_margin(t):
     The risk margin is the cost of holding the future life underwriting
     capital over the run-off of the in-force business: the
     cost-of-capital rate
-    :func:`~annuallife.TradLife_A.Assumptions.coc_rate` applied to each
+    :func:`~annuallife.TradLife_A_EX1.Assumptions.coc_rate` applied to each
     future aggregated life SCR :func:`risk_life`, discounted to ``t``.
 
     .. math::
@@ -204,7 +180,7 @@ def risk_margin(t):
         {1 + \mathrm{disc\_rate\_mth}(t)}
 
     which terminates at ``0`` once ``t`` is beyond
-    :func:`~annuallife.TradLife_A.BaseProj.proj_len`. At ``t = 0`` it is
+    :func:`TradLife_A.BaseProj.proj_len <annuallife.TradLife_A.BaseProj.proj_len>`. At ``t = 0`` it is
     the risk margin at the valuation date.
 
     Args:
@@ -213,7 +189,7 @@ def risk_margin(t):
     .. seealso::
 
         * :func:`risk_life`
-        * :func:`~annuallife.TradLife_A.Assumptions.coc_rate`
+        * :func:`~annuallife.TradLife_A_EX1.Assumptions.coc_rate`
     """
     if t > proj_len():
         return 0
