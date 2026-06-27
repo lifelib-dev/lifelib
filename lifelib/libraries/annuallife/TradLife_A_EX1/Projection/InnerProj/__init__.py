@@ -102,25 +102,34 @@ def claims_surr(t):
 
 
 def lapse_rate(t):
-    """Surrender Rate"""
+    """Surrender Rate
+
+    The unstressed rate is taken from the outer projection
+    (:func:`~annuallife.TradLife_A.BaseProj.lapse_rate`); the lapse-up /
+    lapse-down shocks scale it (capped by the ``LIMIT`` factor), while the
+    mass-lapse shock leaves the ongoing rate unchanged (it is modelled by
+    :func:`pols_lapse_mass` instead).
+    """
+    base = _space._parent._parent.lapse_rate(t)
+
     if not risk == LifeRiskID.LAPSE:
-        return base_lapse_rate(t)
+        return base
 
     elif shock == LapseShockID.UP:
         shock_factor = 1 + asmp.life_shock_param(risk, shock)
         shock_limit = asmp.life_shock_param(risk, shock, extra_key=ExtraKeyID.LIMIT)
-        return min(shock_factor * base_lapse_rate(t), shock_limit)
+        return min(shock_factor * base, shock_limit)
 
     elif shock == LapseShockID.DOWN:
         shock_factor = 1 - asmp.life_shock_param(risk, shock)
         shock_limit = asmp.life_shock_param(risk, shock, extra_key=ExtraKeyID.LIMIT)
-        return max(shock_factor * base_lapse_rate(t), base_lapse_rate(t) - shock_limit)
+        return max(shock_factor * base, base - shock_limit)
 
     elif shock == LapseShockID.MASS:
         # The mass-lapse shock is an instantaneous discontinuance at t0
         # modelled by pols_lapse_mass / pols_if_beg1, not an elevated
         # surrender rate; ongoing surrenders stay at the base rate.
-        return base_lapse_rate(t)
+        return base
 
     else:
         raise ValueError(f'invalid lapse shock id: {shock}')
@@ -129,84 +138,110 @@ def lapse_rate(t):
 def mort_rate(x):
     """Mortality rate at age ``x`` with the mortality / longevity shock applied.
 
-    Under the ``MORT`` risk the base mortality rate is increased and
-    under the ``LONGV`` risk it is decreased, by the factor read from
-    the ``LifeShocks`` input via
+    The unstressed rate is taken from the outer projection
+    (:func:`~annuallife.TradLife_A.BaseProj.mort_rate`). Under the
+    ``MORT`` risk it is increased and under the ``LONGV`` risk it is
+    decreased, by the factor read from the ``LifeShocks`` input via
     :func:`~annuallife.TradLife_A.Assumptions.life_shock_param`. For any
-    other risk the base rate is returned unchanged.
+    other risk the unstressed rate is returned unchanged.
     """
+    base = _space._parent._parent.mort_rate(x)
+
     if risk == LifeRiskID.MORT:
-        return base_mort_rate(x) * (1 + asmp.life_shock_param(risk))
+        return base * (1 + asmp.life_shock_param(risk))
 
     elif risk == LifeRiskID.LONGV:
-        return base_mort_rate(x) * (1 - asmp.life_shock_param(risk))
+        return base * (1 - asmp.life_shock_param(risk))
 
     else:
-        return base_mort_rate(x)
+        return base
 
 
 def expense_acq_pp(t):
     """Acquisition expense per policy with the expense shock applied.
 
-    Under the ``EXPS`` risk the base acquisition expense is increased by
-    the factor read from the ``LifeShocks`` input via
+    Recomputes the acquisition expense locally (mirroring
+    :func:`~annuallife.TradLife_A.BaseProj.expense_acq_pp`) so it uses
+    this Space's stressed :func:`inflation_factor`, then under the
+    ``EXPS`` risk increases it by the factor read from the ``LifeShocks``
+    input via
     :func:`~annuallife.TradLife_A.Assumptions.life_shock_param`. For any
-    other risk the base amount is returned unchanged.
+    other risk the unstressed amount is returned.
     """
+    if t == 0:
+        base = (ann_prem_pp(t) * asmp.exps_acq_ann_prem()[idx]
+                + (sum_assured(t) * asmp.exps_acq_sa()[idx] + asmp.exps_acq_pol()[idx])
+                * inflation_factor(t) / inflation_factor(0))
+    else:
+        base = 0
+
     if risk == LifeRiskID.EXPS:
-        return base_expense_acq_pp(t) * (1 + asmp.life_shock_param(risk))
+        return base * (1 + asmp.life_shock_param(risk))
 
     else:
-        return base_expense_acq_pp(t)
+        return base
 
 
 def expense_maint_pp(t):
     """Maintenance expense per policy with the expense shock applied.
 
-    Under the ``EXPS`` risk the base maintenance expense is increased by
-    the factor read from the ``LifeShocks`` input via
+    Recomputes the maintenance expense locally (mirroring
+    :func:`~annuallife.TradLife_A.BaseProj.expense_maint_pp`) so it uses
+    this Space's stressed :func:`inflation_factor`, then under the
+    ``EXPS`` risk increases it by the factor read from the ``LifeShocks``
+    input via
     :func:`~annuallife.TradLife_A.Assumptions.life_shock_param`. For any
-    other risk the base amount is returned unchanged.
+    other risk the unstressed amount is returned.
     """
+    base = (ann_prem_pp(t) * asmp.exps_maint_ann_prem()[idx]
+            + (sum_assured(t) * asmp.exps_maint_sa()[idx] + asmp.exps_maint_pol()[idx])
+            * inflation_factor(t))
+
     if risk == LifeRiskID.EXPS:
-        return base_expense_maint_pp(t) * (1 + asmp.life_shock_param(risk))
+        return base * (1 + asmp.life_shock_param(risk))
 
     else:
-        return base_expense_maint_pp(t)
+        return base
 
 
 def commissions_ren_pp(t):
     """Renewal commission per policy with the expense shock applied.
 
-    Under the ``EXPS`` risk the base renewal commission is increased by
-    the factor read from the ``LifeShocks`` input via
+    The unstressed renewal commission is taken from the outer projection
+    (:func:`~annuallife.TradLife_A.BaseProj.commissions_ren_pp`); under
+    the ``EXPS`` risk it is increased by the factor read from the
+    ``LifeShocks`` input via
     :func:`~annuallife.TradLife_A.Assumptions.life_shock_param`. For any
-    other risk the base amount is returned unchanged.
+    other risk the unstressed amount is returned unchanged.
     """
+    base = _space._parent._parent.commissions_ren_pp(t)
+
     if risk == LifeRiskID.EXPS:
-        return base_commissions_ren_pp(t) * (1 + asmp.life_shock_param(risk))
+        return base * (1 + asmp.life_shock_param(risk))
 
     else:
-        return base_commissions_ren_pp(t)
+        return base
 
 
-def inflation_rate():
-    """Expense inflation rate with the expense-inflation shock applied.
+def inflation_factor(t):
+    """Expense inflation factor with the expense-inflation shock applied.
 
-    Under the ``EXPS`` risk the base expense inflation rate is increased
-    by the ``INFL`` factor read from the ``LifeShocks`` input via
-    :func:`~annuallife.TradLife_A.Assumptions.life_shock_param` (a +1
-    percentage-point stress to the annual expense inflation rate). The
-    inherited :func:`~annuallife.TradLife_A.BaseProj.inflation_factor`
-    then compounds at this stressed rate, so future expense cashflows
-    inflate faster. For any other risk the base rate is returned
-    unchanged.
+    Overrides :func:`~annuallife.TradLife_A.BaseProj.inflation_factor` to
+    compound at a stressed inflation rate under the ``EXPS`` risk: the
+    base rate plus the ``INFL`` factor read from the ``LifeShocks`` input
+    via :func:`~annuallife.TradLife_A.Assumptions.life_shock_param` (a +1
+    percentage-point stress). The locally recomputed expenses
+    (:func:`expense_maint_pp`, :func:`expense_acq_pp`) therefore inflate
+    faster. For any other risk it equals the unstressed factor.
     """
-    if risk == LifeRiskID.EXPS:
-        return asmp.inflation_rate() + asmp.life_shock_param(risk, extra_key=ExtraKeyID.INFL)
+    if t == 0:
+        return 1
 
-    else:
-        return asmp.inflation_rate()
+    rate = asmp.inflation_rate()
+    if risk == LifeRiskID.EXPS:
+        rate += asmp.life_shock_param(risk, extra_key=ExtraKeyID.INFL)
+
+    return inflation_factor(t - 1) * (1 + rate)
 
 
 # ---------------------------------------------------------------------------

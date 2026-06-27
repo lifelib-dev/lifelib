@@ -613,17 +613,7 @@ def claims_surr_pp(t):
 
 
 def expense_acq_pp(t):
-    """Acquisition expense per policy at time t.
-
-    Returns the base (unshocked) acquisition expense. Overridden in
-    :mod:`~annuallife.TradLife_A.Projection.InnerProj` to apply the
-    expense life shock; see :func:`base_expense_acq_pp`.
-    """
-    return base_expense_acq_pp(t)
-
-
-def base_expense_acq_pp(t):
-    """Base acquisition expense per policy at time t"""
+    """Acquisition expense per policy at time t"""
     if t == 0:
         return (ann_prem_pp(t) * asmp.exps_acq_ann_prem()[idx]
                 + (sum_assured(t) * asmp.exps_acq_sa()[idx] + asmp.exps_acq_pol()[idx])
@@ -641,17 +631,7 @@ def commissions_init_pp(t):
 
 
 def commissions_ren_pp(t):
-    """Renewal commission per policy at time t.
-
-    Returns the base (unshocked) renewal commission. Overridden in
-    :mod:`~annuallife.TradLife_A.Projection.InnerProj` to apply the
-    expense life shock; see :func:`base_commissions_ren_pp`.
-    """
-    return base_commissions_ren_pp(t)
-
-
-def base_commissions_ren_pp(t):
-    """Base renewal commission per policy at time t"""
+    """Renewal commission per policy at time t"""
     if t == 0:
         return 0
     elif t < asmp.comm_ren_term()[idx]:
@@ -661,17 +641,7 @@ def base_commissions_ren_pp(t):
 
 
 def expense_maint_pp(t):
-    """Maintenance expense per policy at time t.
-
-    Returns the base (unshocked) maintenance expense. Overridden in
-    :mod:`~annuallife.TradLife_A.Projection.InnerProj` to apply the
-    expense life shock; see :func:`base_expense_maint_pp`.
-    """
-    return base_expense_maint_pp(t)
-
-
-def base_expense_maint_pp(t):
-    """Base maintenance expense per policy at time t"""
+    """Maintenance expense per policy at time t"""
     return (ann_prem_pp(t) * asmp.exps_maint_ann_prem()[idx]
             + (sum_assured(t) * asmp.exps_maint_sa()[idx] + asmp.exps_maint_pol()[idx])
             * inflation_factor(t))
@@ -735,17 +705,6 @@ def proj_len():
 
 
 def mort_rate(x):
-    """Mortality rate at age ``x``.
-
-    Returns the base (unshocked) mortality rate. Overridden in
-    :mod:`~annuallife.TradLife_A.Projection.InnerProj` to apply the
-    mortality / longevity life shock; see :func:`base_mort_rate` for
-    the underlying table lookup.
-    """
-    return base_mort_rate(x)
-
-
-def base_mort_rate(x):
     """Base mortality rate at age ``x``"""
 
     return asmp.mortality_tables()[x, asmp.mort_array_index()[idx]]
@@ -785,9 +744,9 @@ def mort_factor(y):
     return asmp.asmp_tables()[min(y, asmp.asmp_table_len() - 1), asmp.mort_factor_index()[idx]]
 
 
-def lapse_rate(t):
+def lapse_rate(y):
     """Surrender Rate"""
-    return base_lapse_rate(t)
+    return asmp.asmp_tables()[min(y, asmp.asmp_table_len() - 1), asmp.lapse_rate_index()[idx]]
 
 
 def ann_prem_rate():
@@ -970,24 +929,13 @@ def last_mort_age():
 def inflation_factor(t):
     """Inflation factor at time ``t`` used to adjust expense cashflows.
 
-    Compounded from :func:`inflation_rate` starting from
-    ``inflation_factor(0) = 1``.
+    Compounded from :func:`~annuallife.TradLife_A.Assumptions.inflation_rate`
+    starting from ``inflation_factor(0) = 1``.
     """
     if t == 0:
         return 1
     else:
-        return inflation_factor(t-1) * (1 + inflation_rate())
-
-
-def inflation_rate():
-    """Annual expense inflation rate driving :func:`inflation_factor`.
-
-    Returns the base (unshocked) expense inflation rate from
-    :func:`~annuallife.TradLife_A.Assumptions.inflation_rate`. Overridden
-    in :mod:`~annuallife.TradLife_A.Projection.InnerProj` to apply the
-    expense-inflation life shock.
-    """
-    return asmp.inflation_rate()
+        return inflation_factor(t-1) * (1 + asmp.inflation_rate())
 
 
 def disc_rate_mth(t):
@@ -997,11 +945,6 @@ def disc_rate_mth(t):
     :func:`Economic[scen_id].disc_rate_mth<annuallife.TradLife_A.Economic.disc_rate_mth>`.
     """
     return scen.disc_rate_mth(t)
-
-
-def base_lapse_rate(y):
-    """Surrender Rate"""
-    return asmp.asmp_tables()[min(y, asmp.asmp_table_len() - 1), asmp.lapse_rate_index()[idx]]
 
 
 # ---------------------------------------------------------------------------
