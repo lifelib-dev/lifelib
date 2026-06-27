@@ -3,6 +3,63 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
+"""Inner projection that re-runs the cashflows under a single life stress.
+
+This Space is the engine behind the Solvency II life-risk results in
+:mod:`~annuallife.TradLife_A_EX1.Projection`. Each ItemSpace
+``InnerProj[t0, risk, shock]`` re-runs the per-policy projection from the
+valuation time ``t0`` under one prescribed life stress, so that the
+stressed present value of net cashflows can be compared with the
+unstressed (baseline) one by
+:func:`~annuallife.TradLife_A_EX1.Projection.risk_life_sub`.
+
+It inherits all cashflow and present-value Cells from
+:mod:`TradLife_A.BaseProj <annuallife.TradLife_A.BaseProj>` and
+:mod:`TradLife_A.PV <annuallife.TradLife_A.PV>`, and overrides only the Cells needed to
+anchor the projection at ``t0`` and to apply the stress. The unstressed
+mortality, lapse and renewal-commission rates are taken from the outer
+projection and scaled by the shock; the acquisition and maintenance
+expenses are recomputed locally so they pick up the stressed
+:func:`inflation_factor`.
+
+Parameters and References
+-------------------------
+
+Attributes:
+    t0(:obj:`int`): Valuation time the inner projection is anchored at;
+        at ``t0`` the in-force equals that of the outer projection.
+    risk(:obj:`int`, optional): A ``LifeRiskID`` code selecting the life
+        sub-risk to stress. Defaults to ``BASE`` (0), the unstressed run.
+    shock(:obj:`int`, optional): A ``LapseShockID`` code selecting the
+        lapse shock (``UP``, ``DOWN`` or ``MASS``) when ``risk`` is
+        ``LAPSE``. Defaults to 0.
+
+Cells Summary
+-------------
+
+Overridden Cells
+^^^^^^^^^^^^^^^^
+
+The following Cells override their
+:mod:`TradLife_A.BaseProj <annuallife.TradLife_A.BaseProj>` counterparts to anchor the
+projection at ``t0`` and to apply the life shocks.
+
+.. autosummary::
+
+   ~pols_if
+   ~pols_if_beg1
+   ~pols_lapse_mass
+   ~claims_surr
+   ~claims_surr_mass_pp
+   ~mort_rate
+   ~lapse_rate
+   ~expense_acq_pp
+   ~expense_maint_pp
+   ~commissions_ren_pp
+   ~inflation_factor
+
+"""
+
 from modelx.serialize.jsonvalues import *
 
 _formula = lambda t0, risk=0, shock=0: None
@@ -25,7 +82,7 @@ def pols_if(t):
     The inner projection is anchored at the valuation time ``t0`` (where
     this returns the outer projection's in-force) and is defined only for
     ``t >= t0``. Present values are taken at ``t0`` (e.g.
-    :func:`~annuallife.TradLife_A.PV.pv_net_cf` at ``t0``), so the
+    :func:`TradLife_A.PV.pv_net_cf <annuallife.TradLife_A.PV.pv_net_cf>` at ``t0``), so the
     ``t < t0`` region is never reached in normal use; evaluating any
     in-force cell there would recurse without terminating.
     """
@@ -42,7 +99,7 @@ def pols_lapse_mass(t):
     the valuation time ``t0`` rather than an elevated surrender rate
     spread over the year. At ``t == t0`` a segment-dependent fraction
     (the ``LAPSE`` / ``MASS`` factor from the ``LifeShocks`` input,
-    selected by :func:`~annuallife.TradLife_A.PolicyAttrs.segment`) of
+    selected by :func:`~annuallife.TradLife_A_EX1.PolicyAttrs.segment`) of
     the policies in force at the beginning of the period instantly
     surrenders. The amount is removed from :func:`pols_if_beg1` so those
     policies neither pay premiums nor are exposed to mortality or ongoing
@@ -77,11 +134,11 @@ def claims_surr_mass_pp(t):
     """Surrender benefit per policy for the instantaneous mass-lapse surrenders.
 
     The ongoing surrenders are assumed to occur throughout the period, so
-    :func:`~annuallife.TradLife_A.BaseProj.claims_surr_pp` pays the
+    :func:`TradLife_A.BaseProj.claims_surr_pp <annuallife.TradLife_A.BaseProj.claims_surr_pp>` pays the
     mid-period average of the cash value at ``t`` and ``t+1``. The
     mass-lapse surrenders, by contrast, occur instantaneously at the
     valuation time, so the benefit is the cash value at time ``t`` only
-    (:func:`~annuallife.TradLife_A.BaseProj.cash_value_rate` at ``t``).
+    (:func:`TradLife_A.BaseProj.cash_value_rate <annuallife.TradLife_A.BaseProj.cash_value_rate>` at ``t``).
     """
     return sum_assured(t) * cash_value_rate(t)
 
@@ -93,7 +150,7 @@ def claims_surr(t):
     ongoing surrenders (:func:`pols_lapse`) and the instantaneous
     mass-lapse surrenders (:func:`pols_lapse_mass`). The ongoing
     surrenders receive the mid-period average cash value
-    (:func:`~annuallife.TradLife_A.BaseProj.claims_surr_pp`), while the
+    (:func:`TradLife_A.BaseProj.claims_surr_pp <annuallife.TradLife_A.BaseProj.claims_surr_pp>`), while the
     mass-lapse surrenders receive the cash value at time ``t``
     (:func:`claims_surr_mass_pp`).
     """
@@ -105,7 +162,7 @@ def lapse_rate(t):
     """Surrender Rate
 
     The unstressed rate is taken from the outer projection
-    (:func:`~annuallife.TradLife_A.BaseProj.lapse_rate`); the lapse-up /
+    (:func:`TradLife_A.BaseProj.lapse_rate <annuallife.TradLife_A.BaseProj.lapse_rate>`); the lapse-up /
     lapse-down shocks scale it (capped by the ``LIMIT`` factor), while the
     mass-lapse shock leaves the ongoing rate unchanged (it is modelled by
     :func:`pols_lapse_mass` instead).
@@ -139,10 +196,10 @@ def mort_rate(x):
     """Mortality rate at age ``x`` with the mortality / longevity shock applied.
 
     The unstressed rate is taken from the outer projection
-    (:func:`~annuallife.TradLife_A.BaseProj.mort_rate`). Under the
+    (:func:`TradLife_A.BaseProj.mort_rate <annuallife.TradLife_A.BaseProj.mort_rate>`). Under the
     ``MORT`` risk it is increased and under the ``LONGV`` risk it is
     decreased, by the factor read from the ``LifeShocks`` input via
-    :func:`~annuallife.TradLife_A.Assumptions.life_shock_param`. For any
+    :func:`~annuallife.TradLife_A_EX1.Assumptions.life_shock_param`. For any
     other risk the unstressed rate is returned unchanged.
     """
     base = _space._parent._parent.mort_rate(x)
@@ -161,11 +218,11 @@ def expense_acq_pp(t):
     """Acquisition expense per policy with the expense shock applied.
 
     Recomputes the acquisition expense locally (mirroring
-    :func:`~annuallife.TradLife_A.BaseProj.expense_acq_pp`) so it uses
+    :func:`TradLife_A.BaseProj.expense_acq_pp <annuallife.TradLife_A.BaseProj.expense_acq_pp>`) so it uses
     this Space's stressed :func:`inflation_factor`, then under the
     ``EXPS`` risk increases it by the factor read from the ``LifeShocks``
     input via
-    :func:`~annuallife.TradLife_A.Assumptions.life_shock_param`. For any
+    :func:`~annuallife.TradLife_A_EX1.Assumptions.life_shock_param`. For any
     other risk the unstressed amount is returned.
     """
     if t == 0:
@@ -186,11 +243,11 @@ def expense_maint_pp(t):
     """Maintenance expense per policy with the expense shock applied.
 
     Recomputes the maintenance expense locally (mirroring
-    :func:`~annuallife.TradLife_A.BaseProj.expense_maint_pp`) so it uses
+    :func:`TradLife_A.BaseProj.expense_maint_pp <annuallife.TradLife_A.BaseProj.expense_maint_pp>`) so it uses
     this Space's stressed :func:`inflation_factor`, then under the
     ``EXPS`` risk increases it by the factor read from the ``LifeShocks``
     input via
-    :func:`~annuallife.TradLife_A.Assumptions.life_shock_param`. For any
+    :func:`~annuallife.TradLife_A_EX1.Assumptions.life_shock_param`. For any
     other risk the unstressed amount is returned.
     """
     base = (ann_prem_pp(t) * asmp.exps_maint_ann_prem()[idx]
@@ -208,10 +265,10 @@ def commissions_ren_pp(t):
     """Renewal commission per policy with the expense shock applied.
 
     The unstressed renewal commission is taken from the outer projection
-    (:func:`~annuallife.TradLife_A.BaseProj.commissions_ren_pp`); under
+    (:func:`TradLife_A.BaseProj.commissions_ren_pp <annuallife.TradLife_A.BaseProj.commissions_ren_pp>`); under
     the ``EXPS`` risk it is increased by the factor read from the
     ``LifeShocks`` input via
-    :func:`~annuallife.TradLife_A.Assumptions.life_shock_param`. For any
+    :func:`~annuallife.TradLife_A_EX1.Assumptions.life_shock_param`. For any
     other risk the unstressed amount is returned unchanged.
     """
     base = _space._parent._parent.commissions_ren_pp(t)
@@ -226,10 +283,10 @@ def commissions_ren_pp(t):
 def inflation_factor(t):
     """Expense inflation factor with the expense-inflation shock applied.
 
-    Overrides :func:`~annuallife.TradLife_A.BaseProj.inflation_factor` to
+    Overrides :func:`TradLife_A.BaseProj.inflation_factor <annuallife.TradLife_A.BaseProj.inflation_factor>` to
     compound at a stressed inflation rate under the ``EXPS`` risk: the
     base rate plus the ``INFL`` factor read from the ``LifeShocks`` input
-    via :func:`~annuallife.TradLife_A.Assumptions.life_shock_param` (a +1
+    via :func:`~annuallife.TradLife_A_EX1.Assumptions.life_shock_param` (a +1
     percentage-point stress). The locally recomputed expenses
     (:func:`expense_maint_pp`, :func:`expense_acq_pp`) therefore inflate
     faster. For any other risk it equals the unstressed factor.

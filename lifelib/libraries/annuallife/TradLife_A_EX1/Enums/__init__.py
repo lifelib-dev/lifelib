@@ -3,21 +3,26 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""Enum-style codes used across :mod:`~annuallife.TradLife_A`.
+"""Enum-style codes used across :mod:`~annuallife.TradLife_A_EX1`.
 
-This Space groups the small integer-coded enumerations referenced by
-the projection cells. Each enum is exposed as a child Space whose
-References hold the integer codes for its members:
+This Space extends :mod:`TradLife_A.Enums <annuallife.TradLife_A.Enums>` with the
+enumerations used by the Solvency II life-risk calculations. The
+``ProductID``, ``SexID`` and ``RateBasisID`` enums are unchanged from
+:mod:`TradLife_A.Enums <annuallife.TradLife_A.Enums>`.
 
-* :mod:`~annuallife.TradLife_A.Enums.ProductID` - product type codes
-  (``TERM``, ``WL``, ``ENDW``).
-* :mod:`~annuallife.TradLife_A.Enums.SexID` - sex codes used to index
-  mortality tables (``M``, ``F``).
-* :mod:`~annuallife.TradLife_A.Enums.RateBasisID` - rate-basis codes
-  used by the commutation lookup (``PREM``, ``VAL``).
+.. rubric:: New enum child Spaces
 
-The three child spaces are also re-exported at the model level as
-``ProductID``, ``SexID`` and ``RateBasisID`` for convenience.
+The following enum child Spaces are added. Each exposes its members as
+integer References.
+
+* ``LifeRiskID`` -- life sub-risks: ``MORT``, ``LONGV``, ``DISAB``,
+  ``LAPSE``, ``EXPS``, ``REV`` and ``CAT``, plus ``BASE`` (0) for the
+  unstressed run.
+* ``LapseShockID`` -- lapse shocks: ``UP``, ``DOWN`` and ``MASS``.
+* ``LapseScopeID`` -- lapse scope: ``RETAIL`` and ``INST``.
+* ``ExtraKeyID`` -- extra qualifiers for shock parameters, such as
+  ``LIMIT`` (a cap on the shocked rate) and ``INFL`` (the
+  expense-inflation stress).
 
 """
 

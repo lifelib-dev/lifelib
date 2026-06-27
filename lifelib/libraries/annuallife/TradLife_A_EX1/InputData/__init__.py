@@ -5,96 +5,42 @@
 
 """Input data loaded from *input.xlsx*.
 
-The :mod:`~annuallife.TradLife_A.InputData` Space contains Cells that
-load values from named ranges in the Excel input file, *input.xlsx*,
-and helper Cells that turn those ranges into pandas objects ready for
-the rest of the model.
-
-Per-policy attributes, assumption tables, scenarios, mortality tables
-and product specs are loaded on demand by the cells listed below. The
-workbook itself is opened lazily by :func:`input_workbook`.
-
-The table below lists the cells and the Excel named ranges they read.
-
-============================== =====================  ==========================================
- Cell                           Named range            Purpose
-============================== =====================  ==========================================
-:func:`policy_data`            ``PolicyData``         Per-policy attributes for model points.
-:func:`product_spec`           ``ProductSpecTable``   Per-product loading and rate tables.
-:func:`assumption`             ``AssumptionTable``    Lookup table of assumption keys.
-:func:`assumption_tables`      ``AsmpByDuration``     Duration-based mortality / lapse tables.
-:func:`mortality_tables`       ``MortalityTables``    Mortality tables keyed by Sex / Table.
-:func:`scenarios`              ``Scenarios``          Scenario interest-rate paths.
-:func:`discount_rate`          ``LargePolDiscount``   Premium discount by sum-assured band.
-:func:`prem_waiver_cost`       ``PremiumWaiverCost``  Premium-waiver cost lookup.
-:func:`const_params`           ``ConstParams``        Scalar parameters used across the model.
-============================== =====================  ==========================================
-
-Parameters and References
--------------------------
-
-Attributes:
-    input_file_name(:obj:`str`): Name of the Excel workbook to read.
-        Defaults to ``"input.xlsx"`` and is resolved relative to the
-        parent directory of the model.
-    openpyxl: The :mod:`openpyxl` module used to open the workbook.
-
+This Space is :mod:`TradLife_A.InputData <annuallife.TradLife_A.InputData>` with additional
+Cells that read the Solvency II life-shock and correlation inputs. The
+existing readers (policy data, assumptions, mortality tables, scenarios,
+product specs and scalar constants) are unchanged; see
+:mod:`TradLife_A.InputData <annuallife.TradLife_A.InputData>` for them.
 
 Cells Summary
 -------------
 
-Workbook
-^^^^^^^^
+New Cells
+^^^^^^^^^
 
-Opens the Excel input workbook lazily; every other cell reads from it.
-
-.. autosummary::
-
-   ~input_workbook
-
-
-Input Tables
-^^^^^^^^^^^^
-
-Named ranges loaded as pandas objects: policy data, mortality and
-assumption tables, scenarios, discount and premium-waiver lookups and
-the scalar constants.
+:func:`life_shock_data` reads the ``LifeShocks`` named range and returns
+a :obj:`dict` of shock factors keyed by ``(risk, shock, scope,
+extra_key)`` integer codes. :func:`life_corr_data` reads the ``LifeCorr``
+named range and returns the life-risk correlation matrix as a
+:class:`~pandas.DataFrame` indexed on both axes by ``LifeRiskID`` codes.
 
 .. autosummary::
 
-   ~policy_data
-   ~mortality_tables
-   ~mort_table_last_ages
-   ~assumption_tables
-   ~scenarios
-   ~discount_rate
-   ~prem_waiver_cost
-   ~const_params
+   ~life_shock_data
+   ~life_corr_data
 
+Updated Cells
+^^^^^^^^^^^^^
 
-Lookups
-^^^^^^^
-
-Column lookups into the assumption and product-specification tables,
-keyed by the model point lookup levels.
+:func:`get_named_range_as_dict` is generalised to support named ranges
+with more than two columns: the right-most column holds the values and
+the remaining columns form a tuple key (used by :func:`life_shock_data`).
+:func:`const_params` now also exposes the new ``CoCRate``
+(cost-of-capital) parameter read from the ``ConstParams`` range.
 
 .. autosummary::
 
-   ~assumption
-   ~product_spec
-
-
-Helpers
-^^^^^^^
-
-Generic readers that turn a named range into a ``DataFrame``, a
-``dict`` or a keyed ``Series``.
-
-.. autosummary::
-
-   ~get_named_range_as_df
    ~get_named_range_as_dict
-   ~get_param_series
+   ~const_params
 
 """
 
@@ -340,6 +286,15 @@ def const_params():
 
 
 def life_shock_data():
+    """Life shock factors from the ``LifeShocks`` named range.
+
+    Returns a :obj:`dict` of shock factors keyed by
+    ``(risk, shock, scope, extra_key)``. The enum-name strings in the
+    input (e.g. ``MORT``, ``UP``, ``LIMIT``) are converted to the
+    corresponding integer codes of :mod:`~annuallife.TradLife_A_EX1.Enums`,
+    and a blank qualifier maps to ``0``. Consumed per key by
+    :func:`~annuallife.TradLife_A_EX1.Assumptions.life_shock_param`.
+    """
 
     d = get_named_range_as_dict('LifeShocks')
 
@@ -356,6 +311,13 @@ def life_shock_data():
 
 
 def life_corr_data():
+    """Life-risk correlation matrix from the ``LifeCorr`` named range.
+
+    Returns a square :class:`~pandas.DataFrame` whose row and column
+    labels are ``LifeRiskID`` integer codes (the enum-name headers in the
+    input are converted to codes). Consumed by
+    :func:`~annuallife.TradLife_A_EX1.Assumptions.life_corr`.
+    """
     df = get_named_range_as_df('LifeCorr', index_len=1)
     df.columns = [getattr(LifeRiskID, c) for c in df.columns]
     df.index = [getattr(LifeRiskID, r) for r in df.index]
