@@ -14,6 +14,12 @@ Updates
     Follow <a href="https://www.linkedin.com/company/lifelib" target="_blank">lifelib on LinkedIn</a>
     for more frequent updates.</p>
 
+* *28 June 2026:*
+  lifelib :ref:`v0.13.0<relnotes_v0.13.0>` is released.
+  :mod:`~annuallife.TradLife_A_EX1`, a new nested-projection example that
+  demonstrates a Solvency II Life capital calculation, is added to
+  :mod:`~annuallife`. The :mod:`~solvency2` project is now deprecated.
+
 * *17 May 2026:*
   lifelib :ref:`v0.12.0<relnotes_v0.12.0>` is released.
   :mod:`~annuallife`, a new library featuring the
