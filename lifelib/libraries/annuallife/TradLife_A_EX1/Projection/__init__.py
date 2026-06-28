@@ -165,7 +165,7 @@ def risk_margin(t):
         \mathrm{risk\_margin}(t) = \mathrm{CoC}
         \sum_{s=t}^{\mathrm{proj\_len}}
         \frac{\mathrm{risk\_life}(s)}
-        {\prod_{u=t}^{s}\left(1 + \mathrm{disc\_rate\_mth}(u)\right)}
+        {\prod_{u=t}^{s}\left(1 + \mathrm{disc\_rate}(u)\right)}
 
     The cost of capital for the capital held over year ``[s, s+1]`` is
     taken to be incurred at ``s + 1``, so each ``risk_life(s)`` is
@@ -177,7 +177,7 @@ def risk_margin(t):
         \mathrm{risk\_margin}(t) =
         \frac{\mathrm{CoC}\cdot\mathrm{risk\_life}(t)
         + \mathrm{risk\_margin}(t + 1)}
-        {1 + \mathrm{disc\_rate\_mth}(t)}
+        {1 + \mathrm{disc\_rate}(t)}
 
     which terminates at ``0`` once ``t`` is beyond
     :func:`TradLife_A.BaseProj.proj_len <annuallife.TradLife_A.BaseProj.proj_len>`. At ``t = 0`` it is
@@ -195,7 +195,7 @@ def risk_margin(t):
         return 0
     else:
         return (asmp.coc_rate() * risk_life(t)
-                + risk_margin(t + 1)) / (1 + disc_rate_mth(t))
+                + risk_margin(t + 1)) / (1 + disc_rate(t))
 
 
 # ---------------------------------------------------------------------------

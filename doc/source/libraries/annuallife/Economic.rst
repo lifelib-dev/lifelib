@@ -7,6 +7,6 @@ The **Economic** Space
 Cells Descriptions
 ------------------
 
-.. autofunction:: disc_rate_mth
+.. autofunction:: disc_rate
 
 .. autofunction:: invst_ret_rate
