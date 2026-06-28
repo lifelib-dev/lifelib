@@ -10,9 +10,28 @@ Overview
 
 The purpose of :mod:`~annuallife.TradLife_A_EX1` is to demonstrate how to
 build a **nested projection** in modelx — a projection that, at each
-step, runs further *inner* projections. It is not intended as a complete
-Solvency II model; the Solvency II life-risk SCR and risk margin are used
-only as a concrete example to motivate the nested projection.
+step, runs further *inner* projections under different assumptions.
+
+Nested projections arise in many situations in actuarial practice.
+
+One example is projecting a stream of book profits under a real-world
+scenario — for budgeting, embedded or appraisal value reporting, stress
+testing and the like — when reserves are held on a current, unlocked
+basis. The reserve at each future point must then be recalculated using
+assumptions that reflect the state at that point as simulated by the
+outer real-world scenario. This is the case when book profits are
+recognized under IFRS 17 or US GAAP.
+
+Another example is the risk-margin calculation under the cost-of-capital
+method, as in Solvency II, where each future annual projection step
+requires several inner projections under prescribed stresses to derive
+the required capital for non-hedgeable risks at that point, and
+ultimately the risk margin at time 0.
+
+This model takes the latter case as its example, showing how such a
+nested projection can be implemented in modelx. It is not intended as a
+complete Solvency II model; the Solvency II life-risk SCR and risk margin
+serve only as a concrete example to motivate the nested projection.
 
 The model extends :mod:`~annuallife.TradLife_A`. At a valuation time
 ``t0`` it re-runs the per-policy cashflow projection under each
