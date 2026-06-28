@@ -59,9 +59,3 @@ were developed using an older cashflow model. All the projects use modelx.
    ../projects/ifrs17sim
    ../projects/solvency2
    ../projects/smithwilson
-
-.. toctree::
-   :maxdepth: 1
-   :hidden:
-
-   ../projects/devguide/index
