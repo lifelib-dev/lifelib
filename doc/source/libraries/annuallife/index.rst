@@ -43,8 +43,8 @@ input data of :mod:`~annuallife.TradLife_A`; only the spaces that change
 are documented on its page. See :mod:`~annuallife.TradLife_A_EX1` for the
 list of updates from :mod:`~annuallife.TradLife_A`.
 
-Successor of simplelife
-^^^^^^^^^^^^^^^^^^^^^^^
+Successor of simplelife and solvency2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The **annuallife** library is the updated successor of the legacy
 :ref:`project_simplelife` project. Compared with the original
@@ -62,6 +62,13 @@ The **annuallife** library is the updated successor of the legacy
 * **A renamed input space.** The space holding *input.xlsx*-backed
   References is now ``InputData`` and is referenced as ``input_data``
   by the rest of the model.
+
+Likewise, :mod:`~annuallife.TradLife_A_EX1` supersedes the legacy
+:ref:`project_solvency2` project. Both build a Solvency II life-risk SCR
+and risk-margin calculation as a reference for complex nested
+projections, but :mod:`~annuallife.TradLife_A_EX1` does so on top of the
+modernized :mod:`~annuallife.TradLife_A` model. The *solvency2* project
+is therefore deprecated and will be removed in a future release.
 
 How to Use the Library
 ------------------------------

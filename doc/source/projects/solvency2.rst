@@ -11,6 +11,12 @@ Project **solvency2**
 
 |modelx badge|
 
+.. warning::
+
+   :mod:`solvency2` has been superseded by
+   :mod:`~annuallife.TradLife_A_EX1` in the :mod:`annuallife` library,
+   and will be removed in a future release.
+
 **solvency2** is a project for building a model to
 calculate life risks of selected policies at various points in their policy periods
 based on Solvency II standard formula.
