@@ -31,15 +31,11 @@ named range and returns the life-risk correlation matrix as a
 Updated Cells
 ^^^^^^^^^^^^^
 
-:func:`get_named_range_as_dict` is generalised to support named ranges
-with more than two columns: the right-most column holds the values and
-the remaining columns form a tuple key (used by :func:`life_shock_data`).
 :func:`const_params` now also exposes the new ``CoCRate``
 (cost-of-capital) parameter read from the ``ConstParams`` range.
 
 .. autosummary::
 
-   ~get_named_range_as_dict
    ~const_params
 
 """

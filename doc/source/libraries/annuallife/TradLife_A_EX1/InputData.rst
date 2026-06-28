@@ -11,6 +11,4 @@ Cells Descriptions
 
 .. autofunction:: life_corr_data
 
-.. autofunction:: get_named_range_as_dict
-
 .. autofunction:: const_params

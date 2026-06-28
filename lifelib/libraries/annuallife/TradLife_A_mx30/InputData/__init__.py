@@ -226,10 +226,12 @@ def scenarios():
 
 
 def get_named_range_as_dict(name):
-    """Read a two-column Excel named range as a :obj:`dict`.
+    """Read an Excel named range as a :obj:`dict`.
 
-    The first column of the range becomes the dict keys and the second
-    column becomes the values.
+    The right-most column of the range becomes the dict values.
+    If the range has exactly two columns, the first column becomes the
+    keys. If it has more than two columns, the keys are tuples of the
+    values of all columns except the right-most one.
     """
     wb = input_workbook()
 
@@ -238,7 +240,16 @@ def get_named_range_as_dict(name):
 
     rows = list(ws[cell_range.replace('$', '')])
 
-    return {row[0].value: row[1].value for row in rows}
+    result = {}
+    for row in rows:
+        *key_cells, value_cell = row
+        if len(key_cells) == 1:
+            key = key_cells[0].value
+        else:
+            key = tuple(cell.value for cell in key_cells)
+        result[key] = value_cell.value
+
+    return result
 
 
 _is_cached = False
