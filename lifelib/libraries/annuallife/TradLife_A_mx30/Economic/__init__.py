@@ -31,7 +31,7 @@ Example:
 
     An example of ``Economic`` in :mod:`~annuallife.TradLife_A`::
 
-        >>> m.Economic[1].disc_rate_mth(0)
+        >>> m.Economic[1].disc_rate(0)
         0.015
 
 
@@ -43,7 +43,7 @@ scenario at time ``t``.
 
 .. autosummary::
 
-   ~disc_rate_mth
+   ~disc_rate
    ~invst_ret_rate
 
 """
@@ -61,7 +61,7 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
-def disc_rate_mth(t):
+def disc_rate(t):
     """Discount rate at time ``t``.
 
     Read from the ``Scenarios`` range in *input.xlsx* (column
@@ -75,9 +75,9 @@ def disc_rate_mth(t):
 def invst_ret_rate(t):
     """Rate of investment return at time ``t``.
 
-    Set equal to :func:`disc_rate_mth`.
+    Set equal to :func:`disc_rate`.
     """
-    return disc_rate_mth(t)
+    return disc_rate(t)
 
 
 # ---------------------------------------------------------------------------

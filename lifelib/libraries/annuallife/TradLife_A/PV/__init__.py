@@ -13,8 +13,8 @@ Each present-value cell is defined recursively in ``t``: the recursion
 terminates at ``t > proj_len()`` by returning ``0``, where
 :func:`~annuallife.TradLife_A.BaseProj.proj_len` is the projection
 length for the selected policy. Discounting uses the
-:func:`~annuallife.TradLife_A.BaseProj.disc_rate_mth` cell that resolves
-to :func:`~annuallife.TradLife_A.Economic.disc_rate_mth` for the
+:func:`~annuallife.TradLife_A.BaseProj.disc_rate` cell that resolves
+to :func:`~annuallife.TradLife_A.Economic.disc_rate` for the
 selected scenario.
 
 
@@ -105,14 +105,14 @@ def interest_net_cf(t):
         * :func:`pv_net_cf`
         * :func:`~annuallife.TradLife_A.BaseProj.premiums`
         * :func:`~annuallife.TradLife_A.BaseProj.expenses`
-        * :func:`~annuallife.TradLife_A.BaseProj.disc_rate_mth`
+        * :func:`~annuallife.TradLife_A.BaseProj.disc_rate`
     """
     if t > proj_len():
         return 0
     else:
         return (pv_net_cf(t)
                 - premiums(t)
-                + expenses(t)) * disc_rate_mth(t)
+                + expenses(t)) * disc_rate(t)
 
 
 def pv_claims_death(t):
@@ -126,7 +126,7 @@ def pv_claims_death(t):
     if t > proj_len():
         return 0
     else:
-        return (claims_death(t) + pv_claims_death(t+1)) / (1 + disc_rate_mth(t))
+        return (claims_death(t) + pv_claims_death(t+1)) / (1 + disc_rate(t))
 
 
 def pv_claims_mat(t):
@@ -140,7 +140,7 @@ def pv_claims_mat(t):
     if t > proj_len():
         return 0
     else:
-        return (claims_mat(t) + pv_claims_mat(t+1)) / (1 + disc_rate_mth(t))
+        return (claims_mat(t) + pv_claims_mat(t+1)) / (1 + disc_rate(t))
 
 
 def pv_claims_surr(t):
@@ -154,7 +154,7 @@ def pv_claims_surr(t):
     if t > proj_len():
         return 0
     else:
-        return (claims_surr(t) + pv_claims_surr(t+1)) / (1 + disc_rate_mth(t))
+        return (claims_surr(t) + pv_claims_surr(t+1)) / (1 + disc_rate(t))
 
 
 def pv_claims(t):
@@ -170,7 +170,7 @@ def pv_claims(t):
     if t > proj_len():
         return 0
     else:
-        return (claims(t) + pv_claims(t+1)) / (1 + disc_rate_mth(t))
+        return (claims(t) + pv_claims(t+1)) / (1 + disc_rate(t))
 
 
 def pv_check(t):
@@ -198,7 +198,7 @@ def pv_exps_acq(t):
     if t > proj_len():
         return 0
     else:
-        return exps_acq(t) + pv_exps_acq(t+1) / (1 + disc_rate_mth(t))
+        return exps_acq(t) + pv_exps_acq(t+1) / (1 + disc_rate(t))
 
 
 def pv_commissions(t):
@@ -212,7 +212,7 @@ def pv_commissions(t):
     if t > proj_len():
         return 0
     else:
-        return commissions(t) + pv_commissions(t+1) / (1 + disc_rate_mth(t))
+        return commissions(t) + pv_commissions(t+1) / (1 + disc_rate(t))
 
 
 def pv_exps_maint(t):
@@ -226,7 +226,7 @@ def pv_exps_maint(t):
     if t > proj_len():
         return 0
     else:
-        return exps_maint(t) + pv_exps_maint(t+1) / (1 + disc_rate_mth(t))
+        return exps_maint(t) + pv_exps_maint(t+1) / (1 + disc_rate(t))
 
 
 def pv_expenses(t):
@@ -242,7 +242,7 @@ def pv_expenses(t):
     if t > proj_len():
         return 0
     else:
-        return expenses(t) + pv_expenses(t+1) / (1 + disc_rate_mth(t))
+        return expenses(t) + pv_expenses(t+1) / (1 + disc_rate(t))
 
 
 def pv_net_cf(t):
@@ -282,8 +282,8 @@ def pv_net_cf_for_check(t):
     else:
         return (premiums(t)
                 - expenses(t)
-                - claims(t) / (1 + disc_rate_mth(t))
-                + pv_net_cf(t+1) / (1 + disc_rate_mth(t)))
+                - claims(t) / (1 + disc_rate(t))
+                + pv_net_cf(t+1) / (1 + disc_rate(t)))
 
 
 def pv_premiums(t):
@@ -297,7 +297,7 @@ def pv_premiums(t):
     if t > proj_len():
         return 0
     else:
-        return premiums(t) + pv_premiums(t+1) / (1 + disc_rate_mth(t))
+        return premiums(t) + pv_premiums(t+1) / (1 + disc_rate(t))
 
 
 def pv_sum_insur_if(t):
@@ -311,6 +311,6 @@ def pv_sum_insur_if(t):
     if t > proj_len():
         return 0
     else:
-        return insur_if_beg1(t) + pv_sum_insur_if(t+1) / (1 + disc_rate_mth(t))
+        return insur_if_beg1(t) + pv_sum_insur_if(t+1) / (1 + disc_rate(t))
 
 

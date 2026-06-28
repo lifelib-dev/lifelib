@@ -35,7 +35,7 @@ Cells Descriptions
 
 .. autofunction:: inflation_factor
 
-.. autofunction:: disc_rate_mth
+.. autofunction:: disc_rate
 
 .. autofunction:: pols_if_init
 

@@ -199,7 +199,7 @@ def test_risk_margin_equals_closed_form(ex1_model, idx):
     discount = 1.0
     expected = 0.0
     for s in range(proj.proj_len() + 1):
-        discount *= 1 + proj.disc_rate_mth(s)
+        discount *= 1 + proj.disc_rate(s)
         expected += proj.risk_life(s) / discount
     expected *= coc
     assert math.isclose(proj.risk_margin(0), expected, rel_tol=1e-9, abs_tol=1e-9)
@@ -211,7 +211,7 @@ def test_risk_margin_recursion(ex1_model, idx):
     proj = ex1_model.Projection[idx]
     coc = ex1_model.Assumptions.coc_rate()
     expected = (coc * proj.risk_life(0)
-                + proj.risk_margin(1)) / (1 + proj.disc_rate_mth(0))
+                + proj.risk_margin(1)) / (1 + proj.disc_rate(0))
     assert math.isclose(proj.risk_margin(0), expected, rel_tol=1e-9, abs_tol=1e-9)
 
 

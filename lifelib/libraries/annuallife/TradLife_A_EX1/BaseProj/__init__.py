@@ -63,7 +63,7 @@ rates, surrender charge, inflation and discounting.
    ~cash_value_rate
    ~surr_charge
    ~inflation_factor
-   ~disc_rate_mth
+   ~disc_rate
 
 
 Policy Decrement
@@ -418,7 +418,7 @@ def int_accum_cf(t):
     """Interest on accumulated cashflows"""
     return (accum_cf(t)
             + premiums(t)
-            - expenses(t)) * disc_rate_mth(t)
+            - expenses(t)) * disc_rate(t)
 
 
 def invst_income(t):
@@ -938,13 +938,13 @@ def inflation_factor(t):
         return inflation_factor(t-1) * (1 + asmp.inflation_rate())
 
 
-def disc_rate_mth(t):
+def disc_rate(t):
     """Discount rate at time ``t``.
 
     Refers to
-    :func:`Economic[scen_id].disc_rate_mth<annuallife.TradLife_A.Economic.disc_rate_mth>`.
+    :func:`Economic[scen_id].disc_rate<annuallife.TradLife_A.Economic.disc_rate>`.
     """
-    return scen.disc_rate_mth(t)
+    return scen.disc_rate(t)
 
 
 # ---------------------------------------------------------------------------
