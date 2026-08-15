@@ -105,7 +105,7 @@ VERSION = get_version(eval(version_line.split('=')[-1]))
 
 def get_package_data(top_dirs: list):
     result = []
-    extensions = ['py', 'ipynb', 'xlsx', 'csv', 'json', 'pickle']
+    extensions = ['py', 'ipynb', 'xlsx', 'csv', 'json', 'pickle', 'md']
     modelfiles = ['_dynamic_inputs']
     for topd in top_dirs:
         for root, dirs, files in os.walk(topd):

@@ -65,19 +65,6 @@ Click |colab badge| to open and run them on Google Colab.
 :doc:`libraries/economic/hull-white-simulation`         |colab economic hull-white-simulation|
 ======================================================= ======================================
 
-.. _notebooks_economic_curves:
-
-:mod:`economic_curves` Notebooks
----------------------------------
-
-========================================================================================= =======
-:doc:`libraries/economic_curves/smith_wilson_example`
-:doc:`libraries/economic_curves/Stationary Bootstrap Italian Swap Example`
-:doc:`libraries/economic_curves/NelsonSiegelSvenssonExample`
-:doc:`libraries/economic_curves/EIOPA RISK FREE CURVE MONTHLY PUBLICATION RECALCULATION`
-:doc:`libraries/economic_curves/METROPOLIS_HASTINGS_BLACK_SHOLES`
-========================================================================================= =======
-
 .. _notebooks_cluster:
 
 :mod:`cluster` Notebooks
