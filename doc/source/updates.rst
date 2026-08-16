@@ -14,6 +14,15 @@ Updates
     Follow <a href="https://www.linkedin.com/company/lifelib" target="_blank">lifelib on LinkedIn</a>
     for more frequent updates.</p>
 
+* *17 August 2026:*
+  lifelib :ref:`v0.14.0<relnotes_v0.14.0>` is released.
+  :mod:`~uslib`, a new library of twelve reference liability cash flow
+  projection models for U.S. individual life and annuity products, is
+  added. The library is in its draft stage.
+
+* *9 Aug 2026:*
+  New download available on the :doc:`download` page.
+
 * *28 June 2026:*
   lifelib :ref:`v0.13.0<relnotes_v0.13.0>` is released.
   :mod:`~annuallife.TradLife_A_EX1`, a new nested-projection example that
