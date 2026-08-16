@@ -1,0 +1,11 @@
+schedule,contract_year,surr_charge_rate,provenance
+initial,1,0.09,sourced [S10]
+initial,2,0.08,sourced [S10]
+initial,3,0.07,sourced [S10]
+initial,4,0.06,sourced [S10]
+initial,5,0.05,sourced [S10]
+renewal,1,0.05,sourced [S2]; adoption [std]
+renewal,2,0.04,sourced [S2]; adoption [std]
+renewal,3,0.03,sourced [S2]; adoption [std]
+renewal,4,0.02,sourced [S2]; adoption [std]
+renewal,5,0.01,sourced [S2]; adoption [std]

@@ -1,0 +1,4 @@
+scenario_id,t,mva_ref_yield,market_rate,provenance
+base,0,0.0650,0.0445,worked example [std]; it = 6.50% at the month-30 surrender and MR = CR = 4.45% so the dynamic lapse term is exactly zero
+stress,0,0.1000,0.0445,worked example [std]; it = 10.00% forces the symmetric cap and the Model #805 floor to bind at month 6
+differential,0,0.1000,0.0600,[std] variant; MR = 6.00% above the 4.45% credited rate so the declared-differential MVA and the VM-22 dynamic lapse term are both non-zero

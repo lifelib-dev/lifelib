@@ -1,0 +1,7 @@
+rollup_id,contract_year,rollup_rate,provenance
+blended,1,0.0500,"sourced [S2]; Athene stacking option, contract years 1-10"
+blended,11,0.0200,"sourced [S2]; Athene stacking option, contract years 11-20"
+blended,21,0.0000,sourced [S2]; rollup ceases after contract year 20
+nassau,1,0.0300,"sourced [S9]; 3% simple on the adjusted initial base, 15 anniversaries"
+nassau,16,0.0000,sourced [S9]; rollup ceases after the 15th anniversary
+none,1,0.0000,[std] pure-stacking configuration (b); g = 0 [S3][S4]

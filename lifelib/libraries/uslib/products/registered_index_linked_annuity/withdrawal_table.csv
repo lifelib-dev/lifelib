@@ -1,0 +1,4 @@
+wd_schedule_id,t,wd_amount,provenance
+none,0,0.00,base run [std]; no scheduled withdrawal at any duration
+worked,36,8000.00,worked example row B2 [std]; 8000 taken at the term midpoint and inside the Free Withdrawal Amount so no withdrawal charge
+charged,24,20000.00,[std] variant exercising the withdrawal charge on an excess withdrawal - 20000 against a free amount of about 10100 in contract year 3

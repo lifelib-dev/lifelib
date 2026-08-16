@@ -1,0 +1,16 @@
+point_id,policy_id,premium,premium_tax_rate,annual_income,form,joint,primary_age,primary_sex,joint_age,joint_sex,survivor_pct,reduction_trigger,certain_months,frequency,timing,cola_rate,commutation_enabled,issue_state_excludes_withdrawal,qualified,rating_factor,annuity_year,pols_if_init,mort_basis,death_mth_1,death_mth_2,provenance
+1,IA-000001,100000,0.0,6000,life_only,True,65,M,62,F,0.6666666667,either,0,12,arrears,0.03,False,False,False,1.0,2026,1.0,scenario,,14,worked example [std]
+2,IA-000002,100000,0.0,6000,life_only,True,65,M,62,F,0.6666666667,primary,0,12,arrears,0.03,False,False,False,1.0,2026,1.0,scenario,,14,worked example [std]
+3,IA-000003,100000,0.0,6000,life_only,True,65,M,62,F,0.6666666667,either,0,12,arrears,0.03,False,False,False,1.0,2026,1.0,scenario,14,,worked example [std]
+4,IA-000004,100000,0.0,6000,life_only,True,65,M,62,F,0.6666666667,primary,0,12,arrears,0.03,False,False,False,1.0,2026,1.0,scenario,14,,worked example [std]
+5,IA-000005,100000,0.0,6000,life_certain,True,65,M,62,F,0.6666666667,either,120,12,arrears,0.03,False,False,False,1.0,2026,1.0,scenario,,14,worked example [std]
+6,IA-000006,100000,0.0,6000,cash_refund,False,65,M,,,1.0,either,0,12,arrears,0.03,False,False,False,1.0,2026,1.0,scenario,14,,worked example [std]
+7,IA-000007,100000,0.0,6000,installment_refund,False,65,M,,,1.0,either,0,12,arrears,0.0,False,False,False,1.0,2026,1.0,table,,,worked example [std]
+8,IA-000008,100000,0.0,6000,life_only,True,65,M,62,F,0.6666666667,either,0,12,arrears,0.03,False,False,False,1.0,2026,1.0,table,,,anchor cell [std]
+9,IA-000009,100000,0.0,6000,life_certain,True,65,M,62,F,0.6666666667,either,120,12,arrears,0.03,True,False,False,1.0,2026,1.0,table,,,anchor cell [std]
+10,IA-000010,100000,0.0,6000,life_only,False,65,M,,,1.0,either,0,12,advance,0.03,False,False,False,1.0,2026,1.0,scenario,14,,worked example [std] on advance timing
+11,IA-000011,100000,0.0,6000,cash_refund,False,65,M,,,1.0,either,0,12,advance,0.03,False,False,False,1.0,2026,1.0,scenario,14,,worked example [std] on advance timing
+12,IA-000012,100000,0.0,4800,installment_refund,False,65,M,,,1.0,either,0,12,arrears,0.0,False,False,False,1.0,2026,1.0,table,,,[std] n_R moves with B(1)
+13,IA-000013,100000,0.0,6000,life_certain,True,65,M,62,F,0.6666666667,either,120,12,arrears,0.03,False,False,False,1.0,2026,1.0,scenario,30,14,worked example [std] certain floor with both lives dead
+14,IA-000014,100000,0.0,6000,life_only,False,65,M,,,1.0,either,0,4,advance,0.03,False,False,False,1.0,2026,1.0,scenario,3,,[std] quarterly in advance; survival at the period start
+15,IA-000015,100000,0.0,6000,certain_only,False,65,M,,,1.0,either,120,12,arrears,0.03,False,False,False,1.0,2026,1.0,table,,,[std] certain_only; the expense stops with the last payment

@@ -1,0 +1,5 @@
+rate_class,factor
+PPlusNT,0.8
+PNT,0.9
+StdNT,1.0
+StdTob,1.75

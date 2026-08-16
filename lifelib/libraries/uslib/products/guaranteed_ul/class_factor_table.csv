@@ -1,0 +1,7 @@
+rate_class,factor,provenance
+PPlusNT,0.80,[std]
+PNT,0.90,[std]
+StdPlusNT,0.95,[std]
+StdNT,1.00,[std]
+PTob,1.50,[std]
+StdTob,1.75,[std]

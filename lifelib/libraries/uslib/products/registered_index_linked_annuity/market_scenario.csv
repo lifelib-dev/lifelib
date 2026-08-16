@@ -1,0 +1,11 @@
+scenario_id,t,index_level,mvr,risk_free,div_yield,impl_vol,provenance
+up,0,100.00,0.0400,0.0400,0.0200,0.2000,worked example Scenario A [std]; index normalized to I_s = 100 and the market value rate at 4.00% on the Term Start Date
+up,36,120.00,0.0500,0.0400,0.0200,0.2000,worked example row A1 [std]; index +20% and a 100 bp rise in the market value rate to exercise the MVA factor
+up,72,140.00,0.0500,0.0400,0.0200,0.2000,worked example row A2 [std]; term end at +40% index performance
+down,0,100.00,0.0400,0.0400,0.0200,0.2000,worked example Scenario B [std]; index normalized to I_s = 100 and the market value rate at 4.00% on the Term Start Date
+down,36,80.00,0.0500,0.0400,0.0200,0.2000,worked example row B1 [std]; index -20% and a 100 bp rise in the market value rate
+down,72,75.00,0.0500,0.0400,0.0200,0.2000,worked example row B3 [std]; term end at -25% index performance
+legacy,0,500.00,0.0300,0.0400,0.0200,0.2000,pre-AG 54 worked example [S1]; index 500 at the Term Start Date
+legacy,6,600.00,0.0300,0.0400,0.0200,0.2000,pre-AG 54 worked example [S1]; index 600 at day 183 of a one-year term - month 6 of 12 on a monthly grid
+charge_ex,0,100.00,0.0400,0.0400,0.0200,0.2000,[S2] withdrawal charge example [std]; index normalized to I_s = 100 on the Term Start Date
+charge_ex,60,71.66666667,0.0400,0.0400,0.0200,0.2000,[S2] withdrawal charge example [std]; the index level at which the pre-AG 54 accrued rate is exactly -20% at month 60 - so the Account Value at the start of contract year 6 is exactly 80000 and the prospectus example reproduces end to end

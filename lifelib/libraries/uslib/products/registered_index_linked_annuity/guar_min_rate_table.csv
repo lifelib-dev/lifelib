@@ -1,0 +1,4 @@
+term_years,guar_min_cap,guar_min_step,guar_min_edge,provenance
+1,0.02,0.02,0.02,sourced [S1][S2]
+3,0.06,0.02,0.02,sourced [S1][S2]
+6,0.08,0.02,0.02,sourced [S1][S2]

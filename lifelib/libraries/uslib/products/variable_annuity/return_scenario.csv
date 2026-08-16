@@ -1,0 +1,15 @@
+scenario_id,sub_id,t,gross_return,provenance
+base,1,1,0.00691200072,[std] illustrative; reverse-engineered from the notes' carried state so AV(12) = 104000 exactly
+base,1,13,0.010209265371,[std] illustrative; reverse-engineered so the anniversary-2 contract value is 112500 exactly and the step-up fires
+base,1,25,-0.009316853803,[std] illustrative; reverse-engineered so AV(26) = 110000 split 66000/44000
+base,1,27,0.0120,worked example scenario month r_1 = +1.20% [std]
+base,1,28,0.0050,[std] level continuation after the worked example month; about 6.2% p.a. gross
+base,2,1,0.006660136293,[std] illustrative; paired with sub_id 1 so both subaccounts grow at the same rate net of fund expense
+base,2,13,0.009956576182,[std] illustrative; paired with sub_id 1 so both subaccounts grow at the same rate net of fund expense
+base,2,25,-0.009564658817,[std] illustrative; paired with sub_id 1 so both subaccounts grow at the same rate net of fund expense
+base,2,27,-0.0030,worked example scenario month r_2 = -0.30% [std]
+base,2,28,0.0020,[std] level continuation after the worked example month; about 2.4% p.a. gross
+decline,1,1,-0.0075,[std] sustained decline that exhausts the account value and exercises the post-depletion GLWB stream
+decline,2,1,-0.0025,[std] sustained decline that exhausts the account value and exercises the post-depletion GLWB stream
+variant,1,1,0.0040,[std] level path for the variant model points; about 4.9% p.a. gross
+variant,2,1,0.0015,[std] level path for the variant model points; about 1.8% p.a. gross

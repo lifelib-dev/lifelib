@@ -1,0 +1,5 @@
+income_start_age,sex,payout_form,payout_factor,provenance
+80,F,CR,8.600000,worked example [std] - the notes' illustrative payout factor
+80,F,LO,8.358418,[std] equation (2) on the shipped mortality table
+80,M,CR,7.849439,[std] equation (2) on the shipped mortality table with the anchor contract's derived guarantee period
+80,M,LO,7.688128,[std] equation (2) on the shipped mortality table

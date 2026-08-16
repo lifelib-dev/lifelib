@@ -1,0 +1,5 @@
+point_id,policy_id,age_at_entry,sex,rate_class,sum_assured,db_option,qual_test,premium_type,premium_pp_ann,load_prem_rate,sa_pp_init_1,sa_pp_init_2,fa_pp_init,loan_bal_init,alloc_1,alloc_2,alloc_fixed,wd_pp,pols_if_init,duration_mth,has_surr_charge,surr_charge_id,scenario_id,corridor_override_m1,coi_rate_override_m1,provenance
+1,VUL-000001,45,M,StdNT,500000.0,A,GPT,LEVEL,6000.0,0.04,30000.0,20000.0,0.0,0.0,0.6,0.4,0.0,0.0,1.0,24,True,VUL14,WE,2.15,0.04,worked example [std]
+2,VUL-000002,45,M,StdNT,500000.0,A,GPT,LEVEL,6000.0,0.04,30000.0,20000.0,0.0,0.0,0.6,0.4,0.0,0.0,1.0,24,True,VUL14,WE,,,worked example [std]; overrides blank
+3,VUL-000003,45,M,StdNT,500000.0,B,GPT,LEVEL,6000.0,0.04,0.0,0.0,0.0,0.0,0.6,0.4,0.0,0.0,1.0,0,True,VUL14,LEVEL6,,,"[std] new business, Option B"
+4,VUL-000004,45,M,StdNT,500000.0,A,GPT,LEVEL,6000.0,0.04,40000.0,25000.0,10000.0,8000.0,0.5,0.3,0.2,0.0,1.0,120,True,VUL14,LEVEL6,,,"[std] in force, fixed option and loan"

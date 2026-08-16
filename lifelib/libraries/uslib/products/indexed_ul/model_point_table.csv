@@ -1,0 +1,6 @@
+point_id,policy_id,age_at_entry,sex,rate_class,sum_assured,db_option,qual_test,premium_type,premium_mode,premium_pp_ann,load_prem_rate,index_alloc_rate,av_pp_init,loan_bal_init,wd_pp,wd_first_year,loan_new_pp_ann,loan_first_year,pols_if_init,duration_mth,has_surr_charge,surr_charge_id,mnlp_rate,gsp,glp,seven_pay_prem
+1,IUL-000001,45,M,NT,250000.0,A,GPT,LEVEL,ANNUAL,10000.0,0.05,1.0,0.0,0.0,0.0,2,0.0,21,1.0,0,True,IUL10,20.8,95000.0,10500.0,21000.0
+2,IUL-000002,45,M,NT,250000.0,B,GPT,LEVEL,ANNUAL,10000.0,0.05,1.0,0.0,0.0,0.0,2,0.0,21,1.0,0,True,IUL10,20.8,95000.0,10500.0,21000.0
+3,IUL-000003,45,M,NT,250000.0,A,GPT,LEVEL,ANNUAL,10000.0,0.05,0.0,0.0,0.0,0.0,2,0.0,21,1.0,0,True,IUL10,20.8,95000.0,10500.0,21000.0
+4,IUL-000004,45,M,NT,250000.0,A,GPT,LEVEL,MONTHLY,10000.0,0.05,1.0,0.0,0.0,0.0,2,0.0,21,1.0,0,True,IUL10,20.8,95000.0,10500.0,21000.0
+5,IUL-000005,45,M,NT,250000.0,A,GPT,LEVEL,ANNUAL,6000.0,0.05,1.0,0.0,0.0,200.0,2,6000.0,21,1.0,0,True,IUL10,20.8,95000.0,10500.0,21000.0

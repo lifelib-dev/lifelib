@@ -1,0 +1,61 @@
+plan,sex,rate_class,band,policy_year,premium_pp,provenance
+T10,M,StdNT,1,1,140.0,sourced
+T10,M,StdNT,1,2,140.0,sourced
+T10,M,StdNT,1,3,140.0,sourced
+T10,M,StdNT,1,4,140.0,sourced
+T10,M,StdNT,1,5,140.0,sourced
+T10,M,StdNT,1,6,140.0,sourced
+T10,M,StdNT,1,7,140.0,sourced
+T10,M,StdNT,1,8,140.0,sourced
+T10,M,StdNT,1,9,140.0,sourced
+T10,M,StdNT,1,10,140.0,sourced
+T10,M,StdNT,1,11,764.0,sourced
+T10,M,StdNT,1,12,830.0,sourced
+T10,M,StdNT,1,13,880.82,interpolated [std]
+T10,M,StdNT,1,14,934.76,interpolated [std]
+T10,M,StdNT,1,15,992.0,sourced
+T10,M,StdNT,1,16,1081.24,interpolated [std]
+T10,M,StdNT,1,17,1178.5,interpolated [std]
+T10,M,StdNT,1,18,1284.51,interpolated [std]
+T10,M,StdNT,1,19,1400.06,interpolated [std]
+T10,M,StdNT,1,20,1526.0,sourced
+T10,M,StdNT,1,21,1690.59,interpolated [std]
+T10,M,StdNT,1,22,1872.93,interpolated [std]
+T10,M,StdNT,1,23,2074.94,interpolated [std]
+T10,M,StdNT,1,24,2298.73,interpolated [std]
+T10,M,StdNT,1,25,2546.66,interpolated [std]
+T10,M,StdNT,1,26,2821.34,interpolated [std]
+T10,M,StdNT,1,27,3125.64,interpolated [std]
+T10,M,StdNT,1,28,3462.76,interpolated [std]
+T10,M,StdNT,1,29,3836.24,interpolated [std]
+T10,M,StdNT,1,30,4250.0,sourced
+T10,M,StdNT,1,31,4671.71,interpolated [std]
+T10,M,StdNT,1,32,5135.26,interpolated [std]
+T10,M,StdNT,1,33,5644.8,interpolated [std]
+T10,M,StdNT,1,34,6204.91,interpolated [std]
+T10,M,StdNT,1,35,6820.59,interpolated [std]
+T10,M,StdNT,1,36,7497.37,interpolated [std]
+T10,M,StdNT,1,37,8241.3,interpolated [std]
+T10,M,StdNT,1,38,9059.04,interpolated [std]
+T10,M,StdNT,1,39,9957.92,interpolated [std]
+T10,M,StdNT,1,40,10946.0,sourced
+T10,M,StdNT,1,41,12145.55,interpolated [std]
+T10,M,StdNT,1,42,13476.55,interpolated [std]
+T10,M,StdNT,1,43,14953.41,interpolated [std]
+T10,M,StdNT,1,44,16592.11,interpolated [std]
+T10,M,StdNT,1,45,18410.4,interpolated [std]
+T10,M,StdNT,1,46,20427.95,interpolated [std]
+T10,M,StdNT,1,47,22666.6,interpolated [std]
+T10,M,StdNT,1,48,25150.58,interpolated [std]
+T10,M,StdNT,1,49,27906.77,interpolated [std]
+T10,M,StdNT,1,50,30965.0,sourced
+T10,M,StdNT,1,51,33819.14,interpolated [std]
+T10,M,StdNT,1,52,36936.35,interpolated [std]
+T10,M,StdNT,1,53,40340.88,interpolated [std]
+T10,M,StdNT,1,54,44059.22,interpolated [std]
+T10,M,StdNT,1,55,48120.29,interpolated [std]
+T10,M,StdNT,1,56,52555.69,interpolated [std]
+T10,M,StdNT,1,57,57399.9,interpolated [std]
+T10,M,StdNT,1,58,62690.62,interpolated [std]
+T10,M,StdNT,1,59,68469.01,interpolated [std]
+T10,M,StdNT,1,60,74780.0,sourced

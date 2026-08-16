@@ -1,0 +1,4 @@
+contract_year,lapse_rate_base,provenance
+1,0.020,[std] reference shape; the RILA-specific tables in [REG-R64] sit behind a paid data package
+7,0.020,[std] the charge-expiry shock year; contract year 7 is the first with a zero withdrawal charge [S1][S2] and the first after a 6-year Term End Date. The shock size is the lapse_shock_mult Reference and the year is derived from surr_charge_table.csv by lapse_shock_year()
+8,0.060,[std] ultimate; the shape places the shocked year-7 rate and the ultimate at the same 6.0% level so it exhibits no post-shock reversion

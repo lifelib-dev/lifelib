@@ -1,0 +1,7 @@
+scenario_id,subaccount_id,t,gross_return_mth,provenance
+WE,1,1,0.0100000000,worked example scenario month [std]
+WE,1,2,0.0048675506,level 6% p.a. gross [std]
+WE,2,1,-0.0050000000,worked example scenario month [std]
+WE,2,2,0.0048675506,level 6% p.a. gross [std]
+LEVEL6,1,1,0.0048675506,level 6% p.a. gross [std]
+LEVEL6,2,1,0.0048675506,level 6% p.a. gross [std]

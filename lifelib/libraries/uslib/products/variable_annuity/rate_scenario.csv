@@ -1,0 +1,5 @@
+scenario_id,t,vix_sq,cmt10,provenance
+base,0,330.0,0.0400,"[std] neutral: 330/33 - 10 = 0 leaves the VIX-linked fee at its initial rate, and a 4.00% CMT10 is the observed 10-year level"
+decline,0,330.0,0.0400,[std] neutral; the decline scenario runs the [std] default fixed-rate modules
+variant,0,204.42,0.0450,quarterly average daily VIX-squared 204.42 is the disclosed worked example [S4]; CMT10 4.50% [std]
+variant,13,602.30,0.0300,"quarterly average daily VIX-squared 602.30 is the second disclosed example, unclipped 1.86% [S4]; CMT10 3.00% [std] drives the roll-up to its 4% floor"

@@ -1,0 +1,4 @@
+point_id,policy_id,age_at_entry,sex,rate_class,sum_assured,db_option,qual_test,premium_type,premium_pp_ann,load_prem_rate,av_pp_init,loan_bal_init,wd_pp,pols_if_init,duration_mth,has_surr_charge,surr_charge_id,gsp,glp,seven_pay_prem
+1,UL-000001,35,M,StdNT,100000.0,A,GPT,LEVEL,1800.0,0.06,0.0,0.0,0.0,1.0,0,True,UL9,34138.15,2825.52,6702.10
+2,UL-000002,35,M,StdNT,100000.0,B,GPT,LEVEL,1800.0,0.06,0.0,0.0,0.0,1.0,0,True,UL9,34138.15,2825.52,6702.10
+3,UL-000003,35,M,StdNT,100000.0,A,GPT,LEVEL,1800.0,0.06,15000.0,2000.0,0.0,1.0,120,True,UL9,34138.15,2825.52,6702.10

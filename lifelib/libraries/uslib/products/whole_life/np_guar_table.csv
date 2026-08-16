@@ -1,0 +1,13 @@
+premium_period,sex,issue_age,np_guar_per_1000,provenance
+TO_100,M,45,13.00,worked example [std]
+TO_100,F,45,10.26,[std] generated
+TO_100,M,65,42.68,[std] generated
+TO_100,F,65,37.12,[std] generated
+PAY_10,M,45,13.00,[std] NNLP is over 100-x not m
+PAY_10,F,45,10.26,[std] NNLP is over 100-x not m
+PAY_10,M,65,42.68,[std] NNLP is over 100-x not m
+PAY_10,F,65,37.12,[std] NNLP is over 100-x not m
+PAY_20,M,45,13.00,[std] NNLP is over 100-x not m
+PAY_20,F,45,10.26,[std] NNLP is over 100-x not m
+TO_65,M,45,13.00,[std] NNLP is over 100-x not m
+TO_65,F,45,10.26,[std] NNLP is over 100-x not m

@@ -1,0 +1,5 @@
+issue_age,sex,deferral_years,rop_factor,provenance
+60,F,20,0.157900,worked example [std] - the notes' illustrative ROP factor
+65,F,15,0.180200,worked example [std] - the notes' illustrative ROP factor
+60,M,20,0.217732,[std] mid-band approximation of equation (3)
+65,M,15,0.235574,[std] mid-band approximation of equation (3)

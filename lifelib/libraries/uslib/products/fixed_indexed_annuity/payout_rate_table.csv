@@ -1,0 +1,6 @@
+age_lo,age_hi,payout_rate_single,payout_rate_joint,provenance
+50,54,0.0370,0.0320,sourced [S3]; joint = single - 0.50% [S1][S3]
+55,59,0.0420,0.0370,sourced [S3]; joint = single - 0.50% [S1][S3]
+60,69,0.0470,0.0420,sourced [S3]; joint = single - 0.50% [S1][S3]
+70,79,0.0520,0.0470,sourced [S3]; joint = single - 0.50% [S1][S3]
+80,120,0.0570,0.0520,"[std] extension of the single 80 row of [S3], supported by the 80-100 band of [S4]"
