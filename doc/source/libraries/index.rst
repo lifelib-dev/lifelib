@@ -22,7 +22,7 @@ independent of modelx using modelx's export feature.
    :doc:`economic/index`           |modelx badge|  Basic Hull-White model
    :doc:`economic_curves/index`                    Algorithms for modeling economic scenarios
    :doc:`cluster/index`                            Notebooks for model point selection by cluster analysis
-   :doc:`uslib/index`                              U.S. life and annuity reference products and models
+   :doc:`uslib/index`              |modelx badge|  U.S. life and annuity reference products and models
    =============================== =============== ===============================================================
 
 
