@@ -115,6 +115,7 @@ Contribute your excellent work to lifelib and share it with actuaries from all a
       * :doc:`libraries/annuallife/index`
       * :doc:`libraries/basiclife/index`
       * :doc:`libraries/savings/index`
+      * :doc:`libraries/uslib/index`
       * :doc:`libraries/appliedlife/index`
       * :doc:`libraries/assets/index`
       * :doc:`libraries/ifrs17a/index`
