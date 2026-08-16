@@ -1,0 +1,18 @@
+point_id,policy_id,issue_age,sex,joint,joint_age,joint_sex,survivor_pct,reduction_trigger,market_type,income_form,db_form,certain_period,income_start_mth,frequency,timing,cola_rate,issue_year,pols_if_init,mort_basis,factor_basis,purchase_rate_dp,adjust_mth,adjust_start_mth,accel_mth,commute_mth,commute_frac,other_qlac_premium,provenance
+1,DIA-000001,60,F,False,,,1.0,either,NQ,CR,ROP,0,240,12,arrears,0.0,2026,1.0,anchor,table,6,,,,,,0.0,worked example [std] - the anchor cell
+2,DIA-000002,60,F,False,,,1.0,either,NQ,CR,ROP,0,240,12,arrears,0.0,2026,1.0,anchor,table,,,,,,,0.0,worked example [std] on a full-precision purchase rate
+3,DIA-000003,60,F,False,,,1.0,either,NQ,CR,ROP,0,240,12,arrears,0.0,2026,1.0,anchor,formula,,,,,,,0.0,[std] anchor cell on computed pricing factors
+4,DIA-000004,60,F,False,,,1.0,either,NQ,CR,NONE,0,240,12,arrears,0.0,2026,1.0,anchor,table,6,,,,,,0.0,worked example [std] - the death-benefit fork
+5,DIA-000005,60,F,False,,,1.0,either,NQ,IR,ROP,0,240,12,arrears,0.0,2026,1.0,anchor,formula,,,,,,,0.0,[std] installment refund
+6,DIA-000006,60,F,False,,,1.0,either,NQ,LO,NONE,0,240,12,arrears,0.0,2026,1.0,anchor,formula,,,,,,,0.0,[std] life only
+7,DIA-000007,60,F,False,,,1.0,either,NQ,PC,ROP,10,240,12,arrears,0.0,2026,1.0,anchor,formula,,,,,,,0.0,[std] life with 10-year period certain
+8,DIA-000008,60,F,True,63,M,0.6666666667,either,NQ,CR,ROP,0,240,12,arrears,0.0,2026,1.0,anchor,formula,,,,,,,0.0,[std] joint - reduction on either death
+9,DIA-000009,60,F,True,63,M,0.6666666667,primary,NQ,CR,ROP,0,240,12,arrears,0.0,2026,1.0,anchor,formula,,,,,,,0.0,[std] joint - reduction on the primary's death
+10,DIA-000010,60,F,False,,,1.0,either,NQ,CR,ROP,0,240,12,arrears,0.02,2026,1.0,anchor,formula,,,,,,,0.0,[std] 2% compound COLA
+11,DIA-000011,60,F,False,,,1.0,either,QLAC,CR,ROP,0,300,12,arrears,0.0,2026,1.0,anchor,formula,,,,,,,0.0,[std] QLAC at the premium limit
+12,DIA-000012,60,F,False,,,1.0,either,QLAC,CR,ROP,0,300,12,arrears,0.0,2026,1.0,anchor,formula,,,,,,,0.0,[std] QLAC breaching the premium limit
+13,DIA-000013,60,F,False,,,1.0,either,NQ,CR,ROP,0,240,12,arrears,0.0,2026,1.0,anchor,formula,,120,300,,,,0.0,[std] income start date adjustment - deferred five years
+14,DIA-000014,60,F,False,,,1.0,either,NQ,CR,ROP,0,240,12,arrears,0.0,2026,1.0,anchor,formula,,,,252,,,0.0,[std] payment acceleration
+15,DIA-000015,60,F,False,,,1.0,either,NQ,PC,ROP,10,240,12,arrears,0.0,2026,1.0,anchor,formula,,,,,252,1.0,0.0,[std] commutation of the guaranteed payments
+16,DIA-000016,60,F,False,,,1.0,either,NQ,CR,ROP,0,240,12,arrears,0.0,2026,1.0,generational,formula,,,,,,,0.0,[std] generational mortality on the illustrative scale
+17,DIA-000017,60,F,False,,,1.0,either,NQ,CR,ROP,0,240,12,advance,0.0,2026,1.0,anchor,formula,,,,,,,0.0,[std] income paid in advance

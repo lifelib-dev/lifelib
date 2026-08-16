@@ -1,0 +1,8 @@
+contract_year,surr_charge_rate,provenance
+0,0.07,sourced [S1][S2]
+1,0.07,sourced [S1][S2]
+2,0.06,sourced [S1][S2]
+3,0.05,sourced [S1][S2]
+4,0.04,sourced [S1][S2]
+5,0.03,sourced [S1][S2]
+6,0.00,sourced [S1][S2]

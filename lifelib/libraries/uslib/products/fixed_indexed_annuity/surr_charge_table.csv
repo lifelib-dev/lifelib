@@ -1,0 +1,12 @@
+contract_year,surr_charge_rate,vest_rate,provenance
+1,0.0910,0.00,sourced [S5]; both vectors are the same contract-year schedule
+2,0.0900,0.10,sourced [S5]; both vectors are the same contract-year schedule
+3,0.0800,0.20,sourced [S5]; both vectors are the same contract-year schedule
+4,0.0700,0.30,sourced [S5]; both vectors are the same contract-year schedule
+5,0.0600,0.40,sourced [S5]; both vectors are the same contract-year schedule
+6,0.0500,0.50,sourced [S5]; both vectors are the same contract-year schedule
+7,0.0400,0.60,sourced [S5]; both vectors are the same contract-year schedule
+8,0.0300,0.70,sourced [S5]; both vectors are the same contract-year schedule
+9,0.0200,0.80,sourced [S5]; both vectors are the same contract-year schedule
+10,0.0100,0.90,sourced [S5]; both vectors are the same contract-year schedule
+11,0.0000,1.00,sourced [S5]; both vectors are the same contract-year schedule

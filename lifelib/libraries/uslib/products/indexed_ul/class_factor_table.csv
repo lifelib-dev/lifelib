@@ -1,0 +1,8 @@
+rate_class,factor,provenance
+PElite,0.55,[std]
+PPlus,0.70,[std]
+Pref,0.85,[std]
+NT,1.00,[std]
+PTob,1.40,[std]
+Tob,1.75,[std]
+Juv,0.50,[std]

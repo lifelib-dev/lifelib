@@ -1,0 +1,3 @@
+fund_set,sub_id,alloc,fund_expense,label,provenance
+core_60_40,1,0.60,0.0095,equity,[std] two subaccounts is the minimum that exercises pro-rata charge allocation; 60/40 split [std]; 0.95% within the observed 0.52%-2.28% range [S2]
+core_60_40,2,0.40,0.0065,fixed income,[std] two subaccounts is the minimum that exercises pro-rata charge allocation; 60/40 split [std]; 0.65% within the observed 0.52%-2.28% range [S2]

@@ -1,0 +1,88 @@
+sex,rate_class,age_at_entry,policy_year,coi_rate_guar,provenance
+M,StdNT,35,1,0.100900,sourced
+M,StdNT,35,2,0.107167,log-linear interpolation [std]
+M,StdNT,35,3,0.113822,log-linear interpolation [std]
+M,StdNT,35,4,0.120892,log-linear interpolation [std]
+M,StdNT,35,5,0.128400,sourced
+M,StdNT,35,6,0.140216,log-linear interpolation [std]
+M,StdNT,35,7,0.153119,log-linear interpolation [std]
+M,StdNT,35,8,0.167210,log-linear interpolation [std]
+M,StdNT,35,9,0.182597,log-linear interpolation [std]
+M,StdNT,35,10,0.199400,sourced
+M,StdNT,35,11,0.216761,log-linear interpolation [std]
+M,StdNT,35,12,0.235634,log-linear interpolation [std]
+M,StdNT,35,13,0.256149,log-linear interpolation [std]
+M,StdNT,35,14,0.278451,log-linear interpolation [std]
+M,StdNT,35,15,0.302695,log-linear interpolation [std]
+M,StdNT,35,16,0.329050,log-linear interpolation [std]
+M,StdNT,35,17,0.357699,log-linear interpolation [std]
+M,StdNT,35,18,0.388842,log-linear interpolation [std]
+M,StdNT,35,19,0.422697,log-linear interpolation [std]
+M,StdNT,35,20,0.459500,sourced
+M,StdNT,35,21,0.509031,log-linear interpolation [std]
+M,StdNT,35,22,0.563901,log-linear interpolation [std]
+M,StdNT,35,23,0.624685,log-linear interpolation [std]
+M,StdNT,35,24,0.692021,log-linear interpolation [std]
+M,StdNT,35,25,0.766616,log-linear interpolation [std]
+M,StdNT,35,26,0.849252,log-linear interpolation [std]
+M,StdNT,35,27,0.940795,log-linear interpolation [std]
+M,StdNT,35,28,1.042206,log-linear interpolation [std]
+M,StdNT,35,29,1.154548,log-linear interpolation [std]
+M,StdNT,35,30,1.279000,sourced
+M,StdNT,35,31,1.403153,log-linear interpolation [std]
+M,StdNT,35,32,1.539358,log-linear interpolation [std]
+M,StdNT,35,33,1.688784,log-linear interpolation [std]
+M,StdNT,35,34,1.852715,log-linear interpolation [std]
+M,StdNT,35,35,2.032559,log-linear interpolation [std]
+M,StdNT,35,36,2.229861,log-linear interpolation [std]
+M,StdNT,35,37,2.446315,log-linear interpolation [std]
+M,StdNT,35,38,2.683780,log-linear interpolation [std]
+M,StdNT,35,39,2.944296,log-linear interpolation [std]
+M,StdNT,35,40,3.230100,sourced
+M,StdNT,35,41,3.588130,log-linear interpolation [std]
+M,StdNT,35,42,3.985844,log-linear interpolation [std]
+M,StdNT,35,43,4.427642,log-linear interpolation [std]
+M,StdNT,35,44,4.918410,log-linear interpolation [std]
+M,StdNT,35,45,5.463574,log-linear interpolation [std]
+M,StdNT,35,46,6.069166,log-linear interpolation [std]
+M,StdNT,35,47,6.741883,log-linear interpolation [std]
+M,StdNT,35,48,7.489165,log-linear interpolation [std]
+M,StdNT,35,49,8.319277,log-linear interpolation [std]
+M,StdNT,35,50,9.241400,sourced
+M,StdNT,35,51,10.158836,log-linear interpolation [std]
+M,StdNT,35,52,11.167350,log-linear interpolation [std]
+M,StdNT,35,53,12.275983,log-linear interpolation [std]
+M,StdNT,35,54,13.494676,log-linear interpolation [std]
+M,StdNT,35,55,14.834354,log-linear interpolation [std]
+M,StdNT,35,56,16.307028,log-linear interpolation [std]
+M,StdNT,35,57,17.925901,log-linear interpolation [std]
+M,StdNT,35,58,19.705487,log-linear interpolation [std]
+M,StdNT,35,59,21.661740,log-linear interpolation [std]
+M,StdNT,35,60,23.812200,sourced
+M,StdNT,35,61,25.478075,log-linear interpolation [std]
+M,StdNT,35,62,27.260492,log-linear interpolation [std]
+M,StdNT,35,63,29.167605,log-linear interpolation [std]
+M,StdNT,35,64,31.208138,log-linear interpolation [std]
+M,StdNT,35,65,33.391424,log-linear interpolation [std]
+M,StdNT,35,66,35.727451,log-linear interpolation [std]
+M,StdNT,35,67,38.226903,log-linear interpolation [std]
+M,StdNT,35,68,40.901214,log-linear interpolation [std]
+M,StdNT,35,69,43.762617,log-linear interpolation [std]
+M,StdNT,35,70,46.824200,sourced
+M,StdNT,35,71,50.330760,log-linear interpolation [std]
+M,StdNT,35,72,54.099919,log-linear interpolation [std]
+M,StdNT,35,73,58.151342,log-linear interpolation [std]
+M,StdNT,35,74,62.506167,log-linear interpolation [std]
+M,StdNT,35,75,67.187115,log-linear interpolation [std]
+M,StdNT,35,76,72.218609,log-linear interpolation [std]
+M,StdNT,35,77,77.626900,sourced
+M,StdNT,35,78,83.333300,sourced
+M,StdNT,35,79,83.333300,sourced
+M,StdNT,35,80,83.333300,sourced
+M,StdNT,35,81,83.333300,sourced
+M,StdNT,35,82,83.333300,sourced
+M,StdNT,35,83,83.333300,sourced
+M,StdNT,35,84,83.333300,sourced
+M,StdNT,35,85,83.333300,sourced
+M,StdNT,35,86,83.333300,sourced
+M,StdNT,35,87,0.000000,sourced

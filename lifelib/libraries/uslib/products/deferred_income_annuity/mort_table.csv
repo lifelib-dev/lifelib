@@ -1,0 +1,203 @@
+age,sex,mort_rate,provenance
+20,M,0.000229834512,[std] geometric continuation - NOT the 2012 IAM Basic table
+20,F,0.000178899511,[std] geometric continuation - NOT the 2012 IAM Basic table
+21,M,0.000249852639,[std] geometric continuation - NOT the 2012 IAM Basic table
+21,F,0.000194481300,[std] geometric continuation - NOT the 2012 IAM Basic table
+22,M,0.000271614304,[std] geometric continuation - NOT the 2012 IAM Basic table
+22,F,0.000211420233,[std] geometric continuation - NOT the 2012 IAM Basic table
+23,M,0.000295271366,[std] geometric continuation - NOT the 2012 IAM Basic table
+23,F,0.000229834512,[std] geometric continuation - NOT the 2012 IAM Basic table
+24,M,0.000320988912,[std] geometric continuation - NOT the 2012 IAM Basic table
+24,F,0.000249852639,[std] geometric continuation - NOT the 2012 IAM Basic table
+25,M,0.000348946404,[std] geometric continuation - NOT the 2012 IAM Basic table
+25,F,0.000271614304,[std] geometric continuation - NOT the 2012 IAM Basic table
+26,M,0.000379338938,[std] geometric continuation - NOT the 2012 IAM Basic table
+26,F,0.000295271366,[std] geometric continuation - NOT the 2012 IAM Basic table
+27,M,0.000412378601,[std] geometric continuation - NOT the 2012 IAM Basic table
+27,F,0.000320988912,[std] geometric continuation - NOT the 2012 IAM Basic table
+28,M,0.000448295952,[std] geometric continuation - NOT the 2012 IAM Basic table
+28,F,0.000348946404,[std] geometric continuation - NOT the 2012 IAM Basic table
+29,M,0.000487341633,[std] geometric continuation - NOT the 2012 IAM Basic table
+29,F,0.000379338938,[std] geometric continuation - NOT the 2012 IAM Basic table
+30,M,0.000529788114,[std] geometric continuation - NOT the 2012 IAM Basic table
+30,F,0.000412378601,[std] geometric continuation - NOT the 2012 IAM Basic table
+31,M,0.000575931600,[std] geometric continuation - NOT the 2012 IAM Basic table
+31,F,0.000448295952,[std] geometric continuation - NOT the 2012 IAM Basic table
+32,M,0.000626094090,[std] geometric continuation - NOT the 2012 IAM Basic table
+32,F,0.000487341633,[std] geometric continuation - NOT the 2012 IAM Basic table
+33,M,0.000680625633,[std] geometric continuation - NOT the 2012 IAM Basic table
+33,F,0.000529788114,[std] geometric continuation - NOT the 2012 IAM Basic table
+34,M,0.000739906764,[std] geometric continuation - NOT the 2012 IAM Basic table
+34,F,0.000575931600,[std] geometric continuation - NOT the 2012 IAM Basic table
+35,M,0.000804351164,[std] geometric continuation - NOT the 2012 IAM Basic table
+35,F,0.000626094090,[std] geometric continuation - NOT the 2012 IAM Basic table
+36,M,0.000874408542,[std] geometric continuation - NOT the 2012 IAM Basic table
+36,F,0.000680625633,[std] geometric continuation - NOT the 2012 IAM Basic table
+37,M,0.000950567777,[std] geometric continuation - NOT the 2012 IAM Basic table
+37,F,0.000739906764,[std] geometric continuation - NOT the 2012 IAM Basic table
+38,M,0.001033360329,[std] geometric continuation - NOT the 2012 IAM Basic table
+38,F,0.000804351164,[std] geometric continuation - NOT the 2012 IAM Basic table
+39,M,0.001123363947,[std] geometric continuation - NOT the 2012 IAM Basic table
+39,F,0.000874408542,[std] geometric continuation - NOT the 2012 IAM Basic table
+40,M,0.001221206700,[std] geometric continuation - NOT the 2012 IAM Basic table
+40,F,0.000950567777,[std] geometric continuation - NOT the 2012 IAM Basic table
+41,M,0.001327571361,[std] geometric continuation - NOT the 2012 IAM Basic table
+41,F,0.001033360329,[std] geometric continuation - NOT the 2012 IAM Basic table
+42,M,0.001443200171,[std] geometric continuation - NOT the 2012 IAM Basic table
+42,F,0.001123363947,[std] geometric continuation - NOT the 2012 IAM Basic table
+43,M,0.001568900020,[std] geometric continuation - NOT the 2012 IAM Basic table
+43,F,0.001221206700,[std] geometric continuation - NOT the 2012 IAM Basic table
+44,M,0.001705548074,[std] geometric continuation - NOT the 2012 IAM Basic table
+44,F,0.001327571361,[std] geometric continuation - NOT the 2012 IAM Basic table
+45,M,0.001854097900,[std] geometric continuation - NOT the 2012 IAM Basic table
+45,F,0.001443200171,[std] geometric continuation - NOT the 2012 IAM Basic table
+46,M,0.002015586119,[std] geometric continuation - NOT the 2012 IAM Basic table
+46,F,0.001568900020,[std] geometric continuation - NOT the 2012 IAM Basic table
+47,M,0.002191139639,[std] geometric continuation - NOT the 2012 IAM Basic table
+47,F,0.001705548074,[std] geometric continuation - NOT the 2012 IAM Basic table
+48,M,0.002381983519,[std] geometric continuation - NOT the 2012 IAM Basic table
+48,F,0.001854097900,[std] geometric continuation - NOT the 2012 IAM Basic table
+49,M,0.002589449519,[std] geometric continuation - NOT the 2012 IAM Basic table
+49,F,0.002015586119,[std] geometric continuation - NOT the 2012 IAM Basic table
+50,M,0.002814985394,[std] geometric continuation - NOT the 2012 IAM Basic table
+50,F,0.002191139639,[std] geometric continuation - NOT the 2012 IAM Basic table
+51,M,0.003060164991,[std] geometric continuation - NOT the 2012 IAM Basic table
+51,F,0.002381983519,[std] geometric continuation - NOT the 2012 IAM Basic table
+52,M,0.003326699242,[std] geometric continuation - NOT the 2012 IAM Basic table
+52,F,0.002589449519,[std] geometric continuation - NOT the 2012 IAM Basic table
+53,M,0.003616448092,[std] geometric continuation - NOT the 2012 IAM Basic table
+53,F,0.002814985394,[std] geometric continuation - NOT the 2012 IAM Basic table
+54,M,0.003931433488,[std] geometric continuation - NOT the 2012 IAM Basic table
+54,F,0.003060164991,[std] geometric continuation - NOT the 2012 IAM Basic table
+55,M,0.004273853482,[std] geometric continuation - NOT the 2012 IAM Basic table
+55,F,0.003326699242,[std] geometric continuation - NOT the 2012 IAM Basic table
+56,M,0.004646097573,[std] geometric continuation - NOT the 2012 IAM Basic table
+56,F,0.003616448092,[std] geometric continuation - NOT the 2012 IAM Basic table
+57,M,0.005050763379,[std] geometric continuation - NOT the 2012 IAM Basic table
+57,F,0.003931433488,[std] geometric continuation - NOT the 2012 IAM Basic table
+58,M,0.005050763379,[std] geometric continuation - NOT the 2012 IAM Basic table
+58,F,0.004273853482,[std] geometric continuation - NOT the 2012 IAM Basic table
+59,M,0.005050763379,[std] geometric continuation - NOT the 2012 IAM Basic table
+59,F,0.004646097573,[std] geometric continuation - NOT the 2012 IAM Basic table
+60,M,0.005050763379,[std] geometric continuation - NOT the 2012 IAM Basic table
+60,F,0.005050763379,worked example [std] - band-constant rate reproducing the notes' 5-year survival anchors
+61,M,0.005050763379,[std] geometric continuation - NOT the 2012 IAM Basic table
+61,F,0.005050763379,worked example [std] - band-constant rate reproducing the notes' 5-year survival anchors
+62,M,0.011545592344,[std] geometric continuation - NOT the 2012 IAM Basic table
+62,F,0.005050763379,worked example [std] - band-constant rate reproducing the notes' 5-year survival anchors
+63,M,0.011545592344,[std] geometric continuation - NOT the 2012 IAM Basic table
+63,F,0.005050763379,worked example [std] - band-constant rate reproducing the notes' 5-year survival anchors
+64,M,0.011545592344,[std] geometric continuation - NOT the 2012 IAM Basic table
+64,F,0.005050763379,worked example [std] - band-constant rate reproducing the notes' 5-year survival anchors
+65,M,0.011545592344,[std] geometric continuation - NOT the 2012 IAM Basic table
+65,F,0.011545592344,worked example [std] - band-constant rate reproducing the notes' 5-year survival anchors
+66,M,0.011545592344,[std] geometric continuation - NOT the 2012 IAM Basic table
+66,F,0.011545592344,worked example [std] - band-constant rate reproducing the notes' 5-year survival anchors
+67,M,0.018497888444,[std] geometric continuation - NOT the 2012 IAM Basic table
+67,F,0.011545592344,worked example [std] - band-constant rate reproducing the notes' 5-year survival anchors
+68,M,0.018497888444,[std] geometric continuation - NOT the 2012 IAM Basic table
+68,F,0.011545592344,worked example [std] - band-constant rate reproducing the notes' 5-year survival anchors
+69,M,0.018497888444,[std] geometric continuation - NOT the 2012 IAM Basic table
+69,F,0.011545592344,worked example [std] - band-constant rate reproducing the notes' 5-year survival anchors
+70,M,0.018497888444,[std] geometric continuation - NOT the 2012 IAM Basic table
+70,F,0.018497888444,worked example [std] - band-constant rate reproducing the notes' 5-year survival anchors
+71,M,0.018497888444,[std] geometric continuation - NOT the 2012 IAM Basic table
+71,F,0.018497888444,worked example [std] - band-constant rate reproducing the notes' 5-year survival anchors
+72,M,0.031248462828,[std] geometric continuation - NOT the 2012 IAM Basic table
+72,F,0.018497888444,worked example [std] - band-constant rate reproducing the notes' 5-year survival anchors
+73,M,0.031248462828,[std] geometric continuation - NOT the 2012 IAM Basic table
+73,F,0.018497888444,worked example [std] - band-constant rate reproducing the notes' 5-year survival anchors
+74,M,0.031248462828,[std] geometric continuation - NOT the 2012 IAM Basic table
+74,F,0.018497888444,worked example [std] - band-constant rate reproducing the notes' 5-year survival anchors
+75,M,0.031248462828,[std] geometric continuation - NOT the 2012 IAM Basic table
+75,F,0.031248462828,worked example [std] - band-constant rate reproducing the notes' 5-year survival anchors
+76,M,0.031248462828,[std] geometric continuation - NOT the 2012 IAM Basic table
+76,F,0.031248462828,worked example [std] - band-constant rate reproducing the notes' 5-year survival anchors
+77,M,0.048477810394,[std] geometric continuation - NOT the 2012 IAM Basic table
+77,F,0.031248462828,worked example [std] - band-constant rate reproducing the notes' 5-year survival anchors
+78,M,0.048477810394,[std] geometric continuation - NOT the 2012 IAM Basic table
+78,F,0.031248462828,worked example [std] - band-constant rate reproducing the notes' 5-year survival anchors
+79,M,0.048477810394,[std] geometric continuation - NOT the 2012 IAM Basic table
+79,F,0.031248462828,worked example [std] - band-constant rate reproducing the notes' 5-year survival anchors
+80,M,0.048477810394,[std] geometric continuation - NOT the 2012 IAM Basic table
+80,F,0.048477810394,worked example [std] - band-constant rate reproducing the notes' 5-year survival anchors
+81,M,0.048477810394,[std] geometric continuation - NOT the 2012 IAM Basic table
+81,F,0.048477810394,worked example [std] - band-constant rate reproducing the notes' 5-year survival anchors
+82,M,0.052700130723,[std] geometric continuation - NOT the 2012 IAM Basic table
+82,F,0.048477810394,worked example [std] - band-constant rate reproducing the notes' 5-year survival anchors
+83,M,0.057290206709,[std] geometric continuation - NOT the 2012 IAM Basic table
+83,F,0.048477810394,worked example [std] - band-constant rate reproducing the notes' 5-year survival anchors
+84,M,0.062280069133,[std] geometric continuation - NOT the 2012 IAM Basic table
+84,F,0.048477810394,worked example [std] - band-constant rate reproducing the notes' 5-year survival anchors
+85,M,0.067704538595,[std] geometric continuation - NOT the 2012 IAM Basic table
+85,F,0.052700130723,[std] geometric continuation - NOT the 2012 IAM Basic table
+86,M,0.073601468497,[std] geometric continuation - NOT the 2012 IAM Basic table
+86,F,0.057290206709,[std] geometric continuation - NOT the 2012 IAM Basic table
+87,M,0.080012009200,[std] geometric continuation - NOT the 2012 IAM Basic table
+87,F,0.062280069133,[std] geometric continuation - NOT the 2012 IAM Basic table
+88,M,0.086980895177,[std] geometric continuation - NOT the 2012 IAM Basic table
+88,F,0.067704538595,[std] geometric continuation - NOT the 2012 IAM Basic table
+89,M,0.094556757186,[std] geometric continuation - NOT the 2012 IAM Basic table
+89,F,0.073601468497,[std] geometric continuation - NOT the 2012 IAM Basic table
+90,M,0.102792461623,[std] geometric continuation - NOT the 2012 IAM Basic table
+90,F,0.080012009200,[std] geometric continuation - NOT the 2012 IAM Basic table
+91,M,0.111745479445,[std] geometric continuation - NOT the 2012 IAM Basic table
+91,F,0.086980895177,[std] geometric continuation - NOT the 2012 IAM Basic table
+92,M,0.121478287214,[std] geometric continuation - NOT the 2012 IAM Basic table
+92,F,0.094556757186,[std] geometric continuation - NOT the 2012 IAM Basic table
+93,M,0.132058803074,[std] geometric continuation - NOT the 2012 IAM Basic table
+93,F,0.102792461623,[std] geometric continuation - NOT the 2012 IAM Basic table
+94,M,0.143560860704,[std] geometric continuation - NOT the 2012 IAM Basic table
+94,F,0.111745479445,[std] geometric continuation - NOT the 2012 IAM Basic table
+95,M,0.156064724550,[std] geometric continuation - NOT the 2012 IAM Basic table
+95,F,0.121478287214,[std] geometric continuation - NOT the 2012 IAM Basic table
+96,M,0.169657649929,[std] geometric continuation - NOT the 2012 IAM Basic table
+96,F,0.132058803074,[std] geometric continuation - NOT the 2012 IAM Basic table
+97,M,0.184434491922,[std] geometric continuation - NOT the 2012 IAM Basic table
+97,F,0.143560860704,[std] geometric continuation - NOT the 2012 IAM Basic table
+98,M,0.200498367299,[std] geometric continuation - NOT the 2012 IAM Basic table
+98,F,0.156064724550,[std] geometric continuation - NOT the 2012 IAM Basic table
+99,M,0.217961374094,[std] geometric continuation - NOT the 2012 IAM Basic table
+99,F,0.169657649929,[std] geometric continuation - NOT the 2012 IAM Basic table
+100,M,0.236945373855,[std] geometric continuation - NOT the 2012 IAM Basic table
+100,F,0.184434491922,[std] geometric continuation - NOT the 2012 IAM Basic table
+101,M,0.257582842027,[std] geometric continuation - NOT the 2012 IAM Basic table
+101,F,0.200498367299,[std] geometric continuation - NOT the 2012 IAM Basic table
+102,M,0.280017792402,[std] geometric continuation - NOT the 2012 IAM Basic table
+102,F,0.217961374094,[std] geometric continuation - NOT the 2012 IAM Basic table
+103,M,0.304406782085,[std] geometric continuation - NOT the 2012 IAM Basic table
+103,F,0.236945373855,[std] geometric continuation - NOT the 2012 IAM Basic table
+104,M,0.330920003991,[std] geometric continuation - NOT the 2012 IAM Basic table
+104,F,0.257582842027,[std] geometric continuation - NOT the 2012 IAM Basic table
+105,M,0.359742474499,[std] geometric continuation - NOT the 2012 IAM Basic table
+105,F,0.280017792402,[std] geometric continuation - NOT the 2012 IAM Basic table
+106,M,0.391075324543,[std] geometric continuation - NOT the 2012 IAM Basic table
+106,F,0.304406782085,[std] geometric continuation - NOT the 2012 IAM Basic table
+107,M,0.425137203160,[std] geometric continuation - NOT the 2012 IAM Basic table
+107,F,0.330920003991,[std] geometric continuation - NOT the 2012 IAM Basic table
+108,M,0.462165803280,[std] geometric continuation - NOT the 2012 IAM Basic table
+108,F,0.359742474499,[std] geometric continuation - NOT the 2012 IAM Basic table
+109,M,0.502419520414,[std] geometric continuation - NOT the 2012 IAM Basic table
+109,F,0.391075324543,[std] geometric continuation - NOT the 2012 IAM Basic table
+110,M,0.546179255803,[std] geometric continuation - NOT the 2012 IAM Basic table
+110,F,0.425137203160,[std] geometric continuation - NOT the 2012 IAM Basic table
+111,M,0.593750376625,[std] geometric continuation - NOT the 2012 IAM Basic table
+111,F,0.462165803280,[std] geometric continuation - NOT the 2012 IAM Basic table
+112,M,0.645464846929,[std] geometric continuation - NOT the 2012 IAM Basic table
+112,F,0.502419520414,[std] geometric continuation - NOT the 2012 IAM Basic table
+113,M,0.701683544167,[std] geometric continuation - NOT the 2012 IAM Basic table
+113,F,0.546179255803,[std] geometric continuation - NOT the 2012 IAM Basic table
+114,M,0.762798777496,[std] geometric continuation - NOT the 2012 IAM Basic table
+114,F,0.593750376625,[std] geometric continuation - NOT the 2012 IAM Basic table
+115,M,0.829237025419,[std] geometric continuation - NOT the 2012 IAM Basic table
+115,F,0.645464846929,[std] geometric continuation - NOT the 2012 IAM Basic table
+116,M,0.901461911859,[std] geometric continuation - NOT the 2012 IAM Basic table
+116,F,0.701683544167,[std] geometric continuation - NOT the 2012 IAM Basic table
+117,M,0.979977441458,[std] geometric continuation - NOT the 2012 IAM Basic table
+117,F,0.762798777496,[std] geometric continuation - NOT the 2012 IAM Basic table
+118,M,1.000000000000,[std] geometric continuation - NOT the 2012 IAM Basic table
+118,F,0.829237025419,[std] geometric continuation - NOT the 2012 IAM Basic table
+119,M,1.000000000000,[std] geometric continuation - NOT the 2012 IAM Basic table
+119,F,0.901461911859,[std] geometric continuation - NOT the 2012 IAM Basic table
+120,M,1.000000000000,[std] limiting age omega = 120 with q = 1
+120,F,1.000000000000,[std] limiting age omega = 120 with q = 1

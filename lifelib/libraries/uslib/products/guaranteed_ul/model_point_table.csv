@@ -1,0 +1,5 @@
+point_id,policy_id,age_at_entry,sex,rate_class,sum_assured,guarantee_age,premium_type,premium_pp_ann,premium_mode,load_prem_rate,prem_persistency_override,coi_rate_dp,duration_mth,av_pp_init,sg_pp_init,loan_bal_init,cum_prem_init,wd_pp,pols_if_init,has_surr_charge,surr_charge_id,rop_elected
+1,GUL-000001,60,M,StdNT,500000.0,121,LEVEL,10800.0,A,0.25,1.00,2,300,2400.0,118000.0,0.0,270000.0,0.0,1.0,True,GUL15,True
+2,GUL-000002,60,M,StdNT,500000.0,121,LEVEL,10800.0,A,0.25,,,0,0.0,0.0,0.0,0.0,0.0,1.0,True,GUL15,True
+3,GUL-000003,60,M,StdNT,500000.0,121,SINGLE,152300.0,A,0.25,,,0,0.0,0.0,0.0,0.0,0.0,1.0,True,GUL15,True
+4,GUL-000004,60,M,StdNT,500000.0,90,LEVEL,6000.0,A,0.25,,,0,0.0,0.0,0.0,0.0,0.0,1.0,True,GUL15,False

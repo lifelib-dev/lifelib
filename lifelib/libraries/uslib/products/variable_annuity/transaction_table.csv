@@ -1,0 +1,4 @@
+txn_id,t,prem_amount,wd_amount,provenance
+none,0,0.00,0.00,base run [std]; the single premium is the model point's own premium column and no elective transaction is scheduled
+excess,61,0.00,20000.00,[std] variant exercising the excess-withdrawal algebra and the CDSC in contract year 6
+excess,73,25000.00,0.00,[std] variant exercising a subsequent premium after the first withdrawal: GWB/BB/NP/RB/RP all increase and GAWA takes g x net premium

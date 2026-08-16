@@ -1,0 +1,7 @@
+product,sex,risk_class,issue_age,rate_per_1000,provenance
+WL_FE_LEVEL,M,STD_NT,45,24.99,sourced [S7]
+WL_FE_LEVEL,M,STD_NT,65,59.05,sourced [S7]
+WL_FE_LEVEL,M,STD_NT,85,202.19,sourced [S7]
+WL_FE_LEVEL,F,STD_NT,65,42.48,sourced [S7]
+WL_FE_GRADED,M,STD_NT,65,103.00,sourced [S7]
+WL_FE_GRADED,F,STD_NT,65,69.50,sourced [S7]

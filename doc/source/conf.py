@@ -286,5 +286,35 @@ mermaid_version = "11.4.1"
 # rectangles.
 mermaid_height = "auto"
 
+def _scope_nbsphinx_link_rewriting_to_notebooks():
+    """Keep nbsphinx's local-link rewriting off the MyST pages.
+
+    nbsphinx registers ``RewriteLocalLinks`` with ``app.add_transform``, so it runs
+    over every document rather than only over notebooks. Given a Markdown link that
+    is a bare fragment -- ``[S1]: #uslib-term_life-s1``, the form the uslib citation
+    blocks use -- it substitutes the current document's own filename (a workaround
+    for sphinx-doc issues #11335 and #11336), lowercases the result and emits a
+    ``std:ref`` to ``/<docname>.md#fragment``. No explicit MyST target matches that,
+    so every such citation warns and renders as plain text. Because the node is
+    replaced during the read phase, myst-parser's own resolver never sees it.
+
+    Notebooks are what the transform is for, and it is left alone for them. Nothing
+    else in this documentation needs it: MyST resolves its own ``file.md#fragment``
+    links, and the one page that links to a notebook does so through ``:doc:``,
+    which the std domain handles directly.
+    """
+    import nbsphinx
+
+    original = nbsphinx.RewriteLocalLinks.apply
+
+    def apply(self, *args, **kwargs):
+        source = str(self.document.get("source") or "")
+        if source.endswith((".ipynb", ".nblink")):
+            return original(self, *args, **kwargs)
+
+    nbsphinx.RewriteLocalLinks.apply = apply
+
+
 def setup(app):
     app.add_css_file("custom-style.css")
+    _scope_nbsphinx_link_rewriting_to_notebooks()

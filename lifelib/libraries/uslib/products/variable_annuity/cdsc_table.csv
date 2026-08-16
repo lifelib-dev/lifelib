@@ -1,0 +1,10 @@
+cdsc_schedule,completed_years,surr_charge_rate,provenance
+commission_7yr,0,0.085,sourced [S2]; percentage of Remaining Premium withdrawn by completed years since receipt
+commission_7yr,1,0.075,sourced [S2]
+commission_7yr,2,0.065,sourced [S2]
+commission_7yr,3,0.055,sourced [S2]
+commission_7yr,4,0.050,sourced [S2]
+commission_7yr,5,0.040,sourced [S2]
+commission_7yr,6,0.020,sourced [S2]
+commission_7yr,7,0.000,sourced [S2]
+none,0,0.000,[std] advisory share class with no withdrawal charge; observed at [S4] 0.40% asset charge and [S7] Series ADV
