@@ -32,10 +32,10 @@ structure (Key Information, standardized fee tables, Standard Death Benefits, Lo
 Lapse) [R1] [S1] [S2] [S3] [S4], with summary-prospectus delivery permitted under rule
 498A since July 1, 2020 [R2].
 
-The representative design below is the mainstream retail archetype (Prudential VUL
-Protector [S1] / Equitable VUL Optimizer [S2] pattern): front premium load plus
-multi-year per-$1,000 surrender charge, monthly deductions (COI on net amount at
-risk, per-policy fee, per-$1,000 face charge), an asset-based M&E risk charge on
+The representative design below is the mainstream retail archetype (the pattern of
+two of the four filings surveyed [S1] [S2]): front premium load plus multi-year
+per-$1,000 surrender charge, monthly deductions (COI on net amount at risk,
+per-policy fee, per-$1,000 face charge), an asset-based M&E risk charge on
 separate-account assets, death benefit options A/B with the §7702 corridor, a
 general-account fixed option with an interest floor, spread loans, and monthly
 deductions ceasing at age 121 [S1] [S2] [S4]; low-load designs exist as a variation
@@ -73,13 +73,13 @@ Footnotes:
 | Premium load — current | 4.0% of each premium, all years | **[std]** (3) |
 
 Footnotes:
-3. **[std]** Current load level/shape. Observed: Equitable 6% until two sales-load
-   target premiums paid, then 4% [S2]; Prudential sales charge max 6% (current 3%
-   years 1–5, 2.25% years 6–10, 0 after) plus premium-based admin charge max 7.5%
-   (current 3.75%) [S1]; Pacific Life max 6.50% [S4]; Lincoln LifeGoals no premium
-   load [S3]. The composite collapses these to a single flat current 4% load under a
-   6% guaranteed ceiling — Equitable's long-run current rate — to avoid modeling
-   duration-graded and two-part load schedules.
+3. **[std]** Current load level/shape. Observed: 6% until two sales-load target
+   premiums paid, then 4% [S2]; sales charge max 6% (current 3% years 1–5, 2.25%
+   years 6–10, 0 after) plus premium-based admin charge max 7.5% (current 3.75%)
+   [S1]; max 6.50% [S4]; no premium load at all [S3]. The composite collapses these
+   to a single flat current 4% load under a 6% guaranteed ceiling — one filing's
+   long-run current rate [S2] — to avoid modeling duration-graded and two-part load
+   schedules.
 
 ### Monthly deductions (taken at each monthiversary from account value)
 
@@ -106,7 +106,7 @@ Footnotes:
    gtd $0.22, curr $0.04) [S4]. 50%-of-CSO is a placeholder for the current scale, to
    be replaced per model point; disclosed year-1 current/guaranteed ratios are much
    lower (select effect).
-6. **[std]** Per-$1,000 charge shape. Level $0.20 is Equitable's representative
+6. **[std]** Per-$1,000 charge shape. Level $0.20 is one filing's representative
    charge on initial base face, payable all years [S2]. Observed range: $0.07–$8.21
    per $1,000 (rep $0.21; current first 7 years only) [S1]; $0.15–$0.47 (rep $0.20)
    [S2]; up to $0.31263 (rep $0.1262) [S3]; guaranteed $0.09–$11.39, current
@@ -127,9 +127,9 @@ Footnotes:
    unit-value factor (see technical notes) — a monthly approximation of daily accrual.
 8. **[std]** Guaranteed M&E ceiling. Observed: 0.45% (S1, level not split
    current/guaranteed in the fee-table extract) [S1]; 1.00% years 1–10 / 0.50%
-   after (Equitable) [S2]; 0.6% maximum, guaranteed for policy years 1–20 (Lincoln)
-   [S3]; 0.36% max / 0.20% current (Pacific Life) [S4]. 0.60% adopts the Lincoln
-   ceiling as a mid-range guaranteed maximum over the S1-based 0.45% current rate.
+   after [S2]; 0.6% maximum, guaranteed for policy years 1–20 [S3]; 0.36% max /
+   0.20% current [S4]. 0.60% adopts the S3 ceiling as a mid-range guaranteed
+   maximum over the S1-based 0.45% current rate.
 9. Cross-insurer fund-expense ranges: 0.55%–2.88% gross / 0.54%–2.57% net [S2];
    0.46%–2.54% [S3]; 0.08%–1.93% [S4]. The reference model collapses the lineup to
    two representative subaccounts (equity 0.75%, bond 0.55% expense ratios) —
@@ -194,8 +194,8 @@ Footnotes:
 Footnotes:
 13. **[std]** Declared rate. Current declared fixed-account crediting rates are
     nonguaranteed and not stated numerically in the filings beyond floors (research
-    gap). Baseline sets declared = floor; observed floors: 1.0% [S1], 1.5% (GIO)
-    [S2], 2.0% [S4], loan account ≥0.25% [S3].
+    gap). Baseline sets declared = floor; observed floors: 1.0% [S1], 1.5% [S2],
+    2.0% [S4], loan account ≥0.25% [S3].
 
 ### Grace, lapse, reinstatement
 
@@ -245,8 +245,8 @@ amounts required during grace [S1] [S3].
 **Charges and credits.** The asset-based M&E charge (current 0.45% p.a. [S1],
 guaranteed max 0.60% **[std]**) and fund expense ratios reduce unit values; all other
 charges are explicit deductions. The baseline excludes insurer-specific credits —
-Prudential's persistency credit (0.40% p.a. of unloaned fund from the 9th
-anniversary) [S1] and Equitable's Investment Expense Reduction (≥0.15% daily
+one filing's persistency credit (0.40% p.a. of unloaned fund from the 9th
+anniversary) [S1] and another's investment-expense reduction (≥0.15% daily
 unit-value credit) [S2] are documented as variations **[std]**.
 
 **Loans.** A loan up to the loan value (99% of variable cash value + 100% of the
@@ -292,17 +292,16 @@ In scope (specified; excluded from the baseline projection **[std]**):
   VM-20 [R7].
 - **Overloan protection rider** — prevents lapse from excess debt; one-time exercise
   charge 3.5% of the fund [S1] or 1.12%–4.52% of accumulated value (rep male 85:
-  2.97%) [S4]; Equitable instead offers a Loan Extension Endorsement forcing DB
+  2.97%) [S4]; one filing instead offers a loan extension endorsement forcing DB
   option A [S2]. Interacts with loan mechanics; excluded from baseline.
 
 Out of scope (listed only; observed charges recorded in the research notes):
-accelerated death benefit / chronic & terminal illness riders (BenefitAccess, Living
-Needs [S1]; Living Benefits, LTC Services [S2]; Premier LTC, Terminal Illness [S4]);
-layered term riders (ART/Scheduled ART/SVER [S4]); disability waiver riders
-[S1] [S2]; children's term [S1] [S2]; accidental death [S1]; guaranteed insurability
-[S2]; enhanced early cash value riders [S1] [S2]; charitable legacy [S2]; index-linked
-account options on the VUL chassis (Equitable MSO II [S2]; Pacific Life Indexed Fixed
-Options [S4]).
+accelerated death benefit / chronic & terminal illness riders (two forms each in
+[S1] [S2] [S4]); layered term riders (annual renewable, scheduled and corporate-term
+forms [S4]); disability waiver riders [S1] [S2]; children's term [S1] [S2];
+accidental death [S1]; guaranteed insurability [S2]; enhanced early cash value
+riders [S1] [S2]; charitable legacy [S2]; index-linked account options on the VUL
+chassis [S2] [S4].
 
 ## Variations across insurers
 
@@ -320,8 +319,8 @@ Options [S4]).
    gender-neutral policies use an 80% male/20% female blended 2017 CSO table [S2].
    Baseline: 2017 CSO sex-distinct, no banding — the current-generation norm.
 4. **Death benefit options.** A and B universal [S1] [S2] [S3] [S4]; return-of-premium
-   Option C (DB = face + premiums − withdrawals, subject to a limit) only at Pacific
-   Life among the four [S4]; Lincoln pivots on a Target Age with an expected
+   Option C (DB = face + premiums − withdrawals, subject to a limit) in only one of
+   the four filings [S4]; another pivots on a Target Age with an expected
    Option 2 → Option 1 switch [S3]. Baseline: A and B only.
 5. **Secondary guarantees.** From short built-in guarantees [S1] [S3], age-graded
    15→5-year riders [S2], to priced flexible-duration shadow-fund riders [S4].
@@ -424,10 +423,6 @@ experience, not recouping past losses or distributing past gains [R11].
 [REG-R3]: #uslib-reg-r3
 [REG-R4]: #uslib-reg-r4
 [REG-R5]: #uslib-reg-r5
-[S1]: #uslib-variable_ul-s1
-[S2]: #uslib-variable_ul-s2
-[S3]: #uslib-variable_ul-s3
-[S4]: #uslib-variable_ul-s4
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

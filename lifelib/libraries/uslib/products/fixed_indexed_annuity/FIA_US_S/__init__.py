@@ -56,9 +56,9 @@ year [S9], the annual benefit base update [S9] and the annual lifetime withdrawa
 the contrast with :mod:`.MYGA_US_S`, whose ``t`` counts **months**: that
 chassis credits daily and needs a grid fine enough to resolve a 30-day window, whereas
 here a monthly grid would buy nothing but the excluded variants (monthly-sum crediting,
-Athene's monthly charge deduction, daily interim values, mid-year withdrawal crediting).
-**The product assignment table records this product as monthly; its own technical notes
-state annual, and the notes govern.**
+one carrier's monthly charge deduction, daily interim values, mid-year withdrawal
+crediting). **The product assignment table records this product as monthly; its own
+technical notes state annual, and the notes govern.**
 
 ``age(t)`` is the attained age **at anniversary** ``t``, ``age_at_entry() + t``, exactly
 as the notes define it — the age that reads the lifetime-withdrawal percentage table.
@@ -149,13 +149,13 @@ pins the gap open rather than closing it in either direction.
 
 **Not implemented.** Named here so the gaps cannot be mistaken for oversights. The
 monthly-sum crediting method ``max(f, sum_k min(R_k, c_m))``, which needs a monthly grid
-the notes deliberately exclude [S4][R1]; interim values, whether Nassau's Daily/Protected
-Account Value or Nationwide's Balanced Allocation Value, both daily marks of the embedded
-option rather than interpolations [S10][S11]; the cap re-declaration rule, because the
-notes state the *target* (set the cap so the one-year call-spread cost equals the option
-budget) but give no option-pricing function, so the base projection holds the snapshot
-scale level [R1][R6]; stochastic GLWB activation on the ``h(a)`` incidence table, which
-cannot be applied to a single deterministic cell — :func:`~.FIA_US_S.Projection.activation_rate` reports the
+the notes deliberately exclude [S4][R1]; interim values in either documented form, both
+daily marks of the embedded option rather than interpolations [S10][S11]; the cap
+re-declaration rule, because the notes state the *target* (set the cap so the one-year
+call-spread cost equals the option budget) but give no option-pricing function, so the
+base projection holds the snapshot scale level [R1][R6]; stochastic GLWB activation on the
+``h(a)`` incidence table, which cannot be applied to a single deterministic cell —
+:func:`~.FIA_US_S.Projection.activation_rate` reports the
 table and the base run activates at the model point's ``income_start_age`` instead;
 generational mortality projection with Scale G2, because the 2012 IAM/IAR family and the
 G2 scale may not be redistributed here [REG-R59][REG-R60]; joint-life survivorship, the

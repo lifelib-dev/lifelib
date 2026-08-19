@@ -26,7 +26,7 @@ driven, and the lapse architecture below is **not** that file's renewal/shock-la
 (see "Policyholder behavior modeling": an in-force GLWB suppresses the shock lapse). `MGV` below
 is the same Model #805 floor that file calls `MGSV` — one quantity, two source labels. Two
 base-contract items are **restated rather than inherited**, because the FIA composite chooses
-differently from the fixed-deferred composite: the **MVA** (ratio form `[(1+i₀)/(1+iₜ)]^(n/12) − 1` with the Nassau
+differently from the fixed-deferred composite: the **MVA** (ratio form `[(1+i₀)/(1+iₜ)]^(n/12) − 1` with the specimen
 limit [S10], against that file's linear `(i₀ − iₜ) × T` with a symmetric surrender-charge cap) and
 the **death benefit** (`max(AV, MGV)` [S1] [S2] [S5] [S10], against that file's full account value
 floored at the cash surrender benefit). New here: the index crediting engine, the premium bonus
@@ -52,13 +52,13 @@ survives account-value exhaustion and pays for life, not a no-lapse guarantee on
   date. Every mechanic in the composite is annual — annual point-to-point crediting [S2] [S4] [S10],
   the rider charge at the end of each contract year [S9], the annual benefit base update [S9], and
   the annual lifetime withdrawal. A monthly grid is needed only for excluded variants: monthly-sum
-  crediting [S4] [R1], Athene's monthly charge deduction [S1] [S2], daily interim values [S10] [S11],
-  mid-year withdrawal crediting [S3] [S10] [S11].
+  crediting [S4] [R1], one carrier's monthly charge deduction [S1] [S2], daily interim values
+  [S10] [S11], mid-year withdrawal crediting [S3] [S10] [S11].
 - **Timing.** All transactions occur **at** the anniversary and are processed as the last events
   of the contract year ending there **[std]**. The contract-year surrender charge percentage,
   vesting percentage and free withdrawal amount therefore all apply to a withdrawal at anniversary
   `t`, and the index credit for year `t` is computed on the balance carried from anniversary `t−1`
-  — reproducing Athene's rule that "withdrawals are not credited with index interest in the year
+  — reproducing the rule that "withdrawals are not credited with index interest in the year
   they are taken" [S1].
 - **Age basis: age nearest birthday (ANB)** **[std]** — the statutory annuity tables are published
   on that basis (VM-M / Model #821 print the 2012 IAM Period Table for female and male, age
@@ -155,7 +155,7 @@ view of experience. They must not be mixed in the code.
 | MVA reference index level `iₜ` | scenario input | generic **[std]**; Barclay's US Credit Index in the linear-form products [S6] [S7] |
 
 **Caveat.** Every value here is a non-guaranteed element captured only as of the date on its
-source document, and Athene's current rate sheets could not be fetched [S-f1]. Insurers review
+source document, and one carrier's current rate sheets could not be fetched [S-f1]. Insurers review
 caps, participation rates, spreads and triggers frequently (e.g. monthly), targeting the priced
 product **option budget** and considering investment yields, option costs, volatility, premium
 volumes, competition and profit objectives [R1]. Reference re-declaration rule **[std]**: set
@@ -228,9 +228,9 @@ dimensionless. All account-value terms are currency.
 
 ### Processing order at anniversary `t` **[std]**
 
-Fixed for the reference model, following Nassau's stated sequence — the rider charge is deducted
-**after** index credits are added [S9] — with the benefit-base update after the charge, so the
-charge is always assessed on the *opening* base as `Φ(t) = φ × BB(t−1)`.
+Fixed for the reference model, following one specimen's stated sequence — the rider charge is
+deducted **after** index credits are added [S9] — with the benefit-base update after the charge,
+so the charge is always assessed on the *opening* base as `Φ(t) = φ × BB(t−1)`.
 
 1. Index credit and fixed interest. 2. Rider charge. 3. Benefit base: rollup, stack, step-up.
 4. Lifetime / excess withdrawal. 5. Charges on the excess and proportional reduction of the
@@ -250,13 +250,13 @@ Variants, all floored at `f`: `max(f, p × R)` [S4] [S10] [R1]; `max(f, min(c, p
 *Segment bookkeeping.* One annual segment per indexed account, created at anniversary `t−1` with
 balance `A(t−1)`, maturing at `t`; the credit locks at maturity and cannot be lost to later
 declines [S1]. The credit base is the segment's opening balance less withdrawals from that account
-during the segment — Midland's "Interest Credit Basis" [S6] — which collapses to `A(t−1)` here
+during the segment — the "Interest Credit Basis" [S6] — which collapses to `A(t−1)` here
 because all transactions occur at anniversaries **[std]**. Reallocation is permitted at each
 anniversary [S1] [S5]; dividends are excluded from `R(t)` [S6] [R1]. **The floor applies to the
 credit, not to the account value** — charges do reduce the account value below its prior balance
 [S7]. On a monthly grid, mid-segment conventions are: no credit in the year of withdrawal [S1];
 prorated for the portion of the year the money stayed in the allocation [S3]; `G × PAR/(1 + PAR)`,
-`PAR` being Nassau's *Protected Account Return* and not a participation rate [S10]; full
+`PAR` being a *Protected Account Return* and not a participation rate [S10]; full
 earnings-to-date on the free amount and pro rata above [S11].
 
 **Step 2 — rider charge.**
@@ -267,9 +267,9 @@ Deducted from the fixed account first, then proportionately across indexed accou
 fixed for 15 contract years, then resettable but never above 1.50% [S9]. Variants: charge on the
 contract value [S5]; no explicit charge, the guarantee funded through lower caps, participation
 rates or higher index margins [S3] [S8]. The composite does **not** deduct the charge from `MGV`;
-Athene deducts from both the accumulated value and the minimum guaranteed contract value except in
-certain states [S1] [S2], and Allianz deducts its allocation charge from the guaranteed minimum
-value in most states [S3] [S4] — implement as a switch **[std]**.
+one carrier deducts from both the accumulated value and the minimum guaranteed contract value
+except in certain states [S1] [S2], and another deducts its allocation charge from the guaranteed
+minimum value in most states [S3] [S4] — implement as a switch **[std]**.
 
 **Step 3 — benefit base.**
 
@@ -279,10 +279,10 @@ value in most states [S3] [S4] — implement as a switch **[std]**.
     BB⁽⁴⁾(t)  = max( BB⁽³⁾(t) , AV⁽²⁾(t) )              annual step-up **[std]**
 
 `T_g` = the earlier of the first lifetime withdrawal and contract year 20 [S1] [S2]. The rollup is
-a **flat dollar increment**, not simple interest on the grown base — Athene computes it on premium
-less withdrawals [S2], Nassau on the adjusted *initial* base [S9], and Nassau's 15-year table
-confirms a constant $3,000 per year on a $100,000 adjusted initial base [S9]. The stack is on
-realised dollar credits net of any strategy fee, floored at zero [S9].
+a **flat dollar increment**, not simple interest on the grown base — one carrier computes it on
+premium less withdrawals [S2], another on the adjusted *initial* base [S9], and the latter's
+15-year table confirms a constant $3,000 per year on a $100,000 adjusted initial base [S9]. The
+stack is on realised dollar credits net of any strategy fee, floored at zero [S9].
 
 *The step-up is a [std] generalisation.* No retrieved document describes an automatic annual
 ratchet during deferral; documented instead are an at-exercise step-up to the contract value [S5],
@@ -300,12 +300,12 @@ Three growth mechanisms must be expressible; the baseline is (c):
 | | Mechanism | Configuration | Observed at |
 |---|---|---|---|
 | (a) | Guaranteed deferral rollup only | `m = 0`; `g` simple on `RB`, or compound on `BB` | [S1] [S2] simple, [S5] compound (Options 1, 3, 5), [S9] simple |
-| (b) | Index-credit stacking only, no guaranteed rollup | `g = 0`; `m` = 1.50 or 2.50 | [S3] [S4] (150% Balanced / 250% Accelerated) |
+| (b) | Index-credit stacking only, no guaranteed rollup | `g = 0`; `m` = 1.50 or 2.50 | [S3] [S4] (150% or 250%, by annual owner election) |
 | (c) | **Blended — baseline [std]** | `g` = 5.00%/2.00%, `m` = 1.50 | [S2] [S8] [S9] |
 
-In design (b) the account value is deliberately starved: Allianz's Accelerated option credits
+In design (b) the account value is deliberately starved: one carrier's 250% election credits
 **250% of index interest to the benefit base but only 50% to the account value**, and the contract
-defaults to Balanced (150%/100%) once lifetime withdrawals begin [S3]. Model this as an
+defaults to the 150%/100% election once lifetime withdrawals begin [S3]. Model this as an
 account-value interest factor `κ ∈ {0.50, 1.00}` applied to `IC(t)` in step 1, with the
 benefit-base factor `m` [S3] [S4]. In the benefit-base-only bonus designs the bonus is added to
 `BB(0)` and **never touches the account value or the surrender benefit** [S3] [S4] [S8].
@@ -323,7 +323,7 @@ never decreases [S3]. For a gross withdrawal `G(t)`:
     AV⁽⁵⁾(t) = AV⁽²⁾(t) − G(t)
 
 Withdrawals up to `LW` carry **no surrender charge, no MVA and no bonus clawback even if `LW`
-exceeds the free withdrawal amount** [S9]; unused `LW` does not carry forward [S9] (Allianz
+exceeds the free withdrawal amount** [S9]; unused `LW` does not carry forward [S9] (one carrier
 accumulates it without interest as a "cumulative withdrawal amount" [S3]).
 
 **Step 5 — charges on the excess and proportional reduction.**
@@ -356,7 +356,7 @@ post-exercise denominator is non-positive. The post-exercise denominator is the 
 $100,000, base $200,000, annual benefit amount $10,000, withdrawal $28,000 → denominator $90,000,
 excess $18,000, reduction 20%, base → $160,000, benefit amount → $8,000. An RMD above `LW` is not
 an excess withdrawal after exercise; before exercise it reduces the base pro rata [S1] [S9]. The
-alternative rollup-base convention — Athene's dollar subtraction, "Premium minus Withdrawals" [S2]
+alternative rollup-base convention — the dollar subtraction, "Premium minus Withdrawals" [S2]
 — is `RB(t) = max(0, RB(t−1) − G(t))`.
 
 **Step 6 — guaranteed minimum value.**
@@ -371,9 +371,9 @@ where `Δ ≤ 100 bp` is the FIA additional reduction available while the contra
 substantive participation in an equity indexed benefit [R2]; `Δ` requires an annualized option
 cost of the **guaranteed** index features **≥ 25 bp** and then equals `min(100 bp, annualized
 option cost)`, certified annually [R3]. Whether the 15 bp floor of §4B(3) survives the §4C
-reduction is not stated in the retrieved text [unverified]; Nassau's "the interest rates will
-range between 0.15% and 3%" suggests it does [S10]. **Correction: the §4B floor is 15 basis
-points, not 1%** [R2]; the composite's 1.00% is a **[std]** pick inside the corridor, not the
+reduction is not stated in the retrieved text [unverified]; the contract language "the interest
+rates will range between 0.15% and 3%" suggests it does [S10]. **Correction: the §4B floor is 15
+basis points, not 1%** [R2]; the composite's 1.00% is a **[std]** pick inside the corridor, not the
 statutory floor.
 
 **Step 7 — phase transitions and the post-depletion liability.**
@@ -394,7 +394,7 @@ formula must be switched off and `l(t) = l(t−1) × (1 − q(t))`; under the jo
 continues to the survivor [S1] [S9]. The attribution test is not cosmetic — an account value run to
 zero by an excess withdrawal loses the guarantee entirely [S1] [S5] [S9]. Implement it as
 `depletion_cause`, set in step 5 whenever `E(t) > 0`, `SC(t) > 0` or `MVA(t) < 0`, and evaluate it
-before the depletion test. Athene's confinement and terminal illness waivers are themselves
+before the depletion test. One carrier's confinement and terminal illness waivers are themselves
 **excess withdrawals that terminate the income rider** [S1] — a trap if waivers are added.
 
 **Step 8 — decrements and cash flow outputs.** `l(t) = l(t−1) × (1 − q(t)) × (1 − w(t))`, with
@@ -441,7 +441,7 @@ versus 33% without** [R8]:
 The third row extrapolates **[std]** from the qualitative finding that "contracts with GLWBs lapse
 less than those without" and "activated GLWBs lapse least," with the lowest rates where the
 withdrawal is 95%–105% of the maximum [R1]. Applying a plain fixed-deferred shock lapse — reported
-at roughly 52%–56% for fixed-rate deferred annuities [REG-R63, [unverified]](#uslib-reg-r63) — to an FIA with an
+at roughly 52%–56% for fixed-rate deferred annuities [REG-R63](#uslib-reg-r63) [unverified] — to an FIA with an
 in-force rider will materially understate the tail this product is sold for.
 
 **Rider moneyness multiplier [std].** Surrender is further suppressed when the guarantee is in the
@@ -454,7 +454,7 @@ Rational surrender destroys a guarantee worth `BB − AV` in benefit-base terms;
 direction is documented [R1] [R8], the functional form is not.
 
 **GLWB activation (utilization timing) [std].** Activation clusters at the
-required-minimum-distribution age [R1] [REG-R64 [unverified]](#uslib-reg-r64), which makes the RMD regulations a
+required-minimum-distribution age [R1] [REG-R64](#uslib-reg-r64) [unverified], which makes the RMD regulations a
 behavioral input, not merely a tax one [REG-R57] [REG-R58]:
 
     h(a) = 0.00  for a < 60      h(a) = 0.05  for 60 ≤ a < rmd_age
@@ -661,19 +661,19 @@ Known pitfalls:
   collared separately; the ratio form used here is not.
 - **Monthly-sum floor convention is ambiguous.** The Academy's worked example applies a 0% monthly
   floor as well as a 1% monthly cap [R1], which is unusual — most monthly-sum designs cap the
-  upside monthly but let negative months subtract in full, and the Allianz rate sheet declares a
+  upside monthly but let negative months subtract in full, and one rate sheet declares a
   1.70% monthly cap with a 0.50% guaranteed minimum without stating the floor [S4]. Verify against
   a contract before implementing that variant.
 - **Interim values and index costs.** The baseline has none; adding one requires a different
-  structure — Nassau's Daily Account Value / Protected Account Value with a 90% protection level
-  [S10] or Nationwide's Balanced Allocation Value [S11], both daily marks of the embedded option
+  structure — a Daily Account Value / Protected Account Value with a 90% protection level
+  [S10] or a daily-tracked strategy value [S11], both daily marks of the embedded option
   rather than interpolations. Proprietary volatility-controlled indices separately deduct embedded
   servicing, transaction and financing costs (0.50% p.a. at BNPP MAD 5 and AiPEX [S2]; 2 bp
   change-in-notional plus 12 bp annualized replication at S&P 500 Dynamic Intraday TCA [S10]),
   which reduce `R(t)` *before* the cap or participation rate.
 - **Stale and state-varying parameters.** Declared rates are dated 07/01/2022 [S2] and the access
-  date [S4]; Athene's rate sheets [S-f1], American Equity's official host [S-f3] and the current
-  Nationwide brochure [S-f4] could not be fetched. State variation in surrender charges, vesting,
+  date [S4]; one carrier's rate sheets [S-f1], another's official host [S-f3] and a third's current
+  brochure [S-f4] could not be fetched. State variation in surrender charges, vesting,
   MVA availability and waiver terms is extensive and deliberately not modeled [S2] [S3] [S6] [S7].
 
 <!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
@@ -713,17 +713,6 @@ Known pitfalls:
 [REG-R68]: #uslib-reg-r68
 [REG-R70]: #uslib-reg-r70
 [REG-R71]: #uslib-reg-r71
-[S1]: #uslib-fixed_indexed_annuity-s1
-[S10]: #uslib-fixed_indexed_annuity-s10
-[S11]: #uslib-fixed_indexed_annuity-s11
-[S2]: #uslib-fixed_indexed_annuity-s2
-[S3]: #uslib-fixed_indexed_annuity-s3
-[S4]: #uslib-fixed_indexed_annuity-s4
-[S5]: #uslib-fixed_indexed_annuity-s5
-[S6]: #uslib-fixed_indexed_annuity-s6
-[S7]: #uslib-fixed_indexed_annuity-s7
-[S8]: #uslib-fixed_indexed_annuity-s8
-[S9]: #uslib-fixed_indexed_annuity-s9
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

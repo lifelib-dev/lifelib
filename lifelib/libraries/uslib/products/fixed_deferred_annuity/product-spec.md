@@ -36,9 +36,9 @@ is a separate-account contract that Model #805 expressly excludes, and the nonfo
 floor reaches it only through Model #250 §7.B on any fixed account
 [REG-R42] [REG-R43] — do not import the recursions below into a VA model.
 
-**Composite anchors.** Charges and nonforfeiture follow MassMutual Ascend SecureGain 5
-[S10] [S11] [S12]; the MVA algebra follows the Midland National / Sammons linear family
-[S5] [S8] [S9]; the Nationwide BOA Platinum Edge registered contract [S4] is the arithmetic
+**Composite anchors.** Charges and nonforfeiture follow one carrier's five-year MVA annuity
+[S10] [S11] [S12]; the MVA algebra follows a second carrier's linear family
+[S5] [S8] [S9]; a third carrier's registered contract [S4] is the arithmetic
 unit-test anchor for the geometric MVA branch, being the only retrieved source with fully
 worked MVA numbers. This pairing is the research file's own recommended composite.
 
@@ -72,11 +72,11 @@ the interest-rate environment [R8] [REG-R63]. The NAIC's prescribed standard-pro
 assumption puts base lapse at **75% in the year of a guarantee-period expiry** against 1%
 inside a multi-year guarantee period [R2] [REG-R36].
 
-MYGAs are not SEC-registered. Two retrieved contracts *are* registered (Voya Multi-Rate
-Annuity [S3], Nationwide BOA Platinum Edge [S4]); the research file's reading is that this
-follows from their MVAs carrying **no cap or collar at all** [S3] [S4], where the retail
-MYGAs cap or floor the adjustment [S2] [S8] [S9] [S12] [S13]. Treat that as the research file's
-observation, not a stated legal test [unverified].
+MYGAs are not SEC-registered. Two of the retrieved contracts *are* registered [S3] [S4];
+the research file's reading is that this follows from their MVAs carrying **no cap or
+collar at all** [S3] [S4], where the retail MYGAs cap or floor the adjustment
+[S2] [S8] [S9] [S12] [S13]. Treat that as the research file's observation, not a stated
+legal test [unverified].
 
 ---
 
@@ -144,21 +144,24 @@ observation, not a stated legal test [unverified].
    single-parameter; the escalating variant is a *guaranteed* element and must be disclosed
    as such rather than illustrated [R4 §6.F(8)](#uslib-fixed_deferred_annuity-r4) [REG-R45].
 7. Two camps. **Camp A** rolls into a new multi-year guarantee period with a fresh, usually
-   lower, surrender charge — Athene [S1] [S2], Midland [S5] [S6], MassMutual Ascend (charges
-   and MVA apply "during each initial term **or any renewal terms**") [S11]. **Camp B**
-   drops to annually redetermined rates with **no** new surrender charge — New York Life,
-   where the renewal rate is set each anniversary and, for New York issues, the GMIR itself
-   is redetermined annually at not less than 1.00% [S13]. Camp A matches the charge and
-   nonforfeiture anchor [S11]; the two produce entirely different lapse patterns and the
-   technical notes carry both as a **model-point switch**.
-8. Observed: Athene CA 9/8/7/6/5/4/3 initial vs 5/5/5/5/5/4/3 renewal [S1]; Athene NY
-   7/6/5/4/3 initial vs 5/4/3/2/1 renewal [S2]. Voya and Nationwide instead measure the
-   charge from the **original purchase payment date**, so reinvestment never restarts the
-   clock [S3] [S4]. The composite adopts Athene NY's renewal schedule and age cap.
-9. Not described in the MassMutual Ascend documents; taken from Athene [S1] [S2] and Midland
-   [S5] [S6], where it is the retail norm. Nationwide's analogue is 90 days' notice with
-   unelected money defaulting into a liquid Transition Account free of MVA and CDSC [S4];
-   Voya's is 18 days' notice with a 5-day election deadline and auto-reinvestment [S3].
+   lower, surrender charge — three of the carriers surveyed [S1] [S2] [S5] [S6] [S11],
+   including the charge anchor, whose charges and MVA apply "during each initial term
+   **or any renewal terms**" [S11]. **Camp B** drops to annually redetermined rates with
+   **no** new surrender charge — a single carrier's contract, where the renewal rate is set
+   each anniversary and, for New York issues, the GMIR itself is redetermined annually at
+   not less than 1.00% [S13]. Camp A matches the charge and nonforfeiture anchor [S11]; the
+   two produce entirely different lapse patterns and the technical notes carry both as a
+   **model-point switch**.
+8. Observed: one carrier's California form 9/8/7/6/5/4/3 initial vs 5/5/5/5/5/4/3 renewal
+   [S1]; its New York form 7/6/5/4/3 initial vs 5/4/3/2/1 renewal [S2]. The two registered
+   contracts instead measure the charge from the **original purchase payment date**, so
+   reinvestment never restarts the clock [S3] [S4]. The composite adopts that New York
+   renewal schedule and age cap [S2].
+9. Not described in the charge anchor's documents [S10] [S11] [S12]; taken from two other
+   carriers [S1] [S2] [S5] [S6], where it is the retail norm. One registered contract's
+   analogue is 90 days' notice with unelected money defaulting into a liquid transition
+   account free of MVA and CDSC [S4]; the other's is 18 days' notice with a 5-day election
+   deadline and auto-reinvestment [S3].
 10. **No bailout-rate provision appears in any retrieved document.** The bailout feature (a
     stated renewal rate below which the owner may surrender charge-free) is a real MYGA/FIA
     feature [unverified] but is not evidenced here; the 30-day free-out window is the
@@ -180,23 +183,24 @@ observation, not a stated legal test [unverified].
 | Terminal-illness waiver | After year 1; prognosis of survival 12 months or less; up to 100% of account value free of charge; no rider cost | [S10]; MVA also waived per [S2] [S13] |
 
 11. Observed: explicitly non-cumulative [S4]; multiple partial withdrawals permitted up to
-    the allowance [S16]; Voya restricts the exemption to the **first** withdrawal of each
-    calendar year and charges the rest even if the 10% was unused [S3].
-12. Confirmed in the Midland worked example: on a full surrender at accumulation value
-    $115,927 with an $11,593 free amount and a 3% charge, the charge is
-    $3,130 = 3% × ($115,927 − $11,593) and the MVA runs on the same $104,334 base "before
-    the reduction for any surrender charge" [S8]; MassMutual Ascend states charges and MVA
-    "do not apply to amounts covered by the 10% free withdrawal allowance" [S11]. **The
-    opposite convention is real and material:** Voya [S3] and Nationwide [S4] both apply the
-    MVA to free-amount withdrawals taken before maturity.
+    the allowance [S16]; one carrier restricts the exemption to the **first** withdrawal of
+    each calendar year and charges the rest even if the 10% was unused [S3].
+12. Confirmed in one carrier's worked example — the fixed **index** annuity source, not a
+    MYGA illustration [S8]: on a full surrender at accumulation value $115,927 with an
+    $11,593 free amount and a 3% charge, the charge is $3,130 = 3% × ($115,927 − $11,593)
+    and the MVA runs on the same $104,334 base "before the reduction for any surrender
+    charge" [S8]; the charge anchor states charges and MVA "do not apply to amounts covered
+    by the 10% free withdrawal allowance" [S11]. **The opposite convention is real and
+    material:** the two registered contracts [S3] [S4] both apply the MVA to free-amount
+    withdrawals taken before maturity.
 13. Observed: $500 partial / $100 systematic [S2]; $100 with a $2,000 account-value floor
     after the withdrawal [S13]; $50 minimum systematic interest payment [S5].
 14. Observed: exempt even above the free amount [S15]; exempt by *current company practice*
     only, explicitly not a contractual guarantee [S5] [S6]; exempt when the insurer
     calculates the RMD [S13]; exempt on the enhanced-liquidity version only [S2]. **Worst
     treatment observed:** RMDs treated as any other withdrawal and fully charged unless
-    taken in the 30-day window [S1] [S2]. Nationwide sets the free amount at the greater of
-    10% of contract value or the RMD, but the MVA still applies [S4].
+    taken in the 30-day window [S1] [S2]. One registered contract sets the free amount at
+    the greater of 10% of contract value or the RMD, but the MVA still applies [S4].
 
 ### Market value adjustment
 
@@ -212,12 +216,13 @@ observation, not a stated legal test [unverified].
 | Not applied to | Death benefit [S2] [S4] [S8] [S13] [S16]; the 30-day window [S2]; annuitization [S16]**[std]** (17); RMDs and waiver withdrawals [S2] [S5] [S13]; after the MVA period [S8] [S13] [S16] | as cited |
 | Floor on the adjusted value | Surrender value after MVA and charge may not fall below the state minimum nonforfeiture value | [S8] [S9] [S12] |
 
-15. The index is Barclay's US Credit Index for the Midland/Sammons family, and the formula
-    "varies by state" [S8]. Observed references market-wide: Treasury notes maturing in the
-    last quarter of the term [S3]; interest rate swaps + 25 bp [S4]; Barclay's US Credit
-    Index [S8] [S9]; 5-Year Treasury CMT and/or the BofA Merrill Lynch 5-10 Year US Corporate
-    Bond Index [S12]; the company's own new-money declared rate [S14]; an unnamed
-    reference-index YTM, with Treasury CMT plus corporate bond indexes in New York [S13].
+15. The index is Barclay's US Credit Index for the linear-duration family adopted here, and
+    the formula "varies by state" [S8]. Observed references market-wide: Treasury notes
+    maturing in the last quarter of the term [S3]; interest rate swaps + 25 bp [S4];
+    Barclay's US Credit Index [S8] [S9]; 5-Year Treasury CMT and/or the BofA Merrill Lynch
+    5-10 Year US Corporate Bond Index [S12]; the company's own new-money declared rate
+    [S14]; an unnamed reference-index YTM, with Treasury CMT plus corporate bond indexes in
+    New York [S13].
     **[std]:** the model takes a single scalar reference-yield series as input rather than
     hard-coding an index, because the index is a state-filed variable.
 16. Observed cap/collar designs — the largest single cross-carrier divergence: symmetric cap
@@ -322,9 +327,9 @@ the amount paid and reduces the Model #805 floor by the same gross amount [S11].
 (the amount removed from the account value) with `FW` of allowance remaining,
 `E = max(0, W − FW)`, `C = sc(y) × E` [S8] [S9] [S10], `M = clamp(μ × E, −C, +C)` [S8] [S2],
 and the cash paid is `W + M − C`. Charge and adjustment are both computed on `E` before
-either is deducted [S8]. Contracts promising a stated net check gross up instead — the Voya
-prospectus works the case, requiring a $2,099.08 withdrawal to deliver a $2,000 check at an
-MVA factor of 0.9528 [S3].
+either is deducted [S8]. Contracts promising a stated net check gross up instead — one
+registered prospectus works the case, requiring a $2,099.08 withdrawal to deliver a $2,000
+check at an MVA factor of 0.9528 [S3].
 
 **Full surrender — composition order: account value → MVA → surrender charge →
 nonforfeiture floor.** With `FW(t)` the unused allowance and `E(t) = AV(t) − FW(t)`:
@@ -335,19 +340,19 @@ nonforfeiture floor.** With `FW(t)` the unused allowance and `E(t) = AV(t) − F
     SB(t) = max( SV(t), MGSV(t) )                                    [S8] [S9] [S12]
 
 When the allowance is zero — or when the alternative convention applying the MVA to the
-whole account value is selected, as Voya and Nationwide do [S3] [S4] — this collapses to the
-multiplicative form `SB(t) = max( AV(t) × (1 + μ(t) − sc(y)), MGSV(t) )`, the identity to
-use when checking dimensional consistency: `μ` and `sc` are both pure rates on the same
-currency base. **Whether the MVA reaches inside the free amount differs by insurer:** it
-does not for the retail MYGAs [S2] [S9] [S10] [S15] [S16], it does for the two registered
-contracts [S3] [S4]. Representative convention: MVA-free inside the free amount **[std]**,
-with a switch for the alternative.
+whole account value is selected, as the two registered contracts do [S3] [S4] — this
+collapses to the multiplicative form `SB(t) = max( AV(t) × (1 + μ(t) − sc(y)), MGSV(t) )`,
+the identity to use when checking dimensional consistency: `μ` and `sc` are both pure rates
+on the same currency base. **Whether the MVA reaches inside the free amount differs by
+insurer:** it does not for the retail MYGAs [S2] [S9] [S10] [S15] [S16], it does for the two
+registered contracts [S3] [S4]. Representative convention: MVA-free inside the free amount
+**[std]**, with a switch for the alternative.
 
 **Market value adjustment.** `μ(t) = (i0 − it) × T(t)` with `T(t)` = (days from the
 surrender date to the end of the current contract year ÷ 365) + whole years remaining in
 the MVA period [S8] [S9]. `i0` is locked at the start of the guarantee period; rising
 reference yields give a negative adjustment and falling yields a positive one
-[S5] [S9] [S13]. Worked reference (Midland, on the fixed **index** annuity carrying this MVA
+[S5] [S9] [S13]. Worked reference (taken from the fixed **index** annuity carrying this MVA
 text — do not read the numbers as a MYGA illustration [S8]): 7-year MVA period, $100,000
 premium, accumulation value $115,927 at the end of contract year 5, free amount $11,593,
 3% charge = $3,130, reference rate 3.00% at issue, `T` = 2. Rate falls to 2.00% →
@@ -420,8 +425,8 @@ of exactly such a rider [REG-R62] [REG-R64].
 ## Variations across insurers
 
 1. **MVA formula family.** (i) **Geometric discount factor**, `[(1+a)/(1+b)]^t`, on the
-   SEC-registered modified guaranteed annuities — Voya on Treasury note yields with no
-   spread [S3], Nationwide on swaps with a 25 bp expense adder [S4]. (ii) **Linear
+   SEC-registered modified guaranteed annuities — one on Treasury note yields with no
+   spread [S3], the other on swaps with a 25 bp expense adder [S4]. (ii) **Linear
    duration × rate change**, `(i0 − it) × T`, on the retail MYGAs [S8] [S9]. (iii) **Linear
    declared-rate differential**, `W × (Ic − In) × Fs`, on the insurer's own new-money rate
    against a contractual duration-factor table [S14]. Model #245 §4.I recognizes both the
@@ -434,34 +439,34 @@ of exactly such a rider [REG-R62] [REG-R64].
    the GMIR [S13]; uncapped [S3] [S4]. *Chosen:* symmetric at the surrender charge, with the
    cap a first-class model parameter rather than a hard-coded rule.
 3. **Free-withdrawal design.** 10% of account value is the convention
-   [S2] [S4] [S9] [S10] [S15] [S16], but Midland Oak ADVantage uses an **interest-only**
-   allowance equal to the prior year's credited interest [S5] [S6] and New York Life a
-   **greatest-of** rule reaching 100% of policy gain for premiums ≥$100,000 [S13]. *Chosen:*
-   10% of account value — it is the modal design, it is the design the charge and
-   nonforfeiture anchor actually carries [S10] [S11], and it is the only one of the three that
-   makes the free amount a *fixed known base* at each anniversary, which is what the
-   free-amount/MVA interaction and the `E(t) = AV − FW` composition below both need. The
-   interest-only design is channel-specific (RIA/fee-based) and the greatest-of design is
-   premium-band conditional, so neither generalizes. Whether the MVA reaches inside the free
-   amount also differs (see mechanics).
+   [S2] [S4] [S9] [S10] [S15] [S16], but one carrier's RIA-distributed contract uses an
+   **interest-only** allowance equal to the prior year's credited interest [S5] [S6] and
+   another a **greatest-of** rule reaching 100% of policy gain for premiums ≥$100,000
+   [S13]. *Chosen:* 10% of account value — it is the modal design, it is the design the
+   charge and nonforfeiture anchor actually carries [S10] [S11], and it is the only one of
+   the three that makes the free amount a *fixed known base* at each anniversary, which is
+   what the free-amount/MVA interaction and the `E(t) = AV − FW` composition below both
+   need. The interest-only design is channel-specific (RIA/fee-based) and the greatest-of
+   design is premium-band conditional, so neither generalizes. Whether the MVA reaches
+   inside the free amount also differs (see mechanics).
 4. **Renewal architecture.** Camp A — new multi-year period with a fresh, lower charge
    [S1] [S2] [S5] [S11]; Camp B — annually redeclared rates, no new charge [S13]. *Chosen:*
    Camp A, with Camp B as a switch: the two produce entirely different lapse patterns and
    VM-22's own worked examples are built around the distinction [R2] [REG-R36].
 5. **Surrender charge shape.** Declining 7%–9% schedules dominate the commission-paid retail
-   market (9/8/7/6/5/4/3 [S1]; 9/8/7/6/5 [S10]; 7/6/5/4/3/2/1 in New York [S13]); New York
-   Life's non-New York schedule holds 7% flat for three years first [S13]; Nationwide's
-   registered contract caps the charge at 5% and steps down in pairs [S4]; Midland's
-   RIA-distributed Oak ADVantage uses a **level 3%** every year paired with the
-   interest-only free withdrawal [S5] [S6]. *Chosen:* 9/8/7/6/5 [S10] — it is the schedule of
-   the charge/nonforfeiture anchor itself, it is exactly five rates for a five-year guarantee
+   market (9/8/7/6/5/4/3 [S1]; 9/8/7/6/5 [S10]; the Camp B carrier's 7/6/5/4/3/2/1 in New
+   York [S13]); that same carrier's non-New York schedule holds 7% flat for three years
+   first [S13]; one registered contract caps the charge at 5% and steps down in pairs [S4];
+   an RIA-distributed contract uses a **level 3%** every year paired with the interest-only
+   free withdrawal [S5] [S6]. *Chosen:* 9/8/7/6/5 [S10] — it is the schedule of the
+   charge/nonforfeiture anchor itself, it is exactly five rates for a five-year guarantee
    period (one per guarantee year, expiring with the term, so the surrender-charge clock and
    the guarantee-period clock coincide and the shock lapse has a single unambiguous date),
    and its 9% first-year level is the steepest in the retail set, which makes the Model #805
    floor bind in the worked example rather than sit inert.
 6. **Guaranteed minimum interest rate.** From an explicit 1% renewal floor [S1] [S2], to a
-   contract GMIR of 0.25% [S9] [S11] or 1.50% [S14], to **none at all** on Nationwide's
-   registered contract: "there is no minimum Specified Interest Rate for any of the
+   contract GMIR of 0.25% [S9] [S11] or 1.50% [S14], to **none at all** on one of the
+   registered contracts: "there is no minimum Specified Interest Rate for any of the
    Guaranteed Period Options" [S4]. Not cosmetic — VM-22's GMIR Factor steps prescribed base
    lapse by 1.25 / 1.00 / 0.70 across the ≤1.0% / 1.0–2.5% / >2.5% bands [R2] [REG-R36].
    *Chosen:* 0.25% [S11] → GMIR Factor 1.25 — it is the GMIR on the anchor's current ICC24
@@ -475,7 +480,7 @@ of exactly such a rider [REG-R62] [REG-R64].
    annuitant [S3]. *Chosen:* full account value — modal, and it keeps the death benefit
    outside the MVA module entirely.
 8. **Guarantee-period-end handling and the surrender-charge clock.** 30-day free-out window
-   [S1] [S2] [S5] [S6]; 90 days' notice defaulting into a liquid Transition Account [S4]; 18
+   [S1] [S2] [S5] [S6]; 90 days' notice defaulting into a liquid transition account [S4]; 18
    days' notice with a 5-day election deadline and auto-reinvestment [S3]. The clock runs
    from the start of the current guarantee period [S1] [S2] [S5] [S11] or from the **original
    purchase payment date**, never restarting [S3] [S4]. *Chosen:* the 30-day window with a
@@ -572,7 +577,7 @@ retail MYGAs are not [S2] [S8] [S9] [S12] [unverified as a legal test]. The SEC'
 rulemaking moved registered index-linked and **registered market value adjustment**
 annuities onto **Form N-4** with tailored disclosure of contract adjustments and surrender
 charges and a prescribed Key Information Table; effective September 23, 2024, compliance
-date May 1, 2026 [REG-R49; that entry flags the compliance date [unverified]](#uslib-reg-r49). The
+date May 1, 2026 [REG-R49; that entry flags the compliance date](#uslib-reg-r49) [unverified]. The
 representative contract has a capped MVA and is outside that regime. **That SEC category is
 not the statutory instrument of the same name.** AP&P Appendix A-255, "Modified Guaranteed
 Annuities", defines the term by asset location — "a deferred annuity contract … the
@@ -649,22 +654,6 @@ model-governance frame [REG-R32], ASOP No. 54 the pricing standard [REG-R70], an
 [REG-R64]: #uslib-reg-r64
 [REG-R70]: #uslib-reg-r70
 [REG-R71]: #uslib-reg-r71
-[S1]: #uslib-fixed_deferred_annuity-s1
-[S10]: #uslib-fixed_deferred_annuity-s10
-[S11]: #uslib-fixed_deferred_annuity-s11
-[S12]: #uslib-fixed_deferred_annuity-s12
-[S13]: #uslib-fixed_deferred_annuity-s13
-[S14]: #uslib-fixed_deferred_annuity-s14
-[S15]: #uslib-fixed_deferred_annuity-s15
-[S16]: #uslib-fixed_deferred_annuity-s16
-[S2]: #uslib-fixed_deferred_annuity-s2
-[S3]: #uslib-fixed_deferred_annuity-s3
-[S4]: #uslib-fixed_deferred_annuity-s4
-[S5]: #uslib-fixed_deferred_annuity-s5
-[S6]: #uslib-fixed_deferred_annuity-s6
-[S7]: #uslib-fixed_deferred_annuity-s7
-[S8]: #uslib-fixed_deferred_annuity-s8
-[S9]: #uslib-fixed_deferred_annuity-s9
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

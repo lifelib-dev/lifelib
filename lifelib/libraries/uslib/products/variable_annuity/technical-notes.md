@@ -17,8 +17,8 @@ appendix items read at first hand on 2026-08-06 — of which four are cited here
 most of the **R73–R149** block unused). **[std]** marks a standardization
 introduced for the reference implementation; **[unverified]** marks a claim the research
 file could not confirm against a retrieved document. **Every parameter value below is
-identical to the value in `product-spec.md`.** The mechanics anchor is the Jackson
-Perspective II chassis [S1] [S2] [S3].
+identical to the value in `product-spec.md`.** The mechanics anchor is the single-carrier
+chassis contract [S1] [S2] [S3].
 
 **Relationship to sibling documents.** The *separate-account charge-accrual convention* — a
 monthly discretization of daily fund-expense and asset-charge accrual, `(1 + r)(1 − e/12)(1 −
@@ -36,9 +36,9 @@ this library) and **referenced rather than restated** where the two products agr
 **post-depletion phase**. Two items on that list are *not* shared and are written out below:
 that file carries **no cohort construction** (the cohort method used here is VM-21's [R1]),
 and its excess-withdrawal rule reduces the benefit base **pro rata on the excess only**, with
-no dollar-for-dollar reduction for the guaranteed portion — whereas the Jackson GWB *is*
-reduced dollar-for-dollar by the non-excess portion first. The one structural difference is
-decisive: in an FIA the account value is driven by a floored index-credit formula, whereas
+no dollar-for-dollar reduction for the guaranteed portion — whereas the GWB here *is*
+reduced dollar-for-dollar by the non-excess portion first [S1]. The one structural difference
+is decisive: in an FIA the account value is driven by a floored index-credit formula, whereas
 here **separate-account performance drives the account value directly and can fall without
 limit**, so the guarantee is far more path-dependent and its cost cannot be obtained from a
 deterministic run.
@@ -153,7 +153,7 @@ discipline for non-guaranteed elements, which expressly covers variable deferred
 
 ### (b) Insurer-declared current elements (snapshot; revisable NGEs [REG-R26])
 
-Snapshot dated **2026-04-27**, the Jackson rate sheet date [S3]. Rate sheets carry an
+Snapshot dated **2026-04-27**, the rate sheet date [S3]. Rate sheets carry an
 explicit "can be superseded at any time" clause with a 10-day advance-filing commitment
 [S3] [S5] [S8], so the rate-sheet date is a first-class model input, not metadata.
 
@@ -347,9 +347,9 @@ At BOM of month t:
 credited before or after the anniversary step-up test [S1]. The **[std]** order above
 (bonus, then step-up) yields `GWB_new = max(GWB_old + bonus, AV)`; the reverse yields
 `max(GWB_old, AV) + bonus`, which is strictly more generous. The [std] choice follows the
-one design in the set that states the interaction explicitly — Lincoln's, where "an
-Enhancement and an Account Value Step-up cannot both occur in the same year; if the step-up
-is ≥ the Enhancement, the Enhancement is not applied" [S8]. Treat the alternative as a
+one design in the set that states the interaction explicitly, where "an Enhancement and an
+Account Value Step-up cannot both occur in the same year; if the step-up is ≥ the
+Enhancement, the Enhancement is not applied" [S8]. Treat the alternative as a
 first-order sensitivity, not a rounding issue.
 
 ### Guaranteed minimum death benefit
@@ -419,7 +419,7 @@ surrenders, must also be included [R1].
 **Risk-neutral scenarios — for hedging and fair value.** A separate, market-consistent set
 is required for hedge valuation under a Clearly Defined Hedging Strategy (VM-21 §9)
 [REG-R35] and for the fair value of the GLWB/GMDB as **market risk benefits** under LDTI
-[REG-R34 — **[unverified]**, source not fetched (fasb.org 403); summary-based](#uslib-reg-r34) [REG-R71].
+[REG-R34 — source not fetched (fasb.org 403); summary-based](#uslib-reg-r34) **[unverified]** [REG-R71].
 The two sets are not interchangeable; the model exposes the scenario basis as an input,
 never as a hard-coded assumption.
 
@@ -475,7 +475,7 @@ surrender charge period — an 84% suppression [R1]. Compose them as here, or re
 multiplier with a direct table lookup; do not apply both gradings at once. The economic
 anchor for the size of the effect is the FIA experience split: in the year the surrender
 charge expires, surrender was roughly **10% with a GLWB rider versus 33% without**
-[REG-R62 — **[unverified]**, from press coverage of the 2019–20 study](#uslib-reg-r62).
+[REG-R62 — from press coverage of the 2019–20 study](#uslib-reg-r62) **[unverified]**.
 
 ### GLWB utilization
 
@@ -485,7 +485,7 @@ construction below is VM-21's [R1], not that file's: it carries no cohort machin
 Parameterized here by:
 
 - **First-withdrawal age.** Base run **[std]**: age 70, on the finding that activation
-  clusters at the RMD age [REG-R64 — **[unverified]**](#uslib-reg-r64) [REG-R57] [REG-R58]. The prescribed
+  clusters at the RMD age [REG-R64](#uslib-reg-r64) **[unverified]** [REG-R57] [REG-R58]. The prescribed
   alternative is VM-21's Withdrawal Delay Cohort Method, which splits the contract into
   cohorts weighted by differences in a revised GAPV across candidate initial withdrawal
   ages, discarding cohorts below the attained age and rescaling [R1].
@@ -517,9 +517,9 @@ Parameterized here by:
 ## Worked example — one month, two subaccounts, charge stack, GMDB claim test
 
 Anchor cell: male, issue age 60, single Designated Life, non-qualified; single premium
-$100,000 at issue with premium tax 0.00% **[std]**; allocation 60/40 **[std]**; Flex GMWB
-Single Core (`phi_G` = 1.25%, `b` = 6.00%, annual CV step-up, `s` = 105%) [S3] and Roll-up
-GMDB (`phi_D` = 0.90%, `ρ` = 6.00%) [S3]; `m + α` = 1.30% [S2]; `e_1` = 0.95%, `e_2` = 0.65%
+$100,000 at issue with premium tax 0.00% **[std]**; allocation 60/40 **[std]**; the
+single-life Core GLWB (`phi_G` = 1.25%, `b` = 6.00%, annual CV step-up, `s` = 105%) [S3] and
+Roll-up GMDB (`phi_D` = 0.90%, `ρ` = 6.00%) [S3]; `m + α` = 1.30% [S2]; `e_1` = 0.95%, `e_2` = 0.65%
 **[std]**. No withdrawals to date.
 
 Carried state at the beginning of month 27 (contract year 3; month 27 is the 9th Contract
@@ -590,8 +590,8 @@ them and are cited, not reproduced:
   NAIC-prescribed method (CARVM, i.e. VM-21), capped at statutory [REG-R16]; the LB&I
   examination directive on AG 43/VM-21 tax reserves is [unverified] (irs.gov 404) [REG-R72].
 - **U.S. GAAP** — the GLWB and GMDB are the paradigm **market risk benefits** at fair value
-  through earnings under LDTI [REG-R34 — **[unverified]**, ASU 2018-12 not fetched
-  (fasb.org 403); summary-based](#uslib-reg-r34), with ASOP No. 10 as the professional counterpart, which
+  through earnings under LDTI [REG-R34 — ASU 2018-12 not fetched
+  (fasb.org 403); summary-based](#uslib-reg-r34) **[unverified]**, with ASOP No. 10 as the professional counterpart, which
   *was* retrieved and supplies the MRB definition and classification test [REG-R71].
 - **Standards for the modeling work** — ASOP Nos. 7 [REG-R27], 22 [REG-R29], 56 [REG-R32],
   2 (non-guaranteed elements, expressly covering variable deferred annuities, so governing
@@ -659,7 +659,7 @@ them and are cited, not reproduced:
   most consequential error.
 - **Fixed account and MVA are absent by design** — the Roll-up GMDB election removes Fixed
   Account Options [S1]. If a variant re-enables them, note that **no closed-form MVA factor
-  was found in any of the four prospectuses read**: Jackson discloses a rate-differential
+  was found in any of the four prospectuses read**: the chassis discloses a rate-differential
   rule with a 0.25% dead band and a Fixed Account Minimum Value floor [S1], so any algebraic
   MVA formula in a model would be **[unverified]** [S1] — **and that flag stays**, because the
   contract formula itself was never disclosed in closed form. What has changed is that the
@@ -715,14 +715,6 @@ them and are cited, not reproduced:
 [REG-R70]: #uslib-reg-r70
 [REG-R71]: #uslib-reg-r71
 [REG-R72]: #uslib-reg-r72
-[S1]: #uslib-variable_annuity-s1
-[S2]: #uslib-variable_annuity-s2
-[S3]: #uslib-variable_annuity-s3
-[S4]: #uslib-variable_annuity-s4
-[S5]: #uslib-variable_annuity-s5
-[S6]: #uslib-variable_annuity-s6
-[S7]: #uslib-variable_annuity-s7
-[S8]: #uslib-variable_annuity-s8
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

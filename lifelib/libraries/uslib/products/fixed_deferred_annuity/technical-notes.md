@@ -69,7 +69,7 @@ outside Model #805, which reaches only a VA fixed account via Model #250 §7.B
 | `issue_age` | int (ANB) | 60 |
 | `sex` | enum {M, F} | M |
 | `tax_status` | enum {NQ, IRA, Roth, inherited} | NQ **[std]** |
-| `premium` | currency | 100,000 [S11 rate band ≥$100,000](#uslib-fixed_deferred_annuity-s11) |
+| `premium` | currency | 100,000 [S11 rate band ≥$100,000] |
 | `issue_date` | date | contract month 0 |
 | `guarantee_period_years` | int | 5 [S10] [S11] |
 | `declared_rate_initial` | rate p.a. | 0.0445 [S11] |
@@ -79,7 +79,7 @@ outside Model #805, which reaches only a VA fixed account via Model #250 §7.B
 | `sc_schedule_renewal` | vector by contract year | (0.05, 0.04, 0.03, 0.02, 0.01) [S2] |
 | `renewal_architecture` | enum {`rollover`, `annual_redeclare`} | `rollover` (Camp A) **[std]** |
 | `free_wd_rule` | enum {`pct_av`, `interest_only`, `greatest_of`} | `pct_av` at 10% [S10] |
-| `free_wd_mva_exempt` | bool | True **[std]** (False = Voya/Nationwide convention [S3] [S4]) |
+| `free_wd_mva_exempt` | bool | True **[std]** (False = the registered-contract convention [S3] [S4]) |
 | `mva_family` | enum {`geometric`, `linear_duration`, `declared_differential`} | `linear_duration` [S8] [S9] |
 | `mva_cap_rule` | enum {`sym_sc`, `min_sc_interest`, `asym_sc_snfl`, `gmir_floor`, `none`} | `sym_sc` [S2] |
 | `mva_ref_yield_at_issue` (`i0`) | rate p.a. | 0.0500 **[std]** |
@@ -148,10 +148,10 @@ terms** in [S1] [S2], not as declared elements; they are listed in (b) only beca
 attach at a renewal the insurer also re-rates. Load them from the guaranteed-element file
 and treat only the renewal *rate* as non-guaranteed.
 
-(a) There is no public evidence on renewal-rate setting: Voya "observes no specific
-formula" [S3] and Nationwide "observes no specific method", both citing fixed-income
-yields, competitive considerations, administrative costs and general economic trends
-[S3] [S4]. The base run sets `s_ren = 0` so the credited rate equals the competitor rate
+(a) There is no public evidence on renewal-rate setting: one registered prospectus "observes
+no specific formula" [S3] and the other "observes no specific method", both citing
+fixed-income yields, competitive considerations, administrative costs and general economic
+trends [S3] [S4]. The base run sets `s_ren = 0` so the credited rate equals the competitor rate
 and the dynamic-lapse term is exactly zero — the same discipline the UL notes use. The
 1.00% scenario exercises the dynamic term. Renewal declarations are non-guaranteed
 elements: ASOP 2's scope expressly covers fixed deferred annuities [REG-R26].
@@ -281,10 +281,11 @@ fourth lines; the amount paid is `W(t) + M(t) − C(t)` and the account value fa
 
 **MVA inside the free amount — the [std] convention.** The representative model sets
 `free_wd_mva_exempt = True`: the free allowance is exempt from *both* the surrender charge
-and the MVA, including at full surrender [S8] [S11]. **The market is genuinely split.** Voya
-[S3] and Nationwide [S4] both state that the MVA applies to free-amount withdrawals taken
-before maturity; the retail MYGAs do not [S2] [S9] [S10] [S15] [S16]. Setting the flag to
-`False` gives `E(t) = AV(t)` and the composition collapses to the multiplicative form:
+and the MVA, including at full surrender [S8] [S11]. **The market is genuinely split.** The
+two registered contracts [S3] [S4] both state that the MVA applies to free-amount
+withdrawals taken before maturity; the retail MYGAs do not [S2] [S9] [S10] [S15] [S16].
+Setting the flag to `False` gives `E(t) = AV(t)` and the composition collapses to the
+multiplicative form:
 
     SB(t) = max( AV(t) × (1 + μ(t) − sc(y)),  MGSV(t) )
 
@@ -303,12 +304,12 @@ cross-carrier divergence in the source set.
 
 `a` = reference yield at deposit; `b` = reference yield at distribution for a term equal to
 the **remaining** period, partial years rounded **up** to a full year (capped at the
-guarantee period) [S4]; `s_adm` = administrative-expense adder, **25 bp** in the Nationwide
+guarantee period) [S4]; `s_adm` = administrative-expense adder, **25 bp** in that registered
 contract, explicitly covering the cost of liquidating fixed-income investments and
 structurally biasing the adjustment against the owner [S4]; `τ` = days to maturity ÷
-**365.25** [S4]. Voya's variant has `s_adm = 0`, uses Treasury notes maturing in the last
-three months of the term, and `τ = x/365` measured from the Wednesday of the week of
-withdrawal [S3]. Neither states any cap or collar [S3] [S4].
+**365.25** [S4]. The other registered variant has `s_adm = 0`, uses Treasury notes maturing
+in the last three months of the term, and `τ = x/365` measured from the Wednesday of the
+week of withdrawal [S3]. Neither states any cap or collar [S3] [S4].
 
 **(ii) `linear_duration` — the representative form.**
 
@@ -336,11 +337,11 @@ external-index branch [R4] [REG-R45].
 
 | Value | Rule | Source design |
 |---|---|---|
-| `sym_sc` **[std]** | `M = clamp(M_raw, −C, +C)` | Athene NY [S2] |
-| `min_sc_interest` | `M = clamp(M_raw, −K, +K)` with `K = min(C, interest credited to date)` | Midland [S8] [S9] |
-| `asym_sc_snfl` | `M ≤ +C`; on the downside no cap — only `SB ≥ MGSV` binds | MassMutual Ascend [S12] |
-| `gmir_floor` | `AV + M ≥ P_accum@GMIR` (premiums less prior withdrawals accumulated at the GMIR); the surrender charge may still breach that level | New York Life [S13] |
-| `none` | uncapped, fully two-sided | Voya [S3], Nationwide [S4] |
+| `sym_sc` **[std]** | `M = clamp(M_raw, −C, +C)` | one carrier's New York form [S2] |
+| `min_sc_interest` | `M = clamp(M_raw, −K, +K)` with `K = min(C, interest credited to date)` | the linear-duration family [S8] [S9] |
+| `asym_sc_snfl` | `M ≤ +C`; on the downside no cap — only `SB ≥ MGSV` binds | another carrier's MVA explainer [S12] |
+| `gmir_floor` | `AV + M ≥ P_accum@GMIR` (premiums less prior withdrawals accumulated at the GMIR); the surrender charge may still breach that level | the Camp B carrier [S13] |
+| `none` | uncapped, fully two-sided | both registered contracts [S3] [S4] |
 
 `μ(t) = 0`, unconditionally, when: the surrender is in the 30-day guarantee-period-end
 window [S2]; the MVA period has expired [S8] [S13] [S16]; the benefit is a death benefit
@@ -355,7 +356,7 @@ window [S2]; the MVA period has expired [S8] [S13] [S16]; the benefit is a death
 with `i_nf` the contract GMSV rate (**2.80%** [S11]). The statute *defines* the indexed
 nonforfeiture rate — it is not a band the contract rate sits inside:
 
-    i_stat = max( 0.0015,  min( 0.03,  round_{1/20 of 1%}(CMT5) − 0.0125 ) )  [R1 §4.B](#uslib-fixed_deferred_annuity-r1) [REG-R42]
+    i_stat = max( 0.0015,  min( 0.03,  round_{1/20 of 1%}(CMT5) − 0.0125 ) )  [R1 §4.B] [REG-R42]
 
 and the contract rate must satisfy `i_nf ≥ i_stat`; crediting the floor at more than the
 statutory rate is permitted and simply produces a higher floor, which is exactly what
@@ -576,7 +577,7 @@ $102,200.78 − 2 × 0.09 × $92,200.78 = $85,604.64, not $102,200.78 × 0.82 = 
 and it is only at short durations with a high surrender charge that this falls below
 `0.875 × P × (1 + i_nf)^t`.
 
-**Geometric-branch unit test [S4].** For `mva_family = geometric` the Nationwide contract
+**Geometric-branch unit test [S4].** For `mva_family = geometric` one registered contract
 supplies fully worked arithmetic that a regression test should reproduce exactly: a 5-year
 GPO, $10,000 allocation, Specified Interest Rate 8.5%, 5-year swap at deposit `a` = 8%,
 surrender 985 days from maturity, Specified Value $12,067.96,
@@ -663,16 +664,17 @@ Known modeling pitfalls:
   [S2] [S3] [S4] [S9] [S10] and changes both the surrender value and the `1 − CSV/AV` haircut
   that gates dynamic lapse. Do not hard-code it.
 - **Gross vs net withdrawals.** `W(t)` is the **gross** amount removed from the account
-  value; contracts promising a stated net check need a gross-up solve — Voya's prospectus
-  works the case, $2,099.08 withdrawn to deliver a $2,000 check at a 0.9528 factor [S3].
+  value; contracts promising a stated net check need a gross-up solve — one registered
+  prospectus works the case, $2,099.08 withdrawn to deliver a $2,000 check at a 0.9528
+  factor [S3].
 - **The Model #805 withdrawal convention.** `gross` [S11] versus `net_of_charges` [S9] are
   both live and give different floors; the difference then compounds at `i_nf` for the rest
   of the contract.
 - **The 15 bp floor.** Implementing the folklore 1% floor overstates the Model #805 minimum
   in low-rate environments — the retrieved statute says 15 bp [R1 §4.B](#uslib-fixed_deferred_annuity-r1) [REG-R42].
 - **Surrender-charge clock on renewal.** Under `rollover` the clock resets [S1] [S2] [S11];
-  Voya and Nationwide run it from the original purchase payment date so it never restarts
-  [S3] [S4]. Getting this wrong relocates the shock lapse by years.
+  the two registered contracts run it from the original purchase payment date so it never
+  restarts [S3] [S4]. Getting this wrong relocates the shock lapse by years.
 - **Mortality table plumbing.** The prescribed formula uses the 2012 IAM **Basic** table
   (VM-M §2.C) with Scale G2 and the VM-22 `F_x` factors [R2 §6.B.8](#uslib-fixed_deferred_annuity-r2), not the 2012 IAM
   Period/IAR valuation table. Where the IAR generational table *is* used, the Valuation
@@ -720,21 +722,6 @@ Known modeling pitfalls:
 [REG-R65]: #uslib-reg-r65
 [REG-R70]: #uslib-reg-r70
 [REG-R71]: #uslib-reg-r71
-[S1]: #uslib-fixed_deferred_annuity-s1
-[S10]: #uslib-fixed_deferred_annuity-s10
-[S11]: #uslib-fixed_deferred_annuity-s11
-[S12]: #uslib-fixed_deferred_annuity-s12
-[S13]: #uslib-fixed_deferred_annuity-s13
-[S14]: #uslib-fixed_deferred_annuity-s14
-[S15]: #uslib-fixed_deferred_annuity-s15
-[S16]: #uslib-fixed_deferred_annuity-s16
-[S2]: #uslib-fixed_deferred_annuity-s2
-[S3]: #uslib-fixed_deferred_annuity-s3
-[S4]: #uslib-fixed_deferred_annuity-s4
-[S5]: #uslib-fixed_deferred_annuity-s5
-[S6]: #uslib-fixed_deferred_annuity-s6
-[S8]: #uslib-fixed_deferred_annuity-s8
-[S9]: #uslib-fixed_deferred_annuity-s9
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

@@ -400,10 +400,6 @@ Known modeling pitfalls:
 [REG-R27]: #uslib-reg-r27
 [REG-R3]: #uslib-reg-r3
 [REG-R32]: #uslib-reg-r32
-[S1]: #uslib-variable_ul-s1
-[S2]: #uslib-variable_ul-s2
-[S3]: #uslib-variable_ul-s3
-[S4]: #uslib-variable_ul-s4
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

@@ -17,11 +17,10 @@ implementation; each [std] table row carries a footnote giving the rationale and
 observed range across insurers. Facts the research file could not verify are flagged
 [unverified].
 
-The design anchor is **MassMutual RetireEase** (form SPIA05; SPIA05 (NC)) [S1] combined
-with **Pacific Income Provider** (form series ICC10:30-1181, 30-1181OR) [S2] [S3].
-Pacific Life supplies the cleanest published statement of the two joint-life reduction
-triggers; MassMutual supplies the only published SPIA surrender-charge schedule and the
-1–4% compound COLA menu.
+The design anchor is one carrier's single premium immediate fixed annuity [S1] combined
+with a second carrier's SPIA [S2] [S3]. The second supplies the cleanest published
+statement of the two joint-life reduction triggers; the first supplies the only published
+SPIA surrender-charge schedule and the 1–4% compound COLA menu.
 
 ---
 
@@ -30,9 +29,9 @@ triggers; MassMutual supplies the only published SPIA surrender-charge schedule 
 A SPIA converts a single premium immediately into a payment stream. Income must begin
 within a short window: **12 months** [S1] [S5], **one year** [S2] [S3], **13 months** [S8]; a
 state regulator frames it as income "starting no later than one year after you pay the
-premium" [R11], Guardian as "typically within a month (and never more than one year out)"
+premium" [R11], a carrier as "typically within a month (and never more than one year out)"
 [S11]. Once issued the contract is **irrevocable**, has **no account value, no cash
-surrender value, and cannot be surrendered** [S4] [S5]; MassMutual: "there is no accumulation
+surrender value, and cannot be surrendered** [S4] [S5]; one carrier: "there is no accumulation
 or cash value — and, therefore, limited liquidity" [S1]. Income option, frequency and every
 optional feature are **fixed at issue** [S2] [S3] [S5]; the one general exception is the
 *period certain only* form, whose certain period may be lengthened or shortened after the
@@ -148,17 +147,17 @@ UK guarantee period; and exclusion-ratio taxation under IRC §72 [R6] [R7] [REG-
    younger" joint-annuitant rule [S2] so the same cell can be re-run as qualified.
 3. Up to 12 months' deferral is permitted [S1] [S5]. Collapsing the annuity date onto the issue
    date removes a short pre-income period carrying a death benefit at one insurer only
-   (Pacific Life pays return of premium on death, or on terminal illness with life expectancy
+   (that insurer pays return of premium on death, or on terminal illness with life expectancy
    ≤ 12 months, before the first payment date [S2]). Any nonzero deferral turns this product
    into the deferred-income-annuity chassis.
-4. Minimum premium clusters at $10,000 [S1] [S4] [S5] [S6], Pacific Life the outlier at $25,000
-   [S2]. Maximum without approval clusters at $2 million [S2] [S4] [S5] [S6], MassMutual at $1.5
+4. Minimum premium clusters at $10,000 [S1] [S4] [S5] [S6], one carrier the outlier at $25,000
+   [S2]. Maximum without approval clusters at $2 million [S2] [S4] [S5] [S6], one carrier at $1.5
    million [S1]; the modal value is adopted. Sub-limits not carried into the composite: $1M to
    issue age 75 and $500K for ages 76–85 on single-life-only and temporary life [S4]; $1M for
    ages 86+ [S2].
 5. All six product sources offer the same four-frequency menu; monthly is the frequency in
    which the published illustrations and rate anchors are predominantly quoted (the one
-   exception is [S3]'s age-69 cell, quoted annually) [S3] [S9] [S10]. Nationwide's
+   exception is [S3]'s age-69 cell, quoted annually) [S3] [S9] [S10]. One carrier's
    right to *reduce* frequency if a payment would fall below $100 [S6] is not modeled.
 6. No product document states advance versus arrears. VM-V's prescribed weight-table cash flow
    model assumes "annuity payments are made at the end of each year" [R1] — an
@@ -171,58 +170,58 @@ UK guarantee period; and exclusion-ratio taxation under IRC §72 [R6] [R7] [REG-
    basis** for a fixed SPIA; pricing is embedded entirely in the quoted payout rate
    (research gap). 6.00% p.a. of premium is a **round arithmetic anchor** ($500.00 a month
    on $100,000), chosen so every figure in the worked example is exact — **not** a priced
-   rate. The nearest insurer illustration is Pacific Life's hypothetical Joint Life Only
-   for two 65-year-olds, $230,856 buying $1,200/month = **6.24%** annualized (February
-   2024, "for illustrative purposes only") [S3], but that cell carries **no** COLA, and a
-   COLA materially reduces the initial payment [S1] [S2] [S3] [S4]: Pacific's own single male
-   65 with 3% Inflation Protection runs at ≈**5.28%** against ≈**7.97%** for an
-   un-escalated male 65 in the broker survey [S3] [S9] — a reduction of about a third.
+   rate. The nearest insurer illustration is a hypothetical Joint Life Only for two
+   65-year-olds, $230,856 buying $1,200/month = **6.24%** annualized (February 2024, "for
+   illustrative purposes only") [S3], but that cell carries **no** COLA, and a COLA
+   materially reduces the initial payment [S1] [S2] [S3] [S4]: the same source's single
+   male 65 with a 3% COLA runs at ≈**5.28%** against ≈**7.97%** for an un-escalated
+   male 65 in the broker survey [S3] [S9] — a reduction of about a third.
    Scaling the 6.24% joint anchor by that ratio (≈4.1%) and allowing an uplift for the
    66⅔% survivor percentage against the illustration's implied 100% puts a 3%-COLA joint
    65/62 cell nearer **4.5%**. **The 6.00% level is therefore deliberately generous
    relative to the COLA-adjusted anchors and must be replaced by a real quote before any
    output is read as a price**; `B(1)` is an exogenous input, not a model output. Weaker
    anchors, context only:
-   Life with 10-Year Period Certain at 69 ≈**7.11%**, single life male 65 with 3% Inflation
-   Protection ≈**5.28%** initial rising from ≈$900 to ≈$1,600/month over 20 years [S3]; a
+   Life with 10-Year Period Certain at 69 ≈**7.11%**, single life male 65 with a 3% COLA
+   ≈**5.28%** initial rising from ≈$900 to ≈$1,600/month over 20 years [S3]; a
    low-reliability broker survey (July 2026, best of 8 carriers per $100,000, life only)
    giving male 65 $664/month = **7.97%**, female 65 $635, joint 65 $583, carrier spread
-   about 5–6% [S9]; NYL's weekly "annualized payout as percent of total premium" table,
+   about 5–6% [S9]; a carrier's weekly "annualized payout as percent of total premium" table,
    life-with-cash-refund basis, male with $100,000, which is JavaScript-rendered and could
    not be captured [S10]. **Consequence: no pricing or annuity-rate test against public
    data is possible for this product.**
 9. Certain-period ranges observed: 5–30 years [S1] [S4] [S5] [S7], up to 30 [S2], 5–20 [S6]. Ten
    years is the modal illustrated length [S3] [S9], sits inside the qualified cap [S2] [R8],
-   and clears Integrity's 10-year floor for commutation eligibility [S4].
+   and clears one carrier's 10-year floor for commutation eligibility [S4].
 10. Observed survivor menus: 50/67/75 [S2]; 1/2, 2/3, 3/4 [S1]; two-thirds or one-half by
     contract form [S7]; 50/100 [S6]; continuous 40–99 [S5]. The discrete set {50, 66⅔, 75,
     100} covers essentially the whole market; 100% is included because refund forms
-    frequently *require* it (NYL's Joint Life with Cash Refund is available only if the
+    frequently *require* it (one carrier's Joint Life with Cash Refund is available only if the
     survivor's income is 100% [S5]) and because the legacy "joint and 100% last survivor"
     form is still in the market [S6].
-11. Only NYL addresses the interaction: "if the first annuitant dies during the guaranteed
+11. Only one carrier addresses the interaction: "if the first annuitant dies during the guaranteed
     payment period, the payments to the second annuitant will not be reduced until the end of
     that period", restated as the later of first death and the guaranteed-period end [S5].
-    Neither anchor states a rule, so NYL's is adopted. It costs nothing to implement: because
+    Neither anchor states a rule, so this one is adopted. It costs nothing to implement: because
     the certain floor pays the **full, unreduced** instalment, the `max(certain floor,
     life-contingent factor)` construction in `technical-notes.md` reproduces the deferral
     automatically. The alternative reading — a certain floor set at the *reduced* level — is
     supported by no retrieved document and is not implemented.
 12. Each was found at a single insurer: temporary life payouts (5–30 years, income only while
-    the annuitant lives, no benefit on or after death), Integrity only [S4]; Life with Percent
-    of Premium Death Benefit (25% or 50% of premium), NYL only [S5]; the pre-first-payment
-    return-of-premium death benefit, Pacific Life only [S2].
+    the annuitant lives, no benefit on or after death), at one carrier [S4]; Life with Percent
+    of Premium Death Benefit (25% or 50% of premium), at a second [S5]; the pre-first-payment
+    return-of-premium death benefit, at a third [S2].
 13. The 1–4% compound menu is modal [S1] [S5] and the only menu that works for both qualified
     and nonqualified money under the sub-5% constant-percentage rule [R8]. Three percent is
     the upper-middle rung of that menu, the rate common to every observed menu
     [S1] [S2] [S4] [S5] [S6] [S8], and the rate in the only retrieved COLA illustration [S3].
 14. **No fixed SPIA issuer publishes a commutation discount formula** (research gap).
-    MassMutual caps the withdrawal at "the present value of all remaining period certain
-    payments, less any surrender charges" without stating a rate [S1]; Pacific Life
-    discloses only that "an interest-rate adjustment will apply" [S2]; NYL names the change
+    One carrier caps the withdrawal at "the present value of all remaining period certain
+    payments, less any surrender charges" without stating a rate [S1]; a second
+    discloses only that "an interest-rate adjustment will apply" [S2]; a third names the change
     in the **10-Year Constant Maturity Treasury (CMT) Index** between purchase and election
     as the driver but gives no formula [S5]. The only explicit formula found anywhere is
-    TIAA-CREF Life's, on a 2008 *variable* contract: for the fixed account "the commuted
+    a fourth's, on a 2008 *variable* contract: for the fixed account "the commuted
     value is the sum of payments less the interest that would have been earned from the
     effective date of the commuted value calculation to the date each payment would have
     been made" — a simple-interest discount — with 4% (the assumed investment return) on
@@ -230,10 +229,10 @@ UK guarantee period; and exclusion-ratio taxation under IRC §72 [R6] [R7] [REG-
     4.00% [S7] moved one-for-one with the 10-year CMT change [S5]. Both level and functional
     form are a modeling invention: **[std]** and **[unverified]**. A simple-interest variant
     per [S7] is offered as a switch in `technical-notes.md`.
-15. Excluded to keep the payment engine schedule-driven: Pacific Life's Income Payment
-    Acceleration (3× or 6× the monthly payment as a lump sum after 59½ and five years of
-    payments, then no payments for three or six months, max two uses) [S2] [S3]; NYL's
-    Payment Acceleration (six months of income at once, then five months of nothing, twice)
+15. Excluded to keep the payment engine schedule-driven: one carrier's income payment
+    acceleration (3× or 6× the monthly payment as a lump sum after 59½ and five years of
+    payments, then no payments for three or six months, max two uses) [S2] [S3]; another's
+    payment acceleration (six months of income at once, then five months of nothing, twice)
     [S5]. Both borrow forward from the schedule with no PV discount.
 
 ---
@@ -247,11 +246,11 @@ before income is determined [S6] [S7] [S11], so the amount annuitized is `P_net 
 The insurer converts `P_net` into a level annualized income `B(1)` using an unpublished
 payout factor depending on form, annuitant age(s) and sex, certain period and COLA election.
 No retrieved document discloses the mortality table, interest rate or expense loading behind
-that factor [S1]–[S6] [S10]; NYL states only that its published payout rates "include both
+that factor [S1]–[S6] [S10]; one carrier states only that its published payout rates "include both
 interest and return of principal" [S10]. Structural regularities across every anchor: payout
 rate rises with age, female below male at the same age, joint below single, certain periods
 and refund guarantees reduce income, and a COLA materially reduces the initial payment
-[S3] [S9] [S10]. NYL flags one genuine non-monotonicity: "there are limited situations
+[S3] [S9] [S10]. One carrier flags one genuine non-monotonicity: "there are limited situations
 (primarily younger annuitants) where the same or essentially the same income payment is
 available for longer guarantee periods or cash refund options" [S5].
 
@@ -271,32 +270,32 @@ income payments made through `t`:
    `max(0, P − G(death))`, "your original purchase payment minus the total income payments
    received" [S3]; nothing further once payments equal or exceed the premium [S5].
 4. **Life with installment refund** — the same shortfall paid as *continuing scheduled
-   payments* until cumulative payments equal the premium [S1] [S4] [S5] [S6]. NYL gives the
-   implementable equivalence: guaranteed payment period = **premium ÷ annualized income
+   payments* until cumulative payments equal the premium [S1] [S4] [S5] [S6]. One carrier gives
+   the implementable equivalence: guaranteed payment period = **premium ÷ annualized income
    benefit amount** [S5], so this form is a life annuity with a derived certain period.
 5. **Period certain only** — payments for a chosen 5–30 year term, no life contingency
-   [S1] [S2] [S4] [S7]. (NYL's lifetime-income form does not offer it; its option list is
+   [S1] [S2] [S4] [S7]. (One carrier's lifetime-income form does not offer it; its option list is
    life-contingent throughout [S5].)
 
 ### Joint-life structure — the two reduction triggers
 
 The sharpest structural variation in the U.S. market, modeled as a **switch, not a
-footnote**. Pacific Life draws the line in the option names themselves: **"Joint Life"
+footnote**. One carrier draws the line in the option names themselves: **"Joint Life"
 options** — "Income payments can be reduced to 50%, 67%, or 75% of the current income
 payment **upon the death of either annuitant**" [S2], restated as "Payments can be reduced
 upon either person's death (Joint Life option)" [S3]; **"Joint and Survivor Life"
 options** — "…reduced to 50%, 67%, or 75% of the current income payment **upon the death
 of the primary annuitant**" [S2], so the secondary annuitant's death changes nothing while
-the primary lives. MassMutual offers the same choice under per-option names — *Reduction
+the primary lives. A second carrier offers the same choice under per-option names — *Reduction
 at Death of Annuitant* versus *Reduction at Death of Either Annuitant*, each crossed with
 No Refund / Installment Refund / Period Certain, reductions of 1/2, 2/3 or 3/4 [S1] — and
-TIAA-CREF Life's contract names encode the identical asymmetry: *Two-Thirds Benefit While
+a third carrier's contract names encode the identical asymmetry: *Two-Thirds Benefit While
 **Either** Annuitant Survives* versus *One-Half Benefit While **Second** Annuitant
 Survives First Annuitant* [S7]. Two consequences: the reduction applies to the **current**
 income payment [S2], so a COLA keeps escalating the underlying level and the survivor's
 payment with it; and under the primary-death trigger, if the secondary dies first **100%**
-continues while the primary lives — NYL makes this mandatory for qualified contracts with
-a non-spouse joint annuitant [S5].
+continues while the primary lives — a fourth carrier makes this mandatory for qualified
+contracts with a non-spouse joint annuitant [S5].
 
 ### Cost-of-living adjustment
 
@@ -304,17 +303,18 @@ a non-spouse joint annuitant [S5].
 
 Applied automatically on each anniversary of the annuity date [S1], "annually compounded"
 [S4]; elected at issue, not cancellable or changeable, and it reduces the initial payment
-[S1] [S2] [S4]. NYL instead starts the increase "one year after the first income payment"
-and requires the owner to be at least 59½ at the first payment [S5]; Nationwide applies it
+[S1] [S2] [S4]. One carrier instead starts the increase "one year after the first income payment"
+and requires the owner to be at least 59½ at the first payment [S5]; another applies it
 to "the fixed payment level for the following year" on each contract anniversary and makes
-the election irrevocable [S6]. Integrity warns that "if annuitant dies prior to life
-expectancy, a payee may receive less total income with an IPO than without one" [S4].
+the election irrevocable [S6]. A third warns that a payee may receive less total income
+with an escalating payout than without one if the annuitant dies before life
+expectancy [S4].
 
 ### Commutation and withdrawals
 
 Withdrawals exist **only** on options that include a period certain [S1]. On the composite
-(MassMutual) design: one full or partial withdrawal each contract year after the first on
-*Period Certain Only*; one **partial** withdrawal per year on *Single or Joint Life with
+design: one full or partial withdrawal each contract year after the first on *Period
+Certain Only*; one **partial** withdrawal per year on *Single or Joint Life with
 Period Certain*, reducing the period-certain payments but **not the lifetime payments
 after the end of the period certain**; minimum $5,000; maximum the present value of all
 remaining period certain payments less surrender charges; each remaining guaranteed
@@ -323,16 +323,16 @@ year 2 to 1% in year 9 and 0% from year 10 [S1]. The insurer-side present value 
 disclosed by any fixed SPIA issuer (footnote 14). Three published behaviors a model must
 reproduce:
 
-- Payments through the end of the guaranteed period are reduced **by the withdrawal
-  percentage elected**, and if the annuitant is alive at the end of that period full
-  payments resume for life [S5]; Pacific Life states the same resumption rule for every
-  form except pure Period Certain [S2].
+- One carrier reduces payments through the end of the guaranteed period **by the
+  withdrawal percentage elected**, and if the annuitant is alive at the end of that period
+  full payments resume for life [S5]; another carrier states the same resumption rule for
+  every form except pure Period Certain [S2].
 - An **interest-rate adjustment** applies [S2], driven by the change in the 10-year CMT
   between purchase and election [S5] — the SPIA analogue of an MVA.
 - On death within a certain period the beneficiary may take the remaining scheduled
-  payments or their lump-sum present value [S1] [S5] [S6] [S7]; Integrity sells this as a
-  Deceased Commutation Rider (ICC09 ER.02 0901) alongside a Living Commutation Rider
-  (ICC09 ER.01 0901) paying 10%–90% of the PV of all remaining payouts after year 1 [S4].
+  payments or their lump-sum present value [S1] [S5] [S6] [S7]; one carrier sells this as a
+  death-triggered commutation rider, alongside a living commutation rider paying 10%–90%
+  of the PV of all remaining payouts after year 1 [S4].
 
 ### No cash value, no nonforfeiture floor
 
@@ -356,41 +356,41 @@ certain-portion commutation with its surrender charge [S1].
 
 **Described but out of scope:**
 
-- **Pacific Life Future Adjustment Option** — one-time scheduled income change, amount and
+- **A future adjustment option at one carrier** — one-time scheduled income change, amount and
   date chosen at issue: increase up to **3×** the initial payment or decrease up to **½**;
   unavailable with joint options carrying a reduced benefit; an increasing adjustment is
-  unavailable on qualified contracts [S2] [S3]. **NYL Changing Needs Option** — one-time
+  unavailable on qualified contracts [S2] [S3]. **A changing-needs option at a second** — one-time
   increase of 1%–400% (up to 5×) or decrease of 1%–50%, on or after the third anniversary
   of the income start date, fixed at purchase, nonqualified only [S5].
-- **NYL Income Enhancement Option** — one-time, index-triggered increase after the fifth
+- **An income enhancement option** — one-time, index-triggered increase after the fifth
   anniversary if the **10-Year CMT** in the third full week of the preceding month is at
   least 2 percentage points above its level before the policy date; amount fixed at issue
   [S5]. The only index-linked income feature in any retrieved SPIA; no retrieved SPIA had
   caps, participation rates, spreads, buffers or floors.
-- **Payment acceleration** [S2] [S3] [S5] (footnote 15). **NYL 30% Cash Withdrawal** —
+- **Payment acceleration** [S2] [S3] [S5] (footnote 15). **A 30% cash withdrawal** —
   commutation against **life expectancy** on a life-only contract, 30% of the discounted
   value of remaining expected payments based on life expectancy at purchase, exercisable
   on the 5th, 10th or 15th anniversary, permanently cutting all future income by 30% [S5];
   the only retrieved feature that commutes a life-contingent stream.
-- **Impaired-risk features** — Mutual of Omaha's "age rating available" on Ultra-Income,
+- **Impaired-risk features** — one carrier's "age rating available" on one payout product,
   plus 10%/20% payment increases for health condition, a 50% increase for nursing home
-  confinement and a survivor continuation option on Income Access [S8]. From a 2017
-  producer document whose successor brochure 404s; re-verify before relying on it. AG 9-C
-  governs valuation of substandard contracts and VM-V's "initial age" accommodates a
-  **rated age** [R1] [REG-R41].
+  confinement and a survivor continuation option on a second product of the same carrier
+  [S8]. From a 2017 producer document whose successor brochure 404s; re-verify before
+  relying on it. AG 9-C governs valuation of substandard contracts and VM-V's "initial
+  age" accommodates a **rated age** [R1] [REG-R41].
 - **Temporary life payouts** (5–30 years, income only while alive, no death benefit),
-  Integrity only [S4] — tax-recognized (IRS Tables IV/VIII exist for it [R7]) but rare;
+  at one carrier only [S4] — tax-recognized (IRS Tables IV/VIII exist for it [R7]) but rare;
   **percent-of-premium death benefit** (25% or 50%, barred on qualified policies and in New
-  York), NYL only [S5]; **participating / dividend-paying SPIAs**, mentioned once [S11]
-  with no mechanics located.
+  York), at a second carrier only [S5]; **participating / dividend-paying SPIAs**, mentioned
+  once [S11] with no mechanics located.
 
 **How these excluded features would sort under AG 33, if any were added back.** The guideline's
 two-category test turns on whether a benefit is *freely elected*, not on its label
 [REG-R151 *Definitions* 1](#uslib-reg-r151). **Elective**, and therefore enough on their own to pull the contract
-into AG 33's scope: **payment acceleration**, the **NYL 30% Cash Withdrawal**, and the
+into AG 33's scope: **payment acceleration**, the **30% cash withdrawal** above, and the
 certain-portion **commutation** already in the composite. **Non-elective**, and therefore not:
 the **nursing-home confinement increase** and the **health-condition payment increases** on
-Mutual of Omaha's impaired-risk designs [S8] — AG 33's non-elective list names "nursing home
+the impaired-risk designs above [S8] — AG 33's non-elective list names "nursing home
 benefits" expressly, and a benefit payable on a contingent event independent of an owner's
 election stays non-elective however large the payment step. This is the correction that matters
 most for reading older library notes, which had placed nursing-home waivers among the elective
@@ -401,45 +401,48 @@ set [REG-R151].
 ## Variations across insurers
 
 1. **Survivor-reduction trigger — the sharpest structural variation.** Three patterns:
-   (a) explicit two-family designs naming the trigger (Pacific Life's *Joint Life* versus
-   *Joint and Survivor Life* [S2] [S3]; MassMutual's *Reduction at Death of Either
-   Annuitant* versus *Reduction at Death of Annuitant* [S1]; TIAA-CREF Life's
+   (a) explicit two-family designs naming the trigger (*Joint Life* versus
+   *Joint and Survivor Life* [S2] [S3]; *Reduction at Death of Either
+   Annuitant* versus *Reduction at Death of Annuitant* [S1]; the
    two-thirds-either versus one-half-second-survives forms [S7]); (b) a continuous
-   survivor percentage with tax-driven trigger rules (NYL's 40%–99%, where a spouse joint
+   survivor percentage with tax-driven trigger rules (40%–99% at one carrier, where a spouse joint
    annuitant on a qualified policy may use either trigger but a non-spouse only the
-   primary-death trigger [S5]); (c) legacy discrete last-survivor forms (Nationwide's
-   Joint and 50% / 100% last survivor [S6]). **Chosen: Pacific Life's design** — two
-   triggers × three percentages × four guarantee variants — the cleanest published
+   primary-death trigger [S5]); (c) legacy discrete last-survivor forms (a
+   Joint and 50% / 100% last survivor pair [S6]).
+   **Chosen: pattern (a) in its *Joint Life* / *Joint and Survivor Life* form** [S2] [S3] —
+   two triggers × three percentages × four guarantee variants — the cleanest published
    statement, and it maps directly onto a boolean switch in the payment engine.
 2. **Survivor percentage menus.** 50/67/75 [S2]; 1/2, 2/3, 3/4 [S1]; 2/3 or 1/2 by form
    [S7]; 50/100 [S6]; continuous 40–99 [S5]. Chosen: {50, 66⅔, 75, 100} (footnote 10).
 3. **Certain-period range.** 5–30 years is standard [S1] [S2] [S4] [S5] [S7]; the older
-   Nationwide product caps at 20 [S6]; qualified money is capped near 10 years by RMD rules
+   product in the survey caps at 20 [S6]; qualified money is capped near 10 years by RMD rules
    [S2] [R8]. Chosen: 5–30 with a 10-year default.
 4. **COLA menus.** 1–4% modal [S1] [S5]; 2–4% [S2]; 1–3% [S6]; 1–5% compound [S4]; up to 6%
    [S8]. **No CPI-linked option was found anywhere.** Chosen: 1–4% fixed compound — the only
    menu working for both qualified and nonqualified money under the sub-5% rule [R8].
-5. **Liquidity — where designs diverge most.** *None*: Integrity's base contract [S4];
-   TIAA-CREF Life's life-contingent contracts, where "no lump sum payment is available
-   during the lifetime of annuitant(s)" [S7]. *Certain-period-only, charge-bearing*:
-   MassMutual — one withdrawal a year, $5,000 minimum, capped at the PV of remaining certain
-   payments, with the 8%-to-1% nine-year surrender charge, the only published SPIA
-   surrender-charge schedule found [S1]. *Percentage-band rider*: Integrity, 10%–90% of PV
-   after year 1, excluded on life-only, temporary life and certain periods under 10 years
-   [S4]. *Full PV commutation with income resumption*: Pacific Life, up to 100% of PV,
-   unlimited withdrawals [S2] [S3]; NYL's 100% Cash Withdrawal, once [S5]. *Against life
-   expectancy*: NYL only [S5]. **Oregon** is repeatedly carved out of withdrawal features
-   [S1] [S2]; **New York** out of Integrity's commutation riders [S4] and NYL's
-   percent-of-premium death benefit [S5]. **Chosen: MassMutual's design** — the only one
-   with a published charge schedule, and confining commutation to the certain
-   (non-life-contingent) portion keeps the mortality and liquidity models separable.
+5. **Liquidity — where designs diverge most.** *None*: a first carrier's base contract
+   [S4]; a second carrier's life-contingent contracts, where "no lump sum payment is
+   available during the lifetime of annuitant(s)" [S7]. *Certain-period-only,
+   charge-bearing*: a third carrier — one withdrawal a year, $5,000 minimum, capped at the
+   PV of remaining certain payments, with the 8%-to-1% nine-year surrender charge, the only
+   published SPIA surrender-charge schedule found [S1]. *Percentage-band rider*: the first
+   carrier's commutation rider — 10%–90% of PV after year 1, excluded on life-only,
+   temporary life and certain periods under 10 years [S4]. *Full PV commutation with income
+   resumption*: a fourth carrier — up to 100% of PV, unlimited withdrawals [S2] [S3]; and a
+   fifth carrier's once-only withdrawal of up to 100% of PV [S5]. *Against life
+   expectancy*: the fifth carrier only [S5]. **Oregon** is repeatedly carved out of
+   withdrawal features [S1] [S2]; **New York** out of the first carrier's commutation
+   riders [S4] and the fifth's percent-of-premium death benefit [S5].
+   **Chosen: the certain-period design** [S1] — the only one with a published charge
+   schedule, and confining commutation to the certain (non-life-contingent) portion keeps
+   the mortality and liquidity models separable.
 6. **Minimum premium** ($10,000 cluster [S1] [S4] [S5] [S6] versus $25,000 [S2]; chosen
-   $10,000) and **death benefits before income starts** (only Pacific Life publishes a
+   $10,000) and **death benefits before income starts** (only one carrier publishes a
    pre-first-payment return-of-premium benefit, extended to terminal illness with ≤ 12
    months' life expectancy [S2]; excluded with the deferral window, footnote 3).
-7. **Vintage caveat.** Nationwide INCOME Promise [S6] is a 2004 document; the TIAA-CREF Life
+7. **Vintage caveat.** The consumer brochure [S6] is a 2004 document; the
    prospectus [S7] a 2008 SEC filing and a *variable* immediate annuity with a fixed-account
-   option, not a pure fixed SPIA; the Mutual of Omaha overview [S8] a 2017 producer
+   option, not a pure fixed SPIA; the producer overview [S8] a 2017
    document. None is a currently-sold product spec; they supply design vocabulary and
    contractual precision. Composite parameter *levels* follow the current-era anchors
    [S1] [S2] [S3]; only *mechanics* come from the older documents.
@@ -466,7 +469,7 @@ retirement or deferred compensation plan (IRA/§408 plans excepted), which ¶13.
 **CRVM-consistent** method instead — an individual retail SPIA is squarely inside ¶15
 [REG-R153 ¶¶13.b, 14](#uslib-reg-r153). **¶6** fixes the triple: for individual annuity and pure endowment
 contracts the minimum standard is the **method of ¶¶14–15**, the **valuation interest rates
-of ¶¶7–10**, and **the tables defined in Appendix A-821** [REG-R153 ¶6](#uslib-reg-r153). TIAA-CREF Life
+of ¶¶7–10**, and **the tables defined in Appendix A-821** [REG-R153 ¶6](#uslib-reg-r153). One carrier
 states the application to this product directly: "For deferred annuities in the pay out
 stage, Single Premium Immediate Annuities ('SPIA') and supplementary contracts, the path of
 future guaranteed benefits with the highest present value is used to set policy reserves"
@@ -483,7 +486,7 @@ contract owner under the terms of the contract"; and its *Definitions* block cla
 terms of the contract" [REG-R151 *Purpose*, *Definitions* 1](#uslib-reg-r151). A `life_only`, `cash_refund`
 or `life_certain` contract of the composite design with **no commutation right** — the base
 configuration here, `commutation_enabled = false` — is therefore **inside CARVM and outside
-AG 33**. Add the commutation of the certain portion that MassMutual and NYL offer [S1] [S5]
+AG 33**. Add the commutation of the certain portion that two carriers offer [S1] [S5]
 and the contract is inside both, because commutation is a benefit option "freely elected
 under the terms of the contract"; the mechanics of that case are worked in
 `technical-notes.md`, "Reserve basis". Two corrections to statements the library had carried
@@ -598,10 +601,9 @@ behavior, not on contract cash flows [REG-R46].
 and is not SEC-registered [unverified — no retrieved document states this as a legal
 conclusion]. The verified contrast: the single premium immediate **variable** annuity is
 registered and sold by prospectus, and the only SEC-filed document in this research is
-exactly that — TIAA-CREF Life's Rule 497(c) prospectus, Registration No. 333-46414 [S7] —
-carrying separate-account charges a fixed SPIA does not have (M&E maximum 1.00% / current
-0.40%; administrative expense 0.20%; total separate account maximum 1.20% / current 0.60%;
-no annual contract fee) [S7].
+exactly that — a Rule 497(c) prospectus [S7] — carrying separate-account charges a fixed
+SPIA does not have (M&E maximum 1.00% / current 0.40%; administrative expense 0.20%; total
+separate account maximum 1.20% / current 0.60%; no annual contract fee) [S7].
 
 **IRC §72 — exclusion ratio.** For a nonqualified SPIA each payment splits into an
 excludable return of investment and a taxable interest element, at **exclusion ratio =
@@ -614,7 +616,7 @@ percentage × min(net cost, total guaranteed return) — the adjustment that mus
 cash-refund and installment-refund SPIAs [R7]. **The tax-free amount per payment is fixed in
 dollars at the first payment and does not increase with COLA increases** [R7], so a COLA
 SPIA's taxable proportion rises over time. The §72(q) 10% penalty does not apply to
-distributions "under an immediate annuity contract" [R6] [S11], but NYL warns that adding a
+distributions "under an immediate annuity contract" [R6] [S11], but one carrier warns that adding a
 withdrawal feature can retroactively expose pre-59½ payments to the 10% tax plus interest
 [S5], and a contract offering "an option to receive a lump sum in full discharge of the
 obligation" is a *disqualifying form of payment or settlement* under Regs. §1.72-6(d)(3)
@@ -626,7 +628,7 @@ exceeding one year, and **nonincreasing** except as permitted; a **constant perc
 increase applied at least annually at a rate less than 5% per year** is permitted, as are
 increases tracking an eligible cost-of-living index [R8] [REG-R57]. The period certain is
 capped by the uniform lifetime table denominator at the annuity starting date [R8],
-operationalized by Pacific Life as ≤ 10 years (9 for an inherited IRA) [S2]. Non-spouse
+operationalized by one carrier as ≤ 10 years (9 for an inherited IRA) [S2]. Non-spouse
 survivor percentages are capped by the MDIB table, 52% at a 40+ year age gap up to 100% at
 ≤ 10 years; a spouse may always take 100% [R8]. The 2024 RMD final regulations (T.D. 10001,
 applicable for calendar years beginning January 1, 2025) finalize this framework and add
@@ -660,17 +662,6 @@ the QLAC and partial-annuitization rules that matter to the DIA chassis [REG-R58
 [REG-R57]: #uslib-reg-r57
 [REG-R58]: #uslib-reg-r58
 [REG-R59]: #uslib-reg-r59
-[S1]: #uslib-immediate_annuity-s1
-[S10]: #uslib-immediate_annuity-s10
-[S11]: #uslib-immediate_annuity-s11
-[S2]: #uslib-immediate_annuity-s2
-[S3]: #uslib-immediate_annuity-s3
-[S4]: #uslib-immediate_annuity-s4
-[S5]: #uslib-immediate_annuity-s5
-[S6]: #uslib-immediate_annuity-s6
-[S7]: #uslib-immediate_annuity-s7
-[S8]: #uslib-immediate_annuity-s8
-[S9]: #uslib-immediate_annuity-s9
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

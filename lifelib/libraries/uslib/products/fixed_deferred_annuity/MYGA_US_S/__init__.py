@@ -128,17 +128,18 @@ that differ only in the switches the technical notes make first-class parameters
 the cross-carrier divergence in those switches is the notes' own headline finding. Point 1
 is the worked example anchor; point 2 repeats it under the stress reference yield that
 forces the symmetric cap and the nonforfeiture floor to bind; points 3 to 7 carry the
-Camp B annual-redeclaration architecture, the registered-contract conventions, the Midland
-conventions, the asymmetric cap and the declared-differential MVA. Between them they
-exercise all three MVA families, all five cap rules, both renewal architectures, both
-Model #805 withdrawal conventions and both free-withdrawal rules, so no branch of the
-notes' parameter set is dead code. A test asserts every point projects.
+Camp B annual-redeclaration architecture, the registered-contract conventions, the
+net-of-charges MGSV convention with its interest-only free withdrawal and
+interest-credited cap [S5][S6][S8][S9], the asymmetric cap and the declared-differential
+MVA. Between them they exercise all three MVA families, all five cap rules, both renewal
+architectures, both Model #805 withdrawal conventions and both free-withdrawal rules, so
+no branch of the notes' parameter set is dead code. A test asserts every point projects.
 
 **Verification.** ``tests/test_fixed_deferred_annuity_us.py`` asserts every row and column
 of the notes' worked example table (all seven months, money to the cent), both surrender
 traces line by line including the capped MVA and the binding Model #805 floor, the
-geometric branch factors from the Nationwide contract, the in-force and account value
-roll-forwards, and one test per entry in the notes' Known modeling pitfalls list.
+geometric branch factors from one registered contract [S4], the in-force and account
+value roll-forwards, and one test per entry in the notes' Known modeling pitfalls list.
 
 Example:
 

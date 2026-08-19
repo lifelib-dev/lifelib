@@ -536,9 +536,6 @@ model's choice of a single age basis, stands.
 [REG-R46]: #uslib-reg-r46
 [REG-R62]: #uslib-reg-r62
 [REG-R68]: #uslib-reg-r68
-[S10]: #uslib-fixed_indexed_annuity-s10
-[S6]: #uslib-fixed_indexed_annuity-s6
-[S9]: #uslib-fixed_indexed_annuity-s9
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

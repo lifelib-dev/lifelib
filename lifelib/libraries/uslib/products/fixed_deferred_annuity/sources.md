@@ -545,8 +545,6 @@ introduced at drafting and are not attributable to any source.
 [REG-R59]: #uslib-reg-r59
 [REG-R60]: #uslib-reg-r60
 [REG-R63]: #uslib-reg-r63
-[S5]: #uslib-fixed_deferred_annuity-s5
-[S6]: #uslib-fixed_deferred_annuity-s6
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

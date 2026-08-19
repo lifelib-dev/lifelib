@@ -454,11 +454,6 @@ model have parted company — which is the question this library exists to let y
 [R3]: #uslib-deferred_income_annuity-r3
 [R9]: #uslib-deferred_income_annuity-r9
 [REG-R153]: #uslib-reg-r153
-[S1]: #uslib-deferred_income_annuity-s1
-[S2]: #uslib-deferred_income_annuity-s2
-[S3]: #uslib-deferred_income_annuity-s3
-[S4]: #uslib-deferred_income_annuity-s4
-[S5]: #uslib-deferred_income_annuity-s5
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

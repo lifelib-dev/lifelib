@@ -467,11 +467,6 @@ Known modeling pitfalls:
 [REG-R32]: #uslib-reg-r32
 [REG-R34]: #uslib-reg-r34
 [REG-R6]: #uslib-reg-r6
-[S2]: #uslib-term_life-s2
-[S3]: #uslib-term_life-s3
-[S5]: #uslib-term_life-s5
-[S6]: #uslib-term_life-s6
-[S7]: #uslib-term_life-s7
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

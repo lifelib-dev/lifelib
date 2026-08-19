@@ -200,10 +200,10 @@ as a single assumption number rather than a function of ``t``: ``s_ren`` is
 base run, 1.00% in the notes' scenario **[std]**); ``BF`` is ``lapse_buffer``, the 50 bp
 band inside which the dynamic-lapse response is exactly zero; and ``s_adm`` is
 ``mva_admin_spread``, the 25 bp administrative-expense adder in the geometric MVA's
-denominator, which is 0 in Voya's variant [S3][S4]. Rebasing any of the three is an
-assignment to the Reference, with no formula change. ``P_accum@GMIR``, by contrast, is a
-recursion and so a Cells: :func:`prem_accum_gmir_pp` is the level the ``gmir_floor`` cap
-holds ``AV + M`` above [S13].
+denominator [S4], which the other registered contract sets to 0 [S3]. Rebasing any of
+the three is an assignment to the Reference, with no formula change. ``P_accum@GMIR``, by
+contrast, is a recursion and so a Cells: :func:`prem_accum_gmir_pp` is the level the
+``gmir_floor`` cap holds ``AV + M`` above [S13].
 
 Two quantities the notes list as *model point attributes* are computed here instead,
 because each is fixed by a rule the notes also state: ``av_initial`` is
@@ -773,9 +773,9 @@ def surr_charge_id(t):
 def surr_charge_year(t):
     """sc_clock: the contract year within the schedule in force, 1..n.
 
-    Resets to 1 at each renewal under ``rollover`` [S1][S2][S11]. Voya and Nationwide
-    instead run the clock from the original purchase payment date so it never restarts
-    [S3][S4]; that variant is not carried on this chassis.
+    Resets to 1 at each renewal under ``rollover`` [S1][S2][S11]. The two registered
+    contracts instead run the clock from the original purchase payment date so it never
+    restarts [S3][S4]; that variant is not carried on this chassis.
     """
     return policy_year(t) - guar_period() * (gp_index(t) - 1)
 
@@ -855,7 +855,7 @@ def mva_ref_yield_locked(t):
 def mva_ref_term_years(tau):
     """The whole-year maturity at which the distribution yield is read [S4].
 
-    Partial years round **up**, capped at the guarantee period: the Nationwide contract
+    Partial years round **up**, capped at the guarantee period: one registered contract
     reads a 3-year yield for 985/365.25 = 2.69 years remaining while the exponent keeps
     the exact day count. With a single scalar reference yield per scenario this selection
     determines nothing; it is carried so a curve-valued extension has the rule in place.
@@ -866,9 +866,9 @@ def mva_ref_term_years(tau):
 def mva_factor_geometric(i_deposit, i_dist, tau):
     """Phi: the geometric MVA factor ``((1+a)/(1+b+s_adm))^tau`` [S3][S4].
 
-    ``s_adm`` is ``mva_admin_spread``, 25 bp in the Nationwide contract, covering the cost
-    of liquidating fixed-income investments and structurally biasing the adjustment
-    against the owner; Voya's variant sets it to zero [S3].
+    ``s_adm`` is ``mva_admin_spread``, 25 bp in one registered contract [S4], covering the
+    cost of liquidating fixed-income investments and structurally biasing the adjustment
+    against the owner; the other registered variant sets it to zero [S3].
     """
     return ((1.0 + i_deposit) / (1.0 + i_dist + mva_admin_spread)) ** tau  # noqa: F821
 

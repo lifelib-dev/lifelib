@@ -55,21 +55,21 @@ PLT mortality deterioration of 154%–1,066% of level-period mortality for Jump-
 
 **Footnotes**
 
-1. **[std] Level period menu.** Observed menus: 10/15/20/25/30/35/40 (Protective [S1];
-   Banner [S2]); 10/15/20/30 (Lincoln [S3]); 10/15/20/25/30 (Pacific Life [S4]); 18 periods
-   including every year 15–30 (Corebridge [S5]). The 10/15/20/30 menu is the classic core
-   (it is Lincoln's entire menu [S3]); the reference library models 10/20/30 and takes 20-year as the base cell because
-   20-year term has the highest in-force exposure industry-wide [R6].
-2. **[std] Issue ages.** Observed: Protective 20-yr NT 18–70 (tobacco 18–62), 10-yr 18–80,
-   30-yr 18–58 [S1]; Banner 10-yr 20–75, 20-yr NT 20–70 (tobacco 20–65), 30-yr 20–55 [S2];
-   Lincoln 10/15/20-yr 18–60, 30-yr NT 18–55 [S3]; Corebridge 10-yr 20–80, 20-yr 20–70,
-   30-yr 20–55 [S5]. The representative grid uses minimum age 18 (Protective/Lincoln) and
-   NT caps 75/70/55 — modal for the 20- and 30-year plans; the 10-year cap adopts Banner's
-   75 [S2], between Lincoln's 60 [S3] and the Protective/Corebridge 80 [S1] [S5]; the
-   tobacco cap reduction of 5 years approximates the observed
-   pattern (Protective 20-yr −8 yrs, Banner 20-yr −5 yrs) without a per-plan table.
-3. **[std] Maximum face.** Protective states no set maximum [S1]; Lincoln caps at
-   $1,000,000 reflecting its accelerated/online underwriting program [S3]; Banner bands run
+1. **[std] Level period menu.** Observed menus: 10/15/20/25/30/35/40 ([S1]; [S2]);
+   10/15/20/30 ([S3]); 10/15/20/25/30 ([S4]); 18 periods including every year 15–30 ([S5]).
+   The 10/15/20/30 menu is the classic core (it is one carrier's entire menu [S3]); the
+   reference library models 10/20/30 and takes 20-year as the base cell because 20-year term
+   has the highest in-force exposure industry-wide [R6].
+2. **[std] Issue ages.** Observed: 20-yr NT 18–70 (tobacco 18–62), 10-yr 18–80,
+   30-yr 18–58 [S1]; 10-yr 20–75, 20-yr NT 20–70 (tobacco 20–65), 30-yr 20–55 [S2];
+   10/15/20-yr 18–60, 30-yr NT 18–55 [S3]; 10-yr 20–80, 20-yr 20–70, 30-yr 20–55 [S5]. The
+   representative grid uses minimum age 18 (two of these four carriers [S1] [S3]) and NT caps
+   75/70/55 — modal for the 20- and 30-year plans; the 10-year cap adopts one carrier's
+   75 [S2], between the lowest observed 60 [S3] and the 80 shared by the other two [S1] [S5];
+   the tobacco cap reduction of 5 years approximates the observed pattern (20-yr −8 yrs [S1],
+   20-yr −5 yrs [S2]) without a per-plan table.
+3. **[std] Maximum face.** One carrier states no set maximum [S1]; another caps at
+   $1,000,000 reflecting its accelerated/online underwriting program [S3]; a third's bands run
    to $10,000,001+ [S2]. The reference model imposes no maximum; underwriting-program caps
    are a distribution feature, not a liability mechanic.
 
@@ -82,18 +82,18 @@ PLT mortality deterioration of 154%–1,066% of level-period mortality for Jump-
 | Premium rate bands (by face) | 4: $100,000–249,999 / $250,000–499,999 / $500,000–999,999 / $1,000,000+ | [S5] boundaries; 4-band choice **[std]** (fn 6) |
 | Per-$1,000 rate behavior | Rate per $1,000 decreases by band, constant within band | [S2] [S3] [S5] |
 
-4. **[std] Rate classes.** Observed counts: 4 (Protective: Select Preferred, Preferred,
-   Non-Tobacco, Tobacco [S1]), 5 (Lincoln [S3]), 6 (Banner [S2]), 8 (Corebridge [S5]). The
-   common skeleton is preferred-plus/preferred/standard × tobacco with table ratings layered
-   on a standard-type class [S2] [S3] [S5]. Four classes (three NT tiers + one tobacco) keep
-   the model-point dimensionality small while preserving the preferred-structure mortality
-   split that the 2015 VBT relative-risk tables support [REG-R18].
-5. **[std] Substandard.** Observed: table ratings to Table D (Lincoln;
-   flat extras to $5/1,000) [S3], Table H/D by issue age (Corebridge, on Special rates)
-   [S5], ratings applied to Standard Plus rates (Banner) [S2]. Excluded from the reference
-   model as a volume-minor complication; a flat mortality multiple can emulate it.
-6. **[std] Bands.** Observed band counts: 3 (Lincoln [S3]), 4 (Corebridge [S5]), 7 (William
-   Penn [S2]), 10 (Banner [S2]). Four bands with the Corebridge boundaries [S5] are chosen
+4. **[std] Rate classes.** Observed counts: 4 (Select Preferred, Preferred, Non-Tobacco,
+   Tobacco [S1]), 5 ([S3]), 6 ([S2]), 8 ([S5]). The common skeleton is
+   preferred-plus/preferred/standard × tobacco with table ratings layered on a standard-type
+   class [S2] [S3] [S5]. Four classes (three NT tiers + one tobacco) keep the model-point
+   dimensionality small while preserving the preferred-structure mortality split that the
+   2015 VBT relative-risk tables support [REG-R18].
+5. **[std] Substandard.** Observed: table ratings to Table D (with flat extras to
+   $5/1,000) [S3], Table H/D by issue age (on Special rates) [S5], ratings applied to
+   Standard Plus rates [S2]. Excluded from the reference model as a volume-minor
+   complication; a flat mortality multiple can emulate it.
+6. **[std] Bands.** Observed band counts: 3 ([S3]), 4 ([S5]), and 7 and 10 for the two
+   issuing companies covered by [S2]. The four-band grid and its boundaries [S5] are chosen
    as the median-complexity structure that still exhibits the band-reversal lapse dynamics
    noted in the experience studies [R6].
 
@@ -109,15 +109,15 @@ PLT mortality deterioration of 154%–1,066% of level-period mortality for Jump-
 | Level-period rate anchor 2 | F40 / best NT class / $1,000,000 / 20-yr: ≈ $477/yr (≈ $0.41–$0.48 per $1,000 + fee) | [S4] |
 | Full guaranteed rate table | Synthesized by the implementation, calibrated to the two anchors and the ART tail below | **[std]** (fn 9) |
 
-7. **[std] Policy fee.** Observed: $90 Banner / $80 William Penn [S2]; $80–$90 by band,
-   non-commissionable (Lincoln) [S3]; $74 band 1 (commissionable) / $64 bands 2–4
-   (non-commissionable) (Corebridge) [S5]; $65 included in scheduled premium (Pacific Life
-   specimen) [S6]. $65 is adopted because it keeps the specimen premium anchor internally
+7. **[std] Policy fee.** Observed: $90 / $80 for the two issuing companies covered by
+   [S2]; $80–$90 by band, non-commissionable [S3]; $74 band 1 (commissionable) / $64 bands
+   2–4 (non-commissionable) [S5]; $65 included in scheduled premium (specimen
+   policy) [S6]. $65 is adopted because it keeps the specimen premium anchor internally
    consistent ($140 = $0.75 × 100 + $65) [S6]; non-commissionable follows the majority of
    observed fee treatments [S3] [S5].
-8. Modal factors vary narrowly across carriers: Banner 0.51/0.26/0.085 [S2], Lincoln
-   0.515/0.262/0.0875 [S3], Corebridge 0.52/0.265/0.0845 [S5], Pacific Life specimen
-   0.52/0.27/0.08333 [S6]. The specimen set is used for consistency with the premium anchor.
+8. Modal factors vary narrowly across carriers: 0.51/0.26/0.085 [S2],
+   0.515/0.262/0.0875 [S3], 0.52/0.265/0.0845 [S5], and 0.52/0.27/0.08333 in the specimen
+   policy [S6]. The specimen set is used for consistency with the premium anchor.
 9. **[std] Rate table.** No carrier publishes full per-$1,000 rate tables by
    age/class/band/duration in the retrieved documents; only the two cells above were
    verified (research notes, "Gaps and caveats"). The reference implementation therefore
@@ -136,8 +136,8 @@ PLT mortality deterioration of 154%–1,066% of level-period mortality for Jump-
 
 10. **[std] Current PLT scale.** Graded PLT structures (smaller initial jump, premiums
     grading up annually) have become popular, in some cases implemented by re-rating
-    in-force blocks [R4]; Lincoln instead decreases face and holds premium level for three
-    years [S3], and Corebridge decreases face with premium initially near level [S5]. The
+    in-force blocks [R4]; one carrier instead decreases face and holds premium level for
+    three years [S3], and another decreases face with premium initially near level [S5]. The
     reference product charges the guaranteed Jump-to-ART scale because it is the
     SOA-documented most common structure [R4] and because the specimen contract provides a
     complete verified guaranteed schedule for it [S6].
@@ -154,12 +154,13 @@ PLT mortality deterioration of 154%–1,066% of level-period mortality for Jump-
 | Carry-overs | Suicide/contestable periods measured from original issue date | [S6] |
 | Restriction | Not allowed while waiver-of-premium disability benefits apply (rider out of scope) | [S6] |
 
-11. Window per Banner (level period or attained age 70, whichever first; 5 years if issued
-    at 66+ — the 66+ carve-out is not modeled) [S2] and Lincoln (earlier of level period
-    and attained age 70) [S3]. The Pacific Life specimen instead prints an explicit
-    Conversion Period End Date (sample: 5 years on a 10-year plan) [S6]; Protective's
-    longer rider-extended windows (8/13/18 years, to age 70) are [unverified]. The
-    min(level period, age 70) rule is the modal contractual pattern [S2] [S3].
+11. Window per one carrier (level period or attained age 70, whichever first; 5 years if
+    issued at 66+ — the 66+ carve-out is not modeled) [S2] and another (earlier of level
+    period and attained age 70) [S3]. The specimen policy, from a third carrier, instead
+    prints an explicit Conversion Period End Date (sample: 5 years on a 10-year plan) [S6];
+    a fourth carrier's longer rider-extended windows (8/13/18 years, to age 70) are
+    [unverified]. The min(level period, age 70) rule is the modal contractual pattern
+    [S2] [S3].
 
 ### Policy administration provisions
 
@@ -174,12 +175,12 @@ PLT mortality deterioration of 154%–1,066% of level-period mortality for Jump-
 | Face increases | Not allowed after issue | [S3] |
 | Termination | Earliest of death, expiry (age 95), conversion, lapse, successful contest, owner request; pro-rata premium refund beyond month of termination | [S6] |
 
-12. Lincoln allows 5 years (and 15 days after the 46-day post-due-date window without
+12. One carrier allows 5 years (and 15 days after the 46-day post-due-date window without
     evidence) [S3]; the specimen's 3-year/6% rule [S6] is adopted as it is complete
     contract language. Reinstatement is administratively real but not modeled as a
     decrement reversal in the base reference model (see technical notes).
-13. 1-year suicide period in CO, MO, ND for Banner [S2]; state variations are out of scope
-    for the composite.
+13. 1-year suicide period in CO, MO, ND in one carrier's forms [S2]; state variations are
+    out of scope for the composite.
 
 ### Death benefit
 
@@ -190,10 +191,10 @@ PLT mortality deterioration of 154%–1,066% of level-period mortality for Jump-
 | Delayed-claim interest | Interest payable on delayed claims (10% after 31 days in specimen) | [S6] |
 | Settlement options | Lump sum default; guaranteed income options (≥2% interest; specimen uses Annuity 2000 female −5 yrs for life incomes) — not modeled | [S6]; exclusion **[std]** (fn 14) |
 
-14. **[std] Settlement options.** Guaranteed purchase-rate income options [S6] and
-    Protective's Income Provider Option installment endorsement [S7] exist but have
-    negligible take-up impact on gross liability cash flows relative to lump sums; the
-    reference model pays all death claims as lump sums.
+14. **[std] Settlement options.** Guaranteed purchase-rate income options [S6] and an
+    installment income endorsement [S7] exist but have negligible take-up impact on gross
+    liability cash flows relative to lump sums; the reference model pays all death claims as
+    lump sums.
 
 ---
 
@@ -214,7 +215,7 @@ with `PolicyFee = $65` level in all years [S6] (fee treatment per fn 7). During 
 period `rate_per_1000` is constant in `t`; after the level period it follows the guaranteed
 ART scale [S2] [S6]. Modal premiums are `ModalFactor × AnnPrem` with factors 0.52 / 0.27 /
 0.08333 (semi-annual / quarterly / monthly) [S6]; modal loadings are therefore implicit
-(e.g. 12 × 0.08333 ≈ 1.000 in the specimen, but 12 × 0.085 = 1.02 at Banner [S2]).
+(e.g. 12 × 0.08333 ≈ 1.000 in the specimen, but 12 × 0.085 = 1.02 at another carrier [S2]).
 
 There are no non-guaranteed premium elements in the representative product: no dividends,
 no current-vs-guaranteed premium distinction [S3] [S6] (see fn 10 for the PLT scale choice).
@@ -222,7 +223,7 @@ no current-vs-guaranteed premium distinction [S3] [S6] (see fn 10 for the PLT sc
 ### Death benefit provisions
 
 The death benefit is the level face amount in all years, including the ART tail
-[S1] [S2] [S6] (the Corebridge and Lincoln face-decrease PLT variants are documented under
+[S1] [S2] [S6] (the two face-decrease PLT variants are documented under
 "Variations" and not modeled [S3] [S5]). Proceeds on death equal face plus any rider
 benefits, plus a pro-rata refund of premium paid beyond the policy month of death, minus due
 and unpaid premium [S6]. If death occurs in the grace period, the premium to the end of the
@@ -232,7 +233,7 @@ policy month is deducted from proceeds [S3] [S6].
 
 None. The policy accumulates no account value or cash surrender value, is non-participating,
 and terminates without value on lapse or expiry [S3] [S6]. There are consequently no charges,
-credits, loans, or withdrawals: Lincoln explicitly lists "Loans: N/A" [S3]. Long-duration
+credits, loans, or withdrawals: one source explicitly lists "Loans: N/A" [S3]. Long-duration
 guaranteed-premium term can in principle generate nonforfeiture values under the Standard
 Nonforfeiture Law [REG-R2]; the representative product is assumed to develop none **[std]**
 (consistent with all retrieved product documents, none of which shows a cash value schedule
@@ -266,12 +267,12 @@ of insurability and payment of overdue premiums accumulated at 6.00% compound in
 ### In scope
 
 - **Accelerated Death Benefit (terminal illness) — included at no premium.** Included
-  automatically on all policies at Banner (ICC10-ADB) [S2] and on Corebridge plans
+  automatically on all policies at one carrier (ICC10-ADB) [S2] and on another's plans
   (accelerate up to the lesser of 50% of the specified amount and a scheduled maximum;
   eligibility on a 24-month prognosis (12 in NY); one-time administrative fee up to $500;
-  payment reduces the death benefit) [S5]. Lincoln's version (R879) accelerates up to 50% of
-  death benefit, max $250,000, discounted with interest under a lien approach [S3]; Pacific
-  Life's forms are R16LYTIR / specimen R12TTI [S4] [S6]. **Modeling treatment [std]:** the
+  payment reduces the death benefit) [S5]. A third version (R879) accelerates up to 50% of
+  death benefit, max $250,000, discounted with interest under a lien approach [S3]; a fourth
+  carrier's forms are R16LYTIR / specimen R12TTI [S4] [S6]. **Modeling treatment [std]:** the
   rider is carried in the specification for completeness but modeled as cash-flow-neutral —
   an acceleration is approximately an actuarially discounted prepayment of an imminent death
   claim, and the rider carries no premium.
@@ -282,52 +283,51 @@ Listed for completeness; none is modeled in the reference implementation:
 
 - Waiver of premium (disability) [S2] [S3] [S5] [S6]
 - Children's level term rider [S2] [S3] [S5]
-- Additional-insured / layered term riders (e.g. Banner AIR 10/15/20-year) [S2]
+- Additional-insured / layered term riders (10/15/20-year forms) [S2]
 - Accidental death benefit [S5]
-- Conversion-extension riders with chronic-illness benefits (Protective Conversion
-  Choice(SM) / ExtendCare(SM)) [S1] [S7]
-- Income/settlement endorsements (Protective Income Provider Option [S7]; guaranteed income
+- Conversion-extension riders with chronic-illness benefits [S1] [S7]
+- Income/settlement endorsements (an installment income option [S7]; guaranteed income
   benefit plans [S6])
 - Return-of-premium (ROP) term variants — no fetched insurer source documents one; the only
   verified ROP-related fact is VM-20's special NPR lapse treatment for policies with an
   endowment benefit [R2]; ROP products' existence is otherwise [unverified]
-- Risk class improvement / re-qualification feature (Pacific Life: after 2nd anniversary to
+- Risk class improvement / re-qualification feature (after 2nd anniversary to
   age 70, fee up to $100) [S6]
 
 ---
 
 ## Variations across insurers
 
-1. **Term period menus.** 10–40 years including 35/40-year plans (Protective [S1], Banner
-   [S2]); 10/15/20/30 only (Lincoln [S3]); every year 15–30 plus 10 and 35 (Corebridge
-   [S5]); 10–30 in 5-year steps (Pacific Life [S4]). Representative choice 10/20/30 with a
-   20-year base cell: a subset of the classic 10/15/20/30 core menu (Lincoln's exact
+1. **Term period menus.** 10–40 years including 35/40-year plans ([S1] [S2]);
+   10/15/20/30 only ([S3]); every year 15–30 plus 10 and 35 ([S5]);
+   10–30 in 5-year steps ([S4]). Representative choice 10/20/30 with a
+   20-year base cell: a subset of the classic 10/15/20/30 core menu (one carrier's exact
    lineup [S3]) weighted by in-force exposure [R6].
 2. **PLT design — the largest structural variation.** (a) Jump-to-ART with face unchanged
-   (Banner [S2], Pacific Life [S6]); (b) automatic face decrease with premium held level 3
-   years then ART (Lincoln — explicitly a design to avoid premium sticker-shock and
+   ([S2] [S6]); (b) automatic face decrease with premium held level 3
+   years then ART (explicitly a design to avoid premium sticker-shock and
    antiselective termination [S3]); (c) immediate face decrease with premium initially
-   near-level then increasing (Corebridge [S5]); (d) graded PLT premium scales, sometimes
+   near-level then increasing ([S5]); (d) graded PLT premium scales, sometimes
    applied retroactively to in-force blocks [R4]. Jump-to-ART is chosen because the SOA
    found it the most common U.S. structure [R4] and the full guaranteed schedule is
    verified [S6]; it also produces the strongest anti-selection dynamics, which the model
    must be able to represent.
-3. **Rate classes.** 4 (Protective [S1]) to 8 (Corebridge [S5]); representative 4 **[std]**
+3. **Rate classes.** 4 ([S1]) to 8 ([S5]); representative 4 **[std]**
    (fn 4).
 4. **Policy fees and bands.** Fees $64–$90, commissionable or not [S2] [S3] [S5] [S6]; bands 3
    to 10 [S2] [S3] [S5]. Representative $65 fee / 4 bands (fns 6–7).
-5. **Issue ages.** Minimum 18 (Protective, Lincoln [S1] [S3]) or 20 (Banner, Corebridge
-   [S2] [S5]); maximum 80 on 10-year plans (Protective, Corebridge [S1] [S5]) but 60 at
-   Lincoln's digital program [S3]. Representative grid per fn 2.
+5. **Issue ages.** Minimum 18 in two carriers [S1] [S3] or 20 in two others [S2] [S5];
+   maximum 80 on 10-year plans in two of them [S1] [S5] but 60 in the digital-underwriting
+   program of a third [S3]. Representative grid per fn 2.
 6. **Conversion.** All carriers convert without evidence, typically bounded by the level
-   period and attained age 70, but: Banner grants 5 years at issue ages 66+ [S2]; Lincoln
+   period and attained age 70, but: one grants 5 years at issue ages 66+ [S2]; another
    guarantees full-portfolio access for the first 7 years of the conversion period via
-   amendment [S3]; Pacific Life prints an explicit Conversion Period End Date and pays a
-   conversion credit of about one annual premium [S6]; Protective sells an optional rider
-   lengthening the window with a chronic-illness benefit [S1] [S7], with numeric windows
-   (8/13/18 years) [unverified]; Corebridge's month-based limits (96th/120th month) are
-   [unverified]. Representative: min(level period, age 70) window + one-premium credit
-   (fn 11).
+   amendment [S3]; the specimen policy, from a third carrier, prints an explicit
+   Conversion Period End Date and pays a conversion credit of about one annual premium [S6];
+   a fourth sells an optional rider lengthening the window with a chronic-illness benefit
+   [S1] [S7], with numeric windows (8/13/18 years) [unverified]; a fifth carrier's
+   month-based limits (96th/120th month) are [unverified]. Representative:
+   min(level period, age 70) window + one-premium credit (fn 11).
 7. **Pricing dispersion.** At the F40/$1M/best-NT/20-year cell the top 7 carriers sit
    within $4/yr (≈$477–$480) and the widest outlier is 54% higher [S4] — supporting a
    single representative rate scale calibrated to the cluster.
@@ -429,7 +429,7 @@ Listed for completeness; none is modeled in the reference implementation:
   premium test plus cash value corridor with applicable percentages 250% at ages 0–40
   grading to 100% at 90–95) [R5]. Level premium term with no cash value satisfies these
   tests trivially, and §7702A MEC status is not normally implicated [R5 — analytical note
-  flagged [unverified] in the research](#uslib-term_life-r5). No §7702 testing machinery is needed in the term
+  flagged in the research](#uslib-term_life-r5) [unverified]. No §7702 testing machinery is needed in the term
   reference model.
 
 - **IRC §807 tax reserves [REG-R16].** Post-TCJA, the tax reserve is the greater of net
@@ -439,7 +439,7 @@ Listed for completeness; none is modeled in the reference implementation:
 
 - **Interstate compact.** The specimen contract is issued under IIPRC (Interstate Insurance
   Product Regulation Commission) standards [S6]; state variations (policy forms, suicide
-  periods, NY entities such as William Penn and US Life) apply to essentially all
+  periods, separate New York issuing entities) apply to essentially all
   parameters [S2] [S5] and are out of scope for the composite.
 
 ---
@@ -465,13 +465,6 @@ Listed for completeness; none is modeled in the reference implementation:
 [REG-R2]: #uslib-reg-r2
 [REG-R3]: #uslib-reg-r3
 [REG-R6]: #uslib-reg-r6
-[S1]: #uslib-term_life-s1
-[S2]: #uslib-term_life-s2
-[S3]: #uslib-term_life-s3
-[S4]: #uslib-term_life-s4
-[S5]: #uslib-term_life-s5
-[S6]: #uslib-term_life-s6
-[S7]: #uslib-term_life-s7
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

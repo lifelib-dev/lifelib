@@ -14,8 +14,8 @@ running **R1–R157** with most of the **R73–R149** block unused (R1–R34 fro
 from the AP&P Manual appendix reading of **2026-08-06** — of which **R151** (AG 33)
 and **R153** (A-820 with A-821 and A-822) are cited here). **[std]** marks standardizations
 introduced for the reference implementation. Parameter values are identical to those in
-`product-spec.md`; the mechanics anchors are MassMutual RetireEase [S1] and Pacific Income
-Provider [S2] [S3].
+`product-spec.md`; the mechanics anchors are one carrier's SPIA [S1] and a second
+carrier's [S2] [S3].
 
 ---
 
@@ -45,7 +45,7 @@ Provider [S2] [S3].
   the end of the month of death** — not from the following payment date **[std]**. Both
   follow from evaluating `L(t)` at end-of-month survival, `lᵢ(t)`, and both must be applied
   the same way or the two decrements disagree by one payment period.
-- **Age basis.** **Age nearest birthday (ANB)** **[std]**: MassMutual defines contract age as
+- **Age basis.** **Age nearest birthday (ANB)** **[std]**: one carrier defines contract age as
   age nearest birthday [S1]; the 2012 IAM/IAR family is tabulated ANB [R2] [R9]; IRS
   Publication 939 uses "the age at the birthday nearest to the annuity starting date" [R7].
   One place prescribes a **different** basis: VM-V's "initial age" for valuation-rate bucket
@@ -173,18 +173,18 @@ rate, no declared rider terms. Two quantities remain, and neither is published.
 pricing basis** for a fixed SPIA (research gap). The only insurer-sourced anchors are
 illustrations labelled "for illustrative purposes only": Joint Life Only, both 65,
 $230,856 → $1,200/month ⇒ **6.24%** annualized; Life with 10-Year Period Certain, age 69,
-⇒ **≈7.11%**; single life male 65 with 3% Inflation Protection ⇒ **≈5.28%** initial [S3].
+⇒ **≈7.11%**; single life male 65 with a 3% COLA ⇒ **≈5.28%** initial [S3].
 A low-reliability broker survey gives male 65 life-only **7.97%** with a 5–6% carrier
-spread [S9]; NYL's weekly rate table could not be captured [S10]. **Consequence: no
+spread [S9]; a carrier's weekly rate table could not be captured [S10]. **Consequence: no
 pricing or annuity-rate test against public data is possible.** `B(1)` is exogenous.
 Note that the 6.00% **[std]** level sits **above** what the COLA-adjusted anchors imply
 for this cell (≈4.5%; spec footnote 8): it is a round arithmetic anchor that makes the
 worked example exact, not a price, and must be re-set from a quote before any output is
 read as one.
 
-(ii) **No fixed SPIA issuer publishes a commutation discount formula.** MassMutual gives
-only the cap [S1], Pacific Life only "an interest-rate adjustment will apply" [S2], NYL
-only the 10-Year CMT as driver [S5]. The one explicit formula located is TIAA-CREF Life's
+(ii) **No fixed SPIA issuer publishes a commutation discount formula.** One carrier gives
+only the cap [S1], a second only "an interest-rate adjustment will apply" [S2], a third
+only the 10-Year CMT as driver [S5]. The one explicit formula located is on a fourth's
 2008 *variable* contract: fixed-account commuted value = "the sum of payments less the
 interest that would have been earned from the effective date of the commuted value
 calculation to the date each payment would have been made" (simple interest), with 4% on
@@ -225,7 +225,7 @@ increases the reserve [R2] [REG-R36].
 
 (v) No public data on SPIA commutation take-up was located; the base run holds utilization at
 zero so the payment engine is exercised in isolation. (vi) No insurer publishes expense
-assumptions; MassMutual's "zero fees" [S1] refers to charges to the policyholder, not the
+assumptions; the "zero fees" statement [S1] refers to charges to the policyholder, not the
 insurer's cost. $60 p.a. is a round placeholder for in-payment administration; acquisition
 cost is out of scope (single premium, priced in).
 
@@ -279,7 +279,7 @@ Dimensional check: `B` is currency per annum; `inst = B/m` currency per payment;
 
 Escalation applies to the **unreduced** income level and continues after a survivor
 reduction, because the contract reduces payments to δ "of the **current** income payment"
-[S2]. NYL instead starts the first increase one year after the first income payment [S5] —
+[S2]. One carrier instead starts the first increase one year after the first income payment [S5] —
 one payment period later than the anniversary-of-annuity-date rule adopted here; the
 difference is one instalment's escalation and is a **[std]** convention choice.
 
@@ -318,7 +318,7 @@ stream: during the certain period the full instalment is paid regardless of surv
 `max` prevents paying `1 + L` [S1] [S2] [S5]. Two consequences:
 
 - Because the floor pays the **full, unreduced** instalment, the construction automatically
-  reproduces NYL's rule that a survivor reduction "will not be reduced until the end of
+  reproduces the published rule that a survivor reduction "will not be reduced until the end of
   that period" when the first death falls inside a certain period [S5] — no separate flag
   is needed (spec footnote 11).
 - The `(1 − θ_cum·C)` term applies a prior commutation to certain-period instalments only;
@@ -330,8 +330,8 @@ the premium [S1] [S4] [S5] [S6]:
     n_R = min{ t ∈ T : G(t) ≥ P }
     final instalment at n_R is trimmed to  P − G(n_R − 12/m)          **[std]**
 
-Under a level path (the relevant case — MassMutual does not offer the COLA with Life with
-Installment Refund [S1]) this closes to `n_R = (12/m)·⌈ m·P / B(1) ⌉` months, which is NYL's
+Under a level path (the relevant case — the anchor carrier does not offer the COLA with Life with
+Installment Refund [S1]) this closes to `n_R = (12/m)·⌈ m·P / B(1) ⌉` months, which is the
 published rule "guaranteed payment period = premium paid ÷ annualized income benefit
 amount" [S5] rounded up to a payment date. Anchor check:
 `P/B(1) = 100,000/6,000 = 16.667 years = 200 months`.
@@ -389,13 +389,14 @@ payment staying at or above $100 [S1]:
 
     surrender charge = sc(y) × W                                        [S1]
     E[COMM(t)]       = W × (1 − sc(y))            (paid to the owner)
-    θ_cum(t⁺)        = θ_cum(t) + (1 − θ_cum(t)) × W / CV(t)            [S5 pro-rata rule](#uslib-immediate_annuity-s5)
+    θ_cum(t⁺)        = θ_cum(t) + (1 − θ_cum(t)) × W / CV(t)            [S5 pro-rata rule]
 
-The pro-rata reduction implements NYL's rule that future income payments through the end of
-the guaranteed period are reduced "by the withdrawal percentage elected", with full payments
-resuming for life at the end of that period if the annuitant is alive [S5]; Pacific Life
-states the same resumption rule for every form except pure Period Certain [S2]. On a
-`certain_only` contract there is nothing to resume, so a 100% withdrawal ends the contract.
+The pro-rata reduction implements one carrier's published rule that future income payments
+through the end of the guaranteed period are reduced "by the withdrawal percentage elected",
+with full payments resuming for life at the end of that period if the annuitant is alive
+[S5]; another carrier states the same resumption rule for every form except pure Period
+Certain [S2]. On a `certain_only` contract there is nothing to resume, so a 100%
+withdrawal ends the contract.
 
 ### Monthly processing order
 
@@ -433,8 +434,8 @@ payout):
     u(y, t) = min( u_max, u_base(y) × max(0, 1 + κ·[ CMT10(0) − CMT10(t) ]) )
 
 with `u_max = 0.10`, `κ = 20` **[std]** — pure shape assumptions calibrated to nothing, whose
-only justification is directional: NYL names the 10-year CMT change as the driver of the
-withdrawal amount [S5] and Pacific Life confirms an interest-rate adjustment applies [S2].
+only justification is directional: one carrier names the 10-year CMT change as the driver of the
+withdrawal amount [S5] and another confirms an interest-rate adjustment applies [S2].
 
 **Both constructions are best-estimate objects and are barred from a CARVM run.** Commutation
 is an *elective benefit* under AG 33, and for elective benefits "incidence rates should not be
@@ -446,7 +447,7 @@ different quantity. (Note also that AG 33 reaches this product **only** because 
 right exists — see "Valuation and reserve pointers" below.)
 
 Excluded by scope: payment acceleration (borrowing forward with no PV discount) [S2] [S3] [S5];
-NYL's 30% Cash Withdrawal, which commutes against **life expectancy** on a life-only contract
+the 30% cash withdrawal, which commutes against **life expectancy** on a life-only contract
 and permanently cuts all future income by 30% [S5] — the only retrieved feature that commutes
 a life-contingent stream. Anti-selection enters at **outset**, not through in-force behavior:
 voluntary annuitants self-select for longevity, and impaired lives are diverted to age-rated
@@ -500,7 +501,7 @@ B = 6,000 × 1.03 = 6,180.00 ⇒ 515.00/month; year 3 (from t = 25) B = 6,180 ×
 - **With a 10-year certain period** (n = 120): `C(t) = 1` for t ≤ 120, so
   `Φ(t) = max(1, L(t)) = 1` and every instalment from t = 14 to t = 120 is the **full**
   515.00 / 530.45 / …, with the reduction to δ beginning only at t = 121 — reproducing
-  NYL's deferral rule with no extra logic [S5].
+  the cited deferral rule with no extra logic [S5].
 - **Single-life with cash refund**, death in month 14: lump sum =
   `max(0, 100,000 − G(13)) = 100,000 − (12 × 500.00 + 515.00) = 93,485.00` [S1] [S3] [S5]. On
   **installment refund** (level path, no COLA [S1]) the derived certain period is
@@ -691,17 +692,6 @@ Known modeling pitfalls:
 [REG-R61]: #uslib-reg-r61
 [REG-R70]: #uslib-reg-r70
 [REG-R71]: #uslib-reg-r71
-[S1]: #uslib-immediate_annuity-s1
-[S10]: #uslib-immediate_annuity-s10
-[S11]: #uslib-immediate_annuity-s11
-[S2]: #uslib-immediate_annuity-s2
-[S3]: #uslib-immediate_annuity-s3
-[S4]: #uslib-immediate_annuity-s4
-[S5]: #uslib-immediate_annuity-s5
-[S6]: #uslib-immediate_annuity-s6
-[S7]: #uslib-immediate_annuity-s7
-[S8]: #uslib-immediate_annuity-s8
-[S9]: #uslib-immediate_annuity-s9
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

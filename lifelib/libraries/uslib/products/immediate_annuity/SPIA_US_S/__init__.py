@@ -65,8 +65,8 @@ layer, and the only discounting in the model is contractual, inside the commuted
 
 **What is sourced and what is not.** The contractual elements come from the composite's
 product documents: the five payout forms and the two survivor-reduction triggers, the
-fixed compound COLA menu, the cash-refund and installment-refund definitions, NYL's
-``premium / annualized income`` rule for the derived refund period, and the only
+fixed compound COLA menu, the cash-refund and installment-refund definitions, one
+carrier's ``premium / annualized income`` rule for the derived refund period, and the only
 published SPIA surrender-charge schedule, 8% in contract year 2 grading to 0% from
 year 10 [S1][S2][S3][S5]. Everything else is a standardization introduced for the
 reference implementation, because no public source carries it: the initial income level

@@ -128,7 +128,7 @@ d1, d2                        bs_d1(...), bs_d2(...)            Black-Scholes ar
 C(I,K,tau)                    bs_call(...)                      European call
 P(I,K,tau)                    bs_put(...)                       European put
 BC(I,K,tau)                   bs_binary_call(...)               Cash-or-nothing binary call
-b                             buffer                            Buffer (Shield Rate)
+b                             buffer                            Buffer
 c, s, e (model point)         declared_cap, declared_step,      Rates declared on the model point
                               declared_edge
 c                             cap_rate(t)                       Cap Rate in force, floored
@@ -374,7 +374,7 @@ def term_years():
 
 
 def buffer():
-    """b: the buffer (Shield Rate), guaranteed for the life of each term [S1][S2].
+    """b: the buffer, guaranteed for the life of each term [S1][S2].
 
     The buffer absorbs the first ``b`` of index loss and passes the excess through; 10% is
     the one level present in every retrieved insurer's menu [S1]-[S6].
@@ -385,7 +385,7 @@ def buffer():
 def crediting_type():
     """``CAP``, ``STEP``, ``EDGE`` or ``FLOOR``.
 
-    The chassis offers Cap, Step and Step Rate Edge [S2]; ``FLOOR`` is the optional module
+    The chassis offers Cap, Step and Edge crediting [S2]; ``FLOOR`` is the optional module
     that only one insurer in the sample offers and that needs a **four**-option
     replicating portfolio rather than three [S5].
     """
@@ -980,7 +980,7 @@ def credit_rate_at(t, accrual):
     Edge design flipping at the buffer edge - are contractual; do not smooth them [S2][S4].
 
     ``accrual < 1`` is the **pre-AG 54** design [S1], which uses no option pricing at all:
-    the Shield, Cap and Step Rates each accrue linearly over the term and the term-end
+    the buffer, Cap and Step Rates each accrue linearly over the term and the term-end
     rules are applied to the accrued rates.
     """
     kind = crediting_type()
@@ -1015,10 +1015,10 @@ def credit_rate_term(t):
 def credit_rate_accrued(t):
     """The pre-AG 54 time-prorated crediting rate at month t [S1].
 
-    ``credit_rate_at(t, elapsed / total)``. The source worked example - $50,000, Shield
-    10, a 10% Cap on a one-year term, index 500 to 600 at day 183 - gives an accrued cap
-    of 5%, a 5% Performance Rate and an interim value of $52,500; on a monthly grid month
-    6 of 12 is exactly half the term, so the model reproduces it to the cent.
+    ``credit_rate_at(t, elapsed / total)``. The source worked example - $50,000, a 10%
+    buffer, a 10% Cap on a one-year term, index 500 to 600 at day 183 - gives an accrued
+    cap of 5%, a 5% Performance Rate and an interim value of $52,500; on a monthly grid
+    month 6 of 12 is exactly half the term, so the model reproduces it to the cent.
     """
     return credit_rate_at(t, 1.0 - tau(t) / term_years())
 
@@ -1119,7 +1119,7 @@ def cap_calc_factor(t):
 
     ``E_0 x tau/T`` - "a return of estimated expenses for the portion of the Segment
     Duration that has not elapsed", always positive and declining to zero at term end;
-    Equitable works it as $10 of estimated expenses on a one-year segment giving $6 with
+    the source works it as $10 of estimated expenses on a one-year segment giving $6 with
     219 days remaining. ``E_0`` is expressed here as a rate of notional,
     ``iv_expense_rate`` = **[std]** 0.10%, because no source quantifies it - the same
     standing as family (b)'s other free parameter, ``iv_credit_spread``.

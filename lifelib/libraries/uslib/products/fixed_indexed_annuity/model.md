@@ -61,7 +61,7 @@ govern:**
 Contrast [`MYGA_US_S`](../fixed_deferred_annuity/model.md), whose `t` counts
 **months**: that chassis credits interest daily and needs a grid fine enough to resolve a
 30-day guarantee-period-end window. Here a monthly grid would buy nothing but the variants
-the notes exclude — monthly-sum crediting, Athene's monthly charge deduction, daily interim
+the notes exclude — monthly-sum crediting, a monthly charge deduction, daily interim
 values and mid-year withdrawal crediting.
 
 `age(t) = age_at_entry() + t` is the attained age **at** anniversary `t`, which is the
@@ -130,7 +130,7 @@ no formula change.
 | `model_point_table.csv` | Nine contracts on the anchor configuration M62 / NQ / $100,000 / GLWB at issue. **Point 1 is the worked-example anchor**, entered in force at anniversary 7 | anchor cell **[std]**; contract parameters [S2] [S5] [S9] [S10] |
 | `mort_table.csv` | Annual mortality by attained age and sex, ages 40–120 | **[std]** illustrative Makeham annuitant curve, *not* a published table; shared with `products/fixed_deferred_annuity` so the two annuity models sit on one basis |
 | `surr_charge_table.csv` | The surrender charge percentage 9.1% → 0% and the bonus vesting percentage 0% → 100%, both by contract year | sourced [S5] |
-| `rollup_table.csv` | Three guaranteed simple rollup schedules: blended 5.00%/2.00%/0%, Nassau 3.00% flat, and none | sourced [S2] / [S9]; the `none` row is the pure-stacking configuration **[std]** |
+| `rollup_table.csv` | Three guaranteed simple rollup schedules: blended 5.00%/2.00%/0%, a flat 3.00%, and none | sourced [S2] / [S9]; the `none` row is the pure-stacking configuration **[std]** |
 | `payout_rate_table.csv` | Lifetime withdrawal percentages by attained-age band, single and joint | sourced [S3]; the 80+ band extends [S3]'s single "80" row **[std]**, supported by [S4] |
 | `rate_scenario.csv` | Two scenarios of index level and MVA reference yield. `worked` is the notes' own path — flat at 5,000 to anniversary 7, 5,450 at anniversary 8, flat after, so index credits are zero from anniversary 9 exactly as the notes assume | worked example; the `growth` path **[std]** |
 | `withdrawal_table.csv` | Ad hoc gross withdrawals by schedule and anniversary | **[std]** variants |
@@ -357,7 +357,7 @@ excess.
 One consequence had to be decided rather than read off: when the contract terminates, the
 survivors leave as a **deemed full surrender** (`lapse_rate` returns 1.0 that year, paying
 `max(surrender value, MGV)` which is `MGV` once the account value is zero), following
-American Equity's "the contract as well as the rider will be considered Surrendered" [S5].
+the specimen wording "the contract as well as the rider will be considered Surrendered" [S5].
 Without it the block would sit in force forever holding a contract that pays nothing, and
 the in-force roll-forward would not close.
 
@@ -401,16 +401,17 @@ parameters of the composite. The two crediting parameters that *are* sourced are
 
 Switched **off** by default so the base run reproduces the worked example:
 `index_cost_rate = 0` (the volatility-controlled-index haircut), `mgsv_annual_charge = 0`
-(Model #805 permits $50), `rider_charge_from_mgsv = False` (Athene and Allianz deduct from
-the floor too), `use_guaranteed_scale = False` (the guaranteed minimum cap and fixed rate),
-`rb_wd_convention = "pro_rata"` (Athene's dollar subtraction is the alternative), and
-`comm_rate_acq = 0`.
+(Model #805 permits $50), `rider_charge_from_mgsv = False` (one carrier deducts the rider
+charge from the floor [S1] [S2]; another deducts its allocation charge there [S3] [S4]),
+`use_guaranteed_scale = False` (the guaranteed minimum cap and fixed
+rate), `rb_wd_convention = "pro_rata"` (the dollar-subtraction convention [S2] is the
+alternative), and `comm_rate_acq = 0`.
 
 ## Not implemented
 
 Named so the gaps cannot be mistaken for oversights: monthly-sum crediting (needs the
 monthly grid the notes exclude, and its floor convention is itself flagged ambiguous);
-interim values, Nassau's or Nationwide's, both daily marks of the embedded option;
+interim values in either documented form [S10] [S11], both daily marks of the embedded option;
 cap re-declaration against the option budget (the notes give the target but no
 option-pricing function); stochastic GLWB activation on the `h(a)` table, which cannot be
 applied to a single deterministic cell — `activation_rate()` reports it and the base run
@@ -467,12 +468,5 @@ model have parted company — which is the question this library exists to let y
 
 <!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
 [R1]: #uslib-fixed_indexed_annuity-r1
-[S10]: #uslib-fixed_indexed_annuity-s10
-[S2]: #uslib-fixed_indexed_annuity-s2
-[S3]: #uslib-fixed_indexed_annuity-s3
-[S4]: #uslib-fixed_indexed_annuity-s4
-[S5]: #uslib-fixed_indexed_annuity-s5
-[S8]: #uslib-fixed_indexed_annuity-s8
-[S9]: #uslib-fixed_indexed_annuity-s9
 [std]: #uslib-std
 <!-- END generated citation links -->

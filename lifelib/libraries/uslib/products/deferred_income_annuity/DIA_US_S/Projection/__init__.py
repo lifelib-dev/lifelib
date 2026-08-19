@@ -314,9 +314,9 @@ def model_point():
 def age_at_entry(life):
     """x: issue age (ANB) of the primary (life = 1) or joint (life = 2) annuitant.
 
-    Age nearest birthday **[std]**: MassMutual states contract issue age on an ANB basis
-    [S2], prescribed VM-22 payout mortality is ANB [R9], and the 2012 IAM Basic and
-    Period tables were developed ANB [R15][REG-R59].
+    Age nearest birthday **[std]**: the archetype guide states contract issue age on an
+    ANB basis [S2], prescribed VM-22 payout mortality is ANB [R9], and the 2012 IAM
+    Basic and Period tables were developed ANB [R15][REG-R59].
     """
     if life == 1:
         return int(model_point()["issue_age"])
@@ -373,7 +373,7 @@ def income_form():
     """f: the income option elected at issue and immutable thereafter [S1][S2][S4].
 
     ``LO`` life only; ``LO_ROP`` life only with a 100% return-of-purchase-payments death
-    benefit in deferral, the unbundled Pacific Life variant [S4]; ``CR`` life with cash
+    benefit in deferral, the unbundled extended-case variant [S4]; ``CR`` life with cash
     refund; ``IR`` life with installment refund; ``PC`` life with period certain.
     """
     v = model_point()["income_form"]
@@ -1060,10 +1060,10 @@ def adjust_income_factor():
                     / a_def(x(t_e), (T' - t_e)/12, f; i_e)
 
     ``a_def`` decreases in the deferral, so deferring the date raises the payment and
-    advancing it lowers it, matching Pacific Life's statement [S4][S5].  Two refinements
-    the disclosed recipe does not mention are **flagged rather than modeled**, as the
-    notes require: the return-of-premium exposure changes with the deferral length, and
-    ``CP`` is unchanged so the derived guarantee period shifts.
+    advancing it lowers it, matching the extended case's statement [S4][S5].  Two
+    refinements the disclosed recipe does not mention are **flagged rather than
+    modeled**, as the notes require: the return-of-premium exposure changes with the
+    deferral length, and ``CP`` is unchanged so the derived guarantee period shifts.
     """
     a = adjust_mth()
     if a < 0:
