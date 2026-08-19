@@ -1,0 +1,25 @@
+sex,smoker,age,i_ci,q_d,provenance
+M,NS,40,0.0015,0.0009,notes [std] proxy pivot
+M,NS,45,0.0025,0.0014,notes [std] proxy pivot
+M,NS,50,0.004,0.0022,notes [std] proxy pivot
+M,NS,55,0.007,0.0036,notes [std] proxy pivot
+M,NS,60,0.011,0.006,notes [std] proxy pivot
+M,NS,65,0.017,0.01,notes [std] proxy pivot
+M,S,40,0.002625,0.0018,[std] sex/smoker factor
+M,S,45,0.004375,0.0028,[std] sex/smoker factor
+M,S,50,0.007,0.0044,[std] sex/smoker factor
+M,S,55,0.01225,0.0072,[std] sex/smoker factor
+M,S,60,0.01925,0.012,[std] sex/smoker factor
+M,S,65,0.02975,0.02,[std] sex/smoker factor
+F,NS,40,0.001425,0.00063,[std] sex/smoker factor
+F,NS,45,0.002375,0.00098,[std] sex/smoker factor
+F,NS,50,0.0038,0.00154,[std] sex/smoker factor
+F,NS,55,0.00665,0.00252,[std] sex/smoker factor
+F,NS,60,0.01045,0.0042,[std] sex/smoker factor
+F,NS,65,0.01615,0.007,[std] sex/smoker factor
+F,S,40,0.00249375,0.00126,[std] sex/smoker factor
+F,S,45,0.00415625,0.00196,[std] sex/smoker factor
+F,S,50,0.00665,0.00308,[std] sex/smoker factor
+F,S,55,0.0116375,0.00504,[std] sex/smoker factor
+F,S,60,0.0182875,0.0084,[std] sex/smoker factor
+F,S,65,0.0282625,0.014,[std] sex/smoker factor

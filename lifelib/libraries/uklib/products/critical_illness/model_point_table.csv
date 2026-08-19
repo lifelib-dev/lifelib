@@ -1,0 +1,8 @@
+point_id,policy_id,contract_type,age_at_entry,sex,smoker,sum_assured,policy_term,cover_basis,life_basis,joint_age,joint_sex,joint_smoker,premium_guarantee,premium_mth,premium_mode,children_cover,indexation,pols_if_init
+1,CI-000001,accelerated,40,M,NS,100000.0,25,level,single,,,,guaranteed,55.00,monthly,True,False,1.0
+2,CI-000002,standalone,40,M,NS,100000.0,25,level,single,,,,guaranteed,55.00,monthly,True,False,1.0
+3,CI-000003,accelerated,40,M,NS,100000.0,25,level,single,,,,reviewable,55.00,monthly,True,False,1.0
+4,CI-000004,accelerated,40,M,NS,100000.0,25,level,single,,,,guaranteed,55.00,monthly,True,True,1.0
+5,CI-000005,accelerated,40,M,NS,100000.0,25,level,single,,,,guaranteed,55.00,monthly,False,False,1.0
+6,CI-000006,accelerated,45,F,S,150000.0,20,level,single,,,,guaranteed,95.00,monthly,True,False,1.0
+7,CI-000007,accelerated,40,M,NS,100000.0,25,level,joint_first_event,38,F,NS,guaranteed,82.50,monthly,True,False,1.0

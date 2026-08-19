@@ -1,0 +1,13 @@
+cell,policy_year,lapse_rate,provenance
+O50,1,0.08,[std] no public UK WoL lapse study was retrieved
+O50,2,0.06,[std] no public UK WoL lapse study was retrieved
+O50,3,0.04,[std] no public UK WoL lapse study was retrieved
+O50,4,0.04,[std] no public UK WoL lapse study was retrieved
+O50,5,0.04,[std] no public UK WoL lapse study was retrieved
+O50,6,0.04,[std] ultimate; applies to policy year 6 onwards
+UW,1,0.06,[std] no public UK WoL lapse study was retrieved
+UW,2,0.05,[std] no public UK WoL lapse study was retrieved
+UW,3,0.03,[std] no public UK WoL lapse study was retrieved
+UW,4,0.03,[std] no public UK WoL lapse study was retrieved
+UW,5,0.03,[std] no public UK WoL lapse study was retrieved
+UW,6,0.02,[std] ultimate; applies to policy year 6 onwards

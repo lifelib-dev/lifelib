@@ -1,0 +1,825 @@
+basis,sex,smoker,age,mort_rate,provenance
+assured,F,NS,18,7.7393e-05,[std] sex/smoker factor
+assured,F,NS,19,8.51323e-05,[std] sex/smoker factor
+assured,F,NS,20,9.36455e-05,[std] sex/smoker factor
+assured,F,NS,21,0.00010301,[std] sex/smoker factor
+assured,F,NS,22,0.000113311,[std] sex/smoker factor
+assured,F,NS,23,0.0001246421,[std] sex/smoker factor
+assured,F,NS,24,0.0001371064,[std] sex/smoker factor
+assured,F,NS,25,0.000150817,[std] sex/smoker factor
+assured,F,NS,26,0.0001658987,[std] sex/smoker factor
+assured,F,NS,27,0.0001824886,[std] sex/smoker factor
+assured,F,NS,28,0.0002007374,[std] sex/smoker factor
+assured,F,NS,29,0.0002208112,[std] sex/smoker factor
+assured,F,NS,30,0.0002428923,[std] sex/smoker factor
+assured,F,NS,31,0.0002671815,[std] sex/smoker factor
+assured,F,NS,32,0.0002938996,[std] sex/smoker factor
+assured,F,NS,33,0.0003232896,[std] sex/smoker factor
+assured,F,NS,34,0.0003556186,[std] sex/smoker factor
+assured,F,NS,35,0.0003911804,[std] sex/smoker factor
+assured,F,NS,36,0.0004302985,[std] sex/smoker factor
+assured,F,NS,37,0.0004733283,[std] sex/smoker factor
+assured,F,NS,38,0.0005206612,[std] sex/smoker factor
+assured,F,NS,39,0.0005727273,[std] sex/smoker factor
+assured,F,NS,40,0.00063,[std] sex/smoker factor
+assured,F,NS,41,0.000693,[std] sex/smoker factor
+assured,F,NS,42,0.0007623,[std] sex/smoker factor
+assured,F,NS,43,0.00083853,[std] sex/smoker factor
+assured,F,NS,44,0.000922383,[std] sex/smoker factor
+assured,F,NS,45,0.0010146213,[std] sex/smoker factor
+assured,F,NS,46,0.0011160834,[std] sex/smoker factor
+assured,F,NS,47,0.0012276918,[std] sex/smoker factor
+assured,F,NS,48,0.001350461,[std] sex/smoker factor
+assured,F,NS,49,0.001485507,[std] sex/smoker factor
+assured,F,NS,50,0.0016340577,[std] sex/smoker factor
+assured,F,NS,51,0.0017974635,[std] sex/smoker factor
+assured,F,NS,52,0.0019772099,[std] sex/smoker factor
+assured,F,NS,53,0.0021749309,[std] sex/smoker factor
+assured,F,NS,54,0.002392424,[std] sex/smoker factor
+assured,F,NS,55,0.0026316663,[std] sex/smoker factor
+assured,F,NS,56,0.002894833,[std] sex/smoker factor
+assured,F,NS,57,0.0031843163,[std] sex/smoker factor
+assured,F,NS,58,0.0035027479,[std] sex/smoker factor
+assured,F,NS,59,0.0038530227,[std] sex/smoker factor
+assured,F,NS,60,0.004238325,[std] sex/smoker factor
+assured,F,NS,61,0.0046621575,[std] sex/smoker factor
+assured,F,NS,62,0.0051283732,[std] sex/smoker factor
+assured,F,NS,63,0.0056412105,[std] sex/smoker factor
+assured,F,NS,64,0.0062053316,[std] sex/smoker factor
+assured,F,NS,65,0.0068258647,[std] sex/smoker factor
+assured,F,NS,66,0.0075084512,[std] sex/smoker factor
+assured,F,NS,67,0.0082592963,[std] sex/smoker factor
+assured,F,NS,68,0.009085226,[std] sex/smoker factor
+assured,F,NS,69,0.0099937486,[std] sex/smoker factor
+assured,F,NS,70,0.0109931234,[std] sex/smoker factor
+assured,F,NS,71,0.0120924358,[std] sex/smoker factor
+assured,F,NS,72,0.0133016793,[std] sex/smoker factor
+assured,F,NS,73,0.0146318473,[std] sex/smoker factor
+assured,F,NS,74,0.016095032,[std] sex/smoker factor
+assured,F,NS,75,0.0177045352,[std] sex/smoker factor
+assured,F,NS,76,0.0194749887,[std] sex/smoker factor
+assured,F,NS,77,0.0214224876,[std] sex/smoker factor
+assured,F,NS,78,0.0235647364,[std] sex/smoker factor
+assured,F,NS,79,0.02592121,[std] sex/smoker factor
+assured,F,NS,80,0.028513331,[std] sex/smoker factor
+assured,F,NS,81,0.0313646641,[std] sex/smoker factor
+assured,F,NS,82,0.0345011305,[std] sex/smoker factor
+assured,F,NS,83,0.0379512436,[std] sex/smoker factor
+assured,F,NS,84,0.0417463679,[std] sex/smoker factor
+assured,F,NS,85,0.0459210047,[std] sex/smoker factor
+assured,F,NS,86,0.0505131052,[std] sex/smoker factor
+assured,F,NS,87,0.0555644157,[std] sex/smoker factor
+assured,F,NS,88,0.0611208573,[std] sex/smoker factor
+assured,F,NS,89,0.067232943,[std] sex/smoker factor
+assured,F,NS,90,0.0739562373,[std] sex/smoker factor
+assured,F,NS,91,0.081351861,[std] sex/smoker factor
+assured,F,NS,92,0.0894870472,[std] sex/smoker factor
+assured,F,NS,93,0.0984357519,[std] sex/smoker factor
+assured,F,NS,94,0.1082793271,[std] sex/smoker factor
+assured,F,NS,95,0.1191072598,[std] sex/smoker factor
+assured,F,NS,96,0.1310179857,[std] sex/smoker factor
+assured,F,NS,97,0.1441197843,[std] sex/smoker factor
+assured,F,NS,98,0.1585317627,[std] sex/smoker factor
+assured,F,NS,99,0.174384939,[std] sex/smoker factor
+assured,F,NS,100,0.1918234329,[std] sex/smoker factor
+assured,F,NS,101,0.2110057762,[std] sex/smoker factor
+assured,F,NS,102,0.2321063538,[std] sex/smoker factor
+assured,F,NS,103,0.2553169892,[std] sex/smoker factor
+assured,F,NS,104,0.2808486881,[std] sex/smoker factor
+assured,F,NS,105,0.3089335569,[std] sex/smoker factor
+assured,F,NS,106,0.3398269126,[std] sex/smoker factor
+assured,F,NS,107,0.3738096039,[std] sex/smoker factor
+assured,F,NS,108,0.4111905643,[std] sex/smoker factor
+assured,F,NS,109,0.4523096207,[std] sex/smoker factor
+assured,F,NS,110,0.4975405828,[std] sex/smoker factor
+assured,F,NS,111,0.5472946411,[std] sex/smoker factor
+assured,F,NS,112,0.6020241052,[std] sex/smoker factor
+assured,F,NS,113,0.6622265157,[std] sex/smoker factor
+assured,F,NS,114,0.7284491673,[std] sex/smoker factor
+assured,F,NS,115,0.801294084,[std] sex/smoker factor
+assured,F,NS,116,0.8814234924,[std] sex/smoker factor
+assured,F,NS,117,0.9695658416,[std] sex/smoker factor
+assured,F,NS,118,1.0,[std] sex/smoker factor
+assured,F,NS,119,1.0,[std] sex/smoker factor
+assured,F,NS,120,1.0,[std] sex/smoker factor
+assured,F,S,18,0.0001547859,[std] sex/smoker factor
+assured,F,S,19,0.0001702645,[std] sex/smoker factor
+assured,F,S,20,0.000187291,[std] sex/smoker factor
+assured,F,S,21,0.0002060201,[std] sex/smoker factor
+assured,F,S,22,0.0002266221,[std] sex/smoker factor
+assured,F,S,23,0.0002492843,[std] sex/smoker factor
+assured,F,S,24,0.0002742127,[std] sex/smoker factor
+assured,F,S,25,0.000301634,[std] sex/smoker factor
+assured,F,S,26,0.0003317974,[std] sex/smoker factor
+assured,F,S,27,0.0003649771,[std] sex/smoker factor
+assured,F,S,28,0.0004014748,[std] sex/smoker factor
+assured,F,S,29,0.0004416223,[std] sex/smoker factor
+assured,F,S,30,0.0004857845,[std] sex/smoker factor
+assured,F,S,31,0.000534363,[std] sex/smoker factor
+assured,F,S,32,0.0005877993,[std] sex/smoker factor
+assured,F,S,33,0.0006465792,[std] sex/smoker factor
+assured,F,S,34,0.0007112372,[std] sex/smoker factor
+assured,F,S,35,0.0007823609,[std] sex/smoker factor
+assured,F,S,36,0.000860597,[std] sex/smoker factor
+assured,F,S,37,0.0009466566,[std] sex/smoker factor
+assured,F,S,38,0.0010413223,[std] sex/smoker factor
+assured,F,S,39,0.0011454545,[std] sex/smoker factor
+assured,F,S,40,0.00126,[std] sex/smoker factor
+assured,F,S,41,0.001386,[std] sex/smoker factor
+assured,F,S,42,0.0015246,[std] sex/smoker factor
+assured,F,S,43,0.00167706,[std] sex/smoker factor
+assured,F,S,44,0.001844766,[std] sex/smoker factor
+assured,F,S,45,0.0020292426,[std] sex/smoker factor
+assured,F,S,46,0.0022321669,[std] sex/smoker factor
+assured,F,S,47,0.0024553835,[std] sex/smoker factor
+assured,F,S,48,0.0027009219,[std] sex/smoker factor
+assured,F,S,49,0.0029710141,[std] sex/smoker factor
+assured,F,S,50,0.0032681155,[std] sex/smoker factor
+assured,F,S,51,0.003594927,[std] sex/smoker factor
+assured,F,S,52,0.0039544198,[std] sex/smoker factor
+assured,F,S,53,0.0043498617,[std] sex/smoker factor
+assured,F,S,54,0.0047848479,[std] sex/smoker factor
+assured,F,S,55,0.0052633327,[std] sex/smoker factor
+assured,F,S,56,0.005789666,[std] sex/smoker factor
+assured,F,S,57,0.0063686326,[std] sex/smoker factor
+assured,F,S,58,0.0070054958,[std] sex/smoker factor
+assured,F,S,59,0.0077060454,[std] sex/smoker factor
+assured,F,S,60,0.0084766499,[std] sex/smoker factor
+assured,F,S,61,0.0093243149,[std] sex/smoker factor
+assured,F,S,62,0.0102567464,[std] sex/smoker factor
+assured,F,S,63,0.0112824211,[std] sex/smoker factor
+assured,F,S,64,0.0124106632,[std] sex/smoker factor
+assured,F,S,65,0.0136517295,[std] sex/smoker factor
+assured,F,S,66,0.0150169024,[std] sex/smoker factor
+assured,F,S,67,0.0165185927,[std] sex/smoker factor
+assured,F,S,68,0.0181704519,[std] sex/smoker factor
+assured,F,S,69,0.0199874971,[std] sex/smoker factor
+assured,F,S,70,0.0219862469,[std] sex/smoker factor
+assured,F,S,71,0.0241848715,[std] sex/smoker factor
+assured,F,S,72,0.0266033587,[std] sex/smoker factor
+assured,F,S,73,0.0292636946,[std] sex/smoker factor
+assured,F,S,74,0.032190064,[std] sex/smoker factor
+assured,F,S,75,0.0354090704,[std] sex/smoker factor
+assured,F,S,76,0.0389499775,[std] sex/smoker factor
+assured,F,S,77,0.0428449752,[std] sex/smoker factor
+assured,F,S,78,0.0471294727,[std] sex/smoker factor
+assured,F,S,79,0.05184242,[std] sex/smoker factor
+assured,F,S,80,0.057026662,[std] sex/smoker factor
+assured,F,S,81,0.0627293282,[std] sex/smoker factor
+assured,F,S,82,0.069002261,[std] sex/smoker factor
+assured,F,S,83,0.0759024871,[std] sex/smoker factor
+assured,F,S,84,0.0834927359,[std] sex/smoker factor
+assured,F,S,85,0.0918420094,[std] sex/smoker factor
+assured,F,S,86,0.1010262104,[std] sex/smoker factor
+assured,F,S,87,0.1111288314,[std] sex/smoker factor
+assured,F,S,88,0.1222417146,[std] sex/smoker factor
+assured,F,S,89,0.134465886,[std] sex/smoker factor
+assured,F,S,90,0.1479124746,[std] sex/smoker factor
+assured,F,S,91,0.1627037221,[std] sex/smoker factor
+assured,F,S,92,0.1789740943,[std] sex/smoker factor
+assured,F,S,93,0.1968715037,[std] sex/smoker factor
+assured,F,S,94,0.2165586541,[std] sex/smoker factor
+assured,F,S,95,0.2382145195,[std] sex/smoker factor
+assured,F,S,96,0.2620359715,[std] sex/smoker factor
+assured,F,S,97,0.2882395686,[std] sex/smoker factor
+assured,F,S,98,0.3170635255,[std] sex/smoker factor
+assured,F,S,99,0.348769878,[std] sex/smoker factor
+assured,F,S,100,0.3836468658,[std] sex/smoker factor
+assured,F,S,101,0.4220115524,[std] sex/smoker factor
+assured,F,S,102,0.4642127076,[std] sex/smoker factor
+assured,F,S,103,0.5106339784,[std] sex/smoker factor
+assured,F,S,104,0.5616973763,[std] sex/smoker factor
+assured,F,S,105,0.6178671139,[std] sex/smoker factor
+assured,F,S,106,0.6796538253,[std] sex/smoker factor
+assured,F,S,107,0.7476192078,[std] sex/smoker factor
+assured,F,S,108,0.8223811286,[std] sex/smoker factor
+assured,F,S,109,0.9046192414,[std] sex/smoker factor
+assured,F,S,110,0.9950811656,[std] sex/smoker factor
+assured,F,S,111,1.0,[std] sex/smoker factor
+assured,F,S,112,1.0,[std] sex/smoker factor
+assured,F,S,113,1.0,[std] sex/smoker factor
+assured,F,S,114,1.0,[std] sex/smoker factor
+assured,F,S,115,1.0,[std] sex/smoker factor
+assured,F,S,116,1.0,[std] sex/smoker factor
+assured,F,S,117,1.0,[std] sex/smoker factor
+assured,F,S,118,1.0,[std] sex/smoker factor
+assured,F,S,119,1.0,[std] sex/smoker factor
+assured,F,S,120,1.0,[std] sex/smoker factor
+assured,M,NS,18,0.0001105614,[std] '00' series shape
+assured,M,NS,19,0.0001216175,[std] '00' series shape
+assured,M,NS,20,0.0001337793,[std] '00' series shape
+assured,M,NS,21,0.0001471572,[std] '00' series shape
+assured,M,NS,22,0.0001618729,[std] '00' series shape
+assured,M,NS,23,0.0001780602,[std] '00' series shape
+assured,M,NS,24,0.0001958662,[std] '00' series shape
+assured,M,NS,25,0.0002154528,[std] '00' series shape
+assured,M,NS,26,0.0002369981,[std] '00' series shape
+assured,M,NS,27,0.0002606979,[std] '00' series shape
+assured,M,NS,28,0.0002867677,[std] '00' series shape
+assured,M,NS,29,0.0003154445,[std] '00' series shape
+assured,M,NS,30,0.000346989,[std] '00' series shape
+assured,M,NS,31,0.0003816879,[std] '00' series shape
+assured,M,NS,32,0.0004198566,[std] '00' series shape
+assured,M,NS,33,0.0004618423,[std] '00' series shape
+assured,M,NS,34,0.0005080265,[std] '00' series shape
+assured,M,NS,35,0.0005588292,[std] '00' series shape
+assured,M,NS,36,0.0006147121,[std] '00' series shape
+assured,M,NS,37,0.0006761833,[std] '00' series shape
+assured,M,NS,38,0.0007438017,[std] '00' series shape
+assured,M,NS,39,0.0008181818,[std] '00' series shape
+assured,M,NS,40,0.0009,[std] '00' series shape
+assured,M,NS,41,0.00099,[std] '00' series shape
+assured,M,NS,42,0.001089,[std] '00' series shape
+assured,M,NS,43,0.0011979,[std] '00' series shape
+assured,M,NS,44,0.00131769,[std] '00' series shape
+assured,M,NS,45,0.001449459,[std] '00' series shape
+assured,M,NS,46,0.0015944049,[std] '00' series shape
+assured,M,NS,47,0.0017538454,[std] '00' series shape
+assured,M,NS,48,0.0019292299,[std] '00' series shape
+assured,M,NS,49,0.0021221529,[std] '00' series shape
+assured,M,NS,50,0.0023343682,[std] '00' series shape
+assured,M,NS,51,0.002567805,[std] '00' series shape
+assured,M,NS,52,0.0028245855,[std] '00' series shape
+assured,M,NS,53,0.0031070441,[std] '00' series shape
+assured,M,NS,54,0.0034177485,[std] '00' series shape
+assured,M,NS,55,0.0037595234,[std] '00' series shape
+assured,M,NS,56,0.0041354757,[std] '00' series shape
+assured,M,NS,57,0.0045490233,[std] '00' series shape
+assured,M,NS,58,0.0050039256,[std] '00' series shape
+assured,M,NS,59,0.0055043181,[std] '00' series shape
+assured,M,NS,60,0.00605475,[std] '00' series shape
+assured,M,NS,61,0.0066602249,[std] '00' series shape
+assured,M,NS,62,0.0073262474,[std] '00' series shape
+assured,M,NS,63,0.0080588722,[std] '00' series shape
+assured,M,NS,64,0.0088647594,[std] '00' series shape
+assured,M,NS,65,0.0097512353,[std] '00' series shape
+assured,M,NS,66,0.0107263589,[std] '00' series shape
+assured,M,NS,67,0.0117989948,[std] '00' series shape
+assured,M,NS,68,0.0129788942,[std] '00' series shape
+assured,M,NS,69,0.0142767837,[std] '00' series shape
+assured,M,NS,70,0.015704462,[std] '00' series shape
+assured,M,NS,71,0.0172749082,[std] '00' series shape
+assured,M,NS,72,0.0190023991,[std] '00' series shape
+assured,M,NS,73,0.020902639,[std] '00' series shape
+assured,M,NS,74,0.0229929029,[std] '00' series shape
+assured,M,NS,75,0.0252921932,[std] '00' series shape
+assured,M,NS,76,0.0278214125,[std] '00' series shape
+assured,M,NS,77,0.0306035537,[std] '00' series shape
+assured,M,NS,78,0.0336639091,[std] '00' series shape
+assured,M,NS,79,0.0370303,[std] '00' series shape
+assured,M,NS,80,0.04073333,[std] '00' series shape
+assured,M,NS,81,0.044806663,[std] '00' series shape
+assured,M,NS,82,0.0492873293,[std] '00' series shape
+assured,M,NS,83,0.0542160622,[std] '00' series shape
+assured,M,NS,84,0.0596376685,[std] '00' series shape
+assured,M,NS,85,0.0656014353,[std] '00' series shape
+assured,M,NS,86,0.0721615788,[std] '00' series shape
+assured,M,NS,87,0.0793777367,[std] '00' series shape
+assured,M,NS,88,0.0873155104,[std] '00' series shape
+assured,M,NS,89,0.0960470614,[std] '00' series shape
+assured,M,NS,90,0.1056517676,[std] '00' series shape
+assured,M,NS,91,0.1162169444,[std] '00' series shape
+assured,M,NS,92,0.1278386388,[std] '00' series shape
+assured,M,NS,93,0.1406225027,[std] '00' series shape
+assured,M,NS,94,0.1546847529,[std] '00' series shape
+assured,M,NS,95,0.1701532282,[std] '00' series shape
+assured,M,NS,96,0.187168551,[std] '00' series shape
+assured,M,NS,97,0.2058854062,[std] '00' series shape
+assured,M,NS,98,0.2264739468,[std] '00' series shape
+assured,M,NS,99,0.2491213414,[std] '00' series shape
+assured,M,NS,100,0.2740334756,[std] '00' series shape
+assured,M,NS,101,0.3014368231,[std] '00' series shape
+assured,M,NS,102,0.3315805055,[std] '00' series shape
+assured,M,NS,103,0.364738556,[std] '00' series shape
+assured,M,NS,104,0.4012124116,[std] '00' series shape
+assured,M,NS,105,0.4413336528,[std] '00' series shape
+assured,M,NS,106,0.485467018,[std] '00' series shape
+assured,M,NS,107,0.5340137198,[std] '00' series shape
+assured,M,NS,108,0.5874150918,[std] '00' series shape
+assured,M,NS,109,0.646156601,[std] '00' series shape
+assured,M,NS,110,0.7107722611,[std] '00' series shape
+assured,M,NS,111,0.7818494872,[std] '00' series shape
+assured,M,NS,112,0.860034436,[std] '00' series shape
+assured,M,NS,113,0.9460378796,[std] '00' series shape
+assured,M,NS,114,1.0,[std] '00' series shape
+assured,M,NS,115,1.0,[std] '00' series shape
+assured,M,NS,116,1.0,[std] '00' series shape
+assured,M,NS,117,1.0,[std] '00' series shape
+assured,M,NS,118,1.0,[std] '00' series shape
+assured,M,NS,119,1.0,[std] '00' series shape
+assured,M,NS,120,1.0,[std] '00' series shape
+assured,M,S,18,0.0002211228,[std] sex/smoker factor
+assured,M,S,19,0.000243235,[std] sex/smoker factor
+assured,M,S,20,0.0002675585,[std] sex/smoker factor
+assured,M,S,21,0.0002943144,[std] sex/smoker factor
+assured,M,S,22,0.0003237458,[std] sex/smoker factor
+assured,M,S,23,0.0003561204,[std] sex/smoker factor
+assured,M,S,24,0.0003917324,[std] sex/smoker factor
+assured,M,S,25,0.0004309057,[std] sex/smoker factor
+assured,M,S,26,0.0004739963,[std] sex/smoker factor
+assured,M,S,27,0.0005213959,[std] sex/smoker factor
+assured,M,S,28,0.0005735355,[std] sex/smoker factor
+assured,M,S,29,0.000630889,[std] sex/smoker factor
+assured,M,S,30,0.0006939779,[std] sex/smoker factor
+assured,M,S,31,0.0007633757,[std] sex/smoker factor
+assured,M,S,32,0.0008397133,[std] sex/smoker factor
+assured,M,S,33,0.0009236846,[std] sex/smoker factor
+assured,M,S,34,0.0010160531,[std] sex/smoker factor
+assured,M,S,35,0.0011176584,[std] sex/smoker factor
+assured,M,S,36,0.0012294242,[std] sex/smoker factor
+assured,M,S,37,0.0013523666,[std] sex/smoker factor
+assured,M,S,38,0.0014876033,[std] sex/smoker factor
+assured,M,S,39,0.0016363636,[std] sex/smoker factor
+assured,M,S,40,0.0018,[std] sex/smoker factor
+assured,M,S,41,0.00198,[std] sex/smoker factor
+assured,M,S,42,0.002178,[std] sex/smoker factor
+assured,M,S,43,0.0023958,[std] sex/smoker factor
+assured,M,S,44,0.00263538,[std] sex/smoker factor
+assured,M,S,45,0.002898918,[std] sex/smoker factor
+assured,M,S,46,0.0031888098,[std] sex/smoker factor
+assured,M,S,47,0.0035076908,[std] sex/smoker factor
+assured,M,S,48,0.0038584599,[std] sex/smoker factor
+assured,M,S,49,0.0042443058,[std] sex/smoker factor
+assured,M,S,50,0.0046687364,[std] sex/smoker factor
+assured,M,S,51,0.0051356101,[std] sex/smoker factor
+assured,M,S,52,0.0056491711,[std] sex/smoker factor
+assured,M,S,53,0.0062140882,[std] sex/smoker factor
+assured,M,S,54,0.006835497,[std] sex/smoker factor
+assured,M,S,55,0.0075190467,[std] sex/smoker factor
+assured,M,S,56,0.0082709514,[std] sex/smoker factor
+assured,M,S,57,0.0090980465,[std] sex/smoker factor
+assured,M,S,58,0.0100078512,[std] sex/smoker factor
+assured,M,S,59,0.0110086363,[std] sex/smoker factor
+assured,M,S,60,0.0121094999,[std] sex/smoker factor
+assured,M,S,61,0.0133204499,[std] sex/smoker factor
+assured,M,S,62,0.0146524949,[std] sex/smoker factor
+assured,M,S,63,0.0161177444,[std] sex/smoker factor
+assured,M,S,64,0.0177295188,[std] sex/smoker factor
+assured,M,S,65,0.0195024707,[std] sex/smoker factor
+assured,M,S,66,0.0214527178,[std] sex/smoker factor
+assured,M,S,67,0.0235979895,[std] sex/smoker factor
+assured,M,S,68,0.0259577885,[std] sex/smoker factor
+assured,M,S,69,0.0285535673,[std] sex/smoker factor
+assured,M,S,70,0.0314089241,[std] sex/smoker factor
+assured,M,S,71,0.0345498165,[std] sex/smoker factor
+assured,M,S,72,0.0380047981,[std] sex/smoker factor
+assured,M,S,73,0.041805278,[std] sex/smoker factor
+assured,M,S,74,0.0459858058,[std] sex/smoker factor
+assured,M,S,75,0.0505843863,[std] sex/smoker factor
+assured,M,S,76,0.055642825,[std] sex/smoker factor
+assured,M,S,77,0.0612071075,[std] sex/smoker factor
+assured,M,S,78,0.0673278182,[std] sex/smoker factor
+assured,M,S,79,0.0740606,[std] sex/smoker factor
+assured,M,S,80,0.08146666,[std] sex/smoker factor
+assured,M,S,81,0.089613326,[std] sex/smoker factor
+assured,M,S,82,0.0985746586,[std] sex/smoker factor
+assured,M,S,83,0.1084321245,[std] sex/smoker factor
+assured,M,S,84,0.1192753369,[std] sex/smoker factor
+assured,M,S,85,0.1312028706,[std] sex/smoker factor
+assured,M,S,86,0.1443231577,[std] sex/smoker factor
+assured,M,S,87,0.1587554735,[std] sex/smoker factor
+assured,M,S,88,0.1746310208,[std] sex/smoker factor
+assured,M,S,89,0.1920941229,[std] sex/smoker factor
+assured,M,S,90,0.2113035352,[std] sex/smoker factor
+assured,M,S,91,0.2324338887,[std] sex/smoker factor
+assured,M,S,92,0.2556772776,[std] sex/smoker factor
+assured,M,S,93,0.2812450053,[std] sex/smoker factor
+assured,M,S,94,0.3093695059,[std] sex/smoker factor
+assured,M,S,95,0.3403064564,[std] sex/smoker factor
+assured,M,S,96,0.3743371021,[std] sex/smoker factor
+assured,M,S,97,0.4117708123,[std] sex/smoker factor
+assured,M,S,98,0.4529478935,[std] sex/smoker factor
+assured,M,S,99,0.4982426829,[std] sex/smoker factor
+assured,M,S,100,0.5480669512,[std] sex/smoker factor
+assured,M,S,101,0.6028736463,[std] sex/smoker factor
+assured,M,S,102,0.6631610109,[std] sex/smoker factor
+assured,M,S,103,0.729477112,[std] sex/smoker factor
+assured,M,S,104,0.8024248232,[std] sex/smoker factor
+assured,M,S,105,0.8826673055,[std] sex/smoker factor
+assured,M,S,106,0.9709340361,[std] sex/smoker factor
+assured,M,S,107,1.0,[std] sex/smoker factor
+assured,M,S,108,1.0,[std] sex/smoker factor
+assured,M,S,109,1.0,[std] sex/smoker factor
+assured,M,S,110,1.0,[std] sex/smoker factor
+assured,M,S,111,1.0,[std] sex/smoker factor
+assured,M,S,112,1.0,[std] sex/smoker factor
+assured,M,S,113,1.0,[std] sex/smoker factor
+assured,M,S,114,1.0,[std] sex/smoker factor
+assured,M,S,115,1.0,[std] sex/smoker factor
+assured,M,S,116,1.0,[std] sex/smoker factor
+assured,M,S,117,1.0,[std] sex/smoker factor
+assured,M,S,118,1.0,[std] sex/smoker factor
+assured,M,S,119,1.0,[std] sex/smoker factor
+assured,M,S,120,1.0,[std] sex/smoker factor
+population,F,NS,18,0.0001408025,notes walk-through anchor [std]
+population,F,NS,19,0.0001548828,notes walk-through anchor [std]
+population,F,NS,20,0.000170371,notes walk-through anchor [std]
+population,F,NS,21,0.0001874081,notes walk-through anchor [std]
+population,F,NS,22,0.0002061489,notes walk-through anchor [std]
+population,F,NS,23,0.0002267638,notes walk-through anchor [std]
+population,F,NS,24,0.0002494402,notes walk-through anchor [std]
+population,F,NS,25,0.0002743842,notes walk-through anchor [std]
+population,F,NS,26,0.0003018227,notes walk-through anchor [std]
+population,F,NS,27,0.0003320049,notes walk-through anchor [std]
+population,F,NS,28,0.0003652054,notes walk-through anchor [std]
+population,F,NS,29,0.000401726,notes walk-through anchor [std]
+population,F,NS,30,0.0004418986,notes walk-through anchor [std]
+population,F,NS,31,0.0004860884,notes walk-through anchor [std]
+population,F,NS,32,0.0005346973,notes walk-through anchor [std]
+population,F,NS,33,0.000588167,notes walk-through anchor [std]
+population,F,NS,34,0.0006469837,notes walk-through anchor [std]
+population,F,NS,35,0.0007116821,notes walk-through anchor [std]
+population,F,NS,36,0.0007828503,notes walk-through anchor [std]
+population,F,NS,37,0.0008611353,notes walk-through anchor [std]
+population,F,NS,38,0.0009472488,notes walk-through anchor [std]
+population,F,NS,39,0.0010419737,notes walk-through anchor [std]
+population,F,NS,40,0.0011461711,notes walk-through anchor [std]
+population,F,NS,41,0.0012607882,notes walk-through anchor [std]
+population,F,NS,42,0.001386867,notes walk-through anchor [std]
+population,F,NS,43,0.0015255537,notes walk-through anchor [std]
+population,F,NS,44,0.0016781091,notes walk-through anchor [std]
+population,F,NS,45,0.00184592,notes walk-through anchor [std]
+population,F,NS,46,0.002030512,notes walk-through anchor [std]
+population,F,NS,47,0.0022335632,notes walk-through anchor [std]
+population,F,NS,48,0.0024569195,notes walk-through anchor [std]
+population,F,NS,49,0.0027026114,notes walk-through anchor [std]
+population,F,NS,50,0.0029728726,notes walk-through anchor [std]
+population,F,NS,51,0.0032701598,notes walk-through anchor [std]
+population,F,NS,52,0.0035971758,notes walk-through anchor [std]
+population,F,NS,53,0.0039568934,notes walk-through anchor [std]
+population,F,NS,54,0.0043525827,notes walk-through anchor [std]
+population,F,NS,55,0.004787841,notes walk-through anchor [std]
+population,F,NS,56,0.0052666251,notes walk-through anchor [std]
+population,F,NS,57,0.0057932876,notes walk-through anchor [std]
+population,F,NS,58,0.0063726164,notes walk-through anchor [std]
+population,F,NS,59,0.007009878,notes walk-through anchor [std]
+population,F,NS,60,0.0077108658,notes walk-through anchor [std]
+population,F,NS,61,0.0084819524,notes walk-through anchor [std]
+population,F,NS,62,0.0093301476,notes walk-through anchor [std]
+population,F,NS,63,0.0102631624,notes walk-through anchor [std]
+population,F,NS,64,0.0112894786,notes walk-through anchor [std]
+population,F,NS,65,0.0124184265,notes walk-through anchor [std]
+population,F,NS,66,0.0136602691,notes walk-through anchor [std]
+population,F,NS,67,0.015026296,notes walk-through anchor [std]
+population,F,NS,68,0.0165289256,notes walk-through anchor [std]
+population,F,NS,69,0.0181818182,notes walk-through anchor [std]
+population,F,NS,70,0.02,notes walk-through anchor [std]
+population,F,NS,71,0.022,notes walk-through anchor [std]
+population,F,NS,72,0.0242,notes walk-through anchor [std]
+population,F,NS,73,0.02662,notes walk-through anchor [std]
+population,F,NS,74,0.029282,notes walk-through anchor [std]
+population,F,NS,75,0.0322102,notes walk-through anchor [std]
+population,F,NS,76,0.03543122,notes walk-through anchor [std]
+population,F,NS,77,0.038974342,notes walk-through anchor [std]
+population,F,NS,78,0.0428717762,notes walk-through anchor [std]
+population,F,NS,79,0.0471589538,notes walk-through anchor [std]
+population,F,NS,80,0.0518748492,notes walk-through anchor [std]
+population,F,NS,81,0.0570623341,notes walk-through anchor [std]
+population,F,NS,82,0.0627685675,notes walk-through anchor [std]
+population,F,NS,83,0.0690454243,notes walk-through anchor [std]
+population,F,NS,84,0.0759499667,notes walk-through anchor [std]
+population,F,NS,85,0.0835449634,notes walk-through anchor [std]
+population,F,NS,86,0.0918994597,notes walk-through anchor [std]
+population,F,NS,87,0.1010894057,notes walk-through anchor [std]
+population,F,NS,88,0.1111983463,notes walk-through anchor [std]
+population,F,NS,89,0.1223181809,notes walk-through anchor [std]
+population,F,NS,90,0.134549999,notes walk-through anchor [std]
+population,F,NS,91,0.1480049989,notes walk-through anchor [std]
+population,F,NS,92,0.1628054988,notes walk-through anchor [std]
+population,F,NS,93,0.1790860487,notes walk-through anchor [std]
+population,F,NS,94,0.1969946535,notes walk-through anchor [std]
+population,F,NS,95,0.2166941189,notes walk-through anchor [std]
+population,F,NS,96,0.2383635308,notes walk-through anchor [std]
+population,F,NS,97,0.2621998838,notes walk-through anchor [std]
+population,F,NS,98,0.2884198722,notes walk-through anchor [std]
+population,F,NS,99,0.3172618594,notes walk-through anchor [std]
+population,F,NS,100,0.3489880454,notes walk-through anchor [std]
+population,F,NS,101,0.3838868499,notes walk-through anchor [std]
+population,F,NS,102,0.4222755349,notes walk-through anchor [std]
+population,F,NS,103,0.4645030884,notes walk-through anchor [std]
+population,F,NS,104,0.5109533972,notes walk-through anchor [std]
+population,F,NS,105,0.562048737,notes walk-through anchor [std]
+population,F,NS,106,0.6182536107,notes walk-through anchor [std]
+population,F,NS,107,0.6800789717,notes walk-through anchor [std]
+population,F,NS,108,0.7480868689,notes walk-through anchor [std]
+population,F,NS,109,0.8228955558,notes walk-through anchor [std]
+population,F,NS,110,0.9051851114,notes walk-through anchor [std]
+population,F,NS,111,0.9957036225,notes walk-through anchor [std]
+population,F,NS,112,1.0,notes walk-through anchor [std]
+population,F,NS,113,1.0,notes walk-through anchor [std]
+population,F,NS,114,1.0,notes walk-through anchor [std]
+population,F,NS,115,1.0,notes walk-through anchor [std]
+population,F,NS,116,1.0,notes walk-through anchor [std]
+population,F,NS,117,1.0,notes walk-through anchor [std]
+population,F,NS,118,1.0,notes walk-through anchor [std]
+population,F,NS,119,1.0,notes walk-through anchor [std]
+population,F,NS,120,1.0,notes walk-through anchor [std]
+population,F,S,18,0.000225284,[std] sex/smoker factor
+population,F,S,19,0.0002478124,[std] sex/smoker factor
+population,F,S,20,0.0002725936,[std] sex/smoker factor
+population,F,S,21,0.000299853,[std] sex/smoker factor
+population,F,S,22,0.0003298383,[std] sex/smoker factor
+population,F,S,23,0.0003628221,[std] sex/smoker factor
+population,F,S,24,0.0003991043,[std] sex/smoker factor
+population,F,S,25,0.0004390148,[std] sex/smoker factor
+population,F,S,26,0.0004829163,[std] sex/smoker factor
+population,F,S,27,0.0005312079,[std] sex/smoker factor
+population,F,S,28,0.0005843287,[std] sex/smoker factor
+population,F,S,29,0.0006427615,[std] sex/smoker factor
+population,F,S,30,0.0007070377,[std] sex/smoker factor
+population,F,S,31,0.0007777415,[std] sex/smoker factor
+population,F,S,32,0.0008555156,[std] sex/smoker factor
+population,F,S,33,0.0009410672,[std] sex/smoker factor
+population,F,S,34,0.0010351739,[std] sex/smoker factor
+population,F,S,35,0.0011386913,[std] sex/smoker factor
+population,F,S,36,0.0012525604,[std] sex/smoker factor
+population,F,S,37,0.0013778165,[std] sex/smoker factor
+population,F,S,38,0.0015155981,[std] sex/smoker factor
+population,F,S,39,0.0016671579,[std] sex/smoker factor
+population,F,S,40,0.0018338737,[std] sex/smoker factor
+population,F,S,41,0.0020172611,[std] sex/smoker factor
+population,F,S,42,0.0022189872,[std] sex/smoker factor
+population,F,S,43,0.0024408859,[std] sex/smoker factor
+population,F,S,44,0.0026849745,[std] sex/smoker factor
+population,F,S,45,0.0029534719,[std] sex/smoker factor
+population,F,S,46,0.0032488191,[std] sex/smoker factor
+population,F,S,47,0.003573701,[std] sex/smoker factor
+population,F,S,48,0.0039310712,[std] sex/smoker factor
+population,F,S,49,0.0043241783,[std] sex/smoker factor
+population,F,S,50,0.0047565961,[std] sex/smoker factor
+population,F,S,51,0.0052322557,[std] sex/smoker factor
+population,F,S,52,0.0057554813,[std] sex/smoker factor
+population,F,S,53,0.0063310294,[std] sex/smoker factor
+population,F,S,54,0.0069641323,[std] sex/smoker factor
+population,F,S,55,0.0076605456,[std] sex/smoker factor
+population,F,S,56,0.0084266001,[std] sex/smoker factor
+population,F,S,57,0.0092692602,[std] sex/smoker factor
+population,F,S,58,0.0101961862,[std] sex/smoker factor
+population,F,S,59,0.0112158048,[std] sex/smoker factor
+population,F,S,60,0.0123373853,[std] sex/smoker factor
+population,F,S,61,0.0135711238,[std] sex/smoker factor
+population,F,S,62,0.0149282362,[std] sex/smoker factor
+population,F,S,63,0.0164210598,[std] sex/smoker factor
+population,F,S,64,0.0180631658,[std] sex/smoker factor
+population,F,S,65,0.0198694823,[std] sex/smoker factor
+population,F,S,66,0.0218564306,[std] sex/smoker factor
+population,F,S,67,0.0240420736,[std] sex/smoker factor
+population,F,S,68,0.026446281,[std] sex/smoker factor
+population,F,S,69,0.0290909091,[std] sex/smoker factor
+population,F,S,70,0.032,[std] sex/smoker factor
+population,F,S,71,0.0352,[std] sex/smoker factor
+population,F,S,72,0.03872,[std] sex/smoker factor
+population,F,S,73,0.042592,[std] sex/smoker factor
+population,F,S,74,0.0468512,[std] sex/smoker factor
+population,F,S,75,0.05153632,[std] sex/smoker factor
+population,F,S,76,0.056689952,[std] sex/smoker factor
+population,F,S,77,0.0623589472,[std] sex/smoker factor
+population,F,S,78,0.0685948419,[std] sex/smoker factor
+population,F,S,79,0.0754543261,[std] sex/smoker factor
+population,F,S,80,0.0829997587,[std] sex/smoker factor
+population,F,S,81,0.0912997346,[std] sex/smoker factor
+population,F,S,82,0.1004297081,[std] sex/smoker factor
+population,F,S,83,0.1104726789,[std] sex/smoker factor
+population,F,S,84,0.1215199467,[std] sex/smoker factor
+population,F,S,85,0.1336719414,[std] sex/smoker factor
+population,F,S,86,0.1470391356,[std] sex/smoker factor
+population,F,S,87,0.1617430491,[std] sex/smoker factor
+population,F,S,88,0.177917354,[std] sex/smoker factor
+population,F,S,89,0.1957090894,[std] sex/smoker factor
+population,F,S,90,0.2152799984,[std] sex/smoker factor
+population,F,S,91,0.2368079982,[std] sex/smoker factor
+population,F,S,92,0.260488798,[std] sex/smoker factor
+population,F,S,93,0.2865376778,[std] sex/smoker factor
+population,F,S,94,0.3151914456,[std] sex/smoker factor
+population,F,S,95,0.3467105902,[std] sex/smoker factor
+population,F,S,96,0.3813816492,[std] sex/smoker factor
+population,F,S,97,0.4195198141,[std] sex/smoker factor
+population,F,S,98,0.4614717955,[std] sex/smoker factor
+population,F,S,99,0.5076189751,[std] sex/smoker factor
+population,F,S,100,0.5583808726,[std] sex/smoker factor
+population,F,S,101,0.6142189599,[std] sex/smoker factor
+population,F,S,102,0.6756408559,[std] sex/smoker factor
+population,F,S,103,0.7432049414,[std] sex/smoker factor
+population,F,S,104,0.8175254356,[std] sex/smoker factor
+population,F,S,105,0.8992779791,[std] sex/smoker factor
+population,F,S,106,0.9892057771,[std] sex/smoker factor
+population,F,S,107,1.0,[std] sex/smoker factor
+population,F,S,108,1.0,[std] sex/smoker factor
+population,F,S,109,1.0,[std] sex/smoker factor
+population,F,S,110,1.0,[std] sex/smoker factor
+population,F,S,111,1.0,[std] sex/smoker factor
+population,F,S,112,1.0,[std] sex/smoker factor
+population,F,S,113,1.0,[std] sex/smoker factor
+population,F,S,114,1.0,[std] sex/smoker factor
+population,F,S,115,1.0,[std] sex/smoker factor
+population,F,S,116,1.0,[std] sex/smoker factor
+population,F,S,117,1.0,[std] sex/smoker factor
+population,F,S,118,1.0,[std] sex/smoker factor
+population,F,S,119,1.0,[std] sex/smoker factor
+population,F,S,120,1.0,[std] sex/smoker factor
+population,M,NS,18,0.0002041636,[std] sex/smoker factor
+population,M,NS,19,0.00022458,[std] sex/smoker factor
+population,M,NS,20,0.000247038,[std] sex/smoker factor
+population,M,NS,21,0.0002717418,[std] sex/smoker factor
+population,M,NS,22,0.000298916,[std] sex/smoker factor
+population,M,NS,23,0.0003288076,[std] sex/smoker factor
+population,M,NS,24,0.0003616883,[std] sex/smoker factor
+population,M,NS,25,0.0003978571,[std] sex/smoker factor
+population,M,NS,26,0.0004376429,[std] sex/smoker factor
+population,M,NS,27,0.0004814071,[std] sex/smoker factor
+population,M,NS,28,0.0005295479,[std] sex/smoker factor
+population,M,NS,29,0.0005825027,[std] sex/smoker factor
+population,M,NS,30,0.0006407529,[std] sex/smoker factor
+population,M,NS,31,0.0007048282,[std] sex/smoker factor
+population,M,NS,32,0.000775311,[std] sex/smoker factor
+population,M,NS,33,0.0008528421,[std] sex/smoker factor
+population,M,NS,34,0.0009381263,[std] sex/smoker factor
+population,M,NS,35,0.001031939,[std] sex/smoker factor
+population,M,NS,36,0.0011351329,[std] sex/smoker factor
+population,M,NS,37,0.0012486462,[std] sex/smoker factor
+population,M,NS,38,0.0013735108,[std] sex/smoker factor
+population,M,NS,39,0.0015108619,[std] sex/smoker factor
+population,M,NS,40,0.001661948,[std] sex/smoker factor
+population,M,NS,41,0.0018281429,[std] sex/smoker factor
+population,M,NS,42,0.0020109571,[std] sex/smoker factor
+population,M,NS,43,0.0022120528,[std] sex/smoker factor
+population,M,NS,44,0.0024332581,[std] sex/smoker factor
+population,M,NS,45,0.0026765839,[std] sex/smoker factor
+population,M,NS,46,0.0029442423,[std] sex/smoker factor
+population,M,NS,47,0.0032386666,[std] sex/smoker factor
+population,M,NS,48,0.0035625332,[std] sex/smoker factor
+population,M,NS,49,0.0039187866,[std] sex/smoker factor
+population,M,NS,50,0.0043106652,[std] sex/smoker factor
+population,M,NS,51,0.0047417317,[std] sex/smoker factor
+population,M,NS,52,0.0052159049,[std] sex/smoker factor
+population,M,NS,53,0.0057374954,[std] sex/smoker factor
+population,M,NS,54,0.0063112449,[std] sex/smoker factor
+population,M,NS,55,0.0069423694,[std] sex/smoker factor
+population,M,NS,56,0.0076366064,[std] sex/smoker factor
+population,M,NS,57,0.008400267,[std] sex/smoker factor
+population,M,NS,58,0.0092402937,[std] sex/smoker factor
+population,M,NS,59,0.0101643231,[std] sex/smoker factor
+population,M,NS,60,0.0111807554,[std] sex/smoker factor
+population,M,NS,61,0.0122988309,[std] sex/smoker factor
+population,M,NS,62,0.013528714,[std] sex/smoker factor
+population,M,NS,63,0.0148815854,[std] sex/smoker factor
+population,M,NS,64,0.016369744,[std] sex/smoker factor
+population,M,NS,65,0.0180067184,[std] sex/smoker factor
+population,M,NS,66,0.0198073902,[std] sex/smoker factor
+population,M,NS,67,0.0217881292,[std] sex/smoker factor
+population,M,NS,68,0.0239669421,[std] sex/smoker factor
+population,M,NS,69,0.0263636364,[std] sex/smoker factor
+population,M,NS,70,0.029,[std] sex/smoker factor
+population,M,NS,71,0.0319,[std] sex/smoker factor
+population,M,NS,72,0.03509,[std] sex/smoker factor
+population,M,NS,73,0.038599,[std] sex/smoker factor
+population,M,NS,74,0.0424589,[std] sex/smoker factor
+population,M,NS,75,0.04670479,[std] sex/smoker factor
+population,M,NS,76,0.051375269,[std] sex/smoker factor
+population,M,NS,77,0.0565127959,[std] sex/smoker factor
+population,M,NS,78,0.0621640755,[std] sex/smoker factor
+population,M,NS,79,0.068380483,[std] sex/smoker factor
+population,M,NS,80,0.0752185313,[std] sex/smoker factor
+population,M,NS,81,0.0827403845,[std] sex/smoker factor
+population,M,NS,82,0.0910144229,[std] sex/smoker factor
+population,M,NS,83,0.1001158652,[std] sex/smoker factor
+population,M,NS,84,0.1101274517,[std] sex/smoker factor
+population,M,NS,85,0.1211401969,[std] sex/smoker factor
+population,M,NS,86,0.1332542166,[std] sex/smoker factor
+population,M,NS,87,0.1465796383,[std] sex/smoker factor
+population,M,NS,88,0.1612376021,[std] sex/smoker factor
+population,M,NS,89,0.1773613623,[std] sex/smoker factor
+population,M,NS,90,0.1950974985,[std] sex/smoker factor
+population,M,NS,91,0.2146072484,[std] sex/smoker factor
+population,M,NS,92,0.2360679732,[std] sex/smoker factor
+population,M,NS,93,0.2596747705,[std] sex/smoker factor
+population,M,NS,94,0.2856422476,[std] sex/smoker factor
+population,M,NS,95,0.3142064724,[std] sex/smoker factor
+population,M,NS,96,0.3456271196,[std] sex/smoker factor
+population,M,NS,97,0.3801898316,[std] sex/smoker factor
+population,M,NS,98,0.4182088147,[std] sex/smoker factor
+population,M,NS,99,0.4600296962,[std] sex/smoker factor
+population,M,NS,100,0.5060326658,[std] sex/smoker factor
+population,M,NS,101,0.5566359324,[std] sex/smoker factor
+population,M,NS,102,0.6122995256,[std] sex/smoker factor
+population,M,NS,103,0.6735294782,[std] sex/smoker factor
+population,M,NS,104,0.740882426,[std] sex/smoker factor
+population,M,NS,105,0.8149706686,[std] sex/smoker factor
+population,M,NS,106,0.8964677355,[std] sex/smoker factor
+population,M,NS,107,0.986114509,[std] sex/smoker factor
+population,M,NS,108,1.0,[std] sex/smoker factor
+population,M,NS,109,1.0,[std] sex/smoker factor
+population,M,NS,110,1.0,[std] sex/smoker factor
+population,M,NS,111,1.0,[std] sex/smoker factor
+population,M,NS,112,1.0,[std] sex/smoker factor
+population,M,NS,113,1.0,[std] sex/smoker factor
+population,M,NS,114,1.0,[std] sex/smoker factor
+population,M,NS,115,1.0,[std] sex/smoker factor
+population,M,NS,116,1.0,[std] sex/smoker factor
+population,M,NS,117,1.0,[std] sex/smoker factor
+population,M,NS,118,1.0,[std] sex/smoker factor
+population,M,NS,119,1.0,[std] sex/smoker factor
+population,M,NS,120,1.0,[std] sex/smoker factor
+population,M,S,18,0.0003266618,[std] sex/smoker factor
+population,M,S,19,0.000359328,[std] sex/smoker factor
+population,M,S,20,0.0003952608,[std] sex/smoker factor
+population,M,S,21,0.0004347869,[std] sex/smoker factor
+population,M,S,22,0.0004782655,[std] sex/smoker factor
+population,M,S,23,0.0005260921,[std] sex/smoker factor
+population,M,S,24,0.0005787013,[std] sex/smoker factor
+population,M,S,25,0.0006365714,[std] sex/smoker factor
+population,M,S,26,0.0007002286,[std] sex/smoker factor
+population,M,S,27,0.0007702514,[std] sex/smoker factor
+population,M,S,28,0.0008472766,[std] sex/smoker factor
+population,M,S,29,0.0009320042,[std] sex/smoker factor
+population,M,S,30,0.0010252047,[std] sex/smoker factor
+population,M,S,31,0.0011277251,[std] sex/smoker factor
+population,M,S,32,0.0012404976,[std] sex/smoker factor
+population,M,S,33,0.0013645474,[std] sex/smoker factor
+population,M,S,34,0.0015010022,[std] sex/smoker factor
+population,M,S,35,0.0016511024,[std] sex/smoker factor
+population,M,S,36,0.0018162126,[std] sex/smoker factor
+population,M,S,37,0.0019978339,[std] sex/smoker factor
+population,M,S,38,0.0021976173,[std] sex/smoker factor
+population,M,S,39,0.002417379,[std] sex/smoker factor
+population,M,S,40,0.0026591169,[std] sex/smoker factor
+population,M,S,41,0.0029250286,[std] sex/smoker factor
+population,M,S,42,0.0032175314,[std] sex/smoker factor
+population,M,S,43,0.0035392846,[std] sex/smoker factor
+population,M,S,44,0.003893213,[std] sex/smoker factor
+population,M,S,45,0.0042825343,[std] sex/smoker factor
+population,M,S,46,0.0047107877,[std] sex/smoker factor
+population,M,S,47,0.0051818665,[std] sex/smoker factor
+population,M,S,48,0.0057000532,[std] sex/smoker factor
+population,M,S,49,0.0062700585,[std] sex/smoker factor
+population,M,S,50,0.0068970643,[std] sex/smoker factor
+population,M,S,51,0.0075867708,[std] sex/smoker factor
+population,M,S,52,0.0083454479,[std] sex/smoker factor
+population,M,S,53,0.0091799926,[std] sex/smoker factor
+population,M,S,54,0.0100979919,[std] sex/smoker factor
+population,M,S,55,0.0111077911,[std] sex/smoker factor
+population,M,S,56,0.0122185702,[std] sex/smoker factor
+population,M,S,57,0.0134404272,[std] sex/smoker factor
+population,M,S,58,0.0147844699,[std] sex/smoker factor
+population,M,S,59,0.0162629169,[std] sex/smoker factor
+population,M,S,60,0.0178892086,[std] sex/smoker factor
+population,M,S,61,0.0196781295,[std] sex/smoker factor
+population,M,S,62,0.0216459424,[std] sex/smoker factor
+population,M,S,63,0.0238105367,[std] sex/smoker factor
+population,M,S,64,0.0261915904,[std] sex/smoker factor
+population,M,S,65,0.0288107494,[std] sex/smoker factor
+population,M,S,66,0.0316918243,[std] sex/smoker factor
+population,M,S,67,0.0348610068,[std] sex/smoker factor
+population,M,S,68,0.0383471074,[std] sex/smoker factor
+population,M,S,69,0.0421818182,[std] sex/smoker factor
+population,M,S,70,0.0464,[std] sex/smoker factor
+population,M,S,71,0.05104,[std] sex/smoker factor
+population,M,S,72,0.056144,[std] sex/smoker factor
+population,M,S,73,0.0617584,[std] sex/smoker factor
+population,M,S,74,0.06793424,[std] sex/smoker factor
+population,M,S,75,0.074727664,[std] sex/smoker factor
+population,M,S,76,0.0822004304,[std] sex/smoker factor
+population,M,S,77,0.0904204734,[std] sex/smoker factor
+population,M,S,78,0.0994625208,[std] sex/smoker factor
+population,M,S,79,0.1094087729,[std] sex/smoker factor
+population,M,S,80,0.1203496501,[std] sex/smoker factor
+population,M,S,81,0.1323846152,[std] sex/smoker factor
+population,M,S,82,0.1456230767,[std] sex/smoker factor
+population,M,S,83,0.1601853843,[std] sex/smoker factor
+population,M,S,84,0.1762039228,[std] sex/smoker factor
+population,M,S,85,0.1938243151,[std] sex/smoker factor
+population,M,S,86,0.2132067466,[std] sex/smoker factor
+population,M,S,87,0.2345274212,[std] sex/smoker factor
+population,M,S,88,0.2579801633,[std] sex/smoker factor
+population,M,S,89,0.2837781797,[std] sex/smoker factor
+population,M,S,90,0.3121559976,[std] sex/smoker factor
+population,M,S,91,0.3433715974,[std] sex/smoker factor
+population,M,S,92,0.3777087572,[std] sex/smoker factor
+population,M,S,93,0.4154796329,[std] sex/smoker factor
+population,M,S,94,0.4570275962,[std] sex/smoker factor
+population,M,S,95,0.5027303558,[std] sex/smoker factor
+population,M,S,96,0.5530033914,[std] sex/smoker factor
+population,M,S,97,0.6083037305,[std] sex/smoker factor
+population,M,S,98,0.6691341035,[std] sex/smoker factor
+population,M,S,99,0.7360475139,[std] sex/smoker factor
+population,M,S,100,0.8096522653,[std] sex/smoker factor
+population,M,S,101,0.8906174918,[std] sex/smoker factor
+population,M,S,102,0.979679241,[std] sex/smoker factor
+population,M,S,103,1.0,[std] sex/smoker factor
+population,M,S,104,1.0,[std] sex/smoker factor
+population,M,S,105,1.0,[std] sex/smoker factor
+population,M,S,106,1.0,[std] sex/smoker factor
+population,M,S,107,1.0,[std] sex/smoker factor
+population,M,S,108,1.0,[std] sex/smoker factor
+population,M,S,109,1.0,[std] sex/smoker factor
+population,M,S,110,1.0,[std] sex/smoker factor
+population,M,S,111,1.0,[std] sex/smoker factor
+population,M,S,112,1.0,[std] sex/smoker factor
+population,M,S,113,1.0,[std] sex/smoker factor
+population,M,S,114,1.0,[std] sex/smoker factor
+population,M,S,115,1.0,[std] sex/smoker factor
+population,M,S,116,1.0,[std] sex/smoker factor
+population,M,S,117,1.0,[std] sex/smoker factor
+population,M,S,118,1.0,[std] sex/smoker factor
+population,M,S,119,1.0,[std] sex/smoker factor
+population,M,S,120,1.0,[std] sex/smoker factor
