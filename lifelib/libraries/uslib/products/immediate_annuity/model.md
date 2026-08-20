@@ -232,8 +232,8 @@ important line in the model, and the notes' first-listed pitfall:
 Two consequences fall out for free, with no extra flag:
 
 - Because the floor pays the **full, unreduced** instalment, a survivor reduction inside a
-  certain period is automatically deferred to the end of that period — NYL's published
-  rule [S5]. Model point 5 kills the joint annuitant in month 14 under a 10-year certain
+  certain period is automatically deferred to the end of that period — one carrier's
+  published rule [S5]. Model point 5 kills the joint annuitant in month 14 under a 10-year certain
   period and pays the full instalment until `t = 120`, dropping to δ only at `t = 121`.
 - A commutation reduces certain-period instalments only, because `θ_cum` is multiplied by
   `C(t)`: at `t = 121` the life-contingent tail is paid in full. Applying `θ_cum` to that
@@ -300,7 +300,7 @@ The notes flag both as pitfalls, and they are wired to the same model point swit
 ## `n_R` is derived, never hard-coded
 
 The installment-refund certain period is `n_R = min{t ∈ T : G(t) ≥ P}` — payments continue
-until cumulative payments equal the premium, which is NYL's `premium ÷ annualized income`
+until cumulative payments equal the premium, which is the cited `premium ÷ annualized income`
 rule rounded up to a payment date [S5]. On the anchor it lands on the notes' 200 months,
 and the temptation is to write 200 down. `certain_mths_refund()` searches the schedule
 instead, so it moves with `B(1)`: model point 12 is the same contract at $4,800 of annual
@@ -324,7 +324,7 @@ income level `B(1) = $6,000`; premium tax τ = 0; maintenance expense $60 p.a. i
 2.5% and carried by `IF(t) = max(C, l_alive)`, with the `l_alive` leg dropped on
 `certain_only` so the expense ends with the contract (above); the
 anniversary-of-annuity-date COLA rule
-(NYL's "one year after the first income payment" alternative is *not* implemented); the
+(the cited "one year after the first income payment" alternative [S5] is *not* implemented); the
 installment-refund trim; and the whole commutation basis — the 4.00% base discount rate,
 the compound convention and the flat `cmt10_shift` are **[std]** *and* **[unverified]**,
 since no fixed SPIA issuer publishes a commutation discount formula.
@@ -389,8 +389,6 @@ model have parted company — which is the question this library exists to let y
 
 <!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
 [REG-R151]: #uslib-reg-r151
-[S1]: #uslib-immediate_annuity-s1
-[S5]: #uslib-immediate_annuity-s5
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

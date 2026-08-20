@@ -12,8 +12,8 @@ whose own R-numbering is distinct; research provenance in
 **[std]** are standardizations introduced for the reference implementation; each [std]
 table row carries a footnote giving the rationale and the observed range across
 insurers. Facts the research file could not verify are flagged [unverified]. The
-implementation anchor for mechanics is the Pacific Life "Versa-Flex PRO" specimen
-policy (form P08VP1, 8/08; specimen cell Male 35 Standard Nonsmoker, $100,000) [S3].
+implementation anchor for mechanics is one carrier's specimen policy (form P08VP1,
+8/08; specimen cell Male 35 Standard Nonsmoker, $100,000) [S3].
 
 ---
 
@@ -27,11 +27,11 @@ in the AP&P Manual's own valuation item, Appendix **A-585** ¶¶7 and 3, now rea
 first hand — the two texts were **not** compared line by line [REG-R155]. The
 flexible/fixed distinction is not cosmetic: it is what switches on the funding ratio
 in the statutory reserve (see `technical-notes.md`, "Valuation and reserve pointers").
-The *current assumption* variant is the
-interest-sensitive, cash-value-oriented chassis: the insurer declares a current
-credited interest rate and current charge scales that may be more favorable than the
-contractual guarantees (minimum interest, maximum charges), and revises them at its
-discretion subject to actuarial standards on non-guaranteed elements [R1] [R8].
+The *current assumption* variant is the interest-sensitive, cash-value-oriented
+chassis: the insurer declares a current credited interest rate and current charge
+scales that may be more favorable than the contractual guarantees (minimum interest,
+maximum charges), and revises them at its discretion subject to actuarial standards on
+non-guaranteed elements [R1] [R8].
 
 In the SOA/LIMRA 2015–2021 flexible-premium UL experience study, Current Assumption was
 one of three main product focuses, at 27% of known exposure (Cash Accumulation 33%,
@@ -39,8 +39,8 @@ Lifetime Guarantee 27%); by policy count, fixed (non-indexed, non-variable) UL d
 are the most common chassis across all product focuses [R7]. Current-assumption UL
 competes on credited rate and current charges rather than on secondary (no-lapse)
 guarantees; guaranteed-death-benefit needs are served by dedicated GUL products with
-lifetime no-lapse guarantees (e.g., Nationwide No-Lapse Guarantee UL II, guaranteeing
-to attained age 120) [S4], which are out of scope here.
+lifetime no-lapse guarantees (one of the fetched products guarantees to attained
+age 120) [S4], which are out of scope here.
 
 Current-assumption fixed UL is not an SEC-registered product; no statutory prospectus
 exists for it (prospectuses cover variable UL only) [unverified as a legal statement;
@@ -67,22 +67,23 @@ consistent with EDGAR searches recorded in the research file].
 
 Footnotes to [std] rows:
 
-1. Portfolio crediting chosen over new-money. Observed: Symetra CAUL uses new-money
-   (each net premium earns its declared rate locked for 12 months from receipt) [S1];
-   Protective and the Pacific Life specimen use periodically declared portfolio rates
-   [S2] [S3]. Portfolio-style is the more common design and the simpler modeling default
-   [unverified as to market share].
+1. Portfolio crediting chosen over new-money. Observed: one of the three fetched
+   current-assumption products uses new-money (each net premium earns its declared
+   rate locked for 12 months from receipt) [S1]; the other two, including the
+   specimen, use periodically declared portfolio rates [S2] [S3]. Portfolio-style is
+   the more common design and the simpler modeling default [unverified as to market
+   share].
 2. GPT chosen per the task's representative design and because the specimen cell itself
    elects GPT [S3]; CVAT (minimum DB floor 101% of AV in the specimen implementation
    [S3]) is the alternative under IRC 7702 [R2].
 3. Options A and B are universal across the fetched products; a return-of-premium
-   Option C is offered by some (Symetra caps C at 2x initial face [S1]; Pacific Life
+   Option C is offered by some (one caps C at 2x initial face [S1]; the specimen
    offers C [S3]) and is excluded to keep the reference recursion minimal.
 4. Observed issue-age ranges: 15 days–85 including a juvenile class [S1]; 18–85 with
    preferred classes capped at 75 [S2]; 18–85 for the GUL contrast product [S4]. The
    composite drops juvenile issues.
-5. Observed: 6–7 classes typical (Symetra 7 including juvenile [S1]; Protective 5
-   [S2]; Nationwide 6 [S4]).
+5. Observed: 6–7 classes typical (7 on one current-assumption product, including a
+   juvenile class [S1]; 5 on another [S2]; 6 on the GUL contrast product [S4]).
 6. Observed: $100,000 all classes [S1]; $50,000 Non-Tobacco/Tobacco and $100,000
    preferred classes [S2].
 
@@ -95,16 +96,16 @@ Footnotes to [std] rows:
 | Crediting frequency (contract) | Daily, 365-day year, at no less than the guaranteed rate; excess interest discretionary, uniform by class | [S3] |
 | Rate on loaned AV | Guaranteed rate (2.00%) | design [S2] [S3]; value **[std]** (7)(15) |
 
-7. Observed guaranteed minimums: 2% (Symetra, 2014-era form still sold in 2023) [S1];
-   2.5% (Protective, 2015-era form) [S2]; 3% policy years 2+ (Pacific Life 2008-era
-   form) [S3]. Guaranteed minimums correlate with issue era; new issues cluster at 2%
+7. Observed guaranteed minimums: 2% (2014-era form still sold in 2023) [S1]; 2.5%
+   (2015-era form) [S2]; 3% policy years 2+ (2008-era specimen form) [S3].
+   Guaranteed minimums correlate with issue era; new issues cluster at 2%
    or below following the 2021 IRC 7702 rate change (transition insurance interest
    rate 2%) [R2] [unverified for the market generally]. 2.00% chosen as representative
    of current new issues.
 8. Current declared crediting rates are not published in the fetched public documents,
-   and the Symetra current-rates page returned HTTP 403 [S5]. 4.00% is a pure modeling
-   assumption for the snapshot current scale; the model should treat it as a
-   non-guaranteed element revisable under ASOP 2 discipline [R8].
+   and the one current-rates page that was attempted returned HTTP 403 [S5]. 4.00% is
+   a pure modeling assumption for the snapshot current scale; the model should treat it
+   as a non-guaranteed element revisable under ASOP 2 discipline [R8].
 
 ### Charges (per policy unless stated; "current" = snapshot NGE scale, "guaranteed" = contractual maximum)
 
@@ -120,7 +121,7 @@ Footnotes to [std] rows:
 
 9. Observed premium loads: 6% current / 9% guaranteed max, all years [S1]; 10% all
    years, single stated rate [S2]; 6.95% guaranteed max, current may be lower [S3].
-   The Symetra pair is adopted because it exhibits the typical current-vs-guaranteed
+   The 6%/9% pair is adopted because it exhibits the typical current-vs-guaranteed
    NGE gap; the load itself is a non-guaranteed element in that design [S1].
 10. Observed per-policy charges: $10/month current, $30/month guaranteed max [S1];
     $5/month all years to 121 [S2]; $7.50/month (specimen) [S3]. The specimen value is
@@ -196,7 +197,7 @@ Footnotes to [std] rows:
     below guideline limits so GPT/MEC constraints do not bind in the base projection.
 17. Observed lapse protection on current-assumption UL: short built-in NLG (5 years on
     minimum premium [S1]) or optional flexible-duration shadow-account endorsements
-    (Protective Lapse Protection Endorsement with catch-up provision [S2]). Lifetime
+    (one such endorsement carries a catch-up provision [S2]). Lifetime
     secondary guarantees belong to dedicated GUL products [S4]. The base model excludes
     all secondary guarantees; modeling them changes the reserve regime (AG 38 / VM-20
     ULSG treatment [REG-R6] [REG-R7]).
@@ -309,8 +310,8 @@ $200) [S3]. Maximum loan = AV − 3x most recent monthly deduction − surrender
 existing policy debt [S3]. Interest accrues daily at the charged rate (composite 2.75%
 **[std]**, footnote 15), is due at policy year end, and is capitalized if unpaid [S3].
 The loaned portion of AV is credited at the guaranteed rate (a design feature in both
-fetched fixed-loan products) [S2] [S3]. Payments
-while debt is outstanding repay the loan unless designated as premium [S3].
+fetched fixed-loan products) [S2] [S3]. Payments while debt is outstanding repay the
+loan unless designated as premium [S3].
 
 ### Withdrawals (partial surrenders)
 
@@ -338,9 +339,9 @@ There is no renewal or conversion structure (coverage is permanent and premiums
 flexible). The policy does not mature: at attained age 121 monthly deductions cease,
 premiums are no longer accepted, loans and loan repayments remain available (loan
 interest continues to accrue), withdrawals are not allowed, interest continues to be
-credited, and coverage continues for life [S3]; Protective similarly discontinues
-premiums and charges at attained age 121 [S2]. IRS guidance on post-age-100 coverage
-was noted as unsettled in the specimen [S3].
+credited, and coverage continues for life [S3]; another fetched product similarly
+discontinues premiums and charges at attained age 121 [S2]. IRS guidance on
+post-age-100 coverage was noted as unsettled in the specimen [S3].
 
 ---
 
@@ -349,7 +350,7 @@ was noted as unsettled in the specimen [S3].
 **In scope (described, charged at 0 in the base model [std]):** none are projected in
 the base reference model; the monthly-deduction formula carries a rider-charge term as
 a placeholder so that rider modules can be added without changing the recursion [S3
-formula structure](#uslib-universal_life-s3).
+formula structure].
 
 Commonly attached riders on this chassis, for context:
 
@@ -358,22 +359,23 @@ Commonly attached riders on this chassis, for context:
   $1 million [S2].
 - Chronic illness acceleration: up to 50% of DB ($500,000 max), ADL/cognitive
   triggers, lien design; optional up to 100% of DB with 2% monthly benefit capped at
-  the IRS per diem x 30 [S1]; ExtendCare chronic illness rider [S2]; LTC rider, cash
-  indemnity 2%/3%/4% monthly up to 2x the HIPAA per diem [S4].
+  the IRS per diem x 30 [S1]; an acceleration rider whose terms the fetched producer
+  guide does not state [S2]; LTC rider, cash indemnity 2%/3%/4% monthly up to 2x the
+  HIPAA per diem [S4].
 
 **Out of scope:** accidental death benefit [S1] [S2]; children's term [S2]; disability
 benefit crediting a monthly amount to the policy [S2]; additional/annual renewable
 term riders including additional-insured term [S1] [S3]; surrender value enhancement
 rider [S3]; charitable giving benefit (+1% of face) [S1]; return-of-premium windows on
-GUL [S4]; income provider option (installment DB payout) [S2]; no-lapse
-guarantee/shadow-account endorsements [S1] [S2] [S4] (see footnote 17).
+GUL [S4]; an endorsement paying the death benefit as an installment income stream [S2];
+no-lapse guarantee/shadow-account endorsements [S1] [S2] [S4] (see footnote 17).
 
 ---
 
 ## Variations across insurers
 
-1. **Crediting style.** New-money 12-month rate locks per premium (Symetra CAUL [S1])
-   vs periodically declared portfolio rate (Protective [S2], Pacific Life [S3]).
+1. **Crediting style.** New-money 12-month rate locks per premium (one of the three
+   [S1]) vs periodically declared portfolio rate (the other two [S2] [S3]).
    Representative choice: portfolio — more common and the simpler modeling default
    [unverified as to market share].
 2. **Guaranteed minimum interest.** 2%–3% among fetched forms, correlated with issue
@@ -492,8 +494,8 @@ by "other appendices governing universal life plans" **without naming the item**
 that cross-reference must **not** be resolved to A-585 on the A-830 text
 [REG-R154 ¶32](#uslib-reg-r154).
 
-**IIPRC uniform standards.** Multi-state UL forms (e.g., the "ICC14"-prefixed Symetra
-form [S1]) are filed under the Interstate Compact's uniform standards for individual
+**IIPRC uniform standards.** Multi-state UL forms (e.g., the "ICC14"-prefixed form
+in [S1]) are filed under the Interstate Compact's uniform standards for individual
 flexible premium adjustable life [R10 — located but not read; no facts cited from it](#uslib-universal_life-r10).
 
 **Tax reserves.** IRC 807 defines life insurance tax reserves off the NAIC-prescribed
@@ -520,11 +522,6 @@ statutory) [REG-R16] — a downstream consumer of the same projected cash flows.
 [REG-R5]: #uslib-reg-r5
 [REG-R6]: #uslib-reg-r6
 [REG-R7]: #uslib-reg-r7
-[S1]: #uslib-universal_life-s1
-[S2]: #uslib-universal_life-s2
-[S3]: #uslib-universal_life-s3
-[S4]: #uslib-universal_life-s4
-[S5]: #uslib-universal_life-s5
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

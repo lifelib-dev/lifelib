@@ -13,8 +13,8 @@ cross-product numbering space, which now runs R1–R157** with most of the
 `_research/regulatory-actuarial.md`, R35–R72 from
 `_research/regulatory-actuarial-annuities.md`). **[std]** marks standardizations
 introduced for the reference implementation. Parameter values are identical to those in
-`product-spec.md`; the mechanics anchor is the Brighthouse Shield Level II prospectus,
-Appendix F [S2].
+`product-spec.md`, which takes its chassis from [S2]; the mechanics anchor is that
+prospectus's Appendix F.
 
 **Read this first.** A conforming RILA model **requires an option-pricing routine and a
 market-data interface** (discount curve, implied volatility surface, dividend yield) — not
@@ -216,7 +216,7 @@ chassis, which is why the shock is applied there.
 
 AG 54 requires these to be "consistent with the observable market prices of derivative
 assets over the Index Strategy Term, whenever possible" [R2]. A production implementation
-must supply a **surface**, not a scalar: Equitable documents the interpolation procedure
+must supply a **surface**, not a scalar: one carrier documents the interpolation procedure
 explicitly — quotes are taken for the closest maturities above and below the remaining
 time and, for each, the closest moneyness above and below the actual moneyness; then
 interpolate to the target moneyness at the shorter maturity, repeat at the longer
@@ -305,9 +305,9 @@ Roll-forward [S1] [S2]:
 
 `L` is the tier level. The **floor design needs four options, not three** — buy the ATM
 call spread, sell an ATM put, and buy back an OTM put struck at the floor so the short put
-exposure stops there; Allianz states that "the out-of-the-money put will almost always
-reduce, and never exceed, the negative impact of the at-the-money put for the Index Guard
-Strategy" [S5]. For the Edge/dual-precision design the binary call is *in the money*
+exposure stops there; the source states that "the out-of-the-money put will almost
+always reduce, and never exceed, the negative impact of the at-the-money put" for that
+strategy [S5]. For the Edge / dual-trigger design the binary call is *in the money*
 because it pays when the index ratio is at or above `1 − b` [S2] [S5]. If a Cap option is
 uncapped, the out-of-the-money call is valued at zero [S2].
 
@@ -356,14 +356,14 @@ rebate** [S4] [S6]:
     V_k(t) = IA_k(t) / (1 + rate(t)) ^ tau(t)  +  D_k(t)  +  CCF_k(t)
     CCF_k(t) = E_0 * tau(t) / T          (Cap Calculation Factor; always positive, declines)
 
-Equitable discounts the **full** Segment Investment with no subtraction of an initial option
-budget and adds the Cap Calculation Factor, "a return of estimated expenses for the portion
-of the Segment Duration that has not elapsed" (worked: $10 of estimated expenses on a
-one-year segment gives $6 with 219 days remaining, since 10 x 219/365 = 6); the rate is an
-investment-grade rate (risk-free plus a spread) that Equitable notes is above swap rates and
-therefore "will result in a lower value for that component" [S4]. Lincoln's
-`C x [1/(1+E)^D x (1+E)^D/(1+F)^D]` is presented as accretion-times-MVA but collapses
-algebraically to `C / (1+F)^D` [S6].
+One carrier discounts the **full** Segment Investment with no subtraction of an initial
+option budget and adds the Cap Calculation Factor, "a return of estimated expenses for the
+portion of the Segment Duration that has not elapsed" (worked: $10 of estimated expenses on
+a one-year segment gives $6 with 219 days remaining, since 10 x 219/365 = 6); the rate is an
+investment-grade rate (risk-free plus a spread) that the same carrier notes is above swap
+rates and therefore "will result in a lower value for that component" [S4]. A second
+carrier's `C x [1/(1+E)^D x (1+E)^D/(1+F)^D]` is presented as accretion-times-MVA but
+collapses algebraically to `C / (1+F)^D` [S6].
 
 **(c) A delta applied to the notional rather than a value, with no interest-rate
 adjustment term** [S5]:
@@ -371,7 +371,7 @@ adjustment term** [S5]:
     DailyAdjustment(t) = [ ( Pi(I(t), tau(t)) − Pi(I_s, T) ) + Pi(I_s, T) * (1 − tau(t)/T) ] * IA_k(t)
     V_k(t)             = IA_k(t) + DailyAdjustment(t)
 
-Allianz describes the second bracketed term ("proxy interest") as "approximated by the
+The source describes the second bracketed term ("proxy interest") as "approximated by the
 value of amortizing the cost of the Proxy Investment over the Term to zero" [S5] — the
 same option-budget amortization that appears as term `B` in families (a) and (b), added
 rather than subtracted. **There is no interest-rate adjustment factor in this form at all**
@@ -393,13 +393,13 @@ both, so this is a configuration flag, not a modeling opinion.
 
 **Legacy contrast module (pre-AG 54) [S1].** The older design uses no option pricing:
 accrue each rate linearly and apply the term-end rules to the accrued rates —
-`AccruedCapRate = c x (days elapsed)/(days in term)`, likewise for the Shield and Step
-Rates, 365 days assumed per calendar year of a term [S1]. Worked: $50,000, Shield 10, 10%
-Cap, 1-year term, index 500 → 600 at day 183 gives an accrued cap of 5%, a 5% Performance
-Rate and an interim value of $52,500 [S1]. Useful as a tractable first implementation
-target and as a regression contrast; it predates AG 54's July 1, 2024 effective date [R2]
-and would not satisfy the Hypothetical Portfolio requirement without a
-material-consistency demonstration.
+`AccruedCapRate = c x (days elapsed)/(days in term)`, likewise for the buffer and Step
+Rates, 365 days assumed per calendar year of a term [S1]. Worked: $50,000, a 10% buffer,
+10% Cap, 1-year term, index 500 → 600 at day 183 gives an accrued cap of 5%, a 5%
+Performance Rate and an interim value of $52,500 [S1]. Useful as a tractable first
+implementation target and as a regression contrast; it predates AG 54's July 1, 2024
+effective date [R2] and would not satisfy the Hypothetical Portfolio requirement without
+a material-consistency demonstration.
 
 ### The universal proportional rule for withdrawals
 
@@ -417,12 +417,12 @@ The reduction in notional is `Delta_IA = G_k * IA_k(t−) / V_k(t−)`, so
 i.e. **the notional lost can exceed the cash received**. Numeric illustration at the
 worked-example parameters: `IA = $100,000`, `V = $84,803.11`, `G = $8,000` →
 `Delta_IA = $9,433.62`, an excess of **$1,433.62** over the cash withdrawn, and the
-remaining notional is $90,566.38. Brighthouse works the same rule at
-`$50,000 x (1 − $20,000 / $53,514.77) = $31,313.57` [S2]; Prudential works it at a 71.429%
-ratio and gives a second case in which a $14,000 withdrawal against a $14,000 interim
-value zeroes a $14,285.71 base [S3]. The prospectus states the asymmetry directly: a
-withdrawal when the interim value is below the investment amount "will cause a greater
-percentage reduction in the Investment Amount that remains" [S2].
+remaining notional is $90,566.38. The chassis source works the same rule at
+`$50,000 x (1 − $20,000 / $53,514.77) = $31,313.57` [S2]; another carrier works it at a
+71.429% ratio and gives a second case in which a $14,000 withdrawal against a $14,000
+interim value zeroes a $14,285.71 base [S3]. The prospectus states the asymmetry
+directly: a withdrawal when the interim value is below the investment amount "will cause
+a greater percentage reduction in the Investment Amount that remains" [S2].
 
 Exception: after a **Performance Lock**, the locked value is reduced **dollar-for-dollar**
 [S2] — the option leg is gone and the bucket is a fixed accrual to term end.
@@ -514,7 +514,7 @@ model computes factors on the **[std]** basis in `product-spec.md`.
 Note on the option budget: on this chassis the cap *is* the fee — "While no fees or
 charges are deducted from the amounts held in the Index Strategies, the available Cap
 Rates, Participation Rates, Tier Levels, and Step Rates reflect the expenses related to
-the Index Strategies" [S3]; Equitable and Lincoln call the cap an "implicit ongoing fee"
+the Index Strategies" [S3]; two other carriers call the cap an "implicit ongoing fee"
 [S4] [S6]. A gross-liability projection must therefore **not** deduct a charge from the
 index-linked value; the margin appears as the spread between the earned rate and the
 option budget implied by the declared cap.
@@ -679,9 +679,9 @@ Dominant assumptions, in rough order:
 
 1. **Implied volatility.** The interim value is a derivative price; `sigma` moves it
    directly, and **the sign differs by strategy**: increases in expected volatility hurt
-   dual-precision, precision and 1-year performance strategies, while *decreases* hurt the
-   floor (Index Guard) strategy [S5]. A flat-surface approximation is the largest single
-   simplification in this model.
+   the dual-trigger, trigger and 1-year cap strategies, while *decreases* hurt the floor
+   strategy [S5]. A flat-surface approximation is the largest single simplification in
+   this model.
 2. **Interest rates through the MVA factor.** At the worked-example parameters a 100 bp
    rise costs $2,687.62 of interim value at the term midpoint — larger than the entire
    trading-cost provision by two orders of magnitude. Family (c) has no such term at all
@@ -729,10 +729,10 @@ Known modeling pitfalls:
   [R2]); an in-force model must carry both engines and key them off issue date.
 - **Trading costs are a free parameter.** No retrieved prospectus quantifies them
   [S2] [S4] [S6]; the [std] 0.10% matches only the order of magnitude implied by [R6].
-- **Regression vectors exist — use them.** Lincoln publishes interim-value grids across
+- **Regression vectors exist — use them.** One carrier publishes interim-value grids across
   index moves of −30%/−10%/+20%/+40% for 1- and 6-year terms and for cap, trigger and
-  dual-trigger accounts [S6]; Prudential a three-strategy grid at ±20% [S3]; Brighthouse a
-  single fully decomposed case [S2]; and the Academy a six-year path with all
+  dual-trigger accounts [S6]; another a three-strategy grid at ±20% [S3]; the chassis
+  carrier a single fully decomposed case [S2]; and the Academy a six-year path with all
   Black-Scholes inputs disclosed plus an Excel Lambda library reproducing the calculation
   [R6]. These are the only public conformance tests available.
 
@@ -770,12 +770,6 @@ Known modeling pitfalls:
 [REG-R66]: #uslib-reg-r66
 [REG-R70]: #uslib-reg-r70
 [REG-R71]: #uslib-reg-r71
-[S1]: #uslib-registered_index_linked_annuity-s1
-[S2]: #uslib-registered_index_linked_annuity-s2
-[S3]: #uslib-registered_index_linked_annuity-s3
-[S4]: #uslib-registered_index_linked_annuity-s4
-[S5]: #uslib-registered_index_linked_annuity-s5
-[S6]: #uslib-registered_index_linked_annuity-s6
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

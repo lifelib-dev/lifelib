@@ -1,0 +1,7 @@
+point_id,policy_id,age_at_entry,sex,lives,premium,n_segments,db_uplift,amc_rate,further_costs_rate,tax_provision_rate,wd_pattern,wd_rate_custom,oac_rate,gmdb_flag,uf_init,pols_if_init
+1,ULB-000001,65,M,single,100000.0,100,1.001,0.0100,0.0010,0.20,allowance_5pct,0.0,0.0,False,100000.0,1.0
+2,ULB-000002,65,M,single,100000.0,100,1.001,0.0100,0.0010,0.20,none,0.0,0.0,False,100000.0,1.0
+3,ULB-000003,65,M,single,100000.0,100,1.001,0.0100,0.0010,0.20,allowance_5pct,0.0,0.005,False,100000.0,1.0
+4,ULB-000004,65,M,single,100000.0,100,1.001,0.0100,0.0010,0.20,allowance_5pct,0.0,0.0,True,100000.0,1.0
+5,ULB-000005,65,M,single,100000.0,100,1.010,0.0100,0.0010,0.20,allowance_5pct,0.0,0.0,False,100000.0,1.0
+6,ULB-000006,55,F,single,250000.0,100,1.001,0.0100,0.0010,0.20,custom,0.03,0.0,False,250000.0,1.0

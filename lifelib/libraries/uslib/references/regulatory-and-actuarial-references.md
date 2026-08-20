@@ -604,7 +604,7 @@ Consolidated Appropriations Act change is verified at [R13].
   premium reserve, deterministic and stochastic reserves, prudent-estimate assumption
   setting (mortality credibility, lapse, premium persistency), asset modeling and
   reinvestment, exclusion tests, and the reporting interplay with VM-31 [R23 front
-  matter; topic list partly [unverified] — not every chapter was read](#uslib-reg-r23). Explicitly not
+  matter; topic list — not every chapter was read](#uslib-reg-r23) [unverified]. Explicitly not
   an ASB promulgation and not binding [R23]. The implementation companion to R3 and
   ASOP 52 (R31); updates the 2017 edition for VM changes since the 12/31/2019
   valuation [search summary].
@@ -619,7 +619,7 @@ Consolidated Appropriations Act change is verified at [R13].
 - **Annotation:** Practitioner Q&A on illustration-actuary work under Model #582 and
   ASOP 24: disciplined current scale development, self-support and lapse-support
   testing, certification practice, and application to indexed products under the AG 49
-  family [R24 title/front matter; detailed topic list partly [unverified]](#uslib-reg-r24). The
+  family [R24 title/front matter; detailed topic list](#uslib-reg-r24) [unverified]. The
   companion to R4/R30 for building illustration logic into product models. Not
   applicable to VUL (outside Model #582 scope [R4]).
 
@@ -742,7 +742,7 @@ Current numbers/titles verified against the ASB standards list (fetched 2026-08-
 - **Fetched:** yes (adopted Dec. 2019; effective Oct. 1, 2020)
 - **Annotation:** Cross-practice standard for designing, developing, selecting,
   modifying, using, reviewing, or evaluating models where reliance on model output has
-  a material effect [R32 scope; component list partly [unverified]](#uslib-reg-r32). The governing
+  a material effect [R32 scope; component list](#uslib-reg-r32) [unverified]. The governing
   standard for the reference implementation itself: intended purpose, model-risk
   mitigation, validation/testing, reliance on others' models and data, and
   documentation [R32].

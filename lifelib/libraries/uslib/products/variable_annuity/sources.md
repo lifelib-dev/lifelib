@@ -484,8 +484,6 @@ introduced at drafting and are not attributable to any source.
 [REG-R64]: #uslib-reg-r64
 [REG-R66]: #uslib-reg-r66
 [REG-R67]: #uslib-reg-r67
-[S1]: #uslib-variable_annuity-s1
-[S6]: #uslib-variable_annuity-s6
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

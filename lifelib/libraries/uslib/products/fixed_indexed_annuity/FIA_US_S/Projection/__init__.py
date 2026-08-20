@@ -504,7 +504,7 @@ def stack_factor():
     """m: the stacking factor on realised dollar credits, 150% [S8][S9].
 
     Zero gives the pure-rollup design (a); with ``rollup_rate`` zero it gives the pure
-    stacking design (b), where Allianz's Accelerated option credits 250% to the benefit
+    stacking design (b), where one carrier's 250% election credits 250% to the benefit
     base [S3][S4].
     """
     return float(model_point()["stack_factor"])
@@ -513,10 +513,10 @@ def stack_factor():
 def av_int_factor():
     """kappa: the share of the index credit that reaches the account value [S3][S4].
 
-    1.00 on the blended baseline.  0.50 is Allianz's Accelerated option, which credits
-    250% of index interest to the benefit base but only 50% to the account value,
-    deliberately starving the account value.  The stacking factor ``m`` applies to the
-    **gross** index credit, not to ``kappa x IC``.
+    1.00 on the blended baseline.  0.50 is the 250% election documented at one carrier,
+    which credits 250% of index interest to the benefit base but only 50% to the account
+    value, deliberately starving the account value.  The stacking factor ``m`` applies to
+    the **gross** index credit, not to ``kappa x IC``.
     """
     return float(model_point()["av_int_factor"])
 
@@ -773,7 +773,7 @@ def index_credit_pp(t):
     One annual segment per indexed account, created at anniversary ``t-1`` with balance
     ``A(t-1)`` and maturing at ``t``; the credit locks at maturity and cannot be lost to
     later declines [S1].  The credit base is the segment's opening balance less
-    withdrawals from that account during the segment — Midland's Interest Credit Basis
+    withdrawals from that account during the segment — the "Interest Credit Basis"
     [S6] — which collapses to ``A(t-1)`` here because every transaction happens at an
     anniversary **[std]**.  Zero in ``DEPLETED`` and ``TERMINATED``, where steps 1-3 are
     skipped.
@@ -949,7 +949,7 @@ def rollup_rate(t):
 
     Read as a step function of the contract year from the model point's schedule: the
     blended baseline is 5.00% in years 1-10, 2.00% in years 11-20 and zero after [S2];
-    the Nassau design is a flat 3.00% over fifteen anniversaries [S9].
+    another documented design is a flat 3.00% over fifteen anniversaries [S9].
     """
     if t < 1:
         return 0.0
@@ -985,10 +985,10 @@ def payout_rate_locked(t):
     """The payout percentage in force at anniversary t.
 
     Locked at the attained age of the **first** lifetime withdrawal and not re-read
-    afterwards **[std]**.  Documented alternatives: Allianz reads the band from the age
-    at the most recent anniversary, letting it step up [S3]; Nassau makes it depend on
-    both issue age and the youngest covered person's age at exercise [S9]; American
-    Equity uses sex-distinct factors [S5].
+    afterwards **[std]**.  Documented alternatives: one carrier reads the band from the
+    age at the most recent anniversary, letting it step up [S3]; another makes it depend
+    on both issue age and the youngest covered person's age at exercise [S9]; a third
+    uses sex-distinct factors [S5].
     """
     if t <= entry_year():
         return payout_rate_init()
@@ -1058,7 +1058,7 @@ def depletion_cause(t):
     The attribution test of step 5, evaluated **before** the depletion test: an account
     value run to zero by an excess withdrawal, a surrender charge or a market value
     adjustment loses the guarantee entirely, while one run to zero by guaranteed
-    withdrawals and rider charges keeps it [S1][S5][S9].  Athene's confinement and
+    withdrawals and rider charges keeps it [S1][S5][S9].  One carrier's confinement and
     terminal illness waivers are themselves excess withdrawals that terminate the income
     rider [S1] — a trap if waivers are added.
     """
@@ -1163,11 +1163,11 @@ def step_up_applies(t):
 def rollup_pp(t):
     """rollup(t) = g(t) x RB(t-1): the guaranteed rollup increment at anniversary t.
 
-    **A flat dollar increment, not simple interest on the grown base.** Athene computes
-    it on premium less withdrawals [S2] and Nassau on the adjusted *initial* base [S9];
-    Nassau's fifteen-year table confirms a constant $3,000 a year on a $100,000 adjusted
-    initial base [S9].  Compounding it inflates the base and every downstream charge and
-    payment.
+    **A flat dollar increment, not simple interest on the grown base.** One carrier
+    computes it on premium less withdrawals [S2] and another on the adjusted *initial*
+    base [S9]; the latter's fifteen-year table confirms a constant $3,000 a year on a
+    $100,000 adjusted initial base [S9].  Compounding it inflates the base and every
+    downstream charge and payment.
     """
     if not in_growth_period(t):
         return 0.0
@@ -1178,9 +1178,9 @@ def stack_pp(t):
     """stack(t) = m x max(0, IC(t) + FI(t)): the stacking credit at anniversary t.
 
     On **realised dollar credits**, net of any strategy fee (zero here) and floored at
-    zero [S8][S9] — Nassau's Echo Amount.  The gross index credit is used, so the pure
-    stacking design can credit 250% to the base while ``kappa`` sends only 50% to the
-    account value [S3][S4].
+    zero [S8][S9] — one specimen's separately named stacking credit.  The gross index
+    credit is used, so the pure stacking design can credit 250% to the base while
+    ``kappa`` sends only 50% to the account value [S3][S4].
     """
     if not in_growth_period(t):
         return 0.0
@@ -1223,8 +1223,9 @@ def rollup_base_pp(t):
     """RB(t): the rollup base at anniversary t.
 
     Reduced in the same proportion as the benefit base under the baseline **[std]**
-    convention [S9].  Set ``rb_wd_convention = "dollar"`` for Athene's alternative,
-    ``RB(t) = max(0, RB(t-1) - G(t))`` — "Premium minus Withdrawals" [S2].
+    convention [S9].  Set ``rb_wd_convention = "dollar"`` for the alternative documented
+    at another carrier, ``RB(t) = max(0, RB(t-1) - G(t))`` — "Premium minus
+    Withdrawals" [S2].
     """
     if t <= entry_year():
         return rollup_base_pp_init()
@@ -1243,7 +1244,7 @@ def lw_pp_at(t, timing):
     the closing value, after step 5's proportional reduction.  At exercise
     ``LW = pi x BB(4)``; afterwards the ratchet ``LW = max(LW(t-1), pi x BB(4))`` applies
     so income never decreases [S3].  Unused ``LW`` does **not** carry forward [S9];
-    Allianz is the exception, accumulating the shortfall without interest [S3].  In
+    one carrier is the exception, accumulating the shortfall without interest [S3].  In
     ``DEPLETED`` the amount is simply carried: there is no base to recompute it from.
     """
     if t <= entry_year():
@@ -1699,9 +1700,9 @@ def mgsv_pp(t):
     worked example pins the ordering at ``93,811.84 x 1.01 - 10,144.16 = 84,605.80``.
     The fixed-deferred chassis deducts and *then* accretes; the two are different
     arithmetic on the same concept, which is exactly what that file warns against
-    carrying across.  ``rider_charge_from_mgsv`` switches on the Athene/Allianz treatment
-    that deducts the rider or allocation charge from the floor as well [S1][S2][S3][S4];
-    the composite does not **[std]**.
+    carrying across.  ``rider_charge_from_mgsv`` switches on the treatment documented at
+    two carriers, one deducting the rider charge from the floor and the other its
+    allocation charge [S1][S2][S3][S4]; the composite does not **[std]**.
     """
     if t <= entry_year():
         return mgsv_pp_init()
@@ -1721,7 +1722,7 @@ def mgsv_rate_statutory(cmt5, option_cost):
     Two traps the notes name.  **The 4.B floor is 15 basis points, not 1%** — the
     composite's 1.00% is a **[std]** pick inside the 0.15%-3% corridor, not the statutory
     floor.  And whether the 15 bp floor survives the 4.C reduction is not stated in the
-    retrieved text [unverified]; Nassau's contract language, "the interest rates will
+    retrieved text [unverified]; the specimen contract language, "the interest rates will
     range between 0.15% and 3%", suggests it does [S10], which is the reading
     implemented.  The statute *defines the minimum*: the contract rate must satisfy
     ``mgsv_rate >= mgsv_rate_statutory(...)``, which is what

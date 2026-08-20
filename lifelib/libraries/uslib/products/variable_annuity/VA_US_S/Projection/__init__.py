@@ -410,8 +410,9 @@ def sex():
 def designated_lives():
     """``single`` or ``joint``.
 
-    Reported only: the joint-life Flex GMWB is out of scope in the product spec, so the
-    GAWA% grid and the For Life test are the single-life ones **[std]**.
+    Reported only: the joint-life election of the modeled GLWB is out of scope in the
+    product spec, so the GAWA% grid and the For Life test are the single-life ones
+    **[std]**.
     """
     return model_point()["designated_lives"]
 
@@ -454,8 +455,8 @@ def sub_ids():
     """The subaccount indices of the model point's allocation set, in file order.
 
     Two subaccounts **[std]** — the minimum that exercises pro-rata charge allocation and
-    unit accounting. Real contracts offer far more; Corebridge lists 76 across 12 asset
-    classes [S4].
+    unit accounting. Real contracts offer far more; one carrier's build-your-own menu
+    lists 76 options across 12 asset classes [S4].
     """
     return list(data.fund_table().loc[fund_set()].index)              # noqa: F821
 
@@ -514,7 +515,7 @@ def fee_reset_rule():
     ``none`` is the base run **[std]**: the insurer does not increase the rider charge
     and the owner does not opt out. ``quinquennial`` applies the maximum single increase
     of +0.25% at each fifth Contract Anniversary up to the guaranteed maximum [S1].
-    ``vix`` applies the Corebridge non-discretionary VIX-squared formula [S4][S6].
+    ``vix`` applies a second carrier's non-discretionary VIX-squared formula [S4][S6].
     """
     return model_point()["fee_reset_rule"]
 
@@ -523,9 +524,9 @@ def rollup_rule():
     """``fixed`` or ``cmt_linked``.
 
     ``fixed`` is the base run **[std]**: 6.00% at election ages up to 69 and 5.00% from
-    70 [S3]. ``cmt_linked`` is the Equitable formula rate, a 20-day average 10-year CMT
-    plus 1.00% (1.50% before the first withdrawal), rounded to 0.10%, floored at 4% and
-    capped at 8% [S7].
+    70 [S3]. ``cmt_linked`` is a third carrier's formula rate, a 20-day average 10-year
+    CMT plus 1.00% (1.50% before the first withdrawal), rounded to 0.10%, floored at 4%
+    and capped at 8% [S7].
     """
     return model_point()["rollup_rule"]
 
@@ -1253,8 +1254,8 @@ def rollup_pct():
 def rollup_rate(t):
     """rho(t): the GMDB roll-up percentage credited at the anniversary ending month t.
 
-    ``fixed`` is the base run [S3]. ``cmt_linked`` is the Equitable formula rate: the
-    10-year CMT plus 1.00%, or 1.50% before the first withdrawal, rounded to 0.10%,
+    ``fixed`` is the base run [S3]. ``cmt_linked`` is a third carrier's formula rate:
+    the 10-year CMT plus 1.00%, or 1.50% before the first withdrawal, rounded to 0.10%,
     floored at 4% and capped at 8% [S7].
     """
     if rollup_rule() == "fixed":

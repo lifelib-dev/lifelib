@@ -124,7 +124,7 @@ with no formula change.
 
 | File | Contents | Provenance |
 |---|---|---|
-| `model_point_table.csv` | Seven contracts, all on the anchor cell M60 ANB / NQ / $100,000 / 5-year period, differing only in the switches the notes make first-class parameters. **Point 1 is the worked-example anchor**; point 2 is the same contract on the 10% stress reference yield; points 3–7 carry Camp B, the registered-contract conventions, the Midland conventions, the asymmetric cap and the declared-differential MVA | contract terms sourced [S10] [S11]; behavioural switches **[std]** |
+| `model_point_table.csv` | Seven contracts, all on the anchor cell M60 ANB / NQ / $100,000 / 5-year period, differing only in the switches the notes make first-class parameters. **Point 1 is the worked-example anchor**; point 2 is the same contract on the 10% stress reference yield; points 3–7 carry Camp B, the registered-contract conventions, the net-of-charges MGSV convention with its interest-only free withdrawal and interest-credited cap [S5] [S6] [S8] [S9], the asymmetric cap and the declared-differential MVA | contract terms sourced [S10] [S11]; behavioural switches **[std]** |
 | `mort_table.csv` | Annual mortality by attained age 40–120 and sex, with a `provenance` column | **[std]** illustrative Makeham annuitant curve. **Not a published table.** The prescribed basis is 2012 IAM **Basic** with Projection Scale G2 and the VM-22 Table 6.7 factors [R2 §6.B.8](#uslib-fixed_deferred_annuity-r2) [R9], which may not be redistributed here — swap it in by repointing `Data.mort_table_file` |
 | `surr_charge_table.csv` | The initial and renewal schedules, keyed by `(schedule, contract_year)` | initial 9/8/7/6/5 sourced [S10]; renewal 5/4/3/2/1 sourced [S2], adoption **[std]** |
 | `surr_charge_age_cap.csv` | The attained-age cap on the renewal charge, 4% at 94 down to 0% at 98–100 | sourced [S1] [S2] |
@@ -287,11 +287,12 @@ genuinely varies with tax status.
 
 ## `free_wd_mva_exempt = False` moves the surrender charge too
 
-In the market the flag is about the **MVA**: Voya and Nationwide apply the adjustment to
-free-amount withdrawals, the retail MYGAs do not [S2] [S3] [S4] [S9] [S10] [S15] [S16]. The
-technical notes are explicit that setting it False gives `E(t) = AV(t)` and collapses the
-surrender benefit to `max(AV(t) × (1 + μ(t) − sc(y)), MGSV(t))` — the multiplicative form —
-which moves the surrender *charge* onto the whole account value as well.
+In the market the flag is about the **MVA**: the two registered contracts apply the
+adjustment to free-amount withdrawals, the retail MYGAs do not
+[S2] [S3] [S4] [S9] [S10] [S15] [S16]. The technical notes are explicit that setting it
+False gives `E(t) = AV(t)` and collapses the surrender benefit to
+`max(AV(t) × (1 + μ(t) − sc(y)), MGSV(t))` — the multiplicative form — which moves the
+surrender *charge* onto the whole account value as well.
 
 The model implements the notes' reading, because that identity is the one the notes use for
 their dimensional-consistency check and a test pins it on model point 4. If you need the
@@ -343,12 +344,12 @@ notes' worked example table to the cent; the notes' own exactness checks (`AV(12
 100,000 × 1.0445`, `AV(24) = 100,450 × 1.0445`, `MGSV(24) = (89,950 − 4,000) × 1.028`) to the
 twelfth significant figure; the month-30 surrender trace line by line, cap and floor both
 inactive; the month-6 stress trace, where the symmetric cap bites at −8,298.07 and the Model
-#805 floor then adds 3,111.90; the Nationwide geometric-branch factors 1.01897 and 0.96944
-and the −2.06% expense-adder case; both roll-forwards at every month; and one test per entry
-in the notes' "Known modeling pitfalls" list — composition order, the free-amount/MVA
-interaction, gross versus net withdrawals, the two Model #805 withdrawal conventions, the
-15 bp floor (and that the statute states a *minimum*, not a cap), the surrender-charge clock
-on renewal, and the mortality plumbing.
+#805 floor then adds 3,111.90; one registered contract's geometric-branch factors 1.01897
+and 0.96944 and its −2.06% expense-adder case [S4]; both roll-forwards at every month; and
+one test per entry in the notes' "Known modeling pitfalls" list — composition order, the
+free-amount/MVA interaction, gross versus net withdrawals, the two Model #805 withdrawal
+conventions, the 15 bp floor (and that the statute states a *minimum*, not a cap), the
+surrender-charge clock on renewal, and the mortality plumbing.
 
 Two tolerances are worth knowing. Money is asserted to **0.006** rather than 0.005 because
 the notes round half-up for display and `AV(24) = 104,920.025` sits exactly on the boundary.
@@ -380,18 +381,5 @@ model have parted company — which is the question this library exists to let y
 <!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
 [R1]: #uslib-fixed_deferred_annuity-r1
 [R9]: #uslib-fixed_deferred_annuity-r9
-[S1]: #uslib-fixed_deferred_annuity-s1
-[S10]: #uslib-fixed_deferred_annuity-s10
-[S11]: #uslib-fixed_deferred_annuity-s11
-[S12]: #uslib-fixed_deferred_annuity-s12
-[S14]: #uslib-fixed_deferred_annuity-s14
-[S15]: #uslib-fixed_deferred_annuity-s15
-[S16]: #uslib-fixed_deferred_annuity-s16
-[S2]: #uslib-fixed_deferred_annuity-s2
-[S3]: #uslib-fixed_deferred_annuity-s3
-[S4]: #uslib-fixed_deferred_annuity-s4
-[S5]: #uslib-fixed_deferred_annuity-s5
-[S8]: #uslib-fixed_deferred_annuity-s8
-[S9]: #uslib-fixed_deferred_annuity-s9
 [std]: #uslib-std
 <!-- END generated citation links -->

@@ -18,7 +18,7 @@ values are identical to those in `product-spec.md`.
 
 1. **There is no account value.** No credited rate, no index crediting, no M&E or rider charge, no surrender
    charge, no free-withdrawal corridor, no market value adjustment, no benefit base, no interim value
-   [S1 fn.1](#uslib-deferred_income_annuity-s1) [S2] [S4] [R13]. Consequently there is **no lapse decrement** — VM-22's standard-projection lapse
+   [S1 fn.1] [S2] [S4] [R13]. Consequently there is **no lapse decrement** — VM-22's standard-projection lapse
    section is expressly "not applicable" to contracts with no account value or surrender benefit [R9] — and
    no annuitization decrement (prescribed at 0% [R9]). The full list is in `product-spec.md`, "Parameters
    that do not exist for this product". Do not synthesize any of them.
@@ -47,7 +47,7 @@ values are identical to those in `product-spec.md`.
   first payment falls one payment period later, `12/m` months after `T` — at `m = 12`, at the end of month
   index `T`, i.e. `T + 1` months from issue. Consequently deaths in months `t < T` are deferral-phase deaths
   and deaths in months `t ≥ T` are payout-phase deaths.
-- **Age basis.** Age nearest birthday (ANB) **[std]**: MassMutual states contract issue age on an ANB basis
+- **Age basis.** Age nearest birthday (ANB) **[std]**: the archetype states contract issue age on an ANB basis
   [S2]; prescribed VM-22 payout mortality is ANB with a conversion formula supplied for age-last-birthday
   companies [R9]; the 2012 IAM Basic and Period tables were developed ANB [R15] [REG-R59].
 - **Model points.** Single-contract model points on an expected (probability-weighted) basis: the in-force
@@ -124,7 +124,7 @@ class (c) is the modeler's view of experience.
 | Minimum / maximum deferral; max start age | 13 months / 30 years; attained age 85 | [S2] [S4] [R9]; choices **[std]** |
 | Premium cut-off | No premium within 13 months of the income start date | [S2] [S4] |
 | Income start date adjustment | One-time ±5 years; new date ≥ 13 months after the last premium; option, day of month and frequency locked | [S1] [S2] [S3] [S4] |
-| Adjustment repricing inputs | Originally scheduled payment; new date; Moody's Seasoned Baa Corporate Bond Yield at the request date; Annuity 2012 Mortality Table; contractual interest-rate-change adjustment | [S2] (A2000 in the NYL formulation [S1]) |
+| Adjustment repricing inputs | Originally scheduled payment; new date; Moody's Seasoned Baa Corporate Bond Yield at the request date; Annuity 2012 Mortality Table; contractual interest-rate-change adjustment | [S2] (A2000 in another carrier's formulation [S1]) |
 | COLA | Fixed compound 1%–4% on each income-start anniversary; elected at issue, irrevocable | [S2] [S3] [S4]; menu **[std]** |
 | Payment acceleration | 6 monthly payments in one sum then 5 months without; 2 uses; age 59½; nonqualified | [S1] [S4]; count **[std]** |
 | Commutation (extended) | ≤100% of the PV of remaining **guaranteed** payments; interest-rate adjustment applies; life-contingent tail resumes | [S4] [S5] [R13 §3.F](#uslib-deferred_income_annuity-r13) |
@@ -169,7 +169,7 @@ from Table 6.8 for the standard projection [R9]; the pricing basis uses the same
 prescribed `F_x` loading, at a **[std]** A/E of 100%.
 (d) The contract's "interest rate change adjustment" is named but never quantified in any retrieved source
 [S1] [S2]; 100 bp is a placeholder that keeps the repriced income directionally correct [S4] [S5].
-(e) **The Pacific Life interest-rate adjustment charge formula was not found** in the fact sheet [S4] or the
+(e) **The extended case's interest-rate adjustment charge formula was not found** in the fact sheet [S4] or the
 client guide [S5]; it would appear only in the contract or the actuarial memorandum. Equation (13) implements
 only the Compact's stated principle [R13 §3.F(7)](#uslib-deferred_income_annuity-r13) and is [unverified].
 
@@ -251,7 +251,7 @@ The purchase rate follows from the equivalence principle applied **per premium**
 **[std]**, for the reasons in assumption class (b). Equation (4) makes the central design fork quantitative:
 setting `1{ROP} = 0` raises the numerator from `(1 − L) − A_rop` to `(1 − L)`, so the no-death-benefit form
 buys strictly more income for the same premium, by the factor `(1 − L)/((1 − L) − A_rop)`. That is the
-mortality-gain economics behind MassMutual's separately-conditioned Single Life — No Death Benefit option
+mortality-gain economics behind the archetype's separately-conditioned Single Life — No Death Benefit option
 [S2] and behind the silent removal of the return of premium when Life Only is elected [S1] [S3] [S4].
 
 **Refund forms and the circularity they create.** The Compact treats income payments made before a
@@ -333,8 +333,8 @@ interest-rate-change adjustment [S1] [S2]. Implemented as actuarial equivalence 
     i_e(t_e)  =  Baa(t_e) − s_adj                                                                     (10)
     B′        =  B(t_e) · a_def( x(t_e), (T − t_e)/12, f; i_e ) / a_def( x(t_e), (T′ − t_e)/12, f; i_e )  (11)
 
-Direction check: `a_def` decreases in `d`, so `T′ > T ⇒ B′ > B` and `T′ < T ⇒ B′ < B`, matching Pacific
-Life's statement that advancing reduces and deferring increases the payment [S4] [S5]. Two refinements the
+Direction check: `a_def` decreases in `d`, so `T′ > T ⇒ B′ > B` and `T′ < T ⇒ B′ < B`, matching the extended
+case's statement that advancing reduces and deferring increases the payment [S4] [S5]. Two refinements the
 disclosed recipe does not mention and the reference model therefore does **not** apply: the ROP exposure
 changes with deferral length (the `A_rop` term in (4)), and `CP` is unchanged so the derived guarantee period
 (5) shifts. Both are flagged rather than modeled **[std]**. Not available on Life Only or Joint Life Only
@@ -389,7 +389,7 @@ contract converts [S2]:
     a_def^{(only i)}  =  v^d · ( _d p_{x_i} − _d p_{x₁x₂} ) · a^{(m)}_{x_i + d}(single f)
 
 Because `B_S^{(i)}` (a full single-life payout) exceeds `s·B_J` (the reduced survivor amount), the right-hand
-side of (16) carries more value per unit of `B_J`, so `B_J^c < B_J` — reproducing MassMutual's statement
+side of (16) carries more value per unit of `B_J`, so `B_J^c < B_J` — reproducing the archetype's statement
 exactly: "In general, if both annuitants are alive on the annuity date, the joint life payout will be
 **lower** with a convertible joint life annuity option" [S2]. The convertible variant also caps the period
 certain at 10 years and is unavailable with the inflation protector [S2]. Base model: non-convertible
@@ -419,8 +419,8 @@ status changes the owner's RMD position, not the insurer's liability cash flows.
 | Divorce | A joint-and-survivor QLAC survives a post-purchase, pre-commencement divorce under QDRO conditions, retroactive to contracts purchased on or after July 2, 2014 | [R1 (q)(3)(vii)](#uslib-deferred_income_annuity-r1) [R2 §202(a)(3), §202(c)(1)(B)](#uslib-deferred_income_annuity-r2) |
 
 (a) **Research finding worth carrying into the model as a comment:** the regulation expressly permits a QLAC
-to provide a cost-of-living adjustment described in paragraph (o)(2) [R1 (q)(4)(iv)](#uslib-deferred_income_annuity-r1), yet NYL, Guardian and
-Pacific Life all exclude COLA from their QLAC offering [S1] [S3] [S4] and MassMutual limits it on qualified
+to provide a cost-of-living adjustment described in paragraph (o)(2) [R1 (q)(4)(iv)](#uslib-deferred_income_annuity-r1), yet three of the four
+carriers exclude COLA from their QLAC offering [S1] [S3] [S4] and the fourth limits it on qualified
 contracts [S2]. The market is more restrictive than the law; follow the market by default and expose the
 switch.
 
@@ -675,12 +675,6 @@ Known pitfalls specific to this product:
 [REG-R65]: #uslib-reg-r65
 [REG-R70]: #uslib-reg-r70
 [REG-R71]: #uslib-reg-r71
-[S1]: #uslib-deferred_income_annuity-s1
-[S2]: #uslib-deferred_income_annuity-s2
-[S3]: #uslib-deferred_income_annuity-s3
-[S4]: #uslib-deferred_income_annuity-s4
-[S5]: #uslib-deferred_income_annuity-s5
-[S6]: #uslib-deferred_income_annuity-s6
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

@@ -161,9 +161,9 @@ for an oversight:
 * The funding-stop state (1%/yr **[std]**) of the premium persistency section. It is a
   *second* account value path, and the notes do not say how to blend it with the first;
   the 98% compounding persistency factor is implemented, the second state is not.
-* The guaranteed floor accumulation test (Securian's 2% cumulative average, Transamerica's
-  in-segment 0.75%). Explicitly a variation, not the baseline: the 0% annual floor needs
-  no shadow account.
+* The guaranteed floor accumulation test (one carrier's 2% cumulative average [S7],
+  another's in-segment 0.75% [S3]). Explicitly a variation, not the baseline: the 0%
+  annual floor needs no shadow account.
 * Charge-funded high-cap accounts, multi-index and multi-year segments, participating
   (indexed) loans, the Overloan Protection Rider, face increases and decreases, option
   changes, reinstatement, and riders -- all excluded from the baseline by the product
@@ -193,7 +193,7 @@ table actually projects.
 
 **Verification.** ``tests/test_indexed_ul_us.py`` asserts every row and column of the
 notes' worked example -- both index scenarios, and both of the variant credit bases the
-notes price alongside them (the Transamerica half-weighted base at 1,191.00 and the
+notes price alongside them (one carrier's half-weighted base at 1,191.00 [S3] and the
 guaranteed-cap-only credit at 236.40) -- to the cent, together with the in-force and
 account-value roll-forwards, the segment ladder invariants, and one test per entry in
 the notes' "Known modeling pitfalls" list that can be asserted. The ladder invariants

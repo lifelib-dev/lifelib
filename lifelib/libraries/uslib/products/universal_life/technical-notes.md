@@ -10,7 +10,7 @@ library `references/regulatory-and-actuarial-references.md` (its own R-numbering
 research provenance in `_research/regulatory-actuarial.md`). **[std]** marks
 standardizations introduced for the reference implementation. Parameter values are
 identical to those in `product-spec.md`; the implementation anchor for mechanics is
-the Pacific Life Versa-Flex PRO specimen policy [S3].
+one carrier's specimen policy [S3].
 
 **Revision note, 2026-08-06.** The reserve material under "Valuation and reserve
 pointers" was revised when the AP&P Manual appendix items were read at first hand from
@@ -71,9 +71,9 @@ a limit the appendix reading does not touch.
 | `av_initial` | currency (0 at issue; >0 for in-force cells) | 0 |
 | `loan_balance_initial` | currency | 0 |
 | `sc_layer_table` | schedule per $1,000 | $9.00 initial, 9-yr **[std]** |
-| `guideline_single_premium` | currency (compliance input) | 34,138.15 [S3, incl. riders](#uslib-universal_life-s3) |
-| `guideline_level_premium` | currency (compliance input) | 2,825.52 [S3, incl. riders](#uslib-universal_life-s3) |
-| `seven_pay_premium` | currency (compliance input) | 6,702.10 [S3, incl. riders](#uslib-universal_life-s3) |
+| `guideline_single_premium` | currency (compliance input) | 34,138.15 [S3, incl. riders] |
+| `guideline_level_premium` | currency (compliance input) | 2,825.52 [S3, incl. riders] |
+| `seven_pay_premium` | currency (compliance input) | 6,702.10 [S3, incl. riders] |
 
 ---
 
@@ -271,7 +271,7 @@ max(GSP, cumulative GLP)) and the 7-pay MEC test are tracked as compliance
 side-calculations that cap or refuse premiums [S3] [R2] [R3] [REG-R13] [REG-R14]; they
 generate no cash flow of their own — a refused premium simply never enters the model,
 and MEC status changes policyholder taxation, not insurer liability cash flows [R3
-consequence detail [unverified] beyond the statutory cross-reference](#uslib-universal_life-r3). The base model
+consequence detail beyond the statutory cross-reference](#uslib-universal_life-r3) [unverified]. The base model
 verifies `CumPrem(t) <= max(GSP, GLP x years elapsed)` and flags (does not project)
 7-pay failures.
 
@@ -350,8 +350,7 @@ NOT reproduced here:
   Manual (operative 2017-01-01; accreditation standard 2020-01-01 — both verbatim at
   [R5], now also the shared [REG-R150]) [REG-R3];
   implementation guidance in the AAA VM-20 practice note [REG-R23]. Prescribed NPR
-  mortality: 2017 CSO family via VM-M [REG-R3] [REG-R17; exact table mapping
-  [unverified]](#uslib-reg-r17).
+  mortality: 2017 CSO family via VM-M [REG-R3] [REG-R17; exact table mapping](#uslib-reg-r17) [unverified].
 - **Tax.** IRC 807: greater of net surrender value and 92.81% of the NAIC-method
   reserve, capped at statutory [REG-R16].
 - **Standards for the modeling work itself.** ASOP 7 (life cash flow analysis)
@@ -431,10 +430,6 @@ Known modeling pitfalls:
 [REG-R31]: #uslib-reg-r31
 [REG-R32]: #uslib-reg-r32
 [REG-R5]: #uslib-reg-r5
-[S1]: #uslib-universal_life-s1
-[S2]: #uslib-universal_life-s2
-[S3]: #uslib-universal_life-s3
-[S5]: #uslib-universal_life-s5
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

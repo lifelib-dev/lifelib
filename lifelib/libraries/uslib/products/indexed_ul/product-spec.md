@@ -66,26 +66,26 @@ researched carrier offers [S2] [S3] [S5] [S6] and the regulatory canonical form 
 | Face decreases | After year 3, min $25,000, ≤20% p.a. before later of age 65 / end of surrender period, subject to §7702 | [S3] |
 
 Footnotes:
-- **F1 [std]:** Observed both ways — Transamerica uses age last birthday [S3], Securian age
+- **F1 [std]:** Observed both ways — one carrier uses age last birthday [S3], another age
   nearest birthday [S7]. ANB chosen because the 2017 CSO / 2015 VBT table families publish
   ANB variants directly usable for guaranteed and best-estimate mortality [REG-R17] [REG-R18].
-- **F2:** Observed range $25,000 (Transamerica band 1) [S3] to $100,000 (Nationwide,
-  Securian) [S5] [S7]. $100,000 chosen as the modal modern accumulation-IUL minimum; also
-  the threshold for preferred classes at Transamerica [S3].
+- **F2:** Observed range $25,000 (band 1 of one carrier) [S3] to $100,000 (two other
+  carriers) [S5] [S7]. $100,000 chosen as the modal modern accumulation-IUL minimum; also
+  the threshold for preferred classes at the $25,000-minimum carrier [S3].
 - **F3:** A Graded option (increasing to 70, grading level at 95) [S3] and a Return of
   Premium option [S5] exist; excluded from baseline as minority designs.
-- **F4 [std]:** §7702 allows CVAT or GPT+corridor [R4]. GPT chosen because Transamerica's
+- **F4 [std]:** §7702 allows CVAT or GPT+corridor [R4]. GPT chosen because one carrier's
   Overloan Protection Rider attaches only to GPT non-MEC policies [S3], indicating GPT as
   the operative accumulation-IUL administration basis; CVAT documented as a variation.
 - **F5 [std]:** No retrieved document states maturity mechanics explicitly; age 121 is
   inferred ([unverified]) from charges running to age 120 and a rider (Additional Insured)
   terminating at base insured age 121 [S3]. Confirm against specimen policy forms before
   relying on it.
-- **F6:** Structure and periods from Transamerica's Minimum Monthly No-Lapse Premium
+- **F6:** Structure and periods from one carrier's Minimum Monthly No-Lapse Premium
   (MNLP) design: no lapse during the no-lapse period while cumulative premiums less
-  loans/withdrawals ≥ cumulative MNLP [S3] [S4]. Comparators: Nationwide 20 yrs (issue ages
-  0–55) / (75 − issue age) yrs (56–69) / 5 yrs (70+) [S5]; Pacific Life age-90 NLG rider
-  plus optional lifetime-duration rider [S1].
+  loans/withdrawals ≥ cumulative MNLP [S3] [S4]. Comparators: 20 yrs (issue ages
+  0–55) / (75 − issue age) yrs (56–69) / 5 yrs (70+) at a second carrier [S5]; an age-90
+  NLG rider plus an optional lifetime-duration rider at a third [S1].
 
 ### Table 2 — Accounts and index crediting (baseline = AG 49-A Benchmark Index Account design [R1])
 
@@ -111,23 +111,24 @@ Footnotes:
   consistent snapshot.
 - **F8:** Current caps observed for 1-yr S&P 500 PTP accounts: 10.00% [S2], 10.25% [S5],
   10.50% [S7], 12.00%–13.75% (same product, two print dates — caps fell between prints)
-  [S3] [S4]. Guaranteed minimum caps observed 0.25% [S8] to 4.00% [S2 High Cap account](#uslib-indexed_ul-s2);
-  Transamerica instead guarantees the cap never below its current Basic Interest Account
-  rate [S3] [S4]. Treat any current cap as a calibration snapshot, not a fixed parameter.
-- **F9:** Floor-design variation: Transamerica credits a guaranteed 0.75% *during* the
-  segment and nets it out of excess index interest [S3]; Securian expresses its guarantee
+  [S3] [S4]. Guaranteed minimum caps observed 0.25% [S8] to 4.00% on a charge-funded
+  high-cap account [S2]; one carrier instead guarantees the cap never below its current
+  declared-account rate [S3] [S4]. Treat any current cap as a calibration snapshot, not a
+  fixed parameter.
+- **F9:** Floor-design variation: one carrier credits a guaranteed 0.75% *during* the
+  segment and nets it out of excess index interest [S3]; another expresses its guarantee
   as a 2% cumulative average tested at death or termination [S7]. The 0% annual floor is
   the dominant design [S2] [S5] [S6] [S8] and the BIA definition [R1]; the retrospective
   cumulative guarantee is documented under Variations.
-- **F10 [std]:** Carrier practice varies: Pacific Life sweeps on the 15th of each month
-  [S1]; Transamerica creates segments on monthly policy dates, transfers into index
+- **F10 [std]:** Carrier practice varies: one carrier sweeps on the 15th of each month
+  [S1]; another creates segments on monthly policy dates, transfers into index
   accounts only on the first day of a policy month [S3]. Baseline standardizes sweep =
-  policy monthiversary so segment dates align with monthly processing. Nationwide's
-  Minimum Required Fixed Interest Strategy Allocation (an estimate of the coming year's
+  policy monthiversary so segment dates align with monthly processing. A third carrier's
+  minimum required fixed-interest strategy allocation (an estimate of the coming year's
   charges held back in the fixed strategy) [S5] is documented as a variation, not baseline.
-- **F11 [std]:** Automatic re-entry per standing instructions per [S3] (Automatic Transfer
-  Rule). Baseline: 100% of matured value rolls into a new segment of the same account;
-  reallocation to the fixed account is a policyholder option.
+- **F11 [std]:** Automatic re-entry per standing instructions per [S3] (its automatic
+  transfer rule). Baseline: 100% of matured value rolls into a new segment of the same
+  account; reallocation to the fixed account is a policyholder option.
 
 ### Table 3 — Charges
 
@@ -142,10 +143,10 @@ Footnotes:
 | Withdrawal fee | $25 per withdrawal; minimum withdrawal $500; CSV may not fall below $500 | [S3] |
 
 Footnotes:
-- **F12 [std]:** Observed: Transamerica 4% current all years / 6% guaranteed (6%/8% Puerto
-  Rico) [S3]; Nationwide 8% year 1, 6% years 2+ current / 10% guaranteed [S5]; Pacific
-  Life deducts a load, amount not public [S1]. A level 5% current / 8% guaranteed is a
-  mid-range standardization avoiding year-shape complexity.
+- **F12 [std]:** Observed at three carriers: 4% current all years / 6% guaranteed (6%/8%
+  Puerto Rico) [S3]; 8% year 1, 6% years 2+ current / 10% guaranteed [S5]; a load of
+  undisclosed amount [S1]. A level 5% current / 8% guaranteed is a mid-range
+  standardization avoiding year-shape complexity.
 - **F13:** $10/month current is common to [S3] [S5]. Guaranteed maxima observed $12 [S3]
   and $20 [S5]; $15 **[std]** is a rounded mid-range value.
 - **F14 [std]:** Structure (currently charged years 1–10, guaranteed for all years,
@@ -165,7 +166,7 @@ Footnotes:
   asset charges of 0.72%/yr [S3] or 0.80%/yr [S2], or up-front strategy charges of
   0.65%–1.0% at segment creation [S5] — and fund a Supplemental Hedge Budget under
   AG 49-A [R1]. Excluded from baseline; see Variations.
-- **F17 [std]:** Period: 10 years is modal [S1] [S5] [S7] (15 years at Transamerica [S3]);
+- **F17 [std]:** Period: 10 years is modal [S1] [S5] [S7] (15 years at one carrier [S3]);
   re-starts on face increases [S3] [S7]. Dollar scales are not public (research notes,
   Gaps); the $25/$1,000 linear-decline scale is a placeholder of realistic magnitude.
 
@@ -183,19 +184,19 @@ Footnotes:
 | Illustration constraint | Illustrated loan credited rate ≤ illustrated loan charged rate + 50 bps | [R1] |
 
 Footnotes:
-- **F18 [std]:** Observed declared-rate designs: Transamerica charged 2.75% current / 3%
-  guaranteed, credited 2%, preferred loans years 11+ charged 2% current / 2.25% max on
-  gains [S3] [S4]; Nationwide charged 3.90% years 1–10, 3.00% years 11+ (0% net from year
-  11), credited 3.00% current / 1.00% guaranteed [S5]; Securian charged 4%, credited 3%
-  years 1–10 / 4% years 11+ [S7]. The standardization keeps the universal pattern (net
-  loan spread ~1% early, →0% "wash" after year 10) with round numbers. The baseline
-  liability model uses standard loans only **[std]**; participating loans are a variation.
-- **F19:** Nationwide Alternative Loan: charged 5% current / 8% guaranteed max, credited
-  at indexed strategy rates, may be mixed or switched [S5]; Securian indexed loans charged
-  5% [S7]; Pacific Life routes loaned value to a dedicated lower-par volatility-control
-  account via rider (current par 160%, guaranteed min 20%) [S2]. Securian: fixed-rate loan
-  triggers a 12-month lockout on fixed-to-indexed transfers [S6]; short-term loans
-  interest-free if repaid within 90 days [S7].
+- **F18 [std]:** Observed declared-rate designs at three carriers: charged 2.75% current /
+  3% guaranteed, credited 2%, preferred loans years 11+ charged 2% current / 2.25% max on
+  gains [S3] [S4]; charged 3.90% years 1–10, 3.00% years 11+ (0% net from year 11),
+  credited 3.00% current / 1.00% guaranteed [S5]; charged 4%, credited 3% years 1–10 /
+  4% years 11+ [S7]. The standardization keeps the universal pattern (net loan spread ~1%
+  early, →0% "wash" after year 10) with round numbers. The baseline liability model uses
+  standard loans only **[std]**; participating loans are a variation.
+- **F19:** One carrier's alternative loan: charged 5% current / 8% guaranteed max, credited
+  at indexed strategy rates, may be mixed or switched [S5]; a second carrier's indexed loans
+  charged 5% [S7]; a third routes loaned value to a dedicated lower-par volatility-control
+  account via rider (current par 160%, guaranteed min 20%) [S2]. At that second carrier a
+  fixed-rate loan triggers a 12-month lockout on fixed-to-indexed transfers [S6];
+  short-term loans are interest-free if repaid within 90 days [S7].
 
 ---
 
@@ -226,7 +227,7 @@ Account value = fixed account + sum of active segment balances + loan collateral
 processing order specified in `technical-notes.md`: premiums are received net of load;
 monthly deductions (policy fee + per-unit charge + COI + rider charges) are taken from the
 fixed account first, then pro rata from active segments **[std]** (sourcing convention;
-carrier practice varies — Transamerica sources loans fixed-first/pro-rata [S3] and adjusts
+carrier practice varies — one carrier sources loans fixed-first/pro-rata [S3] and adjusts
 the index-credit base for mid-segment deductions [S3]); eligible fixed-account balance is
 swept into a new 12-month segment [S3] **[std]**.
 
@@ -240,7 +241,7 @@ For a segment created at time m with index level I(m):
 The credit-base convention is standardized: the credit applies to the actual remaining
 segment balance at maturity, i.e., amounts withdrawn, borrowed (standard loans), or
 deducted mid-segment earn no index credit (withdrawal/loan forfeiture [S3]; extension to
-mid-segment deductions **[std]**). Transamerica's contractual variant instead credits
+mid-segment deductions **[std]**). One carrier's contractual variant instead credits
 (adjusted index change %) × (adjusted beginning value) − (interest already credited at
 the guaranteed minimum during the segment), where the adjusted beginning value subtracts
 withdrawals, loan transfers, and one-half of monthly deductions and index-account charges
@@ -289,7 +290,7 @@ Reinstatement within 3 years with evidence of insurability [S3].
 
 ### Renewal / conversion / maturity
 No renewal or conversion mechanics (permanent policy). Maturity at attained age 121
-**[std]**, [unverified] inference (F5): charges cease at age 120 (Transamerica's index
+**[std]**, [unverified] inference (F5): charges cease at age 120 (one carrier's index
 account monthly charge runs to age 120 [S3]) and coverage continues.
 
 ---
@@ -298,9 +299,9 @@ account monthly charge runs to age 120 [S3]) and coverage continues.
 
 **In scope for the reference model:**
 - **No-lapse guarantee** (integral or rider): age-banded no-lapse period with cumulative
-  premium test [S3] [S5]; Pacific Life implements as automatically issued Age 90 NLG rider
-  (issue ages ≤79, DB options A/B) plus optional Flexible Duration NLG to lifetime [S1].
-  Modeled: the baseline MNLP test (Table 1, F6).
+  premium test [S3] [S5]; one carrier implements it as an automatically issued age-90 NLG
+  rider (issue ages ≤79, DB options A/B) plus an optional flexible-duration NLG to
+  lifetime [S1]. Modeled: the baseline MNLP test (Table 1, F6).
 - **Overloan Protection Rider:** on GPT non-MEC policies; converts to paid-up on exercise,
   preventing loan-induced lapse/taxation; one-time exercise charge 5% of policy value at
   ages 75–90 grading to 1% at 94–120 [S3]. Described; exercised-state modeling optional.
@@ -316,30 +317,30 @@ enhancement [S5]; change of insured [S5]; income settlement endorsements [S3].
 
 ## Variations across insurers
 
-1. **Floor design.** 0% annual floor is dominant [S2] [S5] [S6] [S8]; Transamerica credits a
+1. **Floor design.** 0% annual floor is dominant [S2] [S5] [S6] [S8]; one carrier credits a
    guaranteed 0.75% during the segment, netted out of excess index interest (its declared
-   account guarantees 2%) [S3]; Securian guarantees a 2% cumulative average tested
+   account guarantees 2%) [S3]; another guarantees a 2% cumulative average tested
    retrospectively at death or termination [S7]. *Choice:* 0% annual floor — dominant
    practice and the AG 49-A BIA definition [R1]; the retrospective cumulative guarantee is
    a documented variation requiring a shadow accumulation in the model.
 2. **Index menu.** Every carrier offers 1-yr S&P 500 PTP with cap and 100% participation
-   [S2] [S3] [S5] [S6]. Beyond it: multi-index best-performer blends (Transamerica Global
-   50/30/20 [S3]; Nationwide Multi-Index Monthly Average 50/30/20 [S5]; Securian Hindsight
-   [S7]); uncapped S&P 500 with spread (5.75% spread, Nationwide [S5]) or declared
-   participation (Pacific Life Dynamic Par, illustrations at 50% par [S2]); multi-year
-   segments (Pacific Life 2-yr cap 24%/5-yr par 110% [S2]); uncapped volatility-controlled
+   [S2] [S3] [S5] [S6]. Beyond it: multi-index best-performer blends (a global 50/30/20
+   blend [S3]; a multi-index monthly-average 50/30/20 [S5]; a third such blend [S7]);
+   uncapped S&P 500 with spread (5.75% spread [S5]) or declared participation (a
+   dynamic-participation account, illustrations at 50% par [S2]); multi-year segments
+   (2-yr cap 24%/5-yr par 110%, same carrier [S2]); uncapped volatility-controlled
    proprietary indexes at high participation (200% [S2], up to 320% [S5], 215% [S7], 160%
    [S8]). *Choice:* BIA-style S&P 500 account only — canonical [R1], universal, and the
    post-2023 illustration regime caps other accounts' illustrated leverage at the BIA's
    anyway [R1] [R6].
-3. **Charge-funded enhancements.** Ongoing asset charge (0.80%/yr buys cap 12.0% vs 10.0%,
-   Pacific Life [S2]; 0.72%/yr on all index accounts, Transamerica [S3]) vs up-front
-   segment charge (0.65%–1.0% buys cap 25.00%/13.25% vs 14.00%/10.25%, Nationwide [S5]);
+3. **Charge-funded enhancements.** Ongoing asset charge (0.80%/yr buys cap 12.0% vs 10.0%
+   at one carrier [S2]; 0.72%/yr on all index accounts at another [S3]) vs up-front
+   segment charge (0.65%–1.0% buys cap 25.00%/13.25% vs 14.00%/10.25% at a third [S5]);
    multiplier riders for a monthly charge [S1]. Persistency bonuses: 0.20% annualized from
-   year 16 (Nationwide Rewards, guaranteed if premium test met) [S5]; bonus products may
-   carry higher surrender charges or lower caps [S8]. *Choice:* excluded — the BIA
-   explicitly has no multipliers/bonuses/enhancements [R1], and post-AG 49-A these designs
-   cannot illustrate net benefit anyway [R6].
+   year 16 (guaranteed if the premium test is met) [S5]; bonus products may carry higher
+   surrender charges or lower caps [S8]. *Choice:* excluded — the BIA explicitly has no
+   multipliers/bonuses/enhancements [R1], and post-AG 49-A these designs cannot illustrate
+   net benefit anyway [R6].
 4. **Guaranteed crediting minima.** Guaranteed minimum caps 0.25% [S8] – 4.00% [S2];
    guaranteed participation 5% [S2] [S8] – 105% [S2]; cap floored at declared-account rate
    [S3]. *Choice:* 2.00% guaranteed cap, 100% guaranteed par [S2] — from the same source
@@ -349,12 +350,12 @@ enhancement [S5]; change of insured [S5]; income settlement endorsements [S3].
 6. **Surrender charge period.** 10 years [S1] [S5] [S7] vs 15 years [S3]; all re-start on
    face increases [S3] [S7]. *Choice:* 10 years (modal).
 7. **Loan design.** All carriers: declared-rate loan trending to ~0% net cost after ~year
-   10 plus an indexed/participating loan charged ~5% [S3] [S4] [S5] [S7]; Pacific Life
-   dedicates a lower-par VC account to loaned value [S2]; Securian imposes a 12-month
+   10 plus an indexed/participating loan charged ~5% [S3] [S4] [S5] [S7]; one carrier
+   dedicates a lower-par VC account to loaned value [S2]; another imposes a 12-month
    fixed→indexed lockout after fixed loans [S6]. *Choice:* both described; standard loan
    modeled in baseline **[std]** — it decouples loan modeling from index scenarios.
 8. **Interim-account and sweep mechanics.** Sweep on the 15th [S1] vs first day of policy
-   month [S3]; charge-holdback in fixed strategy (MRFISA) [S5]. *Choice:* monthiversary
+   month [S3]; charge-holdback in the fixed strategy [S5]. *Choice:* monthiversary
    sweep, no holdback **[std]** (F10).
 
 ---
@@ -433,14 +434,6 @@ enhancement [S5]; change of insured [S5]; income settlement endorsements [S3].
 [REG-R5]: #uslib-reg-r5
 [REG-R7]: #uslib-reg-r7
 [REG-R9]: #uslib-reg-r9
-[S1]: #uslib-indexed_ul-s1
-[S2]: #uslib-indexed_ul-s2
-[S3]: #uslib-indexed_ul-s3
-[S4]: #uslib-indexed_ul-s4
-[S5]: #uslib-indexed_ul-s5
-[S6]: #uslib-indexed_ul-s6
-[S7]: #uslib-indexed_ul-s7
-[S8]: #uslib-indexed_ul-s8
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

@@ -401,9 +401,9 @@ same list.
   is left out rather than guessed.
 - **Tiered participation rate.** The notes give its replicating portfolio but no crediting
   formula `g`.
-- **Dual-direction and absolute-return segments, Annual Lock segments, rainbow segments,
-  Secure Lock+, optional GMDB riders and living-benefit riders.** Listed out of scope by the
-  product spec, with no formula.
+- **Dual-direction and absolute-return segments, annual-lock segments, rainbow segments,
+  resetting locks, optional GMDB riders and living-benefit riders.** Listed out of scope by
+  the product spec, with no formula.
 - **RMD-driven withdrawals.** Named as a behavioural input; no amount formula.
 - **Multi-option contracts.** The notes define a model point as one contract holding one
   option, with the multi-option case a vector sharing one contract-level decrement and
@@ -417,7 +417,8 @@ same list.
   change to `market_scenario.csv` plus a strike-and-maturity lookup, not to any formula.
 - **Stochastic scenarios.** The index path, the CMT curve, the volatility and the dividend
   yield are read from a deterministic scenario table. The Academy's regression grid [R6] and
-  the Lincoln and Prudential interim-value grids would be run by supplying more scenarios.
+  the two published carrier interim-value grids [S3] [S6] would be run by supplying more
+  scenarios.
 - **The contractual minimum-account-value rule.** A request that would leave less than
   $2,000 is treated as a full withdrawal [S1] [S2]; `wd_pp` merely caps the request at the
   Account Value **[std]**.
@@ -529,11 +530,6 @@ model have parted company — which is the question this library exists to let y
 [REG-R60]: #uslib-reg-r60
 [REG-R64]: #uslib-reg-r64
 [REG-R65]: #uslib-reg-r65
-[S1]: #uslib-registered_index_linked_annuity-s1
-[S2]: #uslib-registered_index_linked_annuity-s2
-[S4]: #uslib-registered_index_linked_annuity-s4
-[S5]: #uslib-registered_index_linked_annuity-s5
-[S6]: #uslib-registered_index_linked_annuity-s6
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

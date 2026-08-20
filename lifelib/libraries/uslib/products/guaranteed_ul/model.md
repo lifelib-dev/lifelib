@@ -442,7 +442,5 @@ model have parted company — which is the question this library exists to let y
 [R7]: #uslib-guaranteed_ul-r7
 [REG-R20]: #uslib-reg-r20
 [REG-R21]: #uslib-reg-r21
-[S1]: #uslib-guaranteed_ul-s1
-[S4]: #uslib-guaranteed_ul-s4
 [std]: #uslib-std
 <!-- END generated citation links -->

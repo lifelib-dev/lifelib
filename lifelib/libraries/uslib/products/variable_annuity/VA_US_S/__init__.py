@@ -154,7 +154,7 @@ counterparts for when one of them fails.
 
 **Model points.** ``model_point_table.csv`` carries nine contracts on the same anchor
 cell — male 60 ANB, single Designated Life, non-qualified, $100,000 single premium,
-60/40 allocation, Flex GMWB Single Core and Roll-up GMDB — that differ only in the
+60/40 allocation, the single-life Core GLWB and the Roll-up GMDB — that differ only in the
 switches the technical notes make first-class parameters. Point 1 is the worked-example
 anchor, projected from issue on a return path reverse-engineered so that the notes' own
 carried state at the beginning of month 27 falls out of the projection exactly. Point 2

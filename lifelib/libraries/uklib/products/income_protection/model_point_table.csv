@@ -1,0 +1,8 @@
+point_id,policy_id,entry_age,sex,occ_class,benefit_mth,earnings_annual,deferred_weeks,expiry_age,escalation,premium_mth,premium_basis,status,recovery_basis,claim_duration_months,pols_if_init
+1,IP-000001,35,M,1,2000.0,40000.0,26,65,RPI,35.00,guaranteed,active,return_to_h,0,1.0
+2,IP-000002,35,M,1,2000.0,40000.0,26,65,none,35.00,guaranteed,in_claim,exit,0,1.0
+3,IP-000003,35,M,1,2000.0,40000.0,26,65,none,35.00,guaranteed,active,return_to_h,0,1.0
+4,IP-000004,42,F,3,1500.0,35000.0,13,60,RPI,58.00,guaranteed,active,return_to_h,0,1.0
+5,IP-000005,50,M,1,2000.0,40000.0,26,65,none,35.00,guaranteed,in_claim,exit,30,1.0
+6,IP-000006,55,M,2,3000.0,80000.0,52,65,RPI,64.00,guaranteed,active,return_to_h,0,1.0
+7,IP-000007,35,M,1,2000.0,40000.0,26,65,none,35.00,guaranteed,in_claim,return_to_h,0,1.0

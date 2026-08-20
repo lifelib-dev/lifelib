@@ -464,6 +464,5 @@ model have parted company — which is the question this library exists to let y
 <!-- END generated -->
 
 <!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
-[S7]: #uslib-whole_life-s7
 [std]: #uslib-std
 <!-- END generated citation links -->

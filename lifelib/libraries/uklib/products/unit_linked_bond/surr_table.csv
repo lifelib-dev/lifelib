@@ -1,0 +1,12 @@
+policy_year,surr_rate,provenance
+1,0.02,[std] no public UK bond persistency study was fetched
+2,0.03,[std] no public UK bond persistency study was fetched
+3,0.05,[std] rising as the advised holding period completes
+4,0.05,[std] rising as the advised holding period completes
+5,0.05,[std] rising as the advised holding period completes
+6,0.08,[std] rising as the advised holding period completes
+7,0.08,[std] rising as the advised holding period completes
+8,0.08,[std] rising as the advised holding period completes
+9,0.08,[std] rising as the advised holding period completes
+10,0.08,[std] rising as the advised holding period completes
+11,0.10,[std] ultimate; applies to policy year 11 onwards

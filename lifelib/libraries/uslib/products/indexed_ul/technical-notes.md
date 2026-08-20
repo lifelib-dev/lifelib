@@ -152,7 +152,7 @@ public bases):
    universal-life base convention).
 5. **Monthly deduction** MD_t = e_pol + e_unit·F/1000·1{yr≤10} + coi_t·NAAR_t/1000
    (+ rider charges, none in baseline), taken from FA first, shortfall pro rata from
-   active segments **[std]** (convention; Transamerica instead half-weights in-segment
+   active segments **[std]** (convention; one carrier instead half-weights in-segment
    deductions in its credit base [S3] — see variation note below). Shortfall test: if
    CSV_t cannot cover MD_t and the no-lapse test fails (CumP_t < CumMNLP_t during the
    no-lapse period [S3] [S4]) → grace/lapse processing (61 days [S3]; modeled as lapse
@@ -161,7 +161,7 @@ public bases):
    **[std]** (monthiversary sweep; spec F10).
 7. **Interest crediting for the month:** FA × ((1+i_fix)^(1/12) − 1); LCA at the loan
    collateral credited rate; segments earn 0 interim interest (0% floor design [S2];
-   contrast Transamerica's in-segment 0.75% [S3]); loan balance accrues
+   contrast one carrier's in-segment 0.75% [S3]); loan balance accrues
    L_{t+1} = (L_t + B_t) (1+i_L^c)^(1/12) (new loans B_t from step 3 added to principal).
 8. **Decrements:** expected claims and surrender cash flows; update in-force l_{t+1}.
 
@@ -179,7 +179,7 @@ Segment k (created at m_k with S_{k,m_k} = Sweep_{m_k} share; term 12 months):
     Credit_k  = cr_k × S_{k, m_k+12}                                    **[std]** credit base
     matured value = S_{k,m_k+12} × (1 + cr_k)  → new segment (or FA per instructions)
 
-Credit-base variation (not baseline): Transamerica's contractual formula credits
+Credit-base variation (not baseline): one carrier's contractual formula credits
 (adjusted index change %) × (segment's adjusted beginning value) − (interest already
 credited at the guaranteed minimum during the segment), where the adjusted beginning value
 subtracts withdrawals, loan transfers, and one-half of monthly deductions and
@@ -253,8 +253,8 @@ otherwise the model holds the current cap level.
 
 ### Guaranteed floor accumulation test (variation, not baseline)
 
-Some designs guarantee a retrospective cumulative accumulation: Securian's "2% cumulative
-average upon death or termination" [S7]; Transamerica's in-segment 0.75% (with a 2%
+Some designs guarantee a retrospective cumulative accumulation: one carrier's "2% cumulative
+average upon death or termination" [S7]; another's in-segment 0.75% (with a 2%
 declared-account minimum) [S3]. Modeling: carry a shadow account accumulating premiums
 less deductions/withdrawals at the guarantee rate; on death/surrender pay
 max(actual value, shadow value) **[std]** implementation convention. The baseline (0%
@@ -307,11 +307,12 @@ $12,000 from the sweep; its pro-rata share of monthly deductions is $15.00 in ea
 | Matured segment value → new segment | 13,002.00 | 11,820.00 |
 
 Notes: deductions taken mid-segment earned no index credit (they left the segment before
-maturity) **[std]**; under the Transamerica variant the credit base would add back half of
-the 180.00 of deductions, giving credit 10.00% × (12,000.00 − 90.00) = 1,191.00 in
-Scenario A (before netting the in-segment guaranteed interest that design credits) [S3].
+maturity) **[std]**; under the adjusted-beginning-value variant the credit base would add
+back half of the 180.00 of deductions, giving credit 10.00% × (12,000.00 − 90.00) =
+1,191.00 in Scenario A (before netting the in-segment guaranteed interest that design
+credits) [S3].
 Under the guaranteed-cap-only scenario (class (a)), the Scenario A credit would be
-2.00% × 11,820.00 = 236.40 [S2 guaranteed cap](#uslib-indexed_ul-s2).
+2.00% × 11,820.00 = 236.40 [S2 guaranteed cap].
 
 ## Valuation and reserve pointers
 
@@ -422,14 +423,6 @@ Known modeling pitfalls:
 [REG-R31]: #uslib-reg-r31
 [REG-R32]: #uslib-reg-r32
 [REG-R5]: #uslib-reg-r5
-[S1]: #uslib-indexed_ul-s1
-[S2]: #uslib-indexed_ul-s2
-[S3]: #uslib-indexed_ul-s3
-[S4]: #uslib-indexed_ul-s4
-[S5]: #uslib-indexed_ul-s5
-[S6]: #uslib-indexed_ul-s6
-[S7]: #uslib-indexed_ul-s7
-[S8]: #uslib-indexed_ul-s8
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

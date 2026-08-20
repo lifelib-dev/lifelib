@@ -1,0 +1,11 @@
+point_id,policy_id,purchase_price,annuitant_age,annuitant_sex,rating_multiplier,dependant_present,dependant_age,dependant_sex,dependant_rating,dependant_pct,overlap,annual_income,frequency,timing,proportion,escalation_type,escalation_rate,guarantee_months,vp_pct,vp_basis,mort_basis,death_mth_1,death_mth_2,start_year,pols_if_init
+1,PA-000001,100000.0,65,M,1.0,True,62,F,1.0,0.50,False,5400.0,4,arrears,False,fixed,0.03,0,0.50,first_death,scenario,17,,2026,1.0
+2,PA-000002,100000.0,65,M,1.0,True,62,F,1.0,0.50,False,5400.0,4,arrears,False,fixed,0.03,0,0.50,first_death,table,,,2026,1.0
+3,PA-000003,100000.0,65,M,1.0,True,62,F,1.0,0.50,False,5400.0,4,arrears,False,fixed,0.03,120,0.0,first_death,scenario,17,,2026,1.0
+4,PA-000004,100000.0,65,M,1.0,True,62,F,1.0,0.50,True,5400.0,4,arrears,False,fixed,0.03,120,0.0,first_death,scenario,17,,2026,1.0
+5,PA-000005,100000.0,65,M,1.0,False,,,,0.0,False,6657.0,12,advance,False,level,0.0,0,0.0,first_death,table,,,2026,1.0
+6,PA-000006,100000.0,65,M,1.0,True,62,F,1.0,0.50,False,5400.0,4,arrears,False,rpi_catchup,0.0,0,0.50,first_death,table,,,2026,1.0
+7,PA-000007,100000.0,65,M,1.0,True,62,F,1.0,0.50,False,5400.0,4,arrears,False,lpi5,0.0,0,0.50,first_death,table,,,2026,1.0
+8,PA-000008,100000.0,65,M,1.35,False,,,,0.0,False,7900.0,12,arrears,False,level,0.0,0,0.0,first_death,table,,,2026,1.0
+9,PA-000009,100000.0,65,M,1.0,True,62,F,1.0,0.50,False,5400.0,4,arrears,True,fixed,0.03,0,0.50,first_death,scenario,17,,2026,1.0
+10,PA-000010,100000.0,65,M,1.0,True,62,F,1.0,0.50,False,5400.0,4,arrears,False,fixed,0.03,0,0.50,last_survivor,scenario,17,,2026,1.0

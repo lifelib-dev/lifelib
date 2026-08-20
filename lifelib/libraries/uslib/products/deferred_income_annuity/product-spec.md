@@ -14,12 +14,12 @@ space, with most of the **R73–R149** block unused: R1–R34 of life origin (pr
 for the reference implementation; every [std] table row carries a footnote giving the rationale and the
 observed range. [unverified] marks claims not confirmed against a retrieved document.
 
-**Representative design.** Base case = the **MassMutual RetireEase Choice / Guardian SecureFuture archetype**
-[S2] [S3]: flexible premium, each premium buying a guaranteed paid-up income slice at then-current purchase
-rates, return of premium on death in deferral on every option except Life Only, a one-time ±5-year income
-start date adjustment, an optional 1–4% annual increase, and payment acceleration as the only in-force
-liquidity. **Pacific Secure Income** [S4] [S5] is the extended case, adding commutation. The **QLAC overlay**
-is a restriction set on the base case.
+**Representative design.** Base case = the **flexible-premium archetype** [S2], together with a second
+carrier's flexible-premium design [S3]: flexible premium, each premium buying a guaranteed paid-up income
+slice at then-current purchase rates, return of premium on death in deferral on every option except Life
+Only, a one-time ±5-year income start date adjustment, an optional 1–4% annual increase, and payment
+acceleration as the only in-force liquidity. **A third carrier's design** [S4] [S5] is the extended case,
+adding commutation. The **QLAC overlay** is a restriction set on the base case.
 
 **Structural warning, up front.** A DIA has **no account value** — no credited rate, no index crediting, no
 M&E or rider charge, no surrender charge, no free-withdrawal corridor, no market value adjustment, no benefit
@@ -45,7 +45,7 @@ account [R13].
 The fact that drives every modeling decision: **each premium immediately and irrevocably buys a fully
 guaranteed paid-up annuity** — "All income benefits, based on the specified income commencement date and
 specified income option associated with each premium paid, shall be guaranteed" [R13 §3.H(1)](#uslib-deferred_income_annuity-r13) — and the
-slices are combined into one payment stream at the income start date [S1] [S2] [S3] [S4]. Guardian states it
+slices are combined into one payment stream at the income start date [S1] [S2] [S3] [S4]. One carrier states it
 plainly: "Each payment purchases a specific amount of guaranteed lifetime income, based on annuity purchase
 rates that are in effect at the time each purchase payment is made" [S3].
 
@@ -91,9 +91,9 @@ variant, the QLAC, additionally removes the contract's value from the RMD accoun
    It is not the binding constraint: the 13-month minimum deferral (footnote 9) together with the age-85
    income-start cap (footnote 11) makes the **effective** maximum issue age **83 ANB** — the same ceiling the
    QLAC band carries (footnote 5) — so the 85 row never binds on its own.
-4. Observed: 68 [S3, 2018](#uslib-deferred_income_annuity-s3), 69 [S2, 2019](#uslib-deferred_income_annuity-s2) — both pre-SECURE-vintage documents keyed to an RMD age of 70½ and
+4. Observed: 68 [S3, 2018], 69 [S2, 2019] — both pre-SECURE-vintage documents keyed to an RMD age of 70½ and
    superseded by the current applicable RMD ages of 73/75 [S1] [S4] — 71 [S4], 73 [S1] [S6]. 73 is
-   the post-SECURE representative; the mechanism behind it is NYL's rule that issue age is "no later than
+   the post-SECURE representative; the mechanism behind it is the rule that issue age is "no later than
    2 years before the client's RMD age" [S1].
 5. Observed minima 31 [S3], 35 [S1], 41 [S2]; maxima 80 [S1], 82 [S3] [S4], 83 [S2] [S6]. The archetype's band
    is adopted. The minimum is purely a product rule — the regulation sets only the age-85 outside date
@@ -120,8 +120,9 @@ variant, the QLAC, additionally removes the contract's value from the RMD accoun
 | QLAC aggregate premium limit — 2026 | $210,000 | [R3] [S4] |
 | Aggregation of cumulative-premium limits | Across all DIAs of the insurer group with the same owner or annuitant | [S2] |
 
-7. Observed: $100 [S1] [S3], $500 [S2] [S4]. $500 is taken with the MassMutual/Pacific pair because it produces
-   materially fewer slices in a flexible-premium projection; the choice changes no mechanic.
+7. Observed: $100 [S1] [S3], $500 [S2] [S4]. $500 is taken with the archetype and the extended case
+   [S2] [S4] because it produces materially fewer slices in a flexible-premium projection; the choice
+   changes no mechanic.
 8. Observed: $1,000,000 [S3], $1,500,000 [S2], $2,000,000 [S1] [S4]. The archetype's value is taken. All four
    are soft limits — larger amounts require home-office approval, not prohibition [S1] [S2] [S3] [S4].
 
@@ -141,16 +142,16 @@ variant, the QLAC, additionally removes the contract's value from the RMD accoun
 | Payment timing — base model | Arrears (payment at the end of each payment period) | **[std]** (13) |
 
 9. Two conventions coexist: **13 months** [S2] [S4], matching the VM-01 statutory floor [R9] and the Florida
-   annuitization mandate [S2]; **24 full months** [S1] [S3]. Fidelity's current table lists Guardian at 13
-   months [S6] — a conflict the research file could not resolve because no current Guardian primary document
-   could be retrieved [S9] [S11]; both figures stand on the record. 13 months is chosen as the regulatory
-   minimum and the more common design.
+   annuitization mandate [S2]; **24 full months** [S1] [S3]. The current distributor table lists one of those
+   two carriers at 13 months [S6] — a conflict the research file could not resolve because no current
+   primary document for that carrier could be retrieved [S9] [S11]; both figures stand on the record.
+   13 months is chosen as the regulatory minimum and the more common design.
 10. Observed: 30 years [S2] [S4], 40 years [S1] [S3], both across five insurers [S6]. 30 is taken with the
     archetype; in practice the maximum income-start age binds first.
 11. Observed: 85 [S1] [S3] [S6], 90 [S2] [S4]. 85 is modal, matches the regulation-fixed QLAC ceiling
     [R1 (q)(1)(ii)](#uslib-deferred_income_annuity-r1) and keeps one age cap across market types (footnote 3).
-12. All four insurers offer all four frequencies [S1] [S2] [S3] [S4]. Fixed at issue at NYL [S1] and MassMutual —
-    it cannot change even on an annuity-date adjustment [S2] — but changeable at Guardian [S3]. The
+12. All four insurers offer all four frequencies [S1] [S2] [S3] [S4]. Fixed at issue at two of them [S1] [S2] —
+    it cannot change even on an annuity-date adjustment [S2] — but changeable at a third [S3]. The
     fixed-at-issue convention is adopted.
 13. No retrieved DIA document states advance versus arrears. Arrears matches
     `products/immediate_annuity/product-spec.md` so one payout chassis serves both products; the model
@@ -166,14 +167,14 @@ variant, the QLAC, additionally removes the contract's value from the RMD accoun
 | Ceiling on the new date | Within the maximum deferral period and the maximum income-start age | [S1] [S2] [S4] |
 | What cannot change | Income option; day of month; payment frequency | [S1] [S2] |
 | Minimum resulting payment | $100 monthly | [S2] |
-| Excluded forms | Life Only and Joint Life Only; Pacific Life additionally excludes Joint and Survivor Life Only and Period Certain | [S1] [S3] [S4] |
-| Repricing basis | Originally scheduled payment; new annuity date; **Moody's Seasoned Baa Corporate Bond Yield** at the request date; **Annuity 2012 Mortality Table**; plus an **interest rate change adjustment set forth in the contract** | [S2] (NYL states the same construction against the **A2000** tables [S1]) |
+| Excluded forms | Life Only and Joint Life Only; one carrier additionally excludes Joint and Survivor Life Only and Period Certain | [S1] [S3] [S4] |
+| Repricing basis | Originally scheduled payment; new annuity date; **Moody's Seasoned Baa Corporate Bond Yield** at the request date; **Annuity 2012 Mortality Table**; plus an **interest rate change adjustment set forth in the contract** | [S2] (another carrier states the same construction against the **A2000** tables [S1]) |
 | Direction of income impact | Advancing the date **reduces** the payment; deferring **increases** it | [S4] [S5] |
 | Explicit charge for the change | None disclosed; any charge must be disclosed | [S1] [S2] [S3] [S4] [R13 §§3.M, 1.B(1)(d)](#uslib-deferred_income_annuity-r13) |
 
-14. One-time at all four insurers [S1] [S2] [S3] [S4]; Guardian adds a one-time right to accelerate back after a
-    deferral [S3]; **Western & Southern allows two changes**, the only multi-change design identified [S6].
-    One exercise is adopted and the count is exposed.
+14. One-time at all four insurers [S1] [S2] [S3] [S4]; one of them adds a one-time right to accelerate back
+    after a deferral [S3]; **a further carrier in the distributor comparison allows two changes**, the only
+    multi-change design identified [S6]. One exercise is adopted and the count is exposed.
 
 ### Income options (payout forms)
 
@@ -191,15 +192,15 @@ variant, the QLAC, additionally removes the contract's value from the RMD accoun
 | Refund mechanics | Cash Refund: lump-sum shortfall of premiums over payments made. Installment Refund: payments continue in the same amount and frequency until they equal the premiums. Period Certain: payments continue to the end of the certain period. Beneficiary may elect the present value instead under Installment Refund and Period Certain | [S1] [S2] [S3] |
 | Compact framing of refunds | Income payments made before a return-of-premium death benefit "shall be considered period certain income" | [R13 definitions](#uslib-deferred_income_annuity-r13) |
 
-15. Observed: 5–30 years [S1 period-certain-only, S3](#uslib-deferred_income_annuity-s1), 10–30 years [S1 life-with-guarantee, S2](#uslib-deferred_income_annuity-s1), up to 30
+15. Observed: 5–30 years [S1 period-certain-only, S3], 10–30 years [S1 life-with-guarantee, S2], up to 30
     years [S4]. The Compact floor is five years minimum with a twenty-year maximum deferral for a
     period-certain-only contract [R13 §3.H(3)](#uslib-deferred_income_annuity-r13). 10–30 is taken with the archetype; period-certain-only is out
     of base scope.
 16. Observed: 100/66⅔/50% [S1]; ½, ⅔, ¾ [S2]; 50/67/75% [S4]. The union {50, 66⅔, 75, 100} is adopted, which
     is exactly the set carried in `products/immediate_annuity/product-spec.md` so the two payout chassis
-    share one menu; 100% must be retained because it is the *only* continuance NYL permits on a joint Cash
-    Refund form [S1] — the joint counterpart of the anchor cell's payout form.
-17. Non-convertible is the simpler pricing equation and the default at three of four insurers. MassMutual
+    share one menu; 100% must be retained because it is the *only* continuance one carrier permits on a joint
+    Cash Refund form [S1] — the joint counterpart of the anchor cell's payout form.
+17. Non-convertible is the simpler pricing equation and the default at three of four insurers. One carrier
     alone exposes the distinction and its pricing consequence [S2] — the most model-relevant pricing subtlety
     in the family — and it is specified as a switch in `technical-notes.md`.
 
@@ -221,7 +222,7 @@ variant, the QLAC, additionally removes the contract's value from the RMD accoun
 | Cover-page disclosure — with death benefit | "The contract does not provide access to funds prior to the income commencement date other than payment of the death benefit." | [R13 §2.A(9)](#uslib-deferred_income_annuity-r13) |
 
 18. The research file records an unresolved internal inconsistency: the option is said to be unavailable in
-    "Connecticut or New York" in the body of the MassMutual guide and in "Connecticut or Florida" in its
+    "Connecticut or New York" in the body of the archetype guide and in "Connecticut or Florida" in its
     footnotes and product highlights [S2]. Both stand; neither is asserted. Separately, **no source offered a
     "percentage of premiums plus interest" deferral death benefit**, though the Compact permits it
     [R13 §3.I(1)(b)](#uslib-deferred_income_annuity-r13).
@@ -240,13 +241,13 @@ variant, the QLAC, additionally removes the contract's value from the RMD accoun
 | Availability on other qualified contracts | May be limited or unavailable because of RMD rules | [S2] [S3] [S4] |
 | Index linkage | None — every observed option is a fixed compound escalator, not CPI-linked | [S1] [S2] [S3] [S4] |
 
-19. Observed: 1–3% [S1, and USAA per S6](#uslib-deferred_income_annuity-s1), 1–4% [S2], 2/3/4% [S4], 1–5% [Guardian and Western & Southern per
+19. Observed: 1–3% [S1, and one further carrier per S6], 1–4% [S2], 2/3/4% [S4], 1–5% [two carriers per
     S6]. The archetype's 1–4% is adopted; the base model runs at 0% so the payout stream is level, and
     exposes `cola_rate`.
 20. **Correction worth stating:** a QLAC "does not fail" the not-variable/not-indexed requirement "merely
     because it provides for a cost-of-living adjustment as described in paragraph (o)(2)" [R1 (q)(4)(iv)](#uslib-deferred_income_annuity-r1).
-    The market is more restrictive than the regulation — NYL, Guardian and Pacific Life all exclude COLA from
-    their QLAC offering [S1] [S3] [S4] and MassMutual limits it on qualified contracts [S2].
+    The market is more restrictive than the regulation — three of the four carriers exclude COLA from
+    their QLAC offering [S1] [S3] [S4] and the fourth limits it on qualified contracts [S2].
 
 ### Liquidity
 
@@ -267,19 +268,19 @@ variant, the QLAC, additionally removes the contract's value from the RMD accoun
 | Feature interlocks | Six-month waiting periods interlock acceleration, commutation and the start-date adjustment in both directions | [S4] |
 
 21. Observed: 1 use [S3], 2 uses [S1] [S4], 5 uses [S2]. Two is modal and is adopted; the count is a parameter.
-    Eligibility also differs — Guardian requires a guarantee or cash-refund period with at least six months
-    remaining [S3], and Pacific Life requires the acceleration period to fall in the same tax year on
+    Eligibility also differs — one carrier requires a guarantee or cash-refund period with at least six months
+    remaining [S3], and another requires the acceleration period to fall in the same tax year on
     qualified contracts [S4].
 
 ### Parameters that do not exist for this product
 
 An implementer arriving from a fixed, indexed or variable deferred annuity chassis will look for the
 following and must not find them. Their absence is a structural feature confirmed at contract level, not a
-research gap [S1 fn.1](#uslib-deferred_income_annuity-s1) [S2 product highlights](#uslib-deferred_income_annuity-s2) [S4] [R13].
+research gap [S1 fn.1] [S2 product highlights] [S4] [R13].
 
 | Parameter class | Status |
 |---|---|
-| Account value / accumulation value | **Does not exist.** "There is also no accumulation or cash value with RetireEase Choice and, therefore, no liquidity" [S2] |
+| Account value / accumulation value | **Does not exist.** "There is also no accumulation or cash value … and, therefore, no liquidity" [S2] |
 | Credited or declared interest rate; guaranteed minimum crediting rate | **Do not exist.** The contract states dollars of income, and the deferral-period interest and mortality basis need not be disclosed at all [R13 §1.B(1)(a)](#uslib-deferred_income_annuity-r13) |
 | Index crediting parameters — caps, participation rates, spreads, buffers, floors, index terms | **Do not exist.** The product is non-variable and non-indexed; a QLAC is additionally *required* not to be indexed [R1 (q)(1)(vii)](#uslib-deferred_income_annuity-r1) |
 | M&E charge, administrative charge, contract fee, rider charges | **Do not exist.** No retrieved document discloses any explicit charge — "There are no fees" [S2]. Pricing margin is embedded in the purchase rate [R13 §1.B(1)(a)](#uslib-deferred_income_annuity-r13) |
@@ -321,12 +322,12 @@ payable on every option except Life Only and Joint Life Only, which carry **no d
 after** the income start date [S1] [S3] [S4]. Economics of the fork: with ROP, deferral mortality is close to
 neutral (the premium comes back); without it, deferral deaths release the entire reserve as mortality gain —
 which is why the no-death-benefit form buys materially more income for the same premium and why it is
-conditioned on a deferral of ten years or longer [S2; derived from S1–S4, R13](#uslib-deferred_income_annuity-s2).
+conditioned on a deferral of ten years or longer [S2; derived from S1–S4, R13].
 
-**Income start date adjustment.** Payments are recalculated on actuarial-equivalence inputs MassMutual
+**Income start date adjustment.** Payments are recalculated on actuarial-equivalence inputs one carrier
 discloses in full: "Your originally scheduled annuity payment; the new annuity date; Moody's Seasoned Baa
 Corporate Bond Yield rate at the time we receive the annuity date change request; the Annuity 2012 Mortality
-Table; an interest rate change adjustment set forth in the contract" [S2]; NYL states the same construction
+Table; an interest rate change adjustment set forth in the contract" [S2]; another states the same construction
 against the A2000 tables [S1]. Advancing reduces the payment, deferring increases it [S4] [S5]. Where a change
 right is granted the contract must disclose the alternatives, the timing and frequency limits and any
 explicit charge, and must **either** state the mortality and interest assumption used for actuarial
@@ -340,11 +341,11 @@ a return-of-premium death benefit as **period certain income** [R13 definitions]
 cash-refund or installment-refund DIA be valued as a life annuity with a derived certain period.
 
 **Payment acceleration and commutation.** Acceleration is a timing shift, not a withdrawal — expressly "not a
-liquidity feature" [S2]. Its 59½ gate exists because of the IRC §72(q) 10% additional tax [R8]; NYL warns
+liquidity feature" [S2]. Its 59½ gate exists because of the IRC §72(q) 10% additional tax [R8]; one carrier warns
 that exercising it on a policy purchased before 59½ can trigger that tax retroactively, plus interest, on
-payments received before 59½ [S1]. Commutation exists only in the extended case, and distinctively "except
+payments received before 59½ [S1]. Commutation exists only in the extended case, and, distinctively, "except
 for the Period Certain option, if you are still living at the end of the period when your guaranteed income
-payments would have stopped, Pacific Life will resume income payments until your death" — the life-contingent
+payments would have stopped", the insurer resumes income payments until death — the life-contingent
 tail survives commutation [S4]. **The interest-rate adjustment formula is not published in any retrieved
 document** [S4] [S5]; the Compact supplies only the principle [R13 §3.F(7)](#uslib-deferred_income_annuity-r13), so the construction in
 `technical-notes.md` is **[std]**/[unverified].
@@ -359,7 +360,7 @@ days from purchase); no death benefits other than those in (q)(3); a statement t
 
 - **Premium limit** $200,000 as enacted, indexed (base period the calendar quarter beginning **July 1, 2022**,
   increments rounded to the **next lowest multiple of $10,000**); **$210,000 for 2026**, unchanged from 2025
-  [R1 (q)(2)(ii), (q)(4)(ii)(A)](#uslib-deferred_income_annuity-r1) [R2 §202(a)(2)](#uslib-deferred_income_annuity-r2) [R3], independently confirmed by Pacific Life [S4]. The limit
+  [R1 (q)(2)(ii), (q)(4)(ii)(A)](#uslib-deferred_income_annuity-r1) [R2 §202(a)(2)](#uslib-deferred_income_annuity-r2) [R3], independently confirmed by a carrier document [S4]. The limit
   is reduced by premiums paid to this contract and to any other contract intended to be a QLAC under any
   401(a), 403(a), 403(b), 408 or governmental 457(b) arrangement [R1 (q)(2)(ii)(B)](#uslib-deferred_income_annuity-r1); the issuer may rely on
   the owner's written representation [R5 (h)(2)](#uslib-deferred_income_annuity-r5). **The percentage-of-account-balance limit is gone** —
@@ -375,16 +376,16 @@ days from purchase); no death benefits other than those in (q)(3); a statement t
   percentage is 0 where the contract provides a return of premium** [R1 (q)(3)(iii)(C)](#uslib-deferred_income_annuity-r1) — so a QLAC carries a
   ROP death benefit **or** a beneficiary life annuity, never both. The contract's value is excluded from the
   RMD account balance [R4], a rule that applies to IRAs but **not to a Roth IRA** [R5] [R5 (h)(4)](#uslib-deferred_income_annuity-r5).
-- **Market implementation and failure modes.** MassMutual permits only Single Life — No Refund, Cash Refund
+- **Market implementation and failure modes.** The archetype permits only Single Life — No Refund, Cash Refund
   and No Death Benefit plus Joint and Survivor — Cash Refund, excluding Installment Refund and Period Certain
-  [S2]; Pacific Life likewise excludes Period Certain and Installment Refund [S4]; Guardian excludes
+  [S2]; the extended case likewise excludes Period Certain and Installment Refund [S4]; a further carrier excludes
   guarantee periods and subsequent premiums [S3]; commutation, acceleration and inflation protection are all
   off [S4]. An excess premium ends QLAC status **on the date paid** unless returned to the non-QLAC portion of
   the account by the end of the following calendar year (returning it is not a prohibited commutation)
   [R1 (q)(4)(i)(B)](#uslib-deferred_income_annuity-r1); any other failure voids status **retroactively to the date of purchase**
   [R1 (q)(4)(iii)(A)](#uslib-deferred_income_annuity-r1). A joint-and-survivor QLAC survives a post-purchase, pre-commencement divorce under
   QDRO conditions [R1 (q)(3)(vii)](#uslib-deferred_income_annuity-r1) [R2 §202(a)(3)](#uslib-deferred_income_annuity-r2), retroactive to contracts purchased on or after July 2,
-  2014 [R2 §202(c)(1)(B)](#uslib-deferred_income_annuity-r2); MassMutual's pre-SECURE-2.0 guide shows the old, harsher treatment and illustrates
+  2014 [R2 §202(c)(1)(B)](#uslib-deferred_income_annuity-r2); the archetype's pre-SECURE-2.0 guide shows the old, harsher treatment and illustrates
   what changed [S2].
 
 ---
@@ -410,50 +411,50 @@ subsequent premium, carried as a cancellation flag only [S2] [S3] [R13 §3.B(1)(
 (Florida's mandate that the **annuity date** be advanceable on all options — including the No-Refund options —
 to as early as 13 months after issue, which is a start-date-adjustment override and not the payment
 acceleration feature [S2];
-Pacific Life unavailable in CA, IL, NC, OR, PA and TX, its start-date adjustment unavailable in CT and NY, and
-its commutation unavailable in MO [S4]).
+the extended-case product unavailable in CA, IL, NC, OR, PA and TX, its start-date adjustment unavailable in
+CT and NY, and its commutation unavailable in MO [S4]).
 
 ---
 
 ## Variations across insurers
 
 1. **Minimum deferral — 13 vs 24 months.** 13 [S2] [S4], matching VM-01 [R9]; 24 full months [S1] [S3], against
-   13 months for Guardian in Fidelity's current table [S6] — unresolved [S9] [S11]. **Chosen: 13 months**, the
-   regulatory minimum and the more common design.
-2. **Maximum deferral — 30 vs 40 years.** 30 at MassMutual, Pacific Life and USAA; 40 at NYL, Guardian and
-   Western & Southern [S1] [S2] [S3] [S4] [S6]. **Chosen: 30**, with the archetype; the income-start age binds
+   13 months for one of those two carriers in the current distributor table [S6] — unresolved [S9] [S11].
+   **Chosen: 13 months**, the regulatory minimum and the more common design.
+2. **Maximum deferral — 30 vs 40 years.** 30 at three of the six products surveyed; 40 at the other three
+   [S1] [S2] [S3] [S4] [S6]. **Chosen: 30**, with the archetype; the income-start age binds
    first.
-3. **Maximum income-start age — 85 vs 90 (nonqualified).** 85 at NYL, Guardian, USAA and Western & Southern;
-   90 at MassMutual and Pacific Life [S1] [S2] [S3] [S4] [S6]. **Chosen: 85** — also the regulation-fixed QLAC
+3. **Maximum income-start age — 85 vs 90 (nonqualified).** 85 at four of the six products surveyed;
+   90 at the other two [S1] [S2] [S3] [S4] [S6]. **Chosen: 85** — also the regulation-fixed QLAC
    ceiling [R1], so the model carries one age cap.
 4. **Deferral death benefit packaging.** All four default to 100% ROP [S1] [S2] [S3] [S4]; what varies is the
    no-death-benefit corner — implicit in a Life Only election [S1] [S3] [S4], an explicit option conditioned on
    a 10+ year deferral [S2], or fully unbundled [S4]. **Chosen: the unbundled treatment as the model's
    parameterization** (a `db_form` switch independent of the payout form, which makes the two mortality
    exposures independent), while the representative *product* defaults to ROP on every option but Life Only.
-5. **Income start date adjustment.** Uniform ±5 years, one time [S1] [S2] [S3] [S4], with Guardian's
-   accelerate-back right [S3] and Western & Southern's two changes [S6] as exceptions; Florida forces
-   acceleration on all options [S2] and Pacific Life cannot offer it in CT or NY [S4]. **Chosen: one-time
-   ±5 years on the MassMutual repricing recipe**, the only fully disclosed one [S1] [S2].
-6. **COLA range — 1% to 5% across the market.** 1–3% [S1]; 1–4% [S2]; 1–5% [S3 per S6](#uslib-deferred_income_annuity-s3); 2/3/4% [S4]; all
+5. **Income start date adjustment.** Uniform ±5 years, one time [S1] [S2] [S3] [S4], with one carrier's
+   accelerate-back right [S3] and another's two changes [S6] as exceptions; Florida forces
+   acceleration on all options [S2] and the extended-case product cannot offer it in CT or NY [S4].
+   **Chosen: one-time ±5 years on the archetype's repricing recipe**, the only fully disclosed one [S1] [S2].
+6. **COLA range — 1% to 5% across the market.** 1–3% [S1]; 1–4% [S2]; 1–5% [S3 per S6]; 2/3/4% [S4]; all
    fixed compound escalators elected at issue, none CPI-linked. **Chosen: 1–4%**, base model 0%.
 7. **Post-income liquidity.** Acceleration everywhere but with different limits — 2 uses / 6 months [S1];
    5 / 3 or 6 [S2]; 1 use and only with a guarantee or refund period with ≥6 months left [S3]; 2 / 3 or 6
-   [S4]. Only Pacific Life offers true commutation [S4] [S5]. **Chosen: 2 uses of a six-month acceleration in
+   [S4]. Only one carrier offers true commutation [S4] [S5]. **Chosen: 2 uses of a six-month acceleration in
    the base case, commutation only in the extended case** — the single largest liability-modeling difference
    across the four products.
 8. **Joint reduction trigger and convertibility.** Reduction on the death of either annuitant versus of the
-   primary annuitant coexist [S1] [S2] [S4]; MassMutual alone exposes convertible vs non-convertible and states
+   primary annuitant coexist [S1] [S2] [S4]; one carrier alone exposes convertible vs non-convertible and states
    that convertible joint payouts are lower because they *also* guarantee a single-life payout if one
    annuitant dies during deferral [S2]. **Chosen: non-convertible base with a convertible switch**, trigger
    likewise a switch, matching the immediate-annuity chassis.
-9. **Minimum premium.** $10,000 at four of five products [S1] [S2] [S3] [S6]; Pacific Life alone $15,000 [S4].
+9. **Minimum premium.** $10,000 at four of five products [S1] [S2] [S3] [S6]; the fifth alone $15,000 [S4].
    Subsequent minima split $100 [S1] [S3] vs $500 [S2] [S4]. **Chosen: $10,000 / $500.**
-10. **Source-vintage caveat.** MassMutual's guide is 2019 and its QLAC figures ($130,000, 25% of balance, RMD
-    age 70½) are superseded [S2] [R1] [R2] [R3]; the current guide could not be retrieved [S8]. Guardian's fact
-    sheet is January 2018 and references RMD age 70½ [S3]. The current-vintage primary sources are NYL's
-    June 2026 product overview [S1] and Pacific Life's February 2026 fact sheet [S4]. USAA and Western &
-    Southern parameters come only from a distributor comparison [S6] [S9]. *Mechanics* are stable across these vintages; *tax and age parameters*
+10. **Source-vintage caveat.** The archetype guide is 2019 and its QLAC figures ($130,000, 25% of balance, RMD
+    age 70½) are superseded [S2] [R1] [R2] [R3]; the current guide could not be retrieved [S8]. A second
+    carrier's fact sheet is January 2018 and references RMD age 70½ [S3]. The current-vintage primary sources
+    are a June 2026 product overview [S1] and a February 2026 fact sheet [S4]. Two further carriers'
+    parameters come only from a distributor comparison [S6] [S9]. *Mechanics* are stable across these vintages; *tax and age parameters*
     follow the current-law sources [R1] [R2] [R3].
 
 ---
@@ -626,15 +627,6 @@ the operative constraint on that rate is the Compact's "current annuity purchase
 [REG-R61]: #uslib-reg-r61
 [REG-R70]: #uslib-reg-r70
 [REG-R71]: #uslib-reg-r71
-[S1]: #uslib-deferred_income_annuity-s1
-[S11]: #uslib-deferred_income_annuity-s11
-[S2]: #uslib-deferred_income_annuity-s2
-[S3]: #uslib-deferred_income_annuity-s3
-[S4]: #uslib-deferred_income_annuity-s4
-[S5]: #uslib-deferred_income_annuity-s5
-[S6]: #uslib-deferred_income_annuity-s6
-[S8]: #uslib-deferred_income_annuity-s8
-[S9]: #uslib-deferred_income_annuity-s9
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

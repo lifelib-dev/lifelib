@@ -151,13 +151,14 @@ from the output.
 consequence but not the rate at which a locked bucket accrues to term end, so the module
 is incomplete and is left out rather than guessed. *Tiered participation rate*: the notes
 give its replicating portfolio but no crediting formula ``g``. *Dual-direction and
-absolute-return designs, Annual Lock segments, rainbow segments and Secure Lock+*: listed
-as out of scope by the product spec, with no formula. *RMD-driven withdrawals*: named as a
-behavioural input, with no amount formula. *Multi-option contracts*: the notes define a
-model point as one contract holding one option and describe the multi-option case as a
-vector sharing one contract-level decrement and guarantee base; this model carries the
-single-option case, and the pro-rata-to-interim-value allocation rule is implemented over
-the option, the Fixed Account and the Holding Account rather than over several options.
+absolute-return designs, annual-lock segments, rainbow segments and resetting locks*:
+listed as out of scope by the product spec, with no formula. *RMD-driven withdrawals*:
+named as a behavioural input, with no amount formula. *Multi-option contracts*: the notes
+define a model point as one contract holding one option and describe the multi-option
+case as a vector sharing one contract-level decrement and guarantee base; this model
+carries the single-option case, and the pro-rata-to-interim-value allocation rule is
+implemented over the option, the Fixed Account and the Holding Account rather than over
+several options.
 *The payout phase*: the Maturity Date benefit is emitted as an outgo at the Account Value;
 converting it to a payment stream is the immediate-annuity chassis. *Stochastic
 scenarios*: the index path, the CMT curve, the volatility and the dividend yield are read

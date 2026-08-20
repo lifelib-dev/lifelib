@@ -199,8 +199,8 @@ probability-weighted run onto it would be dishonest.
 important line in the model and the notes' first listed pitfall. During the certain
 period the full, *unreduced* instalment is payable regardless of survival; an additive
 construction would pay ``1 + L`` and silently double the guarantee. The ``max`` also
-reproduces, with no extra logic, NYL's rule that a survivor reduction inside a certain
-period is deferred to the end of that period [S5] — see model point 5, where the
+reproduces, with no extra logic, one carrier's rule that a survivor reduction inside a
+certain period is deferred to the end of that period [S5] — see model point 5, where the
 reduction to ``delta`` begins at ``t = 121`` and not at the month-14 death.
 
 .. rubric:: ``certain_only``, where the notes' expense formula outlives the contract
@@ -310,7 +310,7 @@ def is_joint():
 def age_at_entry(life):
     """x_i: issue age (ANB) of the primary (life = 1) or joint (life = 2) annuitant.
 
-    Age nearest birthday **[std]**: MassMutual defines contract age as ANB [S1] and the
+    Age nearest birthday **[std]**: one carrier defines contract age as ANB [S1] and the
     2012 IAM/IAR family is tabulated ANB [R2][R9].
     """
     if life == 1:
@@ -539,9 +539,9 @@ def annual_income(y):
     ``B(y) = B(y-1)(1 + g)`` on each anniversary of the annuity date [S1][S4], compound
     and irrevocable.  Escalation applies to the **unreduced** level and continues after a
     survivor reduction, because the contract reduces payments to delta of the *current*
-    income payment [S2].  NYL instead starts the first increase one year after the first
-    income payment [S5]; that one-period difference is a **[std]** convention choice not
-    taken here.  ``B(1)`` is exogenous - no insurer publishes payout factors, so the
+    income payment [S2].  One carrier instead starts the first increase one year after the
+    first income payment [S5]; that one-period difference is a **[std]** convention choice
+    not taken here.  ``B(1)`` is exogenous - no insurer publishes payout factors, so the
     model does not derive it from the premium.
     """
     if y <= 1:
@@ -577,10 +577,11 @@ def certain_mths_refund():
 
     ``n_R = min{t in T : G(t) >= P}`` - payments continue until cumulative payments equal
     the premium.  Under a level path this closes to ``(12/m) * ceil(m*P/B(1))``, which is
-    NYL's published rule "guaranteed payment period = premium paid / annualized income
+    the published rule "guaranteed payment period = premium paid / annualized income
     benefit amount" rounded up to a payment date [S5]; the anchor check is
     ``P/B(1) = 100,000/6,000 = 16.667 years = 200 months``.  Searched rather than closed
-    so a COLA path (which MassMutual does not offer with this form [S1]) still resolves.
+    so a COLA path (which the anchor carrier does not offer with this form [S1]) still
+    resolves.
     Capped at :func:`horizon_mths` if the premium is never recovered.
     """
     step = 12 // payment_freq()
@@ -770,9 +771,9 @@ def payment_factor(t):
     additional stream: during the certain period the full unreduced instalment is paid
     regardless of survival, and the ``max`` prevents paying ``1 + L``.  An additive
     construction silently doubles the guarantee - the notes' first-listed pitfall.
-    Because the floor pays the *unreduced* instalment, it also reproduces NYL's rule that
-    a survivor reduction inside a certain period is deferred to the end of that period,
-    with no extra flag [S5].
+    Because the floor pays the *unreduced* instalment, it also reproduces one carrier's
+    rule that a survivor reduction inside a certain period is deferred to the end of that
+    period, with no extra flag [S5].
     """
     return max(certain_floor(t), payment_factor_life(t))
 
@@ -835,9 +836,9 @@ def commute_disc_rate(t):
     """j(t): the commutation discount rate **[std] [unverified]**.
 
     ``j(t) = j0 + [CMT10(t) - CMT10(0)]`` with ``j0 = 4.00%``.  **No fixed SPIA issuer
-    publishes a commutation discount formula**: MassMutual gives only the cap [S1],
-    Pacific Life only "an interest-rate adjustment will apply" [S2], NYL only the 10-year
-    CMT as the driver [S5]; the 4% comes from TIAA-CREF Life's *variable* contract [S7].
+    publishes a commutation discount formula**: one carrier gives only the cap [S1], a
+    second only "an interest-rate adjustment will apply" [S2], a third only the 10-year
+    CMT as the driver [S5]; the 4% comes from a fourth's *variable* contract [S7].
     ``cmt10_shift`` is a flat scalar here - a CMT path would be another input table - so
     the rate is level.  Any run with commutation enabled inherits an unsupported
     assumption; flag it in output.
@@ -914,11 +915,12 @@ def commute_frac_cum(t):
 
         theta_cum(t+) = theta_cum(t) + (1 - theta_cum(t)) * W / CV(t)
 
-    This is NYL's pro-rata rule: future income payments through the end of the guaranteed
-    period are reduced by the withdrawal percentage elected, with full payments resuming
-    for life at the end of that period [S5][S2].  It applies to certain-period instalments
-    **only** - applying it to the life-contingent tail contradicts every retrieved
-    contract [S1][S2][S5], which is why :func:`annuity_payments` multiplies it by ``C(t)``.
+    This is one carrier's pro-rata rule: future income payments through the end of the
+    guaranteed period are reduced by the withdrawal percentage elected, with full payments
+    resuming for life at the end of that period [S5][S2].  It applies to certain-period
+    instalments **only** - applying it to the life-contingent tail contradicts every
+    retrieved contract [S1][S2][S5], which is why :func:`annuity_payments` multiplies it
+    by ``C(t)``.
     """
     if t <= 1:
         return 0.0
@@ -1017,7 +1019,7 @@ def expenses(t):
 
     ``(c_e / 12) * (1 + pi)^(y(t)-1) * IF(t)``: $60 per contract p.a. inflating at 2.5%,
     paid monthly while any payment obligation remains.  No insurer publishes expense
-    assumptions; MassMutual's "zero fees" [S1] refers to charges to the policyholder, not
+    assumptions; the "zero fees" statement [S1] refers to charges to the policyholder, not
     to the insurer's cost.  Acquisition cost is out of scope - the premium is single and
     the cost is priced in.
     """

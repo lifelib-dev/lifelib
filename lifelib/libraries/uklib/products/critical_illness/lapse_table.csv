@@ -1,0 +1,7 @@
+policy_year,lapse_rate,provenance
+1,0.10,[std] protection-book shape
+2,0.08,[std] protection-book shape
+3,0.06,[std] protection-book shape
+4,0.06,[std] protection-book shape
+5,0.06,[std] protection-book shape
+6,0.04,[std] ultimate; applies to year 6 onwards

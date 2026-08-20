@@ -1,0 +1,7 @@
+duration,factor,provenance
+0,0.55,[std] select structure
+1,0.65,[std] select structure
+2,0.75,[std] select structure
+3,0.85,[std] select structure
+4,0.93,[std] select structure
+5,1.0,[std] ultimate

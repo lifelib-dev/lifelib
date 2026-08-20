@@ -344,7 +344,6 @@ attributable to any source.
 [R8]: #uslib-universal_life-r8
 [REG-R3]: #uslib-reg-r3
 [REG-R5]: #uslib-reg-r5
-[S1]: #uslib-universal_life-s1
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

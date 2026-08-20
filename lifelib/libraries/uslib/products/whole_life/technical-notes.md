@@ -168,7 +168,7 @@ table changes no other logic. Contractual `CV_t ≥ CV_t^min` always [R1].
 
 ### Dividend recursion (three-factor contribution formula)
 
-Anchor (published mechanics, Northwestern Mutual) [S4]:
+Anchor (published mechanics of one surveyed carrier) [S4]:
 
 ```
 D_t = ( CV_{t−1} + G − MEC_t ) · (1 + i_d) − CV_t
@@ -202,7 +202,7 @@ D^PUA_t = (i_d − i_g) · PUACV_{t−1} + (q^g_{x+t−1} − q^{sc}_{x+t−1}) 
 ```
 
 No dividend is credited for policy year 1 (`D_1 = D^PUA_1 = 0`) **[std]** (product-spec Table
-3 note (j); Guardian pays none [S1], MassMutual pays a first-year dividend [S3]).
+3 note (j); one carrier pays none [S1], another pays a first-year dividend [S3]).
 
 Direct recognition (loaned values) **[std]** parametrization of [S1] [S3]: replace `i_d` with
 `i_L` on the loaned portion:
@@ -222,7 +222,7 @@ coincidence of the snapshot, not a model property.
   **[std]**). At age 100, `NSP_100 = 1` so `PUACV = PUAF` [S1].
 - **CASH:** dividend paid out; policyholder cash flow at EOY.
 - **REDUCE_PREM:** offsets next year's BOY premium: `G^{net}_{t+1} = max(G − D_t, 0)`, excess
-  to PUAs **[std]** (excess-to-PUA per MassMutual RPD [S3]).
+  to PUAs **[std]** (excess-to-PUA per one carrier's reduce-premium option [S3]).
 - **ACCUM:** `DA_t = DA_{t−1} · (1 + i_d) + D_t`; balance adds to death and surrender
   proceeds [S1] [S2].
 
@@ -317,8 +317,9 @@ Base behavior is static (schedules in class (c)). Dynamic overlays, all **[std]*
   base records no dynamic-lapse study for WL.
 - **Premium offset behavior:** once `D_t ≥ G` (dividend covers the premium), a fraction
   `0.50` **[std]** of policyholders switch to REDUCE_PREM/premium-offset behavior (offset is a
-  real product feature: Guardian option S [S2]; MassMutual APO [S3]). This shifts premium
-  income to internal dividend application in later durations.
+  real product feature: a lettered dividend option at one carrier [S2]; a named automatic
+  offset option at another [S3]). This shifts premium income to internal dividend application
+  in later durations.
 - **Loan utilization:** static 0%/20% variants only **[std]**; no dynamic loan take-up (the
   6%-fixed direct-recognition design largely neutralizes loan arbitrage [S1] [S3]).
 - **No dynamic mortality (anti-selection) on lapse** for the base par product **[std]**;
@@ -441,16 +442,6 @@ Known modeling pitfalls:
 [REG-R30]: #uslib-reg-r30
 [REG-R31]: #uslib-reg-r31
 [REG-R32]: #uslib-reg-r32
-[S1]: #uslib-whole_life-s1
-[S11]: #uslib-whole_life-s11
-[S14]: #uslib-whole_life-s14
-[S2]: #uslib-whole_life-s2
-[S3]: #uslib-whole_life-s3
-[S4]: #uslib-whole_life-s4
-[S6]: #uslib-whole_life-s6
-[S7]: #uslib-whole_life-s7
-[S8]: #uslib-whole_life-s8
-[S9]: #uslib-whole_life-s9
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

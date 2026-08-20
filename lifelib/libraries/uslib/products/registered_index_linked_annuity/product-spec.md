@@ -18,9 +18,9 @@ the reference implementation; each [std] table row carries a footnote giving the
 rationale and the observed range across insurers. Facts the research file could not
 verify are flagged [unverified].
 
-The implementation anchor for mechanics is the **Brighthouse Shield Level II 6-Year
-Annuity** Rule 424(b)(3) prospectus, whose Appendix F carries the complete AG 54-era
-interim value algebra and the worked proportional-withdrawal example [S2].
+The implementation anchor for mechanics is one carrier's **6-year buffered chassis**, whose
+Rule 424(b)(3) prospectus carries in its Appendix F the complete AG 54-era interim value
+algebra and the worked proportional-withdrawal example [S2].
 
 ---
 
@@ -63,7 +63,7 @@ mark of a hypothetical replicating portfolio priced with an option-pricing model
 | Parameter | Representative value | Basis |
 |---|---|---|
 | Design type | Individual single-premium deferred index-linked separate account annuity | [S1] [S2] |
-| Chassis | Brighthouse Shield Level II 6-Year design | [S2]; selection **[std]** (1) |
+| Chassis | One carrier's 6-year buffered index-linked design | [S2]; selection **[std]** (1) |
 | Account structure | Non-unitized separate account for index-linked options; general account for Fixed Account and Holding Account | [S2] [S4] [R2] [R6] |
 | Premium structure | Single premium; no subsequent purchase payments | [S1] [S2]; scope **[std]** (2) |
 | Owner / annuitant issue ages | 0–85 | [S1] [S2] |
@@ -81,8 +81,9 @@ Footnotes to [std] rows:
    single-premium, 6-year-chassis buffered RILA with 1/3/6-year terms, Cap / Step / Edge
    crediting, a 7-7-6-5-4-3-0 withdrawal charge above a 10% free amount, a
    return-of-premium GMDB, no explicit asset charge and an AG 54 interim value —
-   "essentially the Brighthouse Shield Level II design" [S2], matching AG 54's literal
-   definitions [R2] and the Academy's worked example structure [R6].
+   essentially the design documented in [S2], which is why it was taken as the chassis;
+   it matches AG 54's literal definitions [R2] and the Academy's worked example
+   structure [R6].
 2. Observed: single premium [S1] [S2]; flexible premium with a contribution cut-off at owner
    age 86 and $500/$50 minimum additional contributions [S4]; flexible-premium combination
    contract with variable subaccounts [S3]. Single premium removes premium-persistency
@@ -97,10 +98,10 @@ Footnotes to [std] rows:
 | Parameter | Representative value | Basis |
 |---|---|---|
 | Term lengths offered | 1, 3, 6 years (point-to-point) | [S1] [S2] [S3] [S4] [S5]; 2-year dropped **[std]** (4) |
-| Buffers ("Shield Rates") offered | 10%, 15%, 25% | [S1] [S2] |
+| Buffers offered | 10%, 15%, 25% | [S1] [S2] |
 | Representative buffer | 10% | universal across insurers [S1]–[S6] [R1]; pick **[std]** (5) |
 | Indices | S&P 500, Russell 2000, MSCI EAFE, Nasdaq-100 — all **price return** | [S2] |
-| Rate crediting types | Cap Rate; Step Rate; Step Rate Edge | [S2] |
+| Rate crediting types | Cap Rate; Step Rate; Edge Rate | [S2] |
 | Floor strategies | Not offered on this chassis (documented as a variation) | [S1] [S2]; contrast [S5] |
 | Reallocation | Only during the Transfer Period — the 5 calendar days following the Contract Anniversary coinciding with a Term End Date | [S1] [S2] |
 | Default at Term End | Automatic renewal into the same option at the new declared rate unless the owner elects otherwise; 30 days' advance notice | [S1] [S2] |
@@ -110,8 +111,8 @@ Footnotes to [std] rows:
    to [S2] among the retrieved sources and is dropped to hold the menu at the industry mode.
 5. Observed buffer menus: 10/15/25 [S1] [S2]; 5/10/15/20/**100** [S3]; 10/15/20/40 [S4];
    10/20/30 plus a −10% floor [S5]; protection levels 10/15/20/25 [S6]. **The 10% buffer is
-   the one value present in every menu**, and Equitable commits that "we will always offer a
-   Segment Option with a Segment Buffer that protects the first 10% of loss" [S4].
+   the one value present in every menu**, and one carrier commits that "we will always offer
+   a Segment Option with a Segment Buffer that protects the first 10% of loss" [S4].
 
 ### Declared (non-guaranteed) crediting parameters — snapshot
 
@@ -125,19 +126,20 @@ Footnotes to [std] rows:
 | Participation Rate | 100% | [S4]; adoption **[std]** (7) |
 | Declared Fixed Account rate | 3.00% | **[std]** (8) |
 
-6. **No currently-declared rate sheet was retrievable** — the Brighthouse Shield rates page
-   and the Equitable performance cap rate page both returned HTTP 403 / WAF rejections
-   (research gap 1) — so every rate here is a modeling snapshot. Observed *illustrative*
+6. **No currently-declared rate sheet was retrievable** — the current-rate pages of the
+   chassis carrier and of one other sampled carrier (the issuers of [S2] and [S4]) both
+   returned HTTP 403 / WAF rejections (research gap 1), and nothing is cited from those
+   pages — so every rate here is a modeling snapshot. Observed *illustrative*
    prospectus values: 10% cap, 1-year [S1]; 75% cap, 3-year at a 10% buffer [S3]; 12% cap
    1-year and 100% cap 6-year [S6]; 60% cap with 110% participation on a 6-year 20%-buffer
-   segment and 9% cap on a 1-year Step Up [S4]. The chosen 12% / 55% / 100% triple brackets
-   those and sits well above the contractual minima below.
+   segment and 9% cap on a 1-year step-up segment [S4]. The chosen 12% / 55% / 100%
+   triple brackets those and sits well above the contractual minima below.
 7. Observed illustrative step/trigger values: 8% Step [S1]; 5% Step with 90% participation
    [S3]; 12.5% trigger and 6% dual trigger, 1-year [S6]. No *Edge* value appears in any
    retrieved document; 6% is a modeling choice set below the 8% Step, the correct economic
    ordering because the Edge design pays down to −*b* rather than to 0 and so buys a lower
-   rate. Participation Rate 100% is what Equitable guarantees for the life of every current
-   segment type [S4].
+   rate. Participation Rate 100% is what one carrier guarantees for the life of every
+   current segment type [S4].
 8. No declared fixed-account rate appears in any retrieved document; only the 1% contractual
    minimum is public [S1] [S2]. 3.00% is a snapshot consistent with the **[std]** 4.00%
    risk-free assumption in `technical-notes.md`.
@@ -150,7 +152,7 @@ Footnotes to [std] rows:
 | Minimum guaranteed Step Rate | 2% | [S2] |
 | Minimum guaranteed Edge Rate | 2% | [S2] |
 | Minimum guaranteed interest rate, Fixed Account and Holding Account | 1% | [S1] [S2] |
-| Buffer (Shield Rate) | Guaranteed for the life of each term; not redeterminable mid-term | [S1] [S2] |
+| Buffer | Guaranteed for the life of each term; not redeterminable mid-term | [S1] [S2] |
 
 These are **guaranteed elements** in ASOP No. 2 terms — it lists "minimum index parameters"
 as a guaranteed element and "index parameters used to determine credited interest" as a
@@ -169,9 +171,9 @@ assumption at this table.
 | Premium tax | 0% (state pass-through, modeled as zero) | [S2]; value **[std]** (9) |
 | Trading cost provision inside the interim value | 0.10% of the sum of the absolute market values of the replicating options | **[std]** (10) |
 
-9. Brighthouse lists the complete charge inventory as "(i) Withdrawal Charges; and (ii)
-   Premium Tax and other taxes" [S2]. Premium tax is state-specific and is not quantified
-   in any retrieved document; zero is the modeling default with the parameter exposed.
+9. The chassis source lists the complete charge inventory as "(i) Withdrawal Charges; and
+   (ii) Premium Tax and other taxes" [S2]. Premium tax is state-specific and is not
+   quantified in any retrieved document; zero is the modeling default, parameter exposed.
 10. AG 54 requires consistency with the hypothetical portfolio "less a provision for the
     cost attributable to reasonably expected or actual Trading Costs" [R2], and [S2], [S4]
     and [S6] all say the derivative valuation reflects "the estimated cost of exiting" the
@@ -196,9 +198,9 @@ assumption at this table.
 | Optional GMDB riders | Out of scope | scope **[std]** (see Riders) |
 
 The guarantee therefore sits on top of a value that can itself be depressed by a negative
-interim value: "we will pay the Interim Value, which may be less than if you held the
-Contract until all of your Shield Option(s) reach their Term End Date" [S1]. The GMDB is
-genuinely in the money in equity stress — it is not a nominal guarantee.
+interim value: the contract pays the Interim Value, which may be less than the value the
+owner would have had by holding every index-linked option to its Term End Date [S1]. The
+GMDB is genuinely in the money in equity stress — it is not a nominal guarantee.
 
 ### Annuitization
 
@@ -256,14 +258,14 @@ e.g. 0.10); `c` cap; `s` step; `e` edge; `PR` participation; `f` floor (positive
     Buffer + Step   g = s           if R >= 0 ;   g = min(0, R + b)   if R <  0
     Buffer + Edge   g = e           if R >= -b;   g = R + b           if R <  -b
 
-[S1] states the buffer branch verbatim as "the lesser of: zero or the Index Performance
-increased by the Shield Rate" (worked: −15% index performance under Shield 10 → a −5%
+[S1] states the buffer branch as "the lesser of: zero or the Index Performance
+increased by" the buffer (worked: −15% index performance against a 10% buffer → a −5%
 Performance Rate) together with the governing rule that "The Performance Rate can never be
 greater than zero if the Index Performance is negative" [S1]. Cap-versus-Step contrast
 from [S1]: at +15% index performance a 10% Cap pays 10% and an 8% Step pays 8%; at 0%
 index performance the Cap pays 0% and the Step pays 8%. The Edge design moves the trigger
 threshold from 0 to −*b* — it pays "the rate credited at the Term End Date if the Index
-Performance is equal to or greater than the Shield Rate" [S2]. Roll-forward [S1] [S2]
+Performance is equal to or greater than" −*b* [S2]. Roll-forward [S1] [S2]
 (worked in [S1] as $50,000 + $4,000 = $54,000):
 
     InvestmentAmount(term end) = InvestmentAmount(term start, adjusted for withdrawals) x (1 + g)
@@ -283,17 +285,17 @@ being [S2]:
 
 The `[(1+C)/(1+D)]^E` factor is "a Market Value Adjustment to address any changes in
 interest rates from the Term Start Date to the day the Interim Value is calculated" [S2].
-The Derivative Asset Proxy is valued with Black-Scholes and "reflects the impact of the
-Cap Rate, Step Rate, Edge Rate, and Shield Rate at the end of the Term as well as the
+The Derivative Asset Proxy is valued with Black-Scholes and reflects the impact of the
+Cap Rate, Step Rate, Edge Rate and buffer at the end of the Term as well as "the
 estimated cost of exiting the replicating options prior to the Term End Date" [S2].
 Replicating portfolios [S2] — ATMC/OTMC at-/out-of-the-money call, OTMP out-of-the-money
 put, ATMBC/ITMBC at-/in-the-money binary call:
 
     Cap Rate option:  ATMC - OTMC - OTMP        Step Rate option: (Step Rate x ATMBC) - OTMP
-    Step Rate Edge option:  (Edge Rate x ITMBC) - OTMP
+    Edge Rate option:  (Edge Rate x ITMBC) - OTMP
 
-"For purposes of the Interim Value formula, the value of the out-of-the-money call will be
-zero if a Cap Rate Shield Option is uncapped" [S2]. Two economic warnings a model must
+For purposes of the Interim Value formula, the value of the out-of-the-money call is zero
+if a Cap Rate option is uncapped [S2]. Two economic warnings a model must
 reproduce: "the out-of-the-money put will almost always reduce the Interim Value, even when
 the current Index Value on a Business Day is higher than the Index Value on the Term Start
 Date"; and "you could have negative Interim Value, even if the Index Value has increased at
@@ -308,12 +310,12 @@ withdrawal reduced the Interim Value**, not dollar-for-dollar [S2] [S3] [S4] [S6
     InvestmentAmount_after = InvestmentAmount_before x ( 1 - GrossWithdrawal / InterimValue )
 
 Worked in [S2]: `$50,000 x (1 − $20,000 / $53,514.77) = $31,313.57`; the reduced amount
-becomes the notional for the rest of the term [S2]. Prudential states the identical rule
-and works it at a 71.429% ratio [S3]. The prospectus states the asymmetry: "a withdrawal
-when Interim Value is less than the Investment Amount will cause a greater percentage
-reduction in the Investment Amount that remains in your Shield Option relative to the
-percentage reduction for the same withdrawal amount when Interim Value is greater than the
-Investment Amount" [S2]. **The reduction in notional can exceed the cash the owner
+becomes the notional for the rest of the term [S2]. Another carrier states the identical
+rule and works it at a 71.429% ratio [S3]. The prospectus states the asymmetry: a
+withdrawal when Interim Value is less than the Investment Amount "will cause a greater
+percentage reduction in the Investment Amount that remains" relative to the percentage
+reduction for the same withdrawal amount when Interim Value is greater than the
+Investment Amount [S2]. **The reduction in notional can exceed the cash the owner
 receives** — numeric illustration in `technical-notes.md`.
 
 ### Withdrawal charge and surrender
@@ -357,19 +359,19 @@ Lock** as an optional module [S2].
 
 - Optional GMDB riders for a charge: Highest Anniversary Value Death Benefit [S4]; Maximum
   Anniversary Value Death Benefit at 0.20% of a Charge Base [S5].
-- Guaranteed lifetime income riders — Allianz's Select Income variant bundles one inside a
+- Guaranteed lifetime income riders — one carrier's income variant bundles one inside a
   1.95% base contract fee on a Charge Base, the only explicit asset-based charge in the
   sample, and its figures are provisional ("[To be updated by amendment]" markers in an
   initial N-4) [S5].
 - **Dual-direction / absolute-return** segments paying `|R|` for losses inside the buffer
-  [S4], the trigger rate for the same [S5], or a Dual Performance Trigger Rate / Dual Rate
-  [S6]; **floor** strategies (Allianz Index Guard, −10% floor) [S5]; **100% buffer**
-  full-protection strategies [S3].
-- **Annual Lock** segments, which compound yearly Standard-rule rates and whose interim
+  [S4], the trigger rate for the same [S5], or either of two distinct dual-rate account
+  types [S6]; **floor** strategies (−10%) [S5]; **100% buffer** full-protection
+  strategies [S3].
+- **Annual-lock** segments, which compound yearly standard-rule rates and whose interim
   value needs "a single extended exotic option that periodically settles and resets in
-  strike price" [S4] [S6]; **tiered participation rate** strategies [S3]; **Optimal Mix /
-  rainbow** segments blending 3 or 4 component indices [S4].
-- **Secure Lock+** (a lock that also *resets* the Performance Cap, minimum Reset Rate
+  strike price" [S4] [S6]; **tiered participation rate** strategies [S3]; **rainbow**
+  segments blending 3 or 4 component indices [S4].
+- A **resetting lock** (a lock that also *resets* the Performance Cap, minimum Reset Rate
   3.50%) [S6]; variable investment subaccounts on a combination chassis [S3]; dollar cap
   averaging accounts [S4]; systematic withdrawal and RMD programs; transfer and
   special-service fees ($35 / $55 / up to $90, currently waived) [S4].
@@ -381,10 +383,10 @@ Lock** as an optional module [S2].
 1. **Interim value algebra — three families.** (a) *Fixed leg net of the option budget,
    with an explicit interest-rate adjustment factor*: `(A − B) x [(1+C)/(1+D)]^E`
    [S2] [S3]. (b) *Full notional discounted at a single current rate plus a separate,
-   always-positive expense rebate*: Equitable's `SegmentInvestment / (1 + rate)^(time to
-   maturity)` plus a **Cap Calculation Factor** [S4]; Lincoln's
+   always-positive expense rebate*: `SegmentInvestment / (1 + rate)^(time to maturity)`
+   plus a **Cap Calculation Factor** [S4]; and a second carrier's
    `C x [1/(1+E)^D x (1+E)^D/(1+F)^D]`, which collapses algebraically to `C / (1+F)^D`
-   [S6]. (c) *A delta applied to the notional rather than a value*: Allianz's
+   [S6]. (c) *A delta applied to the notional rather than a value*:
    `Daily Adjustment = [Δ Proxy Value + proxy interest] x Index Option Base`, with **no
    interest-rate adjustment term at all** [S5]. **Chosen: family (a)** — it is the closest
    literal reading of AG 54's Fixed Income Asset Proxy definition [R2] and it is the
@@ -398,28 +400,28 @@ Lock** as an optional module [S2].
    plus a market-observable investment-grade corporate spread [S6]; the Bloomberg Barclays
    U.S. Intermediate Credit Index at a set duration that "may not match the actual length
    of the Index Strategy" [S3]; an investment-grade rate built as risk-free plus a spread,
-   which Equitable notes is above swap rates and therefore "will result in a lower value
+   which one carrier notes is above swap rates and therefore "will result in a lower value
    for that component" [S4]. AG 54's project history explains the dispersion: MVA
    requirements were deliberately **removed** because consensus was unreachable, leaving
    the "equity" principle to state review [R2]. **Chosen: CMT**, per the chassis.
 4. **Buffer versus floor.** Buffers dominate. **Only one insurer in the retrieved sample
-   offers an explicit floor** — Allianz's Index Guard Strategy at a −10% Floor — and it
-   needs a **four-option** replicating portfolio (ATM call − OTM call − ATM put + OTM put)
-   rather than the three-option buffer portfolio [S5]. Prudential's **100% buffer** is full
-   protection achieved inside the buffer framework, not a floor [S3]. The Academy confirms
-   both species exist [R6] and the SEC treats buffers and floors as the two kinds of
-   "limits on losses" [R1]. **Chosen: buffer only**, with the floor payoff and its
+   offers an explicit floor** — at a −10% Floor — and it needs a **four-option**
+   replicating portfolio (ATM call − OTM call − ATM put + OTM put) rather than the
+   three-option buffer portfolio [S5]. Another carrier's **100% buffer** is full
+   protection achieved inside the buffer framework, not a floor [S3]. The Academy
+   confirms both species exist [R6] and the SEC treats buffers and floors as the two kinds
+   of "limits on losses" [R1]. **Chosen: buffer only**, with the floor payoff and its
    replicating portfolio in `technical-notes.md` so the module can be switched on.
 5. **Buffer depth and term length.** Buffers 10/15/25 [S1] [S2]; 5/10/15/20/100 [S3];
-   10/15/20/40 [S4]; 10/20/30 [S5]; 10/15/20/25 [S6] — **10% is universal** and Equitable
+   10/15/20/40 [S4]; 10/20/30 [S5]; 10/15/20/25 [S6] — **10% is universal** and one carrier
    commits to always offering it [S4]. Terms 1/3/6 are near-universal, [S2] adds 2 years,
    [S6] offers only 1 and 6, and the Academy reports one/two/three/six [R6]. **Chosen: 10%
    buffer on a 1/3/6 menu**, full buffer menu retained.
-6. **Dual-direction and absolute-return designs.** Equitable's Dual Direction pays `|R|`
-   for losses within the buffer, the participation rate applying only to positive index
-   performance [S4]; Allianz's Index Dual Precision pays the trigger rate for the same
-   region [S5]; Lincoln's Dual Performance Trigger and Dual Rate accounts likewise [S6];
-   Brighthouse's Step Rate Edge triggers at −*b* rather than 0 [S2]. **Chosen: Edge only**
+6. **Dual-direction and absolute-return designs.** One carrier's dual-direction segment
+   pays `|R|` for losses within the buffer, the participation rate applying only to
+   positive index performance [S4]; another's dual-trigger segment pays the trigger rate
+   for the same region [S5]; a third's dual-trigger accounts likewise [S6]; and the chassis
+   carrier's Edge design triggers at −*b* rather than 0 [S2]. **Chosen: Edge only**
    — the minimal member of the family, needing one binary option rather than a re-strike of
    the whole portfolio.
 7. **Withdrawal accounting is uniform** and is the single most important behavioral rule:
@@ -434,16 +436,17 @@ Lock** as an optional module [S2].
    Tier Levels, and Step Rates reflect the expenses related to the Index Strategies" [S3],
    and [S4] and [S6] both call the cap an "implicit ongoing fee". The Academy confirms
    "Most contracts do not have explicit fees other than for optional benefits" [R6]. The
-   outlier is Allianz's rider-bundled 1.95% [S5]. **Chosen: no explicit charge.**
+   outlier is one carrier's rider-bundled 1.95% [S5]. **Chosen: no explicit charge.**
    [unverified] whether any RILA applies an explicit M&E charge to index-linked account
    value — none of the retrieved documents does.
-9. **Fee-series structure.** One chassis often sells three ways: Series B (8%-grading-to-0
-   withdrawal charge over 6 years), Select (no charge, lower caps) and Advisory (no charge)
-   [S4]; B-Share and Advisory [S6]. A model must parameterize the withdrawal-charge
-   schedule and the cap level **jointly**, since they trade off. **Chosen: the
-   commission-paying B-equivalent** (7-7-6-5-4-3-0 [S1] [S2]).
-10. **Pre- versus post-AG 54 interim value.** The older Shield Level Select design used no
-    option pricing at all — a **time-prorated accrual** in which the Shield, Cap and Step
+9. **Fee-series structure.** One chassis often sells three ways: a commission-paying
+   B-share series (8%-grading-to-0 withdrawal charge over 6 years), a no-withdrawal-charge
+   series with lower caps, and a fee-based advisory series, also with no withdrawal charge
+   [S4]; a B-share and an advisory series only [S6]. A model must parameterize the
+   withdrawal-charge schedule and the cap level **jointly**, since they trade off.
+   **Chosen: the commission-paying B-equivalent** (7-7-6-5-4-3-0 [S1] [S2]).
+10. **Pre- versus post-AG 54 interim value.** The older design [S1] used no option
+    pricing at all — a **time-prorated accrual** in which the buffer, Cap and Step
     Rates each accrue linearly over the term and the term-end rules are applied to the
     accrued rates (worked in [S1]: 10% cap x 183/365 = 5% accrued cap, giving a $52,500
     interim value on a $50,000 investment amount) [S1]. It predates AG 54's July 1, 2024
@@ -636,12 +639,6 @@ classification determines the measurement model [REG-R71].
 [REG-R56]: #uslib-reg-r56
 [REG-R59]: #uslib-reg-r59
 [REG-R71]: #uslib-reg-r71
-[S1]: #uslib-registered_index_linked_annuity-s1
-[S2]: #uslib-registered_index_linked_annuity-s2
-[S3]: #uslib-registered_index_linked_annuity-s3
-[S4]: #uslib-registered_index_linked_annuity-s4
-[S5]: #uslib-registered_index_linked_annuity-s5
-[S6]: #uslib-registered_index_linked_annuity-s6
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

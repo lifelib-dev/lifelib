@@ -23,12 +23,12 @@ a footnote giving the rationale and the observed range across insurers. **[unver
 marks a claim the research file could not confirm against a retrieved document; such flags
 are carried forward, never quietly dropped.
 
-**Implementation anchor.** The **Jackson National Perspective II** chassis — statutory
+**Implementation anchor.** One carrier's flexible-premium deferred VA chassis — statutory
 prospectus dated April 28, 2025 [S1], initial summary prospectus [S2], rate sheet
 supplement dated April 27, 2026 [S3] — because it is the most contractually explicit
 disclosure in the set and exercises every mechanic a general VA model needs [S1]. Two
-documented variants ride alongside: the **Corebridge VIX-linked non-discretionary rider
-fee formula** [S4] [S6] and the **Equitable formula-linked roll-up rate** (10-year CMT +
+documented variants ride alongside: a second carrier's **VIX-linked non-discretionary rider
+fee formula** [S4] [S6] and a third's **formula-linked roll-up rate** (10-year CMT +
 1.00%, floored 4%, capped 8%) [S7].
 
 ---
@@ -82,12 +82,13 @@ versioned by rate-sheet date, not by product name.
 Footnotes to [std] rows:
 
 1. Two subaccounts is the minimum that exercises pro-rata charge allocation and unit
-   accounting; real contracts offer far more (Corebridge Build Your Own Allocation lists
+   accounting; real contracts offer far more (one carrier's build-your-own menu lists
    76 options across 12 asset classes [S4]). The 60/40 split is a modeling convention — no
    fetched document prescribes an allocation for this chassis. The *other* designs impose
-   hard allocation controls this one does not: Corebridge requires a 20% (Income Max) or
-   10% (Daily Flex) general-account Secure Value Account plus mandatory quarterly
-   rebalancing [S4]; Equitable walls guarantees into a separate Protection account [S7].
+   hard allocation controls this one does not: that same carrier requires a mandatory
+   general-account allocation of 20% with its annual-step-up rider or 10% with its
+   daily-step-up rider, plus mandatory quarterly rebalancing [S4]; another walls guarantees
+   into a separate Protection account [S7].
 2. Non-qualified keeps the RMD interaction in the GLWB withdrawal rules *disclosed but
    inactive*; RMD relief is a cited mechanic [S1] [S6] and belongs in the model as a switch.
 3. Issue age 60 sits inside the GMWB eligible band (35–80 [S1]) and the add-on GMDB band
@@ -113,18 +114,18 @@ Footnotes to [std] rows:
 | Fund expense — fixed income subaccount | 0.65% p.a. of fund net assets | **[std]** (7) |
 | Transfer charge | $25 per transfer after 25 transfers in a Contract Year (reserved right) | [S2] |
 
-6. Jackson blends M&E and administration into one "Core Contract Charge" of 1.30% maximum
-   assessed daily on average daily Investment Division value [S2]; its Key Information
-   Table shows base contract cost 1.31% minimum = 1.31% maximum including the amortized
-   contract fee [S2], i.e. current equals contractual maximum. Equitable alone unbundles —
-   Series B: operations 0.80% + administration 0.30% + distribution 0.20% = 1.30% [S7]. The
-   composite therefore takes the **0.30% administrative component directly from [S7]** and
-   assigns the 1.00% residual to M&E **[std]**, so the parts sum exactly to the cited 1.30%
-   total [S2]. Observed totals: Jackson 1.30% [S2]; Corebridge Polaris Choice IV 1.65%
-   [S6]; Corebridge Polaris Advisory 0.40% [S4]; Equitable 0.65% (ADV) to 1.70% (C) [S7];
-   Lincoln 1.55%–1.90% by elected death benefit [S8].
-7. Observed fund expense ranges: 0.52%–2.28% (Jackson, stated as of December 31, 2021, so
-   indicative rather than current [S2]); 0.46%–1.85% [S6]; 0.21%–1.60% [S4]; 0.27%–3.48%
+6. The chassis blends M&E and administration into one "Core Contract Charge" of 1.30%
+   maximum assessed daily on average daily Investment Division value [S2]; its Key
+   Information Table shows base contract cost 1.31% minimum = 1.31% maximum including the
+   amortized contract fee [S2], i.e. current equals contractual maximum. One carrier alone
+   unbundles — Series B: operations 0.80% + administration 0.30% + distribution 0.20% =
+   1.30% [S7]. The composite therefore takes the **0.30% administrative component directly
+   from [S7]** and assigns the 1.00% residual to M&E **[std]**, so the parts sum exactly to
+   the cited 1.30% total [S2]. Observed totals across the set: the chassis 1.30% [S2];
+   the commission-class contract 1.65% [S6]; the advisory-class contract 0.40% [S4]; 0.65%
+   (ADV) to 1.70% (C) [S7]; 1.55%–1.90% by elected death benefit [S8].
+7. Observed fund expense ranges: 0.52%–2.28% (the chassis, stated as of December 31, 2021,
+   so indicative rather than current [S2]); 0.46%–1.85% [S6]; 0.21%–1.60% [S4]; 0.27%–3.48%
    [S8]. The two [std] values sit inside all four with the usual equity/bond ordering.
 
 ### Contingent deferred sales charge (withdrawal charge) and free withdrawal
@@ -138,7 +139,7 @@ Footnotes to [std] rows:
 | Guaranteed-withdrawal carve-out | Cumulative withdrawals within the GLWB annual limit incur **no** withdrawal charge | [S1] |
 | Terminal illness / extended care waiver | Increases the charge-free amount on a 12-month terminal prognosis or 90 consecutive days' confinement; maximum $250,000 of contract value; exercisable once | [S2] |
 
-### GLWB rider — representative election: Flex GMWB, Single life, "Core" benefit option
+### GLWB rider — representative election: the chassis GLWB, single life, "Core" benefit option
 
 | Parameter | Representative value | Basis |
 |---|---|---|
@@ -168,15 +169,19 @@ Footnotes to [std] rows:
    from the cited contract-fee rule [S2] — near-universal in practice, but not on this
    evidence a cited contract term.
 9. Guaranteed maxima in the historical charge appendix run **1.20% to 3.00%** by option and
-   vintage — Flex Net GMWB Core max 3.00% / current 1.30%; Flex Net Value max 1.70% /
-   current 0.60%; Flex Net Joint Core max 3.00% / current 1.60%; LifeGuard Freedom Net max
-   2.90% / current 1.45% [S1]. **No guaranteed maximum is recorded for the
-   currently-offered Flex GMWB Single Core option itself**, so 3.00% is a [std] pick at the
-   top of the observed band. Cross-insurer maxima: 2.50% with a 0.60% minimum [S4]; 2.75%
-   single and joint [S8]; 1.25% [S7].
+   vintage, but none of them is the currently-offered option modeled here. The nearest are
+   the entries for the chassis' **Value-and-Core-only GMWB variant** — a sibling rider
+   offering just those two benefit options, on the same GAWA% grids [S3] — where the
+   appendix records single-life Core max 3.00% / current 1.30%, single-life Value max 1.70%
+   / current 0.60% and joint-life Core max 3.00% / current 1.60%; and, for that same
+   sibling variant issued before 2020-08-10, max 2.90% / current 1.45% [S1]. **No
+   guaranteed maximum is recorded for the modeled GLWB's own single-life Core option**,
+   whose current charge is 1.25% [S3], so 3.00% is a [std] pick at the top of the observed
+   band. Cross-insurer maxima: 2.50% with a 0.60% minimum [S4]; 2.75% single and joint
+   [S8]; 1.25% [S7].
 10. Three reset mechanisms exist in the set; all three are documented under "Contractual
-    mechanics" below. The model defaults to the Jackson five-yearly discretionary reset
-    **[std]** because it matches the chassis, with the VIX-squared formula as a variant.
+    mechanics" below. The model defaults to the five-yearly discretionary reset **[std]**
+    because it matches the chassis [S1], with the VIX-squared formula as a variant.
 
 ### GMDB rider — representative election: Roll-up GMDB
 
@@ -302,7 +307,7 @@ contract value`; at an earlier Income Date the endorsement terminates with no be
    (quarterly 0.3150%); a VIX² average of 602.30 gives an unclipped 1.86%, but against a
    prior rate of 1.42% the +0.40% band caps it at **1.82%** [S4].
 
-A fourth mechanism resets the **benefit growth rate rather than the fee**: the Equitable
+A fourth mechanism resets the **benefit growth rate rather than the fee**: one carrier's
 Annual Roll-up rate is the average of daily 10-year U.S. Treasury rates over the 20
 calendar days ending on the 15th day of the last month of the preceding calendar quarter,
 **plus 1.00%**, rounded to 0.10%, floored at **4%**, capped at **8%**; the
@@ -313,61 +318,66 @@ and terminates permanently on the first withdrawal from the Protection account [
 
 ## Riders and options
 
-**In scope (modeled).** Flex GMWB Single Core and the Roll-up GMDB, both parameterized in
-the tables above [S1] [S3]; the included Basic Death Benefit (no charge, proportional return
-of premium) [S1] [S2]; the CDSC and free-withdrawal allowance [S1] [S2].
+**In scope (modeled).** The single-life Core GLWB option and the Roll-up GMDB, both
+parameterized in the tables above [S1] [S3]; the included Basic Death Benefit (no charge,
+proportional return of premium) [S1] [S2]; the CDSC and free-withdrawal allowance [S1] [S2].
 
 **Described but not modeled.** Terminal Illness / Extended Care Benefit (free with all
 contracts) [S2]; the rider-created annuitization options — Life Income of GAWA, Specified
-Period Income of the GAWA (years = GWB ÷ GAWA), and the AutoGuard Fixed Payment Income
-Option [S1]; spousal continuation of the GMWB without the For Life Guarantee [S1].
+Period Income of the GAWA (years = GWB ÷ GAWA), and the matching fixed-payment income
+option built on the non-lifetime GMWB [S1]; spousal continuation of the GMWB without the
+For Life Guarantee [S1].
 
-**Out of scope.** Joint-life Flex GMWB, Flex Net GMWB, Flex Strategic Income GMWB
-(accelerated-then-standard payout), AutoGuard non-lifetime GMWB at a flat 5.00% GAWA%, and
-MarketGuard Stretch [S3]; the Highest Quarterly Anniversary Value and Combination
-Roll-up + HQAV GMDBs [S3]; Flex DB, a GMWB-linked death benefit with a 100.00% step-up
-percentage [S3]; EarningsMax (40% of earnings if issue age < 70, 25% at 70–75, earnings
-capped at 250% of remaining premiums; closed 2023-08-28) [S1]; the Four Year Withdrawal
-Charge Schedule option (+0.40%) and the Capital Protection Program, a closed self-funded
-GMAB-equivalent [S1]; Fixed Account Options and their market value adjustment, excluded
-here by the Roll-up GMDB election [S1]; dollar cost averaging, DCA+, Earnings Sweep and
-rebalancing programs [S2]; GMIB/annuitization guarantees such as the Equitable GIB [S7];
-payout-phase guarantees such as Lincoln i4LIFE® Advantage [S8]; and Corebridge's mandatory
-Secure Value Account allocation [S4]. **No currently-sold GMAB was located in the four
-registrations read** — a research gap, not an omission [S1].
+**Out of scope.** The joint-life election of the modeled GLWB and the chassis' other GMWB
+variants — one offering only the Value and Core options on the same GAWA% grids, one with
+an accelerated-then-standard payout, a non-lifetime GMWB at a flat 5.00% GAWA%, and one
+priced on a separate GMWB Charge Base with GAWA% banded from age 0 [S3]; the
+Highest Quarterly Anniversary Value and Combination Roll-up + HQAV GMDBs [S3]; the
+GMWB-linked death benefit with a 100.00% step-up percentage [S3]; the earnings-protection
+death benefit (40% of earnings if issue age < 70, 25% at 70–75, earnings capped at 250% of
+remaining premiums; closed 2023-08-28) [S1]; the Four Year Withdrawal Charge Schedule
+option (+0.40%) and a closed self-funded GMAB-equivalent allocation program [S1]; Fixed
+Account Options and their market value adjustment, excluded here by the Roll-up GMDB
+election [S1]; dollar cost averaging, its enhanced-rate fixed-account variant, the earnings
+sweep and rebalancing programs [S2]; GMIB/annuitization guarantees such as the guaranteed
+income benefit (GIB) rider [S7]; payout-phase guarantees such as a variable annuitization
+rider with a guaranteed floor [S8]; and one carrier's mandatory general-account allocation [S4].
+**No currently-sold GMAB was located in the four registrations read** — a research gap, not
+an omission [S1].
 
 ---
 
 ## Variations across insurers
 
-1. **Where the guarantee sits.** Jackson [S1] and Corebridge [S4] use the mainstream
+1. **Where the guarantee sits.** Two of the four carriers [S1] [S4] use the mainstream
    design — one contract value, a shadow benefit base, guaranteed withdrawals while
-   contract value > 0, insurer-funded payments after zero. Equitable bifurcates into an
+   contract value > 0, insurer-funded payments after zero. A third bifurcates into an
    *Investment Performance account* (no guarantees) and a *Protection with Investment
    Performance account* (funds the guarantees), with an annuitization rather than a
-   withdrawal guarantee [S7]. Lincoln offers both a conventional GLWB and i4LIFE®, a
-   variable annuitization payout rider with a guaranteed floor [S8]. **Chosen:** the
-   mainstream withdrawal-phase design — the one a general VA model must handle, and the
-   one with published algebra [S1].
-2. **How the benefit base grows.** Four mechanics: a bonus on a separate Bonus Base with a
-   10-year window that restarts on step-up (Jackson, 5%/6%/7% by option) [S1] [S3]; a 7.00%
-   Income Credit on an Income Credit Base that ratchets to Higher Anniversary Values but is
-   *not* increased by the credits themselves, making the roll-up simple rather than
-   compound (Corebridge Income Max) [S4] [S5]; a formula rate of 10-year CMT + 1.00% floored
-   4% capped 8% (Equitable) [S7]; and a flat 6% Enhancement over a 10-year period that does
-   **not** reset for current elections (Lincoln) [S8]. **Chosen:** the Jackson
-   bonus-with-restarting-window — the restart-on-step-up interaction is the hardest of the
-   four to model and subsumes the flat-window designs.
-3. **Step-up frequency spans three orders of granularity:** annual anniversary (Jackson
-   Value/Core, Lincoln, Corebridge Income Max), highest-of-four-quarters applied annually
-   (Jackson Plus), and **daily** (Corebridge Daily Flex, where "on any day that the
-   contract value is greater than the Income Base on that day, the Income Base is stepped
-   up to that value") [S1] [S3] [S4] [S8]. **Chosen:** annual, with the highest-quarterly
-   variant as an election so the model can price the granularity difference.
+   withdrawal guarantee [S7]. The fourth
+   offers both a conventional GLWB and a variable annuitization payout rider with a
+   guaranteed floor [S8]. **Chosen:** the mainstream withdrawal-phase design — the one a
+   general VA model must handle, and the one with published algebra [S1].
+2. **How the benefit base grows.** Four mechanics, one per carrier: a bonus on a separate
+   Bonus Base with a 10-year window that restarts on step-up (5%/6%/7% by option)
+   [S1] [S3]; a 7.00% Income Credit on an Income Credit Base that ratchets to Higher
+   Anniversary Values but is *not* increased by the credits themselves, making the roll-up
+   simple rather than compound [S4] [S5]; a formula rate of 10-year CMT + 1.00% floored
+   4% capped 8% [S7]; and a flat 6% Enhancement over a 10-year period that does
+   **not** reset for current elections [S8]. **Chosen:** the chassis'
+   bonus-with-restarting-window [S1] — the restart-on-step-up interaction is the hardest of
+   the four to model and subsumes the flat-window designs.
+3. **Step-up frequency spans three orders of granularity:** annual anniversary (the
+   chassis' Value and Core options, plus designs at two other carriers),
+   highest-of-four-quarters applied annually (the chassis' Plus option), and **daily** (one
+   carrier's daily-step-up rider, where "on any day that the contract value is greater than
+   the Income Base on that day, the Income Base is stepped up to that value")
+   [S1] [S3] [S4] [S8]. **Chosen:** annual, with the highest-quarterly variant as an
+   election so the model can price the granularity difference.
 4. **Rider fee base and frequency.** The base is consistently the *benefit base*, never
    account value: GWB [S3], Income Base [S4], GIB benefit base [S7], Protected Income Base
-   [S8]. Frequency is quarterly at Jackson [S1], Corebridge [S4] and Lincoln [S8], while
-   Equitable deducts on each contract date anniversary [S7]. (The research file's
+   [S8]. Frequency is quarterly at three of the four carriers [S1] [S4] [S8], while the
+   fourth deducts on each contract date anniversary [S7]. (The research file's
    cross-insurer summary calls all four quarterly; this specification follows the
    per-insurer extraction.) **Chosen:** quarterly on the benefit base.
 5. **Fee reset mechanism** differs sharply — five-yearly discretionary with a forfeiting
@@ -376,37 +386,40 @@ registrations read** — a research gap, not an omission [S1].
    the five-yearly reset as default, with the VIX² formula as a variant because it is the
    only one that is a deterministic function of an observable market variable, and so the
    only one a model can reproduce faithfully.
-6. **Investment-risk controls.** Corebridge imposes the strongest — a mandatory Secure
-   Value Account (20% with Income Max, 10% with Daily Flex) that cannot be transferred out
-   unless the living benefit is cancelled, plus mandatory quarterly rebalancing [S4].
-   Equitable restricts which account funds guarantees [S7]; Lincoln uses Investment
-   Requirements and managed-risk fund suites [S8]; Jackson restricts the *fixed* account
-   instead — Fixed Account Options are unavailable with the Roll-up GMDB, Combination GMDB,
-   Flex DB or EarningsMax [S1]. **Chosen:** the Jackson restriction, which removes the
-   fixed account and its MVA from the base model.
-7. **GMDB growth ceilings** differ by age: Jackson stops all roll-up and ratchet growth at
-   the anniversary preceding the oldest Covered Life's **81st** birthday [S1]; Equitable's
-   Highest Anniversary Value ratchets to the anniversary following the **85th** and the
-   Roll-up to age 85 base stops there [S7]; Corebridge's Maximum Anniversary Value has no
-   stated cutoff in the retrieved text, though its spousal-continuation version stops at
+6. **Investment-risk controls.** One carrier imposes the strongest — a mandatory
+   general-account allocation (20% with its annual-step-up rider, 10% with its
+   daily-step-up rider) that cannot be transferred out unless the living benefit is
+   cancelled, plus mandatory quarterly rebalancing [S4]. A second restricts which account
+   funds guarantees [S7]; a third uses Investment Requirements and managed-risk fund
+   suites [S8]; the chassis restricts the *fixed* account instead — Fixed Account Options
+   are unavailable with the Roll-up GMDB, the Combination GMDB, the GMWB-linked death
+   benefit or the earnings-protection benefit [S1].
+   **Chosen:** the chassis' restriction [S1], which removes the fixed account and its MVA
+   from the base model.
+7. **GMDB growth ceilings** differ by age: the chassis stops all roll-up and ratchet growth
+   at the anniversary preceding the oldest Covered Life's **81st** birthday [S1]; a second
+   carrier's Highest Anniversary Value ratchets to the anniversary following the **85th**
+   and its Roll-up to age 85 base stops there [S7]; a third's Maximum Anniversary Value has
+   no stated cutoff in the retrieved text, though its spousal-continuation version stops at
    the continuing spouse's 83rd birthday [S6]. **Chosen:** age 81, matching the chassis.
-8. **Share-class structure** trades surrender charge against asset charge. Equitable is the
-   clearest illustration: Series B 1.30% total with a 7-year schedule; L 1.65% with 4
-   years; C 1.70% with none; CP® 1.55% with a 4–5% credit and 9 years; ADV 0.65% with none
-   [S7]. Corebridge shows the same trade across two registrations — Polaris Choice IV at
-   1.65% with an 8/7/6/5 schedule [S6] versus Polaris Advisory at 0.40% with no withdrawal
-   charge [S4]. **Chosen:** a commission-style class with a 7-year CDSC, because the CDSC
-   drives both the expiry lapse shock and the free-withdrawal interaction.
-9. **Post-depletion payout rate.** Lincoln alone uses a **two-table** structure: Table A
+8. **Share-class structure** trades surrender charge against asset charge. One carrier is
+   the clearest illustration: Series B 1.30% total with a 7-year schedule; L 1.65% with 4
+   years; C 1.70% with none; a bonus-credit class 1.55% with a 4–5% credit and 9 years;
+   ADV 0.65% with none [S7]. Another shows the same trade across two registrations — a
+   commission-class contract at 1.65% with an 8/7/6/5 schedule [S6] versus an
+   advisory-class contract at 0.40% with no withdrawal charge [S4]. **Chosen:** a
+   commission-style class with a 7-year CDSC, because the CDSC drives both the expiry lapse
+   shock and the free-withdrawal interaction.
+9. **Post-depletion payout rate.** One carrier alone uses a **two-table** structure: Table A
    while contract value > 0, and a materially lower Table B once it reaches zero, at which
-   point the payment is recalculated as `Protected Income Base × Table B rate` (Select Max
-   ages 70–74: 8.75% single falling to 3.50%) [S8]. Jackson, Corebridge and Equitable
+   point the payment is recalculated as `Protected Income Base × Table B rate` (one of its
+   payout options, ages 70–74: 8.75% single falling to 3.50%) [S8]. The other three
    continue at the same percentage [S1] [S4] [S7]. **Chosen:** single-table continuation,
    with the two-table design noted as a first-order pricing variant.
 10. **Rate-sheet volatility.** Every current-rate table carries a "can be superseded at any
     time" clause with a 10-day advance-filing commitment [S3] [S5] [S8], so the parameter set
-    is versioned: **Jackson rate sheet dated April 27, 2026** [S3]. The historical tables
-    show the de-risking cycle plainly — Flex GMWB bonus options were 5%/6%/7% for issues
+    is versioned: **the rate sheet dated April 27, 2026** [S3]. The historical tables
+    show the de-risking cycle plainly — the GLWB bonus options were 5%/6%/7% for issues
     2019-06-24 → 2020-08-09, cut to 4%/5%/6% for 2020-08-10 → 2022-07-31, restored to
     5%/6%/7% from 2022-08-01; the GWB Adjustment fell from 200% through 170/180/190% by
     bonus option to 105% from 2021-03-01 [S1].
@@ -526,9 +539,9 @@ exempts registered products complying with SEC and FINRA rules under its §3.D, 
 Buyer's Guide is still required in variable annuity sales** [REG-R45]; Model #275's
 best-interest standard changes exchange and replacement behavior and therefore surrender
 assumptions [REG-R46]. Under LDTI the GLWB and GMDB are the paradigm **market risk
-benefits**, at fair value through earnings [REG-R34 — **[unverified]**: fasb.org returned
+benefits**, at fair value through earnings [REG-R34 — fasb.org returned
 403, so ASU 2018-12 itself was never retrieved and its substance rests on secondary
-summaries](#uslib-reg-r34) [REG-R71 for the MRB-vs-insurance-liability classification, which *was*
+summaries](#uslib-reg-r34) **[unverified]** [REG-R71 for the MRB-vs-insurance-liability classification, which *was*
 retrieved](#uslib-reg-r71) — a second consumer of the same cash flows on a risk-neutral basis.
 *Fifth correction:* **there is no ASOP for principle-based reserves for annuities** —
 ASOP No. 52 is scoped to VM-20 life products, so
@@ -581,14 +594,6 @@ VM-21-specific guidance is the non-binding Academy practice note supplement [R4]
 [REG-R66]: #uslib-reg-r66
 [REG-R70]: #uslib-reg-r70
 [REG-R71]: #uslib-reg-r71
-[S1]: #uslib-variable_annuity-s1
-[S2]: #uslib-variable_annuity-s2
-[S3]: #uslib-variable_annuity-s3
-[S4]: #uslib-variable_annuity-s4
-[S5]: #uslib-variable_annuity-s5
-[S6]: #uslib-variable_annuity-s6
-[S7]: #uslib-variable_annuity-s7
-[S8]: #uslib-variable_annuity-s8
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

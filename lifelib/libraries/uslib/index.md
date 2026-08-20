@@ -216,17 +216,28 @@ python -m pytest tests -q
 
 ## Citation conventions
 
-Every citation tag is a link. `[S6]` in a product document lands on entry S6 in **that
-product's** `sources.md`, and `[REG-R18]` lands on entry R18 of the shared
-[reference library](references/regulatory-and-actuarial-references.md). Numbering is per
-product — S1 is a different source in each — so tags resolve against the document's own
-product rather than one global list.
+Whether a citation tag is a link tells you what kind of source it is. `[R1]` and
+`[REG-R18]` are links: the first lands on entry R1 in **that product's** `sources.md`, the
+second on entry R18 of the shared
+[reference library](references/regulatory-and-actuarial-references.md). `[S6]` is not a
+link. It stays on the page as you see it, brackets and all, and names entry S6 in that
+product's `sources.md` for you to look up.
 
-| Tag | Meaning |
-|---|---|
-| `[S#]` | Fact taken from a primary product document (brochure, specimen policy, prospectus, producer guide) listed in the product's `sources.md` |
-| `[R#]` | Fact taken from a product-specific regulatory/actuarial reference in the product's `sources.md` |
-| `[REG-R#]` | Fact taken from the cross-product reference library (frozen R-numbering) |
+That asymmetry is deliberate, and it is the same line the `sources.md` files draw between
+their own sections. A regulatory or actuarial reference is an **authority** the model is
+held to, and following it is part of reading the document. A primary product source is a
+**specification** citation — the brochure or specimen policy a number was taken from —
+which says where a figure came from rather than what the model must obey. So one reads as
+a tag on the page and the other as a link off it.
+
+Numbering is per product — S1 is a different source in each — so tags resolve against the
+document's own product rather than one global list.
+
+| Tag | On the page | Meaning |
+|---|---|---|
+| `[S#]` | bracketed text | Fact taken from a primary product document (brochure, specimen policy, prospectus, producer guide) listed in the product's `sources.md` |
+| `[R#]` | link | Fact taken from a product-specific regulatory/actuarial reference in the product's `sources.md` |
+| `[REG-R#]` | link | Fact taken from the cross-product reference library (frozen R-numbering) |
 
 (uslib-std)=
 

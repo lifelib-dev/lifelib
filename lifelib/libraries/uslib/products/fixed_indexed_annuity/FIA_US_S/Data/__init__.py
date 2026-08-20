@@ -43,7 +43,7 @@ Three of these are read as **step functions**, so a schedule is a handful of row
 than one row per contract year. ``rollup_table`` is indexed by
 ``(rollup_id, contract_year)`` and each row states the guaranteed simple rollup rate that
 holds from its own contract year until the next row of the same schedule, which turns the
-blended 5.00%/2.00%/0% [S2] and the Nassau 3.00%/0% [S9] designs into three rows and two.
+blended 5.00%/2.00%/0% [S2] and the flat 3.00%/0% [S9] designs into three rows and two.
 ``rate_scenario`` is indexed by ``(scenario_id, t)`` and carries the index level ``I(t)``
 and the MVA reference yield ``i_t``; the projection differences consecutive levels into
 ``R(t) = I(t)/I(t-1) - 1``, so holding a level flat is how a scenario says "no index

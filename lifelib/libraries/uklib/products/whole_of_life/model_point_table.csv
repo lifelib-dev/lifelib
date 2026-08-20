@@ -1,0 +1,8 @@
+point_id,policy_id,cell,entry_age,sex,smoker,sum_assured,premium_mth,escalation,cessation_months,moratorium_months,variant_adb_2x,variant_paid_up,pols_if_init
+1,WOL-000001,O50,70,F,NS,5000.0,30.00,level,240,12,False,False,1.0
+2,WOL-000002,O50,70,F,NS,5000.0,30.00,level,240,12,True,False,1.0
+3,WOL-000003,O50,70,F,NS,5000.0,30.00,level,240,12,False,True,1.0
+4,WOL-000004,O50,70,F,NS,5000.0,30.00,rpi,240,12,False,False,1.0
+5,WOL-000005,UW,40,M,NS,150000.0,101.25,level,0,0,False,False,1.0
+6,WOL-000006,UW,40,M,NS,150000.0,101.25,fixed_5pct,0,0,False,False,1.0
+7,WOL-000007,O50,65,M,S,10000.0,45.00,level,300,12,False,False,1.0

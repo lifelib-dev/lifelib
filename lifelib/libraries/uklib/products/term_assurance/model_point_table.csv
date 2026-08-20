@@ -1,0 +1,9 @@
+point_id,policy_id,shape,age_at_entry,sex,smoker,policy_term,sum_assured,fib_income,sched_rate,joint_first_death,joint_age,joint_sex,joint_smoker,indexation,wop,premium_mth,premium_mode,mort_basis,pols_if_init,duration_inforce,fib_commute_rate
+1,TA-000001,level,35,M,N,25,150000.0,0.0,0.06,False,,,,False,False,12.00,monthly,applied,1.0,0,0.0
+2,TA-000002,decreasing,35,M,N,25,150000.0,0.0,0.06,False,,,,False,False,12.00,monthly,applied,1.0,0,0.0
+3,TA-000003,fib,35,M,N,25,0.0,1000.0,0.06,False,,,,False,False,12.00,monthly,applied,1.0,0,0.0
+4,TA-000004,fib,35,M,N,25,0.0,1000.0,0.06,False,,,,False,False,12.00,monthly,applied,1.0,0,1.0
+5,TA-000005,level,35,M,N,25,150000.0,0.0,0.06,False,,,,True,False,12.00,monthly,applied,1.0,0,0.0
+6,TA-000006,level,35,M,N,25,150000.0,0.0,0.06,True,33,F,N,False,False,18.00,monthly,applied,1.0,0,0.0
+7,TA-000007,level,45,F,S,20,250000.0,0.0,0.06,False,,,,False,True,45.00,monthly,select,1.0,0,0.0
+8,TA-000008,level,35,M,N,25,150000.0,0.0,0.06,False,,,,False,False,12.00,monthly,applied,1.0,5,0.0

@@ -607,14 +607,6 @@ attributable to any source.
 [REG-R43]: #uslib-reg-r43
 [REG-R45]: #uslib-reg-r45
 [REG-R58]: #uslib-reg-r58
-[S1]: #uslib-deferred_income_annuity-s1
-[S11]: #uslib-deferred_income_annuity-s11
-[S2]: #uslib-deferred_income_annuity-s2
-[S3]: #uslib-deferred_income_annuity-s3
-[S4]: #uslib-deferred_income_annuity-s4
-[S6]: #uslib-deferred_income_annuity-s6
-[S8]: #uslib-deferred_income_annuity-s8
-[S9]: #uslib-deferred_income_annuity-s9
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

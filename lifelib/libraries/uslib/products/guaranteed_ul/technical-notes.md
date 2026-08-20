@@ -35,8 +35,8 @@ verify from a retrieved document.
   credited over the month; decrements (death, lapse/surrender, ROP exercise) at end
   of month (EOM) after interest. Deaths are processed before lapses at EOM.
 - **Age basis**: age nearest birthday (ANB) **[std]** — chosen because the sourced
-  products underwrite on ANB [S2]], [[S4]], [[S6] and the 2017 CSO / 2015 VBT are published
-  in ANB variants [REG-R17]], [[REG-R18]. Attained age advances on policy anniversaries.
+  products underwrite on ANB [S2], [S4], [S6] and the 2017 CSO / 2015 VBT are published
+  in ANB variants [REG-R17], [REG-R18]. Attained age advances on policy anniversaries.
 - **Model points**: single-policy model points; results are expected (probability-
   weighted) cash flows per policy in force at projection start. No stochastic
   decrement simulation in the base model **[std]**.
@@ -55,8 +55,8 @@ verify from a retrieved document.
 | `issue_age` | int (ANB) | 60 |
 | `sex` | enum {M, F} | M |
 | `risk_class` | enum (4 NT + 2 T classes [S4]) | NT Standard |
-| `face_amount` | float (≥ 100,000 [S4]], [[S6]) | 500,000 |
-| `guarantee_age` | int in [90, 121] [S1]], [[S2]], [[S9] | 121 (lifetime) |
+| `face_amount` | float (≥ 100,000 [S4], [S6]) | 500,000 |
+| `guarantee_age` | int in [90, 121] [S1], [S2], [S9] | 121 (lifetime) |
 | `premium_pattern` | enum {level, single_pay, ten_pay} **[std]** | level |
 | `annual_premium` | float — solved no-lapse premium P* for level pattern | 10,800.00 **[std]** (illustrative solve output) |
 | `premium_mode` | enum {A, S, Q, M-EFT} [S2] | A |
@@ -78,7 +78,7 @@ for single-pay [R8]; premium persistency study basis [REG-R21]).
 | `AV_t` | base account value, EOM, floored at 0 | `av_init` |
 | `SG_t` | shadow account value, EOM, NOT floored (negative = catch-up shortfall) | `sg_init` |
 | `L_t` | loan balance including accrued interest | `loan_init` |
-| `DB_t` | death benefit = max(F, κ(x_t)·AV_t) [S2, S4; R4 corridor](#uslib-guaranteed_ul-s2) | — |
+| `DB_t` | death benefit = max(F, κ(x_t)·AV_t) [S2, S4; R4 corridor] | — |
 | `l_t` | in-force probability (survivorship from all decrements) | 1.0 |
 | `g_t` | grace-period counter, months (0 = not in grace) [S7] | 0 |
 | `D_t` | monthly deduction forgone because AV = 0 under active guarantee | 0 |
@@ -191,7 +191,7 @@ anchored to the public highlights findings.
    - if the guarantee is active (`SG_t'' − L_{t−1} > 0`): set `D_t = −AV_t''`,
      `AV_t'' = 0`. The forgone deduction `D_t` is NOT a receivable — the insurer
      funds the negative "account" economics; coverage continues with `AV = 0` and
-     `NAAR ≈ DB` [S2, S3, S9 guarantee behavior; accounting treatment **[std]**](#uslib-guaranteed_ul-s2).
+     `NAAR ≈ DB` [S2, S3, S9 guarantee behavior; accounting treatment **[std]**].
    - else: enter/continue grace, `g_t = g_{t−1} + 1`; required grace payment =
      amount curing the deduction shortfall **[std]**.
 7. **Interest.** Unloaned base AV grows at `j_c` (floor `j_g`); loaned AV at the
@@ -200,20 +200,20 @@ anchored to the public highlights findings.
    `SG_t = SG_t''·(1+j^g)` — no floor at zero.
 8. **Loan interest.** `L_t = L_{t−1}·(1 + (1.05)^{1/12} − 1)` (5% in arrears [S4],
    accrued monthly **[std]**).
-9. **In-force test.** Guarantee active iff `SG_t − L_t > 0` [S4; S2, S9](#uslib-guaranteed_ul-s4). The policy
+9. **In-force test.** Guarantee active iff `SG_t − L_t > 0` [S4; S2, S9]. The policy
    is in force iff (base account can cover deductions, i.e., not in expired grace)
    OR the guarantee is active. Lapse occurs ONLY if all three hold: (i) base AV net
    of charges failed (step 6 else-branch), (ii) `SG_t − L_t ≤ 0`, (iii) the 61-day
-   grace expires without cure [S7; S2, S9 mechanics; conjunction **[std]**](#uslib-guaranteed_ul-s7).
+   grace expires without cure [S7; S2, S9 mechanics; conjunction **[std]**].
 10. **Catch-up requirement.** `C_t = max(0, −(SG_t − L_t))/(1 − π^g)` **[std]**;
-    paying `C_t` restores `SG − L` to 0⁺ and the guarantee with it [S7; R1 ex. 7](#uslib-guaranteed_ul-s7).
+    paying `C_t` restores `SG − L` to 0⁺ and the guarantee with it [S7; R1 ex. 7].
 11. **Decrements (EOM), deaths first.** With monthly rates `q_t^d` then `w_t`
     applied to `l_t`:
     - death CF: `l_t·q_t^d·(DB_t − L_t)` + claim expense
     - surrender CF: `l_t·(1−q_t^d)·w_t·CSV_t`, `CSV_t = max(AV_t − SC_t − L_t, 0)`
     - ROP exercise (window months only): rate `w^ROP` **[std]**, benefit
       `min(ρ·CumPrem_t, 0.40·F) − L_t`, ρ ∈ {50%, 100%} [S1]; exercise is a full
-      surrender [S1]], [[S3].
+      surrender [S1], [S3].
     - `l_{t+1} = l_t·(1−q_t^d)·(1−w_t)·(1−w_t^ROP)`
 12. **Age/duration update**; at attained age 121 all charges and premiums cease,
     recursion continues with `COI = expenses = P = 0` and interest only [S7].
@@ -277,7 +277,7 @@ To model the cumulative-premium-test design [R1 8E Design #2; S4 initial NLG; S5
 replace `SG_t` with the pair (`CumPrem_t^net`, `ReqPrem_t`), where
 `CumPrem_t^net = Σ premiums − Σ withdrawals − L_t` [S4] and `ReqPrem_t` is the
 contractual required accumulated premium schedule; guarantee active iff
-`CumPrem_t^net ≥ ReqPrem_t` [S4]], [[S5]. All other machinery (grace, catch-up = the
+`CumPrem_t^net ≥ ReqPrem_t` [S4], [S5]. All other machinery (grace, catch-up = the
 schedule shortfall, solve on the required schedule) is unchanged. Note the harsher
 observed loan treatment in this family: one design voids the guarantee entirely on
 any loan [S5].
@@ -415,7 +415,7 @@ cash flows and are cited, not reproduced:
    level payers **[std]** observation.
 4. **ROP exercise.** Exercise at the 100% window is an option against the insurer
    whose cost depends on cumulative premiums vs. reserve released; mis-set exercise
-   rates distort years 20–26 cash flows [S1 design; rates [std]](#uslib-guaranteed_ul-s1).
+   rates distort years 20–26 cash flows [S1 design; rates [std]].
 
 **Known modeling pitfalls:**
 
@@ -434,7 +434,7 @@ cash flows and are cited, not reproduced:
   attempt; testing before deductions lets a policy lapse a month early (or late)
   and shifts claim timing at exactly the durations where NAAR ≈ DB.
 - **ANB/ALB mismatch.** 2017 CSO and 2015 VBT each exist in ANB and ALB variants
-  [REG-R17]], [[REG-R18]; this model is ANB throughout **[std]** — a mixed basis shifts
+  [REG-R17], [REG-R18]; this model is ANB throughout **[std]** — a mixed basis shifts
   COI and expected claims by up to half a year of mortality.
 - **Guarantee-age grid.** The solve target `SG > 0` strictly; a `≥ 0` target with
   monthly grids can leave the guarantee failing on the final monthiversary.
@@ -444,7 +444,7 @@ cash flows and are cited, not reproduced:
   on the shadow parametrization (funding ratios, catch-up costs, VM-20 ASG/FFSG
   inputs) carry that calibration risk.
 - **Out-of-model features.** 7702/7702A testing (GPT premium limits, MEC status
-  [R4]], [[R5]), terminal-illness acceleration (treated as CF-neutral **[std]**),
+  [R4], [R5]), terminal-illness acceleration (treated as CF-neutral **[std]**),
   selective-lapse mortality adjustment, and NGE re-rating are not modeled in the
   base run; each is a documented extension point.
 
@@ -468,14 +468,6 @@ cash flows and are cited, not reproduced:
 [REG-R27]: #uslib-reg-r27
 [REG-R3]: #uslib-reg-r3
 [REG-R32]: #uslib-reg-r32
-[S1]: #uslib-guaranteed_ul-s1
-[S2]: #uslib-guaranteed_ul-s2
-[S3]: #uslib-guaranteed_ul-s3
-[S4]: #uslib-guaranteed_ul-s4
-[S5]: #uslib-guaranteed_ul-s5
-[S6]: #uslib-guaranteed_ul-s6
-[S7]: #uslib-guaranteed_ul-s7
-[S9]: #uslib-guaranteed_ul-s9
 [std]: #uslib-std
 [unverified]: #uslib-unverified
 <!-- END generated citation links -->

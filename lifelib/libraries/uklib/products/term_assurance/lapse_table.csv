@@ -1,0 +1,7 @@
+policy_year,lapse_rate,provenance
+1,0.10,[std] anchored to FCA 5% average [R9]
+2,0.08,[std] anchored to FCA 5% average [R9]
+3,0.07,[std] post-2yr-clawback elevation [R9]
+4,0.05,[std] anchored to FCA 5% average [R9]
+5,0.06,[std] post-4yr-clawback uptick [R9]
+6,0.04,[std] ultimate; applies to year 6 onwards

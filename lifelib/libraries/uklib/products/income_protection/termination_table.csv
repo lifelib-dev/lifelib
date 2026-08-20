@@ -1,0 +1,6 @@
+claim_duration_year,recovery_rate,mort_rate_sick,provenance
+1,0.40,0.03,notes [std] proxy
+2,0.25,0.03,notes [std] proxy
+3,0.15,0.03,notes [std] proxy
+4,0.10,0.03,notes [std] proxy
+5,0.05,0.03,notes [std] proxy; applies to duration year 5 onwards

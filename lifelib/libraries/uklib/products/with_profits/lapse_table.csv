@@ -1,0 +1,6 @@
+chassis,policy_year,lapse_rate,provenance
+UWP_bond,1,0.05,[std] flat 5% p.a. on the bond chassis
+CWP_endowment,1,0.05,[std] no public UK with-profits lapse experience was retrieved
+CWP_endowment,2,0.04,[std] no public UK with-profits lapse experience was retrieved
+CWP_endowment,3,0.03,[std] no public UK with-profits lapse experience was retrieved
+CWP_endowment,4,0.02,[std] ultimate; applies to policy year 4 onwards

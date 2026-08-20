@@ -307,7 +307,7 @@ segment can pay a negative index credit at maturity. Capping both against the sa
 pre-draw pool is the easy mistake, and :func:`check_seg_ladder` now asserts against it.
 The credit base under the baseline convention
 is exactly the remaining balance -- amounts that left the segment mid-term earn no index
-credit [S3]. The alternative convention the notes price, Transamerica's
+credit [S3]. The alternative convention the notes price, one carrier's
 adjusted-beginning-value with half-weighted deductions [S3], is the ``"ADJ_BEGIN"``
 argument of :func:`seg_credit_base`, and both are asserted against the worked example.
 """
@@ -682,7 +682,7 @@ def seg_credit_base(seg_bal_init, seg_deductions, conv=None):
         (withdrawal and loan forfeiture [S3]; extension to deductions **[std]**).
 
     ``"ADJ_BEGIN"``, the documented variation
-        ``seg_bal_init - seg_deductions / 2``: Transamerica's contractual adjusted
+        ``seg_bal_init - seg_deductions / 2``: one carrier's contractual adjusted
         beginning value, which subtracts withdrawals and loan transfers in full but
         **one half** of the monthly deductions taken during the segment [S3].  Pass
         ``seg_bal_init`` already net of withdrawals and loan transfers, as
@@ -1108,7 +1108,7 @@ def mth_deduction_from_seg_pp(t):
     deduction being silently truncated -- the notes charge ``MD_t`` in full and hand
     an uncovered deduction to the grace/lapse cascade, which is not implemented.
 
-    Carrier practice differs -- Transamerica instead half-weights in-segment
+    Carrier practice differs -- one carrier instead half-weights in-segment
     deductions in its credit base [S3] -- and the notes list picking one and keeping
     the formulas consistent among the modeling pitfalls; see :func:`seg_credit_base`.
     """
@@ -1165,10 +1165,10 @@ def sweep_pp(t):
     """Sweep_t = w_ix x FA balance after steps 1-6 **[std]** (spec F10).
 
     The monthiversary sweep, which creates this month's segment.  Carrier practice
-    varies -- Pacific Life sweeps on the 15th [S1], Transamerica on the first day of a
+    varies -- one carrier sweeps on the 15th [S1], another on the first day of a
     policy month [S3] -- and the baseline standardizes on the monthiversary so segment
-    dates align with monthly processing.  Nationwide's charge-holdback in the fixed
-    strategy [S5] is a documented variation and is not modeled.
+    dates align with monthly processing.  A third carrier's charge-holdback in the
+    fixed strategy [S5] is a documented variation and is not modeled.
     """
     return index_alloc_rate() * max(0.0, fa_pp_at(t, "BEF_SWEEP"))
 
@@ -1183,7 +1183,7 @@ def seg_bal_pp(t, m):
 
     ``S_{k,t+1} = S_{k,t} - MD^seg - W^seg - B^seg``, with **no interim interest**: the
     0% floor design credits nothing during the segment term [S2], in contrast with
-    Transamerica's in-segment 0.75% [S3], which is a different guarantee and must not
+    one carrier's in-segment 0.75% [S3], which is a different guarantee and must not
     be mixed with a 0% annual floor.
 
     Zero outside ``m <= t <= m + 11``.  A segment created at ``m`` is live through the
@@ -1559,8 +1559,9 @@ def nlg_period_years():
     """The length of the no-lapse period in policy years, by issue age [S3] (spec F6).
 
     0-45: 20 years; 46-60: to attained age 65; 61+: 5 years.  Comparators differ --
-    Nationwide 20 years for issue ages 0-55, ``75 - issue age`` for 56-69, 5 years for
-    70+ [S5] -- and the Transamerica structure is the one the baseline follows.
+    another carrier gives 20 years for issue ages 0-55, ``75 - issue age`` for 56-69,
+    5 years for 70+ [S5] -- and the structure above [S3] is the one the baseline
+    follows.
     """
     x = age_at_entry()
     if x <= 45:
