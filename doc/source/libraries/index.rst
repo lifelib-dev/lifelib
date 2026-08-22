@@ -22,7 +22,7 @@ independent of modelx using modelx's export feature.
    :doc:`assets/index`             |modelx badge|  Basic models of bond portfolios
    :doc:`ifrs17a/index`                            IFRS17 calculation model and examples
    :doc:`economic/index`           |modelx badge|  Basic Hull-White model
-   :doc:`economic_curves/index`                    Algorithms for modeling economic scenarios
+   :doc:`economic_curves/index`                    Placeholder linking to the algorithms by Open-Source Modelling
    :doc:`cluster/index`                            Notebooks for model point selection by cluster analysis
    =============================== =============== ===============================================================
 

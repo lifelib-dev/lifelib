@@ -154,7 +154,6 @@ Contribute your excellent work to lifelib and share it with actuaries from all a
       * :ref:`notebooks_savings`
       * :ref:`notebooks_ifrs17a`
       * :ref:`notebooks_economic`
-      * :ref:`notebooks_economic_curves`
       * :ref:`notebooks_cluster`
       * :ref:`notebooks_annuallife`
       * :ref:`notebooks_fastlife`
