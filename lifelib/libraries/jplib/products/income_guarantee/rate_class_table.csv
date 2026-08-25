@@ -1,0 +1,5 @@
+rate_class,class_factor,mix_weight,provenance
+nonsmoker_preferred,0.70,0.25,"[std] 非喫煙者優良体 (hi-kitsuensha yuryotai). No carrier publishes a class differential for this product [S2] [S5] [S6] [S14] [S16]; smoker/non-smoker ratio 1.50, preferred/standard ratio 0.778, levels pinned by mix-normalization to 1.000"
+nonsmoker_standard,0.90,0.35,"[std] 非喫煙者標準体. Same [std] structure; qualification is published and measured (BMI 18.0 to under 27.0, blood pressure, a cotinine test) [S2] [S5] but the loading is not"
+smoker_preferred,1.05,0.10,[std] 喫煙者優良体. 0.70 x 1.50
+smoker_standard,1.35,0.30,[std] 喫煙者標準体. 0.90 x 1.50

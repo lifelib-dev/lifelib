@@ -1,0 +1,10 @@
+point_id,policy_id,sex,issue_age,term_type,term_y,expiry_age,renew_ceiling,sum_assured,premium_mode,living_needs,wop,reinstatement,contract_boundary,note
+1,JP-TL-0001,M,30,nen,10,0,80,10000000,monthly,0,0,0,ceiling,"anchor cell of the technical notes worked example"
+2,JP-TL-0002,F,30,nen,10,0,80,10000000,monthly,0,0,0,ceiling,"same cell, female: the published female rate card anchor"
+3,JP-TL-0003,M,40,sai,0,65,80,30000000,annual,0,0,0,ceiling,"sai manryo to 65: never renews; sum assured at the composite ceiling"
+4,JP-TL-0004,M,35,nen,10,0,80,5000000,monthly,0,0,0,ceiling,"truncation at the ceiling: four full terms then a 5-year final term to 80"
+5,JP-TL-0005,M,30,nen,10,0,80,10000000,monthly,0,0,0,current_term,"anchor cell on the current_term contract boundary"
+6,JP-TL-0006,F,45,sai,0,60,80,3000000,monthly,1,0,0,ceiling,"living needs module ON, on a non-renewable term so the one-year bar bites"
+7,JP-TL-0007,M,50,nen,10,0,80,5000000,semiannual,0,1,0,ceiling,"waiver of premium module ON"
+8,JP-TL-0008,M,20,nen,10,0,80,1000000,monthly,0,0,1,ceiling,"reinstatement module ON; minimum issue age and minimum sum assured"
+9,JP-TL-0009,M,65,sai,0,80,80,30000000,annual,1,0,0,ceiling,"oldest issue age, shortest sai term, living needs cap exactly reached"

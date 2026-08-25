@@ -1,0 +1,8 @@
+segment,from_year,lapse_rate,provenance
+premium_paying,0,0.060,"[R15] [REG-R31] market-wide 3.4% kaiyaku-shikko rate FY2024; duration shape [std, new here]"
+premium_paying,1,0.050,"[R15] [REG-R31] market-wide 3.4% kaiyaku-shikko rate FY2024; duration shape [std, new here]"
+premium_paying,2,0.045,"[R15] [REG-R31] market-wide 3.4% kaiyaku-shikko rate FY2024; duration shape [std, new here]"
+premium_paying,3,0.040,"[R15] [REG-R31] market-wide 3.4% kaiyaku-shikko rate FY2024; duration shape [std, new here]"
+premium_paying,10,0.030,"[R15] [REG-R31] market-wide 3.4% kaiyaku-shikko rate FY2024; duration shape [std, new here]"
+defer_gap,0,0.010,"[std, new here] no premium is due in the suechi kikan, so the commonest lapse trigger is absent [R15]"
+pre_annuitisation,0,0.000,"[S2] [S4] surrender is unavailable from the nenkin shiharai kaishi bi, so the decrement must stop at t = n - 1"

@@ -1,0 +1,10 @@
+point_id,policy_id,sex,issue_age,expiry_age,guar_m,annuity_mth,rate_class,premium_monthly,premium_mode,commutation,living_needs,wop,reinstatement
+1,IG-JP-0001,M,30,65,24,150000,nonsmoker_preferred,2565,monthly,False,False,False,False
+2,IG-JP-0002,F,30,65,24,150000,nonsmoker_preferred,2175,monthly,False,False,False,False
+3,IG-JP-0003,M,45,65,24,150000,nonsmoker_preferred,2865,annual,False,False,False,False
+4,IG-JP-0004,M,30,60,24,100000,nonsmoker_preferred,1410,monthly,True,False,False,False
+5,IG-JP-0005,F,40,60,24,100000,nonsmoker_preferred,1400,monthly,False,True,False,False
+6,IG-JP-0006,M,35,65,60,150000,smoker_standard,4950,semiannual,False,False,False,False
+7,IG-JP-0007,M,50,60,24,200000,nonsmoker_standard,3420,monthly,False,False,True,False
+8,IG-JP-0008,M,70,75,60,50000,smoker_standard,7000,monthly,False,False,False,True
+9,IG-JP-0009,F,35,65,24,100000,smoker_preferred,2475,monthly,False,False,False,False

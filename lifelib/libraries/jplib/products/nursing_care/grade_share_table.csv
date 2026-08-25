@@ -1,0 +1,6 @@
+grade,share_ge,provenance
+support1,1.0,"要支援1以上 = every certified person, 令和5年度介護保険事業状況報告 [R4] [REG-R30]"
+support2,0.856,"要支援2以上 = 100% - 14.4% (要支援1), [R4 derived] [REG-R30]"
+care1,0.715,要介護1以上 share of certified persons [R4 derived] [REG-R30]
+care2,0.508,要介護2以上 share of certified persons [R4 derived] [REG-R30]
+care3,0.34,要介護3以上 share of certified persons [R4 derived] [REG-R30]

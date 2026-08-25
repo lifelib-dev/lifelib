@@ -1,0 +1,10 @@
+point_id,policy_id,chassis,issue_age,sex,daily_amount,limit_per_hosp,limit_agg,prem_period,premium,prem_mode,surg_mult_ih,surg_mult_op,min_days_5,adv_rider,lump_rider,tokusoku_3dis,waiver_3dis,surg_after_limit,issue_date
+1,MED-JP-0001,shushin,40,M,5000,60,1095,whole_life,2100,monthly,20,5,False,True,False,False,False,True,2026-04-01
+2,MED-JP-0002,shushin,30,F,5000,60,1095,whole_life,1700,monthly,20,5,False,True,False,False,False,True,2026-04-01
+3,MED-JP-0003,shushin,55,M,10000,120,1095,whole_life,8800,monthly,20,5,True,True,True,False,False,True,2026-04-01
+4,MED-JP-0004,shushin,45,M,5000,60,1000,to_65,3950,monthly,20,5,False,True,False,True,False,True,2026-04-01
+5,MED-JP-0005,shushin,40,F,8000,60,1095,whole_life,2350,monthly,10,5,False,True,False,False,False,False,2026-04-01
+6,MED-JP-0006,teiki,35,M,5000,60,1095,whole_life,1300,monthly,10,0,False,False,False,False,False,True,2026-04-01
+7,MED-JP-0007,shushin,70,M,15000,120,1095,whole_life,22000,monthly,20,5,True,True,True,False,True,True,2026-04-01
+8,MED-JP-0008,shushin,80,F,3000,60,1095,whole_life,4500,monthly,20,5,True,True,False,False,False,True,2026-04-01
+9,MED-JP-0009,shushin,20,M,3000,60,1095,whole_life,1100,monthly,20,5,False,True,False,False,False,True,2026-04-01

@@ -1,0 +1,11 @@
+point_id,policy_id,sex,issue_age,sum_assured,prem_term,premium_annual,low_cv,low_cv_rate,apl_elected,default_rate,pol_loan_util,pol_loan_year,dividend_type,lapse_spike,dyn_lapse,mort_adj,pua_year
+1,WL-JP-0001,M,30,5000000,15,174960,True,0.7,True,0.0,0.0,0,none,0.15,False,1.0,0
+2,WL-JP-0002,M,30,5000000,15,209032,False,1.0,True,0.0,0.0,0,none,0.15,False,1.0,0
+3,WL-JP-0003,M,30,5000000,0,65301,True,0.7,True,0.0,0.0,0,none,0.15,False,1.0,0
+4,WL-JP-0004,F,45,10000000,20,373648,False,1.0,True,0.0,0.0,0,none,0.15,False,1.0,10
+5,WL-JP-0005,M,30,5000000,15,174960,True,0.7,True,0.01,0.0,0,none,0.15,False,1.0,0
+6,WL-JP-0006,M,30,5000000,15,174960,False,1.0,True,0.01,0.0,0,none,0.15,False,1.0,0
+7,WL-JP-0007,M,30,5000000,15,174960,True,0.7,False,0.0,0.9,40,none,0.15,False,1.0,0
+8,WL-JP-0008,M,30,5000000,15,174960,True,0.7,True,0.0,0.0,0,none,0.0,True,1.0,0
+9,WL-JP-0009,M,60,3000000,10,233282,True,0.7,True,0.0,0.0,0,five_year,0.15,False,0.85,0
+10,WL-JP-0010,M,80,2000000,0,244813,False,1.0,False,0.0,0.0,0,none,0.15,False,1.0,0

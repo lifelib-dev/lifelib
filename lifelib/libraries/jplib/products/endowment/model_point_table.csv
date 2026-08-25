@@ -1,0 +1,10 @@
+point_id,policy_id,cell,sex,issue_age,ph_sex,ph_issue_age,sum_assured,policy_term,prem_term,premium_annual,schedule_id,waiver,apl_elected,apl_default_mult,pol_loan_util,dividend_type,dyn_lapse,mort_adj,wv_load,wv_frac,wv_lapse_mult
+1,EN-JP-0001,endowment,M,30,,,5000000,30,30,181140,none,False,True,0.0,0.0,none,False,1.00,1.00,1.00,1.00
+2,EN-JP-0002,education,M,0,M,30,1000000,22,17,108564,S_0_1,True,True,0.0,0.0,none,False,1.00,1.00,1.00,1.00
+3,EN-JP-0003,education,M,0,M,30,1000000,22,17,108564,J,True,True,0.0,0.0,none,False,1.00,1.00,1.00,1.00
+4,EN-JP-0004,education,M,0,M,30,1000000,22,17,108564,S_0_1,True,True,0.0,0.0,none,False,1.25,1.50,0.90,1.00
+5,EN-JP-0005,education,F,0,F,32,1000000,22,17,108564,S_0_1,True,True,0.0,0.0,none,False,1.00,1.00,1.00,0.50
+6,EN-JP-0006,endowment,F,40,,,3000000,20,20,170217,none,False,True,0.0,0.0,none,True,1.00,1.00,1.00,1.00
+7,EN-JP-0007,endowment,M,35,,,5000000,25,15,350241,none,False,True,0.0,0.0,none,False,1.00,1.00,1.00,1.00
+8,EN-JP-0008,endowment,M,30,,,5000000,30,30,181140,none,False,True,1.0,0.0,none,False,1.00,1.00,1.00,1.00
+9,EN-JP-0009,endowment,M,30,,,5000000,30,30,181140,none,False,True,0.0,0.5,none,False,1.00,1.00,1.00,1.00

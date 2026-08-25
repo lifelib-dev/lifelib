@@ -1,0 +1,9 @@
+point_id,policy_id,issue_age,sex,lump_amount,annuity_amount,grade_lump,grade_annuity,grade_waiver,annuity_max,annuity_test,rec_rate,company_limb,dementia_rider,dementia_amount,mci_fraction,waiting_1y,sel_lapse_lambda,premium,prem_mode,prem_period
+1,LTC-000001,60,M,3000000.0,600000.0,care2,care3,care1,10,survival,0.0,True,False,1000000.0,0.1,False,0.0,11500.0,monthly,whole_life
+2,LTC-000002,55,F,3000000.0,600000.0,care2,care3,care1,10,survival,0.0,True,False,1000000.0,0.1,False,0.0,12700.0,monthly,whole_life
+3,LTC-000003,70,M,2000000.0,600000.0,care2,care3,care1,10,survival,0.0,True,False,1000000.0,0.1,False,0.0,17500.0,monthly,whole_life
+4,LTC-000004,45,M,3000000.0,400000.0,care2,care3,care1,10,survival,0.0,False,False,1000000.0,0.1,False,0.0,6900.0,monthly,whole_life
+5,LTC-000005,65,F,3000000.0,600000.0,care2,care3,care1,10,state,0.05,True,False,1000000.0,0.1,False,0.0,13900.0,monthly,whole_life
+6,LTC-000006,60,M,3000000.0,600000.0,care2,care3,care1,10,survival,0.0,True,True,1000000.0,0.1,False,0.0,13000.0,monthly,whole_life
+7,LTC-000007,40,F,1000000.0,200000.0,care2,care3,care1,5,survival,0.0,True,False,1000000.0,0.1,True,0.0,5400.0,monthly,whole_life
+8,LTC-000008,79,M,500000.0,1200000.0,care1,care2,care1,10,survival,0.0,True,False,1000000.0,0.1,False,0.3,44000.0,monthly,whole_life
