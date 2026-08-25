@@ -1,0 +1,9 @@
+point_id,policy_id,chassis,issue_age,sex,base_amount,diag_benefit,cycle_months,insitu_pct,daily_amount,surg_mult,treat_benefit,treat_cap,outp_daily,wait_months,prem_period,premium,prem_mode,waiver_trigger,adv_rider,disch_rider,repeat_conditioned,issue_date
+1,CA-000001,shushin,40,M,10000,1000000,24,0.50,10000,20,100000,60,10000,3,whole_life,3000,monthly,cancer_diag,True,False,False,2026-04-01
+2,CA-000002,shushin,35,F,10000,1000000,24,1.00,10000,20,100000,60,10000,3,whole_life,2600,monthly,cancer_diag,True,False,False,2026-04-01
+3,CA-000003,teiki,50,M,10000,1000000,24,0.10,10000,20,100000,60,10000,3,whole_life,4200,monthly,cancer_diag,True,False,True,2026-04-01
+4,CA-000004,shushin,60,F,5000,500000,24,0.50,5000,20,50000,12,5000,3,whole_life,4800,monthly,cancer_diag,False,False,False,2026-04-01
+5,CA-000005,shushin,20,M,10000,1000000,24,0.50,10000,20,100000,60,10000,3,to_65,1500,monthly,cancer_diag,True,False,False,2026-04-01
+6,CA-000006,shushin,75,M,10000,1000000,24,0.50,10000,20,100000,60,10000,3,whole_life,9800,monthly,cancer_diag,True,False,False,2026-04-01
+7,CA-000007,shushin,45,F,10000,1000000,24,0.50,10000,20,100000,60,10000,3,whole_life,3400,monthly,none,True,False,False,2026-04-01
+8,CA-000008,shushin,55,M,10000,1000000,24,0.50,10000,20,100000,60,10000,3,to_65,5600,monthly,cancer_diag,True,True,False,2026-04-01

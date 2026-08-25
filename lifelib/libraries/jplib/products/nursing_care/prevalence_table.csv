@@ -1,0 +1,8 @@
+param,value,provenance
+prev_ceil,0.95,"[std] ceiling of the certification prevalence logistic; no sourced value, see technical-notes.md (c)"
+prev_beta,0.194069,"[std] fitted slope (1/year), pinned to the two sourced 認定率 below [R4] [R5] [REG-R30]"
+prev_x_mid,85.710591,"[std] fitted midpoint age, pinned to the two sourced 認定率 below [R4] [R5] [REG-R30]"
+prev_age_low,70.0,midpoint age of the 65-74 band; the age the low anchor is read at [std]
+prev_rate_low,0.043,"認定率 at 65-74, 令和5年度介護保険事業状況報告 [R4] [R5] [REG-R30]"
+prev_age_high,82.0,approximate population mean age of the 75+ group; the age the high anchor is read at [std]
+prev_rate_high,0.311,"認定率 at 75 and over, 令和5年度介護保険事業状況報告 [R4] [R5] [REG-R30]"

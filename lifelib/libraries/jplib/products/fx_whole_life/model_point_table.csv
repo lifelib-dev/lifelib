@@ -1,0 +1,9 @@
+point_id,policy_id,shape,sex,issue_age,currency,sum_assured,premium_mth,single_premium,prem_months,credit_rate,guar_floor,rate_period_y,mva_delta,low_cv,idb_ratchet,idb_basis,target_on,target_g,target_action,dyn_lapse,apl_on,yen_in,yen_out,fx_ttm,fx_spread,fx_path,mort_adj
+1,FXWL-JP-0001,LEVEL,M,40,USD,100000.0,239.6,0.0,240,0.03,0.03,0,0.0,False,True,fund,False,1.1,none,False,False,True,True,159.43,0.5,False,1.0
+2,FXWL-JP-0002,LEVEL,M,40,USD,100000.0,225.0,0.0,240,0.03,0.03,0,0.0,True,True,fund,False,1.1,none,False,False,True,True,159.43,0.5,False,1.0
+3,FXWL-JP-0003,SINGLE,M,60,USD,100000.0,0.0,100000.0,1,0.0472,0.0001,15,0.0,False,False,fund,True,1.1,convert,False,False,True,True,159.43,0.5,False,1.0
+4,FXWL-JP-0004,SINGLE,M,60,USD,100000.0,0.0,100000.0,1,0.0472,0.0001,15,-0.01,False,False,fund,True,1.1,surrender,True,False,True,True,159.43,0.5,False,1.0
+5,FXWL-JP-0005,LEVEL,F,55,USD,50000.0,120.0,0.0,0,0.035,0.03,0,0.0,False,True,fund,False,1.1,none,False,False,True,True,159.43,0.5,False,1.0
+6,FXWL-JP-0006,LEVEL,M,45,USD,200000.0,560.0,0.0,240,0.03,0.03,0,0.0,True,True,fund,False,1.1,none,False,True,True,True,159.43,0.5,False,1.0
+7,FXWL-JP-0007,LEVEL,M,35,USD,100000.0,180.0,0.0,300,0.04,0.03,0,0.0,False,False,prospective,False,1.1,none,False,False,True,True,159.43,0.5,True,1.2
+8,FXWL-JP-0008,SINGLE,F,80,USD,50000.0,0.0,50000.0,1,0.0472,0.0001,15,0.0,False,False,fund,False,1.1,none,False,False,False,False,159.43,0.5,False,1.0

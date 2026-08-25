@@ -18,6 +18,7 @@ independent of modelx using modelx's export feature.
    :doc:`savings/index`            |modelx badge|  Cashflow models of saving products with cash values
    :doc:`uslib/index`              |modelx badge|  U.S. life and annuity reference products and models
    :doc:`uklib/index`              |modelx badge|  UK life and pension annuity reference products and models
+   :doc:`jplib/index`              |modelx badge|  Japanese life and third-sector reference products and models
    :doc:`appliedlife/index`        |modelx badge|  Comprehensive and practical projection model
    :doc:`assets/index`             |modelx badge|  Basic models of bond portfolios
    :doc:`ifrs17a/index`                            IFRS17 calculation model and examples
@@ -36,6 +37,7 @@ independent of modelx using modelx's export feature.
    savings/index.rst
    uslib/index.md
    uklib/index.md
+   jplib/index.md
    appliedlife/index.rst
    assets/index.rst
    ifrs17a/index.md

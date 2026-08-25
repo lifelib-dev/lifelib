@@ -1,0 +1,4 @@
+policy_year,lapse_rate,default_rate,provenance
+1,0.04,0.010,[std] year-1 level inherited from the savings chassis; industry 解約・失効率 5.6% FY2024 is an amount-weighted all-product ceiling only [R9] [REG-R31]
+2,0.03,0.008,[std] year-2 level inherited from the savings chassis [R9] [REG-R31]
+3,0.02,0.006,[std] ultimate level - applies to policy year 3 onwards; no carrier publishes a curve by duration for either cell

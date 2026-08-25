@@ -1,0 +1,6 @@
+policy_year,lapse_rate,provenance
+1,0.09,[std] chassis table (../term_life/technical-notes.md); reconciled to the LIAJ FY2024 個人保険 kaiyaku/shikko rate of 5.6% [REG-R31]
+2,0.07,[std] chassis table; nothing product-specific exists - the national household survey returns no occurrence of 収入保障 [R11] [REG-R32]
+3,0.06,[std] chassis table
+4,0.055,[std] chassis table
+5,0.05,[std] chassis table; the last row applies to policy year 5 and beyond

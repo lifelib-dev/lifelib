@@ -1,0 +1,4 @@
+policy_year,lapse_rate,provenance
+1,0.04,"[std] first-year surrender, suppressed by the 30% haircut a 低解約返戻金型 owner takes; the industry 解約・失効率 of 5.6% for FY2024 [R12] [REG-R31] is an amount-weighted all-product ceiling, used only as a sanity bound"
+2,0.03,"[std] second-year surrender; no carrier publishes a lapse curve by duration, the single largest assumption gap on this product"
+3,0.02,[std] level tail applying to policy year 3 and every later year; the 払込満了 spike is held apart as the model point's lapse_spike

@@ -1,0 +1,22 @@
+policy_year,lapse_rate,provenance
+1,0.090,[std] anchored to the 5.6% 解約・失効率 on 個人保険 [REG-R31]; no Japanese durational lapse curve is public
+2,0.070,[std] anchored to the 5.6% 解約・失効率 on 個人保険 [REG-R31]; no Japanese durational lapse curve is public
+3,0.060,[std] anchored to the 5.6% 解約・失効率 on 個人保険 [REG-R31]; no Japanese durational lapse curve is public
+4,0.055,[std] anchored to the 5.6% 解約・失効率 on 個人保険 [REG-R31]; no Japanese durational lapse curve is public
+5,0.050,[std] anchored to the 5.6% 解約・失効率 on 個人保険 [REG-R31]; no Japanese durational lapse curve is public
+6,0.045,[std] policy years 6-20 level; first ten years average 5.5% against the sourced 5.6% [REG-R31]
+7,0.045,[std] policy years 6-20 level; first ten years average 5.5% against the sourced 5.6% [REG-R31]
+8,0.045,[std] policy years 6-20 level; first ten years average 5.5% against the sourced 5.6% [REG-R31]
+9,0.045,[std] policy years 6-20 level; first ten years average 5.5% against the sourced 5.6% [REG-R31]
+10,0.045,[std] policy years 6-20 level; first ten years average 5.5% against the sourced 5.6% [REG-R31]
+11,0.045,[std] policy years 6-20 level; first ten years average 5.5% against the sourced 5.6% [REG-R31]
+12,0.045,[std] policy years 6-20 level; first ten years average 5.5% against the sourced 5.6% [REG-R31]
+13,0.045,[std] policy years 6-20 level; first ten years average 5.5% against the sourced 5.6% [REG-R31]
+14,0.045,[std] policy years 6-20 level; first ten years average 5.5% against the sourced 5.6% [REG-R31]
+15,0.045,[std] policy years 6-20 level; first ten years average 5.5% against the sourced 5.6% [REG-R31]
+16,0.045,[std] policy years 6-20 level; first ten years average 5.5% against the sourced 5.6% [REG-R31]
+17,0.045,[std] policy years 6-20 level; first ten years average 5.5% against the sourced 5.6% [REG-R31]
+18,0.045,[std] policy years 6-20 level; first ten years average 5.5% against the sourced 5.6% [REG-R31]
+19,0.045,[std] policy years 6-20 level; first ten years average 5.5% against the sourced 5.6% [REG-R31]
+20,0.045,[std] policy years 6-20 level; first ten years average 5.5% against the sourced 5.6% [REG-R31]
+21,0.030,[std] policy years 21+; no surrender value and rising morbidity exposure remove the incentive to lapse - last row applies onward

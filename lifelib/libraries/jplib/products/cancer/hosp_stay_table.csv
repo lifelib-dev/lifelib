@@ -1,0 +1,6 @@
+basis,age_from,days,provenance
+all_ages,0,14.4,[R7] [REG-R27] 患者調査 2023-09 悪性新生物 退院患者平均在院日数 all ages
+age_band,0,14.4,[std] not published below 35; the all-ages figure is carried [R7]
+age_band,35,10.7,[R7] [REG-R27] 患者調査 2023-09 悪性新生物 ages 35-64
+age_band,65,15.5,[R7] [REG-R27] 患者調査 2023-09 悪性新生物 ages 65 and over
+age_band,75,17.6,[R7] [REG-R27] 患者調査 2023-09 悪性新生物 ages 75 and over

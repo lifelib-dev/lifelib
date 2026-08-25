@@ -1,0 +1,8 @@
+item,value,provenance
+expense_acq,30000,"[std, new here] acquisition expense per policy at t = 0"
+comm_init_rate,0.40,"[std, new here] initial commission, a proportion of the annual premium"
+comm_renewal_rate,0.02,"[std, new here] renewal commission on premium income, t = 1 .. m - 1"
+expense_maint_defer,4000,"[std, new here] maintenance expense per policy per year in the deferral phase"
+expense_maint_payout,2000,"[std, new here] maintenance expense per policy per year once the annuity is in payment"
+expense_claim,5000,"[std, new here] claim expense per death claim; none on surrender"
+inflation_rate,0.01,"[std, new here] flat expense inflation"

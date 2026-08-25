@@ -1,0 +1,6 @@
+policy_year,lapse_rate,provenance
+1,0.090,"[std] first-year rate of the reference duration curve; the curve is reconciled to the LIAJ FY2024 individual-insurance 解約・失効率 of 5.6% of opening sum insured [REG-R31], which is a whole-market figure and not a duration curve"
+2,0.070,"[std] duration curve, shape unevidenced; see the year-1 row [REG-R31]"
+3,0.060,"[std] duration curve, shape unevidenced; see the year-1 row [REG-R31]"
+4,0.055,"[std] duration curve, shape unevidenced; see the year-1 row [REG-R31]"
+5,0.050,"[std] ultimate rate, applied in policy year 5 and every later year; the simple mean over the first ten years is 5.75% and the in-force-weighted mean 5.94%, both a little above the 5.6% market figure [REG-R31]"

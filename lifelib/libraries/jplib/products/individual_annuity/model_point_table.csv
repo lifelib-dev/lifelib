@@ -1,0 +1,10 @@
+point_id,policy_id,sex,issue_age,premium_term_y,defer_gap_y,annuity_start_age,premium_pp,payout_form,payout_term_y,guar_term_y,db_ratio,tax_rider,apl_on,loan_on,commute_rate,div_rate,rate_new
+1,JP-ANN-0001,M,30,30,5,65,180000,certain,10,10,1.00,1,0,0,0.0,0.000,0.0100
+2,JP-ANN-0002,F,35,25,5,65,240000,certain,15,10,1.00,1,0,0,0.0,0.000,0.0100
+3,JP-ANN-0003,M,45,15,0,60,360000,certain,10,10,1.00,1,0,0,0.0,0.000,0.0100
+4,JP-ANN-0004,M,50,10,10,70,600000,life_guar,10,10,1.00,1,0,0,0.0,0.000,0.0100
+5,JP-ANN-0005,F,55,10,0,65,500000,certain,10,10,1.00,1,0,0,1.0,0.000,0.0100
+6,JP-ANN-0006,M,40,20,5,65,300000,certain,10,10,0.70,0,0,0,0.0,0.000,0.0100
+7,JP-ANN-0007,M,30,30,5,65,180000,certain,10,10,1.00,1,1,0,0.0,0.000,0.0100
+8,JP-ANN-0008,F,30,30,5,65,180000,certain,10,10,1.00,1,0,1,0.0,0.002,0.0150
+9,JP-ANN-0009,M,30,30,5,65,180000,life_guar,10,10,1.00,1,0,0,0.0,0.000,0.0100

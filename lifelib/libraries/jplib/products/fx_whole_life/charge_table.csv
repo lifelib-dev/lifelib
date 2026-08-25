@@ -1,0 +1,35 @@
+shape,item,value,provenance
+LEVEL,prem_charge_early,0.38,"[std] back-solved from the published guaranteed (3.00%) surrender-value run at the anchor cell, nine durations over forty-seven years [S2]; see technical-notes.md, Calibration of the charge stack"
+LEVEL,prem_charge_late,0.13,"[std] back-solved from the published guaranteed (3.00%) surrender-value run at the anchor cell, nine durations over forty-seven years [S2]; see technical-notes.md, Calibration of the charge stack"
+LEVEL,prem_charge_early_months,24.0,"[std] fitted breakpoint; [S1] [S2] establish only that a keiyaku no teiketsu-iji cost is taken from the premium or the tsumitatekin, not that it is taken at two rates"
+LEVEL,maint_rate,0.005,"[std] back-solved from the published guaranteed (3.00%) surrender-value run at the anchor cell, nine durations over forty-seven years [S2]; see technical-notes.md, Calibration of the charge stack"
+LEVEL,coi_charged,1.0,"[S1] [S2] a hosho-bubun cost is deducted from the tsumitatekin monthly on the kiken hokenkin-gaku, on seiho hyojun seimeihyo 2018 rates"
+LEVEL,surr_charge_start,0.07,"[S3] kaiyaku kojo scale, 7.0% in policy year 1 falling 0.7pp per completed policy year to zero at ten years, applied to the tsumitatekin"
+LEVEL,surr_charge_step,0.007,"[S3] kaiyaku kojo scale, 7.0% in policy year 1 falling 0.7pp per completed policy year to zero at ten years, applied to the tsumitatekin"
+LEVEL,surr_charge_months,120.0,"[S3] kaiyaku kojo scale, 7.0% in policy year 1 falling 0.7pp per completed policy year to zero at ten years, applied to the tsumitatekin"
+LEVEL,low_cv_ge4,0.7,"[S2] tei-kaiyaku-henreikin wariai by zanyo hokenryo haraikomi nensu (>=4 / 3 / 2 / 1 remaining years), 1.00 from haraikomi manryo"
+LEVEL,low_cv_3,0.775,"[S2] tei-kaiyaku-henreikin wariai by zanyo hokenryo haraikomi nensu (>=4 / 3 / 2 / 1 remaining years), 1.00 from haraikomi manryo"
+LEVEL,low_cv_2,0.85,"[S2] tei-kaiyaku-henreikin wariai by zanyo hokenryo haraikomi nensu (>=4 / 3 / 2 / 1 remaining years), 1.00 from haraikomi manryo"
+LEVEL,low_cv_1,0.925,"[S2] tei-kaiyaku-henreikin wariai by zanyo hokenryo haraikomi nensu (>=4 / 3 / 2 / 1 remaining years), 1.00 from haraikomi manryo"
+LEVEL,mva_spread,0.001,[S2] no shijo kakaku chosei on the level-premium shape; the constant is carried for symmetry and never applied
+LEVEL,mva_base_rate,0.03,[S2] not applied on the level-premium shape
+LEVEL,mva_damping,0.7,[S2] not applied on the level-premium shape
+LEVEL,special_reserve_rate_10,0.24,[std] fitted to the published tokubetsu tsumitatekin of 147 / 527 at 3.50% and 302 / 1120 at 4.00% after 10 and 20 years [S2]; identically zero when the crediting rate runs at the floor
+LEVEL,special_reserve_rate_20,0.16,[std] fitted to the published tokubetsu tsumitatekin of 147 / 527 at 3.50% and 302 / 1120 at 4.00% after 10 and 20 years [S2]; identically zero when the crediting rate runs at the floor
+SINGLE,prem_charge_early,0.045,"[S10] keiyaku shoki hiyo, 4.50% of the single premium at issue ages 40-69 (3.00% at 70-79, 2.00% at 80-90)"
+SINGLE,prem_charge_late,0.0,"[S10] the front-end charge is taken once, at issue"
+SINGLE,prem_charge_early_months,1.0,"[S3] one premium, collected at keiyakubi"
+SINGLE,coi_charged,0.0,"[S3] [S10] the death benefit never exceeds the fund by design and the hosho cost sits inside the crediting-rate calculation, so nothing is deducted from the tsumitatekin"
+SINGLE,maint_rate,0.0,[S10] the single-premium shape carries no in-force charge outside the declared tsumitate riritsu; reproducing the published CV(36) run requires the fund to grow at the declared rate exactly
+SINGLE,surr_charge_start,0.07,"[S3] kaiyaku kojo scale, 7.0% in policy year 1 falling 0.7pp per completed policy year to zero at ten years, applied to the tsumitatekin"
+SINGLE,surr_charge_step,0.007,"[S3] kaiyaku kojo scale, 7.0% in policy year 1 falling 0.7pp per completed policy year to zero at ten years, applied to the tsumitatekin"
+SINGLE,surr_charge_months,120.0,"[S3] kaiyaku kojo scale, 7.0% in policy year 1 falling 0.7pp per completed policy year to zero at ten years, applied to the tsumitatekin"
+SINGLE,low_cv_ge4,1.0,[S2] the tei-kaiyaku-henreikin tokusoku is a level-premium option; no suppression on the single-premium shape
+SINGLE,low_cv_3,1.0,[S2] no suppression on this shape
+SINGLE,low_cv_2,1.0,[S2] no suppression on this shape
+SINGLE,low_cv_1,1.0,[S2] no suppression on this shape
+SINGLE,mva_spread,0.001,"[std] reconstruction of the published 15-year shijo kakaku chosei rate table [S3]; reproduces all 140 printed cells at four decimal places, maximum absolute deviation 0.000050 before rounding"
+SINGLE,mva_base_rate,0.03,"[std] reconstruction of the published 15-year shijo kakaku chosei rate table [S3]; reproduces all 140 printed cells at four decimal places, maximum absolute deviation 0.000050 before rounding"
+SINGLE,mva_damping,0.7,"[std] reconstruction of the published 15-year shijo kakaku chosei rate table [S3]; reproduces all 140 printed cells at four decimal places, maximum absolute deviation 0.000050 before rounding"
+SINGLE,special_reserve_rate_10,0.0,[S3] no tokubetsu tsumitatekin on the single-premium shape
+SINGLE,special_reserve_rate_20,0.0,[S3] no tokubetsu tsumitatekin on the single-premium shape
