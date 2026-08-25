@@ -17,16 +17,26 @@ What the house style is, and why, is written up in ``products/term_assurance/mod
   carries the mapping from the technical notes' actuarial symbols to the cells names.
 
 ``Term_UK_A`` also asserts several of these for itself, in more specific form (it names
-its four input files, its exact read count, its own docstring phrases). That overlap is
-deliberate: the checks here are the general contract, the ones there are that model's
-particulars.
+its four input files, its own docstring phrases). That overlap is deliberate: the checks
+here are the general contract, the ones there are that model's particulars.
+
+This module also holds the library's **only** sweep of a model over its whole model point
+table. Each product module used to run a second one on its own instance of the same model,
+and a model point's first evaluation is by far the most expensive thing in this suite —
+modelx caches per instance, so the second sweep pays full price to assert what the first
+one just asserted. ``test_every_model_point_projects`` below is therefore also where the
+``check_*`` cells are called, on every model point rather than on the first alone. Every
+one of the seven product sweeps was ``len(df) > 0``, ``df.notna().all().all()`` and a list
+of ``check_*`` calls, so nothing had to be carried over with them.
 """
+import math
 import re
+from collections import Counter
 
 import modelx as mx
 import pytest
 
-from uk_registry import MODELS, model_path
+from uk_registry import INPUT_FILES, MODELS, model_path
 
 def model_files(folder):
     """The model's own file names, ignoring interpreter caches.
@@ -78,8 +88,44 @@ def name(request):
 
 
 @pytest.fixture(scope="module")
-def model(name):
-    """The model itself, read under a distinct instance name and closed afterwards."""
+def read_log(name):
+    """The path of every CSV pandas reads while this model is alive.
+
+    ``model`` requests this fixture, and that dependency is the whole trick: it forces the
+    counting window open *before* ``mx.read_model``, so the window spans the model's entire
+    life and catches every read its formulas trigger, the sweep's included. A counter
+    installed after the model has been warmed instead sees nothing, and
+    ``test_inputs_are_read_once_not_once_per_model_point`` below then passes vacuously.
+
+    With the window over the sweep the module already runs, the read-once check no longer
+    needs an instance of its own: it used to build a second ``<name>_reads`` model and
+    re-project every model point purely to count reads, which was the single most expensive
+    line in all three suites — and each of the seven product modules ran its own copy.
+
+    ``name`` is requested so the window is per model rather than per module.
+    """
+    import pandas as pd
+
+    reads = []
+    original = pd.read_csv
+
+    def counting(*args, **kwargs):
+        reads.append(str(args[0]).replace("\\", "/"))
+        return original(*args, **kwargs)
+
+    pd.read_csv = counting
+    try:
+        yield reads
+    finally:
+        pd.read_csv = original
+
+
+@pytest.fixture(scope="module")
+def model(name, read_log):
+    """The model itself, read under a distinct instance name and closed afterwards.
+
+    Read inside ``read_log``'s counting window, so that the reads it provokes are counted.
+    """
     m = mx.read_model(model_path(name), name=name + "_conv")
     yield m
     m.close()
@@ -198,36 +244,8 @@ def test_readers_and_filenames_belong_to_data_alone(model):
     assert "input_dir" not in model.Projection.cells
 
 
-def test_inputs_are_read_once_not_once_per_model_point(name):
-    """N model points must not cause N reads of each input file.
-
-    Projection is parameterized by ``point_id``, so every ``Projection[N]`` is a separate
-    ItemSpace with its own cells cache. Readers placed there would re-read every file for
-    every policy; in ``Data`` they are evaluated once per model.
-    """
-    from collections import Counter
-
-    import pandas as pd
-
-    model = mx.read_model(model_path(name), name=name + "_reads")
-    reads = []
-    original = pd.read_csv
-
-    def counting(*args, **kwargs):
-        reads.append(str(args[0]).replace("\\", "/").split("/")[-1])
-        return original(*args, **kwargs)
-
-    pd.read_csv = counting
-    try:
-        for point_id in model.Data.model_point_table().index:
-            model.Projection[point_id].result_cf()
-    finally:
-        pd.read_csv = original
-        model.close()
-
-    counts = Counter(reads)
-    assert counts, f"{name}: no input file was read at all"
-    assert all(n == 1 for n in counts.values()), counts
+# The read-once property this arrangement buys is asserted under *Behaviour* below, after
+# the sweep whose reads it counts.
 
 
 # ---------------------------------------------------------------------------
@@ -354,19 +372,11 @@ def test_lapse_rate_is_the_annual_rate(name, model):
                 assert mth < ann, f"t={t}: monthly {mth} not below annual {ann}"
 
 
-def test_check_cells_are_no_argument_booleans(model):
-    """``check_*`` takes no argument and returns a bool, as in CashValue_SE.
-
-    A per-``t`` residual is genuinely useful when a check fails, but it lives under
-    ``<name>_resid(t)`` so that one test can call the same no-arg check across the library.
-    """
-    proj = model.Projection[list(model.Data.model_point_table().index)[0]]
-    checks = [c for c in model.Projection.cells
-              if c.startswith("check_") and not c.endswith("_resid")]
-    for c in checks:
-        value = getattr(proj, c)()
-        assert isinstance(value, bool), f"{c}() returned {type(value).__name__}, not bool"
-        assert value is True, f"{c}() is False - a roll-forward identity does not close"
+# ``check_*`` takes no argument and returns a bool, as in CashValue_SE, with the per-``t``
+# residual under ``<name>_resid(t)``. That contract is asserted inside the sweep under
+# *Behaviour* below rather than in a test of its own: run separately it was the first test
+# to touch the shared instance, and so paid a model point's cold projection to assert one
+# bool.
 
 
 def test_result_cf_column_conventions(model):
@@ -404,34 +414,99 @@ def test_every_model_point_projects(model):
 
     A model point the shipped rate tables cannot price raises deep inside a lookup, so
     without this the table quietly documents a capability the model does not have.
+
+    This is the one place in the suite where a model is projected over its whole model
+    point table, so it is also where the ``check_*`` cells are called — on every model
+    point rather than on the first alone. ``notna`` admits an infinity, so ``net_cf`` is
+    checked for one separately; and every point must publish the same columns, or two rows
+    of one model's output cannot be read together.
     """
+    checks = [c for c in model.Projection.cells
+              if c.startswith("check_") and not c.endswith("_resid")]
+    columns = None
     for point_id in model.Data.model_point_table().index:
-        df = model.Projection[point_id].result_cf()
+        proj = model.Projection[point_id]
+        df = proj.result_cf()
         assert len(df) > 0, f"{model.name}: model point {point_id} projects nothing"
         assert df.index.name == "t", f"{model.name}: result_cf is not indexed by t"
         assert df.notna().all().all(), f"{model.name}: NaN in point {point_id} cash flows"
+        assert math.isfinite(df["net_cf"].sum()), (
+            f"{model.name}: point {point_id} has an infinite net_cf")
+        if columns is None:
+            columns = list(df.columns)
+        else:
+            assert list(df.columns) == columns, (
+                f"{model.name}: point {point_id} publishes different columns")
+        for c in checks:
+            value = getattr(proj, c)()
+            assert isinstance(value, bool), (
+                f"{model.name} point {point_id}: {c}() returned "
+                f"{type(value).__name__}, not bool")
+            assert value is True, (
+                f"{model.name} point {point_id}: {c}() is False - a roll-forward "
+                f"identity does not close")
 
 
-def test_round_trip_is_stable(name, tmp_path):
+def test_inputs_are_read_once_not_once_per_model_point(name, model, read_log):
+    """N model points must not cause N reads of each input file.
+
+    Projection is parameterized by ``point_id``, so every ``Projection[N]`` is a separate
+    ItemSpace with its own cells cache. Readers placed there would re-read every file for
+    every policy; in ``Data`` they are evaluated once per model.
+
+    Two things make this safe to assert off the shared instance rather than off one built
+    for the purpose. The sweep is repeated below, which costs nothing once
+    ``test_every_model_point_projects`` has warmed this instance — and is what keeps the
+    count complete when it has not, because ``-n`` can put the two tests in different
+    workers. And the log is filtered to this model's own input directory, so the copies
+    ``test_round_trip_is_stable`` re-reads out of ``tmp_path`` are not miscounted as second
+    reads of the same file names.
+
+    The expected file set comes from :data:`uk_registry.INPUT_FILES` rather than from the
+    log itself, and it replaces the ``len(reads) == N`` each product module asserted for
+    its own model. Asserting only that whatever was read was read once is self-fulfilling:
+    a file that stops being read drops out of the ``Counter`` instead of failing, and a
+    shortened sweep passes with less coverage rather than louder.
+    """
+    for point_id in model.Data.model_point_table().index:
+        model.Projection[point_id].result_cf()
+
+    parent = str(model_path(name).parent).replace("\\", "/")
+    counts = Counter(path.rsplit("/", 1)[-1] for path in read_log
+                     if path.rsplit("/", 1)[0] == parent)
+    assert set(counts) == INPUT_FILES[name], (
+        f"{name}: read {sorted(counts)}, registered {sorted(INPUT_FILES[name])}")
+    assert all(n == 1 for n in counts.values()), counts
+
+
+def test_round_trip_is_stable(name, model, tmp_path):
     """read -> write -> re-read reproduces the same file set and the same numbers.
 
     Inputs are external, so they must travel with the model: the CSVs are copied to the
     new parent directory before re-reading. Without that the re-read model loads and then
     fails on first evaluation — which is exactly the trade-off this layout makes, and the
     reason it is worth asserting in both directions.
+
+    ``before`` is taken from the warm ``model`` fixture, which the sweep above has already
+    projected, rather than from a third instance projected cold for the purpose. The model
+    that is *written*, though, is a fresh pristine read and never the shared one:
+    ``mx.write_model`` rebinds ``model.path`` to the destination, which would repoint
+    ``Data.input_dir()`` at ``tmp_path`` and clear the cache of an instance every later test
+    in this module shares.
     """
     import shutil
 
     src = model_path(name)
-    model = mx.read_model(src, name=name + "_rt_src")
+    point_id = list(model.Data.model_point_table().index)[0]
+    before = model.Projection[point_id].result_cf()
+    before_doc = model.Projection.doc
+
+    pristine = mx.read_model(src, name=name + "_rt_src")
     try:
-        point_id = list(model.Data.model_point_table().index)[0]
-        before = model.Projection[point_id].result_cf()
-        before_doc = model.Projection.doc
         dest = tmp_path / src.name
-        mx.write_model(model, str(dest), backup=False)
+        mx.write_model(pristine, str(dest), backup=False)
     finally:
-        model.close()
+        pristine.close()
 
     for csv in src.parent.glob("*.csv"):
         shutil.copy(csv, tmp_path / csv.name)

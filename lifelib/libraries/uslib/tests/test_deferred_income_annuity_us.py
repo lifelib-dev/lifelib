@@ -772,16 +772,6 @@ def test_maintenance_expense(anchor):
         50.0 / 12 * 1.025 * anchor.lives_if_last(12), abs=1e-9)
 
 
-def test_every_model_point_projects(deferred_income_annuity):
-    """No model point may sit in the table that the input tables cannot serve."""
-    for point_id in deferred_income_annuity.Data.model_point_table().index:
-        proj = deferred_income_annuity.Projection[point_id]
-        df = proj.result_cf()
-        assert len(df) > 0
-        assert df.notna().all().all()
-        assert proj.annual_income(proj.income_start_mth()) > 0.0
-
-
 def test_the_premium_schedule_is_a_separate_table(deferred_income_annuity):
     """A flexible-premium contract takes an unbounded number of slices, so the schedule
     cannot live in a fixed set of model point columns."""

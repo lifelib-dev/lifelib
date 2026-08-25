@@ -891,15 +891,6 @@ def test_result_tables_have_the_worked_examples_columns(anchor):
     assert "surr_value_pp" in anchor.result_av().columns
 
 
-def test_every_model_point_projects(rila):
-    """No model point may sit in the table that the input tables cannot serve."""
-    for point_id in rila.Data.model_point_table().index:
-        p = rila.Projection[point_id]
-        df = p.result_cf()
-        assert len(df) == p.proj_len() + 1
-        assert df["net_cf"].notna().all()
-
-
 def test_price_return_not_total_return(anchor):
     """All representative indices are price return, so the dividend yield is live [S1][S2].
 

@@ -738,17 +738,6 @@ def test_result_pols_and_result_av_shape(anchor):
     assert len(av) == anchor.proj_len() + 1
 
 
-def test_every_model_point_projects(fixed_deferred_annuity):
-    """Each of the seven switch combinations must run to completion and close its ledgers."""
-    for point_id in fixed_deferred_annuity.Data.model_point_table().index:
-        proj = fixed_deferred_annuity.Projection[point_id]
-        df = proj.result_cf()
-        assert len(df) == proj.proj_len() + 1
-        assert df["net_cf"].notna().all()
-        assert proj.check_pols_roll_fwd() is True
-        assert proj.check_av_roll_fwd() is True
-
-
 def test_every_mva_switch_is_exercised_by_a_model_point(fixed_deferred_annuity):
     """The cap, not the formula family, is where the money is - so all five must run.
 

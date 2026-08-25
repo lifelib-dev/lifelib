@@ -634,14 +634,6 @@ def test_result_av_and_result_net_shapes(anchor):
         WE["me_total"] * anchor.pols_if(1), abs=CENT)
 
 
-def test_every_model_point_projects(variable_ul):
-    """No model point may sit in the table that the input tables cannot serve."""
-    for point_id in variable_ul.Data.model_point_table().index:
-        df = variable_ul.Projection[point_id].result_cf()
-        assert len(df) > 0
-        assert not df.isna().any().any()
-
-
 def test_every_model_point_allocates_the_whole_premium(variable_ul):
     """alpha_1 + alpha_2 + alpha_F = 1, or a net premium would vanish."""
     for point_id in variable_ul.Data.model_point_table().index:

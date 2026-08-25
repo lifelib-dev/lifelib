@@ -22,8 +22,6 @@ a partial withdrawal is ``withdrawals(t)`` and not a ``kind`` of ``claims``, the
 ``result_cf()`` flow columns sum to an income-positive ``net_cf``, and ``pols_if(t)`` is
 the start-of-month count that weights that same row.
 """
-import math
-
 import modelx as mx
 import pytest
 
@@ -700,14 +698,6 @@ def test_invalid_arguments_raise(anchor):
         with pytest.raises(Exception) as excinfo:
             call()
         assert message in str(excinfo.value)
-
-
-def test_every_model_point_projects(universal_life):
-    """No model point may sit in the table that the input tables cannot serve."""
-    for point_id in universal_life.Data.model_point_table().index:
-        df = universal_life.Projection[point_id].result_cf()
-        assert len(df) > 0
-        assert math.isfinite(df["net_cf"].sum())
 
 
 def test_model_docstring_names_what_is_not_implemented(universal_life):

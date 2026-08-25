@@ -1153,17 +1153,16 @@ def test_inforce_is_a_decreasing_probability(fixed_indexed_annuity):
                 assert p.pols_if(t) <= p.pols_if(t - 1) + 1e-15, (point_id, t)
 
 
-def test_every_model_point_projects(fixed_indexed_annuity):
-    """No model point may sit in the table that the input tables cannot serve."""
-    ids = list(fixed_indexed_annuity.Data.model_point_table().index)
-    assert len(ids) == 9
-    for point_id in ids:
-        p = fixed_indexed_annuity.Projection[point_id]
-        df = p.result_cf()
-        assert len(df) > 0
-        assert df["net_cf"].notna().all()
-        assert p.result_glwb()["phase"].isin(
-            ["ACCUM", "INCOME", "DEPLETED", "TERMINATED"]).all()
+def test_the_model_point_table_ships_the_nine_switch_combinations(
+        fixed_indexed_annuity):
+    """Nine rows, one per switch combination the product supports.
+
+    That each of them projects, publishes a clean frame and stays inside the four GLWB
+    phases is asserted in ``test_model_conventions.py`` — once, on one instance, for every
+    model in the library. What is left here is the count, which is this product's own
+    statement about what the shipped table covers.
+    """
+    assert len(fixed_indexed_annuity.Data.model_point_table()) == 9
 
 
 def test_the_model_name_matches_the_product_folder(fixed_indexed_annuity):

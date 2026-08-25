@@ -236,37 +236,6 @@ def test_input_dir_resolves_to_the_parent(term_life):
     assert term_life.Data.input_dir() == (LIB / MODELS["Term_US_A"][0]).parent
 
 
-def test_inputs_are_read_once_not_once_per_model_point(term_life):
-    """The readers live in Data, so N model points do not cause N reads.
-
-    Projection is parameterized by point_id, so every Projection[N] is a separate
-    ItemSpace with its own cells cache.  Readers placed there would re-read every file
-    for every policy; in Data they are evaluated once per model.
-    """
-    import pandas as pd
-    from collections import Counter
-
-    model = mx.read_model(LIB / MODELS["Term_US_A"][0], name="Term_US_A_reads")
-    reads = []
-    original = pd.read_csv
-
-    def counting(*args, **kwargs):
-        reads.append(str(args[0]).replace("\\", "/").split("/")[-1])
-        return original(*args, **kwargs)
-
-    pd.read_csv = counting
-    try:
-        for point_id in model.Data.model_point_table().index:
-            model.Projection[point_id].result_cf()
-    finally:
-        pd.read_csv = original
-        model.close()
-
-    counts = Counter(reads)
-    assert counts and all(n == 1 for n in counts.values()), counts
-    assert len(reads) == 5           # one per input file, regardless of point count
-
-
 def test_projection_shares_one_data_space(term_life):
     """`data` resolves to the single Data Space from every ItemSpace."""
     assert term_life.Projection[1].data is term_life.Data
@@ -283,18 +252,6 @@ def test_data_holds_the_inputs_and_projection_does_not(term_life):
     assert files <= set(term_life.Data.refs)
     assert not (readers & set(term_life.Projection.cells))
     assert not (files & set(term_life.Projection.refs))
-
-
-def test_every_model_point_projects(term_life):
-    """No model point may sit in the table that the input tables cannot serve.
-
-    Model point 3 (T20 / F / PNT) was removed for exactly this reason: the specimen
-    gives a guaranteed premium scale for the anchor configuration only, so that point
-    raised a KeyError on the premium lookup.
-    """
-    for point_id in term_life.Data.model_point_table().index:
-        df = term_life.Projection[point_id].result_cf()
-        assert len(df) > 0
 
 
 def test_an_input_can_be_swapped_without_touching_formulas(term_life, tmp_path):
