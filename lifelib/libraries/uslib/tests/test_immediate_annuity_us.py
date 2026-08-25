@@ -650,11 +650,3 @@ def test_the_cross_model_convention_names_are_used(immediate_annuity, anchor):
     assert anchor.check_payment_factor() is True
     assert isinstance(anchor.check_lives_roll_fwd_resid(12), float)
     assert isinstance(anchor.check_payment_factor_resid(12), float)
-
-
-def test_every_model_point_projects(immediate_annuity):
-    """No model point may sit in the table that the input tables cannot serve."""
-    for point_id in immediate_annuity.Data.model_point_table().index:
-        df = immediate_annuity.Projection[point_id].result_cf()
-        assert len(df) > 0
-        assert df["liability_cf"].min() >= 0.0        # gross outgo, never negative

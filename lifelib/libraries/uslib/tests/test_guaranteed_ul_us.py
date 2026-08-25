@@ -560,13 +560,6 @@ def test_result_av_carries_the_worked_example_columns(anchor):
     assert df.loc[4, "status"] == "IN FORCE - GUARANTEE"
 
 
-def test_every_model_point_projects(guaranteed_ul):
-    """No model point may sit in the table that the input tables cannot serve."""
-    for point_id in guaranteed_ul.Data.model_point_table().index:
-        df = guaranteed_ul.Projection[point_id].result_cf()
-        assert len(df) > 0
-
-
 def test_corridor_table_is_the_irc_7702d2_applicable_percentages(guaranteed_ul, anchor):
     """corridor_factors.csv is labelled `sourced [R4]`, so every row must be sourced.
 

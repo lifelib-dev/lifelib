@@ -57,6 +57,32 @@ MODELS = {
 }
 
 
+# name -> the exact set of input files a full sweep of the shipped model point table reads.
+#
+# Each product module used to assert its own model's read *count* — ``PA_UK_S`` expects 2,
+# ``IP_UK_S`` 5 — inside a copy of the read-once check that built its own instance and
+# re-projected every model point to get it.  The counts are kept here as sets instead, and
+# ``test_model_conventions_uk.py`` asserts them once against the sweep it already runs.
+#
+# The set, and not merely "whatever was read was read once", is the assertion: counting only
+# the files that happen to be read makes the check self-fulfilling, since a file that stops
+# being read drops out of the counter and the check then passes over less coverage rather
+# than failing.
+INPUT_FILES = {
+    "CI_UK_S": {"ci_rate_table.csv", "lapse_table.csv", "model_point_table.csv"},
+    "IP_UK_S": {
+        "inception_table.csv", "lapse_table.csv", "model_point_table.csv",
+        "mort_table.csv", "termination_table.csv"},
+    "PA_UK_S": {"model_point_table.csv", "mort_table.csv"},
+    "Term_UK_A": {
+        "lapse_table.csv", "model_point_table.csv", "mort_table.csv",
+        "select_factor_table.csv"},
+    "ULB_UK_S": {"model_point_table.csv", "mort_table.csv", "surr_table.csv"},
+    "WOL_UK_S": {"lapse_table.csv", "model_point_table.csv", "mort_table.csv"},
+    "WP_UK_A": {"lapse_table.csv", "model_point_table.csv", "mort_table.csv"},
+}
+
+
 def model_path(name):
     """Absolute path to a model folder, from its entry in :data:`MODELS`."""
     return LIB / MODELS[name][0]

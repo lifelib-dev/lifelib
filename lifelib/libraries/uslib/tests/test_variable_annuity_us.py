@@ -1128,19 +1128,6 @@ def test_result_tables_shape(anchor):
         assert len(df) == anchor.proj_len() + 1
 
 
-def test_every_model_point_projects(variable_annuity):
-    """Each of the nine switch combinations must run and close both roll-forwards."""
-    for point_id in variable_annuity.Data.model_point_table().index:
-        proj = variable_annuity.Projection[point_id]
-        df = proj.result_cf()
-        assert len(df) == proj.proj_len() + 1
-        assert df["net_cf"].notna().all()
-        for t in (1, 61, 121, 300):
-            if t <= proj.proj_len():
-                assert proj.check_pols_roll_fwd_resid(t) == pytest.approx(0.0, abs=1e-12)
-                assert proj.check_av_roll_fwd_resid(t) == pytest.approx(0.0, abs=1e-6)
-
-
 def test_every_switch_is_exercised_by_a_model_point(variable_annuity):
     """No branch of the notes' parameter set is dead code."""
     table = variable_annuity.Data.model_point_table()

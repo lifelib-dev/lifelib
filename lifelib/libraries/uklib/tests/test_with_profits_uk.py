@@ -768,33 +768,6 @@ def test_inputs_live_beside_the_model():
                         if p.suffix == ".csv"}
 
 
-def test_inputs_are_read_once_not_once_per_model_point():
-    """The readers live in Data, so N model points do not cause N reads."""
-    from collections import Counter
-
-    import pandas as pd
-
-    model = mx.read_model(MODEL_DIR, name="WP_UK_A_reads")
-    reads = []
-    original = pd.read_csv
-
-    def counting(*args, **kwargs):
-        reads.append(str(args[0]).replace("\\", "/").split("/")[-1])
-        return original(*args, **kwargs)
-
-    pd.read_csv = counting
-    try:
-        for point_id in model.Data.model_point_table().index:
-            model.Projection[point_id].result_cf()
-    finally:
-        pd.read_csv = original
-        model.close()
-
-    counts = Counter(reads)
-    assert counts and all(n == 1 for n in counts.values()), counts
-    assert len(reads) == 3           # one per input file, regardless of point count
-
-
 def test_an_input_can_be_swapped_without_touching_formulas():
     """Point a filename Reference at a different file and the projection follows."""
     import pandas as pd
@@ -820,21 +793,6 @@ def test_an_input_can_be_swapped_without_touching_formulas():
             (model.Data.input_dir() / alt).unlink(missing_ok=True)
     finally:
         model.close()
-
-
-def test_every_model_point_projects(with_profits):
-    """No model point may sit in the table that the input tables cannot serve."""
-    for point_id in with_profits.Data.model_point_table().index:
-        p = with_profits.Projection[point_id]
-        df = p.result_cf()
-        assert len(df) > 0
-        assert df.notna().all().all()
-        assert p.check_pols_roll_fwd() is True
-        assert p.check_asset_share_roll_fwd() is True
-        assert p.check_fb_mvr_exclusive() is True
-        assert p.check_mvr_bound() is True
-        assert p.check_fund_nonneg() is True
-        assert p.check_payout_corridor() is True
 
 
 def test_round_trip_is_stable(tmp_path):

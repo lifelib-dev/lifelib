@@ -882,14 +882,6 @@ def test_result_tables_are_indexed_by_t(anchor):
         assert list(df.index) == list(range(1, anchor.proj_len() + 1))
 
 
-def test_every_model_point_projects(indexed_ul):
-    """No model point may sit in the table that the input tables cannot serve."""
-    for point_id in indexed_ul.Data.model_point_table().index:
-        df = indexed_ul.Projection[point_id].result_cf()
-        assert len(df) > 0
-        assert math.isfinite(df["net_cf"].sum())
-
-
 def test_the_model_docstring_describes_the_shipped_model_points(indexed_ul):
     """The ``**Model points.**`` paragraph must match ``model_point_table.csv``.
 

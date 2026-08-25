@@ -63,6 +63,69 @@ MODELS = {
 }
 
 
+# name -> the exact set of input files a full sweep of the shipped model point table reads.
+#
+# ``test_model_conventions.py`` asserts this set, not merely that whatever was read was
+# read once.  Counting only the files that happen to be read makes the check self-
+# fulfilling: a file that stops being read drops out of the counter, and the read-once
+# assertion passes over less coverage rather than failing.  Registering the set is what
+# turns "each file is read once per model" into a statement about *which* files.
+#
+# The set is what the **base run** reads, which is not always every CSV in the directory.
+# ``VUL_US_S`` ships ``prem_persistency.csv`` and does not read it: ``prem_persistency(t)``
+# short-circuits to 1.0 while ``dyn_behavior_on`` is off, which is the default, so only a
+# test that switches the behaviour module on reaches the table.  Two files are reached
+# late rather than not at all — ``SPIA_US_S`` first reads its mortality table and
+# improvement scale at model point 7, where ``mort_basis`` stops being ``"scenario"`` —
+# which is why the sweep has to run to the end of the table before this is asserted.
+INPUT_FILES = {
+    "DIA_US_S": {
+        "improvement_scale.csv", "model_point_table.csv", "mort_table.csv",
+        "payout_factor_table.csv", "premium_schedule.csv", "rop_factor_table.csv"},
+    "FIA_US_S": {
+        "model_point_table.csv", "mort_table.csv", "payout_rate_table.csv",
+        "rate_scenario.csv", "rollup_table.csv", "surr_charge_table.csv",
+        "withdrawal_table.csv"},
+    "IUL_US_S": {
+        "class_factor_table.csv", "coi_rates.csv", "corridor_factors.csv",
+        "lapse_table.csv", "model_point_table.csv", "mort_table.csv",
+        "surr_charge_table.csv"},
+    "MYGA_US_S": {
+        "model_point_table.csv", "mort_table.csv", "mva_factor_table.csv",
+        "rate_scenario.csv", "surr_charge_age_cap.csv", "surr_charge_table.csv",
+        "withdrawal_table.csv"},
+    "RILA_US_S": {
+        "guar_min_rate_table.csv", "lapse_table.csv", "market_scenario.csv",
+        "model_point_table.csv", "mort_table.csv", "surr_charge_table.csv",
+        "withdrawal_table.csv"},
+    "SPIA_US_S": {
+        "improvement_scale.csv", "model_point_table.csv", "mort_table.csv",
+        "surr_charge_table.csv"},
+    "Term_US_A": {
+        "class_factor_table.csv", "model_point_table.csv", "mort_table.csv",
+        "premium_rates.csv", "shock_lapse_table.csv"},
+    "ULSG_US_S": {
+        "class_factor_table.csv", "coi_rates.csv", "corridor_factors.csv",
+        "lapse_table.csv", "model_point_table.csv", "mort_table.csv",
+        "rop_table.csv", "surr_charge_table.csv"},
+    "UL_US_S": {
+        "class_factor_table.csv", "coi_rates.csv", "corridor_factors.csv",
+        "lapse_table.csv", "model_point_table.csv", "mort_table.csv",
+        "prem_persistency.csv", "surr_charge_table.csv"},
+    "VA_US_S": {
+        "cdsc_table.csv", "fund_table.csv", "gawa_pct_table.csv",
+        "model_point_table.csv", "mort_table.csv", "rate_scenario.csv",
+        "return_scenario.csv", "transaction_table.csv"},
+    "VUL_US_S": {
+        "class_factor_table.csv", "coi_rates.csv", "corridor_factors.csv",
+        "lapse_table.csv", "model_point_table.csv", "mort_table.csv",
+        "scenario_table.csv", "subaccount_table.csv", "surr_charge_table.csv"},
+    "WholeLife_US_A": {
+        "cv_table.csv", "model_point_table.csv", "mort_table.csv",
+        "np_guar_table.csv", "nsp_table.csv", "premium_rates.csv"},
+}
+
+
 def model_path(name):
     """Absolute path to a model folder, from its entry in :data:`MODELS`."""
     return LIB / MODELS[name][0]

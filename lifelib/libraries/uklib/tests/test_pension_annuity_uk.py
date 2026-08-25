@@ -656,33 +656,6 @@ def test_the_shipped_mortality_table_marks_its_own_provenance():
         "mort_rate"].iloc[0] == 1.0
 
 
-def test_inputs_are_read_once_not_once_per_model_point():
-    """The readers live in Data, so N model points do not cause N reads."""
-    from collections import Counter
-
-    import pandas as pd
-
-    model = mx.read_model(MODEL_DIR, name="PA_UK_S_reads")
-    reads = []
-    original = pd.read_csv
-
-    def counting(*args, **kwargs):
-        reads.append(str(args[0]).replace("\\", "/").split("/")[-1])
-        return original(*args, **kwargs)
-
-    pd.read_csv = counting
-    try:
-        for point_id in model.Data.model_point_table().index:
-            model.Projection[point_id].result_cf()
-    finally:
-        pd.read_csv = original
-        model.close()
-
-    counts = Counter(reads)
-    assert counts and all(n == 1 for n in counts.values()), counts
-    assert len(reads) == 2           # one per input file, regardless of point count
-
-
 def test_an_input_can_be_swapped_without_touching_formulas():
     """This is what a production user does with a licensed SAPS or PMA16 basis."""
     import pandas as pd
@@ -706,18 +679,6 @@ def test_an_input_can_be_swapped_without_touching_formulas():
             (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
     finally:
         model.close()
-
-
-def test_every_model_point_projects(pension_annuity):
-    """No model point may sit in the table that the input tables cannot serve."""
-    for point_id in pension_annuity.Data.model_point_table().index:
-        proj = pension_annuity.Projection[point_id]
-        df = proj.result_cf()
-        assert len(df) > 0
-        assert df.notna().all().all()
-        assert proj.check_payment_factor() is True
-        assert proj.check_guarantee_xor() is True
-        assert proj.check_vp_bound() is True
 
 
 def test_round_trip_is_stable(tmp_path):

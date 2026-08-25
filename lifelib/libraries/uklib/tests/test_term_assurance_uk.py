@@ -716,33 +716,6 @@ def test_the_shipped_mortality_table_marks_its_own_provenance():
     assert set(worked["sex"]) == {"M"} and set(worked["smoker"]) == {"N"}
 
 
-def test_inputs_are_read_once_not_once_per_model_point():
-    """The readers live in Data, so N model points do not cause N reads."""
-    from collections import Counter
-
-    import pandas as pd
-
-    model = mx.read_model(MODEL_DIR, name="Term_UK_A_reads")
-    reads = []
-    original = pd.read_csv
-
-    def counting(*args, **kwargs):
-        reads.append(str(args[0]).replace("\\", "/").split("/")[-1])
-        return original(*args, **kwargs)
-
-    pd.read_csv = counting
-    try:
-        for point_id in model.Data.model_point_table().index:
-            model.Projection[point_id].result_cf()
-    finally:
-        pd.read_csv = original
-        model.close()
-
-    counts = Counter(reads)
-    assert counts and all(n == 1 for n in counts.values()), counts
-    assert len(reads) == 4           # one per input file, regardless of point count
-
-
 def test_projection_shares_one_data_space(term_assurance):
     """`data` resolves to the single Data Space from every ItemSpace."""
     assert term_assurance.Projection[1].data is term_assurance.Data
@@ -777,17 +750,6 @@ def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
             (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
     finally:
         model.close()
-
-
-def test_every_model_point_projects(term_assurance):
-    """No model point may sit in the table that the input tables cannot serve."""
-    for point_id in term_assurance.Data.model_point_table().index:
-        proj = term_assurance.Projection[point_id]
-        df = proj.result_cf()
-        assert len(df) > 0
-        assert df.notna().all().all()
-        assert proj.check_pols_roll_fwd() is True
-        assert proj.check_fib_ledger() is True
 
 
 def test_round_trip_is_stable(tmp_path):

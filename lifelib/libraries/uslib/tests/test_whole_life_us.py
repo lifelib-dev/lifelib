@@ -840,14 +840,3 @@ def test_cells_names_follow_lifelib(whole_life):
     }
     names = set(whole_life.Projection.cells) | set(whole_life.Projection.refs)
     assert shared <= names, "missing: %s" % sorted(shared - names)
-
-
-def test_every_model_point_projects(whole_life):
-    """No model point may sit in the table that the input tables cannot serve."""
-    for point_id in whole_life.Data.model_point_table().index:
-        proj = whole_life.Projection[point_id]
-        df = proj.result_cf()
-        assert len(df) == proj.proj_len() - proj.proj_start() + 1
-        assert df.notna().all().all()
-        assert proj.check_pols_roll_fwd() is True
-        assert proj.check_pua_roll_fwd() is True
