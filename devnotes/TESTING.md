@@ -41,7 +41,7 @@ pytest --cov=lifelib --cov-report=term-missing
 Run tests in a specific file:
 
 ```bash
-pytest lifelib/tests/projects/test_simplelife.py
+pytest lifelib/tests/libraries/test_simplelife.py
 ```
 
 Run tests matching a pattern:
@@ -150,13 +150,16 @@ The project uses GitHub Actions for CI/CD:
 ```
 lifelib/
 ├── tests/                      # Main test directory
-│   ├── projects/              # Tests for projects
+│   ├── libraries/             # Tests for library models
+│   ├── export/                # nomx export tests for uslib, uklib and jplib
 │   ├── commands/              # Tests for CLI commands
 │   ├── data/                  # Test data generators
 │   └── filecomp/              # File comparison utilities
 ├── libraries/
-│   └── ifrs17a/
-│       └── tests/             # Library-specific tests
+│   ├── ifrs17a/
+│   │   └── tests/             # Library-specific tests
+│   └── uslib/ uklib/ jplib/
+│       └── tests/             # In-library suites, which travel with lifelib.create()
 └── projects/
     └── smithwilson/
         └── smith-wilson-py/
