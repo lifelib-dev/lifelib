@@ -14,6 +14,13 @@ Updates
     Follow <a href="https://www.linkedin.com/company/lifelib" target="_blank">lifelib on LinkedIn</a>
     for more frequent updates.</p>
 
+* *29 August 2026:*
+  lifelib :ref:`v0.16.0<relnotes_v0.16.0>` is released.
+  :mod:`~jplib`, a new library of nine reference liability cash flow
+  projection models for Japanese individual life products, including
+  the three third-sector products of medical, cancer and nursing care,
+  is added. The library is in its draft stage.
+
 * *22 August 2026:*
   lifelib :ref:`v0.15.0<relnotes_v0.15.0>` is released.
   :mod:`~uklib`, a new library of seven reference liability cash flow
