@@ -1,0 +1,5 @@
+prem_freq,instalments,prem_freq_load,prem_freq_fee,provenance
+annual,1,1.0,0.00,[S1] no frais de fractionnement and no frais d'echeance
+half_yearly,2,1.025,3.00,[S1] 2.50 pct loading plus 3 EUR frais d'echeance
+quarterly,4,1.04,6.00,[S1] 4 pct loading plus 6 EUR frais d'echeance
+monthly,12,1.04,18.00,[S1] 4 pct loading plus 18 EUR frais d'echeance over 12 instalments

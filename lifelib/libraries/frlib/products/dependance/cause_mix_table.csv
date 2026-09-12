@@ -1,0 +1,4 @@
+cause,share,provenance
+accident,0.10,"[std] spec footnote 8; no retrieved document states a cause mix, and there is no observed range"
+illness,0.55,[std] spec footnote 8; illness other than neurological or psychiatric
+neuro,0.35,"[std] spec footnote 8; neurological, neurodegenerative or psychiatric, the cause every retrieved contract singles out for the longest carence [S1] [S5] [S7]"

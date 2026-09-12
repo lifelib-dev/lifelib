@@ -1,0 +1,13 @@
+point_id,policy_id,premium_form,benefit_shape,benefit_schedule_id,sex,smoker,issue_age,sum_assured,cover_end_age,ptia_end_age,premium_rate_id,rating_factor,prem_freq,level_premium,waiting_period_y,accident_multiplier,issue_date
+1,TD-000001,revisable,constant,constant,M,N,58,150000.0,75,65,maif_2019,1.0,annual,0.0,0,1.0,2026-01-01
+2,TD-000002,constante,constant,constant,M,N,58,150000.0,75,65,maif_2019,1.0,annual,0.0,0,1.0,2026-01-01
+3,TD-000003,constante,constant,constant,M,N,58,150000.0,75,65,maif_2019,1.0,annual,3900.0,0,1.0,2026-01-01
+4,TD-000004,revisable,constant,constant,M,N,45,200000.0,75,65,maif_2019,1.0,monthly,0.0,0,1.0,2026-01-01
+5,TD-000005,revisable,constant,constant,M,S,58,150000.0,75,65,maif_2019,1.5,annual,0.0,0,1.0,2026-01-01
+6,TD-000006,revisable,constant,constant,M,N,58,150000.0,75,65,maif_2019,1.0,annual,0.0,0,2.0,2026-01-01
+7,TD-000007,revisable,constant,constant,M,N,40,100000.0,65,65,maif_2019,1.0,annual,0.0,0,1.0,2026-01-01
+8,TD-000008,revisable,constant,constant,F,N,58,150000.0,75,65,maif_2019,1.0,quarterly,0.0,0,1.0,2026-01-01
+9,TD-000009,revisable,constant,constant,M,N,52,40000.0,75,65,maif_2019,1.0,annual,0.0,1,1.0,2026-01-01
+10,TD-000010,revisable,constant,constant,M,N,30,250000.0,65,65,maif_2019,1.0,half_yearly,0.0,0,1.0,2026-01-01
+11,TD-000011,revisable,constant,constant,M,N,65,150000.0,75,65,maif_2019,1.0,annual,0.0,0,1.0,2026-01-01
+12,TD-000012,revisable,constant,constant,M,N,58,20000.0,75,65,maif_2019,1.0,annual,0.0,0,1.0,2026-01-01

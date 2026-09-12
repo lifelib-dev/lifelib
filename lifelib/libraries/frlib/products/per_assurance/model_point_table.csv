@@ -1,0 +1,13 @@
+point_id,policy_id,sex,age,retirement_age,duration_ifo,compartment,allocation_profile,premium,av_euro_init,av_uc_init,death_floor_init,death_floor_flag,exit_form,annuity_share,capital_instalments,deduction_elected,mort_basis,mort_rate_flat,pols_if_init
+1,PER-000001,M,52,64,2,c1,equilibre,3000.0,0.0,16600.0,16000.0,True,mixed,0.3,1,True,flat,0.005,1.0
+2,PER-000002,F,55,64,6,c3,equilibre,0.0,8000.0,12000.0,19000.0,True,annuity,1.0,1,False,table,0.0,1.0
+3,PER-000003,M,45,64,0,c1,prudent,2400.0,0.0,5000.0,5000.0,True,mixed,0.3,1,True,table,0.0,1.0
+4,PER-000004,F,40,64,1,c1,dynamique,1800.0,0.0,9000.0,8800.0,True,mixed,0.3,1,True,table,0.0,1.0
+5,PER-000005,M,58,64,10,c1,offensif,6000.0,0.0,40000.0,38000.0,True,mixed,0.3,1,True,table,0.0,1.0
+6,PER-000006,M,52,64,2,c1,equilibre,3000.0,0.0,16600.0,16000.0,True,mixed,0.5,1,True,flat,0.005,1.0
+7,PER-000007,M,60,64,8,c1,equilibre,4000.0,5000.0,55000.0,52000.0,True,capital_single,0.0,1,True,table,0.0,1.0
+8,PER-000008,F,50,62,3,c1,equilibre,3600.0,0.0,22000.0,21000.0,True,capital_staged,0.0,5,True,table,0.0,1.0
+9,PER-000009,M,66,70,12,c1,prudent,1200.0,30000.0,10000.0,36000.0,True,mixed,0.3,1,True,table,0.0,1.0
+10,PER-000010,M,52,64,2,c1,equilibre,3000.0,0.0,16600.0,19000.0,True,mixed,0.3,1,True,flat,0.005,1.0
+11,PER-000011,M,48,64,0,c2,equilibre,0.0,0.0,30000.0,30000.0,False,mixed,0.3,1,False,table,0.0,1.0
+12,PER-000012,F,35,67,0,c1,prudent,5000.0,0.0,2000.0,2000.0,True,annuity,1.0,1,True,table,0.0,1.0

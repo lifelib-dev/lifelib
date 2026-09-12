@@ -1,0 +1,7 @@
+sex,param,value,provenance
+F,prev_ceil,0.900000,"[std] ceiling of the APA-prevalence logistic; no sourced value, see technical-notes.md (c)"
+F,prev_beta,0.195085656071,"[std] fitted to the two sourced DREES female APA rates, 20% at ages 80-89 read at 84.5 and 54% from age 90 read at 93 [R7]; [REG-R26] carries no rate split by age band and sex"
+F,prev_x_mid,90.921604713159,"[std] fitted to the two sourced DREES female APA rates, 20% at ages 80-89 read at 84.5 and 54% from age 90 read at 93 [R7]; [REG-R26] carries no rate split by age band and sex"
+M,prev_ceil,0.900000,"[std] ceiling of the APA-prevalence logistic; no sourced value, see technical-notes.md (c)"
+M,prev_beta,0.183025001539,"[std] fitted to the two sourced DREES male APA rates, 13% at ages 80-89 read at 84.5 and 40% from age 90 read at 93 [R7]; [REG-R26] carries no rate split by age band and sex"
+M,prev_x_mid,94.219197101152,"[std] fitted to the two sourced DREES male APA rates, 13% at ages 80-89 read at 84.5 and 40% from age 90 read at 93 [R7]; [REG-R26] carries no rate split by age band and sex"

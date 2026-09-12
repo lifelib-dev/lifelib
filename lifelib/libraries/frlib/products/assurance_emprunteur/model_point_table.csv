@@ -1,0 +1,13 @@
+point_id,policy_id,entry_age,sex,capital_initial,loan_rate_annual,loan_term_months,quotite,premium_basis,premium_rate_annual,indemnity_basis,income_loss_ratio,franchise_days,itt_max_days,ipt_benefit_basis,deces_end_age,ptia_end_age,itt_ipt_end_age,status,claim_duration_months,pols_if_init
+1,ADE-FR-0001,52,M,200000,0.03,240,1.0,capital_initial,0.0084,forfaitaire,1.0,90,1095,echeance,85,70,70,healthy,0,1.0
+2,ADE-FR-0002,52,M,200000,0.03,240,1.0,capital_restant_du,0.0084,forfaitaire,1.0,90,1095,echeance,85,70,70,healthy,0,1.0
+3,ADE-FR-0003,52,M,200000,0.03,240,0.6,capital_initial,0.0084,forfaitaire,1.0,90,1095,echeance,85,70,70,healthy,0,1.0
+4,ADE-FR-0004,52,M,200000,0.03,240,1.0,capital_initial,0.0084,indemnitaire,0.55,90,1095,echeance,85,70,70,healthy,0,1.0
+5,ADE-FR-0005,52,M,200000,0.03,240,1.0,capital_initial,0.0084,forfaitaire,1.0,90,1095,crd,85,70,70,healthy,0,1.0
+6,ADE-FR-0006,34,F,250000,0.022,300,0.5,capital_initial,0.0027,forfaitaire,1.0,30,1095,echeance,85,70,70,healthy,0,1.0
+7,ADE-FR-0007,45,M,90000,0.041,180,1.0,capital_restant_du,0.0041,forfaitaire,1.0,180,1095,echeance,85,70,70,healthy,0,1.0
+8,ADE-FR-0008,58,M,120000,0.036,264,1.0,capital_initial,0.011,forfaitaire,1.0,90,1095,echeance,80,65,65,healthy,0,1.0
+9,ADE-FR-0009,52,M,200000,0.03,240,1.0,capital_initial,0.0084,forfaitaire,1.0,90,1095,echeance,85,70,70,itt,18,1.0
+10,ADE-FR-0010,52,M,200000,0.03,240,1.0,capital_initial,0.0084,forfaitaire,1.0,90,1095,echeance,85,70,70,ipt,0,1.0
+11,ADE-FR-0011,62,M,40000,0.052,84,1.0,capital_initial,0.0177,forfaitaire,1.0,60,1095,echeance,85,70,70,healthy,0,1.0
+12,ADE-FR-0012,40,F,180000,0.03,240,0.75,capital_restant_du,0.0025,indemnitaire,0.8,120,1095,echeance,85,70,70,healthy,0,1.0

@@ -1,0 +1,5 @@
+policy_year,lapse_rate,provenance
+1,0.12,[std] no observed range -- renonciation window absorbed here
+2,0.1,[std] no observed range -- early-duration attrition
+3,0.08,[std] no observed range -- early-duration attrition
+4,0.06,[std] no observed range -- ultimate; applies to year 4 onwards

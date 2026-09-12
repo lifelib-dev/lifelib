@@ -1,0 +1,4 @@
+trigger_grid,share_partial,share_total,provenance
+avq5,0.150000,0.300000,"[std] s_P and s_T of technical-notes.md (c); bounded by the sourced GIR 1-2 share of APA beneficiaries, 34.9% [R7], and the market ratio of rentes in payment to lives covered, about 0.44 [R10] [R13] [REG-R28]"
+avq6,0.127500,0.255000,[std] the avq5 shares x 0.85; a 6-act grid is stricter at the same count [S4] [S6] and NO retrieved document supports the factor
+aggir,0.187500,0.375000,[std] the avq5 shares x 1.25; an AGGIR trigger borrows the public classification and is looser [S3] [S7] and NO retrieved document supports the factor

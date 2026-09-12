@@ -1,0 +1,4 @@
+claim_duration_year,itt_recovery_rate,itt_to_ipt_rate,itt_mort_rate,provenance
+1,0.55,0.02,0.02,"[std] proxy, notes pivot"
+2,0.3,0.06,0.03,"[std] proxy, notes pivot"
+3,0.15,0.12,0.04,"[std] proxy, notes pivot"

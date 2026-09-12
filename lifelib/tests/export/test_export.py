@@ -1,4 +1,4 @@
-"""Every registered model in uslib, uklib and jplib exports to a working nomx package.
+"""Every registered model in uslib, uklib, jplib and frlib exports to a working nomx package.
 
 ``Model.export`` writes a model out as a pure-Python package that does not import modelx.
 For these libraries that is a supported way to run the models, so the export is part of
@@ -74,13 +74,25 @@ def published_statements(model):
 
 
 def assert_statements_match(model, nomx, point_id, statements):
-    """Every published statement of one model point, compared frame by frame."""
+    """Every published statement of one model point, compared value by value.
+
+    A statement is usually a DataFrame, but one that publishes a single labelled column
+    -- ``PER_FR_S.result_settlement``, the only one today -- returns a Series. The
+    comparison therefore dispatches on what the statement actually is, and asserts first
+    that the export returns the same type as the model, so a statement that changed shape
+    fails here rather than being compared as something it is not.
+    """
     for name in statements:
         expected = getattr(model.Projection[point_id], name)()
         actual = getattr(nomx.Projection[point_id], name)()
-        pd.testing.assert_frame_equal(
-            expected, actual, check_exact=True,
-            obj=f"{model.name}.Projection[{point_id}].{name}()")
+        obj = f"{model.name}.Projection[{point_id}].{name}()"
+        assert type(expected) is type(actual), (
+            f"{obj}: the model returned {type(expected).__name__} and the export "
+            f"returned {type(actual).__name__}")
+        assert_equal = (pd.testing.assert_series_equal
+                        if isinstance(expected, pd.Series)
+                        else pd.testing.assert_frame_equal)
+        assert_equal(expected, actual, check_exact=True, obj=obj)
 
 
 def test_the_export_holds_the_generated_modules(exported):

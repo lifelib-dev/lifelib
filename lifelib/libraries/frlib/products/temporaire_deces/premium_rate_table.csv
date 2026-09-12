@@ -1,0 +1,58 @@
+rate_id,age,prem_rate,provenance
+maif_2019,18,0.0015,[S3] tarif de base annuel -- entry grid
+maif_2019,19,0.0015,[S3] tarif de base annuel -- entry grid
+maif_2019,20,0.0015,[S3] tarif de base annuel -- entry grid
+maif_2019,21,0.0015,[S3] tarif de base annuel -- entry grid
+maif_2019,22,0.0015,[S3] tarif de base annuel -- entry grid
+maif_2019,23,0.0015,[S3] tarif de base annuel -- entry grid
+maif_2019,24,0.0015,[S3] tarif de base annuel -- entry grid
+maif_2019,25,0.0015,[S3] tarif de base annuel -- entry grid
+maif_2019,26,0.0015,[S3] tarif de base annuel -- entry grid
+maif_2019,27,0.0015,[S3] tarif de base annuel -- entry grid
+maif_2019,28,0.0015,[S3] tarif de base annuel -- entry grid
+maif_2019,29,0.0015,[S3] tarif de base annuel -- entry grid
+maif_2019,30,0.0015,[S3] tarif de base annuel -- entry grid
+maif_2019,31,0.0015,[S3] tarif de base annuel -- entry grid
+maif_2019,32,0.0015,[S3] tarif de base annuel -- entry grid
+maif_2019,33,0.0015,[S3] tarif de base annuel -- entry grid
+maif_2019,34,0.0015,[S3] tarif de base annuel -- entry grid
+maif_2019,35,0.0017,[S3] tarif de base annuel -- entry grid
+maif_2019,36,0.0017,[S3] tarif de base annuel -- entry grid
+maif_2019,37,0.0019,[S3] tarif de base annuel -- entry grid
+maif_2019,38,0.002,[S3] tarif de base annuel -- entry grid
+maif_2019,39,0.0022,[S3] tarif de base annuel -- entry grid
+maif_2019,40,0.0024,[S3] tarif de base annuel -- entry grid
+maif_2019,41,0.0029,[S3] tarif de base annuel -- entry grid
+maif_2019,42,0.0032,[S3] tarif de base annuel -- entry grid
+maif_2019,43,0.0036,[S3] tarif de base annuel -- entry grid
+maif_2019,44,0.004,[S3] tarif de base annuel -- entry grid
+maif_2019,45,0.0044,[S3] tarif de base annuel -- entry grid
+maif_2019,46,0.0048,[S3] tarif de base annuel -- entry grid
+maif_2019,47,0.0052,[S3] tarif de base annuel -- entry grid
+maif_2019,48,0.0056,[S3] tarif de base annuel -- entry grid
+maif_2019,49,0.006,[S3] tarif de base annuel -- entry grid
+maif_2019,50,0.0064,[S3] tarif de base annuel -- entry grid
+maif_2019,51,0.0069,[S3] tarif de base annuel -- entry grid
+maif_2019,52,0.0074,[S3] tarif de base annuel -- entry grid
+maif_2019,53,0.0079,[S3] tarif de base annuel -- entry grid
+maif_2019,54,0.0085,[S3] tarif de base annuel -- entry grid
+maif_2019,55,0.0091,[S3] tarif de base annuel -- entry grid
+maif_2019,56,0.0093,[S3] tarif de base annuel -- entry grid
+maif_2019,57,0.0099,[S3] tarif de base annuel -- entry grid
+maif_2019,58,0.0105,[S3] tarif de base annuel -- entry grid
+maif_2019,59,0.0113,[S3] tarif de base annuel -- entry grid
+maif_2019,60,0.0156,[S3] tarif de base annuel -- entry grid
+maif_2019,61,0.0168,[S3] tarif de base annuel -- entry grid
+maif_2019,62,0.0181,[S3] tarif de base annuel -- entry grid
+maif_2019,63,0.0197,[S3] tarif de base annuel -- entry grid
+maif_2019,64,0.0214,[S3] tarif de base annuel -- entry grid
+maif_2019,65,0.0233,[S3] tarif de base annuel -- entry grid
+maif_2019,66,0.0255,[S3] tarif de base en cours de contrat -- entry capped at 65
+maif_2019,67,0.0278,[S3] tarif de base en cours de contrat -- entry capped at 65
+maif_2019,68,0.0288,[S3] tarif de base en cours de contrat -- entry capped at 65
+maif_2019,69,0.0314,[S3] tarif de base en cours de contrat -- entry capped at 65
+maif_2019,70,0.0343,[S3] tarif de base en cours de contrat -- entry capped at 65
+maif_2019,71,0.0374,[S3] tarif de base en cours de contrat -- entry capped at 65
+maif_2019,72,0.0409,[S3] tarif de base en cours de contrat -- entry capped at 65
+maif_2019,73,0.0446,[S3] tarif de base en cours de contrat -- entry capped at 65
+maif_2019,74,0.0486,[S3] tarif de base en cours de contrat -- entry capped at 65
