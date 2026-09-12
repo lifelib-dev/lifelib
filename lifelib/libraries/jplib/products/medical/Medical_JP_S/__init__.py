@@ -32,7 +32,7 @@ chassis:
   carries a *benefit-driven* decrement alongside mortality and lapse;
 * there is **no death benefit**, **no surrender value** on the 終身払 anchor and hence
   **no 自動振替貸付**: mortality is a pure liability release, and a missed premium
-  really does lapse the policy. Importing the ``WholeLife_JP_A`` automatic-premium-loan
+  really does lapse the policy. Importing the ``WholeLife_JP_S`` automatic-premium-loan
   logic here would suppress lapses that genuinely happen.
 
 .. rubric:: Spaces
@@ -62,7 +62,12 @@ the model and its inputs must travel together.
 
 Monthly steps, the notes' base grid, and not a refinement of an annual one: the unit of
 account is a **day**, the per-hospitalization limit is 60 days — about two months — and
-the premium mode is 月払. ``t`` is the policy month, ``t = 0, 1, ..., proj_len() - 1``.
+the premium mode is 月払. ``t`` is the policy month and it is **0-based**, the
+library-wide convention: ``t = 0`` is the first policy month, month ``t`` runs from ``t``
+to ``t + 1`` months after the 契約日, and the frame is ``t = 0, 1, ..., proj_len() - 1``,
+so ``proj_len()`` is the number of projected months and ``result_cf()`` has exactly that
+many rows. The policy year is the contractual **1-based** label derived from it,
+``policy_year(t) = t // 12 + 1``, so months ``t = 0 ... 11`` are policy year 1.
 Premium and maintenance expense fall at the start of month ``t``; benefits and the claim
 expense at the end; mortality then lapse then the benefit-driven termination at the end,
 in that order. Acquisition expense and initial commission fall at ``t = 0``. A

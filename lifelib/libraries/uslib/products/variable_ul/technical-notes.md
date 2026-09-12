@@ -28,6 +28,13 @@ stay flagged here.
 - **Projection frequency.** Monthly, on policy monthiversaries; contractual daily
   accruals (M&E, fund expenses, fixed-option interest [S1]) are approximated by
   monthly factors **[std]**.
+- **Time index.** t is 0-based: t = 0 is the first projected month — the issue month
+  for a new-business point, the month duration_inforce completed months after issue
+  for an in-force point — and the frame is t = 0, 1, …, proj_len − 1, where
+  proj_len = 12 × (121 − issue_age + 1) − duration_inforce is the number of projected
+  months. Month t runs from monthiversary t to monthiversary t + 1. The policy month
+  from issue is duration_inforce + t, and policy year = ⌊(duration_inforce + t)/12⌋ + 1
+  is a contractual, 1-based label, never the index.
 - **Timing.** Beginning-of-month (BOM) monthiversary processing: premium receipt,
   withdrawals, loan activity, and the monthly deduction occur at the monthiversary;
   investment growth accrues over the month; decrements (death, lapse/surrender) and
@@ -58,7 +65,7 @@ stay flagged here.
 | planned_premium (annualized) | currency | 6,000 |
 | premium_mode | enum | monthly |
 | premium_allocation α = (α_1, α_2, α_F) | vector, Σ = 1 | (0.60, 0.40, 0.00) |
-| duration_inforce (months, for in-force points) | int | 24 |
+| duration_inforce (completed months at t = 0; 0 for new business) | int | 24 |
 | initial_subaccount_values | vector | (30,000, 20,000) |
 | initial_fixed_value | currency | 0 |
 | initial_loan_balance | currency | 0 |
@@ -72,8 +79,8 @@ ranges 0.29%–1.18% [S1], 0.55%–2.88% gross [S2], 0.46%–2.54% [S3], 0.08%�
 
 | Variable | Meaning |
 |---|---|
-| t | policy month index (t = 0 at issue or projection start) |
-| x_t | attained age (ANB), advancing on anniversaries |
+| t | projected policy month index, 0-based: t = 0, 1, …, proj_len − 1, with t = 0 the issue month or, for an in-force point, the projection start (duration_inforce completed months after issue); policy year = ⌊(duration_inforce + t)/12⌋ + 1 |
+| x_t | attained age (ANB) in month t, issue_age + ⌊(duration_inforce + t)/12⌋, advancing on anniversaries |
 | SA_{i,t} | value of subaccount i (separate account) |
 | FA_t | fixed-option value (general account) |
 | LA_t | loan-account (collateral) value (general account) [S3] |
@@ -83,8 +90,8 @@ ranges 0.29%–1.18% [S1], 0.55%–2.88% gross [S2], 0.46%–2.54% [S3], 0.08%�
 | DB_t | death benefit per option and corridor |
 | NAAR_t | net amount at risk = max(0, DB_t − AV_t) [S2] (floor **[std]**) |
 | SC_t | surrender charge (per schedule, **[std]** scale) |
-| CSV_t | cash surrender value = AV_t − SC_t − D_t [S1] |
-| l_t | probability policy is in force at start of month t |
+| CSV_t | cash surrender value = AV_t − SC_t − D_t [S1], a start-of-month value; the surrender outflow and the default test use the end-of-month form CSV_t^{EOM} = AV_{t+1} − SC_t − D_{t+1} |
+| l_t | probability policy is in force at start of month t; l_0 = 1 |
 | status | in force / grace / lapsed / matured (age 121) |
 
 ## Assumption inputs
@@ -106,7 +113,7 @@ in separate input structures.
 | Surrender charge | $18.00 per $1,000 initial, linear to 0 over 14 years | **[std]** (spec footnote 10) |
 | Corridor factors κ | 250% (≤40), 215% (45), 185% (50), 150% (55), 130% (60), to 100% at 90–95; linear interpolation | [S2] [R3]; interpolation **[std]** |
 | Grace / default | default when AV − SC − D ≤ 0; 61-day grace | [S1] [R8] |
-| Age-121 rule | no premiums or monthly deductions after attained age 121; asset charges continue | [S1] [S2] [S4] |
+| Age-121 rule | no premiums or monthly deductions from attained age 121; asset charges continue | [S1] [S2] [S4] |
 
 ### (b) Current non-guaranteed scales (insurer-declared; snapshot)
 
@@ -139,7 +146,10 @@ placeholders below.
 
 ### Notation (defined once; used in both documents)
 
-- t: policy month; x_t: attained age; l_t: in-force probability at BOM.
+- t: projected policy month, 0-based, t = 0, 1, …, proj_len − 1 (t = 0 the first
+  projected month); x_t: attained age; l_t: in-force probability at BOM, l_0 = 1.
+  State variables subscripted t are start-of-month values and those subscripted
+  t+1 the end-of-month values of the same month t.
 - P_t: premium paid at monthiversary t; γ: premium load rate (current 0.04).
 - α_i: allocation share to account i (subaccounts i = 1,2; F = fixed).
 - SA_{i,t}, FA_t, LA_t, D_t, AV_t, F_t, DB_t, NAAR_t, SC_t, CSV_t: state above.
@@ -155,9 +165,11 @@ placeholders below.
 
 ### Monthly processing order (monthiversary t → t+1)
 
-1. Advance to monthiversary t; on an anniversary, advance x_t and the policy-year
-   dependent parameters (loan tier, SC_t, corridor κ_t). If x_t ≥ 121: skip steps
-   2–4 and 6 (no premiums, no monthly deduction) [S1] [S2] [S4].
+1. Advance to monthiversary t; on an anniversary — a month with
+   (duration_inforce + t) mod 12 = 0; at t = 0 of a new-business point these are set
+   rather than advanced — advance x_t and the policy-year dependent
+   parameters (loan tier, SC_t, corridor κ_t). If x_t ≥ 121: skip steps 2–4 and 6
+   (no premiums, no monthly deduction) [S1] [S2] [S4].
 2. **Premium.** P_t = ρ_t × planned modal premium. Load: γ·P_t to insurer. Net
    premium allocation: SA_{i,t} += α_i·(1−γ)·P_t; FA_t += α_F·(1−γ)·P_t.
 3. **Withdrawal** (if modeled): reduce accounts by withdrawal + $25 fee; Option A
@@ -195,7 +207,7 @@ placeholders below.
    - Maintenance expense outflow: l_t · (75/12) **[std]**; premium expense 2%·P_t
      at step 2 **[std]**.
    - Survivorship: l_{t+1} = l_t · (1 − q^d_t) · (1 − q^w_t).
-9. **Status checks.** If CSV_t ≤ 0 (and no NLG): default → grace; the baseline
+9. **Status checks.** If CSV_t^{EOM} ≤ 0 (and no NLG): default → grace; the baseline
    model lapses the policy at the next monthiversary if not cured, collapsing the
    61-day grace and notice mechanics [S1] [R8] into a one-month lag **[std]**. At
    x_t = 121, switch to the age-121 regime [S1] [S2] [S4].
@@ -287,7 +299,8 @@ to the base tables in assumption class (c).
   (φ < 1 ⇒ ρ up); strong performance induces premium holidays (φ > 1 ⇒ ρ down) —
   the signature flexible-premium behavior the UL studies measure [REG-R21].
 - **Surrender at surrender-charge cliff.** Optional spike multiplier on q^w in the
-  month after SC_t reaches zero (end of year 14) **[std]**; magnitude an input.
+  month after SC_t reaches zero (end of year 14: policy month 168 from issue,
+  0-based, the first month of policy year 15) **[std]**; magnitude an input.
 - **No dynamic mortality.** Anti-selective lapse interaction (lapse-supported
   effects) is not modeled in the baseline **[std]**.
 
@@ -298,7 +311,10 @@ Model point: male 45 standard nonsmoker, F_0 = 500,000, Option A, GPT; policy ye
 balance, no debt; current scales as above (γ = 4%; c = $0.04 per $1,000 [S4] —
 illustrative current rate at the disclosed representative point; e_1 = 0.75%,
 e_2 = 0.55%, m = 0.45% [S1]); scenario month: r_1 = +1.00%, r_2 = −0.50% gross.
-Premium level is illustrative only **[std]**. Corridor κ(45) = 215% [S2].
+Premium level is illustrative only **[std]**. Corridor κ(45) = 215% [S2]. The month
+is t = 0 of an in-force model point with duration_inforce = 24 (policy year
+⌊24/12⌋ + 1 = 3); the row labels below are the processing-step numbers of that single
+month, not t, and the "BOM balances" are the opening state at t = 0.
 
 | Step | Item | SA_1 (equity) | SA_2 (bond) | Total AV |
 |---|---|---|---|---|

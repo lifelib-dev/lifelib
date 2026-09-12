@@ -51,33 +51,51 @@ between the technical notes' symbols and the cells names.
 
 ## Monthly, and `t` is 0-based
 
-`t` counts **policy months from issue**, running `0, 1, 2, … proj_len()`. Monthly is
-what the notes set ("Projection frequency. Monthly, indexed `t = 0, 1, 2, …` from
-issue") and what the product forces: the modal payment frequency is monthly, and both
-the 13-month minimum deferral and the 13-month premium cut-off are expressed in months.
+`t` counts **policy months from issue**, running `0, 1, 2, … proj_len() − 1` — the
+library-wide 0-based convention, lifelib's own (`basiclife/BasicTerm_S`,
+`savings/CashValue_SE`: `t = 0` is the first period and the frame is
+`range(proj_len())`). Monthly is what the notes set ("Projection frequency. Monthly,
+indexed `t = 0, 1, 2, …` from issue") and what the product forces: the modal payment
+frequency is monthly, and both the 13-month minimum deferral and the 13-month premium
+cut-off are expressed in months.
 
-**The 0-based index is a deliberate departure from `Term_US_A` and
-`SPIA_US_S`, which are 1-based.** The reason is that in these notes `T` is a
-month *index*, not a count: the anchor cell's income start month is `T = 240` and its
-premiums fall at months 0 and 60. Renumber to a 1-based grid and `T = 240` silently
-becomes the 241st month, moving every option window, premium date and payment date by
-one. Month 0 is a real projected month here — the first premium arrives at its start,
-deaths occur during it, the maintenance expense accrues in it — not a recursion base
-case.
+Month `t` runs from elapsed time `t` to `t + 1`. Month 0 is a real projected month — the
+first premium arrives at its start, deaths occur during it, the maintenance expense
+accrues in it — not a recursion base case. In these notes `T` is a month *index* on this
+grid, not a count: the anchor cell's income start month is `T = 240`, the start of month
+240 and exactly twenty years from issue, and its premiums fall at months 0 and 60. The
+option months named on the model point (`adjust_mth`, `adjust_start_mth`, `accel_mth`,
+`commute_mth`) are indices on the same grid.
 
 Two consequences worth holding on to:
 
-| | `SPIA_US_S` (1-based) | `DIA_US_S` (0-based) |
-|---|---|---|
-| `lives_if(t, life)` | survival over `t` elapsed months | **the same** — survival over `t` elapsed months, i.e. alive at the *start* of month `t` |
-| `lives_death(t, life)` | `l(t−1) − l(t)` | `l(t) − l(t+1)` |
+| Cells | Meaning on the 0-based grid |
+|---|---|
+| `lives_if(t, life)` | survival over `t` elapsed months, i.e. alive at the *start* of month `t`; `lives_if(0) = 1` |
+| `lives_death(t, life)` | `l(t) − l(t+1)`, the deaths *during* month `t` — a forward difference, because month `t` spans elapsed `[t, t+1)` |
 
-The survival cells means exactly the same thing in both models; only the death density
-shifts, because month `t` spans elapsed `[t−1, t)` there and `[t, t+1)` here.
+**`proj_len()` is the number of projected months**, the exclusive end of the frame:
+`result_cf()` and `result_pols()` have `proj_len()` rows, `t = 0 … proj_len() − 1`. It
+runs to the limiting age ω = 120 of the **youngest** covered life — the Reference
+`omega_age`, so **720 months on the anchor cell's age 60**, `t = 0 … 719`, ages 60 to
+119 — or to the end of the guarantee period if that is later. `phase(t)` is
+`TERMINATED` from `t = proj_len()`, the first month past the frame.
 
-`proj_len()` runs to the limiting age ω = 120 of the **youngest** covered life — the
-Reference `omega_age`, 719 months on the anchor cell's age 60 — or to the end of the
-guarantee period if that is later.
+The policy year is a derived, 1-based contractual label, `policy_year(t) = t // 12 + 1`
+(1 for months 0–11). It is never the index of the projection; it indexes only the
+annual display grid `result_annual()` — one row per complete policy year inside the
+`proj_len()` projected months, policy years 1 to 60 on the anchor cell — and drives the
+expense escalation `(1 + g)^(policy_year − 1)`, exactly as the notes write it.
+
+**Time-like input columns, and why none of them moved.** No input CSV carries a column
+named `t`. `premium_schedule.csv`'s `premium_mth` and `model_point_table.csv`'s
+`income_start_mth`, `adjust_mth`, `adjust_start_mth`, `accel_mth` and `commute_mth` are
+points on the frame's 0-based month axis — `premium_mth = 0` is the issue month, `T =
+240` the start of month 240, twenty years from issue — and the model compares
+them with `t` directly, so they are already in the convention and their values are
+unchanged. `rop_factor_table.csv`'s `deferral_years` is an elapsed count in whole years,
+`payout_factor_table.csv`'s `income_start_age` an attained age, and `mort_table.csv` and
+`improvement_scale.csv` are keyed by age; none is a time index.
 
 ## Inputs are external files
 
@@ -426,7 +444,10 @@ COLA, all three in-force options — including acceleration's lifetime-outgo inv
 the commutation exchange identity — the QLAC overlay, the generational construction, the
 in-force and income roll-forwards, that the cross-model names (`mort_ae_factor`,
 `omega_age`, the no-argument `check_*()` bools and their `check_*_resid(t)` companions)
-are the library's canonical ones, and that every model point projects.
+are the library's canonical ones, the frame shape — `result_cf()` and `result_pols()`
+are `range(proj_len())`, 720 rows from `t = 0` to `t = proj_len() − 1 = 719` on the
+anchor cell, with `phase()` turning `TERMINATED` at `t = proj_len()`, and
+`result_annual()` policy years 1 to 60 — and that every model point projects.
 
 ```bash
 python -m pytest tests/test_deferred_income_annuity_us.py -q

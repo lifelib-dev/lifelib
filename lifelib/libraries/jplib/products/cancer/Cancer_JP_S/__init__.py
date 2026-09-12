@@ -48,12 +48,16 @@ model and its inputs must travel together.
 **Projection basis.** Monthly steps, the notes' base grid, and monthly by construction
 rather than by approximation: the 90-day waiting period is three months of the grid, the
 treatment benefit's unit of payment *is* the calendar month, and the premium mode is 月払
-at every carrier in the composite. ``t`` is the policy month, ``t = 0, 1, ...,
-proj_len() - 1``. Premium and maintenance expense fall at the start of month ``t``; every
-benefit and the claim-handling expense at the end; decrements at the end, mortality then
-lapse. Acquisition expense and initial commission fall at ``t = 0``. Cover is whole of
-life and runs to the terminal age of 第三分野標準生命表2018 — 116 male, 118 female — so the
-anchor cell projects 924 months.
+at every carrier in the composite. ``t`` is the policy month on the library-wide **0-based
+time index**: ``t = 0`` is the first projected month, the one beginning at the 契約日, and
+the frame runs ``t = 0, 1, ..., proj_len() - 1`` — ``proj_len()`` is the number of months
+projected, so ``result_cf()`` has ``proj_len()`` rows, ``pols_if(0) == pols_if_init()``
+and ``age(0) == issue_age()``. The contractual policy year is the derived 1-based label
+``policy_year(t) = t // 12 + 1``, so months ``t = 0 .. 11`` are policy year 1. Premium and
+maintenance expense fall at the start of month ``t``; every benefit and the claim-handling
+expense at the end; decrements at the end, mortality then lapse. Acquisition expense and
+initial commission fall at ``t = 0``. Cover is whole of life and runs to the terminal age
+of 第三分野標準生命表2018 — 116 male, 118 female — so the anchor cell projects 924 months.
 
 **What is sourced and what is not.** The contractual mechanics are sourced: the 90-day
 waiting period as a hard zero, the two-year repeat cycle measured from the previous

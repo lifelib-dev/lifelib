@@ -35,8 +35,9 @@ print("premium = JPY {:,.2f}/month ({:,.2f} p.a.), {}   waiting period = {} mont
 print("advanced-medicine rider = {}   discharge rider = {}   "
       "repeat conditioned = {}".format(
           proj.adv_rider(), proj.disch_rider(), proj.repeat_conditioned()))
-print("projection = {} months to attained age {}".format(
-    proj.proj_len(), proj.omega_age()))
+print("projection = {} months to attained age {}   (t = 0 .. {}, t is the 0-based "
+      "policy month)".format(
+          proj.proj_len(), proj.omega_age(), proj.proj_len() - 1))
 print()
 
 cols = ["pols_if", "pols_healthy", "pols_cancer", "premiums", "claims_diag",
@@ -50,9 +51,10 @@ df = proj.result_cf()
 # to show -- premiums ride on pols_healthy, the care benefits on pols_cancer.
 decimals = {c: 2 for c in cols}
 decimals.update({"pols_if": 6, "pols_healthy": 6, "pols_cancer": 8})
+print("months t = 0-11 (policy year 1):")
 print(df[cols].head(12).round(decimals).to_string())
 print()
-print("policy year 1 totals (unrounded sums):")
+print("policy year 1 totals, t = 0-11 (unrounded sums):")
 year1 = df.head(12).sum()
 for col in ("premiums", "claims_diag", "claims_insitu", "claims_hosp",
             "claims_surgery", "claims_treat", "claims_outpatient",

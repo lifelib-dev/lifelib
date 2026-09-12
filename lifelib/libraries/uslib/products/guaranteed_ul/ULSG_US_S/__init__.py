@@ -46,20 +46,27 @@ time rather than stored inside the model. The model folder itself holds no data,
 the model and its inputs must travel together.
 
 **Projection basis.** Monthly steps on policy monthiversaries. ``t`` counts **policy
-months** from the start of the projection, 1-based: ``t = 1`` is the issue month of a
+months** from the start of the projection, 0-based: ``t = 0`` is the issue month of a
 new-business model point and the first projected month of an in-force cell, which sits
-``duration_mth_init()`` completed policy months after issue. The technical notes index
-the same months by their absolute policy month number, starting at
-``duration_months + 1``; the worked example's months 301-305 are therefore ``t = 1``
-to ``t = 5`` here, with ``duration_mth(t) = 300 + t - 1``. State variables the notes
-define at ``t = 0`` -- ``AV_0``, ``SG_0``, ``L_0``, ``CumPrem_0``, ``l_0 = 1``,
-``g_0 = 0`` -- are the ``t == 0`` branch of the corresponding recursion.
+``duration_mth_init()`` completed policy months after issue. Policy month ``t`` runs
+from monthiversary ``t`` to monthiversary ``t + 1``, and the frame is
+``t = 0 .. proj_len() - 1``. The completed policy months at the beginning of month
+``t`` are ``duration_mth(t) = duration_mth_init() + t``; the worked example's policy
+months 301-305 are therefore ``t = 0`` to ``t = 4`` here, on the anchor cell at
+``duration_mth_init() = 300``. The opening balances the notes give per model point --
+``av_init``, ``sg_init``, ``loan_init``, ``cumprem_init`` -- are the opening timing of
+``t = 0`` (``av_pp_at(0, "BEF_PREM")``, ``sg_pp_at(0, "BEF_PREM")``,
+``loan_bal_pp_at(0, "BEF_INT")``, and the balance ``cum_prem_pp(0)`` adds the first
+premium to); ``av_pp(t)``, ``sg_pp(t)`` and ``loan_bal_pp(t)`` are end-of-month values
+for every ``t`` of the frame, and ``pols_if(0) = l_0 = pols_if_init()``.
 
-``proj_len() = 12 * (121 - age_at_entry()) - duration_mth_init()``, the notes' maximum
-projection length: the projection runs to attained age 121, where charges and premiums
-cease. Coverage continues past that point in the contract [S7]; the illustrative
-mortality table reaches 1.0 at attained age 120, so nothing survives the horizon and
-``pols_maturity(t)`` is identically zero -- guaranteed UL has no maturity date.
+``proj_len() = 12 * (121 - age_at_entry()) - duration_mth_init()`` is the **number of
+projected months**, the notes' maximum projection length: the projection runs to
+attained age 121, where charges and premiums cease, so the last projected month
+``proj_len() - 1`` is the last month of attained age 120. Coverage continues past that
+point in the contract [S7]; the illustrative mortality table reaches 1.0 at attained
+age 120, so nothing survives the horizon and ``pols_maturity(t)`` is identically zero
+-- guaranteed UL has no maturity date.
 
 Within each month the notes' monthiversary order is followed exactly. At the beginning
 of the month (BOM): the status check, premium and its two loads (one to the account
@@ -165,7 +172,8 @@ notes, and ``tests/test_guaranteed_ul_us.py`` asserts every cell of all five of 
 rows -- premium, net premium to each account, the monthly deductions on each account,
 the interest credited to each, both closing balances, the forgone deduction and the
 status -- together with the notes' NAAR constants, the exhaustion of the account value
-in month 304 and the guarantee carrying the contract from month 305.
+in policy month 304 (``t = 3``) and the guarantee carrying the contract from policy
+month 305 (``t = 4``).
 
 Example:
 

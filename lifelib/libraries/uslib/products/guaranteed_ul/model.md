@@ -34,7 +34,8 @@ model.Projection[1].result_av()
 ```
 
 `Projection` takes a `point_id`; `Projection[1]` is the worked-example anchor cell.
-There are four result tables, all `DataFrame`s indexed by policy month `t`:
+There are four result tables, all `DataFrame`s indexed by policy month `t`, 0-based,
+one row per projected month `t = 0 … proj_len() − 1`:
 
 | | |
 |---|---|
@@ -47,20 +48,49 @@ The model and both Spaces carry docstrings — `model.doc` describes the product
 projection basis, `model.Projection.doc` holds the full mapping between the technical
 notes' symbols and the cells names, and `model.Data.doc` explains the input arrangement.
 
-## Monthly, and `t = 1` is not policy month 1
+## Monthly, 0-based, and `t` is not the contractual policy month
 
-`t` counts **policy months** from the start of the projection, 1-based.
-`proj_len() = 12 × (121 − age_at_entry()) − duration_mth_init()` — the notes' maximum
-projection length, running to attained age 121 where premiums and all charges cease.
+`t` counts **policy months** from the start of the projection, 0-based, the
+library-wide convention (lifelib's `basiclife/BasicTerm_S`, `savings/CashValue_SE`):
+`t = 0` is the first projected month, policy month `t` runs from monthiversary `t` to
+monthiversary `t + 1`, and the frame is `range(proj_len())`, i.e.
+`t = 0 … proj_len() − 1`. `proj_len() = 12 × (121 − age_at_entry()) −
+duration_mth_init()` is the **number of projected months** — the notes' maximum
+projection length, running to attained age 121 where premiums and all charges cease —
+and the last row, `t = proj_len() − 1`, is the last month of attained age 120.
 
-The technical notes index the same months by their **absolute** policy month number,
-starting at `duration_months + 1`. Model point 1 is an in-force cell with
-`duration_mth = 300`, so the worked example's months **301–305 are `t = 1 … 5`** here,
-with `duration_mth(t) = 300 + t − 1`. Getting that offset wrong is the easiest way to
-misread the golden table.
+The elapsed time is carried separately, as in `CashValue_SE`: `duration_mth(t) =
+duration_mth_init() + t` is the number of completed policy months at the beginning of
+month `t`, `duration(t) = duration_mth(t) // 12` the completed policy years, `age(t) =
+age_at_entry() + duration(t)`, and `policy_year(t) = duration(t) + 1` the 1-based
+contractual label the lapse table is looked up by. Model point 1 is an in-force cell
+with `duration_mth = 300`, so the worked example's policy months **301–305 are
+`t = 0 … 4`** here. The contractual policy month *number* is `duration_mth(t) + 1` —
+the surrender charge schedule counts the current month — so `t = 0` on a new-business
+point is policy month 1. Getting either offset wrong is the easiest way to misread the
+golden table.
 
-State variables the notes define at `t = 0` — `AV_0`, `SG_0`, `L_0`, `CumPrem_0`,
-`l_0 = 1`, `g_0 = 0` — are the `t == 0` branch of the corresponding recursion.
+The opening balances the notes give per model point — `av_init`, `sg_init`,
+`loan_init`, `cumprem_init` — are **not a row**: they are the opening timing of
+`t = 0`, `av_pp_at(0, "BEF_PREM") = av_pp_init()`, `sg_pp_at(0, "BEF_PREM") =
+sg_pp_init()`, `loan_bal_pp_at(0, "BEF_INT") = loan_bal_init()`, and
+`cum_prem_pp(0) = cum_prem_init() + premium_pp(0)`. The closing-balance cells
+`av_pp(t)`, `sg_pp(t)`, `loan_bal_pp(t)` and `cum_prem_pp(t)` are end-of-month values
+for every `t` of the frame, `t = 0` included, and nothing is indexed at `t = −1`.
+`pols_if(0) = pols_if_init()` is the count at the start of the first month, and the
+grace counter and the lapse flag start at zero and `False` with no seed row.
+
+**Input files under this convention.** No CSV is keyed by the frame's `t`, so none was
+re-keyed:
+
+| File | Column | Decision |
+|---|---|---|
+| `lapse_table.csv` | `policy_year` (1 … 21) | a contractual 1-based label; left as is, read through `policy_year(t) = duration(t) + 1`, with the last row carried forward |
+| `rop_table.csv` | `anniversary` (20, 25) | a time point, anniversary *k* with *k* = 0 at issue; left as is, matched when `duration_mth(t) % 12 == 0` and `duration(t)` equals it — `t = 240` and `t = 300` on a from-issue point, `t = 0` on the anchor |
+| `model_point_table.csv` | `duration_mth` (300, 0, 0, 0) | an elapsed count, already 0-based; unchanged |
+| `surr_charge_table.csv` | `runoff_years` (15) | a length, not a time index; unchanged — `surr_charge_rate(t)` builds the policy month number `duration_mth(t) + 1` itself |
+| `coi_rates.csv`, `mort_table.csv`, `corridor_factors.csv` | `age` | attained-age keys, reached through `age(t)`; unchanged |
+| `class_factor_table.csv` | `rate_class` | not time-keyed |
 
 ## Inputs are external files
 
@@ -160,8 +190,8 @@ needed care:
 
 | Notes | Cells | Why |
 |---|---|---|
-| `risk_class` | `rate_class` | The name `Term_US_A` and `UL_US_S` both use for the underwriting class, and the one the model point table column carries. The only model point attribute renamed on cross-model grounds rather than for a reason internal to this product |
-| `l_t` | `pols_if(t)`, no offset | These notes define `l_t` at the **beginning** of month `t`; the universal life notes define theirs at the **end**, so the chassis has `pols_if(t) = l(t−1)` and this model does not |
+| `risk_class` | `rate_class` | The name `Term_US_S` and `UL_US_S` both use for the underwriting class, and the one the model point table column carries. The only model point attribute renamed on cross-model grounds rather than for a reason internal to this product |
+| `l_t` | `pols_if(t)`, no offset | These notes define `l_t` at the **beginning** of month `t`, before that month's decrements, so it maps straight onto `pols_if(t)` — the same convention the universal life chassis uses for its own `l(t)` |
 | `AV'(t)` | `av_pp_at(t, "BEF_COI")` | Measured **after the expense charges**, one step later than the chassis' `"BEF_FEE"` — a deviation the notes flag deliberately |
 | `CSV_t` | `ncsv_pp(t)` | The notes' `CSV_t` already nets indebtedness, so it is the chassis' *net* cash surrender value, not its `csv_pp` |
 | `D_t` | `mth_deduction_forgone_pp(t)` | Split from `mth_deduction_taken_pp`, which is what the roll-forward uses |
@@ -187,13 +217,13 @@ else:
 
 `D(t)` — `mth_deduction_forgone_pp` — **is not a receivable.** It never accrues against
 future premiums and it is never recovered out of an account-value recovery. The
-worked-example anchor demonstrates both halves: month 304 takes $1,965.90 of a
-$2,890.47 deduction and forgoes $924.57; months 305 onward forgo the whole $2,900.88;
-and when the next annual premium arrives twelve months later the full $8,100 net premium
-is credited to an account value of zero, with none of the ~$24,000 of forgone deductions
-netted off. A test asserts precisely that.
+worked-example anchor demonstrates both halves: `t = 3` (policy month 304) takes
+$1,965.90 of a $2,890.47 deduction and forgoes $924.57; `t = 4` (policy month 305)
+onward forgoes the whole $2,900.88; and when the next annual premium arrives at
+`t = 12` the full $8,100 net premium is credited to an account value of zero, with none
+of the ~$24,000 of forgone deductions netted off. A test asserts precisely that.
 
-From month 305 the net amount at risk is the entire discounted death benefit and the
+From `t = 4` the net amount at risk is the entire discounted death benefit and the
 cost of insurance charged on it is forgone. That is the "negative account economics"
 regime the notes describe, and it is what dominates late-duration guaranteed UL
 liability cash flows. `margin_mortality(t)` goes deeply negative there, which is the
@@ -215,12 +245,12 @@ weighted figure is zero from there on. Two things do follow, and they are worth 
 before reading a per-policy column:
 
 - `mth_deduction_forgone_pp(t)` keeps reporting the shortfall in the grace months. On
-  the anchor that is $5,007.40 a month at `t = 81` and `t = 82`, where the guarantee has
+  the anchor that is $5,007.40 a month at `t = 80` and `t = 81`, where the guarantee has
   already failed. It is the guarantee's running cost only while `is_guar_supported(t)`
   holds; in grace the same number is the notes' *required grace payment*, which is why
   `cure_premium_pp(t)` is built from it. `result_guar()` prints
   `mth_deduction_forgone` next to `is_guar_active` so the two are read together.
-- The per-policy account value goes on projecting after the lapse. At `t = 85` the
+- The per-policy account value goes on projecting after the lapse. At `t = 84` the
   anchor's next annual premium credits $8,100 to `av_pp`, on a row whose `status(t)` is
   `LAPSED` and whose `pols_if(t)` is zero.
 
@@ -251,12 +281,13 @@ model does that, and it uses two tests rather than one:
   credits, which decides whether a failed deduction is forgone or opens the grace;
 - `is_guar_active(t)` — the step-9 in-force test `SG(t) − L(t) > 0`, after them.
 
-The anchor's account value fails in month 4 of the projection and its guarantee holds
-for another 77 months. The grace period opens in month 81 — the first month with
-`SG − L ≤ 0` — runs the `[std]` two-month discretization of the 61-day grace, and the
-policy lapses at the beginning of month 83 with no value. `pols_lapse_grace(t)` carries
-those policies out of the in-force roll-forward: it is a contractual termination, not a
-rate-based decrement, so it takes the whole remaining block at once and pays nothing.
+The anchor's account value fails at `t = 3`, the fourth projected month, and its
+guarantee holds for another 77 months. The grace period opens at `t = 80` — the first
+month with `SG − L ≤ 0` — runs the `[std]` two-month discretization of the 61-day
+grace, and the policy lapses at the beginning of `t = 82` with no value.
+`pols_lapse_grace(t)` carries those policies out of the in-force roll-forward: it is a
+contractual termination, not a rate-based decrement, so it takes the whole remaining
+block at once and pays nothing.
 
 ## The COI-scale precision divergence is shipped, not resolved
 
@@ -287,9 +318,9 @@ display rounding. Two sources:
    rather than 497,774.10 on the shadow. `test_notes_naar_constants_are_dollar_roundings`
    names both.
 2. The notes cascade cent-rounded intermediates from row to row. Their shadow interest
-   column runs a cent or so low in every row, and by month 305 the shadow balance has
-   drifted 5.6 cents from a clean recomputation. That is the worst figure in the table;
-   every base-account figure is within about a cent.
+   column runs a cent or so low in every row, and by `t = 4` (policy month 305) the
+   shadow balance has drifted 5.6 cents from a clean recomputation. That is the worst
+   figure in the table; every base-account figure is within about a cent.
 
 The notes anticipate this: *"Independent recomputation may differ by cents due to
 rounding."* `test_worked_example_gap_is_only_the_notes_rounding` pins the bound at 6
@@ -313,8 +344,8 @@ The consequence is worth seeing, and worth stating exactly. Point 2 pays the not
 `P* = $10,800`, which is $3.93 *under* this model's own solved $10,803.93 — so it is
 marginally underfunded before persistency is applied at all, and its lifetime guarantee
 was always going to fail. On the contractual path with persistency off,
-`sg_pp_solve(t, 10800)` first turns non-positive at **`t = 632`, attained age 112**.
-Apply the 98% and the same recursion at `10800 × 0.98` fails at **`t = 503`, attained
+`sg_pp_solve(t, 10800)` first turns non-positive at **`t = 631`, attained age 112**.
+Apply the 98% and the same recursion at `10800 × 0.98` fails at **`t = 502`, attained
 age 101** — which is exactly where the model's own `is_guar_active(t)` first goes False
 on point 2. Two percent of premium moves the guarantee failure eleven years earlier.
 That is the notes' own third sensitivity — *"a 98% vs. 100% payment probability
@@ -396,7 +427,8 @@ acquisition expense instead.
 ## Tests
 
 `tests/test_guaranteed_ul_us.py` asserts all five rows and eleven columns of the notes'
-worked example against hard-coded goldens; the notes' dollar-rounded NAAR constants and
+worked example against hard-coded goldens, keyed `t = 0 … 4` for policy months
+301–305; the notes' dollar-rounded NAAR constants and
 the exact bound on the residual gap; the COI-scale precision divergence in both
 directions; one test per entry in the notes' "Known modeling pitfalls" list — the NAAR
 discount convention and its zero floor, the simple-twelfth COI conversion against the
@@ -411,11 +443,13 @@ three lapse multipliers; the surrender-charge run-off; the mortality-improvement
 and its 20-year cap; the funding-premium solve against the notes' calibration; and that
 every model point in the table projects.
 
-It also pins the library-wide conventions this model shares: that the `result_cf()`
-columns sum to `net_cf` income-positive, that `pols_if(t)` is the start-of-month count
-weighting its own row, that a withdrawal is `withdrawals(t)` and `claims(t,
-"WITHDRAWAL")` raises so the claims total cannot double-count it, and that every
-`check_*` is a no-argument `bool`.
+It also pins the library-wide conventions this model shares: that the frame is
+`t = 0 … proj_len() − 1` with `proj_len()` rows and `pols_if(0) = pols_if_init()`, that
+the opening balances enter at the `BEF_PREM` / `BEF_INT` timing of `t = 0` rather than
+as a seed row, that the `result_cf()` columns sum to `net_cf` income-positive, that
+`pols_if(t)` is the start-of-month count weighting its own row, that a withdrawal is
+`withdrawals(t)` and `claims(t, "WITHDRAWAL")` raises so the claims total cannot
+double-count it, and that every `check_*` is a no-argument `bool`.
 
 ```bash
 python -m pytest tests/test_guaranteed_ul_us.py -q

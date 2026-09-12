@@ -27,7 +27,10 @@ print("m = {} in {}   COLA = {:.0%}   survivor = {:.2%} on {} death   "
 print("mortality basis = {}   proj_len = {} mths (max of the age stop rule, {} mths, "
       "and the certain period)".format(
           proj.mort_basis(), proj.proj_len(), proj.horizon_mths()))
+print("t is 0-based: months t = 0 .. {} (policy year = t // 12 + 1)".format(
+    proj.proj_len() - 1))
 print()
+print("first 15 months, t = 0 .. 14:")
 print(proj.result_cf().head(15).round(2).to_string())
 
 model.close()

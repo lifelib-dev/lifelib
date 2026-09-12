@@ -22,6 +22,12 @@ fires on the same event that starts every benefit; and the model carries **three
 rather than one, because the repeating diagnosis benefit, the unlimited-day inpatient
 benefit and the monthly treatment benefit are all integrals over post-diagnosis survival.
 
+Every ``t`` below is the library-wide **0-based** policy month: ``t = 0`` is the first
+projected month, the frame is ``t = 0 … proj_len() - 1`` with ``proj_len()`` rows, and the
+contractual policy year is the derived label ``t // 12 + 1`` — so ``t = 0 … 11`` is policy
+year 1, the waiting period ends at ``t = 3``, and the renewal commission starts at
+``t = 12``.
+
 Tolerances follow the precision the notes display: money to ¥0.01, ``pols_if`` and the
 healthy/diagnosed split to six decimals, the diagnosed state to eight, the ledgers to
 four.
@@ -1269,6 +1275,38 @@ def test_the_no_waiver_design_reverses_both_consequences(cancer):
     assert p7.check_cancer_roll_fwd() is True
 
 
+def test_the_time_index_is_zero_based(cancer):
+    """``t = 0`` is the first projected month, and ``proj_len()`` is the row count.
+
+    The library-wide convention, asserted here on the model's own terms: the first row of
+    the frame carries the opening exposure and the 契約年齢, ``proj_len()`` is the exclusive
+    end of the frame rather than its last index, and the contractual policy year is the
+    derived 1-based label ``t // 12 + 1`` rather than the index itself. An implementation
+    that opened the frame at ``t = 1`` would put the acquisition expense, the initial
+    commission and the waiting-period boundary all one month late.
+    """
+    for point_id in (1, 4, 5, 6):
+        p = cancer.Projection[point_id]
+        assert p.age(0) == p.issue_age()
+        assert p.pols_if(0) == pytest.approx(p.pols_if_init(), rel=1e-15)
+        assert p.pols_healthy(0) == pytest.approx(p.pols_if_init(), rel=1e-15)
+        assert p.pols_cancer(0) == 0.0
+        assert p.policy_year(0) == 1 and p.policy_year(11) == 1
+        assert p.policy_year(12) == 2
+        # The renewal commission pinned on both sides of its boundary: policy year 1
+        # carries none, and the first month of policy year 2 is t = 12, not t = 13.
+        assert p.commissions(11) == 0.0
+        assert p.commissions(12) == pytest.approx(
+            0.03 * p.premiums(12), rel=1e-14)
+        assert p.expenses(0) - p.maint_expenses(0) == pytest.approx(20_000.0, abs=YEN)
+        for df in (p.result_cf(), p.result_pols()):
+            assert df.index.name == "t"
+            assert df.index[0] == 0
+            assert df.index[-1] == p.proj_len() - 1
+            assert len(df) == p.proj_len()
+            assert list(df.index) == list(range(p.proj_len()))    # contiguous
+
+
 def test_result_cf_publishes_the_notes_columns(jp_cancer_anchor):
     """The statement carries the three counts side by side with the nine benefit lines.
 
@@ -1290,6 +1328,8 @@ def test_result_cf_publishes_the_notes_columns(jp_cancer_anchor):
         df.loc[5, [c for c in df.columns if c.startswith("claims_")]].sum(), abs=1e-9)
     assert df.index.name == "t"
     assert len(df) == jp_cancer_anchor.proj_len() == 924
+    assert df.index[0] == 0
+    assert df.index[-1] == jp_cancer_anchor.proj_len() - 1
     assert df.loc[0, "net_cf"] == pytest.approx(-71250.00, abs=YEN)
     assert "liability_cf" not in set(jp_cancer_anchor.cells)     # one stream, one sign
 

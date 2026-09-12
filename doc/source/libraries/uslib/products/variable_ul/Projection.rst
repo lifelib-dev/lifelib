@@ -182,7 +182,11 @@ Cells Descriptions
 
 .. autofunction:: fa_pp
 
+.. autofunction:: la_pp_at
+
 .. autofunction:: la_pp
+
+.. autofunction:: loan_bal_pp_at
 
 .. autofunction:: loan_bal_pp
 

@@ -20,9 +20,9 @@ print("model point {}: {} - {}{} premium {:,.0f}, one {}-year {} option, "
           proj.premium_pp(), proj.term_years(), proj.crediting_type(),
           proj.buffer()))
 print("interim value family = {} / {}   scenario = {}   "
-      "months 1..{} (Maturity Date at attained age {})".format(
+      "months 0..{} (Maturity Date at attained age {})".format(
           proj.iv_family(), proj.amort_rule(), proj.scenario_id(),
-          proj.proj_len(), proj.age_at_entry() + proj.policy_term()))
+          proj.proj_len() - 1, proj.age_at_entry() + proj.policy_term()))
 print("option budget beta = {:.4%} = {:,.2f}   fixed leg opens at {:,.2f} "
       "and accretes at {:.4%}, a {:.2%} spread".format(
           proj.opt_budget(0), proj.opt_budget(0) * proj.premium_pp(),
@@ -30,15 +30,15 @@ print("option budget beta = {:.4%} = {:,.2f}   fixed leg opens at {:,.2f} "
           proj.fixed_leg_yield(0), proj.nge_spread_implied(0)))
 print()
 
-term_ends = [t for t in range(1, proj.proj_len() + 1) if proj.is_term_end(t)]
-rows = sorted(set([0, 12, 36] + term_ends[:2]))
-rows = [t for t in rows if t <= proj.proj_len()]
-print("interim value decomposition at issue, month 12, the term midpoint "
-      "and the first term ends:")
+term_ends = [t for t in range(proj.proj_len()) if proj.is_term_end(t)]
+rows = sorted(set([0, 11, 35] + term_ends[:2]))
+rows = [t for t in rows if t < proj.proj_len()]
+print("interim value decomposition in the first month, the month ending on the "
+      "first anniversary, the term midpoint and the first term ends:")
 print(proj.result_iv().loc[rows].round(2).to_string())
 print()
 
-print("cash flows, first 12 months:")
-print(proj.result_cf().head(13).round(2).to_string())
+print("cash flows, first 12 months (t = 0..11):")
+print(proj.result_cf().head(12).round(2).to_string())
 
 model.close()

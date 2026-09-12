@@ -48,13 +48,18 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 time rather than stored inside the model. The model folder itself holds no data, so
 the model and its inputs must travel together.
 
-**Projection basis.** Monthly steps from the annuity start date. Escalation applies at
-the start of the month containing the policy anniversary, first at ``t = 13``; arrears
-instalments require survival at the end of the payment month and advance instalments at
-the start of it; deaths are decremented at end of month. Age is **age last birthday**.
-The limiting age is 115, and the projection stops one month before the youngest covered
-life would reach it — stopping on the annuitant's age alone would truncate a younger
-dependant's tail.
+**Projection basis.** Monthly steps from the annuity start date, on the library's
+0-based frame: ``t = 0`` is the first projected month, month ``t`` runs from time ``t``
+to time ``t + 1``, the policy year containing it is ``t // 12 + 1``, and ``proj_len()``
+is the number of months projected, so the frame is ``t = 0 ... proj_len() - 1``. State
+variables — survival, the cumulative instalment schedule and the value-protection
+balance — are indexed by a **time point** ``k`` with ``k = 0`` at the start date, which
+does not move with the frame. Escalation applies at the start of the month containing
+the policy anniversary, first at ``t = 12``; arrears instalments require survival at the
+end of the payment month and advance instalments at the start of it; deaths are
+decremented at end of month. Age is **age last birthday**. The limiting age is 115, and
+the projection stops one month before the youngest covered life would reach it —
+stopping on the annuitant's age alone would truncate a younger dependant's tail.
 
 **What is sourced and what is not.** The contractual mechanics are sourced: the
 instalment formula, the four escalation bases and the RPI catch-up ratchet, the
@@ -71,7 +76,7 @@ any conclusion from the output.
 
 **Verification.** ``tests/test_pension_annuity_uk.py`` asserts the notes' worked
 example row by row to the penny, including the £43,209.50 value-protection lump sum on
-the month-17 death and the dependant's stream starting at the next payment date.
+the month-16 death and the dependant's stream starting at the next payment date.
 
 Example:
 

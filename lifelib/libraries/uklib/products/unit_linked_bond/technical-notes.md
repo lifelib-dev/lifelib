@@ -32,6 +32,13 @@ KFD + Policy Provisions pair [S1] [S2].
   through the unit price [S2 §5.1.1] and prices funds daily/at least monthly
   [S2 §3.2] [S3 Part E]; the model discretizes to monthly steps with all
   intra-month flows at the conventions below.
+- **Time index [std].** `t` counts policy months from issue and is **0-based**: the
+  first month is `t = 0`, month `t` runs from time `t` to time `t + 1`, and the frame
+  is `t = 0, 1, …, proj_len − 1`, where `proj_len` is the number of projected months.
+  The policy year is the derived 1-based label `y = ⌊t/12⌋ + 1` (policy year 1 is
+  `t = 0 … 11`). The state variables `UF(t)` and `l(t)` are values **at time `t`**,
+  the start of month `t`, with `UF(0) = P` and `l(0) = 1`; the flows of month `t`
+  carry them to `UF(t+1)` and `l(t+1)`.
 - **Timing conventions [std].** Fund growth, tax provision and fund-based charges
   accrue over the month; withdrawals, adviser charges and rider charges are unit
   cancellations at end of month (EOM); decrements (death, surrender) are EOM events
@@ -72,7 +79,7 @@ KFD + Policy Provisions pair [S1] [S2].
 | `oac_rate` | annual rate on unit value (ongoing adviser charge) | 0 (module value 0.005 [S1] [S2 §7.1 example]) |
 | `gmdb_flag` | bool (return-of-premium rider [S1] [S2 §5.2, §10] [S5]) | false **[std]** |
 | `uf_initial` | currency (premium at issue; >0 for in-force cells) | 100,000 |
-| `issue_date` / `policy_month_offset` | date / int | month 1 |
+| `issue_date` / `policy_month_offset` | date / int | 0 (new business: the frame opens at issue, `t = 0`) |
 
 ---
 
@@ -80,9 +87,9 @@ KFD + Policy Provisions pair [S1] [S2].
 
 | Variable | Description | Updated |
 |---|---|---|
-| `UF(t)` | Unit fund = bid value of units at end of month t | monthly recursion |
-| `l(t)` | In-force probability at end of month t; l(0) = 1 | monthly decrements |
-| `y` | Policy year = ceil(t/12); insurance year for allowance tracking [R2] | monthly |
+| `UF(t)` | Unit fund = bid value of units at time t, the start of month t; UF(0) = P | monthly recursion, to UF(t+1) |
+| `l(t)` | In-force probability at time t, the start of month t; l(0) = 1 | monthly decrements, to l(t+1) |
+| `y` | Policy year = ⌊t/12⌋ + 1; insurance year for allowance tracking [R2] | monthly |
 | `CumWD(n)` | Cumulative withdrawals + ongoing/ad hoc adviser charges to end of insurance year n (allowance-relevant [S2 §12.1.1] [S4] [S5 Q15]) | on withdrawal/charge |
 | `CumAllow(n)` | Cumulative allowable element = premium × min(n, 20) × 5% [R2] | yearly |
 | `ExcessGain(n)` | Excess-event gain at insurance-year end (policyholder-side flag, no insurer cash flow) [R1 s498/s507](#uklib-unit_linked_bond-r1) [R2] | yearly |
@@ -173,9 +180,9 @@ completes, and settle at a high ultimate level):
 
 | Symbol | Meaning |
 |---|---|
-| t | policy month, t = 1, 2, …; y = ceil(t/12); a = attained age (ALB) = issue_age + y − 1 |
+| t | policy month, 0-based: t = 0, 1, …, proj_len − 1, month t running from time t to t + 1; y = ⌊t/12⌋ + 1 (policy year); a = attained age (ALB) = issue_age + ⌊t/12⌋ = issue_age + y − 1 |
 | `P` | single premium (100,000) |
-| `UF(t)` | unit fund at end of month t; UF(0) = P |
+| `UF(t)` | unit fund at time t, the start of month t; UF(0) = P; UF(t+1) is the fund after month t's cancellations |
 | `g` | annual gross fund return (0.05); `g_m` = (1+g)^(1/12) − 1 = 0.0040741 (derived) |
 | `t_pf` | tax-provision rate (0.20) **[std]** |
 | `c`, `f` | AMC (0.0100) and further costs (0.0010), annual; `c_m` = c/12 = 0.0008333, `f_m` = f/12 = 0.0000833 **[std 1/12 accrual convention]** |
@@ -186,7 +193,7 @@ completes, and settle at a high ultimate level):
 | `TX(t)` | tax provision deducted in month t; `AMC$(t)`, `FC$(t)` monetary AMC/further costs |
 | `DS(t)` | death strain per death in month t |
 | `q_m(t)` | monthly mortality rate = 1 − (1 − q_a)^(1/12) from the class-(c) basis; `w_m(t)` monthly surrender rate = 1 − (1 − w_ann)^(1/12) |
-| `l(t)` | in-force probability at end of month t; l(0) = 1 |
+| `l(t)` | in-force probability at time t, the start of month t; l(0) = 1 |
 | `E(t)` | maintenance expense = 60/12 × 1.025^(y−1) **[std]** |
 
 Dimension check: `g_m`, `c_m`, `f_m`, `t_pf` are dimensionless per-month rates or
@@ -195,12 +202,12 @@ fractions; every product with `UF` is in GBP; `q_m × DS` is GBP per policy-mont
 
 ### Monthly processing order **[std]**
 
-For month t, per policy in force at t−1:
+For month t (from time t to time t + 1), per policy in force at time t:
 
 1. Update y, a, E(t).
 2. **Fund growth and tax provision** (within unit price [S2 §3.2.1] [S4] [S5 Q15]):
-   `G$(t) = g_m × UF(t−1)`;  `TX(t) = t_pf × G$(t)`;
-   `UF_g(t) = UF(t−1) + G$(t) − TX(t) = UF(t−1) × (1 + g_m(1 − t_pf))`.
+   `G$(t) = g_m × UF(t)`;  `TX(t) = t_pf × G$(t)`;
+   `UF_g(t) = UF(t) + G$(t) − TX(t) = UF(t) × (1 + g_m(1 − t_pf))`.
 3. **Fund-based charges** (AMC accrues via price [S2 §5.1.1]; further costs
    fund-borne [S2 §3.1.7]):
    `AMC$(t) = c_m × UF_g(t)`;  `FC$(t) = f_m × UF_g(t)`;
@@ -208,17 +215,17 @@ For month t, per policy in force at t−1:
 4. **Unit cancellations (EOM):** withdrawals, adviser charges, rider charge:
    `GC(t) = q_m(t) × max(0, G(t) − u × UF'(t))` if `gmdb_flag` else 0
    (design [S2 §5.2, §10]; scale **[std]**);
-   `UF(t) = UF'(t) − W(t) − AC(t) − GC(t)`.
+   `UF(t+1) = UF'(t) − W(t) − AC(t) − GC(t)`.
    Enforce the product cap: rolling-12-month W + AC ≤ max(0.075 × UF, 0.075 × P)
    [S1] [S2 §7.1].
-5. **Death strain per death:**
-   `DS(t) = (u − 1) × UF(t) + max(0, G(t) − u × UF(t)) × 1{gmdb_flag}`
+5. **Death strain per death** (on the end-of-month fund, after the cancellations):
+   `DS(t) = (u − 1) × UF(t+1) + max(0, G(t) − u × UF(t+1)) × 1{gmdb_flag}`
    — the sum assured is u × UF funded by cancelling the whole unit fund, so the
    non-unit cost is the 0.1% uplift [S1] [S2] plus any GMDB in-the-money amount
    [S2 §10] [S5].
 6. **Decrements (EOM), deaths before surrenders [std]:**
-   `l(t) = l(t−1) × (1 − q_m(t)) × (1 − w_m(t))`.
-   Surrender pays `UF(t)` by cancelling all units — no non-unit cash flow (clean
+   `l(t+1) = l(t) × (1 − q_m(t)) × (1 − w_m(t))`.
+   Surrender pays `UF(t+1)` by cancelling all units — no non-unit cash flow (clean
    design [S4]; spec footnote 13) — but extinguishes all future margins.
 7. **Allowance tracker (insurance-year end, policyholder side only):**
    `CumAllow(n) = P × min(n, 20) × 0.05` [R2];
@@ -227,13 +234,13 @@ For month t, per policy in force at t−1:
    Chargeable events on death/full surrender follow s484/s491 [R1] and are likewise
    policyholder-side (the insurer issues certificates [S5 Q15]).
 
-The core unit-fund recursion (anchor cell: AC = GC = 0):
+The core unit-fund recursion (anchor cell: AC = GC = 0), from UF(0) = P:
 
-    UF(t) = UF(t−1) × (1 + g_m(1 − t_pf)) × (1 − c_m − f_m) − W(t)
+    UF(t+1) = UF(t) × (1 + g_m(1 − t_pf)) × (1 − c_m − f_m) − W(t)
 
 ### Non-unit (insurer) cash flow extraction
 
-Per policy in force at t−1, before survivorship weighting:
+Per policy in force at time t (the start of month t), before survivorship weighting:
 
 | Cash flow | Formula | Sign |
 |---|---|---|
@@ -241,17 +248,17 @@ Per policy in force at t−1, before survivorship weighting:
 | GMDB rider charge | GC(t) (0 in base) | + |
 | Set-up adviser charge / commission | 0 — post-RDR adviser charges are pass-throughs facilitated by unit cancellation [S1] [S2 §12] [S4] | 0 |
 | Maintenance expense | E(t) | − |
-| Acquisition expense (t = 0) | 300 **[std]** | − |
+| Acquisition expense (at issue, in the first month t = 0) | 300 **[std]** | − |
 | Death strain (per death) | DS(t) | − |
 | Further costs FC$(t) | pass-through to fund costs — excluded from insurer margin **[std]** | 0 |
 | Tax provision TX(t) | pass-through to corporation tax — neutral **[std]** (class (b) note) [R6] | 0 |
 | Surrender / withdrawal payments | funded by unit cancellation — no non-unit flow (clean design) [S4] | 0 |
 
 Aggregate expected cash flows multiply each row by the in-force factor: AMC, GC and
-expenses by l(t−1); death strain by l(t−1) × q_m(t); nothing by surrenders (their
+expenses by l(t); death strain by l(t) × q_m(t); nothing by surrenders (their
 non-unit flow is zero) **[std timing]**. The expected net non-unit cash flow:
 
-    NUCF(t) = l(t−1) × [ AMC$(t) + GC(t) − E(t) − q_m(t) × DS(t) ]  −  300 × 1{t=0}
+    NUCF(t) = l(t) × [ AMC$(t) + GC(t) − E(t) − q_m(t) × DS(t) ]  −  300 × l(t) × 1{t=0}
 
 Because AMC$(t) ≈ c_m × UF and DS(t) ≈ 0.001 × UF, the insurer's result is a
 fund-based margin stream: proportional to the unit fund and to persistency, with
@@ -304,32 +311,36 @@ p.a. [R2 allowance](#uklib-unit_linked_bond-r2)), AC = GC = 0; all parameters **
 Derived monthly rates: g_m = 0.0040741; g_m(1−t_pf) = 0.0032593; c_m = 0.0008333;
 f_m = 0.0000833. Placeholder mortality for the year: q_a = 1.0% **[std order-of-
 magnitude placeholder consistent with the class-(c) proxy]**, q_m = 0.000837.
-Figures in GBP, displayed to pence, full precision carried.
+Figures in GBP, displayed to pence, full precision carried. Rows are policy months
+`t = 0, 1, 2, …` (policy year 1 is `t = 0 … 11`); `UF(t)` is the fund at the start of
+the month and `UF(t+1)` the fund after the month's cancellations.
 
-| t | UF(t−1) | Gross return G$ | Tax TX | AMC$ | FC$ | W | UF(t) |
+| t | UF(t) | Gross return G$ | Tax TX | AMC$ | FC$ | W | UF(t+1) |
 |---|---|---|---|---|---|---|---|
-| 1 | 100,000.00 | 407.41 | 81.48 | 83.60 | 8.36 | 416.67 | 99,817.30 |
-| 2 | 99,817.30 | 406.67 | 81.33 | 83.45 | 8.35 | 416.67 | 99,634.17 |
-| 3 | 99,634.17 | 405.92 | 81.18 | 83.30 | 8.33 | 416.67 | 99,450.61 |
+| 0 | 100,000.00 | 407.41 | 81.48 | 83.60 | 8.36 | 416.67 | 99,817.30 |
+| 1 | 99,817.30 | 406.67 | 81.33 | 83.45 | 8.35 | 416.67 | 99,634.17 |
+| 2 | 99,634.17 | 405.92 | 81.18 | 83.30 | 8.33 | 416.67 | 99,450.61 |
 | … | … | … | … | … | … | … | … |
-| 12 | 97,966.60 | 399.13 | 79.83 | 81.90 | 8.19 | 416.67 | 97,779.14 |
-| **Yr 1** | — | **4,839.44** | **967.89** | **993.10** | **99.31** | **5,000.00** | **97,779.14** |
+| 11 | 97,966.60 | 399.13 | 79.83 | 81.90 | 8.19 | 416.67 | 97,779.14 |
+| **Yr 1** (t = 0–11) | — | **4,839.44** | **967.89** | **993.10** | **99.31** | **5,000.00** | **97,779.14** |
 
-Trace, month 1: G$ = 0.0040741 × 100,000 = 407.41; TX = 0.20 × 407.41 = 81.48;
-UF_g = 100,325.93; AMC$ = 0.0008333 × 100,325.93 = 83.60; FC$ = 8.36;
+Trace, the first month t = 0: G$ = 0.0040741 × 100,000 = 407.41; TX = 0.20 × 407.41
+= 81.48; UF_g = 100,325.93; AMC$ = 0.0008333 × 100,325.93 = 83.60; FC$ = 8.36;
 UF' = 100,233.96; UF(1) = 100,233.96 − 416.67 = 99,817.30.
 Reconciliation, year 1: 100,000 + 4,839.44 − 967.89 − 993.10 − 99.31 − 5,000.00
-= 97,779.14. ✓ Per segment: 977.79.
+= 97,779.14 = UF(12). ✓ Per segment: 977.79.
 
 Insurer-side extraction, year 1 (per policy, survivorship factors ≈ 1 at this q/w):
 
 - AMC margin collected: **+993.10**
 - Maintenance expense (£60, year 1): **−60.00**
-- Expected death strain: Σ q_m × 0.001 × UF(t) = **−0.99**
-  (per actual death at month 12 the sum assured would be 1.001 × 97,779.14
-  = 97,876.92, of which 97,779.14 is funded by cancelling units — strain 97.78)
+- Expected death strain: Σ_{t=0..11} q_m × 0.001 × UF(t+1) = **−0.99**
+  (per actual death in the twelfth month, t = 11, the sum assured would be
+  1.001 × UF(12) = 1.001 × 97,779.14 = 97,876.92, of which 97,779.14 is funded by
+  cancelling units — strain 97.78)
 - Tax provision (967.89) and further costs (99.31): pass-throughs, nil margin **[std]**
-- **Net non-unit cash flow ≈ +932.11** (acquisition expense −300 falls at issue)
+- **Net non-unit cash flow ≈ +932.11** (acquisition expense −300 falls at issue, in
+  the first month t = 0)
 
 Policyholder-side check (no insurer cash flow): year-1 withdrawals 5,000 =
 allowable element 100,000 × 1/20 = 5,000 [R2] — no excess event; unused allowance
@@ -397,9 +408,9 @@ Dominant assumptions, in order, for a fund-margin product:
 Known modeling pitfalls:
 
 - **Charge-base ordering.** AMC accrues on the post-growth, pre-cancellation fund
-  (in-price accrual [S2 §5.1.1]). Charging c_m on UF(t−1) or after withdrawals
-  changes the margin by ~½ month's growth/withdrawal — small monthly, systematic
-  over decades.
+  (in-price accrual [S2 §5.1.1]). Charging c_m on the opening fund UF(t) or after
+  withdrawals changes the margin by ~½ month's growth/withdrawal — small monthly,
+  systematic over decades.
 - **Counting pass-throughs as margin.** Further costs [S1] [S2 §3.1.7] and the tax
   provision [S4] [S5 Q15] reduce the unit fund but are not insurer income; booking
   them as margin overstates NUCF by ~107% of the AMC in the anchor cell (year-1

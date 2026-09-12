@@ -151,6 +151,11 @@ def lapse_table():
     figure, 解約・失効率 5.6% p.a. on 個人保険 — which is measured on opening in-force
     *sum assured*, a basis a 医療保険 with no sum assured cannot even enter.  Policy
     years beyond the last row take that row.
+
+    The key column ``policy_year`` is the contractual **1-based** label — the file runs
+    from 1 — and not the projection's 0-based month ``t``:
+    ``Projection.lapse_rate(t)`` reads it through ``policy_year(t) = t // 12 + 1``, so
+    months ``t = 0 ... 11`` read policy year 1.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / lapse_table_file, index_col="policy_year")     # noqa: F821

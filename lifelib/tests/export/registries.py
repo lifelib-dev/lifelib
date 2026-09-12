@@ -48,5 +48,5 @@ def registered_models():
 
 MODELS = registered_models()
 
-# "uslib/Term_US_A" and so on, so a failure names the library as well as the model.
+# "uslib/Term_US_S" and so on, so a failure names the library as well as the model.
 IDS = [f"{library}/{name}" for library, name, _path in MODELS]

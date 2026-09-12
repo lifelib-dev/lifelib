@@ -129,9 +129,11 @@ Footnotes to [std] rows:
    月払保険料 ¥14,580, with 解約払戻金 at durations 5 / 10 / 15 / 15+ / 20 / 30 / 40 / 50 [S4]. It is
    round, internally consistent (14,580 × 180 = ¥2,624,400, the published cumulative premium
    at 15 years, and every published 払戻率 reproduces to the displayed decimal), and it
-   **exhibits the cliff**. `WholeLife_JP_A` runs on an annual grid, so the annual premium is
-   standardized as 12 × the monthly figure = ¥174,960; no carrier publishes an annual-mode
-   premium for this cell, so the modal discount a real 年払 scale would carry is not applied.
+   **exhibits the cliff**. `WholeLife_JP_S` collects a 年払 premium, standardized as 12 × the
+   monthly figure = ¥174,960; no carrier publishes an annual-mode premium for this cell, so the
+   modal discount a real 年払 scale would carry is not applied. The projection steps in months,
+   but the payment frequency is the 契約者's choice and not the grid's: the annual premium falls
+   in one month of twelve rather than being spread across the year.
    The sum assured sits inside the household 普通死亡保険金 bands of the national survey [REG-R32]
    and is one heir's worth of the inheritance-tax exemption [REG-R44].
 
@@ -308,7 +310,9 @@ Footnotes to [std] rows:
 Notation used below and carried into `technical-notes.md`:
 
     x       契約年齢 at issue (満年齢, fractional year discarded)
-    t       completed policy years since 契約日 (the annual grid step)
+    t       completed policy years since 契約日 — the 年単位の契約応当日, which is where the
+            contract defines every value below; `WholeLife_JP_S` projects in months and
+            carries this anniversary index beside it, spelled `d`
     m       保険料払込期間 in years; m = infinity for a 終身払 contract
     SA      保険金額
     P       annual premium, level for t < m, zero for t >= m
@@ -427,11 +431,12 @@ the mode is switched to 半年払 and the half-yearly premium is advanced [S3] [
 The balance rolls up at compound interest, with the interest capitalised into principal at
 each subsequent grace expiry (annually on 年払) [S3] [S7]; one carrier adds a rule for the
 post-払込満了 period, rolling interest in on the day after the payment period matures and
-annually thereafter [S10]. On the annual grid the recursion is simply
+annually thereafter [S10]. The balance is therefore an **annual** quantity whatever the
+projection grid, and the recursion is simply
 
     L(t+1) = (L(t) + A(t)) * (1 + i_L)
 
-with `A(t) = P` when the APL fires at `t` and zero otherwise.
+with `A(t) = P` when the APL fires at the anniversary `t` and zero otherwise.
 
 An advance already made is **unwound** — treated as never having happened — if the
 policyholder requests 解約, 減額 or conversion to 払済保険 within three months of the day after
@@ -561,8 +566,8 @@ adds the currency and MVA layers
    to the day before the next half-yearly anniversary [S10]; the premium due [S3] [S7]
    [S11]. Interest rolls into principal at each subsequent grace expiry [S3] [S7], with a
    distinct post-払込満了 rule at one carrier [S10]. Composite: **the premium due**, rolled
-   annually — the simplest rule consistent with the annual grid, and the rule at two
-   carriers.
+   annually — the rule at two carriers, and the one consistent with a 年払 premium advanced
+   on one date a year and capitalised at the 契約応当日.
 3. **Grace and what follows it.** One month at four carriers [S1] [S3] [S7] [S10]; **two
    months** at one [S9]; and at one carrier neither grace nor lapse but a scheduled 解除 on
    the monthly anniversary in the third month after the 払込期月, with the surrender value paid

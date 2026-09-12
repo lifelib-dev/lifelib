@@ -11,11 +11,16 @@ projecting model point 1::
     >>> Projection[1].result_cf()          # the worked-example anchor cell
     >>> Projection.point_id = 2            # the accumulation cell, no withdrawals
 
-``t`` counts **policy months**, 1-based. The notes index the unit fund ``UF(t)`` at the
-**end** of month ``t`` with ``UF(0) = P``; the library indexes :func:`av_pp` at the
-**start**, so ``av_pp(t)`` is the notes' ``UF(t-1)`` — the column their worked-example
-table prints first — and the notes' ``UF(t)`` is ``av_pp_at(t, "AFT_WD")``, which equals
-``av_pp(t + 1)``.
+``t`` counts **policy months** from issue and is **0-based**: ``t = 0`` is the first
+month, month ``t`` runs from time ``t`` to time ``t + 1``, and the frame is
+``range(proj_len())`` — ``t = 0, 1, ..., proj_len() - 1``. The policy year is the
+1-based contractual label ``policy_year(t) = t // 12 + 1``. The notes index the unit
+fund ``UF(t)`` at **time** ``t`` — the start of month ``t``, with ``UF(0) = P`` — and so
+does :func:`av_pp`: ``av_pp(t)`` is the notes' ``UF(t)``, the column their
+worked-example table prints first, and the notes' ``UF(t + 1)``, the fund after the
+month's cancellations, is ``av_pp_at(t, "AFT_WD")``, which equals ``av_pp(t + 1)``.
+The in-force count is indexed the same way: ``pols_if(t)`` is the notes' ``l(t)``, the
+count at time ``t`` with ``l(0) = 1``.
 
 .. rubric:: Input data
 
@@ -53,14 +58,14 @@ symbols instead. The mapping is:
 =========================  ==============================  ==========================
 Notes symbol               Cells                           Meaning
 =========================  ==============================  ==========================
-t                          (the cells argument)            Policy month
-y = ceil(t/12)             policy_year(t)                  Policy year containing month t
+t                          (the cells argument)            Policy month, 0-based
+y = t // 12 + 1            policy_year(t)                  Policy year containing month t
 a                          age(t)                          Attained age (ALB)
-(none)                     duration(t)                     Completed policy years, y - 1
-(none)                     duration_mth(t)                 Months elapsed at end of month t
+(none)                     duration(t)                     Completed policy years, t // 12
+(none)                     duration_mth(t)                 Months elapsed at time t, = t
 P                          premium()                       Single premium
-UF(t-1)                    av_pp(t)                        Unit fund at the start of month t
-UF_g(t), UF'(t), UF(t)     av_pp_at(t, timing)             The fund inside month t
+UF(t)                      av_pp(t)                        Unit fund at time t (start of month t)
+UF_g(t), UF'(t), UF(t+1)   av_pp_at(t, timing)             The fund inside month t
 (per segment)              av_per_segment_pp(t)            The fund divided by the segments
 g                          fund_return                     Annual gross fund return
 g_m                        fund_return_mth()               Its monthly equivalent
@@ -85,8 +90,8 @@ w_base(y)                  surr_rate_base(t)               Table surrender rate
 M_perf(t)                  perf_factor(t)                  Performance lapse multiplier
 M_allow(y)                 allow_factor(t)                 Allowance-exhaustion step
 w_ann(y,t), w_m(t)         surr_rate(t), surr_rate_mth(t)  Surrender rates applied
-l(t-1)                     pols_if(t)                      In force at the start of month t
-l(t)                       pols_if_at(t, timing)           BEF_DECR / BEF_SURR / AFT_DECR
+l(t)                       pols_if(t)                      In force at time t (start of month t)
+l(t+1) (AFT_DECR)          pols_if_at(t, timing)           BEF_DECR / BEF_SURR / AFT_DECR
 (none)                     pols_death(t)                   Deaths in month t
 (none)                     pols_surr(t)                    Surrenders at the end of month t
 (none)                     pols_maturity(t)                In force when the projection ends
@@ -110,7 +115,7 @@ Four names needed care.
 :func:`av_pp_at`. The house name wins, because one concept must not carry two names
 across the library — but the docstrings and the ``result_cf`` columns keep the unit
 vocabulary the product is actually discussed in, and ``av_pp(t)`` is documented
-everywhere as the notes' ``UF(t-1)``.
+everywhere as the notes' ``UF(t)``, the fund at time ``t``.
 
 ``G`` is used twice in the notes: ``G$(t)`` is the gross fund return credited in the
 month and ``G(t)`` the GMDB guaranteed amount. They become :func:`fund_growth_pp` and
@@ -131,15 +136,15 @@ closes in the last month.
 
 .. rubric:: The unit fund recursion, and the order the charges come in
 
-Per policy, within month ``t``::
+Per policy, within month ``t`` (from time ``t`` to time ``t + 1``)::
 
-    UF_g(t) = UF(t-1) x (1 + g_m(1 - t_pf))          growth, net of the tax provision
+    UF_g(t) = UF(t) x (1 + g_m(1 - t_pf))            growth, net of the tax provision
     UF'(t)  = UF_g(t) x (1 - c_m - f_m)              AMC and further costs
-    UF(t)   = UF'(t) - W(t) - AC(t) - GC(t)          unit cancellations at end of month
+    UF(t+1) = UF'(t) - W(t) - AC(t) - GC(t)          unit cancellations at end of month
 
 The **order matters and is a listed pitfall**. The annual management charge accrues
 daily through the unit price, so it is levied on the post-growth, pre-cancellation fund.
-Charging it on ``UF(t-1)`` instead, or after the withdrawal, moves the margin by about
+Charging it on ``UF(t)`` instead, or after the withdrawal, moves the margin by about
 half a month's growth or withdrawal — small in one month and systematic over decades.
 :func:`av_pp_at` exposes all three points so the ordering is inspectable rather than
 buried in one expression.
@@ -170,9 +175,10 @@ alone is about 97% of the AMC on the anchor cell, and the further costs another 
 The sum assured is ``u x UF``, of which ``UF`` is funded by cancelling the policyholder's
 own units. The non-unit cost per death is therefore only
 
-    DS(t) = (u - 1) UF(t) + max(0, G(t) - u UF(t)) 1{gmdb}
+    DS(t) = (u - 1) UF(t+1) + max(0, G(t) - u UF(t+1)) 1{gmdb}
 
-— a tenth of a percent of the fund on the composite, plus any in-the-money guarantee.
+— a tenth of a percent of the end-of-month fund on the composite, plus any in-the-money
+guarantee.
 The uplift is a **parameter and never a literal**: 100.1% against 101% is a tenfold
 difference in death strain, which the notes list as a pitfall and model point 5
 exercises.
@@ -378,23 +384,24 @@ def pols_if_init():
 
 
 def duration(t):
-    """Completed policy years at the start of month t: ``(t - 1) // 12``."""
-    return (t - 1) // 12
+    """Completed policy years at the start of month t: ``t // 12``; 0 in the first year."""
+    return t // 12
 
 
 def duration_mth(t):
-    """Months elapsed from issue at the end of month t; equal to t.
+    """Months elapsed from issue at the start of month t; equal to t.
 
-    ``t`` is 1-based, so the identity is trivial - the cells exists so the monthly
-    models in this library share one vocabulary.
+    ``t`` is 0-based and counts from issue, so the identity is trivial - the cells
+    exists so the monthly models in this library share one vocabulary.
     """
     return t
 
 
 def policy_year(t):
-    """y = ceil(t/12): the policy year containing month t; 1 for t = 1..12.
+    """y = t // 12 + 1: the 1-based policy year containing month t; 1 for t = 0..11.
 
-    Also the **insurance year** the tax allowance is tracked against.
+    A contractual label derived from the 0-based ``t``, never the index itself.  Also
+    the **insurance year** the tax allowance is tracked against.
     """
     return duration(t) + 1
 
@@ -405,34 +412,43 @@ def age(t):
 
 
 def horizon_mths():
-    """The mortality horizon: ``12 x (omega_age - age_at_entry)``."""
+    """The mortality horizon in months: ``12 x (omega_age - age_at_entry)``.
+
+    The number of months from issue to the limiting age, so the last month before it
+    is ``t = horizon_mths() - 1``.
+    """
     return 12 * (omega_age - age_at_entry())                         # noqa: F821
 
 
 def fund_exhaust_mth():
-    """The first month at which the unit fund has been drawn to nothing.
+    """The time at which the unit fund has been drawn to nothing.
 
-    ``horizon_mths() + 1`` if it never is.  A 5% withdrawal against a 5% gross return is
-    not sustainable once the tax provision and the charges are taken, so on the
-    deterministic base run the anchor cell's fund does run out - around policy year 30 -
-    and every margin the insurer was counting on stops there.  Searched rather than
-    solved, so that any withdrawal pattern and charge basis resolves.
+    The first ``t`` with ``av_pp(t) == 0``.  A time point, not a row: the fund is zero at
+    the start of month ``t``, having been
+    cancelled to nothing at the end of month ``t - 1``, so ``t`` is also the number of
+    months the bond carried units.  ``horizon_mths() + 1`` if it never is.  A 5%
+    withdrawal against a 5% gross return is not sustainable once the tax provision and
+    the charges are taken, so on the deterministic base run the anchor cell's fund does
+    run out - around policy year 30 - and every margin the insurer was counting on stops
+    there.  Searched rather than solved, so that any withdrawal pattern and charge basis
+    resolves.
     """
     last = horizon_mths()
-    for t in range(1, last + 1):
+    for t in range(last):
         if av_pp(t) <= 0.0:
             return t
     return last + 1
 
 
 def proj_len():
-    """Projection length in months: the mortality horizon, or the fund exhausting first.
+    """The number of projected months: the mortality horizon, or the fund running out.
 
-    A bond has no maturity date, so the horizon is a limiting age - but a bond with no
-    units has no liability, no margin and nothing left to project, so the projection also
-    ends when the fund does.
+    The exclusive end of the frame, which is ``t = 0, 1, ..., proj_len() - 1``.  A bond
+    has no maturity date, so the horizon is a limiting age - but a bond with no units has
+    no liability, no margin and nothing left to project, so the projection also ends when
+    the fund does: the last month is the one whose closing fund is zero.
     """
-    return min(horizon_mths(), fund_exhaust_mth() - 1)
+    return min(horizon_mths(), fund_exhaust_mth())
 
 
 def fund_return_mth():
@@ -533,14 +549,15 @@ def surr_rate_mth(t):
 
 
 def av_pp(t):
-    """UF(t-1): the unit fund per policy at the **start** of policy month t.
+    """UF(t): the unit fund per policy at time t, the **start** of policy month t.
 
     The bid value of units, and the column the notes' worked-example table prints first.
-    ``av_init_pp()`` at ``t = 1``, then the end-of-month value of the previous month.
-    Floored at zero: :func:`wd_pp` caps the withdrawal at what the fund can pay, so the
-    fund is drawn to nothing rather than through it.
+    ``av_init_pp()`` at ``t = 0`` (issue), then the end-of-month value of the previous
+    month, ``av_pp_at(t - 1, "AFT_WD")``.  Floored at zero: :func:`wd_pp` caps the
+    withdrawal at what the fund can pay, so the fund is drawn to nothing rather than
+    through it.
     """
-    if t <= 1:
+    if t == 0:
         return av_init_pp()
     return av_pp_at(t - 1, "AFT_WD")
 
@@ -549,7 +566,7 @@ def av_pp_at(t, timing):
     """The unit fund per policy at a point inside policy month t.
 
     ``"BEF_GROWTH"``
-        UF(t-1), the start of the month; the same as :func:`av_pp`.
+        UF(t), the start of the month; the same as :func:`av_pp`.
 
     ``"AFT_GROWTH"``
         UF_g(t), after the gross return and the tax provision taken in
@@ -557,12 +574,12 @@ def av_pp_at(t, timing):
 
     ``"AFT_CHARGE"``
         UF'(t), after the annual management charge and the further costs.
-        **This is the base the AMC is levied on**, not ``UF(t-1)`` and not
+        **This is the base the AMC is levied on**, not ``UF(t)`` and not
         the post-withdrawal fund: the charge accrues daily through the
         unit price, so it sits on the post-growth, pre-cancellation fund.
 
     ``"AFT_WD"``
-        UF(t), after the end-of-month unit cancellations - withdrawal,
+        UF(t+1), after the end-of-month unit cancellations - withdrawal,
         adviser charge and rider charge.  Equals ``av_pp(t + 1)``.
 
     All four points are exposed so that the charge ordering is inspectable rather than
@@ -592,7 +609,7 @@ def av_per_segment_pp(t):
 
 
 def fund_growth_pp(t):
-    """G$(t) = g_m x UF(t-1): the gross fund return credited in month t."""
+    """G$(t) = g_m x UF(t): the gross fund return credited in month t."""
     return fund_return_mth() * av_pp(t)
 
 
@@ -667,16 +684,18 @@ def gmdb_guarantee_pp(t):
     guarantee that erodes as the policyholder draws the fund down.  Zero without the
     rider.
 
-    Measured **before** the current month's cancellations, at ``wd_cum_pp(t - 1)``.
-    That is the only reading that resolves: the rider charge is itself a cancellation
-    alongside the withdrawal, so a guarantee net of the same month's withdrawal would
-    make the charge depend on a withdrawal that depends on the charge.  Taking the
-    start-of-month guarantee breaks the loop and matches the contractual sense, in which
-    the amount guaranteed is what is on the record when the month begins.
+    Measured **before** the current month's cancellations, at ``wd_cum_pp(t - 1)`` -
+    nothing has been drawn when ``t = 0``.  That is the only reading that resolves: the
+    rider charge is itself a cancellation alongside the withdrawal, so a guarantee net of
+    the same month's withdrawal would make the charge depend on a withdrawal that depends
+    on the charge.  Taking the start-of-month guarantee breaks the loop and matches the
+    contractual sense, in which the amount guaranteed is what is on the record when the
+    month begins.
     """
     if not gmdb_flag():
         return 0.0
-    return max(0.0, premium() - wd_cum_pp(t - 1))
+    drawn = wd_cum_pp(t - 1) if t > 0 else 0.0
+    return max(0.0, premium() - drawn)
 
 
 def gmdb_charge_pp(t):
@@ -696,10 +715,10 @@ def gmdb_charge_pp(t):
 def death_strain_pp(t):
     """DS(t): the **non-unit** cost per death in month t.
 
-    ``(u - 1) UF(t) + max(0, G(t) - u UF(t)) 1{gmdb}``.  The sum assured is ``u x UF``,
-    of which ``UF`` is funded by cancelling the policyholder's own units, so the
-    insurer's cost is only the uplift - a tenth of a percent of the fund on the composite
-    - plus any in-the-money guarantee.
+    ``(u - 1) UF(t+1) + max(0, G(t) - u UF(t+1)) 1{gmdb}``, on the end-of-month fund
+    after the cancellations.  The sum assured is ``u x UF``, of which ``UF`` is funded by
+    cancelling the policyholder's own units, so the insurer's cost is only the uplift - a
+    tenth of a percent of the fund on the composite - plus any in-the-money guarantee.
     """
     uf = av_pp_at(t, "AFT_WD")
     strain = (db_uplift() - 1.0) * uf
@@ -712,11 +731,11 @@ def wd_cum_pp(t):
     """CumWD: cumulative withdrawals and adviser charges to the end of month t.
 
     The allowance-relevant total: ongoing and ad hoc adviser charges consume the same 5%
-    tax allowance as withdrawals do.
+    tax allowance as withdrawals do.  The first month's cancellations at ``t = 0``, then
+    the running sum.
     """
-    if t <= 0:
-        return 0.0
-    return wd_cum_pp(t - 1) + wd_pp(t) + adviser_charge_pp(t)
+    prior = wd_cum_pp(t - 1) if t > 0 else 0.0
+    return prior + wd_pp(t) + adviser_charge_pp(t)
 
 
 def allowance_cum_pp(t):
@@ -741,14 +760,18 @@ def excess_gain_pp(t):
 
 
 def pols_if(t):
-    """l(t-1): the number of policies in force at the **start** of policy month t.
+    """l(t): the number of policies in force at time t, the **start** of policy month t.
 
-    ``pols_if_init()`` at ``t = 1``, then the notes' recursion
-    ``l(t) = l(t-1)(1 - q_m)(1 - w_m)``, deaths before surrenders **[std]**.
+    ``pols_if_init()`` at ``t = 0``, then the notes' recursion
+    ``l(t+1) = l(t)(1 - q_m(t))(1 - w_m(t))``, deaths before surrenders **[std]**, read
+    back one month: the count opening month ``t`` is the count closing month ``t - 1``,
+    ``pols_if_at(t - 1, "AFT_DECR")``.
+    Zero outside the frame, so ``pols_if(proj_len())`` is the count after the last
+    projected month: nothing, because :func:`pols_maturity` takes the survivors.
     """
-    if t < 1 or t > proj_len():
+    if t < 0 or t >= proj_len():
         return 0.0
-    if t == 1:
+    if t == 0:
         return pols_if_init()
     return pols_if_at(t - 1, "AFT_DECR")
 
@@ -764,15 +787,15 @@ def pols_if_at(t, timing):
         before surrender** **[std]**.
 
     ``"AFT_DECR"``
-        the notes' ``l(t)``, the end-of-month count, and zero in the last
-        projected month.
+        the notes' ``l(t+1)``, the end-of-month count, and zero in the last
+        projected month ``t = proj_len() - 1``.
     """
     if timing == "BEF_DECR":
         return pols_if(t)
     if timing == "BEF_SURR":
         return pols_if(t) * (1.0 - mort_rate_mth(t))
     if timing == "AFT_DECR":
-        if t < 1 or t >= proj_len():
+        if t < 0 or t >= proj_len() - 1:
             return 0.0
         return pols_if_at(t, "BEF_SURR") * (1.0 - surr_rate_mth(t))
     raise ValueError("invalid timing")
@@ -793,9 +816,10 @@ def pols_maturity(t):
 
     A bond has no maturity date, so this is either the population left at the limiting
     age or - on the base run - the population still holding a bond whose fund has just
-    been drawn to nothing.  It pays nothing, and it exists so the roll-forward closes.
+    been drawn to nothing.  It pays nothing, and it exists so the roll-forward closes in
+    the last projected month, ``t = proj_len() - 1``.
     """
-    if t != proj_len():
+    if t != proj_len() - 1:
         return 0.0
     return pols_if(t) - pols_death(t) - pols_surr(t)
 
@@ -804,13 +828,13 @@ def claims(t, kind=None):
     """Gross benefit outgo in policy month t, by kind; the total when kind is omitted.
 
     ``"DEATH"``
-        ``u x UF(t)`` per death - the full sum assured, of which all but
-        the uplift is funded by cancelling the policyholder's own units -
-        or the guaranteed amount where the rider is elected and in the
-        money, ``max(u x UF(t), G(t))``.
+        ``u x UF(t+1)`` per death - the full sum assured on the end-of-month
+        fund, of which all but the uplift is funded by cancelling the
+        policyholder's own units - or the guaranteed amount where the rider
+        is elected and in the money, ``max(u x UF(t+1), G(t))``.
 
     ``"SURRENDER"``
-        ``UF(t)`` per surrender: the bid value of units, with no penalty.
+        ``UF(t+1)`` per surrender: the bid value of units, with no penalty.
 
     These are **gross** flows.  They are published so the reader can see the whole
     picture, but they are not in :func:`net_cf`, because :func:`unit_releases` cancels
@@ -841,8 +865,9 @@ def withdrawals(t):
 def unit_releases(t):
     """The unit fund cancelled to fund the month's death and surrender benefits.
 
-    ``UF(t) x (deaths + surrenders)``.  The gross benefit outgo less this is exactly the
-    death strain, which is the only part the insurer funds from its own resources.
+    ``UF(t+1) x (deaths + surrenders)``, on the end-of-month fund.  The gross benefit
+    outgo less this is exactly the death strain, which is the only part the insurer funds
+    from its own resources.
     """
     return av_pp_at(t, "AFT_WD") * (pols_death(t) + pols_surr(t))
 
@@ -881,18 +906,23 @@ def death_strain(t):
 
 
 def inflation_factor(t):
-    """The expense inflation factor in month t: ``(1 + pi)^(y - 1)`` **[std]**."""
-    return (1.0 + inflation_rate) ** (policy_year(t) - 1)            # noqa: F821
+    """The expense inflation factor in month t: ``(1 + pi)^duration(t)`` **[std]**.
+
+    ``(1 + pi)^(y - 1)`` in the notes' policy-year terms: 1 throughout the first policy
+    year, ``t = 0..11``.
+    """
+    return (1.0 + inflation_rate) ** duration(t)                     # noqa: F821
 
 
 def expenses(t):
     """Acquisition and maintenance expense in month t **[std]**.
 
-    £300 per policy at issue, then £60 per policy a year inflating at 2.5%.  The margin
-    is proportional to the fund while the expense inflates, so a small-fund cell goes
-    margin-negative late in life - which the anchor cell does, as its fund is drawn down.
+    £300 per policy at issue - the first month, ``t = 0`` - then £60 per policy a year
+    inflating at 2.5%.  The margin is proportional to the fund while the expense
+    inflates, so a small-fund cell goes margin-negative late in life - which the anchor
+    cell does, as its fund is drawn down.
     """
-    acq = expense_acq * pols_if(t) if t == 1 else 0.0                # noqa: F821
+    acq = expense_acq * pols_if(t) if t == 0 else 0.0                # noqa: F821
     return acq + expense_maint / 12.0 * inflation_factor(t) * pols_if(t)  # noqa: F821
 
 
@@ -916,7 +946,7 @@ def net_cf(t):
 def check_av_roll_fwd_resid(t):
     """The unit fund roll-forward residual in month t; zero everywhere.
 
-    ``UF(t) - [UF(t-1) + growth - tax - AMC - further costs - W - AC - GC]``, per policy.
+    ``UF(t+1) - [UF(t) + growth - tax - AMC - further costs - W - AC - GC]``, per policy.
     This is the identity the charge ordering has to satisfy, and it is checked rather
     than assumed because the ordering is the model's most consequential convention.
     Skipped once the fund has been drawn to nothing, where the withdrawal cap breaks the
@@ -938,7 +968,7 @@ def check_av_roll_fwd():
     one test can call the same check across every account-value model in the library.
     """
     return all(abs(check_av_roll_fwd_resid(t)) <= 1e-8
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_pols_roll_fwd_resid(t):
@@ -953,7 +983,7 @@ def check_pols_roll_fwd_resid(t):
 def check_pols_roll_fwd():
     """True when the in-force roll-forward closes in every projected month."""
     return all(abs(check_pols_roll_fwd_resid(t)) <= 1e-10 * max(pols_if_init(), 1.0)
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_unit_funding_resid(t):
@@ -970,11 +1000,11 @@ def check_unit_funding_resid(t):
 def check_unit_funding():
     """True when every benefit is funded by unit cancellation plus the death strain."""
     return all(abs(check_unit_funding_resid(t)) <= 1e-8
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def result_cf():
-    """Result table of cashflows, indexed by policy month t.
+    """Result table of cashflows, indexed by policy month t = 0, 1, ..., proj_len() - 1.
 
     ``av_pp`` is the unit fund at the start of the month, and ``pols_if`` the in-force
     count that weights every flow on the row.  ``net_cf`` is the **non-unit** stream -
@@ -983,7 +1013,7 @@ def result_cf():
     ``further_costs`` and ``tax_provisions`` are published precisely because they are
     **not** in ``net_cf``: they leave the unit fund and are paid on.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1007,11 +1037,12 @@ def result_cf():
 def result_uf():
     """Result table of the unit fund recursion, indexed by policy month t.
 
+    One row per projected month, ``t = 0, 1, ..., proj_len() - 1``.
     The notes' worked-example table, column for column: the fund at the start of the
-    month, the gross return, the tax provision, the charges, the withdrawal, and the fund
-    at the end.
+    month (``UF(t)``), the gross return, the tax provision, the charges, the withdrawal,
+    and the fund at the end (``UF(t+1)``, as ``av_pp_end``).
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "av_pp": [av_pp(t) for t in ts],

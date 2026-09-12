@@ -11,8 +11,17 @@ projecting model point 1::
     >>> Projection[1].result_cf()          # the worked example's anchor cell
     >>> Projection.point_id = 5            # or switch the default
 
-``t`` counts **policy months**, 0-based: ``t = 0`` is the first policy month and
-``t = proj_len() - 1`` the last. Cover is whole of life, so the last month is the last
+``t`` counts **policy months**, 0-based, on the library-wide time-index convention:
+``t = 0`` is the first policy month, month ``t`` runs from ``t`` to ``t + 1`` months
+after the 契約日, and the frame is ``range(proj_len())`` — the last index is
+``proj_len() - 1`` and ``len(result_cf()) == proj_len()``. Every model point is new
+business at ``t = 0``, so there is no in-force offset to carry: ``age(0) =
+issue_age()`` and ``pols_if(0) = 1``. The **policy year** is the contractual, 1-based
+label derived from the index, ``policy_year(t) = t // 12 + 1``, and is what the
+1-based ``policy_year`` key of *lapse_table.csv* is read at; it is never the index
+itself.
+
+Cover is whole of life, so the last month is the last
 month of the mortality table's terminal age — 116 for males, 118 for females — and
 ``proj_len() = 12 * (omega_age() - issue_age() + 1)``. There is no maturity and no
 maturity benefit; what ends the projection is the table, not the contract.
@@ -56,12 +65,15 @@ compact actuarial symbols instead. The mapping is:
 ======================  =================================  ================================
 Notes symbol            Cells                              Meaning
 ======================  =================================  ================================
-t                       (the cells argument)               Policy month, 0-based
+t                       (the cells argument)               Policy month, 0-based;
+                                                           t = 0 .. proj_len() - 1
 x                       issue_age()                        Issue age, 満年齢
 age(t)                  age(t)                             Attained age, x + floor(t/12)
-y(t)                    policy_year(t)                     Policy year, floor(t/12) + 1
+y(t)                    policy_year(t)                     Policy year label, 1-based,
+                                                           floor(t/12) + 1
 (none)                  omega_age()                        Terminal age of the table
-(none)                  proj_len()                         Number of projected months
+(none)                  proj_len()                         Number of projected months;
+                                                           the frame's exclusive end
 (none)                  model_point()                      The selected model point row
 A_L                     lump_amount()                      介護一時金額
 A_N                     annuity_amount()                   基準介護年金額 per instalment
@@ -546,6 +558,10 @@ def omega_age():
 def proj_len():
     """The number of projected policy months, ``12 (omega_age() - issue_age() + 1)``.
 
+    A **row count**, and so the frame's exclusive end: the frame is ``range(proj_len())``,
+    the first month is ``t = 0``, the last is ``t = proj_len() - 1``, and
+    ``len(result_cf()) == proj_len()``.
+
     684 for the anchor cell.  Cover and premiums are both whole of life [S1] [S4] [S7]
     [S8] [S10] [S11], so nothing but the table ends the projection: there is no
     maturity, no maturity benefit and no renewal.
@@ -554,12 +570,26 @@ def proj_len():
 
 
 def age(t):
-    """age(t): the attained 満年齢 in policy month t, ``x + floor(t / 12)``."""
+    """age(t): the attained 満年齢 in policy month t, ``x + floor(t / 12)``.
+
+    ``t`` is 0-based, so ``age(0) = issue_age()``: the first projected month is the
+    first month of the contract and the age steps at each 年単位の契約応当日, ``t = 12``,
+    ``24``, and so on.
+    """
     return issue_age() + t // 12
 
 
 def policy_year(t):
-    """y(t): the policy year of month t, ``floor(t / 12) + 1``, 1-based."""
+    """y(t): the policy year of month t, ``floor(t / 12) + 1``.
+
+    The **contractual, 1-based label**, derived from the 0-based index and never the
+    index itself: month ``t = 0`` sits in policy year 1 and ``t = 12`` opens policy
+    year 2.  It exists because one schedule is keyed by that label and must be looked up
+    through it: the ``policy_year`` key of *lapse_table.csv*, read by :func:`lapse_rate`.
+    The contract's other policy-year boundary — the renewal commission that starts in
+    policy year 2 — is written directly on the 0-based index as ``t >= 12``
+    (:func:`commissions`), which is the same condition as ``policy_year(t) >= 2``.
+    """
     return t // 12 + 1
 
 
@@ -627,6 +657,9 @@ def mort_rate_care_mth(t):
 def lapse_rate(t):
     """The annual lapse rate in the policy year of month t, from *lapse_table.csv*.
 
+    The file's key column is ``policy_year``, a **contractual 1-based label** rather
+    than the model's time index, so it is read at ``policy_year(t) = t // 12 + 1``: the
+    first twelve months, ``t = 0 ... 11``, take the table's ``policy_year = 1`` row.
     The policy year is capped at the last year in the table, which carries the terminal
     rate — a whole-of-life projection would otherwise run off the end of it.  The only
     published industry-wide persistency figure in Japan is a 5.6% p.a. 解約・失効率 on
@@ -914,9 +947,15 @@ def pols_if(t):
     """l(t): the number of policies in force at the **start** of policy month t.
 
     ``pols_act(t) + care_w(t)``: alive, not lapsed and not extinguished by the annuity
-    cap, whether or not the premium is being waived.  ``pols_if(0) = 1``.  This is the
-    weight on every cash flow of the same ``result_cf()`` row.  Zero from
-    ``proj_len()`` on.
+    cap, whether or not the premium is being waived.  Every model point is new business
+    at ``t = 0``, so ``pols_if(0) = 1``.  This is the weight on every cash flow of the
+    same ``result_cf()`` row.
+
+    Defined one step past the frame, at ``t = proj_len()``, because that is the
+    closing state of the last projected month, read by :func:`pols_if_at` as
+    ``"AFT_DECR"`` and by :func:`check_pols_roll_fwd_resid`; it is zero there, the
+    terminal age carrying ``mort_rate == 1``.  Zero again for every ``t`` beyond it and
+    for ``t < 0``.
     """
     if t < 0 or t > proj_len():
         return 0.0
@@ -1284,6 +1323,13 @@ def check_nesting():
 
     The notes' ``check_nesting()``: it asserts the **ordering**, never a sum, because
     the ledgers must never be added together.
+
+    It is the one check that deliberately scans ``range(proj_len() + 1)`` rather than
+    the frame ``range(proj_len())``: the ordering is a property of the ledgers at a
+    *time point*, and the closing state of the last projected month, ``t =
+    proj_len()``, is the one time point the frame itself never publishes.  The other
+    three checks are cash flow and roll-forward identities of a *period* and stop at
+    ``proj_len() - 1``.
     """
     return all(check_nesting_resid(t) >= -roll_fwd_tol               # noqa: F821
                for t in range(proj_len() + 1))
@@ -1335,7 +1381,11 @@ def check_net_cf():
 # --- result tables ---
 
 def result_cf():
-    """Result table of cash flows, indexed by policy month t.
+    """Result table of cash flows, indexed by the 0-based policy month t.
+
+    One row per projected month over ``range(proj_len())``: the index runs
+    ``0, 1, ..., proj_len() - 1`` and the frame has ``proj_len()`` rows, 684 on the
+    anchor cell.  Row ``t`` is what happens **during** month ``t``.
 
     ``claims_annuity`` is a **living** benefit: the 介護年金 is paid while the insured
     survives in a certified care state at ``grade_annuity()``, and death stops it.  The
@@ -1373,7 +1423,10 @@ def result_cf():
 
 
 def result_pols():
-    """Result table of policy counts and decrement rates, indexed by policy month t."""
+    """Policy counts and decrement rates on the same 0-based frame as :func:`result_cf`.
+
+    Indexed by policy month ``t = 0, 1, ..., proj_len() - 1``.
+    """
     ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {

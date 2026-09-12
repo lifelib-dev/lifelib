@@ -50,12 +50,23 @@ layer, and a path-dependent conversion rider.
   capital and every statutory reserve are out of scope** and are cited, not reproduced (see
   Valuation and reserve pointers).
 - **Projection frequency.** **Monthly** (`FXWholeLife_JP_S`), stepping on the monthly policy
-  anniversary (*getsu-tan'i no keiyaku ōtōbi*, 月単位の契約応当日). This is not a refinement of
-  the chassis's annual grid but a requirement: the crediting rate (*tsumitate riritsu*, 積立利率)
+  anniversary (*getsu-tan'i no keiyaku ōtōbi*, 月単位の契約応当日). The chassis now steps monthly
+  too, but for a different reason: there the month is a finer reading of quantities the
+  contract defines at the 年単位の契約応当日, while here it is a **requirement** of the product
+  itself — the crediting rate (*tsumitate riritsu*, 積立利率)
   is redeclared monthly and credited from the monthly policy anniversary [S2], the
   death-benefit uplift (*zōka shibō hokenkin-gaku*, 増加死亡保険金額) is recomputed at the same date
   [S2], and the target-value test is made every business day [S9]. `t` counts completed
   policy months from 契約日; `t = 0` is the month beginning at issue.
+- **Time index [0-based].** `t` is **0-based**: the first projected period is `t = 0`, the
+  month beginning at issue, and month `t` runs from time `t` to time `t + 1`. The frame is
+  `t = 0 … T − 1` where `T` is the **number** of projected months, so the model's
+  `result_cf()` has `T` rows and `l(0) = 1`, `AV(0) = 0` and attained age `x + floor(t/12)`
+  all read at `t = 0`. The **policy year is a 1-based contractual label derived from `t`**,
+  `policy_year = floor(t/12) + 1`, and it is what the two policy-year-keyed input tables —
+  the surrender-rate table of class (c) and `fx_path_table.csv` — are looked up by; it is
+  never the index the projection runs on. Where the text below says "policy year 1" it is
+  speaking contractually, and the formula beside it is written in `t`.
 - **The declaration/application offset is real and is carried, not resolved.** The 重要事項説明書
   of the anchor booklet says the rate is set 毎月1日; 約款第3条第2項 of the same booklet says it is
   applied 月単位の契約応当日ごとに [S2]. The 約款 governs, so the model credits on policy months and never
@@ -160,6 +171,13 @@ premium for exactly this cell — male, 契約年齢40歳, the sum assured on th
 | `target_hit(t)` | bool — the yen-converted `CV(t)` has reached the 目標額 | derived, path-dependent |
 | `fx_rate(t)` | `e(t)` — the reference TTM in month `t` | model point or path table |
 
+**Every state variable above is a time-point value, not a closing balance.** `AV(t)`,
+`AV0(t)`, `CV(t)` and `l(t)` are read *at* time `t` — the start of month `t`, with `t = 0`
+at issue and before that month's premium — so `AV(0) = 0`, `l(0) = 1`, and the closing
+state of month `t` is the same cells read at `t + 1`. That is why the cash-flow table
+publishes `AV(t+1)` and `CV(t+1)` on the row of month `t`, and why the surrender benefit of
+month `t` is valued on `CV(t+1)`.
+
 `av0_pp` and `idb_pp` exist only on the LEVEL shape; on the SINGLE shape the death benefit
 is `max(AV(t), CV(t))` and there is no fund-independent sum assured at all [S3]. `cv_pp` is
 the chassis name and is used here for the same object; `av_pp` is the new one, and the two
@@ -189,7 +207,7 @@ the 3.50% and 4.00% columns as three columns and never as an average [S2] [R8].
 | 最低保証積立利率 `i0` | **3.00%** on LEVEL, equal to the contract's own 予定利率, fixed at issue | [S1] [S2] |
 | 最低保証積立利率, SINGLE | **0.01%** | [S3] |
 | 解約返戻金 formula | `AV × (1 − mva − sc) × kl` | [S3]; suppression [S2] |
-| 解約控除率 `sc(t)` | 7.0% in policy year 1, −0.7pp per completed policy year, zero from year 10; constant within the year; base = the 積立金 | [S3] |
+| 解約控除率 `sc(t)` | 7.0% in policy year 1, −0.7pp per completed policy year, zero from ten completed years (`t ≥ 120`, i.e. policy year 11 onward); constant within the year; base = the 積立金 | [S3] |
 | MVA scope | SINGLE only; not on an 積立利率計算基準日 nor inside a 1-year 積立利率適用期間 | [S3] |
 | MVA direction | Symmetric: positive when rates have risen, **negative when they have fallen** | [S3] [R8] |
 | 低解約返戻金割合 `kl` | 70% / 77.5% / 85% / 92.5% by 残余保険料払込年数 (≥4 / 3 / 2 / 1), 1.00 from 払込満了 | [S2] |
@@ -283,6 +301,11 @@ difference is an order of magnitude.
 | LEVEL `lapse_rate(t)` **[std]** | 8% | 7% | 6% | 5% | 5% | 4% | 3% |
 | SINGLE `lapse_rate(t)` **[std]** | 28% | 23% | 18% | 14% | 8% | 8% | 8% |
 
+The columns are the **1-based contractual policy year**, which the model reads through
+`policy_year(t) = floor(t/12) + 1`: policy year 1 is months `t = 0 … 11`, policy year 2 is
+months 12 … 23, and years beyond the table's last row take that row. The shipped
+`lapse_table.csv` is keyed that way and its values are not shifted.
+
 The SINGLE curve is **calibrated, not invented**: the FSA reports that about **60% of
 外貨建一時払保険 are surrendered within four years** of purchase [R5], and the four rates above give
 a cumulative four-year exit of **60.90%**. The companion statistic — an average holding
@@ -328,8 +351,8 @@ hidden.
 
 | Symbol | Meaning |
 |---|---|
-| `t` | policy month, `t = 0 … T − 1`; attained age is `x + floor(t/12)` |
-| `x`, `T`, `ω` | 契約年齢; projection length in months, `T = 12(ω − x + 1)`; table terminal age |
+| `t` | policy month, **0-based**: `t = 0 … T − 1`, month `t` running from time `t` to time `t + 1`; attained age is `x + floor(t/12)` and the contractual policy year is `floor(t/12) + 1` |
+| `x`, `T`, `ω` | 契約年齢; the **number** of projected months, `T = 12(ω − x + 1)`, so the frame's last index is `T − 1`; table terminal age |
 | `n` | 保険料払込期間 in months (240 on the anchor cell) |
 | `SA`, `P` | 基本保険金額; monthly premium, payable at the start of months 0 … n−1 |
 | `i0`, `ic` | 予定利率 / guaranteed floor; declared 積立利率 — both annual effective |
@@ -602,7 +625,8 @@ All dynamic forms are **[std]** reference constructions.
 - **The test is on the surrender value, not the account value** [S9]. The worked example
   measures what that costs: thirteen months.
 - **The one-year dead zone is contractual** [S9] and interacts with the surrender charge,
-  which is 7.0% and 6.3% over exactly that window [S3].
+  which is 7.0% over exactly that window and steps to 6.3% in the month the test first
+  becomes live (`t = 12`) [S3].
 - **自動振替貸付.** Inherited unchanged on the LEVEL shape, absent on the SINGLE shape. A policy
   does not lapse while the account value can carry the premium, so applying a lapse rate to
   unpaid premiums without first running the APL test models a decrement the contract does
@@ -767,9 +791,11 @@ the target conversion**, entirely without help from the crediting rate or the cu
 
 On the flat path the target is reached at **month 52** (four years four months), where `AV =
 116,626.82`, `mva = 0.007219`, `sc = 4.2%`, `CV = 110,886.51` and `CV × 158.93 = ¥17,623,193
-≥ ¥17,592,300`. Three counterfactuals measure the mechanics that the trigger is easy to get
-wrong about: testing the **account value** instead of the surrender value hits at month
-**39**, thirteen months early; ignoring the 解約控除 alone hits at month 41; ignoring the MVA
+≥ ¥17,592,300`. The conversion is a *flow* of month 51 and is published on `result_cf()` row
+`t = target_month() − 1 = 51`; `AV(52)` and `CV(52)` are the time-52 state values it is
+measured on, and `pols_if(52) = 0`. Three counterfactuals measure the mechanics that the
+trigger is easy to get wrong about: testing the **account value** instead of the surrender
+value hits at month **39**, thirteen months early; ignoring the 解約控除 alone hits at month 41; ignoring the MVA
 alone hits at month 50. The 解約控除 moves the trigger further than the MVA does because it is
 the larger deduction over exactly this window — `sc` of 4.9% at month 41 then 4.2% at month
 52, against an `mva` of 0.78% and 0.72% at the same two months — so dropping it must

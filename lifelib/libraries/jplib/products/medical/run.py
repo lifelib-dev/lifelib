@@ -5,6 +5,11 @@
 
 Output is ASCII-only so it prints on a Windows console under any code page: the product
 is written "iryo hoken" (medical insurance, third sector) and amounts are JPY.
+
+The time index is 0-based, the library-wide convention: t is the policy month, t = 0 is
+the first one, and the frame runs t = 0 .. proj_len() - 1, so result_cf() has proj_len()
+rows. The policy year printed below is the contractual 1-based label derived from it,
+policy_year = t // 12 + 1, so months t = 0 .. 11 are policy year 1.
 """
 import sys
 from pathlib import Path
@@ -27,9 +32,10 @@ print("daily amount = JPY {:,.0f}/day   per-hospitalization limit = {} days   "
       "aggregate limit = {:,.0f} days/limb".format(
           proj.daily_amount(), proj.limit_per_hosp(), proj.limit_agg()))
 print("premium = JPY {:,.2f}/month   surgery {:.0f}x in hospital / {:.0f}x outpatient   "
-      "projection = {} months to age {}".format(
+      "projection = {} months (t = 0 .. {}) to age {}".format(
           proj.premium_mth_pp(), proj.surg_mult_ih(), proj.surg_mult_op(),
-          proj.proj_len(), proj.issue_age() + proj.proj_len() // 12 - 1))
+          proj.proj_len(), proj.proj_len() - 1,
+          proj.issue_age() + proj.proj_len() // 12 - 1))
 print("modules: five-day minimum = {}   advanced-medicine rider = {}   "
       "lump-sum rider = {}".format(
           proj.min_days_5(), proj.adv_rider(), proj.lump_rider()))
@@ -38,17 +44,19 @@ print("         3-disease unlimited = {}   3-disease waiver = {}   "
           proj.tokusoku_3dis(), proj.waiver_3dis(), proj.surg_after_limit()))
 print()
 
-print("Cash flow statement, first 13 months (JPY; net_cf is income-positive)")
+print("Cash flow statement, first 13 months, t = 0 .. 12 "
+      "(JPY; net_cf is income-positive)")
 print(proj.result_cf().head(13).round(2).to_string())
 print()
 
-print("Benefit-day and rider ledgers, per surviving policy, first 13 months")
+print("Benefit-day and rider ledgers, per surviving policy, t = 0 .. 12")
 print(proj.result_days().head(13).round(4).to_string())
 print()
 
-annual = proj.result_cf().groupby(proj.result_cf().index // 12).sum()
-annual.index.name = "policy_year_less_1"
-print("Policy year totals, first 5 years (sums of unrounded monthly values)")
+annual = proj.result_cf().groupby(proj.result_cf().index // 12 + 1).sum()
+annual.index.name = "policy_year"
+print("Policy year totals, first 5 years (policy_year = t // 12 + 1; "
+      "sums of unrounded monthly values)")
 print(annual.head(5).round(2).to_string())
 print()
 

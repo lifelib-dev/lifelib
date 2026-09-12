@@ -25,6 +25,14 @@ the reference implementation. Parameter values here are identical to those in
 - **Projection frequency:** monthly. All policy processing occurs on the monthiversary
   ("monthly policy date"), consistent with segment creation on monthly policy dates
   [S3] **[std]**.
+- **Time index:** policy month t is 0-based. t = 0 is the issue month; policy month t runs
+  from monthiversary t to monthiversary t + 1; the frame is t = 0, 1, …, proj_len − 1
+  with proj_len = 12 × (121 − issue age) − duration_mth (the months already elapsed) the
+  number of projected months. Policy year is the 1-based contractual label ⌊t/12⌋ + 1,
+  attained age x = issue age + ⌊t/12⌋, and an in-force model point carries its elapsed
+  months as a separate offset (duration_mth). A state variable X_t is the value at
+  monthiversary t (X_0 the opening value), so the recursions below step from X_t to
+  X_{t+1}.
 - **Timing:** beginning-of-month (BOM) processing for premium, deductions, sweeps, and
   segment events; interest credited over the month (end-of-month effect). Decrements
   (death, lapse) applied at end of month after crediting **[std]**.
@@ -51,7 +59,7 @@ the reference implementation. Parameter values here are identical to those in
 | Face amount F | currency | 250,000 |
 | DB option | enum {A, B} | A |
 | Planned annual premium | currency | 10,000 **[std]** example |
-| Premium mode | enum | annual, paid at BOM of policy month 1 each year **[std]** |
+| Premium mode | enum | annual, paid at BOM of the first month of each policy year (t ≡ 0 mod 12) **[std]** |
 | Indexed allocation w_ix | percent of sweepable balance | 100% **[std]** |
 | Issue date / duration offset | date, months | t = 0 |
 | Existing loan balance | currency | 0 |
@@ -115,7 +123,7 @@ public bases):
 
 ## Cash flow components and recursions
 
-### Notation (defined once; monthly step t → t+1, policy month t = 0, 1, 2, …)
+### Notation (defined once; monthly step t → t+1, policy month t = 0, 1, 2, …, proj_len − 1)
 
 | Symbol | Meaning |
 |---|---|
@@ -139,9 +147,10 @@ public bases):
 
 ### Monthly processing order (monthiversary t) **[std]** (carrier ordering conventions vary; this order is fixed for the reference model and matches the universal-life base-chassis order — premium, withdrawal, DB/NAAR, deduction, interest, decrements — per `products/universal_life/technical-notes.md`; the segment steps are the IUL additions)
 
-1. **Anniversary resets** (if t ≡ 0 mod 12): attained age +1; re-declare NGEs if the
-   re-declaration model is on; update corridor factor κ_x [R4]; annual premium P_t
-   received (net premium NP_t → FA).
+1. **Anniversary events** (if t ≡ 0 mod 12): annual premium P_t received (net premium
+   NP_t → FA). **Anniversary resets** (if t ≡ 0 mod 12 **and t > 0**): attained age +1
+   (x = issue age + ⌊t/12⌋, so it first steps at t = 12); re-declare NGEs if the
+   re-declaration model is on; update corridor factor κ_x [R4].
 2. **Segment maturity** (for any k with t = m_k + 12): compute index credit (below), add
    to S_k; roll matured value into a new segment (standing instructions) **[std]**.
 3. **Withdrawals / new loans** processed: W_t + fee from FA then pro rata from segments

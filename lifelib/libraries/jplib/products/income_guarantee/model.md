@@ -6,13 +6,13 @@ implements is specified in [`product-spec.md`](product-spec.md). The protection 
 it states deltas against is 定期保険, specified in
 [`products/term_life/product-spec.md`](../term_life/product-spec.md) with its
 [technical notes](../term_life/technical-notes.md) and implemented in
-[`Term_JP_A`](../term_life/model.md) — this model carries that model's names for every
+[`Term_JP_S`](../term_life/model.md) — this model carries that model's names for every
 shared concept, and restates none of its machinery. `S#` and `R#` ids resolve
 against [`sources.md`](sources.md), and `[REG-R#]` against
 `references/regulatory-and-actuarial-references.md`.
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** What is sourced
-> on this product is the *shape*: the instalment count `max(N − m + 1, G)`, the 最低支払保証期間
+> on this product is the *shape*: the instalment count `max(N − m, G)`, the 最低支払保証期間
 > (*saitei shiharai hoshō kikan*, minimum payment guarantee period) as an extension of the
 > payment period past the expiry date rather than a floor inside it, the absence of any
 > survival condition on the instalments, the absence of any surrender value (*kaiyaku-henreikin*,
@@ -58,7 +58,11 @@ model.Projection[1].result_pols()    # the populations and decrement rates besid
 
 `Projection` takes a `point_id` and `Projection[1]` is the worked example's anchor cell.
 `result_cf()` returns a `DataFrame` indexed by policy month `t`, one column per cash flow
-line, with `pols_if` first and `net_cf` last. The model and its `Projection` Space both
+line, with `pols_if` first and `net_cf` last. **`t` is 0-based**, library-wide: `t = 0` is
+the first policy month, the frame is `range(proj_len())` so the index runs
+`0 … proj_len() − 1` and `len(result_cf()) == proj_len()`, and the contractual labels are
+derived rather than indexed by — policy month `t + 1`, policy year `policy_year(t) =
+t // 12 + 1`. The model and its `Projection` Space both
 carry docstrings — `model.doc` describes the product and the projection basis, and
 `model.Projection.doc` holds the full mapping between the technical notes' symbols and the
 cells names.
@@ -74,22 +78,28 @@ the annuity payment period is **extended past the expiry date** until the guaran
 
     proj_len() = term_m() + guar_m() - 1
 
-On the anchor cell that is 443 months against a 420-month term: a claim in policy month 420
-pays its twenty-fourth instalment twenty-three months after cover ended. `pols_if(t)` is
-zero for every `t` beyond `term_m()`, and in those months the only surviving lines are the
-annuity instalments and their administration expense — `check_expired_cover()` asserts
-exactly that, month by month. Terminating at `t = N` drops ¥2,645.21 of contractual claim
-outgo on the anchor cell, 0.5967% of the total, and nothing else looks wrong afterwards,
-which is what makes it the easiest error to make on this product and the least visible.
+and the frame is `t = 0 … N + G − 2` — `proj_len()` rows in all, the count and not the last
+index.
+
+On the anchor cell that is 443 months against a 420-month term: a claim in the last month of
+cover, `t = 419`, pays its twenty-fourth instalment at `t = 442`, twenty-three months after
+cover ended. `pols_if(t)` is zero for every `t >= term_m()`, and in those months the only
+surviving lines are the annuity instalments and their administration expense —
+`check_expired_cover()` asserts exactly that, month by month. Terminating at the end of
+cover, `t = N − 1`, drops ¥2,645.21 of contractual claim outgo on the anchor cell, 0.5967%
+of the total, and nothing else looks wrong afterwards, which is what makes it the easiest
+error to make on this product and the least visible.
 
 The guarantee is a **term extension, not a benefit floor**. Both readings pay the same
-`max(N − m + 1, G)` instalments, so an undiscounted total cannot distinguish them; they
-differ in *when*. `pay_count(m)` and `pay_end(m)` express the same contractual rule from
-opposite ends — how many instalments a claim makes, and the month the last of them falls —
-and `check_pay_count()` asserts `pay_count(m) == pay_end(m) − m + 1` for every month of
-cover. `pay_end(m) = max(N, m + G − 1)` is the whole guarantee mechanic in one expression:
-for `m <= N − G + 1` every stream ends at exactly `N` whenever it opened, because the expiry
-date is fixed at issue.
+`max(N − m, G)` instalments — `m` being the model's own 0-based claim month, which is why
+the count is `N − m` and not the `N − m + 1` a 1-based month number would give — so an
+undiscounted total cannot distinguish them; they differ in *when*. `pay_count(m)` and
+`pay_end(m)` express the same contractual rule from opposite ends — how many instalments a
+claim makes, and the month the last of them falls — and `check_pay_count()` asserts
+`pay_count(m) == pay_end(m) − m + 1` for every month of cover. `pay_end(m) =
+max(N − 1, m + G − 1)` is the whole guarantee mechanic in one expression: for `m <= N − G`
+every stream ends at exactly `N − 1` whenever it opened, because the expiry date is fixed at
+issue.
 
 ---
 
@@ -98,7 +108,7 @@ date is fixed at issue.
 `annuities_if(t)` is the notes' `R(t)`: the number of annuity instalments falling due in
 month `t`, per policy issued. It is *not* a population of policies, which is why it is not
 spelled `pols_*`, and it must never be summed with `pols_if(t)`. On the anchor cell
-`annuities_if(420) = 0.016780` while `pols_if(420) = 0.145023`, and adding them produces a
+`annuities_if(419) = 0.016780` while `pols_if(419) = 0.145023`, and adding them produces a
 number with no meaning.
 
 The recursion is
@@ -122,15 +132,16 @@ Two identities guard it, both implemented as `check_*` cells with a per-`t` sign
 - `check_annuity_ledger()` rebuilds `annuities_if(t)` directly from the claim vector — the
   streams `s` with `s <= t <= pay_end(s)` — with no reference to the recursion.
 - `check_annuity_total()` checks the running total `annuities_cum(t)` against an independent
-  count of the instalments each claim contributes at or before `t`. At `t = proj_len()`
-  this is the notes' identity `sum of R(t) = sum of D(s) × n_pay(s)`: 2.955425 instalments
+  count of the instalments each claim contributes at or before `t`. At the last row of the
+  frame, `t = proj_len() − 1`, this is the notes' identity
+  `sum of R(t) = sum of D(s) × n_pay(s)`: 2.955425 instalments
   against 0.016780 expected claims, an average of 176 instalments a claim, which is the
   number that says this is an income product and not a sum-assured one.
 
-A consequence worth stating separately: the ledger **peaks at exactly month `N`**, where it
-equals the sum of every claim the contract has ever made. An implementation that ends
-streams one month early gets that identity wrong by one month's claims and nothing else
-visibly changes.
+A consequence worth stating separately: the ledger **peaks at exactly `t = N − 1`**, the
+last month of cover, where it equals the sum of every claim the contract has ever made. An
+implementation that ends streams one month early gets that identity wrong by one month's
+claims and nothing else visibly changes.
 
 ---
 
@@ -151,7 +162,7 @@ cessation, because a policy in claim has already left `pols_if`; what the model 
 is give the ledger a premium. And **`annuity_expenses` rides the ledger**, at ¥200 per
 instalment **[std]**, not the in-force population: it is the one expense that survives the
 end of the term, so attaching every expense to `pols_if` charges nothing at all in months
-421 to 443, when instalments are still being paid. It has no analogue on the protection
+`t = 420 … 442`, when instalments are still being paid. It has no analogue on the protection
 chassis, which pays a lump sum and closes the file.
 
 ---
@@ -205,6 +216,19 @@ the projection follows, with no formula change.
 | `mort_table.csv` | 死亡保険用 table rates by sex and attained age 20-89, the range this model can read | The library's one canonical **[std]** construction, anchored on the individual rates read from the IAJ table [R1] [REG-R18]; per-row `provenance` says which rows are anchors and which are interpolated, and is identical to the row every other `jplib` product ships for the same cell |
 | `lapse_table.csv` | Annual ordinary lapse rate by policy year, five rows, the last applying to year 5 and beyond | **[std]** chassis table, reconciled to the LIAJ FY2024 個人保険 解約・失効率 of 5.6% [REG-R31]; nothing product-specific exists |
 | `rate_class_table.csv` | `class_factor` and `mix_weight` for the four rate classes | **[std]**; no carrier publishes a class differential for this product [S2] [S5] [S6] [S14] [S16] |
+
+**No input file is keyed by the model's time index**, so the move to the 0-based `t`
+changed no CSV. Every time-like column was decided on its meaning and the decision is
+recorded here:
+
+| File | Column | Decision | Reason |
+|---|---|---|---|
+| `lapse_table.csv` | `policy_year` (values 1–5) | **Unchanged, 1-based** | A contractual policy-year label, not the frame's index. `lapse_rate(t)` maps through `policy_year(t) = t // 12 + 1` and clamps at the last row, so the file keeps the chassis's 1-based key unchanged |
+| `mort_table.csv` | `age` (20–89) | **Unchanged** | Attained age, not a time index; read at `age(t) = issue_age() + t // 12` |
+| `model_point_table.csv` | `guar_m` (24, 60) | **Unchanged** | An elapsed month *count* — the length of the guarantee — not a point on the time axis |
+| `model_point_table.csv` | `issue_age`, `expiry_age` | **Unchanged** | Ages; `term_m()` is derived from their difference |
+| `model_point_table.csv` | — | **No duration or elapsed-time column exists** | Every model point is new business at issue, so the frame opens at `t = 0` on all nine and the model carries no in-force offset |
+| `rate_class_table.csv` | — | **No time column** | Keyed by `rate_class` |
 
 **The mortality table is a construction, not a copy.** 生保標準生命表2018（死亡保険用）is published at
 a stable public URL and anyone may go and read it [R1] [REG-R18], but its publisher
@@ -274,9 +298,9 @@ model point columns; the fifth is a `Projection` Reference.
 | Selective lapsation | Reference `sel_lapse_lambda` | `0.0` | Loads persisters' mortality by `1 + λ max(0, 1 − l(t)/l_ref)`. Weaker here than on the protection chassis, which has a periodic no-underwriting renewal to select against, but not absent: the rate class is fixed at issue and cannot be changed, so a life whose health deteriorates keeps a preferred rate while a life whose health improves cannot get one and may re-shop |
 
 The リビング・ニーズ module has one product-specific consequence. Because the payout is the present
-value of an income stream rather than a level sum assured, **the cap binds from month 1** on
+value of an income stream rather than a level sum assured, **the cap binds from `t = 0`** on
 the anchor cell's parameters, where the full 年金現価 at issue is ¥56,352,381.90, and stops
-binding only in month 209. That is the opposite pattern to a level sum assured, where a cap
+binding only at `t = 208`. That is the opposite pattern to a level sum assured, where a cap
 either always binds or never does. The `<= 6`-month timing shift the acceleration really
 produces is ignored on this grid **[std]**.
 
@@ -301,7 +325,7 @@ fact.** The instalments are paid on the death of the insured, or on the contract
 state carried inside the same decrement as its accelerated equivalent — not on survival and
 not on disability as such. The name records the benefit's *form*, and the same name carries a
 *living* benefit in `LTC_JP_S` ([nursing care model notes (介護保険)](../nursing_care/model.md)) and
-`Annuity_JP_A` ([individual annuity model notes (個人年金保険)](../individual_annuity/model.md)), so this model states
+`Annuity_JP_S` ([individual annuity model notes (個人年金保険)](../individual_annuity/model.md)), so this model states
 the contingency in the `claims` docstring and in the `result_cf` docstring rather than leaving
 it to the column name. **There is no `claims_death` column**: the contract pays no lump sum on
 death at any duration — a claim *opens* an annuity stream instead of settling one — so the
@@ -309,8 +333,8 @@ whole death benefit is `claims_annuity`, and a zero-valued `claims_death` would 
 the contract rather than document it. Nor is there a bare `claims` column beside the four
 `claims_*` splits: a statement that prints its own subtotal next to its parts stops adding to
 `net_cf` unless the reader knows which column to skip. `check_net_cf()` re-adds the published
-columns to `net_cf(t)` in every one of the 443 months and is the assertion that keeps both
-properties true.
+columns to `net_cf(t)` in every one of the 443 months `t = 0 … 442` and is the assertion that
+keeps both properties true.
 
 `claims_lapse` is identically zero because the
 composite is 無解約返戻金型 with no 解約返戻金 at any duration [S2] [S5] [S6] [S7] [S9] [S15]. The zero
@@ -401,11 +425,12 @@ of it.
 
 Discounting is out of scope for the library, so the notes' four present-value diagnostics
 are not cells either. They were reproduced against this model, and reproducing them takes
-the notes' own **split timing**: the start-of-month leg — premiums, maintenance, renewal
-commission — discounted at `(t − 1) / 12`, and the end-of-month leg — the instalments, the
-claim expense and the annuity administration expense — at `t / 12`. That gives −¥73,865.82
+the notes' own **split timing**: on the 0-based index, the start-of-month leg — premiums,
+maintenance, renewal commission — falls at time `t` and so discounts at `t / 12`, and the
+end-of-month leg — the instalments, the claim expense and the annuity administration
+expense — falls at time `t + 1` and discounts at `(t + 1) / 12`. That gives −¥73,865.82
 at 0.5%, −¥49,216.50 at 1% and −¥10,895.85 at 2%, which is the notes' table to the yen. A
-reader who instead discounts the whole of `net_cf(t)` at `t / 12` gets −¥73,998.78,
+reader who instead discounts the whole of `net_cf(t)` at `(t + 1) / 12` gets −¥73,998.78,
 −¥49,465.63 and −¥11,336.00. The gap is small and is entirely a timing artefact, but on a
 product whose claim leg discounts far harder than its premium leg it is worth knowing which
 convention produced a printed number.
@@ -425,8 +450,10 @@ worked example is hard-coded as a module-level table, to the precision the notes
 money to the second decimal, in-force to six, the claim and ledger populations to nine and
 the decrement rates to twelve, because `q_m` at attained age 30 is about 3.17e-05 and six
 decimals would leave it with two significant figures — 0.000032 against 0.000031738873, a
-0.8% distortion carried into every claim of the first policy year. Beside it sit the
-decrement vector at the three months where something moves, the month-1 and month-13 traces
+0.8% distortion carried into every claim of the first policy year. Its keys are the model's
+own 0-based `t`, so the notes' seven rows are `t = 0, 1, 2, 12, 419, 420, 442`; the values
+are the notes' verbatim. Beside it sit the
+decrement vector at the three months where something moves, the `t = 0` and `t = 12` traces
 line by line, the four sourced anchors and the three interpolated table rates the notes
 quote, the totals table, the structural
 quantities behind it, and the four present-value diagnostics with the split timing that

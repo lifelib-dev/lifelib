@@ -30,6 +30,41 @@ model = mx.read_model("products/whole_of_life/WOL_UK_S")
 model.Projection[1].result_cf()
 ```
 
+## Time index and the frame
+
+`t` is the **policy month, 0-based**, lifelib's own convention: `t = 0` is the issue month,
+month `t` runs from time `t` to time `t + 1`, `pols_if(0) == pols_if_init()`, and every
+model point is new business so the frame opens at `t = 0`. `proj_len()` is the **number of
+projected months**, `12 × (omega_age − entry_age)`, and the exclusive end of the frame:
+`result_cf()` and `result_pols()` are indexed `t = 0 … proj_len() − 1` and have `proj_len()`
+rows — 600 on the anchor cell, `t = 0 … 599`, the last of them the last month of age 119.
+
+The policy year is a derived, 1-based contractual label, `policy_year(t) = t // 12 + 1`
+(`duration(t) = t // 12` completed years, `age(t) = age_at_entry() + t // 12` on ALB);
+anniversaries fall at `t = 12, 24, …`. The month-count parameters are elapsed counts and
+compare against `t` at the boundary: the moratorium is `t < moratorium_mths()`, premiums
+are due while `t < cessation_mths()` (so `t = 240` is the first premium-free month on the
+anchor), the suicide window is `t < suicide_mths`, and `payments_made(t) = min(t + 1,
+T_cess)`. `crossover_mth()` returns the 0-based month and `-1` where there is none, since
+`0` is now a real month.
+
+`product-spec.md` states the same mechanics in **contractual** month numbering, where the
+issue month is month 1: its `t` is this `t + 1`, so its `t <= 12` is this `t < 12`, its
+`CumPrem(t) = P x min(t, T_cess)` is this `P x min(t + 1, T_cess)`, and its crossover at
+month 167 is this `t* = 166`.
+
+The notes' `l(t)` is the in-force probability at the **start** of month `t` with
+`l(0) = 1`, so `pols_if(t)` is exactly `l(t)` and the worked example's rows are the same
+numbers at the same `t`.
+
+**CSV decisions.** No input column is the frame's `t`, so no file changed:
+
+| File | Column | Decision |
+|---|---|---|
+| `lapse_table.csv` | `policy_year` (1–6) | contractual 1-based label; left as is, read through `policy_year(t) = t // 12 + 1`, capped at the table's last year |
+| `model_point_table.csv` | `cessation_months`, `moratorium_months` | elapsed counts (240 / 300 and 12 months), not points on the time axis; unchanged, compared against `t` with `<` / `>=` |
+| `mort_table.csv` | `age` | attained age last birthday, not a time key; unchanged, read at `age(t)` |
+
 ## Two cells, one engine
 
 | | **RefWOL-UW** (`cell = "UW"`) | **RefWOL-O50** (`cell = "O50"`) |
@@ -39,12 +74,12 @@ model.Projection[1].result_cf()
 | Year-1 death | sum assured, less a suicide refund carve-out | **twelve-month moratorium**: non-accidental death returns premiums paid, accidental death pays the full cash sum |
 | Mortality basis | assured-lives shape, 100% | population shape, **120% anti-selection loading** |
 | Anchor | M40 NS, £150,000, £101.25/month | F70 NS, £5,000, £30.00/month |
-| Crossover | none at the anchor | month **167** — 13 years 11 months |
+| Crossover | none at the anchor | `t = 166`, the **167th** premium — 13 years 11 months |
 
 **Neither cell has an account value, a unit fund or a surrender value.** Both are pure
 decrement protection models: premiums in, death benefits and expenses out, weighted by
 survivorship. That is the deliberate contrast with
-[`WholeLife_US_A`](../../../uslib/products/whole_life/model.md), the U.S. whole life model in
+[`WholeLife_US_S`](../../../uslib/products/whole_life/model.md), the U.S. whole life model in
 the same library, which is built around a guaranteed cash value schedule, three-factor
 dividends, paid-up additions, a dividend accumulation balance and policy loans. None of
 that machinery exists here — no `cv_pp`, no `div_*`, no `pua_*`, no `loan_bal` — and a
@@ -65,18 +100,18 @@ designs — £71.73 against £8.10 per £1,000 of cover [R2] — is the scale of
 
 ## The moratorium is a discontinuity, not a curve
 
-During the O50 cell's first twelve months:
+During the O50 cell's first twelve months, `t = 0 … 11`:
 
 - a **non-accidental** death returns `CumPrem(t)` — the premiums paid, **not** the cash
   sum and **not** an annualized premium;
 - an **accidental** death pays the full cash sum from day one.
 
-At month 13 the full cash sum becomes payable for any death, and expected death outgo
-jumps about **elevenfold** on the anchor cell: £0.91 at t = 12 against £10.00 at t = 13.
-That step is the signature of the product and must not be smoothed — an annual-grid
-implementation has to split policy year 1 explicitly.
+From `t = 12` (the thirteenth policy month) the full cash sum becomes payable for any
+death, and expected death outgo jumps about **elevenfold** on the anchor cell: £0.91 at
+`t = 11` against £10.00 at `t = 12`. That step is the signature of the product and must
+not be smoothed — an annual-grid implementation has to split policy year 1 explicitly.
 
-Note where the year-one outgo actually comes from. At month 1 the blended benefit is
+Note where the year-one outgo actually comes from. At `t = 0` the blended benefit is
 `0.97 × £30 + 0.03 × £5,000 = £179.10`: five sixths of it is the small accidental tail
 paying the full cash sum, not the premium refund. An implementation that dropped the
 accidental split would understate year-one claims by about that much.
@@ -98,10 +133,11 @@ cross-subsidy insurers would need to rely on lapses to remain profitable [R2].
 Two consequences are wired into the model rather than left as prose:
 
 **No lapse after premiums cease.** There is nothing left to stop paying once the O50 cell
-reaches cessation, so `lapse_rate(t)` is zero from month 241 on the anchor. Applying a
-lapse decrement past cessation silently destroys liability, and the notes list it as a
-pitfall. The post-cessation period is pure outgo — the worked example's month 241 row
-shows premium income at zero while death outgo *rises*.
+reaches cessation, so `lapse_rate(t)` is zero from `t = 240`, the first premium-free
+month, on the anchor. Applying a lapse decrement past cessation silently destroys
+liability, and the notes list it as a pitfall. The post-cessation period is pure outgo —
+the worked example's `t = 240` row shows premium income at zero while death outgo
+*rises*.
 
 **The pro-rata paid-up variant is a different product.** Once half the expected payments
 have been made, a would-be lapse converts to a **paid-up** policy at
@@ -114,7 +150,7 @@ It is carried as a **second population strand**:
 
 | Cells | What it holds |
 |---|---|
-| `pols_if(t)` | policies still on full cover — the notes' `l`, and the column the worked example prints |
+| `pols_if(t)` | policies still on full cover at the start of month t — the notes' `l(t)`, and the column the worked example prints |
 | `pols_pu(t)` | paid-up policies |
 | `pu_benefit(t)` | the **aggregate paid-up cover** in force |
 | `pols_all(t)` | the sum, which is what the maintenance expense is carried on |
@@ -128,8 +164,9 @@ strand is then simply `pu_benefit(t) × q_m(t)`.
 ## The crossover
 
 On the O50 cell cumulative premiums eventually exceed the cash sum. `crossover_mth()`
-finds the month: on the anchor cell `floor(5000/30) + 1 = 167` months — **13 years 11
-months**, which is the FCA's stylised example exactly [R2]. Total premiums are capped at
+finds the month: on the anchor cell `t = floor(5000/30) = 166`, the month in which the
+167th premium is paid — **13 years 11 months** of premiums, which is the FCA's stylised
+example exactly [R2]. It returns `-1` where there is no crossover. Total premiums are capped at
 `P × T_cess` (£7,200 against a £5,000 cash sum), so a crossover exists only where the cash
 sum is below that cap; the underwritten anchor has none.
 
@@ -252,11 +289,13 @@ and the anti-selective milestone-benefit increases on the underwritten cell.
 ## Tests
 
 `tests/test_whole_of_life_uk.py` asserts all eleven rows of the notes' worked example to
-the penny and the in-force column to five decimals, the month-12/13 moratorium
-discontinuity and its size, the accidental split's share of year-one outgo, the
-month-167 crossover, that lapse pays nothing and stops at cessation, both escalation
-variants, the pro-rata paid-up strand and its effect on the liability, the two mortality
-bases against each other, and that the truncation residual is negligible.
+the penny and the in-force column to five decimals at the same `t` (0-based, keyed
+`0, 5, 11, 12, …, 240`), the moratorium discontinuity between `t = 11` and `t = 12` and
+its size, the accidental split's share of year-one outgo, the crossover at `t = 166`,
+that lapse pays nothing and stops at cessation (`t = 240`), both escalation variants, the
+pro-rata paid-up strand and its effect on the liability, the two mortality bases against
+each other, that the truncation residual is negligible, and that `result_cf()` is
+indexed `0 … proj_len() − 1`.
 
 ```bash
 python -m pytest tests -q

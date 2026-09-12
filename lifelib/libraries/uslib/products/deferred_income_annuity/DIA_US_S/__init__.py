@@ -44,16 +44,20 @@ time rather than stored inside the model. The model folder itself holds no data,
 model and its inputs must travel together.
 
 **Projection basis.** Monthly steps. ``t`` counts **policy months from issue and is
-0-based** — ``t = 0, 1, 2, …, proj_len()`` — exactly as the technical notes index it
-("Projection frequency. Monthly, indexed ``t = 0, 1, 2, …`` from issue"). This is a
-deliberate departure from the 1-based ``t`` of :mod:`.Term_US_A` and
-:mod:`.SPIA_US_S`: the notes' income start month ``T = 240`` and premium months
-0 and 60 are month *indices* in the 0-based scheme, and renumbering would silently make
-``T = 240`` mean the 241st month. ``l(t)`` is the survival probability at the **start**
-of month ``t`` with ``l(0) = 1``, so ``lives_if(t)`` still means "has survived ``t``
-elapsed months" and carries the same meaning as in :mod:`.SPIA_US_S`; what does
-shift is the death density, ``lives_death(t) = lives_if(t) - lives_if(t + 1)``, because
-month ``t`` spans elapsed ``[t, t+1)`` here and ``[t-1, t)`` there.
+0-based** — ``t = 0, 1, 2, …, proj_len() - 1``, the library-wide convention shared with
+lifelib's ``basiclife.BasicTerm_S`` and ``savings.CashValue_SE`` — exactly as the
+technical notes index it ("Projection frequency. Monthly, indexed ``t = 0, 1, 2, …``
+from issue"). ``t = 0`` is the issue month and a real projected month: the first
+premium arrives at its start, deaths occur during it and the maintenance expense
+accrues in it. ``proj_len()`` is the **number** of projected months, the exclusive end
+of the frame — 720 on the anchor cell, ``t = 0 .. 719``, to the limiting age of the
+youngest covered life. The notes' income start month ``T = 240`` and premium months
+0 and 60 are month *indices* on this grid, so the income start date is the start of
+month 240, twenty years from issue. ``l(t)`` is the survival probability at the
+**start** of month ``t`` with ``l(0) = 1``, so ``lives_if(t)`` means "has survived
+``t`` elapsed months", and the death density is the forward difference
+``lives_death(t) = lives_if(t) - lives_if(t + 1)``, because month ``t`` spans elapsed
+``[t, t+1)``. The policy year is a derived 1-based label, ``policy_year(t) = t // 12 + 1``.
 
 The monthly processing order follows the notes: roll the attained age and look up
 ``q(t)``; take any premium at the **start** of the month, price it by equation (4) and

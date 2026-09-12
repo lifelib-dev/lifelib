@@ -24,8 +24,9 @@ UK family income benefit shape instead.
 **longer than the policy term**. Where the insured event falls so late that fewer than
 ``guar_m()`` months remain, the annuity payment period is extended *past the expiry
 date* until the guarantee has run, so ``proj_len() = term_m() + guar_m() - 1``. On the
-anchor cell that is 443 months against a 420-month term: a death in policy month 420
-pays its twenty-fourth instalment twenty-three months after cover ended. Terminating
+anchor cell that is 443 months against a 420-month term: a death in the last month of
+cover, ``t = 419``, pays its twenty-fourth instalment twenty-three months after cover
+ended, at ``t = 442``. Terminating
 the projection at the end of the term truncates real, contractual liability, and every
 remaining number still looks reasonable — which is what makes it the easiest error to
 make on this product.
@@ -54,14 +55,17 @@ the model and its inputs must travel together.
 **Projection basis.** Monthly steps, and the grid is the contract rather than a
 refinement: the benefit is one instalment per monthly payment date, the instalment
 count is a month count, and the 最低支払保証期間 is quoted in years but binds in months.
-Policy month ``t`` runs 1, 2, ..., ``proj_len()``. Premium, maintenance expense and
+Policy month ``t`` is **0-based**: it runs 0, 1, ..., ``proj_len() - 1``, so the frame
+is ``range(proj_len())`` and the contractual policy month is ``t + 1``, the policy year
+``t // 12 + 1``. Premium, maintenance expense and
 renewal commission fall at the start of the month on the in-force population;
 acquisition expense and initial commission at issue; claims, claim expense, the
 annuity instalments and the annuity administration expense at the end of the month;
 ordinary lapse at the end of the month, after deaths.
 
 **What is sourced and what is not.** The contractual mechanics are sourced: the
-instalment count ``max(N - m + 1, G)``, the guarantee as a term extension past expiry
+instalment count, ``max(N - m, G)`` on the 0-based claim month ``m``, the guarantee as
+a term extension past expiry
 rather than as a benefit floor inside the term, the absence of any survival condition
 on the instalments, the absence of any 解約返戻金 at any duration, premium cessation on
 the annuity event, and the absence of 更新. The monthly office premium of the anchor
@@ -79,8 +83,9 @@ the anchor cell of the worked example in the technical notes and reproduces it t
 precision the notes display.
 
 **Verification.** ``tests/test_income_guarantee_jp.py`` asserts the notes' worked
-example, the guarantee identity ``ends_at(m) = max(N, m + G - 1)``, the run-off tail in
-months 421-443 row by row, and the in-payment ledger against an independent rebuild.
+example, the guarantee identity ``ends_at(m) = max(N - 1, m + G - 1)``, the run-off
+tail in months ``t = 420 ... 442`` row by row, and the in-payment ledger against an
+independent rebuild.
 
 Example:
 

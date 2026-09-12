@@ -48,12 +48,16 @@ time rather than stored inside the model. The model folder itself holds no data,
 the model and its inputs must travel together.
 
 **Projection basis.** Monthly steps, matching the monthly-in-arrears benefit. Policy
-month ``t`` runs 1, 2, ..., ``proj_len()``, where
-``proj_len() = 12 x (expiry_age - entry_age)``. Premiums fall at the beginning of the
-month and are paid by lives in H only — premiums are waived from the start of benefit
-payment. Transitions and benefit fall at the end of the month; a claim incepting at the
-end of month ``t`` receives its first payment at the end of month ``t + 1``. All cover
-and any claim in payment terminate at the policy end date with no value.
+month ``t`` is 0-based and runs 0, 1, ..., ``proj_len() - 1``, where
+``proj_len() = 12 x (expiry_age - entry_age)`` is the number of projected months;
+``t = 0`` is the first month and the policy year is the contractual label
+``policy_year(t) = t // 12 + 1``. Premiums fall at the beginning of the month and are
+paid by lives in H only — premiums are waived from the start of benefit payment.
+Transitions and benefit fall at the end of the month; a claim incepting at the end of
+month ``t`` receives its first payment at the end of month ``t + 1``. All cover and any
+claim in payment terminate at the policy end date, the end of month
+``proj_len() - 1``, with no value. The claim duration ``z`` is a separate 1-based
+cohort clock, not a time index.
 
 **Model points come in two kinds.** ``status = active`` cells start the whole population
 in H; ``status = in_claim`` cells start it in S at a stated claim duration, and are the
@@ -71,8 +75,8 @@ proxies shaped like IP11 and carry no CMI authority, and the premium is a placeh
 the basis with licensed tables before drawing any conclusion from the output.
 
 **Verification.** ``tests/test_income_protection_uk.py`` asserts the notes' three-month
-claims-in-payment worked example to the penny, including its present values, and the
-month-one active-lives figures alongside it.
+claims-in-payment worked example (``t = 0, 1, 2``) to the penny, including its present
+values, and the first-month (``t = 0``) active-lives figures alongside it.
 
 Example:
 

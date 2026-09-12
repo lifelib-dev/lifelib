@@ -14,6 +14,10 @@ exact inputs.  The full monthly projection is pinned separately by the notes' ow
 parameters at the anchor model point, by the four roll-forward self-checks, and by one
 test per entry in the notes' "Known modeling pitfalls" list.
 
+Policy month ``t`` is 0-based: ``t = 0`` is the issue month of a new-business model
+point and the frame is ``t = 0 ... proj_len() - 1``, so every month literal below is
+the notes' own month index (``duration_mth(t)``), and ``policy_year(t) = t // 12 + 1``.
+
 Tolerances follow the precision the notes display: money to the cent, rates to the
 displayed decimals.
 """
@@ -59,14 +63,15 @@ WORKED_EXAMPLE_GUAR_CAP_CREDIT = 236.40        # 2.00% x 11,820.00 [S2 guarantee
 # The anchor model point traced through the notes' own parameters: M45 / NT /
 # 250,000 / Option A / GPT, 10,000 annual premium, load 5%, policy fee 10.00,
 # per-unit 0.30 x 250 = 75.00, cap 10.00% on a 6.40% level index return.
-# t -> (av_bef_prem, net_prem, index_credit, av_bef_fee, db, naar, coi, md,
+# t (0-based policy month; t = 0 is the issue month, t = 12 the first anniversary)
+#   -> (av_bef_prem, net_prem, index_credit, av_bef_fee, db, naar, coi, md,
 #       av_bef_inv, interest, av)
 ANCHOR = {
-    1:  (0.00, 9500.00, 0.00,  9500.00, 250000.00, 240292.79, 31.36, 116.36,  9383.64, 0.00,  9383.64),
-    2:  (9383.64,  0.00, 0.00,  9383.64, 250000.00, 240409.15, 31.38, 116.38,  9267.26, 0.00,  9267.26),
-    12: (8219.17,  0.00, 0.00,  8219.17, 250000.00, 241573.62, 31.53, 116.53,  8102.64, 0.00,  8102.64),
-    13: (8102.64, 9310.00, 518.57, 17931.21, 250000.00, 231861.58, 32.75, 117.75, 17813.46, 0.00, 17813.46),
-    14: (17813.46, 0.00, 0.00, 17813.46, 250000.00, 231979.33, 32.77, 117.77, 17695.68, 0.00, 17695.68),
+    0:  (0.00, 9500.00, 0.00,  9500.00, 250000.00, 240292.79, 31.36, 116.36,  9383.64, 0.00,  9383.64),
+    1:  (9383.64,  0.00, 0.00,  9383.64, 250000.00, 240409.15, 31.38, 116.38,  9267.26, 0.00,  9267.26),
+    11: (8219.17,  0.00, 0.00,  8219.17, 250000.00, 241573.62, 31.53, 116.53,  8102.64, 0.00,  8102.64),
+    12: (8102.64, 9310.00, 518.57, 17931.21, 250000.00, 231861.58, 32.75, 117.75, 17813.46, 0.00, 17813.46),
+    13: (17813.46, 0.00, 0.00, 17813.46, 250000.00, 231979.33, 32.77, 117.77, 17695.68, 0.00, 17695.68),
 }
 
 
@@ -109,7 +114,7 @@ def test_worked_example_row(anchor, scenario):
 
 def test_worked_example_cap_and_floor_are_what_bind(anchor):
     """The notes label scenario A "cap binds" and scenario B "floor binds"."""
-    assert anchor.index_credit_rate(0.1200) == anchor.index_cap_at(1) == 0.10
+    assert anchor.index_credit_rate(0.1200) == anchor.index_cap_at(0) == 0.10
     assert anchor.index_credit_rate(-0.1500) == anchor.index_floor == 0.0
     # 100% participation, so between the two the credited rate is the index change.
     assert anchor.index_par == 1.0
@@ -172,8 +177,8 @@ def test_anchor_account_value_row(anchor, t):
     assert anchor.av_pp(t) == pytest.approx(av, abs=CENT)
 
 
-def test_anchor_month_1_trace(anchor):
-    """The month-1 arithmetic, at full precision, term by term.
+def test_anchor_month_0_trace(anchor):
+    """The issue-month (t = 0) arithmetic, at full precision, term by term.
 
     Premium 10,000.00 less the 5% load is 9,500.00; the death benefit is the face
     amount because the 215% corridor factor at attained age 45 on 9,500.00 is far below
@@ -183,41 +188,46 @@ def test_anchor_month_1_trace(anchor):
     whole post-deduction balance is swept into the first segment, so no fixed-account
     interest is credited.
     """
-    assert anchor.premium_pp(1) == 10000.0
+    assert anchor.duration_mth(0) == 0 and anchor.policy_year(0) == 1
+    assert anchor.av_pp_at(0, "BEF_PREM") == anchor.av_pp_init() == 0.0
+    assert anchor.premium_pp(0) == 10000.0
     assert anchor.load_prem_rate() == 0.05
-    assert anchor.prem_to_av_pp(1) == pytest.approx(9500.0, abs=1e-9)
-    assert anchor.corridor_factor(1) == 2.15
-    assert anchor.db_pp(1) == 250000.0
+    assert anchor.prem_to_av_pp(0) == pytest.approx(9500.0, abs=1e-9)
+    assert anchor.corridor_factor(0) == 2.15
+    assert anchor.db_pp(0) == 250000.0
     assert anchor.naar_factor() == pytest.approx(1.01 ** (1 / 12), rel=1e-12)
-    assert anchor.net_amt_at_risk(1) == pytest.approx(
+    assert anchor.net_amt_at_risk(0) == pytest.approx(
         250000.0 / 1.01 ** (1 / 12) - 9500.0, rel=1e-12)
-    assert anchor.maint_fee_pp(1) == pytest.approx(10.0 + 0.30 * 250, abs=1e-9)
-    assert anchor.coi_rate(1) == pytest.approx(0.65 * anchor.coi_rate_guar(1), rel=1e-12)
-    assert anchor.coi_pp(1) == pytest.approx(
-        anchor.coi_rate(1) / 1000 * anchor.net_amt_at_risk(1), rel=1e-12)
-    assert anchor.mth_deduction_pp(1) == pytest.approx(116.363015, abs=1e-5)
-    assert anchor.sweep_pp(1) == pytest.approx(9383.636985, abs=1e-5)
-    assert anchor.inv_income_pp(1) == 0.0
-    assert anchor.av_pp(1) == pytest.approx(9383.636985, abs=1e-5)
+    assert anchor.maint_fee_pp(0) == pytest.approx(10.0 + 0.30 * 250, abs=1e-9)
+    assert anchor.coi_rate(0) == pytest.approx(0.65 * anchor.coi_rate_guar(0), rel=1e-12)
+    assert anchor.coi_pp(0) == pytest.approx(
+        anchor.coi_rate(0) / 1000 * anchor.net_amt_at_risk(0), rel=1e-12)
+    assert anchor.mth_deduction_pp(0) == pytest.approx(116.363015, abs=1e-5)
+    assert anchor.sweep_pp(0) == pytest.approx(9383.636985, abs=1e-5)
+    assert anchor.inv_income_pp(0) == 0.0
+    assert anchor.av_pp(0) == pytest.approx(9383.636985, abs=1e-5)
 
 
 def test_first_segment_credit_reproduces_from_its_own_ladder(anchor):
-    """Month 13: the segment born at month 1 matures and is credited 6.40%.
+    """Month 12: the segment born at month 0 matures and is credited 6.40%.
 
-    It bore eleven in-segment deductions, one for each of months 2 to 12; the
-    month-13 deduction is taken after it has already matured and rolled into the
+    It bore eleven in-segment deductions, one for each of months 1 to 11; the
+    month-12 deduction is taken after it has already matured and rolled into the
     fixed account.  Its credit is the level index return because 0% < 6.40% < 10.00%.
     """
-    assert anchor.seg_new_pp(1) == pytest.approx(9383.636985, abs=1e-5)
-    assert anchor.seg_bal_pp(12, 1) == pytest.approx(8102.641000, abs=1e-5)
-    assert anchor.seg_ded_cum_pp(12, 1) == pytest.approx(1280.995985, abs=1e-5)
-    assert anchor.seg_return(13) == pytest.approx(0.064, rel=1e-12)
-    assert anchor.index_credit_pp(13) == pytest.approx(
+    assert anchor.seg_new_pp(0) == pytest.approx(9383.636985, abs=1e-5)
+    assert anchor.seg_bal_pp(11, 0) == pytest.approx(8102.641000, abs=1e-5)
+    assert anchor.seg_ded_cum_pp(11, 0) == pytest.approx(1280.995985, abs=1e-5)
+    assert anchor.seg_return(12) == pytest.approx(0.064, rel=1e-12)
+    assert anchor.index_credit_pp(12) == pytest.approx(
         0.064 * 8102.641000, abs=1e-5)
     # the credit base is the remaining balance, so the eleven deductions earn nothing
-    assert anchor.index_credit_pp(13) == pytest.approx(
-        anchor.index_credit(anchor.seg_new_pp(1), anchor.seg_ded_cum_pp(12, 1), 0.064),
+    assert anchor.index_credit_pp(12) == pytest.approx(
+        anchor.index_credit(anchor.seg_new_pp(0), anchor.seg_ded_cum_pp(11, 0), 0.064),
         rel=1e-12)
+    # nothing matures in the first twelve months, and no segment predates t = 0
+    assert all(anchor.index_credit_pp(t) == 0.0 for t in range(12))
+    assert anchor.seg_bal_pp(0, -1) == 0.0
 
 
 # ===========================================================================
@@ -228,18 +238,18 @@ def test_pitfall_segment_bookkeeping_keeps_per_segment_index_levels(indexed_ul):
     """Pitfall 1: a monthly ladder, up to 12 concurrent, each with its own I(m).
 
     Model point 4 pays monthly, so a segment is created every month and twelve are
-    live from month 12 onwards.  Each carries its own index start level, so the twelve
+    live from month 11 onwards.  Each carries its own index start level, so the twelve
     credits paid in a year are twelve separate point-to-point calculations, not one.
     """
     p = indexed_ul.Projection[4]
     p.result_cf()
     assert p.premium_mode() == "MONTHLY"
-    assert p.seg_count(1) == 1
-    assert p.seg_count(12) == p.seg_term_mth == 12
-    assert max(p.seg_count(t) for t in range(1, 200)) == 12
-    starts = {p.index_level(m) for m in range(1, 13)}
+    assert p.seg_count(0) == 1
+    assert p.seg_count(11) == p.seg_term_mth == 12
+    assert max(p.seg_count(t) for t in range(199)) == 12
+    starts = {p.index_level(m) for m in range(12)}
     assert len(starts) == 12                         # twelve distinct start levels
-    credits = [p.index_credit_pp(t) for t in range(13, 25)]
+    credits = [p.index_credit_pp(t) for t in range(12, 24)]
     assert all(c > 0 for c in credits)               # twelve separate credits
     assert p.check_seg_ladder()
 
@@ -254,14 +264,14 @@ def test_pitfall_segment_bookkeeping_no_segment_when_nothing_is_allocated(indexe
     p = indexed_ul.Projection[3]
     p.result_cf()
     assert p.index_alloc_rate() == 0.0
-    assert all(p.seg_count(t) == 0 for t in range(1, 200))
-    assert all(p.sweep_pp(t) == 0.0 for t in range(1, 200))
-    assert all(p.index_credit_pp(t) == 0.0 for t in range(1, 200))
-    assert p.fa_pp(1) == pytest.approx(p.av_pp(1), abs=1e-9)
+    assert all(p.seg_count(t) == 0 for t in range(199))
+    assert all(p.sweep_pp(t) == 0.0 for t in range(199))
+    assert all(p.index_credit_pp(t) == 0.0 for t in range(199))
+    assert p.fa_pp(0) == pytest.approx(p.av_pp(0), abs=1e-9)
     # the fixed account earns one month's interest at (1 + 4.50%)^(1/12) - 1
-    assert p.inv_return_mth(1) == pytest.approx(1.045 ** (1 / 12) - 1, rel=1e-12)
-    assert p.inv_income_pp(1) == pytest.approx(
-        p.fa_pp_at(1, "BEF_INV") * p.inv_return_mth(1), rel=1e-12)
+    assert p.inv_return_mth(0) == pytest.approx(1.045 ** (1 / 12) - 1, rel=1e-12)
+    assert p.inv_income_pp(0) == pytest.approx(
+        p.fa_pp_at(0, "BEF_INV") * p.inv_return_mth(0), rel=1e-12)
 
 
 def test_pitfall_deduction_sourcing_matches_the_credit_base(anchor):
@@ -272,15 +282,15 @@ def test_pitfall_deduction_sourcing_matches_the_credit_base(anchor):
     must reconcile exactly, which is what :func:`check_seg_ladder` asserts segment by
     segment.
     """
-    for t in (2, 6, 12, 14, 30):
+    for t in (1, 5, 11, 13, 29):
         assert (anchor.mth_deduction_from_fa_pp(t)
                 + anchor.mth_deduction_from_seg_pp(t)) == pytest.approx(
             anchor.mth_deduction_pp(t), rel=1e-12)
-    # months 2-12: nothing in the fixed account, so the whole deduction is pro rata
-    assert anchor.fa_pp(1) == pytest.approx(0.0, abs=1e-9)
-    assert anchor.mth_deduction_from_fa_pp(5) == pytest.approx(0.0, abs=1e-9)
-    assert anchor.mth_deduction_from_seg_pp(5) == pytest.approx(
-        anchor.mth_deduction_pp(5), rel=1e-12)
+    # months 1-11: nothing in the fixed account, so the whole deduction is pro rata
+    assert anchor.fa_pp(0) == pytest.approx(0.0, abs=1e-9)
+    assert anchor.mth_deduction_from_fa_pp(4) == pytest.approx(0.0, abs=1e-9)
+    assert anchor.mth_deduction_from_seg_pp(4) == pytest.approx(
+        anchor.mth_deduction_pp(4), rel=1e-12)
     assert anchor.check_seg_ladder()
 
 
@@ -294,9 +304,9 @@ def test_the_two_draws_on_the_segment_pool_cannot_together_overdraw_it(indexed_u
     pre-draw pool.
 
     Capping both against the pre-draw pool let the two together take more than the
-    segments held.  On model point 5 at month 384 the pool was 265.29, the draw took
+    segments held.  On model point 5 at month 383 the pool was 265.29, the draw took
     200.00 and the deduction was allowed 177.38 -- 377.38 out of 265.29 -- which drove
-    the segment born at month 373 to -112.09 and, at its maturity in month 385, paid an
+    the segment born at month 372 to -112.09 and, at its maturity in month 384, paid an
     index credit of 0.0640 x (-112.0873) = -7.17.  A negative index credit breaches the
     contractual 0% floor of ``cr_k = max(f, min(c, p x r))`` [S2][R1].
     """
@@ -304,19 +314,19 @@ def test_the_two_draws_on_the_segment_pool_cannot_together_overdraw_it(indexed_u
     p.result_cf()
 
     # the month the old cap broke, term by term
-    t = 384
+    t = 383
     assert p.seg_bal_active_pp(t) == pytest.approx(265.29, abs=CENT)
     assert p.draw_from_seg_pp(t) == pytest.approx(200.00, abs=CENT)
     assert p.mth_deduction_from_seg_pp(t) == pytest.approx(65.29, abs=CENT)
-    assert p.seg_bal_pp(t, 373) == pytest.approx(0.0, abs=1e-8)
-    assert p.index_credit_pp(385) >= 0.0 - 1e-8          # was -7.17
+    assert p.seg_bal_pp(t, 372) == pytest.approx(0.0, abs=1e-8)
+    assert p.index_credit_pp(384) >= 0.0 - 1e-8          # was -7.17
 
     # ... and the invariant behind it, every month of the projection
-    for u in range(1, p.proj_len() + 1):
+    for u in range(p.proj_len()):
         assert (p.draw_from_seg_pp(u) + p.mth_deduction_from_seg_pp(u)
                 <= p.seg_bal_active_pp(u) + 1e-8)
         assert p.index_credit_pp(u) >= -1e-8
-        for m in range(max(1, u - p.seg_term_mth + 1), u + 1):
+        for m in range(max(0, u - p.seg_term_mth + 1), u + 1):
             assert p.seg_bal_pp(u, m) >= -1e-8
 
     # the deduction is still charged in full: the fixed account carries the excess
@@ -338,12 +348,12 @@ def test_pitfall_floor_is_not_an_in_segment_guarantee(anchor):
     """
     assert anchor.index_floor == 0.0
     # a live segment loses exactly its deductions, month after month, and gains nothing
-    for t in range(2, 12):
-        assert anchor.seg_bal_pp(t, 1) == pytest.approx(
-            anchor.seg_bal_pp(t - 1, 1) - anchor.seg_ded_pp(t, 1), rel=1e-12)
+    for t in range(1, 11):
+        assert anchor.seg_bal_pp(t, 0) == pytest.approx(
+            anchor.seg_bal_pp(t - 1, 0) - anchor.seg_ded_pp(t, 0), rel=1e-12)
     # interest credited to the account value comes from the fixed and collateral
     # accounts only, never from a segment
-    for t in (3, 7, 11):
+    for t in (2, 6, 10):
         assert anchor.inv_income_pp(t) == pytest.approx(
             anchor.fa_pp_at(t, "BEF_INV") * anchor.inv_return_mth(t)
             + anchor.lca_pp_at(t, "BEF_INV") * anchor.loan_credit_rate_mth(t),
@@ -385,16 +395,16 @@ def test_pitfall_corridor_interplay(indexed_ul):
     p = indexed_ul.Projection[2]
     p.result_cf()
     assert p.db_option() == "B"
-    assert p.db_pp(1) == pytest.approx(
-        p.sum_assured() + p.av_pp_at(1, "BEF_FEE"), abs=CENT)
+    assert p.db_pp(0) == pytest.approx(
+        p.sum_assured() + p.av_pp_at(0, "BEF_FEE"), abs=CENT)
     # Option B keeps the net amount at risk near the face amount as the fund grows,
     # where Option A lets it run off.
     a = indexed_ul.Projection[1]
     a.result_cf()
-    assert p.net_amt_at_risk(600) > a.net_amt_at_risk(600)
-    assert p.coi_pp(600) > a.coi_pp(600)
+    assert p.net_amt_at_risk(599) > a.net_amt_at_risk(599)
+    assert p.coi_pp(599) > a.coi_pp(599)
     # the corridor table is the IRC 7702(d) grading, 250% to 40 down to 100% at 90-95
-    assert a.corridor_factor(1) == 2.15                # attained age 45
+    assert a.corridor_factor(0) == 2.15                # attained age 45
     assert indexed_ul.Data.corridor_factors().loc[40, "corridor_factor"] == 2.50
     assert indexed_ul.Data.corridor_factors().loc[95, "corridor_factor"] == 1.00
 
@@ -408,10 +418,12 @@ def test_pitfall_maturity_mechanics(anchor):
     horizon, not by a contractual event.
     """
     assert anchor.maturity_age == 121
-    assert anchor.proj_len() == 12 * (121 - 45)
-    assert anchor.age(anchor.proj_len()) == 120
-    assert anchor.age(1) == 45
-    assert all(anchor.pols_maturity(t) == 0.0 for t in range(1, anchor.proj_len() + 1))
+    assert anchor.proj_len() == 12 * (121 - 45)        # the number of projected months
+    last = anchor.proj_len() - 1                       # the last projected month
+    assert anchor.age(last) == 120 and anchor.duration_mth(last) == 12 * 76 - 1
+    assert anchor.age(0) == 45 and anchor.age(11) == 45 and anchor.age(12) == 46
+    assert anchor.policy_year(0) == 1 and anchor.policy_year(12) == 2
+    assert all(anchor.pols_maturity(t) == 0.0 for t in range(anchor.proj_len()))
 
 
 # ===========================================================================
@@ -427,7 +439,7 @@ def test_naar_uses_the_guaranteed_rate_and_the_pre_deduction_account_value(ancho
     """
     assert anchor.guar_rate_ann == 0.01
     assert anchor.naar_factor() == pytest.approx(1.01 ** (1 / 12), rel=1e-12)
-    for t in (1, 13, 200):
+    for t in (0, 12, 199):
         assert anchor.net_amt_at_risk(t) == pytest.approx(
             max(0.0, anchor.db_pp(t) / anchor.naar_factor()
                 - anchor.av_pp_at(t, "BEF_FEE")), rel=1e-12)
@@ -444,7 +456,7 @@ def test_interest_is_credited_after_the_deduction(indexed_ul):
     """
     p = indexed_ul.Projection[3]
     p.result_cf()
-    for t in (1, 2, 50):
+    for t in (0, 1, 49):
         correct = (p.av_pp_at(t, "BEF_FEE") - p.mth_deduction_pp(t)) * (
             1 + p.inv_return_mth(t))
         wrong = p.av_pp_at(t, "BEF_FEE") * (1 + p.inv_return_mth(t)) - p.mth_deduction_pp(t)
@@ -455,25 +467,30 @@ def test_interest_is_credited_after_the_deduction(indexed_ul):
 def test_surrender_charge_runs_off_over_ten_years(anchor):
     """$25.00 per $1,000 of initial face, linear to zero at the end of policy year 10.
 
-    The notes' month index counts the current month, so the issue month already carries
-    one twelfth of a year's run-off.
+    The notes' month index counts the current month (``duration_mth(t) + 1``), so the
+    issue month ``t = 0`` already carries one twelfth of a year's run-off, and the last
+    month of policy year 10 is ``t = 119``.
     """
-    assert anchor.surr_charge_rate(1) == pytest.approx(25.0 - 2.5 / 12, abs=1e-9)
-    assert anchor.surr_charge_pp(1) == pytest.approx(6197.92, abs=CENT)
-    assert anchor.surr_charge_rate(120) == pytest.approx(0.0, abs=1e-9)
-    assert anchor.surr_charge_rate(121) == 0.0
+    assert anchor.surr_charge_rate(0) == pytest.approx(25.0 - 2.5 / 12, abs=1e-9)
+    assert anchor.surr_charge_pp(0) == pytest.approx(6197.92, abs=CENT)
+    assert anchor.surr_charge_rate(119) == pytest.approx(0.0, abs=1e-9)
+    assert anchor.surr_charge_rate(120) == 0.0
     assert anchor.lapse_shock_year() == 11
 
 
 def test_lapse_has_the_surrender_charge_expiry_spike(anchor):
-    """6% in policy years 1-10, 4% after, doubled in policy year 11 **[std]**."""
-    assert anchor.lapse_rate_base(1) == 0.06
-    assert anchor.lapse_rate_base(120) == 0.06          # policy year 10
-    assert anchor.lapse_rate_base(121) == 0.04          # policy year 11
-    assert anchor.lapse_rate_sc_mult(121) == 2.0
-    assert anchor.lapse_rate(120) == pytest.approx(0.06, abs=1e-12)
-    assert anchor.lapse_rate(121) == pytest.approx(0.08, abs=1e-12)
-    assert anchor.lapse_rate(133) == pytest.approx(0.04, abs=1e-12)   # policy year 12
+    """6% in policy years 1-10, 4% after, doubled in policy year 11 **[std]**.
+
+    Policy year ``k`` is ``t = 12 (k - 1) ... 12 k - 1``, so year 10 ends at ``t = 119``
+    and year 11 opens at ``t = 120``.
+    """
+    assert anchor.lapse_rate_base(0) == 0.06
+    assert anchor.lapse_rate_base(119) == 0.06          # policy year 10
+    assert anchor.lapse_rate_base(120) == 0.04          # policy year 11
+    assert anchor.lapse_rate_sc_mult(120) == 2.0
+    assert anchor.lapse_rate(119) == pytest.approx(0.06, abs=1e-12)
+    assert anchor.lapse_rate(120) == pytest.approx(0.08, abs=1e-12)
+    assert anchor.lapse_rate(132) == pytest.approx(0.04, abs=1e-12)   # policy year 12
 
 
 def test_dynamic_lapse_is_neutral_in_the_base_run(anchor):
@@ -482,28 +499,33 @@ def test_dynamic_lapse_is_neutral_in_the_base_run(anchor):
     The trailing credited rate is the maturing segment's own credited rate once the
     ladder is running, and the fixed-account rate before that.
     """
-    assert anchor.cred_rate_ann(1) == pytest.approx(0.045, rel=1e-12)
-    assert anchor.cred_rate_ann(200) == pytest.approx(0.064, rel=1e-9)
-    assert anchor.comp_rate_ann(200) == anchor.cred_rate_ann(200)
-    assert anchor.lapse_rate_dyn_mult(200) == pytest.approx(1.0, abs=1e-12)
+    assert anchor.cred_rate_ann(0) == pytest.approx(0.045, rel=1e-12)
+    assert anchor.cred_rate_ann(11) == pytest.approx(0.045, rel=1e-12)
+    assert anchor.cred_rate_ann(12) == pytest.approx(0.064, rel=1e-9)   # first maturity
+    assert anchor.cred_rate_ann(199) == pytest.approx(0.064, rel=1e-9)
+    assert anchor.comp_rate_ann(199) == anchor.cred_rate_ann(199)
+    assert anchor.lapse_rate_dyn_mult(199) == pytest.approx(1.0, abs=1e-12)
     assert anchor.lapse_dyn_cap == 2.0 and anchor.lapse_dyn_floor == 0.5
 
 
 def test_premium_persistency_compounds_at_98_percent(anchor):
     """The notes give it in closed form: expected premium_y = planned x 0.98^(y-1)."""
-    assert anchor.prem_persistency(1) == 1.0
-    assert anchor.prem_persistency(13) == pytest.approx(0.98, rel=1e-12)
-    assert anchor.prem_persistency(121) == pytest.approx(0.98 ** 10, rel=1e-12)
-    assert anchor.premium_pp(13) == pytest.approx(10000 * 0.98, abs=CENT)
+    assert anchor.prem_persistency(0) == 1.0
+    assert anchor.prem_persistency(12) == pytest.approx(0.98, rel=1e-12)
+    assert anchor.prem_persistency(120) == pytest.approx(0.98 ** 10, rel=1e-12)
+    assert anchor.premium_pp(12) == pytest.approx(10000 * 0.98, abs=CENT)
 
 
 def test_premium_falls_only_on_the_policy_anniversary(anchor):
-    """Annual mode **[std]**: the whole premium at BOM of month 1 of each policy year."""
+    """Annual mode **[std]**: the whole premium at BOM of the first month of each policy year.
+
+    That is ``t = 0, 12, 24, ...`` -- ``duration_mth(t) % 12 == 0``.
+    """
     assert anchor.premium_mode() == "ANNUAL"
-    assert anchor.premium_pp(1) == 10000.0
-    assert all(anchor.premium_pp(t) == 0.0 for t in range(2, 13))
-    assert anchor.premium_pp(13) > 0.0
-    assert all(anchor.premium_pp(t) == 0.0 for t in range(14, 25))
+    assert anchor.premium_pp(0) == 10000.0
+    assert all(anchor.premium_pp(t) == 0.0 for t in range(1, 12))
+    assert anchor.premium_pp(12) > 0.0
+    assert all(anchor.premium_pp(t) == 0.0 for t in range(13, 24))
 
 
 # ===========================================================================
@@ -516,38 +538,39 @@ def test_no_lapse_guarantee_suppresses_lapse_while_it_is_in_effect(indexed_ul):
     Model point 5 is funded at 6,000 a year on a 250,000 face, so the $25 per $1,000
     surrender charge exceeds the account value throughout policy year 1 and the cash
     surrender value is zero.  Cumulative premium still clears cumulative MNLP, so the
-    guarantee is in effect and voluntary lapse is suppressed; from month 13 the cash
-    surrender value turns positive and normal lapse resumes.
+    guarantee is in effect and voluntary lapse is suppressed; from month 12 (the first
+    anniversary) the cash surrender value turns positive and normal lapse resumes.
     """
     p = indexed_ul.Projection[5]
     p.result_cf()
     assert p.mnlp_rate() == 20.80
     assert p.mnlp_pp_mth() == pytest.approx(20.80 * 250 / 12, rel=1e-12)
     assert p.nlg_period_years() == 20
-    for t in range(1, 13):
+    for t in range(12):
         assert p.ncsv_pp(t) == 0.0
         assert p.nlg_in_effect(t) is True
         assert p.lapse_rate(t) == 0.0
         assert p.pols_lapse(t) == 0.0
-    assert p.ncsv_pp(13) > 0.0
-    assert p.lapse_rate(13) == pytest.approx(0.06, abs=1e-12)
+    assert p.ncsv_pp(12) > 0.0
+    assert p.lapse_rate(12) == pytest.approx(0.06, abs=1e-12)
 
 
 def test_the_two_cumulative_premium_accumulators_differ(indexed_ul):
     """CumP_t nets loans as well as withdrawals; the GPT / 7-pay base does not."""
     p = indexed_ul.Projection[5]
     p.result_cf()
-    t = 241                                    # policy year 21, first loan drawn
+    t = 240                                    # policy year 21, first loan drawn
+    assert p.policy_year(t) == 21 == p.loan_first_year()
     assert p.loan_new_pp(t) == 6000.0
     assert p.cum_prem_pp(t) - p.cum_prem_net_pp(t) == pytest.approx(6000.0, abs=CENT)
 
 
 def test_guideline_and_seven_pay_are_flags_not_cash_flows(anchor):
     """The anchor stays inside both limits and neither generates a cash flow."""
-    assert anchor.gpt_limit(1) == max(anchor.gsp(), anchor.glp())
-    assert all(anchor.gpt_ok(t) for t in (1, 121, 601))
-    assert not anchor.is_mec(1) and not anchor.is_mec(80)
-    assert anchor.seven_pay_limit(85) == anchor.seven_pay_prem() * 7   # capped at 7
+    assert anchor.gpt_limit(0) == max(anchor.gsp(), anchor.glp())
+    assert all(anchor.gpt_ok(t) for t in (0, 120, 600))
+    assert not anchor.is_mec(0) and not anchor.is_mec(79)
+    assert anchor.seven_pay_limit(84) == anchor.seven_pay_prem() * 7   # capped at 7
 
 
 # ===========================================================================
@@ -563,8 +586,8 @@ def test_standard_loan_moves_collateral_without_reducing_the_account_value(index
     """
     p = indexed_ul.Projection[5]
     p.result_cf()
-    t = 241
-    assert p.lca_pp(t - 1) == 0.0
+    t = 240                                    # first month of policy year 21
+    assert p.lca_pp(t - 1) == 0.0 == p.lca_pp_at(t, "BEF_PREM")
     assert p.loan_new_pp(t) == 6000.0
     assert p.av_pp_at(t, "BEF_FEE") == pytest.approx(
         p.av_pp_at(t, "BEF_WD") - p.wd_pp(t), rel=1e-12)   # the loan is not subtracted
@@ -572,7 +595,7 @@ def test_standard_loan_moves_collateral_without_reducing_the_account_value(index
     assert p.loan_bal_pp(t) > 6000.0
     assert p.net_loan_cf(t) == pytest.approx(-6000.0 * p.pols_if(t), rel=1e-12)
     assert p.loan_credit_rate_ann(t) == 0.03                # policy year 21, the wash
-    assert p.loan_credit_rate_ann(1) == 0.02
+    assert p.loan_credit_rate_ann(0) == 0.02
     assert p.loan_rate_ann == 0.03
 
 
@@ -586,17 +609,17 @@ def test_heavy_late_life_loans_can_overrun_the_cash_value(indexed_ul):
     """
     p = indexed_ul.Projection[5]
     p.result_cf()
-    overloan = [t for t in range(241, p.proj_len() + 1)
+    overloan = [t for t in range(240, p.proj_len())
                 if p.loan_bal_pp(t) > p.csv_pp(t)]
     assert overloan, "model point 5 should eventually go overloaned"
     t = overloan[0]
-    assert t == 384 and p.policy_year(t) == 32
+    assert t == 383 and p.policy_year(t) == 32
     assert p.ncsv_pp(t) == 0.0
     assert any(p.is_shortfall(u) for u in range(t, min(t + 24, p.proj_len())))
 
 
-def test_point_5_account_value_runs_away_after_month_605(indexed_ul):
-    """The disclosed boundary: point 5's ``result_av()`` stops meaning anything at 605.
+def test_point_5_account_value_runs_away_after_month_604(indexed_ul):
+    """The disclosed boundary: point 5's ``result_av()`` stops meaning anything at t = 604.
 
     No policy is terminated for insufficiency in this model -- the grace and
     lapse-for-insufficiency cascade is in the *Not implemented* list, because the notes
@@ -616,12 +639,13 @@ def test_point_5_account_value_runs_away_after_month_605(indexed_ul):
     p = indexed_ul.Projection[5]
     p.result_cf()
 
-    boundary = 605
-    assert all(p.av_pp(t) > 0 for t in range(1, boundary))
+    boundary = 604
+    last = p.proj_len() - 1                       # the last projected month
+    assert all(p.av_pp(t) > 0 for t in range(boundary))
     assert p.av_pp(boundary) < 0
     assert p.av_pp(boundary) == pytest.approx(-241.18, abs=CENT)
     assert p.policy_year(boundary) == 51
-    assert p.av_pp(p.proj_len()) < -1e10          # about -1.3e10 at the horizon
+    assert p.av_pp(last) < -1e10                  # about -1.3e10 at the horizon
 
     # the cash flows are a different matter and stay finite and bounded: the death
     # benefit is the (withdrawal-reduced) face amount, the corridor multiplies a
@@ -629,18 +653,18 @@ def test_point_5_account_value_runs_away_after_month_605(indexed_ul):
     df = p.result_cf()
     assert math.isfinite(df["net_cf"].sum())
     assert df["net_cf"].abs().max() < 1e5
-    assert p.db_pp(p.proj_len()) == pytest.approx(70000.0, abs=CENT)
-    assert p.claim_pp(p.proj_len(), "DEATH") == 0.0
-    assert p.ncsv_pp(p.proj_len()) == 0.0
+    assert p.db_pp(last) == pytest.approx(70000.0, abs=CENT)
+    assert p.claim_pp(last, "DEATH") == 0.0
+    assert p.ncsv_pp(last) == 0.0
 
     # points 1-4 never get near it
     for point_id in (1, 2, 3, 4):
         q = indexed_ul.Projection[point_id]
         q.result_cf()
-        assert min(q.av_pp(t) for t in range(1, q.proj_len() + 1)) > 0
+        assert min(q.av_pp(t) for t in range(q.proj_len())) > 0
 
     # and the boundary is disclosed where a reader will find it
-    assert "605" in indexed_ul.doc
+    assert "604" in indexed_ul.doc
 
 
 def test_the_two_five_hundred_dollar_withdrawal_limits_are_not_enforced(indexed_ul):
@@ -661,9 +685,9 @@ def test_the_two_five_hundred_dollar_withdrawal_limits_are_not_enforced(indexed_
     """
     p = indexed_ul.Projection[5]
     p.result_cf()
-    assert p.wd_pp(13) == 200.0 < 500.0            # below the sourced minimum
-    assert p.wd_fee_pp(13) == 25.0                 # the fee, which *is* implemented
-    assert p.ncsv_pp(384) == 0.0                   # floors at zero, not at 500
+    assert p.wd_pp(12) == 200.0 < 500.0            # below the sourced minimum
+    assert p.wd_fee_pp(12) == 25.0                 # the fee, which *is* implemented
+    assert p.ncsv_pp(383) == 0.0                   # floors at zero, not at 500
 
     names = set(indexed_ul.Projection.cells) | set(indexed_ul.Projection.refs)
     assert not any("wd_min" in n or "min_wd" in n or "csv_floor" in n for n in names)
@@ -725,8 +749,12 @@ def test_margin_identity_holds(indexed_ul, point_id):
 
 
 def test_inforce_rollforward_closes(anchor):
-    """pols_if(t) - pols_if(t+1) = deaths + lapses + maturities, every month."""
-    for t in range(1, anchor.proj_len() + 1):
+    """pols_if(t) - pols_if(t+1) = deaths + lapses + maturities, every month.
+
+    ``pols_if(proj_len())`` is the count left at the end of the last projected month,
+    one step past the frame, computed from the last row's decrements.
+    """
+    for t in range(anchor.proj_len()):
         out = (anchor.pols_death(t) + anchor.pols_lapse(t)
                + anchor.pols_maturity(t))
         assert anchor.pols_if(t) - anchor.pols_if(t + 1) == pytest.approx(
@@ -734,29 +762,29 @@ def test_inforce_rollforward_closes(anchor):
 
 
 def test_inforce_is_a_decreasing_probability(anchor):
-    for t in range(1, anchor.proj_len() + 1):
+    for t in range(anchor.proj_len()):
         assert 0.0 <= anchor.pols_if(t) <= 1.0
         assert anchor.pols_if(t + 1) <= anchor.pols_if(t) + 1e-15
-    assert anchor.pols_if(1) == 1.0
+    assert anchor.pols_if(0) == anchor.pols_if_init() == 1.0
 
 
 def test_decrement_conversions_are_the_notes_own(anchor):
     """q_m = 1 - (1 - q)^(1/12) and i_m = (1 + i)^(1/12) - 1 **[std]**."""
-    assert anchor.mort_rate_mth(1) == pytest.approx(
-        1 - (1 - anchor.mort_rate(1)) ** (1 / 12), rel=1e-12)
-    assert anchor.lapse_rate_mth(1) == pytest.approx(
-        1 - (1 - anchor.lapse_rate(1)) ** (1 / 12), rel=1e-12)
-    assert anchor.inv_return_mth(1) == pytest.approx(
-        (1 + anchor.fixed_rate_ann(1)) ** (1 / 12) - 1, rel=1e-12)
+    assert anchor.mort_rate_mth(0) == pytest.approx(
+        1 - (1 - anchor.mort_rate(0)) ** (1 / 12), rel=1e-12)
+    assert anchor.lapse_rate_mth(0) == pytest.approx(
+        1 - (1 - anchor.lapse_rate(0)) ** (1 / 12), rel=1e-12)
+    assert anchor.inv_return_mth(0) == pytest.approx(
+        (1 + anchor.fixed_rate_ann(0)) ** (1 / 12) - 1, rel=1e-12)
 
 
 def test_timing_arguments_reject_unknown_values(anchor):
     for cells, bad in ((anchor.av_pp_at, "BEF_MAT"), (anchor.fa_pp_at, "MID_MTH"),
                        (anchor.lca_pp_at, "BEF_FEE"), (anchor.pols_if_at, "EOM")):
         with pytest.raises(Exception):
-            cells(1, bad)
+            cells(0, bad)
     with pytest.raises(Exception):
-        anchor.claims(1, "ANNUITIZATION")
+        anchor.claims(0, "ANNUITIZATION")
 
 
 # ===========================================================================
@@ -776,21 +804,21 @@ def test_guaranteed_basis_diverges_dramatically():
     try:
         curr = model.Projection[1]
         curr.result_cf()
-        base_av = curr.av_pp(120)
+        base_av = curr.av_pp(119)                          # end of policy year 10
         model.Projection.basis = "GUARANTEED"
         model.Projection.clear_all()
         guar = model.Projection[1]
         guar.result_cf()
         assert guar.is_guaranteed_basis() is True
-        assert guar.index_cap_at(1) == 0.02
-        assert guar.fixed_rate_ann(1) == 0.01
+        assert guar.index_cap_at(0) == 0.02
+        assert guar.fixed_rate_ann(0) == 0.01
         assert guar.load_prem_rate() == 0.08
-        assert guar.expense_pol_mth_at(1) == 15.0
-        assert guar.expense_unit_mth_at(1) == 0.40
-        assert guar.expense_unit_mth_at(200) == 0.40      # all years, not just 1-10
-        assert guar.coi_rate(1) == guar.coi_rate_guar(1)
+        assert guar.expense_pol_mth_at(0) == 15.0
+        assert guar.expense_unit_mth_at(0) == 0.40
+        assert guar.expense_unit_mth_at(199) == 0.40      # all years, not just 1-10
+        assert guar.coi_rate(0) == guar.coi_rate_guar(0)
         assert guar.index_credit_rate(0.064) == pytest.approx(0.02, abs=RATE)
-        assert guar.av_pp(120) < base_av
+        assert guar.av_pp(119) < base_av
     finally:
         model.close()
 
@@ -810,17 +838,21 @@ def test_basis_rejects_an_unknown_value():
 
 
 def test_result_cf_shape(anchor):
+    """One row per projected month, ``t = 0 ... proj_len() - 1``: ``proj_len()`` rows."""
     df = anchor.result_cf()
-    assert list(df.index) == list(range(1, anchor.proj_len() + 1))
+    assert list(df.index) == list(range(anchor.proj_len()))
+    assert df.index[0] == 0 and df.index[-1] == anchor.proj_len() - 1
+    assert len(df) == anchor.proj_len() == 912
     assert df.index.name == "t"
     assert list(df.columns) == [
         "pols_if", "premiums", "claims_death", "claims_lapse", "withdrawals",
         "expenses", "premium_taxes", "net_loan_cf", "net_cf",
     ]
-    assert df.loc[1, "premiums"] == pytest.approx(10000.0, abs=CENT)
-    assert df.loc[1, "net_cf"] == pytest.approx(
-        10000.0 - anchor.claims(1) - anchor.withdrawals(1) - anchor.expenses(1)
-        - anchor.premium_taxes(1),
+    assert df.loc[0, "pols_if"] == 1.0
+    assert df.loc[0, "premiums"] == pytest.approx(10000.0, abs=CENT)
+    assert df.loc[0, "net_cf"] == pytest.approx(
+        10000.0 - anchor.claims(0) - anchor.withdrawals(0) - anchor.expenses(0)
+        - anchor.premium_taxes(0),
         abs=CENT)
 
 
@@ -856,7 +888,7 @@ def test_a_withdrawal_is_not_a_claim(indexed_ul):
     """
     p = indexed_ul.Projection[5]
     p.result_cf()
-    t = 13                                       # first month of policy year 2
+    t = 12                                       # first month of policy year 2
 
     with pytest.raises(Exception):
         p.claims(t, "WITHDRAWAL")
@@ -879,7 +911,13 @@ def test_a_withdrawal_is_not_a_claim(indexed_ul):
 def test_result_tables_are_indexed_by_t(anchor):
     for df in (anchor.result_pols(), anchor.result_av(), anchor.result_seg()):
         assert df.index.name == "t"
-        assert list(df.index) == list(range(1, anchor.proj_len() + 1))
+        assert list(df.index) == list(range(anchor.proj_len()))
+        assert df.index[0] == 0 and df.index[-1] == anchor.proj_len() - 1
+    # the opening balance of row t is the closing balance of row t - 1
+    av = anchor.result_av()
+    assert av.loc[0, "av_pp_bef_prem"] == anchor.av_pp_init()
+    assert (av["av_pp_bef_prem"].iloc[1:].to_numpy()
+            == av["av_pp"].iloc[:-1].to_numpy()).all()
 
 
 def test_the_model_docstring_describes_the_shipped_model_points(indexed_ul):
@@ -899,13 +937,13 @@ def test_the_model_docstring_describes_the_shipped_model_points(indexed_ul):
     # point 4 is the monthly-premium cell, the only one with a full ladder
     p4 = indexed_ul.Projection[4]
     assert p4.premium_mode() == "MONTHLY"
-    assert p4.wd_pp(13) == 0.0 and p4.loan_new_pp(241) == 0.0
+    assert p4.wd_pp(12) == 0.0 and p4.loan_new_pp(240) == 0.0
     assert "Point 4 pays **monthly**" in doc
 
     # point 5 is the underfunded withdrawal-and-loan cell
     p5 = indexed_ul.Projection[5]
     assert p5.premium_mode() == "ANNUAL" and p5.premium_pp_ann() == 6000.0
-    assert p5.wd_pp(13) == 200.0 and p5.loan_new_pp(241) == 6000.0
+    assert p5.wd_pp(12) == 200.0 and p5.loan_new_pp(240) == 6000.0
     assert "Point 5 is underfunded at $6,000 a year" in doc
 
 

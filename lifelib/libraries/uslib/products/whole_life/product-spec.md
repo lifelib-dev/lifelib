@@ -82,7 +82,7 @@ Footnotes:
 | Gross premium rates | Input rate table per $1,000 by issue age, sex, class (level, guaranteed) | [S1] [S3]; carrier rate books are non-public — the shipped illustrative table is **[std]** (c) |
 | Policy fee | $0 (rates fully banded) | **[std]** (d) |
 | Modal factors (× annual premium) | Semi-annual 0.515; quarterly 0.26265; monthly 0.085833 | [S1] (e) |
-| Premium mode modeled | Annual | **[std]** (f) |
+| Premium mode modeled | All four (A / SA / Q / M), on the modal factors above | [S1] [S7]; model-point default annual (f) |
 | Issue ages | Level pay 0–80; 10-pay 0–75; 20-pay 0–70; paid-up-at-65 0–45 | [S1] (another carrier issues 10/12/15/20-pay to 0–75 [S3]) |
 | Minimum face amount | $25,000 | [S1] [S3] |
 | Representative model-point face | $100,000 | **[std]** (g) |
@@ -104,8 +104,13 @@ Footnotes:
 - (e) One carrier's modal factors are adopted as the representative set [S1]; a second
   carrier's are 0.5117 / 0.2589 / 0.0870 [S3] and the FE carrier's 0.52 / 0.275 / 0.089
   [S7] — see Variations.
-- (f) **[std]** annual mode: the reference projection is annual (see technical notes); modal
-  loadings are a premium-income refinement that does not change the mechanics.
+- (f) Premium mode is a model point attribute. The reference projection runs on a **monthly**
+  grid (see technical notes), so the sourced modal factors are applied as they are printed —
+  the instalment is `factor × annual premium`, collected on the mode's own cycle. Annual mode
+  remains the default model point, and the worked example's anchor cell, because the
+  contractual quantities the example walks through are anniversary quantities either way.
+  This retires an earlier **[std]** annual-mode standardization, which existed only because
+  the projection grid could not express the factors.
 - (g) **[std]** $100,000 model point: inside all observed minimum-face rules ($25,000 general
   minimum [S1] [S3]; $100,000 preferred-class minimum at one carrier [S1]) and used
   consistently in the worked example of the technical notes.

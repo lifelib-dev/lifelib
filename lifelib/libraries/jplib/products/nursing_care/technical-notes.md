@@ -60,9 +60,18 @@ other is the whole modelling problem of this product. Section (c) does it explic
 - **Projection frequency.** Monthly grid, inherited from the chassis. The unit of account
   here is not a day but an **annual annuity instalment**, and the composite's premium mode
   is monthly (月払) — the mode of every published rate table retrieved [S6] [S8], though
-  半年払 and 年払 are also offered [S1]. `t` is the **policy month**,
-  `t = 0, 1, …, proj_len − 1`, and month `t` runs from `t` to `t + 1` months after the
-  contract date (*keiyakubi*, 契約日).
+  半年払 and 年払 are also offered [S1]. The step is therefore the **policy month**, and the
+  index over it is `t`.
+- **The time index [library-wide convention].** `t` is the policy month and is
+  **0-based**: `t = 0` is the first projected month, month `t` runs from `t` to `t + 1`
+  months after the contract date (*keiyakubi*, 契約日), the frame is `t = 0 … proj_len − 1`
+  and `proj_len` is the number of projected months, not the last index. Every model point
+  is new business at `t = 0`, so `age(0) = x` and `pols_if(0) = 1`; there is no in-force
+  offset to carry. The **policy year** is the contractual, 1-based label derived from the
+  index — `y(t) = floor(t/12) + 1`, so months `t = 0 … 11` are policy year 1 — and is
+  what a schedule written in policy years, such as the lapse table below, is read at.
+  Where these notes say "policy year k"
+  they mean that label; the corresponding index is `t = 12(k − 1) … 12k − 1`.
 - **Timing conventions [std].** Office premium received at the **start** of month `t`, and
   only by lives not yet on premium waiver (*hokenryō haraikomi menjo*, 保険料払込免除); maintenance
   expense at the start of month `t`; the lump sum, the annuity instalment and the
@@ -87,9 +96,9 @@ other is the whole modelling problem of this product. Section (c) does it explic
 - **Termination.** Whole-of-life cover with whole-of-life premiums [S1] [S4] [S7] [S8] [S10]
   [S11]. The projection runs to the terminal age of 第三分野標準生命表2018, **116 for males and 118
   for females** [REG-R18] [REG-R20], so `proj_len = 12 × (terminal_age − x + 1)` — 684
-  months for the anchor cell. There is no maturity benefit, no 死亡保険金 and no surrender value
-  (*kaiyaku-henreikin*, 解約返戻金), so death and lapse are pure liability-releasing
-  decrements.
+  months for the anchor cell, projected as `t = 0 … 683`. There is no maturity benefit, no
+  死亡保険金 and no surrender value (*kaiyaku-henreikin*, 解約返戻金), so death and lapse are
+  pure liability-releasing decrements.
   There **is** a benefit-driven termination: the contract is extinguished on the **tenth**
   annuity instalment, effective retroactively to the date that instalment's trigger was met
   [S1].
@@ -126,7 +135,7 @@ other is the whole modelling problem of this product. Section (c) does it explic
 | `premium` (`P`) | JPY per month, office premium, model-point input | 11,500 **[std]** |
 | `prem_mode` | enum {monthly, semiannual, annual} | monthly |
 | `prem_period` | enum {whole_life} | whole_life (終身払) |
-| `issue_date` | date | — |
+| `issue_date` | date | — (not carried by the shipped CSV; every model point is new business at `t = 0`) |
 
 `premium` is an **input, not a computed quantity**. No carrier publishes assumed incidence
 rate (*yotei hasseiritsu*, 予定発生率), assumed interest rate (*yotei riritsu*, 予定利率) or
@@ -419,8 +428,10 @@ Japan is 解約・失効率 **5.6% p.a.** on 個人保険, measured on opening i
 |---|---|---|---|---|---|---|---|
 | `lapse_rate` **[std]** | 9.0% | 7.0% | 6.0% | 5.5% | 5.0% | 4.5% | 3.0% |
 
-`lapse_rate_mth(t) = 1 − (1 − lapse_rate(year(t)))^(1/12)` **[std]**. Lapse applies **only
-to `pols_act`** — see *Policyholder behavior modeling*.
+`lapse_rate_mth(t) = 1 − (1 − lapse_rate(y(t)))^(1/12)` **[std]**, where `y(t) =
+floor(t/12) + 1` is the 1-based policy year label: months `t = 0 … 11` take the 9.0% of
+policy year 1. The row index of the table is that contractual label, not `t`. Lapse
+applies **only to `pols_act`** — see *Policyholder behavior modeling*.
 
 **Expenses and commission (all levels [std]).** Inherited from the chassis with one change.
 
@@ -428,7 +439,7 @@ to `pols_act`** — see *Policyholder behavior modeling*.
 |---|---|---|
 | Acquisition expense | ¥20,000 per policy at `t = 0` | **[std]**, as `medical` |
 | Initial commission | 1.5 × annualized premium at `t = 0` (¥207,000 on the anchor) | **[std]**, as `medical` |
-| Renewal commission | 3.0% of premiums from policy year 2 | **[std]**, as `medical` |
+| Renewal commission | 3.0% of premiums from policy year 2 — that is, from `t = 12` | **[std]**, as `medical` |
 | Maintenance expense | ¥250 per policy per month, inflating 1.0% p.a. at each anniversary | **[std]**, as `medical` |
 | Claim expense | **¥5,000** per claim event — the lump sum, and **each** annuity instalment | **[std]**, raised from `medical`'s ¥3,000 |
 | Expense inflation | 1.0% p.a. flat | **[std]**, as `medical` |
@@ -447,9 +458,10 @@ Maintenance expense is charged on `pols_if`, including lives on waiver.
 
 | Symbol | Meaning |
 |---|---|
-| `t` | policy month, `t = 0, 1, …, proj_len − 1` |
-| `x`, `age(t)` | 契約年齢 (満年齢); attained age `x + floor(t/12)` |
-| `y(t)` | policy year, `floor(t/12) + 1` |
+| `t` | policy month, **0-based**: `t = 0, 1, …, proj_len − 1` |
+| `proj_len` | number of projected months, `12 × (terminal_age − x + 1)`; the frame's exclusive end |
+| `x`, `age(t)` | 契約年齢 (満年齢); attained age `x + floor(t/12)`, so `age(0) = x` |
+| `y(t)` | policy year, the **1-based contractual label** `floor(t/12) + 1`, derived from `t` and never the index itself |
 | `A_L`, `A_N` | 介護一時金額 (JPY); 基準介護年金額 (JPY per instalment) |
 | `n_A` | maximum annuity instalments (10) |
 | `s_W`, `s_L`, `s_N` | grade shares of certified persons: 0.715 / 0.508 / 0.340 |
@@ -622,8 +634,9 @@ publishes them as two columns of `result_cf()`.
 要介護2以上, 介護年金 `A_N` = ¥600,000 per year from 要介護3以上 capped at `n_A` = 10 instalments and
 **survival-tested**, 保険料払込免除 from 要介護1以上, company-basis limb **on**, 認知症一時金特約 **off**,
 1-year 不担保期間 **off**, office premium `P` = ¥11,500 per month. `proj_len = 12 × (116 − 60 +
-1) = 684` months. All four rows below sit at `age = 60` and in policy year 1, so one set of
-rates drives them.
+1) = 684` months, projected as `t = 0 … 683`. The four rows below are the first four
+months of the frame, `t = 0, 1, 2, 3`; all of them sit at `age = 60` and in policy year 1
+(`y(t) = floor(t/12) + 1 = 1`), so one set of rates drives them.
 
 Assumption values used, every one of them:
 

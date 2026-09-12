@@ -25,8 +25,8 @@ from jp_registry import LIB, ANNUAL, MONTHLY, MODELS, model_path  # noqa: F401
 
 @pytest.fixture(scope="module")
 def term_life():
-    """The Term_JP_A model, closed after the module finishes."""
-    model = mx.read_model(model_path("Term_JP_A"))
+    """The Term_JP_S model, closed after the module finishes."""
+    model = mx.read_model(model_path("Term_JP_S"))
     yield model
     model.close()
 
@@ -57,8 +57,8 @@ def jp_income_anchor(income_guarantee):
 
 @pytest.fixture(scope="module")
 def whole_life():
-    """The WholeLife_JP_A model, closed after the module finishes."""
-    model = mx.read_model(model_path("WholeLife_JP_A"))
+    """The WholeLife_JP_S model, closed after the module finishes."""
+    model = mx.read_model(model_path("WholeLife_JP_S"))
     yield model
     model.close()
 
@@ -71,8 +71,8 @@ def jp_wl_anchor(whole_life):
 
 @pytest.fixture(scope="module")
 def endowment():
-    """The Endowment_JP_A model, closed after the module finishes."""
-    model = mx.read_model(model_path("Endowment_JP_A"))
+    """The Endowment_JP_S model, closed after the module finishes."""
+    model = mx.read_model(model_path("Endowment_JP_S"))
     yield model
     model.close()
 
@@ -149,8 +149,8 @@ def jp_ltc_anchor(nursing_care):
 
 @pytest.fixture(scope="module")
 def individual_annuity():
-    """The Annuity_JP_A model, closed after the module finishes."""
-    model = mx.read_model(model_path("Annuity_JP_A"))
+    """The Annuity_JP_S model, closed after the module finishes."""
+    model = mx.read_model(model_path("Annuity_JP_S"))
     yield model
     model.close()
 

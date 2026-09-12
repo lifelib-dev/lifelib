@@ -47,8 +47,13 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 time rather than stored inside the model. The model folder itself holds no data, so
 the model and its inputs must travel together.
 
-**Projection basis.** Monthly steps. ``t`` is the policy month, ``t = 0, 1, ...,
-proj_len() - 1``, and month ``t`` runs from ``t`` to ``t + 1`` months after the 契約日.
+**Projection basis.** Monthly steps on the library-wide **0-based** time index. ``t`` is
+the policy month, ``t = 0, 1, ..., proj_len() - 1``, and month ``t`` runs from ``t`` to
+``t + 1`` months after the 契約日. The frame is ``range(proj_len())``, so ``proj_len()``
+is a row count and ``len(result_cf()) == proj_len()``. Every model point is new business
+at ``t = 0``: ``age(0)`` is the 契約年齢 and ``pols_if(0) = 1``. The **policy year** is the
+contractual 1-based label derived from the index, ``policy_year(t) = t // 12 + 1``, and
+is what the ``policy_year`` key of ``lapse_table.csv`` is read at.
 Office premium and maintenance expense fall at the start of the month, the lump sum,
 the annuity instalment and the claim-handling expense at the end; then care incidence,
 then mortality, then lapse, then the benefit-driven termination on the last permitted

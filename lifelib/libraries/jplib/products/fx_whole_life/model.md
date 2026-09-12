@@ -6,7 +6,7 @@ implements is specified in [`product-spec.md`](product-spec.md). Both state **de
 against the savings chassis, 終身保険: its
 [product specification](../whole_life/product-spec.md) and its
 [technical notes](../whole_life/technical-notes.md) carry the inherited mechanics, and its
-model is [`WholeLife_JP_A`](../whole_life/model.md).
+model is [`WholeLife_JP_S`](../whole_life/model.md).
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
 > contractual mechanics are sourced — the surrender-value formula and the base the
@@ -43,6 +43,31 @@ model.Projection[1].result_cf()
 `result_cf()` returns a `DataFrame` indexed by policy month `t` with one column per cash
 flow line. `result_pols()` gives the decrement columns and `result_av()` the per-policy
 account-value and surrender layers.
+
+## The time index is 0-based
+
+`t` counts completed policy months from 契約日 and is **0-based**: `t = 0` is the month
+beginning at issue, month `t` runs from time `t` to time `t + 1`, and every model point is
+new business at `t = 0` — there is no in-force offset and no issue-date column anywhere in
+the inputs. `age(0) = issue_age()`, `pols_if(0) = pols_if_init()` and the month-0 premium is
+the first one collected.
+
+`proj_len()` is the **number** of projected months, `12 (ω − x + 1)`, and therefore the
+exclusive end of the frame: all three result tables are built over `range(proj_len())`,
+their index runs `0 … proj_len() − 1` and `len(result_cf()) == proj_len()` — 840 rows on the
+anchor cell, 708 on the female life of point 5. That row-count identity is what
+`test_model_conventions_jp.py` asserts for every model point.
+
+The contractual policy year is a **1-based label derived from `t`**, `policy_year(t) =
+t // 12 + 1`, and it is never the index the projection runs on. It exists because two input
+tables are keyed the way the contract speaks; the lookup goes through `policy_year(t)`.
+
+The state cells are **time-point** values rather than closing balances: `av_pp(t)`,
+`av0_pp(t)`, `cv_pp(t)` and `pols_if(t)` are read *at* time `t`, the start of month `t`, so
+the closing state of month `t` is the same cells read at `t + 1`. `result_cf()`'s `av_pp`
+and `cv_pp` columns therefore publish `AV(t+1)` and `CV(t+1)` — the end of that row's month,
+which is where the row's surrender benefit is valued — while `result_av()` publishes the
+start-of-month `AV(t)`. The two tables disagree by one month on purpose.
 
 The model and its `Projection` Space both carry docstrings — `model.doc` describes the
 product and the projection basis, and `model.Projection.doc` holds the full mapping
@@ -119,12 +144,30 @@ then fails on first evaluation.
 | `mort_table.csv` | annual `q` by sex and attained age, 18 to ω | the library's canonical **[std]** proxy, anchored row by row to published rates [REG-R18]; see below |
 | `lapse_table.csv` | annual surrender rate by shape and policy year | SINGLE calibrated to a published four-year exit statistic [R5]; LEVEL **[std]** with no public anchor |
 | `charge_table.csv` | the shape's charge, surrender-charge, 低解約返戻金, MVA and 特別積立金 parameters | charge stack back-solved [S2]; 解約控除 and 低解約返戻金 scales sourced [S3] [S2]; MVA constants fitted to the published table [S3] |
-| `fx_path_table.csv` | an optional TTM path by policy year | month 1 is the published reference level [S11]; the rest **[std]** illustrative, read only where a point sets `fx_path` |
+| `fx_path_table.csv` | an optional TTM path by policy year | policy year 1 (months `t = 0 … 11`) is the published reference level [S11]; the rest **[std]** illustrative, read only where a point sets `fx_path` |
 
 Every row of every assumption table carries a `provenance` column saying whether the
 value is sourced or **[std]**, and which. It is the only place in the library outside
 `sources.md` and `_research/` where a source may be named at all, and it is not
 rendered.
+
+### No input column is the model's `t`
+
+None of the five files is keyed by the projection's time index, so none of them moved when
+the library settled on the 0-based convention. Every time-like column, and what it is:
+
+| File | Column | Decision | Why |
+|---|---|---|---|
+| `lapse_table.csv` | `policy_year` (1 … 21, with `shape`) | **contractual label; values unchanged** | It is the 1-based policy year the surrender curve is quoted in. The reader maps `policy_year(t) = t // 12 + 1` and carries the last row forward, so year 1 serves months `t = 0 … 11` |
+| `fx_path_table.csv` | `policy_year` (1 … 21) | **contractual label; values unchanged** | Same key and same mapping; the path is quoted by policy year, not by month |
+| `mort_table.csv` | `age` (18 … ω, with `sex`) | **an attained age, not a time index; unchanged** | Read at `age(t) = issue_age() + t // 12`, so it is keyed by the life and not by the frame |
+| `charge_table.csv` | `prem_charge_early_months` (24 LEVEL / 1 SINGLE), `surr_charge_months` (120) | **month counts used as exclusive bounds; unchanged** | They are lengths, not points: the code reads `t < prem_charge_early_months` (months 0 … 23) and `t >= surr_charge_months` (zero from month 120), which is already the 0-based reading |
+| `model_point_table.csv` | `prem_months` (1, 240 or 300; 0 on point 5) | **an elapsed count; unchanged** | The 保険料払込期間 in months, consumed as `t < prem_months_eff()`, so premiums fall in months `0 … n − 1`. `0` denotes 終身払 |
+| `model_point_table.csv` | `rate_period_y` (15) | **a length in years; unchanged** | The 積立利率適用期間, used modulo `12 × rate_period_y()` so that the 積立利率計算基準日 falls at months 0, 180, 360, … |
+
+The table has no column holding a *point* on the frame's time axis — no `wd_start_year`,
+no `pup_month`, no `duration_init` — because every shipped model point is new business at
+`t = 0` and no calendar date enters the projection.
 
 ### Read once, in `Data`
 
@@ -388,7 +431,7 @@ Everything quantitative that is not a contract term. The load-bearing ones:
 `check_*` contract and the read-write-re-read round trip — parametrized over the model
 registry.
 
-`tests/test_fx_whole_life_jp.py` asserts this product, in 121 tests:
+`tests/test_fx_whole_life_jp.py` asserts this product, in 114 tests:
 
 - **The notes' worked example, hard-coded as module-level tables** — `TRACE` for the
   month 0, 1 and 2 traces, `FIRST_PERIODS` for the printed cash-flow table, `CALIBRATION`
@@ -422,6 +465,11 @@ registry.
 - **The identities**: the five `check_*` cells on all eight model points, plus the
   in-force roll-forward rebuilt month by month independently of the recursion, on all
   eight.
+- **The 0-based frame**: `result_cf()` indexed by `t` from 0 to `proj_len() − 1` with
+  `proj_len()` rows, `age(0) = issue_age()` and `pols_if(0) = 1` on the anchor cell, and
+  `policy_year(0) = policy_year(11) = 1` against `policy_year(12) = 2` for the derived
+  1-based label. The same row count is asserted for every model point of every model in
+  the library by `test_model_conventions_jp.py`.
 - **The structural product facts**: no maturity and no tail states; the horizon read off
   the table, 109 male and 113 female, with the terminal year emptying in its first month
   because `q = 1` is an annual rate; 終身払 resolved against the horizon; death before

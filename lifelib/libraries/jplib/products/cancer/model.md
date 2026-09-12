@@ -42,8 +42,9 @@ model.Projection[1].result_cf()
 ```
 
 `Projection` takes a `point_id`; `Projection[1]` is the worked-example anchor cell.
-`result_cf()` returns a `DataFrame` indexed by policy month `t` with one column per
-cash flow line, and `result_pols()` the policy counts, rates and ledgers. `model.doc`
+`result_cf()` returns a `DataFrame` indexed by the 0-based policy month `t` —
+`proj_len()` rows, `t = 0 … proj_len() − 1` — with one column per cash flow line, and
+`result_pols()` the policy counts, rates and ledgers on the same frame. `model.doc`
 describes the product and the projection basis; `model.Projection.doc` holds the full
 mapping from the technical notes' symbols to the cells names.
 
@@ -132,12 +133,31 @@ hundred months of its projection.
 Three mechanics are monthly by construction rather than by approximation: the 90-day
 waiting period is three months of the grid, the treatment benefit's unit of payment
 **is** the calendar month [S5] [S10] [S11], and the premium mode is monthly (*getsubarai*,
-月払) throughout the composite [S1] [S6] [S11] [S12]. `t` is the policy month, and
-`proj_len() = 12 × (omega_age − x + 1)` — 924 months on the anchor cell, running to the
-terminal age of 第三分野標準生命表2018, 116 male and 118 female [REG-R18] [REG-R20]. A
+月払) throughout the composite [S1] [S6] [S11] [S12]. A
 diagnosis arising in month `t` pays its lump sum in month `t` and the life enters the
 diagnosed state at the **end** of that month, so the four continuing benefits begin at
 `t + 1` **[std]**.
+
+### The time index is 0-based
+
+`t` is the policy month on the library-wide **0-based** index. `t = 0` is the **first
+projected month**, the one beginning at the contract date (*keiyakubi*, 契約日), so
+`pols_if(0) = pols_if_init()` and `age(0) = issue_age()`. `proj_len()` is the **number of
+months projected** — the exclusive end of the frame, not a last index — so the frame is
+`range(proj_len())`, the last row is `t = proj_len() − 1`, and both `result_cf()` and
+`result_pols()` have exactly `proj_len()` rows: `proj_len() = 12 × (omega_age − x + 1)` =
+**924 rows** on the anchor cell, `t = 0 … 923`, running to the terminal age of
+第三分野標準生命表2018, 116 male and 118 female [REG-R18] [REG-R20]. The `+ 1` in that formula is
+the terminal age's own twelve months, not a slack row.
+
+The **policy year is a contractual, 1-based label derived from the index**, never the
+index itself: `policy_year(t) = t // 12 + 1`, so months `t = 0 … 11` are policy year 1 —
+which is the window `run.py` prints as `head(12)` and the notes aggregate as *policy year
+1*. Every duration constant in the model is written against the 0-based index: cover
+attaches at `t ≥ wait_months() = 3`, the renewal commission starts at `t ≥ 12` (the first
+month of policy year 2), expense inflation steps on `t // 12` and the 定期 repricing on
+`t // 120`. `age(t) = x + t // 12` and `unlock(t)` reads `trig(t − C)`, so the first
+possible unlock is `t = C + W = 27`.
 
 ## Inputs are external files
 
@@ -175,6 +195,26 @@ resolves the directory from `_model.path.parent` at run time. The trade-off is t
 model is not portable on its own: copy `Cancer_JP_S/` without the CSVs and it reads
 fine, then fails on first evaluation. What that buys is a diff that shows logic changes
 only, and an input that can be swapped in place.
+
+### No input CSV is keyed by the model's `t`
+
+Under the 0-based time index every time-like column in the seven inputs was decided by
+**meaning**, and none of them holds a point on the projection frame's axis, so no file
+changes:
+
+| File | Column | Decision |
+|---|---|---|
+| `lapse_table.csv` | `policy_year` (values 1…21) | A **contractual 1-based label**, not the index. Left as it is; `lapse_rate(t)` reads it through `policy_year(t) = t // 12 + 1` and takes the last row beyond the table |
+| `model_point_table.csv` | `wait_months`, `cycle_months`, `treat_cap` | **Elapsed counts in months**, already 0-based by nature — a delay, a cycle length and a lifetime cap, never an index. Unchanged |
+| `model_point_table.csv` | `issue_date` | A calendar date, read by no cells; the model has no calendar mapping and every point is new business at `t = 0`. Unchanged |
+| `mort_table.csv` | `age` | An attained age, reached through `age(t)`. Unchanged |
+| `incidence_table.csv` | `band_start` | An age band's starting age. Unchanged |
+| `sex_factor_table.csv` | `age` | A band midpoint age. Unchanged |
+| `hosp_stay_table.csv` | `age_from` | An age threshold, filtered on `age(t)`. Unchanged |
+| `survival_table.csv` | *(none)* | Keyed by `sex` only |
+
+There is no column named `t`, no `duration`, and no scenario table keyed by period, so
+nothing in this directory had to be re-keyed.
 
 ### The mortality table is a construction, not a copy
 
@@ -351,9 +391,15 @@ error, and it is the first thing a serious user should do.
 
 ## Tests
 
-`tests/test_model_conventions_jp.py` asserts the house style over the whole registry.
-`tests/test_cancer_jp.py` asserts this product:
+`tests/test_model_conventions_jp.py` asserts the house style over the whole registry,
+including the 0-based frame: `result_cf()` is indexed `t`, contiguous, and carries
+`proj_len()` rows for every model point. `tests/test_cancer_jp.py` asserts this product:
 
+- the frame itself — `len(result_cf()) == proj_len() == 924` on the anchor cell, first
+  index 0 and last index `proj_len() − 1` — and, with it, the 0-based reading of every
+  duration constant: cover attaching at `t = 3`, the first unlock at `t = 27`, the
+  renewal commission from `t = 12`, and `mort_rate(proj_len() − 1) == 1.0` at the
+  terminal age;
 - the notes' six-row worked example and its four month-by-month traces, hard-coded, to
   the precision the notes display — money to ¥0.01, `pols_if` and the healthy split to
   six decimals, the diagnosed state to eight, the ledgers to four — plus the

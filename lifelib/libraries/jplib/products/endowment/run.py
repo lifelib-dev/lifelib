@@ -1,4 +1,4 @@
-"""Run the Endowment_JP_A reference model and print its cash flow statement.
+"""Run the Endowment_JP_S reference model and print its cash flow statement.
 
     python products/endowment/run.py            # anchor cell (point_id = 1)
     python products/endowment/run.py 2          # the education cell
@@ -13,7 +13,7 @@ from pathlib import Path
 
 import modelx as mx
 
-model = mx.read_model(Path(__file__).parent / "Endowment_JP_A")
+model = mx.read_model(Path(__file__).parent / "Endowment_JP_S")
 point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 
 proj = model.Projection[point_id]
@@ -23,13 +23,16 @@ second = ("" if proj.cell() != "education"
           else "   policyholder {}{}, waiver = {}".format(
               proj.ph_sex(), proj.ph_issue_age(), proj.waiver()))
 
+print("Endowment_JP_S - JPY, monthly grid")
 print("model point {}: {} - {} - insured {}{}, {}-year term, "
       "{}-year premium term".format(
           point_id, proj.policy_id(), label, proj.sex(), proj.issue_age(),
           proj.policy_term(), proj.prem_term()))
-print("sum assured = JPY {:,.0f}   premium = JPY {:,.0f} p.a.   "
-      "schedule = {}{}".format(
+print("sum assured = JPY {:,.0f}   premium = JPY {:,.0f} p.a. (nenbarai: one month "
+      "in twelve)   schedule = {}{}".format(
           proj.sum_assured(), proj.premium_pp(), proj.schedule_id(), second))
+print("projection = {} months ({} policy years); t counts MONTHS, "
+      "policy year = t // 12 + 1".format(proj.proj_len(), proj.proj_years()))
 print("net level premium = JPY {:,.2f} at i_cv = {:.2%}   implied rate = {:.4%}   "
       "henreiritsu = {:.4%}".format(
           proj.prem_net_level_pp(), proj.i_cv, proj.implied_rate(), proj.henreiritsu()))
@@ -41,7 +44,16 @@ print("checks: in-force roll-fwd {}   policy value roll-fwd {}   terminal value 
 print()
 
 result = proj.result_cf()
-print(result.round(2).to_string())
+annual = result.groupby(result.index // 12).sum()
+for col in ("pols_if", "pols_if_pay", "pols_wv"):
+    annual[col] = [getattr(proj, col)(12 * y) for y in annual.index]
+annual.index.name = "policy year - 1"
+print("cash flow statement grouped into policy years "
+      "(in-force columns read at the anniversary):")
+print(annual.round(2).to_string())
+print()
+print("the first 13 months, one row per month:")
+print(result.head(13).round(2).to_string())
 print()
 print("undiscounted totals per policy issued (JPY, income positive):")
 print(result.drop(columns=["pols_if", "pols_if_pay", "pols_wv"]

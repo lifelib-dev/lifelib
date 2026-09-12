@@ -31,14 +31,22 @@ values are identical to those in `product-spec.md`.
 - **Projection frequency.** Monthly grid, matching the monthly-in-arrears benefit
   [S1] [S3] [S10]. Annual assumption rates are converted to monthly per the formulas
   below **[std]**.
+- **Time index.** The policy month t is 0-based: t = 0 is the first projected month
+  and the frame is t = 0 … T − 1 with T = 12 × (expiry_age − entry_age) months. Month
+  t runs from time t to time t + 1. The policy year is the contractual 1-based label
+  y = floor(t/12) + 1, so anniversaries fall at BOM of months t = 12, 24, …. On an
+  `in_claim` cell t = 0 is the valuation month **[std]**. The claim duration z is a
+  separate, 1-based cohort clock (z = 1 is a claim that has just started paying) and
+  is not a time index.
 - **Timing conventions [std].** Premiums received at the beginning of the policy
-  month (BOM) from lives in H; state transitions occur at end of month (EOM); benefit
-  for month t is paid at EOM to lives in claim payment throughout month t — in S at
-  BOM and still in S at EOM (monthly in arrears [S1]; a claim incepting at EOM t
-  receives its first payment at EOM t+1). The
+  month (BOM, time t) from lives in H; state transitions occur at end of month (EOM,
+  time t + 1); benefit for month t is paid at EOM to lives in claim payment
+  throughout month t — in S at BOM and still in S at EOM (monthly in arrears [S1]; a
+  claim incepting at EOM t receives its first payment at EOM t+1). The
   contractual daily pro-rating of partial claim months [S1] [S3] [S10] is replaced by
   whole-month payment **[std]**. Escalation applies at BOM of each anniversary month.
-- **Age basis.** Age nearest birthday at entry, advancing with policy year **[std]**.
+- **Age basis.** Age nearest birthday at entry, advancing with policy year **[std]**:
+  attained age a = entry_age + floor(t/12).
   No public statement of the IP11 age definition was retrieved (the briefing note
   records graduated age ranges 17–65 M / 17–60 F, extended to 70 [R1]); the choice
   is a pure convention and must be revisited by CMI Authorised Users.
@@ -84,13 +92,13 @@ not public.
 
 | Variable | Description | Updated |
 |---|---|---|
-| `l_H(t)` | Probability in state H (active premium-payer, incl. any sickness spell still inside the deferred period — see Deferred-period mechanics) at EOM t | monthly |
-| `l_S(t, z)` | Probability in claim payment at EOM t with claim duration z months (z = 1, 2, ...) | monthly, two-dimensional |
+| `l_H(t)` | Probability in state H (active premium-payer, incl. any sickness spell still inside the deferred period — see Deferred-period mechanics) at BOM t, i.e. at time t; l_H(0) = 1 on an at-issue cell | monthly |
+| `l_S(t, z)` | Probability in claim payment at BOM t with claim duration z months (z = 1, 2, ...) | monthly, two-dimensional |
 | `l_S(t)` | Total in-claim probability = Σ_z l_S(t, z) | derived |
-| `B(y)` | Escalated monthly benefit in policy year y | at anniversaries |
+| `B(y)` | Escalated monthly benefit in policy year y (y = floor(t/12) + 1) | at anniversaries |
 | `P(y)` | Escalated monthly premium in policy year y | at anniversaries |
 | `AP(y)` | Amount payable per month of full incapacity (spec formula; base: = B(y)) | at anniversaries |
-| `n(t)` | New claim inceptions during month t | monthly |
+| `n(t)` | New claim inceptions during month t, seeded at EOM t: n(t) = l_S(t+1, 1) | monthly |
 | `rec(t)`, `dth_S(t)`, `dth_H(t)`, `lps(t)` | Exits: recoveries, deaths in claim, deaths in H, lapses | monthly |
 
 There is no account value, surrender value or unit fund: the contract has no cash-in
@@ -209,55 +217,60 @@ waived and the benefit is valuable **[std]**):
 
 | Symbol | Meaning |
 |---|---|
-| t | policy month, t = 1..T; T = 12 × (expiry_age − entry_age) = 360 (base cell); y = ceil(t/12); attained age a = entry_age + y − 1 |
-| B(y), P(y), AP(y) | escalated benefit, premium, amount payable (£/month); B(1) = 2,000, P(1) = 35 **[std]** |
+| t | policy month, 0-based: t = 0, 1, …, T − 1; T = 12 × (expiry_age − entry_age) = 360 (base cell); month t runs from time t to t + 1; policy year y = floor(t/12) + 1; attained age a = entry_age + floor(t/12) |
+| B(y), P(y), AP(y) | escalated benefit, premium, amount payable (£/month) in policy year y; B(1) = 2,000, P(1) = 35 **[std]** (policy year 1 is t = 0..11) |
 | j | escalation rate = min(max(RPI, 0), 0.10); snapshot 0.03 **[std]** |
 | ι_m(a) | monthly claim (payment) inception rate = 1 − (1 − ι_a(a))^(1/12) **[std]** |
 | q_H_m(a), w_m(y) | monthly active mortality and lapse, same annual-to-monthly conversion **[std]** |
 | ρ_m(z), q_S_m(z) | monthly recovery and death-in-claim rates at claim duration z months (from the annual rate of the duration year containing z) **[std]** |
 | s_S(z) | monthly in-claim survival = (1 − ρ_m(z)) × (1 − q_S_m(z)) (independent decrements **[std]**) |
 | e_m(y), ec_m(y) | monthly maintenance and claim-management expense = 60/12 and 300/12, × 1.03^(y−1) **[std]** |
-| v(t) | discount factor to time t (valuation: PRA risk-free curve [R7] [REG-R1]; worked example: 1.03^(−t/12) **[std]**) |
-| l_H(t), l_S(t, z) | state probabilities (state-variable table); l_H(0) = 1, l_S(0, ·) = 0 for an at-issue cell |
+| v(t) | discount factor to EOM t, i.e. to time t + 1, when the month's cash flows fall (valuation: PRA risk-free curve [R7] [REG-R1]; worked example: 1.03^(−(t+1)/12) **[std]**, so v(0) is one month's discount) |
+| l_H(t), l_S(t, z) | state probabilities at BOM t (state-variable table); l_H(0) = 1, l_S(0, ·) = 0 for an at-issue cell; an in-claim cell at duration z0 starts with l_S(0, z0 + 1) = 1 |
 
 Dimensional check: ι, q, w, ρ are monthly probabilities (dimensionless); B, P, AP,
 e are £/month; every cash flow below is £ per month per policy issued.
 
 ### Monthly processing order [std]
 
-At month t (skip all steps from t > T; at t = T all cover and any claim in payment
-terminate without value [S1] [S3] [S5] [S7] [S10]):
+At month t = 0, 1, …, T − 1, with y = floor(t/12) + 1 and a = entry_age + floor(t/12)
+(no month is projected from t = T; at EOM T − 1, the policy end date, all cover and any
+claim in payment terminate without value [S1] [S3] [S5] [S7] [S10], so
+l_H(T) = l_S(T, ·) = 0):
 
-1. **Anniversary (BOM, months t = 13, 25, ...):** B(y) = B(y−1) × (1 + j);
+1. **Anniversary (BOM, months t = 12, 24, ...):** B(y) = B(y−1) × (1 + j);
    P(y) = P(y−1) × (1 + 1.5 × j) [S1] [S2]. In-claim benefit escalates identically
    [S1] [S2] — the same B(y) applies to lives in S.
-2. **Premium income (BOM):** `PREM(t) = P(y) × l_H(t−1)`. Lives in S pay nothing
+2. **Premium income (BOM):** `PREM(t) = P(y) × l_H(t)`. Lives in S pay nothing
    (waiver [S5] [S7] [S10] [S11]); lives in H still inside a deferred period pay
    normally (see Deferred-period mechanics).
 3. **Transitions (EOM), from H** — order death, then lapse, then inception among
    survivors **[std]**:
-   - `dth_H(t) = l_H(t−1) × q_H_m(a)`
-   - `lps(t) = l_H(t−1) × (1 − q_H_m) × w_m(y)`
-   - `n(t) = l_H(t−1) × (1 − q_H_m) × (1 − w_m) × ι_m(a)` (new claims at duration z = 1)
+   - `dth_H(t) = l_H(t) × q_H_m(a)`
+   - `lps(t) = l_H(t) × (1 − q_H_m) × w_m(y)`
+   - `n(t) = l_H(t) × (1 − q_H_m) × (1 − w_m) × ι_m(a)` (new claims at duration z = 1)
 4. **Transitions (EOM), from S** — order recovery, then death **[std]**, per
    duration cohort z:
-   - `rec(t, z) = l_S(t−1, z) × ρ_m(z)`
-   - `dth_S(t, z) = l_S(t−1, z) × (1 − ρ_m(z)) × q_S_m(z)`
-   - `l_S(t, z+1) = l_S(t−1, z) × s_S(z)`
-   - `l_S(t, 1) = n(t)`
+   - `rec(t, z) = l_S(t, z) × ρ_m(z)`
+   - `dth_S(t, z) = l_S(t, z) × (1 − ρ_m(z)) × q_S_m(z)`
+   - `l_S(t+1, z+1) = l_S(t, z) × s_S(z)`
+   - `l_S(t+1, 1) = n(t)`
 5. **State update:**
-   `l_H(t) = l_H(t−1) × (1 − q_H_m) × (1 − w_m) × (1 − ι_m) + Σ_z rec(t, z)`
+   `l_H(t+1) = l_H(t) × (1 − q_H_m) × (1 − w_m) × (1 − ι_m) + Σ_z rec(t, z)`
    (recovered lives return to H and are again exposed to inception **[std]**; see
    the linked-claims limitation below).
-6. **Benefit outgo (EOM):** `BEN(t) = k × AP(y) × [l_S(t) − n(t)]` — i.e. paid to the
-   surviving cohorts z ≥ 2 only (equivalently Σ_z l_S(t−1, z) × s_S(z)): benefit is
-   monthly in arrears [S1], so new inceptions n(t) = l_S(t, 1), seeded at EOM t,
+6. **Benefit outgo (EOM):** `BEN(t) = k × AP(y) × Σ_z l_S(t, z) × s_S(z)` — the
+   cohorts in payment at BOM t that survive the month, equivalently
+   `l_S(t+1) − n(t)`, i.e. the cohorts at z ≥ 2 of the next month only: benefit is
+   monthly in arrears [S1], so new inceptions n(t) = l_S(t+1, 1), seeded at EOM t,
    receive their first payment at EOM t+1. (Including n(t) in BEN(t) would pay a
    full month's benefit at the instant of payment inception and break the
    inception-annuity equivalence in Active-lives valuation.) Whole-month
    convention **[std]**.
-7. **Expenses (EOM):** `EXP(t) = e_m(y) × [l_H(t−1) + l_S(t−1)] + ec_m(y) × l_S(t−1)`.
-8. **Discount** cash flows at v(t) and accumulate.
+7. **Expenses (EOM):** `EXP(t) = e_m(y) × [l_H(t) + l_S(t)] + ec_m(y) × l_S(t)`.
+8. **Discount** the EOM flows (benefit, expenses) at v(t), the factor to time
+   t + 1, and the BOM premium at v(t − 1) (= 1 at t = 0), and accumulate. The
+   reference implementation discounts benefit outgo only.
 
 Net cash flow (insurer perspective): `CF(t) = PREM(t) − BEN(t) − EXP(t)`. Death and
 lapse generate no payment (no death benefit, no surrender value [S4] [S5] [S7]; the
@@ -291,23 +304,27 @@ premium-paying, matching the contractual waiver-from-payment-start convention
 A claim in payment is valued as a disabled-life annuity: expected present value of
 the escalating benefit until recovery, death or expiry — the "claim annuity values"
 the CMI Rate Table Tool produces for subscribers [R5]. For a claim at duration z0
-months, attained age a0, with T_rem months to expiry:
+months (entering cohort z0 + 1 at t = 0), attained age a0, with T_rem months to
+expiry, i.e. t = 0 … T_rem − 1:
 
-    a_dis(a0, z0) = Σ_{m=1}^{T_rem} [ Π_{i=1}^{m} s_S(z0 + i − 1) ] × k × AP(y(m)) / AP(y(0)) × v(m)
+    a_dis(a0, z0) = Σ_{t=0}^{T_rem−1} [ Π_{i=0}^{t} s_S(z0 + 1 + i) ] × k × AP(y(t)) / AP(y(0)) × v(t)
 
 so that claims-in-payment BEL outgo per £1/month of benefit in payment is a_dis, and
 the cell's benefit liability is AP × a_dis + the claim-expense annuity (same
-survival, ec_m in place of AP). Escalation enters through AP(y(m)) (step-ups at
+survival, ec_m in place of AP). The product to t is the probability of still being in
+payment at EOM t, the survival the benefit of month t is paid on, and v(t) discounts
+that payment from time t + 1. Escalation enters through AP(y(t)) (step-ups at
 policy anniversaries [S1] [S2]); the annuity truncates at expiry — payments stop at
 the policy end date [S1] [S3] [S5] [S7] [S10].
 
 ### Active-lives valuation
 
-Active-life BEL cash flows are steps 1–8 run from the valuation date: premium income
-from l_H, benefit outgo from claims yet to incept (each n(t) seeds a new duration
-cohort), and expenses. Equivalently, the benefit side can be written as
-`Σ_t v(t) × n(t) × [k × AP × a_dis(a(t), 0-month equivalent)]` — the inception-annuity
-decomposition of the same multi-state projection.
+Active-life BEL cash flows are steps 1–8 run from the valuation date, t = 0: premium
+income from l_H, benefit outgo from claims yet to incept (each n(t) seeds a new
+duration cohort at EOM t), and expenses. Equivalently, the benefit side can be written
+as `Σ_t v(t) × n(t) × [k × AP × a_dis(a(t), 0-month equivalent)]` — the
+inception-annuity decomposition of the same multi-state projection, v(t) discounting
+each cohort from the EOM t at which it is seeded.
 
 **Alternative: inception-annuity method [brief].** The historical alternative prices
 each year's claim cost as (inception rate) × (disabled-life annuity at claim start)
@@ -331,9 +348,11 @@ policyholder-behavior study was retrieved.
   waived, benefit in payment) **[std]**.
 - **Premium-shock lapse [std].** With escalation on, premiums rise 1.5 × j each
   year; the model multiplies lapse by
-  `M_esc(y) = 1 + 2 × max(0, 1.5 × j(y) − 0.05)` in anniversary years (lapse
-  response to premium increases above 5%; e.g. j at the 10% cap gives 1.5 × 0.10 =
-  15% premium growth and M_esc = 1.2). Contract anchor: sampled insurers let
+  `M_esc(y) = 1 + 2 × max(0, 1.5 × j(y) − 0.05)` (lapse response to premium
+  increases above 5%; e.g. j at the 10% cap gives 1.5 × 0.10 = 15% premium growth
+  and M_esc = 1.2) in **every month** of policy years y ≥ 2, i.e. from t = 12
+  onwards; M_esc = 1 throughout policy year 1 (t = 0 … 11), before the first
+  escalation uplift. Contract anchor: sampled insurers let
   policyholders decline escalation increases, with the option lapsing after
   consecutive refusals — two consecutive cancelled increases end the option in one
   contract [S5]; declining three consecutive increases removes it in another [S11];
@@ -354,29 +373,37 @@ policyholder-behavior study was retrieved.
 
 Claims-in-payment recursion for the base cell's level-cover variant **[std]** (the
 escalation step falls outside the 3-month window shown): a claim in payment from
-duration z = 0, benefit AP = B = £2,000/month, duration-year-1 proxy terminations
-(ρ_a = 0.40, q_S_a = 0.03 **[std]**), discount 3.0%/yr flat **[std]**.
+duration z0 = 0 at t = 0 (so l_S(0, 1) = 1), benefit AP = B = £2,000/month,
+duration-year-1 proxy terminations (ρ_a = 0.40, q_S_a = 0.03 **[std]**), discount
+3.0%/yr flat **[std]**.
 
 Monthly factors (derived): ρ_m = 1 − 0.60^(1/12) = 0.041675;
 q_S_m = 1 − 0.97^(1/12) = 0.002535; in-claim survival
 s_S = 0.958325 × 0.997465 = 0.955895; v = 1.03^(−1/12) = 0.997540.
 
-| Month m | l_S start | Recoveries ρ_m × l_S | Deaths (1−ρ_m) q_S_m × l_S | l_S(m) = l_S × s_S | Benefit 2,000 × l_S(m) | v^m | PV |
-|---|---|---|---|---|---|---|---|
-| 1 | 1.000000 | 0.041675 | 0.002429 | 0.955895 | 1,911.79 | 0.997540 | 1,907.09 |
-| 2 | 0.955895 | 0.039837 | 0.002322 | 0.913735 | 1,827.47 | 0.995086 | 1,818.49 |
-| 3 | 0.913735 | 0.038080 | 0.002220 | 0.873434 | 1,746.87 | 0.992638 | 1,734.01 |
+The rows are the first three months of the frame, t = 0, 1, 2; the l_S column is the
+population at BOM t, the benefit is paid at EOM t on the survivors, and v(t) = v^(t+1)
+discounts it from time t + 1. The survivor column is the step-6 quantity
+`Σ_z l_S(t, z) s_S(z) = l_S(t+1) − n(t)`; on this cell there are no active lives, so
+n(t) = 0 and the column is simply l_S(t+1).
 
-Three-month PV of benefit outgo: £5,459.59 per claim in payment. Trace, month 1:
+| Month t | l_S(t) at BOM | Recoveries ρ_m × l_S(t) | Deaths (1−ρ_m) q_S_m × l_S(t) | l_S(t+1) = l_S(t) × s_S | Benefit 2,000 × l_S(t+1) | v(t) = v^(t+1) | PV |
+|---|---|---|---|---|---|---|---|
+| 0 | 1.000000 | 0.041675 | 0.002429 | 0.955895 | 1,911.79 | 0.997540 | 1,907.09 |
+| 1 | 0.955895 | 0.039837 | 0.002322 | 0.913735 | 1,827.47 | 0.995086 | 1,818.49 |
+| 2 | 0.913735 | 0.038080 | 0.002220 | 0.873435 | 1,746.87 | 0.992638 | 1,734.01 |
+
+Three-month PV of benefit outgo: £5,459.59 per claim in payment. Trace, month t = 0:
 survival s_S = (1 − 0.041675) × (1 − 0.002535) = 0.955895; expected benefit paid at
-EOM = 2,000 × 0.955895 = £1,911.79 (in-arrears convention: exits during the month
+EOM 0 = 2,000 × 0.955895 = £1,911.79 (in-arrears convention: exits during the month
 receive nothing under the whole-month simplification **[std]**; contractually they
 would receive a daily pro-rated amount [S1] [S3] [S10]); PV = 1,911.79 × 0.997540 =
-£1,907.09. Claim expense follows the same survival column at ec_m = 300/12 = £25.00
-per month **[std]**. On the active-lives side, the same conventions give month-1
-premium income P × l_H(0) = £35.00 and expected new inceptions
-n(1) ≈ ι_m(35) = 1 − (1 − 0.0013)^(1/12) = 0.000108 — each seeding this in-claim
-recursion at z = 1.
+£1,907.09. Claim expense is ec_m = 300/12 = £25.00 per month **[std]** on the BOM
+in-claim population l_S(t) (step 7), not on the survival column: £25.00 in month
+t = 0. On the active-lives side, the same conventions give first-month
+(t = 0) premium income P × l_H(0) = £35.00 and expected new inceptions
+n(0) ≈ ι_m(35) = 1 − (1 − 0.0013)^(1/12) = 0.000108 — each seeding this in-claim
+recursion at z = 1, as l_S(1, 1).
 
 ---
 

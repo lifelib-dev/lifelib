@@ -10,6 +10,16 @@ here rather than pickled so that a reviewer can compare them against the notes b
 Tolerances follow the precision the notes display: money to the yen-cent, in-force to
 six decimals, benefit-day ledgers to four decimals of a day.
 
+``t`` is the **0-based** policy month, the library-wide convention: ``t = 0`` is the
+first policy month, the frame is ``t = 0 ... proj_len() - 1`` so
+``len(result_cf()) == proj_len()``, ``pols_if(0) == pols_if_init() == 1`` and
+``age(0) == issue_age()``.  The policy year is the contractual 1-based label derived
+from it, ``policy_year(t) = t // 12 + 1``, so the year-1 aggregate below is
+``t = 0 ... 11`` and the renewal commission starts at ``t = 12``.  Every golden key and
+every literal ``t`` in this module is on that index; a ledger read at ``proj_len()`` is
+deliberately one past the end of the frame, which the recursions evaluate and
+``pols_if`` returns zero for.
+
 Beyond the worked example this module asserts every product fact the notes list under
 **Known modeling pitfalls**, because each of them is a way an implementation can look
 right and be wrong.  This product invites more of them than a death-benefit product
@@ -166,7 +176,11 @@ def test_worked_example_month_zero_trace(jp_medical_anchor):
     in the ledgers.
     """
     a = jp_medical_anchor
-    assert a.pols_if(0) == 1.0
+    # t is 0-based, so month 0 is the first policy month: the frame opens in force, at
+    # the issue age, in policy year 1.
+    assert a.pols_if(0) == a.pols_if_init() == 1.0
+    assert a.age(0) == a.issue_age() == 40
+    assert (a.policy_year(0), a.policy_year(11), a.policy_year(12)) == (1, 1, 2)
     assert a.premiums(0) == pytest.approx(2100.00, abs=YEN)
     assert a.claims(0, "HOSP") == pytest.approx(
         5000.0 * 15.20 * INC_RATE_MTH_40, abs=YEN)
@@ -468,7 +482,7 @@ def test_pitfall_no_surrender_value_no_apl_no_policy_loan(medical):
     The main contract is 無解約返戻金型 during the premium-paying period, which under
     終身払 is every duration [S1] [S6] [S9], and neither 契約者貸付 nor 自動振替貸付 is
     offered [S1].  So ``claims(t, "LAPSE")`` is identically zero and no lapse-suppression
-    term belongs in the recursion — importing ``WholeLife_JP_A``'s automatic-premium-loan
+    term belongs in the recursion — importing ``WholeLife_JP_S``'s automatic-premium-loan
     machinery here would suppress lapses that genuinely happen.
     """
     names = set(medical.Projection.cells) | set(medical.Projection.refs)
@@ -989,10 +1003,19 @@ def test_benefit_driven_termination_is_a_decrement_a_death_product_lacks(medical
 
 
 def test_result_cf_shape(jp_medical_anchor):
-    """The published statement, column by column, indexed by the policy month."""
-    df = jp_medical_anchor.result_cf()
+    """The published statement, column by column, on the 0-based policy month.
+
+    The frame rule: the index is named ``t``, starts at 0, is contiguous, and ends at
+    ``proj_len() - 1``, so the table holds ``proj_len()`` rows and the notes' month-0
+    strain is the first of them.
+    """
+    a = jp_medical_anchor
+    df = a.result_cf()
     assert df.index.name == "t"
-    assert list(df.index) == list(range(924))
+    assert list(df.index) == list(range(PROJ_LEN_ANCHOR))
+    assert df.index[0] == 0
+    assert df.index[-1] == a.proj_len() - 1
+    assert len(df) == a.proj_len()
     assert list(df.columns) == [
         "pols_if", "premiums", "claims_hosp", "claims_surgery", "claims_advanced",
         "claims_lump", "claims_lapse", "expenses", "claim_expenses", "commissions",

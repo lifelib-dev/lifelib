@@ -59,15 +59,29 @@ by — `MYGA`, `FIA`, `RILA`, `SPIA`, `DIA`, `ULSG` — then `US`, then `_A` for
 or `_S` for a monthly one. The grid letters follow lifelib, where `annuallife/TradLife_A` is
 the annual-step model and `basiclife/BasicTerm_S` and `savings/CashValue_SE` are the monthly
 ones. `S` carries a second sense in lifelib — scalar, one model point at a time, as against
-the vectorized `_M` models — and that is true of all twelve here, whether or not they carry
-the letter.
+the vectorized `_M` models — and that is true of all twelve here.
+
+All twelve run on a **monthly** grid, the term, whole life and FIA models included since
+their conversion.
+
+Where a product's contractual drivers *are* annual — the term guaranteed premium schedule
+and its shock lapse, whole life's cash value schedule and dividend declaration, the FIA's
+point-to-point index credit, rider charge and lifetime withdrawal — the model keeps those
+events on the policy anniversary and derives the policy year from `t`
+(`duration(t) = t // 12`), rather than stepping annually. A monthly grid is not the same
+thing as a monthly product: what the finer grid resolves is everything that is *not* a
+contractual event — mortality and lapse in the month they happen, interest and
+nonforfeiture floors accruing month by month so a mid-year exit is valued on the balance it
+actually has, and expenses falling where they are incurred. The two grids agree exactly on
+the in-force at every anniversary, and on every anniversary-dated contractual quantity;
+they differ on cash flow timing, which is what the monthly grid is for.
 
 **Life**
 
 | Product | Model | Grid | Representative design |
 |---|---|---|---|
-| [Level premium term](products/term_life/index.md) | `Term_US_A` | annual | Guaranteed level premiums for 10/20/30 years, then jump-to-ART renewal at unchanged face to attained age 95; convertible until min(end of level period, age 70); no cash value |
-| [Whole life](products/whole_life/index.md) | `WholeLife_US_A` | annual | Participating level-premium WL on a 2017 CSO / 4% nonforfeiture basis, three-factor contribution dividends, paid-up-additions default; plus a non-par final-expense variant |
+| [Level premium term](products/term_life/index.md) | `Term_US_S` | monthly | Guaranteed level premiums for 10/20/30 years, then jump-to-ART renewal at unchanged face to attained age 95; convertible until min(end of level period, age 70); no cash value. Contractually annual throughout, so the premium schedule, the ART renewals and the shock lapse sit on the anniversary |
+| [Whole life](products/whole_life/index.md) | `WholeLife_US_S` | monthly | Participating level-premium WL on a 2017 CSO / 4% nonforfeiture basis, three-factor contribution dividends, paid-up-additions default; plus a non-par final-expense variant. The dividend and the cash value schedule stay annual; the cash value interpolates between anniversaries |
 | [Universal life](products/universal_life/index.md) | `UL_US_S` | monthly | Flexible-premium current-assumption UL: monthly deductions, declared crediting over a guaranteed minimum, GPT corridor, DB options A/B — the **base chassis** for the three below |
 | [Indexed UL](products/indexed_ul/index.md) | `IUL_US_S` | monthly | UL chassis + S&P 500 annual point-to-point index account with cap, 100% participation, 0% floor — the AG 49-A benchmark design |
 | [Variable UL](products/variable_ul/index.md) | `VUL_US_S` | monthly | UL chassis + unitized separate-account subaccounts and a fixed option; SEC-registered, so charges are anchored on prospectus fee tables |
@@ -114,7 +128,9 @@ and the ruling is asserted, not merely documented:
 
 | Convention | Settled as |
 |---|---|
+| Time index | `t` is **0-based** and counts policy months: `t = 0` is the issue month of a policy projected from issue, period `t` runs from time `t` to time `t + 1`, and `proj_len()` is the number of periods from `t = 0` — the exclusive end of the frame, `result_cf()` covering `t = t_first, ..., proj_len() - 1`. A policy year is the derived 1-based label `duration(t) + 1`, never the index |
 | In-force count | `pols_if(t)` is the count at the **start** of period `t`, and is the weight on that same `result_cf()` row's cash flows. End-of-period state is reachable through `pols_if_at(t, timing)` |
+| Annual rates on a monthly grid | An assumption published annually stays annual in the unsuffixed cells and is converted at `1 - (1 - q)^(1/12)` for the month. A **contractually** annual event is never spread across the year to match: a dividend declaration, a shock lapse and a paid-up-additions purchase land whole on the anniversary month, and a premium lands whole on each date the elected mode bills it |
 | Rates | `mort_rate` / `lapse_rate` are **annual**; `mort_rate_mth` / `lapse_rate_mth` are monthly |
 | Net cash flow | `net_cf` is **income-positive** in every model. Where a product's notes print the stream outgo-positive (whole life, both payout annuities), that orientation survives verbatim as `liability_cf`, and `net_cf(t) == -liability_cf(t)` |
 | Roll-forward checks | `check_*()` takes no argument and returns `bool` over all `t` (the `CashValue_SE` form); a per-`t` residual lives at `check_*_resid(t)` |
@@ -168,13 +184,28 @@ or read it and take the cash flow statement:
 ```python
 >>> import modelx as mx
 
->>> model = mx.read_model("products/term_life/Term_US_A")
+>>> model = mx.read_model("products/term_life/Term_US_S")
 
 >>> model.Projection[1].result_cf()
 ```
 
 `Projection` takes a `point_id`; `Projection[1]` is each model's worked-example anchor cell.
 `result_cf()` returns a tidy `DataFrame` indexed by `t` with one column per cash flow line.
+
+The time index `t` is 0-based and counts **policy months**: `t = 0` is the issue month of
+a policy projected from issue, period `t` runs from time `t` to time `t + 1`, and the
+attained age is `age_at_entry + duration(t)` with `duration(t) = t // 12`. `proj_len()` is
+the number of periods from `t = 0`, i.e. the exclusive end of the frame: `result_cf()`
+covers `t = t_first, ..., proj_len() - 1`, where `t_first` is 0 for a point projected from
+issue and the elapsed periods for an in-force point (`WholeLife_US_S`'s `proj_start()`).
+This is lifelib's own convention (`basiclife/BasicTerm_S`, `savings/CashValue_SE`:
+`for t in range(proj_len())`). A contractual policy year is the 1-based label
+`duration(t) + 1` and is derived, never indexed by. The same rule holds in all twelve
+models, and `tests/test_model_conventions.py` asserts it for every model point.
+
+Where a model publishes `result_cf_annual()` — `Term_US_S` and `WholeLife_US_S`, the two
+products whose contractual quantities are annual — it is the same frame summed into policy
+years, with `pols_if` the count entering each year.
 
 The tests ship inside the library and run against *your* copy:
 

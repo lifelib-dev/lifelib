@@ -27,12 +27,19 @@ pension annuity [S1] [S2].
   after the cancellation window [S1 p4]. The only decrements are deaths; the only
   stochastic drivers are longevity and (for indexed options) inflation. This is the
   design property that makes the liability MA-eligible [R1].
-- **Projection frequency.** Monthly grid, t = 1, 2, ... months from the start date
-  **[std]**. Payment dates fall on the grid per the frequency m; exact-day mechanics
-  (one carrier's first-of-month payments and stub proportioning [S5 §§5.2–5.3],
-  another's working-day adjustment [S2 §2.4]) are not modeled **[std]**.
+- **Projection frequency.** Monthly grid, **0-based**: t = 0, 1, ..., proj_len − 1
+  months from the start date **[std]**. Month t runs from time t to time t + 1, so the
+  first projected month is t = 0, the policy year containing month t is the 1-based
+  label y = ⌊t/12⌋ + 1, and proj_len is the *number* of months projected — the
+  exclusive end of the frame. **State variables** (survival l, the cumulative
+  instalment schedule G and the value-protection balance VPbal) are indexed by a **time
+  point** k with k = 0 at the start date, so month t opens with the state at k = t and
+  closes with the state at k = t + 1; that index does not move with the frame. Payment
+  dates fall on the grid per the frequency m; exact-day mechanics (one carrier's
+  first-of-month payments and stub proportioning [S5 §§5.2–5.3], another's working-day
+  adjustment [S2 §2.4]) are not modeled **[std]**.
 - **Timing conventions [std].** Escalation is applied at the start of the month
-  containing the policy anniversary (first at t = 13) [S2 §3.3]. Advance instalments
+  containing the policy anniversary (first at t = 12) [S2 §3.3]. Advance instalments
   are paid at the start of a payment period and require survival at the start;
   arrears instalments at the end, requiring survival at the payment date. Deaths are
   decremented at end of month; a death in month t means the life does not receive an
@@ -88,15 +95,15 @@ illustration's frequency/timing/escalation basis is not recorded).
 |---|---|---|
 | `A(y)` | Annualized income in policy year y (annuitant scale) | anniversaries |
 | `peak` | Running peak of the RPI reference index (catch-up state) | anniversaries (rpi_catchup only) |
-| `G(t)` | Cumulative gross instalments scheduled through month t | payment dates |
-| `l_a(t)` | Annuitant survival probability to end of month t; l_a(0) = 1 | monthly |
-| `l_d(t)` | Dependant survival probability to end of month t; l_d(0) = 1 | monthly |
-| `d_a(t)` | Probability annuitant dies in month t = l_a(t−1) − l_a(t) | monthly |
-| `n_rem(t)` | Remaining guarantee months = max(0, n − t) | monthly |
-| `VPbal(t)` | Value-protection balance = max(0, v × P − G(t)) | payment dates |
+| `G(k)` | Cumulative gross instalments scheduled up to time k; G(0) = 0 | payment dates |
+| `l_a(k)` | Annuitant survival probability to time k; l_a(0) = 1 | monthly |
+| `l_d(k)` | Dependant survival probability to time k; l_d(0) = 1 | monthly |
+| `d_a(t)` | Probability annuitant dies in month t = l_a(t) − l_a(t+1) | monthly |
+| `n_rem(t)` | Remaining guarantee months at the start of month t = max(0, n − t) | monthly |
+| `VPbal(k)` | Value-protection balance = max(0, v × P − G(k)) | payment dates |
 
 Because instalments while the annuitant is alive are deterministic given the
-escalation path, G(t) and VPbal(t) are deterministic schedules in a deterministic
+escalation path, G(k) and VPbal(k) are deterministic schedules in a deterministic
 projection — the expected VP outgo needs no path simulation (see recursions).
 
 ---
@@ -167,26 +174,29 @@ cap — all inflation options. See Key sensitivities.
 
 | Symbol | Meaning |
 |---|---|
-| t | month index from start date, t = 1, 2, ...; policy year y = ceil(t/12) |
-| m | payments per year (12/4/2/1); payment months T = {12k/m : k = 1, 2, ...} (arrears) or {12k/m : k = 0, 1, ...} mapped to the start of month 12k/m + 1 (advance) |
+| t | month index from the start date, 0-based: t = 0, 1, ..., proj_len − 1; month t spans time t to t + 1; policy year y(t) = ⌊t/12⌋ + 1 |
+| k | time point from the start date, k = 0 at the start date; the state indices l(k), G(k), VPbal(k) |
+| a | anniversary count, a = 0 at outset, one step per policy year — a different scale from k, and the index of I(a), peak(a) |
+| s(t) | the payment point of month t: t + 1 (arrears, end of the month) or t (advance, start of it) |
+| m | payments per year (12/4/2/1); the j-th instalment (j = 1, 2, ...) falls in month 12j/m − 1 on arrears, paid at the end of it, or month 12(j−1)/m on advance, paid at the start; T is the set of those months |
 | A(y) | annualized income in policy year y; inst(t) = A(y(t))/m for t ∈ T |
 | g | fixed escalation rate (0.03 **[std]**, ≤ 0.10 [S2 §3.2]) |
-| I(k), peak | RPI reference index at anniversary k and its running maximum (catch-up state) [S2 defs] |
+| I(a), peak(a) | RPI reference index at anniversary a and its running maximum (catch-up state) [S2 defs] |
 | δ | dependant's percentage (0.50 **[std]**, ≤ 1 [S1 p9]) |
 | n | guarantee period in months (0 or 12–360 [S1 p10]) |
 | v | value-protection percentage (0.50 **[std]**, ≤ 1 [S1 p11]); v + δ ≤ 1 on first-death basis [S2 §7.3] |
 | P | purchase price (100,000 [S1 p11]) |
-| G(t) | cumulative gross instalments scheduled through month t |
-| q_a(t), q_d(t) | monthly mortality of annuitant/dependant (rated, improved) |
-| l_a(t), l_d(t) | survival probabilities from outset; d_a(t) = l_a(t−1) − l_a(t) |
-| w(t) | dependant-stream availability: 1 if overlap or t > n, else 0 [S2 §§5.9–5.11] |
+| G(k) | cumulative gross instalments scheduled up to time k; month t's instalment enters at G(t+1) |
+| q_a(t), q_d(t) | monthly mortality of annuitant/dependant in month t (rated, improved) |
+| l_a(k), l_d(k) | survival probabilities to time k; d_a(t) = l_a(t) − l_a(t+1) is the death density of month t |
+| w(t) | dependant-stream availability: 1 if overlap or t ≥ n, else 0 [S2 §§5.9–5.11] |
 | c_e, π | maintenance expense p.a. (30 **[std]**) and expense/RPI inflation (0.03 **[std]**) |
 
 Dimensional check: A(y) is currency per annum; inst = A/m is currency per payment;
 G, P, VP lump sums are currency; q, l, δ, v, w are dimensionless. Every cash flow
 below is currency per month.
 
-### Escalation update (start of month 12(y−1)+1, y ≥ 2) [S2 §3.3]
+### Escalation update (start of month 12(y−1), y ≥ 2) [S2 §3.3]
 
     level:        A(y) = A(y−1)
     fixed:        A(y) = A(y−1) × (1 + g)
@@ -196,13 +206,13 @@ below is currency per month.
 RPI catch-up pseudocode (path-dependent ratchet [S2 defs]; a second carrier operates
 the same rule [S9]):
 
-    # I[k] = RPI reference level for anniversary k
+    # I[a] = RPI reference level for anniversary a
     # (index for the 12 months ending six months before the anniversary [S2 defs])
     peak = I[0]                      # reference level at outset
-    for k = 1, 2, ...:               # k-th anniversary
-        if I[k] > peak:
-            A = A * (I[k] / peak)    # increase by the excess over the prior peak
-            peak = I[k]
+    for a = 1, 2, ...:               # a-th anniversary
+        if I[a] > peak:
+            A = A * (I[a] / peak)    # increase by the excess over the prior peak
+            peak = I[a]
         # else: A unchanged (income frozen until the index exceeds its peak)
 
 Equivalently A(y) = A(1) × max(I(0..y−1)) / I(0): income is indexed to the running
@@ -213,8 +223,8 @@ fixed-3%; the ratchet has value only under stochastic inflation (see sensitiviti
 ### Scheduled payment schedule (per policy, before survival weighting)
 
 At each payment month t ∈ T: scheduled annuitant instalment inst(t) = A(y(t))/m;
-scheduled dependant instalment δ × inst(t). Update G(t) = G(t−) + (instalments
-scheduled at t). The dependant's amount uses δ × the income "as if alive" A(y(t)):
+scheduled dependant instalment δ × inst(t). Update G(t+1) = G(t) + (instalments
+scheduled in month t). The dependant's amount uses δ × the income "as if alive" A(y(t)):
 this implements the contractual "% of the higher of income at death and income at
 guarantee end" [S2 §5.12] exactly, because under the (non-decreasing **[std]** menu)
 escalation options the as-if-alive income path is monotone, so the higher-of base
@@ -223,13 +233,14 @@ plus same-basis escalation [S2 §5.13] reproduces δ × A(y(t)) at every later d
 ### Expected cash flows (month t)
 
 **Annuity outgo** (annuitant stream with its guarantee floor, plus dependant stream),
-for t ∈ T (arrears; for advance replace l(t) with l(t−1) **[std]**):
+for t ∈ T, survival read at the payment point s = s(t) — s = t + 1 on arrears and
+s = t on advance **[std]**:
 
-    E[ANN(t)] = inst(t) × max(1{t ≤ n}, l_a(t))                — certain during guarantee [S2 §6]
-              + inst(t) × δ × (1 − l_a(t)) × l_d(t) × w(t)     — dependant stream [S2 §5]
+    E[ANN(t)] = inst(t) × max(1{t < n}, l_a(s))                — certain during guarantee [S2 §6]
+              + inst(t) × δ × (1 − l_a(s)) × l_d(s) × w(t)     — dependant stream [S2 §5]
 
 The first term pays the full instalment regardless of survival while the guarantee
-runs (annuity-certain floor [S2 §§6.5–6.6] [S7 §4.2]) and l_a(t) × inst(t) thereafter.
+runs (annuity-certain floor [S2 §§6.5–6.6] [S7 §4.2]) and l_a(s) × inst(t) thereafter.
 The second term pays the dependant when the annuitant is dead and the dependant
 alive, gated by w(t): with overlap both streams run during the remaining guarantee;
 without overlap the dependant stream starts at guarantee end [S2 §§5.9–5.11].
@@ -241,16 +252,18 @@ in month t, the accrued stub to the next scheduled instalment is approximated as
 
     E[PROP(t)] = d_a(t) × (h(t) + 0.5) / (12/m) × inst(next(t))   **[std half-month accrual]**
 
-where h(t) is the number of complete months since the last payment date. Without
+where h(t) is the number of complete months from the last payment date to time t, the
+start of the death month, and next(t) is the first payment month at or after t. Without
 proportion (representative default) this term is zero and nothing is paid for the
 final partial period [S2 §4].
 
 **Value protection** (first-death basis; n = 0):
 
-    E[VP(t)] = d_a(t) × VPbal(t−1),   VPbal(t) = max(0, v × P − G(t))   [S1 p11][S2 §7]
+    E[VP(t)] = d_a(t) × VPbal(t),   VPbal(k) = max(0, v × P − G(k))   [S1 p11][S2 §7]
 
 G accumulates gross instalments scheduled while the annuitant is alive; measuring
-the balance at t−1 implements "instalments already paid" for a mid-month death
+the balance at time t — the *start* of the death month, before the instalment due at
+its end — implements "instalments already paid" for a mid-month death
 **[std discretization]**. On the last-survivor basis, replace d_a(t) with the density
 of the last death, d_last(t) = d(l_a + l_d − l_a l_d)(t), and let G accumulate the
 dependant's instalments too [S2 §7.3] [S5 §8.4]. (One carrier's variant additionally
@@ -260,14 +273,15 @@ implementable by extending G with guarantee outflows.)
 **Maintenance expense**:
 
     E[EXP(t)] = (c_e / 12) × (1 + π)^(y−1) × IF(t)                       **[std]**
-    IF(t) = min(1, max(1{t ≤ n}, l_a(t)) + 1{δ>0} × (1 − l_a(t)) × l_d(t))
+    IF(t) = min(1, max(1{t < n}, l_a(t+1)) + 1{δ>0} × (1 − l_a(t+1)) × l_d(t+1))
 
 IF(t) is the probability any payment obligation remains (guarantee certain, annuitant
 alive, or dependant stream in payment) **[std]**.
 
 **Total gross liability cash flow**: CF(t) = E[ANN(t)] + E[PROP(t)] + E[VP(t)] +
-E[EXP(t)]. There is no premium income (single premium at t = 0 is a pricing input,
-not projected [S2 §1.1]) and no surrender outgo [S2 §12].
+E[EXP(t)]. There is no premium income (the single premium is paid at outset, before
+the first projected month, and is a pricing input, not projected [S2 §1.1]) and no
+surrender outgo [S2 §12].
 
 ### Mortality construction
 
@@ -275,22 +289,27 @@ not projected [S2 §1.1]) and no surrender outgo [S2 §12].
     q_imp(x, c)    = q_base(x) × (1 − f(x))^(c − c_0)                    **[std]** improvement fallback (f = 1.25% p.a. ages ≤ 90, linear taper to 0 at 110; c_0 = base-table data mid-year; production: CMI_2025 with a chosen long-term rate [R12][REG-R30])
     q_rated(x, c)  = min(1, θ × q_imp(x, c))                             **[std]** enhancement overlay
     q_m            = 1 − (1 − q_rated)^(1/12)                            **[std]**
-    l(t)           = l(t−1) × (1 − q_m(t)),  separately for annuitant (θ_a) and dependant (θ_d)
+    l(k)           = l(k−1) × (1 − q_m(k−1)),  l(0) = 1, separately for annuitant (θ_a) and dependant (θ_d)
+
+(q_m(t) is the rate of month t, which carries survival from time t to time t + 1.)
 
 ### Monthly processing order
 
-1. If t starts a policy year (t = 12(y−1)+1, y ≥ 2): apply the escalation update
+1. If t starts a policy year (t = 12(y−1), y ≥ 2): apply the escalation update
    (including catch-up state) [S2 §3.3].
-2. If t ∈ T: record scheduled instalments; update G(t).
-3. Decrement mortality: update l_a(t), l_d(t), d_a(t).
+2. If t ∈ T: record scheduled instalments; update G(t+1) = G(t) + instalments.
+3. Decrement mortality: update l_a(t+1), l_d(t+1) and the densities d_a(t) =
+   l_a(t) − l_a(t+1), d_d(t).
 4. Compute expected payment flows E[ANN(t)], E[PROP(t)] using survival to the
-   payment point (arrears: end of month t, i.e. l(t); advance: end of month t−1,
-   i.e. l(t−1)) **[std]**.
-5. Compute E[VP(t)] from d_a(t) and VPbal(t−1); update VPbal(t).
+   payment point s(t) (arrears: end of month t, i.e. l(t+1); advance: start of
+   month t, i.e. l(t)) **[std]**.
+5. Compute E[VP(t)] from d_a(t) and VPbal(t); update VPbal(t+1).
 6. Accrue E[EXP(t)].
-7. Stop when IF(t) < 10^-6, or when every in-scope life has passed the limiting age
-   (t/12 + x_a > ω and, if a dependant is present, t/12 + x_d > ω), ω = 115 **[std]**
-   — stopping on the annuitant's age alone would truncate a younger dependant's tail.
+7. Stop when IF(t) < 10^-6, or at the first month in which every in-scope life has
+   reached the limiting age (⌊t/12⌋ + x_a ≥ ω and, if a dependant is present,
+   ⌊t/12⌋ + x_d ≥ ω), ω = 115 **[std]** — so proj_len = 12(ω − min x_i) months and
+   the frame is t = 0 ... proj_len − 1. Stopping on the annuitant's age alone would
+   truncate a younger dependant's tail.
 
 ---
 
@@ -329,44 +348,51 @@ no guarantee period (XOR rule [S2 §§6.7, 7.6]). Starting income A(1) = £5,400
 **[std]** — an illustrative quote level (no public rate card exists; the cited anchor,
 £6,657 p.a., is for a 50%-VP basis whose escalation/frequency basis is not recorded
 [S1 p11], and an escalating joint-life basis starts lower than a level one for the
-same premium [S1 p8] [S4] [S6]). Scenario: the annuitant dies in month 17; the
-dependant survives throughout. All amounts in GBP.
+same premium [S1 p8] [S4] [S6]). Scenario: the annuitant dies in month 16; the
+dependant survives throughout, so l_a(k) = 1 for k ≤ 16 and 0 from k = 17. All amounts
+in GBP.
 
-Instalments: year 1: 5,400/4 = 1,350.00 per quarter; year 2 (from t = 13):
+Instalments: year 1: 5,400/4 = 1,350.00 per quarter; year 2 (from t = 12):
 A(2) = 5,400 × 1.03 = 5,562.00, so 1,390.50 per quarter. Dependant income after
 death: δ × A(2) = 2,781.00 p.a. = 695.25 per quarter, first paid at the next
-scheduled payment date after death (t = 18) **[std convention]**.
+scheduled payment date after death (t = 17) **[std convention]**.
 
-| t (month) | Event | Annuitant CF | Dependant CF | VP lump sum | G(t) |
+The month index is 0-based, so the j-th quarterly arrears instalment falls at the end
+of month 3j − 1: months 2, 5, 8, 11, 14, 17, ... The G column is the closing balance
+of the row, G(t+1) — the cumulative instalments once month t has been paid.
+
+| t (month) | Event | Annuitant CF | Dependant CF | VP lump sum | G(t+1) |
 |---|---|---|---|---|---|
-| 3 | Q1 instalment (arrears) | 1,350.00 | — | — | 1,350.00 |
-| 6 | Q2 instalment | 1,350.00 | — | — | 2,700.00 |
-| 9 | Q3 instalment | 1,350.00 | — | — | 4,050.00 |
-| 12 | Q4 instalment | 1,350.00 | — | — | 5,400.00 |
-| 13 | Anniversary: A ← 5,400 × 1.03 = 5,562.00 | — | — | — | 5,400.00 |
-| 15 | Q5 instalment | 1,390.50 | — | — | 6,790.50 |
-| 17 | Annuitant dies. VP = max(0, 0.50 × 100,000 − 6,790.50) | — | — | 43,209.50 | 6,790.50 |
-| 18 | Q6 date: no annuitant payment (arrears, without proportion [S2 §4]); dependant stream starts | 0.00 | 695.25 | — | 7,485.75 |
-| 21 | Q7 instalment (dependant) | — | 695.25 | — | 8,181.00 |
-| 24 | Q8 instalment (dependant) | — | 695.25 | — | 8,876.25 |
+| 2 | Q1 instalment (arrears) | 1,350.00 | — | — | 1,350.00 |
+| 5 | Q2 instalment | 1,350.00 | — | — | 2,700.00 |
+| 8 | Q3 instalment | 1,350.00 | — | — | 4,050.00 |
+| 11 | Q4 instalment | 1,350.00 | — | — | 5,400.00 |
+| 12 | Anniversary: A ← 5,400 × 1.03 = 5,562.00 | — | — | — | 5,400.00 |
+| 14 | Q5 instalment | 1,390.50 | — | — | 6,790.50 |
+| 16 | Annuitant dies. VP = max(0, 0.50 × 100,000 − 6,790.50) | — | — | 43,209.50 | 6,790.50 |
+| 17 | Q6 date: no annuitant payment (arrears, without proportion [S2 §4]); dependant stream starts | 0.00 | 695.25 | — | 7,485.75 |
+| 20 | Q7 instalment (dependant) | — | 695.25 | — | 8,181.00 |
+| 23 | Q8 instalment (dependant) | — | 695.25 | — | 8,876.25 |
 
-Checks. VP balance at death uses instalments paid before death: G(16) = 6,790.50, so
-the lump sum is 50,000 − 6,790.50 = 43,209.50 [S1 p11] [S2 §7]. Had "with proportion"
-been chosen, a stub of ≈ (1 + 0.5)/3 × 1,390.50 = 695.25 would be paid for the
-accrued month-and-a-half since t = 15 (**[std]** half-month accrual; one carrier would
-net this stub off the VP fund-value formula [S5 §8.3]). The dependant's 695.25 continues
-for her life, escalating 3% at each anniversary on the same basis [S2 §§5.12–5.13].
+Checks. VP balance at death uses instalments paid before death, which is the balance
+at the start of the death month: G(16) = 6,790.50, so the lump sum is
+50,000 − 6,790.50 = 43,209.50 [S1 p11] [S2 §7]. Had "with proportion" been chosen, a
+stub of ≈ (1 + 0.5)/3 × 1,390.50 = 695.25 would be paid for the accrued
+month-and-a-half since the month-14 instalment (**[std]** half-month accrual; one
+carrier would net this stub off the VP fund-value formula [S5 §8.3]). The dependant's
+695.25 continues for her life, escalating 3% at each anniversary on the same basis
+[S2 §§5.12–5.13].
 
 Guarantee/VP interaction. Had the model point instead carried a 10-year guarantee
 **[std default]** and no VP (the XOR rule forbids both [S2 §§6.7, 7.6]), the death in
-month 17 would change nothing until month 120: instalments of 1,390.50, escalating 3%
+month 16 would change nothing until month 120: instalments of 1,390.50, escalating 3%
 each anniversary as if the annuitant were alive [S7 §4.2], continue to beneficiaries
-through t = 120 (annuity-certain floor), and — without overlap — the dependant's
-695.25-style stream would begin only from the first payment date after t = 120, at
-δ × the income at the end of the guarantee period [S2 §§5.9–5.12]. With overlap, the
-dependant's stream would run from t = 18 alongside the guarantee payments
-[S2 §§5.9–5.11]. In expectation these scenario flows are reproduced by the E[ANN(t)]
-formula with n = 120 and w(t) as defined.
+through t = 119, the last month of the guarantee (annuity-certain floor), and — without
+overlap — the dependant's 695.25-style stream would begin only from the first payment
+date at or after t = 120, at δ × the income at the end of the guarantee period
+[S2 §§5.9–5.12]. With overlap, the dependant's stream would run from t = 17 alongside
+the guarantee payments [S2 §§5.9–5.11]. In expectation these scenario flows are
+reproduced by the E[ANN(t)] formula with n = 120 and w(t) as defined.
 
 ---
 
@@ -440,12 +466,12 @@ Dominant assumptions, in order:
 Known modeling pitfalls:
 
 - **Guarantee double-counting.** During the guarantee, the annuitant stream is
-  certain — do not also weight it by l_a(t) (the max(1{t≤n}, l_a) form prevents
+  certain — do not also weight it by l_a (the max(1{t<n}, l_a) form prevents
   paying 1 + l_a). Symmetrically, VP and guarantee never coexist in the
   representative design [S2 §§6.7, 7.6]; engines supporting the combinable variant
   offered by one carrier must net guarantee payments off VPbal [S7 §4.3] or the death
   benefit is double-paid.
-- **Overlap gating.** Without overlap the dependant stream is gated on t > n even
+- **Overlap gating.** Without overlap the dependant stream is gated on t ≥ n even
   when the annuitant died mid-guarantee; applying δ from the death date silently
   converts every without-overlap policy into the more expensive with-overlap form
   [S2 §§5.9–5.11].
@@ -461,15 +487,15 @@ Known modeling pitfalls:
   anniversaries. Resetting it each year turns the catch-up into a plain 0-floor and
   overstates indexed income after deflation-recovery paths [S2 defs].
 - **Escalation timing.** Increases apply on the anniversary [S2 §3.3], not on
-  payment dates; applying the year-2 rate to the t = 12 arrears instalment (accrued
+  payment dates; applying the year-2 rate to the t = 11 arrears instalment (accrued
   in year 1) overstates income. GMP-bearing policies use different escalation dates
   (1 April / 1 May at one carrier [S5 §7.2]) — out of scope with GMP generally **[std]**.
 - **VP balance timing.** VPbal must net instalments *paid before death*; netting the
   instalment due at the death-month payment date that was never paid (arrears,
   without proportion) understates the lump sum [S2 §§4, 7]. Symmetrically, on
   advance timing an instalment paid at the *start* of the death month has been paid:
-  in advance payment months net it (use VPbal after the month-t advance payment,
-  not VPbal(t−1)) or the lump sum is overstated by one instalment.
+  in advance payment months net it (use VPbal(t+1), after the month-t advance payment,
+  not VPbal(t)) or the lump sum is overstated by one instalment.
 - **Population-proxy basis risk.** The [std] ONS × α basis has the wrong shape as
   well as level versus annuitant tables (socio-economic mix, amounts weighting
   [R10] [R11 detail unverified](#uklib-pension_annuity-r11)); treat all reference-basis results as mechanics

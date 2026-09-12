@@ -33,6 +33,14 @@ a limit the appendix reading does not touch.
 - **Projection frequency.** Monthly. The contract credits interest daily on a 365-day
   year [S3]; the model discretizes to monthly compounding **[std]**: one month of
   interest is applied at the end of each policy month to the post-deduction balance.
+- **Time index.** The policy month index `t` is 0-based: `t = 0` is the first projected
+  month — the issue month of a model point projected from issue, and for an in-force
+  point the month `policy_month_offset` completed months after issue. Policy month `t`
+  runs from the monthiversary at time `t` to the next, and the frame is
+  `t = 0, 1, …, proj_len − 1`. The policy year is the 1-based contractual label
+  `y = floor(d(t) / 12) + 1`, with `d(t) = policy_month_offset + t` the completed policy
+  months at the start of month `t` (`d(t) = t` from issue); tables keyed by policy year
+  are read through `y`, never through `t` directly.
 - **Timing / monthiversary processing.** All policy transactions are processed on the
   monthiversary (the monthly payment date — the same day each month as the policy
   date [S3]), at the beginning of the policy month (BOM); interest accrues over the
@@ -64,7 +72,7 @@ a limit the appendix reading does not touch.
 | `face_amount` | currency | 100,000 |
 | `db_option` | enum {A, B} | A |
 | `qual_test` | enum {GPT} (CVAT out of scope) | GPT |
-| `issue_date` / `policy_month_offset` | date / int | month 1 |
+| `issue_date` / `policy_month_offset` | date / int (completed months at `t = 0`) | 0 (projected from issue) |
 | `planned_premium_annual` | currency | 1,800 **[std]** |
 | `premium_pattern` | enum {level, single, target} | level **[std]** |
 | `premium_mode` | enum {monthly, annual} | monthly **[std]** |
@@ -88,7 +96,7 @@ a limit the appendix reading does not touch.
 | `SC(t)` | Surrender charge in month t | monthly amortization |
 | `L(t)` | Policy loan balance (with capitalized interest) | monthly |
 | `CumPrem(t)` | Cumulative premiums less withdrawal offsets (GPT/7-pay tracking) | monthly |
-| `l(t)` | In-force probability at end of month t (survivorship) | monthly decrements |
+| `l(t)` | In-force probability at the start of month t, before that month's decrements (survivorship); `l(0) = 1` | monthly decrements |
 | `grace_flag(t)` | In-grace indicator and months-in-grace counter | monthly |
 | `wd_used_year` | Free-withdrawal usage in current policy year | on withdrawal |
 
@@ -109,7 +117,7 @@ ASOP 2 [R8]); class (c) is the modeler's view of policyholder/insurer experience
 | Guaranteed max premium load | 9% | [S1]; composite **[std]** |
 | Per-policy charge (guaranteed = current) | $7.50/month to age 121 | [S3]; composite **[std]** |
 | Per-unit charge | $0.26/$1,000/mo yrs 1–10; $0.156 to age 121 | [S3]; composite **[std]** |
-| Surrender charge schedule | $9.00/$1,000 initial, linear monthly runoff, 0 from year 10 | pattern [S1] [S2], mechanics [S3], amount **[std]** |
+| Surrender charge schedule | $9.00/$1,000 initial, linear monthly runoff, 0 from the last month of policy year 9 (`t = 107`) | pattern [S1] [S2], mechanics [S3], amount **[std]** |
 | Corridor factors (GPT) | specimen table 250% (ages 0–40) → 101% (94+) | [S3] [R2] |
 | Loan spread (charged − credited on loaned AV) | 0.75% | [S3]; level **[std]** |
 | Grace | 61 days; required payment 3xMD + load | [S2] [S3] |
@@ -161,7 +169,10 @@ year to a 70% floor (year 2: 98%, year 3: 96%, ..., floor from year 16).
 
 | Symbol | Meaning |
 |---|---|
-| t | policy month index, t = 1, 2, ... (t=1 is the issue month); y = policy year = ceil(t/12); x = issue age; attained age = x + y − 1 (ANB) |
+| t | policy month index, 0-based: t = 0, 1, …, proj_len − 1 (t = 0 is the issue month of a point projected from issue); month t runs from the monthiversary at time t to the next |
+| `d(t)` | completed policy months at the start of month t = policy_month_offset + t (= t from issue) |
+| y | policy year, the 1-based contractual label = floor(d(t)/12) + 1 (y = 1 for t = 0, …, 11 from issue); x = issue age; attained age = x + y − 1 = x + floor(d(t)/12) (ANB) |
+| `AV(t−1)`, `L(t−1)`, `CumPrem(t−1)` | the opening values of month t: the previous month's closing values, and at t = 0 the model point's `av_initial`, `loan_balance_initial` and 0 |
 | `F` | total face amount (per policy) |
 | `U` | units of face = F / 1000 |
 | `GP(t)` | gross premium received at BOM of month t |
@@ -184,7 +195,7 @@ year to a 70% floor (year 2: 98%, year 3: 96%, ..., floor from year 16).
 | `SC(t)` | surrender charge; `CSV(t) = AV(t) − SC(t)`; `NCSV(t) = CSV(t) − L(t)` |
 | `L(t)` | loan balance; `r_L` charged loan rate (0.0275); loaned AV credited at i_guar |
 | `q_m(t)` | best-estimate monthly mortality rate; `w_m(t)` monthly lapse rate |
-| `l(t)` | in-force probability at end of month t; l(0) = 1 |
+| `l(t)` | in-force probability at the start of month t, before its decrements; l(0) = 1 |
 
 Dimensional check: `q_coi` is per $1,000 per month, so COI charge = q_coi/1000 x NAAR
 is in currency; `e_unit x U` is currency; all MD components are currency/month.
@@ -195,8 +206,11 @@ At BOM of month t (skip steps 2–7 from attained age 121: charges cease, premiu
 accepted [S2] [S3]):
 
 1. Set policy year y, attained age a. Amortize surrender charge:
-   `SC(t) = max(0, (9.00 − t/12) x U)` (per-layer if face increases are modeled)
-   **[std amount; mechanics [S3]]**.
+   `SC(t) = max(0, (9.00 − (d(t) + 1)/12) x U)` (per-layer if face increases are
+   modeled) **[std amount; mechanics [S3]]**. The run-off counts the current month:
+   one twelfth of a year is already amortized in the issue month t = 0, giving $8.916667
+   per $1,000 rather than $9.00, and the charge is zero from t = 107, the last month of
+   policy year 9.
 2. Premium: `GP(t)` per the premium pattern and persistency assumption; check GPT
    guideline limit and 7-pay limit (compliance side-calculation — see below); deduct
    load; credit `NP(t)` to AV. (If L(t−1) > 0, unallocated payments repay the loan
@@ -204,7 +218,8 @@ accepted [S2] [S3]):
 3. Withdrawal: deduct `W(t) + wf`; apply free-amount rule (10% of AV per policy year
    **[std]**); under Option A reduce F if the withdrawal would otherwise increase
    NAAR beyond the free amount [S3].
-   After steps 2–3: `AV'(t) = AV(t−1) + NP(t) − W(t) − wf x 1{W>0}`.
+   After steps 2–3: `AV'(t) = AV(t−1) + NP(t) − W(t) − wf x 1{W>0}`, where `AV(t−1)`
+   is the opening balance of month t — `av_initial` at t = 0.
 4. Death benefit and corridor:
    `DB(t) = max(optionDB(t), cf(a) x AV'(t))` where `optionDB = F` (Option A) or
    `F + AV'(t)` (Option B) [S1] [S3]; corridor per GPT [S3] [R2].
@@ -225,8 +240,9 @@ accepted [S2] [S3]):
    `L(t) = L(t−1) x (1 + r_L)^(1/12)` (capitalized annually per contract [S3];
    monthly compounding **[std]**).
 9. Decrements (EOM): deaths at `q_m(t)`, lapses/surrenders at `w_m(t)` applied to
-   survivors; update `l(t) = l(t−1) x (1 − q_m(t)) x (1 − w_m(t))` **[std order:
-   death before lapse]**.
+   survivors; update `l(t+1) = l(t) x (1 − q_m(t)) x (1 − w_m(t))`, the probability in
+   force at the start of the next month, from `l(0) = 1` **[std order: death before
+   lapse]**.
 
 With no loans and no withdrawals, steps 2–8 collapse to the core recursion:
 
@@ -260,9 +276,10 @@ policy-date AV equals net premium minus the first monthly deduction [S3].
 | Percent-of-premium expense | 0.025 x GP(t) **[std]** | − |
 | Loan flows (optional) | new loans −, repayments + | +/− |
 
-Aggregate expected cash flows multiply each row by the appropriate in-force factor:
-premiums/expenses by l(t−1); death claims by l(t−1) x q_m(t); surrenders by
-l(t−1) x (1 − q_m(t)) x w_m(t) **[std timing]**.
+Aggregate expected cash flows multiply each row by the appropriate in-force factor,
+`l(t)` being the probability in force at the start of month t: premiums/expenses by
+l(t); death claims by l(t) x q_m(t); surrenders by l(t) x (1 − q_m(t)) x w_m(t)
+**[std timing]**.
 
 ### MEC / 7-pay and guideline premium tests (compliance side-calculations)
 
@@ -290,8 +307,9 @@ cited where they exist.
   early years [R7].
 - **Base lapse [std].** Annual `w_base(y)` per the table above, converted monthly:
   `w_m = 1 − (1 − w_annual)^(1/12)`.
-- **Surrender-charge-expiry shock [std].** During policy year 10 (the first year with
-  SC = 0): `M_sc = 2.0`; else 1.0. Rationale: the surrender charge suppresses
+- **Surrender-charge-expiry shock [std].** During policy year 10 (the first policy year
+  with no surrender charge in any month; the charge already reaches zero in the last
+  month of policy year 9): `M_sc = 2.0`; else 1.0. Rationale: the surrender charge suppresses
   surrender while it is positive; its expiry is a known industry lapse-shock point
   (product-specific studies are proprietary; shape assumption).
 - **Interest-sensitive (dynamic) lapse [std].**
@@ -313,21 +331,24 @@ pl = 6% → NP = $141.00; e_pol = $7.50; e_unit = 0.26 → $26.00/mo; guaranteed
 i_m = 0.0032737 (from i_cr = 4.00% **[std]**); 1 + i_gm = 1.0016516 (from i_guar =
 2.00% **[std]**); DB/(1+i_gm) = 100,000 x 0.9983511 = 99,835.11; corridor 250% x AV'
 never binds at these AV levels [S3]. No withdrawals or loans. All figures in dollars,
-rounded to cents for display (full precision carried).
+rounded to cents for display (full precision carried). The rows are the first three
+policy months, t = 0 (the issue month), 1 and 2 — the first three rows of the model's
+`result_av()`.
 
 | Month t | AV(t−1) | NP | AV' | DB | NAAR = 99,835.11 − AV' | COI = 0.06054xNAAR/1000 | MD = 7.50+26.00+COI | AV'−MD | Interest (x i_m) | AV(t) |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 1 | 0.00 | 141.00 | 141.00 | 100,000 | 99,694.11 | 6.04 | 39.54 | 101.46 | 0.33 | 101.80 |
-| 2 | 101.80 | 141.00 | 242.80 | 100,000 | 99,592.32 | 6.03 | 39.53 | 203.27 | 0.67 | 203.93 |
-| 3 | 203.93 | 141.00 | 344.93 | 100,000 | 99,490.18 | 6.02 | 39.52 | 305.41 | 1.00 | 306.41 |
+| 0 | 0.00 | 141.00 | 141.00 | 100,000 | 99,694.11 | 6.04 | 39.54 | 101.46 | 0.33 | 101.80 |
+| 1 | 101.80 | 141.00 | 242.80 | 100,000 | 99,592.32 | 6.03 | 39.53 | 203.27 | 0.67 | 203.93 |
+| 2 | 203.93 | 141.00 | 344.93 | 100,000 | 99,490.18 | 6.02 | 39.52 | 305.41 | 1.00 | 306.41 |
 
-Trace, month 1: AV' = 0 + 141.00; corridor min = 2.50 x 141.00 = 352.50 < 100,000 so
-DB = 100,000; NAAR = 99,835.11 − 141.00 = 99,694.11; COI = 0.060540/1000 x 99,694.11
-= 6.0355 (displayed 6.04); MD = 7.50 + 26.00 + 6.0355 = 39.5355 (displayed 39.54);
-AV(1) = (141.00 − 39.5355) x 1.0032737 = 101.80. Month-1 shortfall test: AV' (141.00)
->= MD (39.54), no grace. This reproduces
-the contractual policy-date rule AV = net premium − first monthly deduction [S3],
-followed by one month's interest.
+Trace, month t = 0 (the issue month; the opening balance is av_initial = 0): AV' = 0 +
+141.00; corridor min = 2.50 x 141.00 = 352.50 < 100,000 so DB = 100,000; NAAR =
+99,835.11 − 141.00 = 99,694.11; COI = 0.060540/1000 x 99,694.11 = 6.0355 (displayed
+6.04); MD = 7.50 + 26.00 + 6.0355 = 39.5355 (displayed 39.54); AV(0) = (141.00 −
+39.5355) x 1.0032737 = 101.80, the closing balance of the issue month. Issue-month
+shortfall test: AV' (141.00) >= MD (39.54), no grace. This reproduces the contractual
+policy-date rule AV = net premium − first monthly deduction [S3], followed by one
+month's interest.
 
 ---
 

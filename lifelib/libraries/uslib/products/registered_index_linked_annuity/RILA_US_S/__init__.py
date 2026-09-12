@@ -56,30 +56,39 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 rather than stored inside the model. The model folder itself holds no data, so the model
 and its inputs must travel together.
 
-**Projection basis.** Monthly steps. ``t`` counts **policy months**, and following the
-notes ``t`` denotes **month ends**, with ``t = 0`` the Issue Date. Complete contract years
-are ``duration(t) = t // 12`` — the notes' ``cy(t) = floor(t/12)`` — so an anniversary
-month ``t = 12, 24, ...`` already counts as a completed year, and ``policy_year(t) =
-duration(t) + 1``. Note the contrast with :mod:`.Term_US_A`, where ``t`` counts **years**,
-and the smaller contrast with :mod:`.MYGA_US_S`, whose beginning-of-month
-transaction convention makes its ``duration(t)`` ``ceil(t/12) - 1``: on a month-end
-convention the anniversary belongs to the year that just closed. That month-end reading is
-right for what is read *at* the instant ``t`` — the withdrawal charge a transaction
-settling there bears, the free-withdrawal base snapshotted there, and the surrender
-behaviour keyed to that charge — but wrong for a rate applied *across* month ``t``, so the
-attained age behind ``q_m(t)`` and the expense inflation step are keyed on the interval
-reading ``duration_bom(t) = ceil(t/12) - 1`` instead: all twelve months of contract year 1,
-month 12 included, are charged at ``q_x`` and at the issue expense level. The two readings
-differ only in anniversary months. The contractual interim
+**Projection basis.** Monthly steps. ``t`` counts **policy months** and is **0-based**:
+``t = 0`` is the first policy month, month ``t`` runs from time ``t`` to time ``t + 1`` in
+policy months from the Issue Date, and the frame is ``t = 0 … proj_len() - 1``. Following
+the notes, every within-month quantity is evaluated at the month **end**, time ``t + 1``,
+while ``pols_if(t)`` is the count entering the month at time ``t``. Every model in this
+library runs on that grid; here it is forced by the term structure, whose crediting dates
+are contract-month boundaries.
+
+Complete contract years elapsed at the start of month ``t`` are ``duration(t) = t // 12``
+— lifelib's 0-based duration, ``0`` throughout contract year 1 — and ``policy_year(t)``
+names the contract year a transaction settling at the month end falls in. Those are the
+two readings the product needs and the model carries both. The interval reading
+``duration(t)`` is right for a rate applied *across* the month: the attained age behind
+``q_m(t)`` and the expense inflation step, so all twelve months of contract year 1 —
+month 11, which ends on the anniversary, included — are charged at ``q_x`` and at the
+issue expense level. The instant reading ``duration_eom(t) = (t + 1) // 12`` is right for
+what settles *at* the month end — the withdrawal charge a transaction bears, the
+free-withdrawal base snapshotted at an anniversary, and the surrender behaviour keyed to
+that charge. The two differ only in the month that closes on an anniversary.
+:mod:`.MYGA_US_S` needs only one reading, because its beginning-of-month transaction
+convention makes the two coincide: there the anniversary month belongs to the year that is
+opening, here the anniversary closes the month that has just run, and the two products'
+``policy_year`` readings differ in exactly that one month a year. The contractual interim
 value is a *daily* quantity [S2][S4][S6]; the model evaluates it at each month end
 **[std]**, which resolves every contractual boundary because terms are whole years, the
 withdrawal-charge schedule runs by complete contract years and the free-withdrawal limit
 resets annually [S1][S2].
 
-``proj_len()`` is ``12 * policy_term()`` months, and ``policy_term()`` is the Maturity
-Date rule: the later of the anniversary after the oldest owner's age 90 and ten years
-[S2] — 360 months on the anchor cell. The survivors there are force-annuitized through
-:func:`~.RILA_US_S.Projection.pols_maturity`.
+``proj_len()`` is the **number** of months projected, ``12 * policy_term()``, and
+``policy_term()`` is the Maturity Date rule: the later of the anniversary after the oldest
+owner's age 90 and ten years [S2] — 360 months on the anchor cell, the last of them
+``t = 359``. The Maturity Date is that month's end, and the survivors there are
+force-annuitized through :func:`~.RILA_US_S.Projection.pols_maturity`.
 
 The month's processing order follows the notes' step list exactly. **Market state** (the
 index level, the Market Value Rate, the implied volatility and the dividend yield are
@@ -96,16 +105,20 @@ Amount **proportionally** and the return-of-premium base proportionally); and fi
 on survivors **[std order]**, plus the discrete term-end surrender fraction ``phi`` if
 ``t`` is a Term End Date.
 
-``t = 0`` is the Issue Date. The single premium and the acquisition expense fall there,
-as they do in the notes' cash flow ledger, and ``inv_amt_pp(0)``, ``rop_pp(0)`` and
-``pols_if(0)`` are the initial branches of the recursions, so ``result_cf()`` starts at
-``t = 0`` rather than ``t = 1``.
+The Issue Date is **not a row**: it is the opening of month 0. The single premium, the
+acquisition expense and the opening state fall there and are therefore carried by that
+first row, alongside its own maintenance expense, market movement and decrements — so
+``net_cf(0)`` is the notes' ledger entry for the Issue Date plus the first month's flows.
+The opening state itself lives in the timing cells that need it:
+``inv_amt_basis_pp(0)``, ``rop_pp``'s and ``inv_income_pp``'s opening branch, and
+``pols_if(0)`` are all the purchase payment or the count at issue.
 
 In-force counts follow the library-wide convention: ``pols_if(t)`` is the number in force
 at the **start** of month ``t`` and is the weight applied to that same month's cash flows,
-so ``pols_if(1) = pols_if_init()`` as in :mod:`.Term_US_A` and the ``pols_if`` column of
-``result_cf()`` reconciles against the row it sits on rather than the next one. The notes'
-own **end**-of-month ``l(t)`` is not lost: it is ``pols_if_at(t, "AFT_DECR")``, the last
+so ``pols_if(0) = pols_if_init()`` as in :mod:`.Term_US_S` and the ``pols_if`` column of
+``result_cf()`` reconciles against the row it sits on rather than the next one. The count
+at the month **end**, the notes' ``l(t+1)``, is not lost: it is
+``pols_if_at(t, "AFT_DECR")``, the last
 point of the decrement chain. Surrender rates follow the ``mort_rate`` / ``mort_rate_mth``
 pair - ``lapse_rate(t)`` is the notes' annual ``w_annual(y,t)`` and ``lapse_rate_mth(t)``
 its monthly ``w_m(t)``, which is what the decrement chain reads.
@@ -186,14 +199,15 @@ engine; the updated-time-to-expiry amortization convention; a participation rate
 free amount, so the withdrawal charge and its non-gross-up are live; and, at issue age 81,
 the death benefit band in which the return-of-premium guarantee does not apply. Point 15
 is the notes' *second* labelled verification: it runs the pre-AG 54 engine on a scenario
-whose index level makes the accrued crediting rate exactly -20% at month 60, which puts an
-Account Value of exactly $80,000 at the start of contract year 6 and so reproduces the
+whose index level makes the accrued crediting rate exactly -20% at the end of month 59,
+which is the fifth anniversary. That puts an Account Value of exactly $80,000 at the start
+of contract year 6 and so reproduces the
 [S2] withdrawal-charge example — $8,000 free, $72,000 chargeable, a 3% charge of $2,160
 and a $77,840 cash surrender value — end to end rather than by re-deriving it. A test
 asserts every point projects to completion.
 
 **Verification.** ``tests/test_registered_index_linked_annuity_us.py`` asserts every row
-and every column of the notes' worked example table — all six rows and all thirteen
+and every column of the notes' worked example table — all six rows and all fourteen
 columns, money to the cent — together with the trace beneath it: the option budget
 ``beta = 10.0632%``, the fixed leg opening at $89,936.81, its 1.7834% equivalent accretion
 yield and the 2.22% implied spread, the $2,687.62 cost of the 100 bp rate rise, the

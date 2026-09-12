@@ -68,15 +68,34 @@ Model names are `<product>_<country>_<grid>`: the short name the product is actu
 by — `CI`, `IP`, `WOL`, `ULB`, `WP`, `PA` — then `UK`, then `_A` for an annual step or `_S`
 for a monthly one. The grid letters follow lifelib, where `annuallife/TradLife_A` is the
 annual-step model and `basiclife/BasicTerm_S` and `savings/CashValue_SE` are the monthly
-ones. `S` carries a second sense in lifelib — scalar, one model point at a time, as against
-the vectorized `_M` models — and that is true of all seven here, whether or not they carry
-the letter.
+ones. **All seven models here are monthly**, so all seven carry `_S`: monthly is the
+frequency these contracts are written in — premiums are quoted and collected per month,
+benefit schedules step per month, and annuity and income-protection instalments are paid
+per month — and running the whole library on one grid is what lets two products' cash
+flows be read, summed or compared without first checking which step they came from. `S`
+carries a second sense in lifelib — scalar, one model point at a time, as against the
+vectorized `_M` models — and that is true of all seven here as well.
+
+Assumption tables stay in the units they are quoted in: a mortality rate by attained age
+and a lapse rate by policy year are annual, and each model converts them month by month
+with `1 − (1 − r)^(1/12)`, so twelve months compound back to the table rate exactly. The
+naming follows: a bare `*_rate` is the annual rate everywhere in the library, and only
+`*_rate_mth` is monthly.
+
+Where a mechanic is genuinely annual, it stays annual on the monthly grid rather than
+being compounded twelve times. The clearest case is the with-profits **bonus declaration**,
+the governing act of discretion on that product: it fires in the twelfth month of each
+policy year and nowhere else, so `WP_UK_S`'s unit price and guaranteed benefit are step
+functions of the policy year while everything continuous around them runs monthly.
+`WP_UK_S.check_declaration_is_annual()` asserts it, because that is the way such a
+conversion goes wrong quietly — a model that still runs, whose roll-forwards all still
+close, and whose guarantee is an order of magnitude too large a decade later.
 
 **Protection**
 
 | Product | Model | Grid | Representative design |
 |---|---|---|---|
-| [Term assurance](products/term_assurance/index.md) | `Term_UK_A` | annual | Guaranteed-premium term in three benefit shapes — level, decreasing at a client-selected mortgage rate, and family income benefit — with terminal illness benefit included and optional RPI indexation; expires at end of term, with no U.S.-style post-level-term tail |
+| [Term assurance](products/term_assurance/index.md) | `Term_UK_S` | monthly | Guaranteed-premium term in three benefit shapes — level, decreasing at a client-selected mortgage rate, and family income benefit — with terminal illness benefit included and optional RPI indexation; expires at end of term, with no U.S.-style post-level-term tail |
 | [Critical illness cover](products/critical_illness/index.md) | `CI_UK_S` | monthly | Accelerated life-or-CI level term on the **term-assurance chassis**: ~40 ABI-aligned full-payment conditions including TPD, 25%/£25k additional-payment conditions, 50%/£25k children's cover, 14-day survival period; standalone variant minus the death benefit |
 | [Income protection](products/income_protection/index.md) | `IP_UK_S` | monthly | Full-term guaranteed-premium own-occupation IP: two-band earnings cap (65% to £60k, 50% above), deferred periods 4–52 weeks, RPI escalation in claim, proportionate benefit on partial return to work — the one **three-state** model here, healthy / sick / dead |
 | [Whole of life](products/whole_of_life/index.md) | `WOL_UK_S` | monthly | Two cells: underwritten guaranteed whole of life, protection-only with no cash value — unlike U.S. whole life — and over-50s guaranteed acceptance, a fixed cash sum with a 12-month moratorium, premiums ceasing at 90, lapse-supported |
@@ -85,7 +104,7 @@ the letter.
 
 | Product | Model | Grid | Representative design |
 |---|---|---|---|
-| [With-profits](products/with_profits/index.md) | `WP_UK_A` | annual | 90:10 proprietary fund on retrospective asset shares: 80–120% payout target range, smoothing caps, MVR bounded by the asset-share shortfall; unitised WP as the primary cell and conventional WP endowment as the legacy one |
+| [With-profits](products/with_profits/index.md) | `WP_UK_S` | monthly | 90:10 proprietary fund on retrospective asset shares: 80–120% payout target range, smoothing caps, MVR bounded by the asset-share shortfall; unitised WP as the primary cell and conventional WP endowment as the legacy one |
 | [Unit-linked investment bond](products/unit_linked_bond/index.md) | `ULB_UK_S` | monthly | Modern clean-charge onshore single-premium bond: 100.1% death uplift, segmented mini-policies, AMC-based charges, the 5% p.a. tax-deferred withdrawal machinery; modeled through the classic UK **unit / non-unit** cash flow decomposition |
 
 **Annuity**
@@ -136,15 +155,15 @@ reserving result.
 
 **Where a worked example is on a different basis from a realistic run, the basis is a
 model point column** rather than a switch buried in a formula — the `mort_basis` column in
-both `Term_UK_A` and `PA_UK_S` — following
+both `Term_UK_S` and `PA_UK_S` — following
 [uslib's immediate annuity](../uslib/products/immediate_annuity/index.md) precedent. The
 alternative, silently running the notes' illustrative basis as if it were the projection
 basis, is the failure this pattern exists to prevent.
 
 **Scope limits are stated and validated against, not faked.** With-profits' smoothed-fund
-(PruFund) chassis is out of scope because its smoothing limits are daily and quarterly and
-an annual grid smooths away the mechanics that define it, so `WP_UK_A.chassis()` rejects it
-by name; the stochastic guarantee valuation the with-profits notes require is out of scope,
+(PruFund) chassis is out of scope because its smoothing limits are daily and quarterly —
+a 5% daily and 10% quarterly movement with a 2.5% gap trigger — and even a monthly grid
+smooths away the mechanics that define it, so `WP_UK_S.chassis()` rejects it by name; the stochastic guarantee valuation the with-profits notes require is out of scope,
 and the model says what it does and does not produce. Where a deterministic run cannot
 reach a mechanic, that is stated rather than smoothed over: `PA_UK_S`'s RPI catch-up
 ratchet degenerates to fixed escalation under a monotone inflation path, because the zero
@@ -163,7 +182,7 @@ restating it, and each pointer states what it inherits and where it deviates:
   top.
 - **The unit-linked bond's** smoothed-fund (PruFund) variation cross-references the
   [with-profits mechanics](products/with_profits/technical-notes.md) rather than restating
-  the smoothing rules, and records why that chassis is out of scope for an annual grid.
+  the smoothing rules, and records why that chassis is out of scope on this grid.
 
 ## How to use the library
 
@@ -187,13 +206,25 @@ or read it and take the cash flow statement:
 ```python
 >>> import modelx as mx
 
->>> model = mx.read_model("products/term_assurance/Term_UK_A")
+>>> model = mx.read_model("products/term_assurance/Term_UK_S")
 
 >>> model.Projection[1].result_cf()
 ```
 
 `Projection` takes a `point_id`; `Projection[1]` is each model's worked-example anchor cell.
 `result_cf()` returns a tidy `DataFrame` indexed by `t` with one column per cash flow line.
+
+The time index `t` is 0-based and counts **policy months**: `t = 0` is the issue month of
+a policy projected from issue, month `t` runs from time `t` to time `t + 1`, and the
+attained age is `age_at_entry + duration(t)` with `duration(t) = t // 12`, advancing on
+the policy anniversary. `proj_len()` is the number of months from `t = 0`, i.e. the
+exclusive end of the frame: `result_cf()` covers `t = t_first, ..., proj_len() - 1`, where
+`t_first` is 0 for a point projected from issue and the elapsed months for an in-force
+one. This is lifelib's own convention (`basiclife/BasicTerm_S`, `savings/CashValue_SE`:
+`for t in range(proj_len())`). A contractual policy year is the 1-based label
+`duration(t) + 1` and is derived, never indexed by — so is every schedule keyed by it,
+including the lapse tables and the with-profits guarantee dates, which are read through
+`policy_year(t)` rather than re-keyed to months.
 
 The tests ship inside the library and run against *your* copy:
 

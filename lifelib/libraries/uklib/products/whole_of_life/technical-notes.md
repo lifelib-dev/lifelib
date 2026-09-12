@@ -32,11 +32,16 @@ cash-value whole life chassis (no CSV schedule, no dividends, no loans).
   not computed (see Valuation and reserve pointers).
 - **Projection frequency.** Monthly **[std]**. Premiums are monthly Direct Debit in the O50
   cell [S1] [S4] [S7] [S9] and monthly or annual in the UW cell [S10]; monthly is the natural grid.
+- **Time index [std].** The policy month `t` is 0-based: `t = 0` is the first policy month
+  (the issue month), month `t` runs from time `t` to time `t + 1`, and the frame is
+  `t = 0, 1, …, proj_len − 1` with `proj_len = 12 × (ω − entry_age)` the number of projected
+  months (ω = 120 the limiting age). The policy year is the contractual 1-based label
+  `y = floor(t/12) + 1`; anniversaries fall at `t = 12, 24, …`.
 - **Timing conventions [std].** Premiums (and premium-linked commission) at the beginning of
   the policy month (BOM); deaths during the month resolved at end of month (EOM) against the
   BOM in-force; lapses at EOM after deaths (death-before-lapse order). Escalation steps
   (increasing cover, RPI variants) apply at policy anniversaries [S4] [S10]. Annual-grid
-  implementations must preserve the month-13 moratorium boundary.
+  implementations must preserve the moratorium boundary between `t = 11` and `t = 12`.
 - **Age basis.** Age last birthday (ALB) **[std]**. Rationale: the UW chassis defines entry
   age x as "before the (x+1)th birthday" [S10], which is ALB; the O50 documents price on "age at
   outset" without stating a basis [S1]. All age lookups in this model are ALB.
@@ -69,7 +74,7 @@ cash-value whole life chassis (no CSV schedule, no dividends, no loans).
 | `variant_adb_2x` | bool (accidental multiplier, one plan [S7]) | false | n/a |
 | `variant_paid_up` | bool (pro-rata paid-up value, one plan [S9]) | false | n/a |
 | `variant_rpi_increasing` | bool (RPI indexation, one plan [S4]) | false | n/a |
-| `issue_date` | date | month 1 | month 1 |
+| `issue_date` | date | t = 0 | t = 0 |
 
 ---
 
@@ -77,15 +82,15 @@ cash-value whole life chassis (no CSV schedule, no dividends, no loans).
 
 | Variable | Description | Updated |
 |---|---|---|
-| `l(t)` | In-force probability at end of month t; l(0) = 1 | monthly (deaths, lapses) |
+| `l(t)` | In-force probability at the start of month t (= end of month t−1); l(0) = 1 | monthly (deaths, lapses) |
 | `CumPrem(t)` | Cumulative premiums paid to end of month t (year-1 refund base; crossover tracking) | monthly |
 | `N_paid(t)` | Count of monthly payments made (pro-rata paid-up numerator [S9]) | monthly |
 | `SA(t)` | Current sum assured / cash sum (escalating variants) | anniversaries |
 | `P(t)` | Current monthly premium (escalating variants; 0 after cessation) | anniversaries / cessation |
 | `paid_up` | Pro-rata paid-up state: policy premium-free with reduced payout PU [S9] | on qualifying lapse |
 | `PU` | Paid-up payout = SA x N_paid / N_expected (pro-rata paid-up variant) [S9] | on paid-up conversion |
-| `in_moratorium(t)` | Indicator t <= 12 (O50) | monthly |
-| `attained_age(t)` | entry_age + floor((t−1)/12) (ALB) | monthly |
+| `in_moratorium(t)` | Indicator t < 12 (O50) | monthly |
+| `attained_age(t)` | entry_age + floor(t/12) (ALB) | monthly |
 
 ---
 
@@ -169,22 +174,27 @@ no public product-specific study; replace with experience):
 
 ## Cash flow components and recursions
 
-### Notation (defined once, used throughout; shared with product-spec.md)
+### Notation (defined once, used throughout)
+
+`product-spec.md` states the same mechanics in **contractual** month numbering, where the
+issue month is month 1: its `t` is this `t + 1`, so its `t <= 12` is this `t < 12`, its
+`CumPrem(t) = P x min(t, T_cess)` is this `P x min(t + 1, T_cess)`, and its crossover at
+month 167 is this `t* = 166`.
 
 | Symbol | Meaning |
 |---|---|
-| t | policy month, t = 1, 2, ...; y = policy year = floor((t−1)/12) + 1 |
-| a(t) | attained age (ALB) = entry_age + floor((t−1)/12) |
+| t | policy month, 0-based: t = 0, 1, …, proj_len − 1 (t = 0 the issue month); y = policy year = floor(t/12) + 1 |
+| a(t) | attained age (ALB) = entry_age + floor(t/12) |
 | P(t) | monthly premium due at BOM of month t (0 after cessation / in paid-up state) |
 | SA(t) | sum assured / cash sum in month t (constant unless escalating variant) |
-| T_cess | months from start to premium cessation (O50: to anniversary on/after 90th birthday; anchor 240); ∞ for UW |
+| T_cess | number of premium-paying months from start (O50: to anniversary on/after 90th birthday; anchor 240): premiums due while t < T_cess, none from t = T_cess; ∞ for UW |
 | CumPrem(t) | Σ_{s<=t} P(s) |
 | q(y) | annual mortality rate for policy year y (basis per cell, class (c)) |
 | q_m(y) | monthly mortality = 1 − (1 − q(y))^(1/12) **[std]** |
 | w(y), w_m(y) | annual / monthly lapse rates, w_m = 1 − (1 − w)^(1/12) **[std]** |
 | δ_acc | accidental share of year-1 deaths (O50), 0.03 **[std]** |
 | δ_su | suicide share of year-1 deaths (UW), 0.01 **[std]** |
-| l(t) | in-force probability at end of month t; l(0) = 1 |
+| l(t) | in-force probability at the start of month t (= end of month t−1); l(0) = 1 |
 | DB_na(t), DB_ac(t) | death benefit for non-accidental / accidental death in month t (O50) |
 | k_adb | accidental multiplier after year 1: 1 (base) or 2 (one plan's variant [S7]) |
 | E[·] | expectation over decrements (survivorship weighting) |
@@ -194,18 +204,18 @@ cash flow below is £ per month per policy issued.
 
 ### Monthly processing order (both cells) **[std]**
 
-At month t while in force and not paid-up:
+At month t (t = 0, 1, …) while in force and not paid-up, with l(t) the in-force at its start:
 
-1. BOM: premium P(t) received if t <= T_cess (O50) or always (UW); commission/premium
+1. BOM: premium P(t) received if t < T_cess (O50) or always (UW); commission/premium
    expense deducted as an expense flow, not from any fund (there is no fund).
 2. BOM: maintenance expense for the month.
-3. Anniversary (t ≡ 1 mod 12, t > 12): apply escalation to SA and P (variants only)
+3. Anniversary (t ≡ 0 mod 12, t > 0): apply escalation to SA and P (variants only)
    [S4] [S10].
-4. EOM: deaths at rate q_m(y) applied to l(t−1); benefit per the rules below.
+4. EOM: deaths at rate q_m(y) applied to l(t); benefit per the rules below.
 5. EOM: lapses at rate w_m(y) applied to survivors of step 4; death-before-lapse **[std]**.
    In the pro-rata paid-up variant a "lapse" with N_paid >= N_expected/2 converts to paid-up
    (state change, no cash flow) instead of termination [S9].
-6. Update l(t) = l(t−1) x (1 − q_m(y)) x (1 − w_m(y)).
+6. Update l(t+1) = l(t) x (1 − q_m(y)) x (1 − w_m(y)), from l(0) = 1.
 
 Paid-up policies (the pro-rata paid-up variant) and post-cessation O50 policies skip steps 1
 and 5 (no premiums due, so no lapse decrement **[std]**) and continue steps 2, 4, 6 with
@@ -217,23 +227,25 @@ being zero, stops).
 
 Premiums (level base design):
 
-    P(t) = P x 1{t <= T_cess},        CumPrem(t) = P x min(t, T_cess)
+    P(t) = P x 1{t < T_cess},        CumPrem(t) = P x min(t + 1, T_cess)
 
-Death benefit split during the 12-month moratorium [S1] [S4] [S7] [S9]:
+(the month-t premium is paid at its start, so t + 1 premiums have been paid by the end of
+month t; N_paid(t) = min(t + 1, T_cess) likewise). Death benefit split during the 12-month
+moratorium, policy months t = 0 … 11 [S1] [S4] [S7] [S9]:
 
-    DB_na(t) = CumPrem(t)   if t <= 12          (return of premiums paid, no interest)
-             = SA           if t >  12
-    DB_ac(t) = SA           if t <= 12          (full cash sum from day 1)
-             = k_adb x SA   if t >  12          (k_adb = 2: one plan's variant [S7])
+    DB_na(t) = CumPrem(t)   if t <  12          (return of premiums paid, no interest)
+             = SA           if t >= 12
+    DB_ac(t) = SA           if t <  12          (full cash sum from day 1)
+             = k_adb x SA   if t >= 12          (k_adb = 2: one plan's variant [S7])
 
 Expected cash flows in month t (per policy issued):
 
-    E[premium](t) = l(t−1) x P(t)
-    E[death outgo](t) = l(t−1) x q_m(y) x [ (1−δ_acc) x DB_na(t) + δ_acc x DB_ac(t) ]   if t <= 12
-                      = l(t−1) x q_m(y) x [ (1−δ_acc) + δ_acc x k_adb ] x SA           if t >  12
-    E[expenses](t) = l(t−1) x [maintenance(t)] + commission/acquisition at their BOM timing
+    E[premium](t) = l(t) x P(t)
+    E[death outgo](t) = l(t) x q_m(y) x [ (1−δ_acc) x DB_na(t) + δ_acc x DB_ac(t) ]   if t <  12
+                      = l(t) x q_m(y) x [ (1−δ_acc) + δ_acc x k_adb ] x SA           if t >= 12
+    E[expenses](t) = l(t) x [maintenance(t)] + commission/acquisition at their BOM timing
 
-(with k_adb = 1 the post-moratorium death outgo is simply l(t−1) q_m SA). Lapse generates
+(with k_adb = 1 the post-moratorium death outgo is simply l(t) q_m SA). Lapse generates
 **no cash flow**: there is no surrender value [S1] [S4] [S5] [S7] [S9] — its entire effect is
 through l(t). That is the arithmetic meaning of "lapse-supported": every lapse extinguishes
 a paid-up-style liability for nothing, and the FCA records that without the continuing-payer
@@ -241,10 +253,11 @@ cross-subsidy "insurers would need to rely on lapses to remain profitable" [R2].
 
 Crossover (tipping point): cumulative premiums first exceed the cash sum at
 
-    t* = floor(SA / P) + 1    (months, level premiums, t* <= T_cess)
+    t* = floor(SA / P)    (0-based month, level premiums, t* < T_cess)
 
-Anchor: floor(5000/30) + 1 = 167 months = 13 years 11 months, reproducing the FCA's stylised
-example exactly [R2]. Total premiums payable are capped at P x T_cess (anchor: £7,200 vs
+i.e. the month in which the (floor(SA/P) + 1)-th premium is paid. Anchor: t* = floor(5000/30)
+= 166, the 167th monthly premium — 13 years 11 months of premiums, reproducing the FCA's
+stylised example exactly [R2]. Total premiums payable are capped at P x T_cess (anchor: £7,200 vs
 £5,000 cash sum). A crossover exists iff SA < P x T_cess; the FCA notes entrants at 79–80 are
 most exposed and that the majority of policies still pay out more than premiums paid [R2].
 
@@ -275,8 +288,8 @@ SA(y) at death (TI acceleration ignored **[std]**; a TI module would move a frac
 claims ~6 months earlier **[std]** with no change in amount). Suicide within 12 months
 refunds premiums [S10]:
 
-    E[death outgo](t) = l(t−1) x q_m(y) x [ (1−δ_su) x SA(y) + δ_su x CumPrem(t) ]   if t <= 12
-                      = l(t−1) x q_m(y) x SA(y)                                      if t >  12
+    E[death outgo](t) = l(t) x q_m(y) x [ (1−δ_su) x SA(y) + δ_su x CumPrem(t) ]   if t <  12
+                      = l(t) x q_m(y) x SA(y)                                      if t >= 12
 
 Lapse (2 months' unpaid premiums, no reinstatement [S10]) again generates no cash flow — no
 cash-in value at any time [S10] — and only reduces l(t). Milestone-benefit exercises and
@@ -287,10 +300,10 @@ model risks) [S10] [S12].
 
 | Cash flow | Formula | Sign |
 |---|---|---|
-| Premium income | l(t−1) x P(t) | + |
+| Premium income | l(t) x P(t) | + |
 | Death outgo | per cell formulas above | − |
-| Acquisition expense + initial commission | at t = 1 (and commission % x premiums in year 1, O50) **[std]** | − |
-| Maintenance expense | l(t−1) x (annual maintenance / 12) x (1.03)^(y−1) **[std]** | − |
+| Acquisition expense + initial commission | at t = 0 (and commission % x premiums in policy year 1, t = 0 … 11, O50) **[std]** | − |
+| Maintenance expense | l(t) x (annual maintenance / 12) x (1.03)^(y−1) **[std]** | − |
 | Surrender outgo | **none — identically zero in both cells** [S1] [S4] [S7] [S9] [S10] | — |
 | Claims interest | excluded **[std]** (contractual BoE−0.5% floor 0.5% between death and payment [S1] [S9]) | — |
 
@@ -305,7 +318,8 @@ with the qualitative anchors cited.
 - **Base lapse [std].** Duration-declining tables above; converted monthly. Rationale for the
   declining shape: sunk premiums with zero surrender value and (O50) the approaching
   paid-out-in-full status discourage late lapse.
-- **Moratorium-completion effect (O50) [std].** No extra lapse spike at month 13: the
+- **Moratorium-completion effect (O50) [std].** No extra lapse spike when the moratorium
+  ends at t = 12: the
   moratorium gives no incentive to lapse (lapsing returns nothing at any time). The year-1
   rate is set highest instead (affordability/buyer's-remorse attrition; the 30-day
   cooling-off with full refund [S1] [S4] is modeled as never-issued business, out of scope).
@@ -339,33 +353,35 @@ table): q(y) = 0.024 x 1.10^(y−1) — i.e. a 0.020 population-style rate at 70
 anti-selection loading, with 10% p.a. age progression; lapse 8%/6%/4%/4% (years 1/2/3–5/6+),
 0 after cessation; δ_acc = 3%. Monthly rates: q_m(1) = 1 − (1−0.024)^(1/12) = 0.0020223;
 w_m(1) = 1 − (1−0.08)^(1/12) = 0.0069244. Expenses omitted from the table for clarity.
-`E[death outgo](t)` = l(t−1) x q_m x (0.97 x DB_na + 0.03 x DB_ac) for t <= 12, and
-l(t−1) x q_m x 5,000 thereafter. All £, full precision carried, displayed rounded.
+`E[death outgo](t)` = l(t) x q_m x (0.97 x DB_na + 0.03 x DB_ac) for t < 12, and
+l(t) x q_m x 5,000 thereafter. All £, full precision carried, displayed rounded. Rows are
+labelled by the 0-based policy month t; y = floor(t/12) + 1 is the policy year.
 
-| t | y | CumPrem | DB non-acc | DB acc | l(t−1) | E[premium] | E[death outgo] |
+| t | y | CumPrem | DB non-acc | DB acc | l(t) | E[premium] | E[death outgo] |
 |---|---|---|---|---|---|---|---|
-| 1 | 1 | 30.00 | 30.00 | 5,000 | 1.00000 | 30.00 | 0.36 |
-| 6 | 1 | 180.00 | 180.00 | 5,000 | 0.95613 | 28.68 | 0.63 |
-| 12 | 1 | 360.00 | 360.00 | 5,000 | 0.90601 | 27.18 | 0.91 |
-| 13 | 2 | 390.00 | 5,000.00 | 5,000 | 0.89792 | 26.94 | 10.00 |
-| 24 | 2 | 720.00 | 5,000.00 | 5,000 | 0.82785 | 24.84 | 9.22 |
-| 60 | 5 | 1,800.00 | 5,000.00 | 5,000 | 0.66359 | 19.91 | 9.88 |
-| 120 | 10 | 3,600.00 | 5,000.00 | 5,000 | 0.42564 | 12.77 | 10.31 |
-| 166 | 14 | 4,980.00 | 5,000.00 | 5,000 | 0.27420 | 8.23 | 9.85 |
-| 167 | 14 | 5,010.00 | 5,000.00 | 5,000 | 0.27131 | 8.14 | 9.74 |
-| 240 | 20 | 7,200.00 | 5,000.00 | 5,000 | 0.09992 | 3.00 | 6.57 |
-| 241 | 21 | 7,200.00 | 5,000.00 | 5,000 | 0.09828 | 0.00 | 7.16 |
+| 0 | 1 | 30.00 | 30.00 | 5,000 | 1.00000 | 30.00 | 0.36 |
+| 5 | 1 | 180.00 | 180.00 | 5,000 | 0.95613 | 28.68 | 0.63 |
+| 11 | 1 | 360.00 | 360.00 | 5,000 | 0.90601 | 27.18 | 0.91 |
+| 12 | 2 | 390.00 | 5,000.00 | 5,000 | 0.89792 | 26.94 | 10.00 |
+| 23 | 2 | 720.00 | 5,000.00 | 5,000 | 0.82785 | 24.84 | 9.22 |
+| 59 | 5 | 1,800.00 | 5,000.00 | 5,000 | 0.66359 | 19.91 | 9.88 |
+| 119 | 10 | 3,600.00 | 5,000.00 | 5,000 | 0.42564 | 12.77 | 10.31 |
+| 165 | 14 | 4,980.00 | 5,000.00 | 5,000 | 0.27420 | 8.23 | 9.85 |
+| 166 | 14 | 5,010.00 | 5,000.00 | 5,000 | 0.27131 | 8.14 | 9.74 |
+| 239 | 20 | 7,200.00 | 5,000.00 | 5,000 | 0.09992 | 3.00 | 6.57 |
+| 240 | 21 | 7,200.00 | 5,000.00 | 5,000 | 0.09828 | 0.00 | 7.16 |
 
-Trace, month 1: E[death] = 1.0 x 0.0020223 x (0.97 x 30 + 0.03 x 5,000) = 0.0020223 x 179.10
+Trace, t = 0: E[death] = 1.0 x 0.0020223 x (0.97 x 30 + 0.03 x 5,000) = 0.0020223 x 179.10
 = £0.36 — the year-1 death outgo is dominated by the small accidental tail paying the full
-cash sum, not the premium refund. Trace, month 13: the moratorium ends and the full £5,000
-becomes payable for any death: E[death] = 0.89792 x 0.0022271 x 5,000 = £10.00 (q(2) = 0.0264
-→ q_m = 0.0022271) — a ~11x jump in expected death outgo at the month-12/13 boundary, the
-signature discontinuity of this product. Month 167 is the crossover: CumPrem = £5,010 first
-exceeds the £5,000 cash sum (13 years 11 months, reproducing [R2]). Month 241: premiums have
-ceased (E[premium] = 0) but death outgo continues — and rises, because lapses stop **[std]**
-and mortality steps up at the year-21 anniversary; the post-cessation period is pure outgo,
-funded by the pre-cessation premium margins and lapse releases.
+cash sum, not the premium refund. Trace, t = 12 (the thirteenth policy month): the moratorium
+ends and the full £5,000 becomes payable for any death: E[death] = 0.89792 x 0.0022271 x
+5,000 = £10.00 (q(2) = 0.0264 → q_m = 0.0022271) — a ~11x jump in expected death outgo
+between t = 11 and t = 12, the signature discontinuity of this product. t = 166 is the
+crossover: CumPrem = £5,010, the 167th premium, first exceeds the £5,000 cash sum (13 years
+11 months of premiums, reproducing [R2]). t = 240: premiums have ceased (E[premium] = 0) but
+death outgo continues — and rises, because lapses stop **[std]** and mortality steps up at
+the year-21 anniversary; the post-cessation period is pure outgo, funded by the
+pre-cessation premium margins and lapse releases.
 
 ---
 
@@ -427,9 +443,9 @@ Dominant assumptions, in order, for a guaranteed-acceptance (O50) block:
 
 Known modeling pitfalls:
 
-- **Moratorium boundary.** The month-12/13 discontinuity (~11x jump in expected death outgo
-  in the worked example) must not be smoothed by annual-grid interpolation; if projecting
-  annually, split year 1 explicitly.
+- **Moratorium boundary.** The discontinuity between t = 11 and t = 12 (~11x jump in
+  expected death outgo in the worked example) must not be smoothed by annual-grid
+  interpolation; if projecting annually, split year 1 explicitly.
 - **Refund base.** The year-1 non-accidental benefit is *cumulative premiums paid*, not the
   cash sum and not an annualized premium; with the arrears rule, claims in the 60-day window
   are further reduced by unpaid amounts [S9].

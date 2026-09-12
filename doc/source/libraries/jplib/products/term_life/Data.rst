@@ -1,7 +1,7 @@
 The **Data** Space
 ==================
 
-.. automodule:: jplib.products.term_life.Term_JP_A.Data
+.. automodule:: jplib.products.term_life.Term_JP_S.Data
 
 Cells Descriptions
 ------------------

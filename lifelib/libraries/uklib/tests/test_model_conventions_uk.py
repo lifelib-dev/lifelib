@@ -16,7 +16,7 @@ What the house style is, and why, is written up in ``products/term_assurance/mod
 * every Space and every cells carries a docstring, and the ``Projection`` docstring
   carries the mapping from the technical notes' actuarial symbols to the cells names.
 
-``Term_UK_A`` also asserts several of these for itself, in more specific form (it names
+``Term_UK_S`` also asserts several of these for itself, in more specific form (it names
 its four input files, its own docstring phrases). That overlap is deliberate: the checks
 here are the general contract, the ones there are that model's particulars.
 
@@ -139,7 +139,7 @@ def test_the_model_name_matches_its_folder(name, model):
     """The registry name, the folder on disk and the model's own ``_name`` agree.
 
     The name is the product's market short name, a country tag and a grid tag —
-    ``WOL_UK_S``, ``Term_UK_A`` — rather than anything derivable from the folder slug,
+    ``WOL_UK_S``, ``Term_UK_S`` — rather than anything derivable from the folder slug,
     because ``unit_linked_bond`` spelled out is unusable in a model name and the market
     says ULB. So the pairing lives in :data:`conftest.MODELS` and is asserted here
     instead of being recomputed.
@@ -335,7 +335,7 @@ RETIRED_NAMES = {
     "lapse_rate_ann": "lapse_rate (annual), with lapse_rate_mth for the monthly rate",
     "free_wd_used_pp": "wd_free_pp, the fixed-deferred-annuity chassis name",
     "free_wd_taken_pp": "wd_free_pp",
-    "prem_net_pp": "prem_to_av_pp (prem_net_pp collided with WholeLife_US_A.premium_net_pp)",
+    "prem_net_pp": "prem_to_av_pp (prem_net_pp collided with WholeLife_US_S.premium_net_pp)",
     "mort_a_e_factor": "mort_ae_factor",
     "ae_factor": "mort_ae_factor",
     "omega": "omega_age",
@@ -359,14 +359,18 @@ def test_lapse_rate_is_the_annual_rate(name, model):
 
     Three models briefly used ``lapse_rate`` for the *monthly* rate while still spelling
     the monthly mortality rate ``mort_rate_mth``, so one model had two conventions in it.
+
+    The sample is the first month of the first three policy years on the library's 0-based
+    monthly frame — ``t = 0, 12, 24`` — and each is guarded by ``t < proj_len()``, the
+    exclusive end of the frame.
     """
     cells = set(model.Projection.cells)
     if "lapse_rate_mth" not in cells:
         pytest.skip(f"{name} has no monthly lapse rate")
     assert "lapse_rate" in cells, "lapse_rate_mth exists without an annual lapse_rate"
     proj = model.Projection[list(model.Data.model_point_table().index)[0]]
-    for t in (1, 13, 25):
-        if t <= proj.proj_len():
+    for t in (0, 12, 24):
+        if t < proj.proj_len():
             ann, mth = proj.lapse_rate(t), proj.lapse_rate_mth(t)
             if ann > 0:
                 assert mth < ann, f"t={t}: monthly {mth} not below annual {ann}"
@@ -393,10 +397,12 @@ def test_result_cf_column_conventions(model):
 def test_net_cf_is_income_positive(model):
     """``net_cf`` carries one sign across every model in the library: income less outgo.
 
-    Where a product's technical notes print the stream outgo-positive (whole of life, and
-    the pension annuity), that orientation survives verbatim as ``liability_cf`` and
-    ``net_cf`` is its negative - so ``result_cf()["net_cf"]`` can be compared and summed
-    across the library without checking which product it came from.
+    Where a product's technical notes print the stream outgo-positive - in this library
+    that is the pension annuity alone, whose ``CF(t)`` is gross liability outgo - that
+    orientation survives verbatim as ``liability_cf`` and ``net_cf`` is its negative, so
+    ``result_cf()["net_cf"]`` can be compared and summed across the library without
+    checking which product it came from.  Every other model's notes are already income
+    positive, ships no ``liability_cf``, and skips below.
     """
     proj = model.Projection[list(model.Data.model_point_table().index)[0]]
     if "liability_cf" not in model.Projection.cells:
@@ -420,6 +426,25 @@ def test_every_model_point_projects(model):
     point rather than on the first alone. ``notna`` admits an infinity, so ``net_cf`` is
     checked for one separately; and every point must publish the same columns, or two rows
     of one model's output cannot be read together.
+
+    It is also where the library's one time-index convention is asserted, for every
+    model point of every model. Every model here runs on a **monthly** grid, so the time
+    index ``t`` is 0-based and counts policy months: ``t = 0`` is the issue month of a
+    policy projected from issue, month ``t`` runs from time ``t`` to time ``t + 1``, and
+    the attained age is ``age_at_entry + duration(t)`` with ``duration(t) = t // 12``.
+    ``proj_len()`` is the number of months from ``t = 0``, i.e. the exclusive end of
+    the frame: ``result_cf()`` covers ``t = t_first, ..., proj_len() - 1``, where
+    ``t_first`` is 0 for a point projected from issue and the elapsed months for an
+    in-force point. This is lifelib's own convention (``basiclife/BasicTerm_S``,
+    ``savings/CashValue_SE``: ``for t in range(proj_len())``). A contractual policy year
+    is the 1-based label ``duration(t) + 1`` and is derived, never indexed by.
+
+    The assertions below are grid-agnostic - a contiguous frame ending at
+    ``proj_len() - 1`` - because the grid is a property of each model rather than of the
+    library, and ``GRID_SUFFIX`` above still carries the annual case.
+
+    So the frame of every ``result_cf()`` is contiguous, starts at some ``t_first >= 0``,
+    and ends at ``proj_len() - 1`` inclusive: ``range(t_first, proj_len())``.
     """
     checks = [c for c in model.Projection.cells
               if c.startswith("check_") and not c.endswith("_resid")]
@@ -429,6 +454,15 @@ def test_every_model_point_projects(model):
         df = proj.result_cf()
         assert len(df) > 0, f"{model.name}: model point {point_id} projects nothing"
         assert df.index.name == "t", f"{model.name}: result_cf is not indexed by t"
+        t_first = df.index[0]
+        assert t_first >= 0, (
+            f"{model.name}: point {point_id} opens its frame at t = {t_first} < 0")
+        assert list(df.index) == list(range(t_first, proj.proj_len())), (
+            f"{model.name}: point {point_id} is not the contiguous frame "
+            f"range({t_first}, proj_len() = {proj.proj_len()})")
+        assert df.index[-1] == proj.proj_len() - 1, (
+            f"{model.name}: point {point_id} ends at t = {df.index[-1]}, not "
+            f"proj_len() - 1 = {proj.proj_len() - 1} - proj_len() is the exclusive end")
         assert df.notna().all().all(), f"{model.name}: NaN in point {point_id} cash flows"
         assert math.isfinite(df["net_cf"].sum()), (
             f"{model.name}: point {point_id} has an infinite net_cf")

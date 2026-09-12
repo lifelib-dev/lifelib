@@ -12,11 +12,27 @@ projecting model point 1::
     >>> Projection.point_id = 3            # or switch the default
 
 ``t`` counts **policy months**, 0-based: ``t = 0`` is the month beginning at issue and
-``t = proj_len() - 1`` the last projected month. The step is the 月単位の契約応当日, not the
-calendar month end. There is no maturity date and no 満期保険金: the horizon is the
-terminal age of the mortality table, ``proj_len() = 12 (omega - x + 1)`` months, and at
-``t = proj_len() - 1`` the table's rate is 1, so the projection ends with nobody left
-and no tail states.
+``t = proj_len() - 1`` the last projected month. Month ``t`` runs from time ``t`` to time
+``t + 1``, so ``pols_if(0) = pols_if_init()``, ``age(0) = issue_age()`` and the premium of
+month 0 is the first one collected. ``proj_len()`` is the **number** of projected months
+and the exclusive end of the frame: every ``result_*`` table is built over
+``range(proj_len())`` and has exactly ``proj_len()`` rows. The contractual label is
+derived and 1-based — ``policy_year(t) = t // 12 + 1``, which is what keys
+*lapse_table.csv* and *fx_path_table.csv* — and the attained age is
+``age(t) = issue_age() + t // 12``.
+
+The step is the 月単位の契約応当日, not the calendar month end. There is no maturity date and
+no 満期保険金: the horizon is the terminal age of the mortality table,
+``proj_len() = 12 (omega - x + 1)`` months, and at ``t = proj_len() - 1`` the table's rate
+is 1, so the projection ends with nobody left and no tail states.
+
+:func:`av_pp`, :func:`av0_pp`, :func:`cv_pp` and :func:`pols_if` are **time-point**
+quantities, not closing balances: ``AV(t)`` is the fund *at* time ``t``, the start of
+month ``t``, with ``t = 0`` at issue, so the index of a state cells is a point on the
+clock and never shifts with the period index. That is why the cash-flow table's state
+columns publish ``AV(t+1)`` and ``CV(t+1)`` — the end of month ``t``, which is where that
+row's surrender benefit is valued — while :func:`result_av` publishes the start-of-month
+``AV(t)``.
 
 .. rubric:: Input data
 
@@ -62,6 +78,7 @@ Notes symbol               Cells                           Meaning
 (shape)                    shape()                         LEVEL or SINGLE
 x                          issue_age()                     契約年齢, 満年齢 at 契約日
 x + floor(t/12)            age(t)                          Attained age in month t
+(policy year, 1-based)     policy_year(t)                  floor(t/12) + 1, a label
 (none)                     sex()                           M or F
 omega                      omega_age()                     Terminal age of the table
 T = 12(omega - x + 1)      proj_len()                      Projected months
@@ -140,7 +157,7 @@ boundary. So
 
 identically, and the difference is the insurer's spread income. :func:`fx_spread_jpy`
 publishes it as its own column rather than letting it hide inside a translated net
-figure: on the anchor cell it is ¥125.17 in month 0 and ¥39,266 over the whole run.
+figure: on the anchor cell it is ¥125.17 in month 0 and ¥39,146 over the whole run.
 :func:`check_fx_ledger` asserts the identity
 ``net_cf_jpy = net_cf x fx_rate + fx_spread_jpy`` in every month.
 
@@ -175,8 +192,8 @@ The alternative reading of ``AV0`` — the prospective fund at ``i0`` needed to 
 ``SA`` with no future premiums on the same charge basis — is implemented as
 :func:`av0_pro_pp` and selected by ``idb_basis = "prospective"`` on the model point. It
 does not give an identically zero uplift: on the anchor cell it gives ``AV - AV0`` of
--US$22,044.31 at ten years, **+US$36.52** at 払込満了, +US$296.03 at fifty years and
-+US$30,762.05 at the terminal month. The near-zero crossing at 払込満了 is a strong
+-US$21,818.29 at ten years, **+US$8.73** at 払込満了, +US$67.86 at fifty years and
++US$22,617.69 at the last projected month. The near-zero crossing at 払込満了 is a strong
 independent check on the back-solved charge stack — actuarial equivalence predicts a
 contract that is almost exactly self-funding at the floor — but a definition that
 manufactures a positive uplift on the guaranteed run contradicts the one document that
@@ -607,9 +624,11 @@ def omega_age():
 
 
 def proj_len():
-    """T: the projection length in months, ``12 (omega - x + 1)``.
+    """T: the **number** of projected policy months, ``12 (omega - x + 1)``.
 
-    840 on the anchor cell.  ``t`` runs ``0 ... proj_len() - 1``; there is no maturity
+    840 on the anchor cell.  It is a count, and therefore the exclusive end of the frame:
+    ``t`` runs ``0 ... proj_len() - 1``, every ``result_*`` table is built over
+    ``range(proj_len())`` and ``len(result_cf()) == proj_len()``.  There is no maturity
     date and no 満期保険金, so the horizon is the table's terminal age and nothing else.
     Truncating at 払込満了, or at age 100, is a direct understatement: 85% of expected
     death claims on the anchor cell arrive after 払込満了.
@@ -630,12 +649,22 @@ def prem_months_eff():
 
 
 def policy_year(t):
-    """The policy year containing month t, 1-based: ``floor(t/12) + 1``."""
+    """The policy year containing month t, a **1-based contractual label**.
+
+    ``floor(t/12) + 1``, so ``policy_year(0) = 1``: it is derived from the 0-based month
+    index and is never the index itself.  It exists because two input tables are keyed
+    the way the contract speaks — *lapse_table.csv* and *fx_path_table.csv* both start at
+    policy year 1 — and the lookup goes through this cells rather than through ``t``.
+    """
     return t // 12 + 1
 
 
 def age(t):
-    """The attained age in policy month t: ``x + floor(t/12)``, exactly."""
+    """The attained age in policy month t: ``x + floor(t/12)``, exactly.
+
+    ``age(0) = issue_age()``, because month 0 is the month beginning at issue and the age
+    increments on the 年単位の契約応当日.
+    """
     return issue_age() + t // 12
 
 
@@ -751,7 +780,7 @@ def charge_param(item):
 def prem_charge_rate(t):
     """phi(t): the 契約初期費用 rate deducted from the premium received in month t.
 
-    Two rates on the LEVEL shape — 38% over policy months 0 to 23 and 12% thereafter —
+    Two rates on the LEVEL shape — 38% over policy months 0 to 23 and 13% thereafter —
     **back-solved** from the published guaranteed surrender-value run, because every
     carrier in the source set refuses to quantify the charge and the rates live in an
     unpublished 基礎書類.  One front-end rate on the SINGLE shape, 4.50% of the single
@@ -827,7 +856,7 @@ def charge_coi(t):
     ``q_m(t) x max(0, DB(t) - (AVg(t) - C_maint(t)))`` — the monthly table rate applied
     to the net amount at risk measured *after* the maintenance charge.  The floor at
     zero is structural, not cosmetic: on the anchor cell the account value overtakes the
-    sum assured at month 709 and the charge stops, and the death benefit must **not** be
+    sum assured at month 740 and the charge stops, and the death benefit must **not** be
     silently floored at the fund in exchange.  Not a cash flow.
 
     The charge is also capped at what the fund actually holds, so the 積立金 can never
@@ -893,11 +922,13 @@ def av_pp_bef_sr(t):
 def special_reserve_pp(t):
     """特別積立金: the top-up added to the 積立金 after 10 and after 20 years in force.
 
-    Computed from ten-year investment performance and never paid to a contract
+    The two dates are the time points ``t = 120`` and ``t = 240`` — the ends of months 119
+    and 239, i.e. of the tenth and twentieth completed policy years on the 0-based month
+    index.  Computed from ten-year investment performance and never paid to a contract
     terminating earlier.  The **[std]** reconstruction is a share of the fund's excess
     over its 予定利率 benchmark, ``0.24`` at ten years and ``0.16`` at twenty, fitted to
     the four published amounts — 147 and 527 on the 3.50% column, 302 and 1,120 on the
-    4.00% column — with a worst deviation of 3.0%.
+    4.00% column — with a worst deviation of 3.7%.
 
     On the guaranteed run it is **identically zero**, because the fund and its benchmark
     coincide there, and the published 3.00% column shows (0) at both durations.  A
@@ -960,9 +991,10 @@ def av0_pro_pp(t):
 
         AV0(t) = (AV0(t+1) / (1 + j0) + q_m(t) SA) / ((1 - mu/12)(1 + q_m(t)))
 
-    Selected by ``idb_basis = "prospective"``.  It gives ``AV - AV0`` of -22,044.31 at
-    ten years, +36.52 at 払込満了, +296.03 at fifty years and +30,762.05 at the terminal
-    month on the anchor cell.  The near-zero crossing at 払込満了 is a strong independent
+    Selected by ``idb_basis = "prospective"``.  It gives ``AV - AV0`` of -21,818.29 at
+    ten years (``t = 120``), +8.73 at 払込満了 (``t = 240``), +67.86 at fifty years
+    (``t = 600``) and +22,617.69 at the last projected month (``t = proj_len() - 1``)
+    on the anchor cell.  The near-zero crossing at 払込満了 is a strong independent
     check on the back-solved charge stack.
     """
     if t >= proj_len():
@@ -1011,6 +1043,9 @@ def surr_charge_rate(t):
     7.0% in policy year 1 falling 0.7 percentage points per completed policy year to
     zero at ten years, constant within the year, applied to the **積立金**.  It is a
     charge: one-sided and never adding value.
+
+    On the 0-based month index the scale runs over months ``0 ... 119`` and is zero from
+    month 120, and the step is ``t // 12`` — policy year 1 is ``t // 12 == 0``.
     """
     if t >= int(charge_param("surr_charge_months")):
         return 0.0
@@ -1509,7 +1544,7 @@ def fx_spread_jpy(t):
     """The insurer's 為替手数料 spread income in month t, published as its own column.
 
     ``s x (premiums + benefits)`` over the legs that actually convert.  ¥125.17 in month
-    0 on the anchor cell and ¥39,266 over the whole run — exactly the gap between
+    0 on the anchor cell and ¥39,146 over the whole run — exactly the gap between
     :func:`net_cf_jpy` and ``net_cf(t) e(t)``, month by month and so in total.  Summing
     ``net_cf`` first and translating once at ``e(0)`` reproduces that gap only where the
     rate is flat; where ``fx_path`` is on it does not.
@@ -1536,9 +1571,9 @@ def check_pols_roll_fwd():
     """True when every policy leaves by a named decrement and none is lost.
 
     The per-month roll-forward closes, ``pols_if(proj_len())`` is zero, and the whole-run
-    decrements sum to the cohort: on the anchor cell ``sum D = 0.211608544`` and
-    ``sum S = 0.788391456``, which is 1.000000000 exactly.  Surrenders take 78.8% of the
-    cohort out against mortality's 21.2%, so this is a lapse-driven liability wearing a
+    decrements sum to the cohort: on the anchor cell ``sum D = 0.209118071`` and
+    ``sum S = 0.790881929``, which is 1.000000000 exactly.  Surrenders take 79.1% of the
+    cohort out against mortality's 20.9%, so this is a lapse-driven liability wearing a
     mortality product's clothes.
     """
     tol = roll_fwd_tol * max(pols_if_init, 1.0)                      # noqa: F821

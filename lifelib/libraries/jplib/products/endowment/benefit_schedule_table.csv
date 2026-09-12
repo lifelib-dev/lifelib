@@ -1,4 +1,4 @@
-schedule_id,t,benefit_pct,provenance
+schedule_id,k,benefit_pct,provenance
 S_0_1,3,0.05,S型 grid at child 契約年齢 0-1 [S10] [S11]; timing [std]
 S_0_1,6,0.05,S型 grid at child 契約年齢 0-1 [S10] [S11]; timing [std]
 S_0_1,12,0.10,S型 grid at child 契約年齢 0-1 [S10] [S11]; timing [std]

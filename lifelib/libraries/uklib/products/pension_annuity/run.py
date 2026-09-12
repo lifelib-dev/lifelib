@@ -27,7 +27,8 @@ print("income {:,.2f} p.a., {} payments in {}, escalation = {}   "
 print("guarantee = {} months   value protection = {:.0%} on {}   overlap = {}".format(
     proj.guarantee_mths(), proj.vp_pct(), proj.vp_basis(), proj.overlap()))
 print()
-rows = [t for t in (3, 6, 9, 12, 13, 15, 17, 18, 21, 24) if t <= proj.proj_len()]
+# The notes' worked-example months, on the 0-based frame t = 0 .. proj_len() - 1.
+rows = [t for t in (2, 5, 8, 11, 12, 14, 16, 17, 20, 23) if t < proj.proj_len()]
 print(proj.result_cf().loc[rows].round(2).to_string())
 
 model.close()

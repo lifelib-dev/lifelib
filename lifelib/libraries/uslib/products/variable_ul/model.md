@@ -38,7 +38,8 @@ model.Projection[1].result_av()
 ```
 
 `Projection` takes a `point_id`; `Projection[1]` is the worked-example anchor cell.
-There are four result tables, all `DataFrame`s indexed by policy month `t`:
+There are four result tables, all `DataFrame`s indexed by the projected month `t`,
+0-based — `t = 0 … proj_len() − 1`, `proj_len()` rows:
 
 | Table | What it shows |
 |---|---|
@@ -55,13 +56,34 @@ technical notes' symbols and the cells names.
 
 ## Monthly, on monthiversaries
 
-Policy month `t` runs 1 … `proj_len()` = `12 × (121 − age_at_entry() + 1) −
-duration_mth_init()`. For a new-business model point `t = 1` is the issue month; for an
-in-force point it is the first projected month, sitting `duration_mth_init()` completed
-months after issue. The contract has **no maturity date** — at attained age 121 premiums
-and monthly deductions cease, the asset charges continue, and coverage runs to death or
-surrender — so `pols_maturity(t)` is identically zero and the projection is truncated by
-mortality, not by the policy.
+The projected month `t` is **0-based** and runs `0, 1, …, proj_len() − 1`, with
+`proj_len()` = `12 × (121 − age_at_entry() + 1) − duration_mth_init()` the number of
+projected months — `for t in range(proj_len())`, lifelib's own convention
+(`savings/CashValue_SE`). For a new-business model point `t = 0` is the issue month; for
+an in-force point it is the first projected month, sitting `duration_mth_init()`
+completed months after issue, so `duration_mth(t) = duration_mth_init() + t` is the
+policy month from issue and `policy_year(t) = duration_mth(t) // 12 + 1` the
+contractual, 1-based policy year (the anchor cell opens at `t = 0` with
+`duration_mth(0) = 24`, policy year 3). This is the clock the technical notes use —
+their state-variable table defines `t = 0` at issue or at the projection start — so the
+worked example's month is `t = 0` of model point 1, and a reader can take any of its
+figures and find it in row 0 of `result_av()`. The contract has **no maturity date** —
+at attained age 121 premiums and monthly deductions cease, the asset charges continue,
+and coverage runs to death or surrender — so `pols_maturity(t)` is identically zero and
+the projection is truncated by mortality, not by the policy: the last row,
+`t = proj_len() − 1`, is the last month of the policy year at attained age 121 (900
+rows on the anchor cell, 924 on the new-business point, 804 on point 4).
+
+Every state variable is a **closing balance** of month `t`: `sa_pp(t, i)`, `fa_pp(t)`,
+`la_pp(t)`, `loan_bal_pp(t)` and `av_pp(t)` are the notes' `SA_{i,t+1}`, `FA_{t+1}`,
+`LA_{t+1}`, `D_{t+1}`, `AV_{t+1}`. The opening balances live in the `"BEF_PREM"` timing
+of the matching `*_at` cells — `sa_pp_at(0, i, "BEF_PREM") = sa_pp_init(i)`,
+`fa_pp_at(0, "BEF_PREM") = fa_pp_init()`, `la_pp_at(0, "BEF_PREM")` and
+`loan_bal_pp_at(0, "BEF_PREM")` both `= loan_bal_init()`, `av_pp_at(0, "BEF_PREM") =
+av_pp_init()` — and `pols_if(0) = pols_if_init()`. There is no `t = 0` row holding the
+opening state and no month is indexed at `t = −1`. The pricing path behind the
+funding ratio runs on the same 0-based clock counted from issue, `m = duration_mth(t)`,
+with `av_pricing_pp_at(0, "BEF_PREM") = 0`.
 
 Ending at attained age 121 rather than 120 is deliberate. It is the age at which the
 regime switches, and the notes list *"missing the age-121 regime switch (charges stop;
@@ -87,7 +109,7 @@ the model docstring carries the same list in prose:
 | Net amount at risk | `DB / (1 + i_gm) − AV'`, one month discounted at the guaranteed rate | `max(0, DB − AV')`, **no discount** | The VUL prospectuses define NAAR as death benefit − account value [S2]. **Sourced.** |
 | Investment return | one declared credited rate `i_cr` | per-subaccount `(1 + r)(1 − e_i/12)(1 − m/12)` on exogenous gross returns, plus a declared rate on the fixed option only | The account value is a separate-account vector |
 | Charge base | per-unit charge on the **current** face, `units(t)` | $0.20 charge *and* surrender charge on **F₀**, `units()` — no `t` | "per $1,000 of F₀" [S2] |
-| Surrender charge | amortized **monthly**, `max(0, 9.00 − t/12)` | steps by **policy year**, `18.00 × (15 − y)/14` | The worked example pins the step at 12/14 in policy year 3 |
+| Surrender charge | amortized **monthly**, `max(0, 9.00 − (duration_mth(t) + 1)/12)` | steps by **policy year**, `18.00 × (15 − y)/14` | The worked example pins the step at 12/14 in policy year 3 |
 | Maintenance expense | $75/year inflating at 2.5% | flat $75/year, `inflation_rate = 0.0` | The variable-UL notes give no inflation |
 | Lapse shock | a whole shock **year** at surrender-charge expiry | a one-**month** spike, optional, magnitude an input | "spike multiplier on q^w in the month after SC_t reaches zero" |
 | Total lapse cap | 35% **[std]** | none — the dynamic multiplier is already bounded at 2.0 | The variable-UL notes set no cap |
@@ -160,9 +182,9 @@ follows, with no formula change.
 
 | File | Contents | Provenance |
 |---|---|---|
-| `model_point_table.csv` | Four points, all on the anchor configuration M45 / StdNT / $500,000. **Point 1 is the worked-example anchor cell** (Option A, 24 completed months, $30,000/$20,000 opening subaccounts, 60/40 allocation, no fixed balance, no debt, scenario `WE`); point 2 is identical with the two month-1 pins blank; point 3 is new business under Option B; point 4 is an in-force cell with a fixed-option balance and an $8,000 loan | anchor cell from the notes' worked example and model-point attribute table |
+| `model_point_table.csv` | Four points, all on the anchor configuration M45 / StdNT / $500,000. **Point 1 is the worked-example anchor cell** (Option A, 24 completed months, $30,000/$20,000 opening subaccounts, 60/40 allocation, no fixed balance, no debt, scenario `WE`); point 2 is identical with the two first-month (`t = 0`) pins blank; point 3 is new business under Option B; point 4 is an in-force cell with a fixed-option balance and an $8,000 loan | anchor cell from the notes' worked example and model-point attribute table |
 | `subaccount_table.csv` | Two subaccounts, equity 0.75% and bond 0.55% fund expense | **[std]** collapse of observed menus; ranges 0.29%–1.18% [S1], 0.55%–2.88% [S2], 0.46%–2.54% [S3], 0.08%–1.93% [S4] |
-| `scenario_table.csv` | Monthly **gross** subaccount returns by `scenario_id`. `WE` is the worked example's month (+1.00% / −0.50%) then a level 6% a year path; `LEVEL6` is that path throughout | **[std]**; the worked example's month is the notes' own |
+| `scenario_table.csv` | Monthly **gross** subaccount returns by `scenario_id`, keyed by the projected month `t`, 0-based like the frame. `WE` is the worked example's month at `t = 0` (+1.00% / −0.50%) then a level 6% a year path; `LEVEL6` is that path throughout; months past a scenario's last row repeat it | **[std]**; the worked example's month is the notes' own |
 | `coi_rates.csv` | Guaranteed maximum monthly COI per $1,000 NAAR, M / StdNT / 45, policy years 1–77 | year 1 = $0.22 is the disclosed anchor [S4]; the rest is an **illustrative [std]** stand-in for the licensed 2017 CSO table, capped at $83.34 |
 | `corridor_factors.csv` | GPT corridor factors, attained ages 18–121, grading to 100% at 95 | quoted ages and 100% from 95 sourced [S2] [R3]; ages 41–94 are **linear interpolation [std]** — see below |
 | `mort_table.csv` | Best-estimate annual mortality by age, 18–121 | **illustrative [std]**, *not* the 2015 VBT the notes recommend — that family is licensed. Deliberately well below the COI basis |
@@ -170,6 +192,22 @@ follows, with no formula change.
 | `lapse_table.csv` | Base annual lapse by policy year: 6% / 5% / 4% / 3% | **[std]**, from the UL persistency studies [REG-R20] [REG-R21] applied to VUL by analogy — VUL is not broken out separately, which the notes flag |
 | `prem_persistency.csv` | 1.00 in year 1 grading to 0.85 in year 5 and 0.80 after | **[std]** placeholder grading, base levels [REG-R21] |
 | `surr_charge_table.csv` | `VUL14`: $18.00 per $1,000, linear to zero over 14 policy years | amount and shape **[std]** (spec footnote 10); 14-year period [S1] [S2] |
+
+### Time-keyed columns
+
+The library-wide 0-based convention touches the input files in one place. The
+decisions, column by column:
+
+| File | Column | Decision | Why |
+|---|---|---|---|
+| `scenario_table.csv` | `t` | **shifted by −1** (`1, 2` → `0, 1`; `provenance` and every other column unchanged, row order unchanged) | it is literally the frame's `t`, the projected month: `gross_return_mth(t, i)` reads the row at `t`, so the worked example's month is now row `t = 0` |
+| `coi_rates.csv` | `policy_year` | unchanged, values `1 … 77` | a contractual 1-based label; read through `policy_year(t)` |
+| `lapse_table.csv` | `policy_year` | unchanged, `1 … 11` | as above, via `lapse_rate_base(t)` |
+| `prem_persistency.csv` | `policy_year` | unchanged, `1 … 6` | as above, via `prem_persistency_base(t)` |
+| `corridor_factors.csv`, `mort_table.csv` | `age` | unchanged, `18 … 121` | attained age, reached through `age(t)`; not a time index |
+| `model_point_table.csv` | `duration_mth` | unchanged (24, 24, 0, 120) | an elapsed count — completed months at `t = 0` — and so already 0-based by nature |
+| `model_point_table.csv` | `corridor_override_m1`, `coi_rate_override_m1` | unchanged, names kept | values, not months; `_m1` means "the first projected month", which is `t = 0` |
+| `surr_charge_table.csv` | `runoff_years` | unchanged (14) | a length in policy years; the cliff it implies, `lapse_shock_month()`, is `12 × 14 = 168`, the 0-based policy month from issue in which the charge first reads zero |
 
 ## Naming
 
@@ -189,10 +227,10 @@ The technical notes use compact actuarial symbols; the full mapping lives in the
 
 | Notes | Cells | Why |
 |---|---|---|
-| `AV_{t+1}`, `D_{t+1}` | `av_pp(t)`, `loan_bal_pp(t)` | The notes index end-of-month balances with `t+1`. Their death claim `DB_t^EOM − D_{t+1}` is two quantities of the *same* month |
+| `AV_{t+1}`, `D_{t+1}`, `LA_{t+1}` | `av_pp(t)`, `loan_bal_pp(t)`, `la_pp(t)` | The notes index end-of-month balances with `t+1`; the cells are the closing balances of month `t`. Their death claim `DB_t^EOM − D_{t+1}` is two quantities of the *same* month. The opening values `AV_t`, `D_t`, `LA_t` are `av_pp_at(t, "BEF_PREM")`, `loan_bal_pp_at(t, "BEF_PREM")`, `la_pp_at(t, "BEF_PREM")` |
 | `CSV_t = AV − SC − D` | `ncsv_pp(t)` | The chassis calls the debt-net figure `ncsv_pp`; `csv_pp` is the `AV − SC` intermediate |
-| `m` (M&E rate) and `m` (policy month) | `me_rate_ann` and the pricing path's `m` argument | The notes reuse the letter |
-| `l_t` | `pols_if(t)` | Both are start-of-month, so they coincide — unlike `UL_US_S`, whose notes put `l(t)` at end of month |
+| `m` (M&E rate) and `m` (policy month) | `me_rate_ann` and the pricing path's `m` argument | The notes reuse the letter. The pricing path's `m` is 0-based from issue, `m = duration_mth(t)` |
+| `l_t` | `pols_if(t)` | Both are start-of-month, so they coincide and `pols_if(0) = l_0 = pols_if_init()` — and, since the 0-based conversion, the same is true of `UL_US_S`, whose `l(t)` is also the start-of-month probability |
 | `c_t` per $1,000 NAAR/month | `coi_rate(t)` | Not comparable with `CashValue_SE.coi_rate`, a rate per unit of account value |
 | `U` | `units()` — **no `t`** | Charges are on `F₀`, not the current face |
 | `MD_t` non-COI part | `maint_fee_pp(t)` | Income. `expenses(t)` is the insurer's own outgo, and the two must never be confused |
@@ -218,17 +256,18 @@ Rather than pick one, the model ships both. `corridor_factor_at(a)` and `coi_rat
 are the rules; model point 1 carries `corridor_override_m1 = 2.15` and
 `coi_rate_override_m1 = 0.04`, and model point 2 is the same cell with both blank.
 
-**Both pins are confined to `t == 1`.** That is the single month the worked example
+**Both pins are confined to `t == 0`**, the first projected month (the `_m1` in the
+column names means "the first month"). That is the single month the worked example
 describes, and the pinned values are lookups performed at the wrong age, not parameters
 of the contract. Holding an issue-age corridor factor across the seventy-seven years
 this projection runs would misstate every later month, and holding one disclosed COI
 rate flat would leave a policy paying $0.04 per $1,000 for its insurance at age 100.
-Because the pin lifts at month 2, point 1's output *steps* between months 1 and 2 —
+Because the pin lifts at `t = 1`, point 1's output *steps* between `t = 0` and `t = 1` —
 `run.py` prints a note saying so, and point 2 is the same cell without the step. Neither
 value is "right"; the rule is a standardization and so is the pin, and
 `test_the_two_age_lookups_are_shipped_both_ways` holds the gap open in both directions.
 
-This is the pattern `Term_US_A` uses for its `M(1)` divergence.
+This is the pattern `Term_US_S` uses for its `M(1)` divergence.
 
 A second, smaller gap sits in the same worked example and is pinned the same way. The
 notes' table totals the two subaccounts by adding the **displayed** figures: 30,482.82 +
@@ -255,7 +294,8 @@ thirty-five-year grade does not terminate in four: the annual step is 0.30/35 =
 The choice is not cosmetic. Grading to 90 instead would put κ at exactly 1.0000 from
 age 90 on, and a corridor of 1.0000 collapses the net amount at risk to zero on an
 Option A policy funded above its face — which is what the anchor cell has become by
-then. At policy month 517, attained age 90, its account value before the deduction is
+then. At projected month `t = 516` — 540 completed months, the anniversary at attained
+age 90 — its account value before the deduction is
 $801,347.97 against a $500,000 face, so the corridor alone is holding the death benefit
 up. With κ(90) = 1.042857 the death benefit is $835,691.34, the net amount at risk
 $34,343.37 and the month's cost of insurance $154.73; with κ = 1.0000 the death benefit
@@ -324,12 +364,13 @@ policy at the next monthiversary "if not cured". Read literally that test is **t
 issue** on any front-loaded design: in policy year 1 the scheduled $18 per $1,000
 surrender charge is $9,000 against an account value a first premium has barely started,
 so `AV − SC` is deeply negative on a perfectly healthy new policy. Model point 3 shows
-exactly this — `first_default_month() == 1`.
+exactly this — `first_default_month() == 0`, the issue month. (Both `first_*_month()`
+cells return `−1` for "never", since `0` is a real month.)
 
 `is_default(t)` therefore reports the notes' test as written, and **`is_shortfall(t)` is
 the companion diagnostic** that answers the question the default rule is really asking:
 can the unloaned account value pay the monthly deduction? That is the fixed-UL chassis's
-trigger, and on model point 3 it first fires at policy month 594 — policy year 50, where
+trigger, and on model point 3 it first fires at `t = 593` — policy year 50, where
 a level $500 a month stops covering the cost of insurance on a $500,000 net amount at
 risk.
 
@@ -360,7 +401,7 @@ no loans, starting from zero.
 It is switched **off** by `Projection.dyn_behavior_on = False`, which makes `φ = 1`,
 `λ = 1` and `ρ = 1`. That is what lets the base deterministic run pay the planned
 premium in full, which is what the worked example does ("planned premium $500/month
-paid"). `Term_US_A` switches conversion off for exactly the same reason. Switch it on
+paid"). `Term_US_S` switches conversion off for exactly the same reason. Switch it on
 with one assignment:
 
 ```python
@@ -371,8 +412,9 @@ and the base persistency scale and both dynamic multipliers come alive together.
 three self-checks still close with it on; a test asserts that.
 
 The surrender-charge cliff spike is separately optional, as the notes make it —
-`lapse_shock_mult` ships at 1.0 (off), and the cliff month, policy month 169, is derived
-from `surr_charge_table.csv` rather than hard-coded.
+`lapse_shock_mult` ships at 1.0 (off), and the cliff month — policy month 168 from
+issue, 0-based, the first month of policy year 15 and `t = 144` on the anchor cell — is
+derived from `surr_charge_table.csv` rather than hard-coded.
 
 ## Standardizations used
 
@@ -411,7 +453,10 @@ test per entry on the notes' "Known modeling pitfalls" list, the in-force roll-f
 all three self-checks on all four model points, the two-way age-lookup divergence, the
 behavior module both off and on, the `withdrawals`/`claims` split and the `result_cf()`
 columns netting to `net_cf`, the start-of-month `pols_if` weighting, and a read → write
-→ re-read round trip carrying the inputs along.
+→ re-read round trip carrying the inputs along. Every golden assertion is made at
+`t = 0`, the worked example's month on the anchor cell; the frame tests pin
+`list(result_cf().index) == list(range(proj_len()))`, 900 rows on that cell, and that
+the closing balance of month 0 is the `"BEF_PREM"` opening of month 1.
 
 ```bash
 python -m pytest tests/test_variable_ul_us.py -q

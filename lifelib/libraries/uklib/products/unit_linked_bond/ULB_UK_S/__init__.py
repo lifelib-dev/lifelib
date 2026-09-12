@@ -51,10 +51,14 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 time rather than stored inside the model. The model folder itself holds no data, so
 the model and its inputs must travel together.
 
-**Projection basis.** Monthly steps. Fund growth, the tax provision and the fund-based
-charges accrue over the month; withdrawals, adviser charges and any rider charge are
-unit cancellations at the end of it; death and surrender follow, deaths before
-surrenders. Age is **age last birthday**. The projection ends at the limiting age or,
+**Projection basis.** Monthly steps, indexed by the policy month ``t`` counted from
+issue and **0-based**: ``t = 0`` is the first month, month ``t`` runs from time ``t`` to
+time ``t + 1``, and the frame is ``t = 0, 1, ..., proj_len() - 1``, ``proj_len()`` being
+the number of projected months. The policy year is the derived 1-based label
+``t // 12 + 1``. Fund growth, the tax provision and the fund-based charges accrue over
+the month; withdrawals, adviser charges and any rider charge are unit cancellations at
+the end of it; death and surrender follow, deaths before surrenders. Age is **age last
+birthday**. The projection ends at the limiting age or,
 sooner, when the unit fund is exhausted — which on the deterministic base run it is,
 because a 5% withdrawal against a 5% gross return net of tax and charges cannot be
 sustained.

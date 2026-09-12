@@ -63,6 +63,51 @@ aggregate to the precision the notes display. `result_cf()` is a tidy `DataFrame
 policy month `t`; `result_pols()` is its policy-count companion. The `Projection` docstring
 holds the full mapping between the notes' symbols and the cells names.
 
+## The time index
+
+`t` is **0-based**, on the library-wide convention. `t = 0` is the first projected policy
+month and month `t` runs from `t` to `t + 1` months after the 契約日, so:
+
+```
+frame            range(proj_len())        t = 0, 1, ..., proj_len() - 1
+row count        len(result_cf()) == proj_len()        684 on the anchor cell
+attained age     age(t) = issue_age() + t // 12        age(0) = 60 on the anchor cell
+in force         pols_if(0) = 1
+policy year      policy_year(t) = t // 12 + 1          1-based contractual label
+```
+
+`proj_len()` is a **row count**, the exclusive end of the frame, not the last index — the
+last projected month is `proj_len() - 1`, the last month of the mortality table's terminal
+age. Every model point is new business at `t = 0`, so there is no in-force offset cells
+anywhere in this model: no `proj_start()`, no `duration_mth_init()`, and no issue-date
+column in the model point table.
+
+The one schedule the contract writes in **policy years** and looks up by that label is
+read through `policy_year(t)` rather than through the index: the lapse table's rows. The
+contract's other policy-year boundary, the renewal commission that starts in policy year
+2, is written directly on the 0-based index as `t >= 12` — the same condition as
+`policy_year(t) >= 2`. Every other duration constant in the model is a count of months
+on the 0-based index and is compared with `<`, at the boundary — the 1-year 不担保期間 is
+`t < waiting_mths()` with `waiting_mths()` = 12, the rider's 認知症診断責任開始期 is
+`t < dementia_wait_mths` with `dementia_wait_mths` = 6, and the annuity's `n_A`-instalment
+cap fires at `s = t - 12 (n_A - 1) >= 0`, all of which count from the first month `t = 0`.
+
+Two places reach one step past the frame on purpose, and both read a **time point** rather
+than a period. `pols_if(proj_len())` is the closing state of the last projected month —
+what `pols_if_at(t, "AFT_DECR")` and the roll-forward residual read, and zero there,
+because the terminal age carries `mort_rate = 1`. And `check_nesting()` scans
+`range(proj_len() + 1)`, so the ledger ordering is checked at that closing time point too.
+The other three `check_*` cells are identities of a period and stop at `proj_len() - 1`.
+
+**None of the five input CSVs is keyed by `t`.** `lapse_table.csv` is keyed by
+`policy_year`, a 1-based contractual label mapped through `policy_year(t) = t // 12 + 1`,
+so its values are read at policy year 1 for months `t = 0 … 11`; `mort_table.csv` is keyed
+by `sex` and attained `age`, read at `age(t)`; `prevalence_table.csv` and
+`grade_share_table.csv` are keyed by `param` and `grade`. `model_point_table.csv` carries
+no point on the time axis and no elapsed count either: `issue_age` is an age,
+`annuity_max` is a number of instalments, `prem_period` is a category, and there is no
+issue-date or duration column. So no input file changes under the time-index convention.
+
 ## Four ledgers, nested rather than disjoint
 
 This is not the third-sector chassis's frequency × severity × limit shape. It is **incidence
@@ -469,8 +514,13 @@ contractual parameter in the notes is unchanged and still identical to its.
 
 `tests/test_model_conventions_jp.py` asserts the house style — the external-inputs layout,
 the read-once property, the `Data` / `Projection` split, the docstring contract, the
-`result_cf` column vocabulary, the no-argument `check_*` shape and the read-write-re-read
-round trip. `tests/test_nursing_care_jp.py` asserts this product, in five blocks:
+`result_cf` column vocabulary, the no-argument `check_*` shape, the read-write-re-read
+round trip, and the frame rule: `result_cf()` is indexed by `t`, contiguous, starting at a
+non-negative index and ending at `proj_len() - 1` — which for this product, whose every
+model point opens at `t = 0`, means `len(result_cf()) == proj_len()`.
+`tests/test_nursing_care_jp.py` pins the frame for this product directly —
+`list(df.index) == list(range(proj_len()))`, `proj_len() == 684` on the anchor cell,
+`pols_if(0) == 1`, `age(0) == 60` — and then asserts the product, in five blocks:
 
 - **The worked example**, hard-coded as module-level tables so a reviewer can check it
   against the notes by eye: every assumption value the notes list, the four-row table, all

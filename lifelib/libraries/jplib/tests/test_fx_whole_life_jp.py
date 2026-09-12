@@ -12,6 +12,15 @@ The anchor cell is male, 契約年齢 40 (満年齢), the LEVEL shape, 米ドル
 held at the guaranteed floor of 3.00%, TTM ¥159.43 per US$1 held flat with a ±¥0.50 spread.
 ``T = 12 x (109 - 40 + 1) = 840`` months.
 
+**The time index is 0-based**, so every integer argument below is read that way: ``t = 0``
+is the policy month beginning at issue, month ``t`` runs from time ``t`` to time ``t + 1``,
+the frame is ``t = 0 ... proj_len() - 1`` and ``len(result_cf()) == proj_len()``.
+``policy_year(t) = t // 12 + 1`` is the 1-based contractual label and never the index. The
+state cells are time-point values — ``av_pp(t)`` is the fund *at* time ``t``, the start of
+month ``t`` — which is why the traces below read the end-of-month state as ``av_pp(t + 1)``
+and ``cv_pp(t + 1)``, and why ``av_pp(proj_len())`` is a legitimate read one point past the
+last row.
+
 The goldens are hard-coded in module-level tables — ``TRACE`` for the three month traces,
 ``FIRST_PERIODS`` for the printed cash-flow table, ``CALIBRATION`` for the nine-duration
 charge-stack fit and ``MVA_ROW`` for the rate-move row — carrying the digits the notes
@@ -628,7 +637,7 @@ def test_the_special_reserve_shares_reproduce_the_published_amounts(
         assert abs(got20 - want20) / want20 <= 0.040
         # The 20-year share is applied to the fund *including* the compounded ten-year
         # top-up, not to the excess the ten-year point measured: dropping it would shift
-        # the twenty-year fit by about a tenth and the 3.0% bound would not hold.
+        # the twenty-year fit by about a tenth and the 4.0% bound would not hold.
         assert got20 == pytest.approx(
             0.16 * (run.av_pp_bef_sr(240) - run.av0_pp(240)), abs=5e-3)
         assert run.av_pp(120) > run.av_pp_bef_sr(120)
@@ -1256,6 +1265,32 @@ def test_the_horizon_is_the_tables_terminal_age_for_that_life(fx_whole_life):
     assert female.proj_len() == 12 * (113 - 55 + 1) == 708
     assert female.mort_rate(female.proj_len() - 1) == 1.0
     assert female.pols_if(female.proj_len()) == pytest.approx(0.0, abs=1e-12)
+
+
+@pytest.mark.parametrize("point_id", POINT_IDS)
+def test_the_frame_is_zero_based_and_proj_len_rows_long(fx_whole_life, point_id):
+    """``t`` is 0-based: the frame is ``0 ... proj_len() - 1`` and has ``proj_len()`` rows.
+
+    ``proj_len()`` is a *count* of policy months, not the last index, so it is the
+    exclusive end of the frame.  ``t = 0`` is the month beginning at issue and is a real
+    projected period rather than an issue instant: the age is the 契約年齢 there, the
+    in-force count is the opening one, and the first premium is collected in it.  The
+    policy year is the derived 1-based label and turns over at exact multiples of twelve.
+    """
+    p = fx_whole_life.Projection[point_id]
+    for frame in (p.result_cf(), p.result_pols(), p.result_av()):
+        assert frame.index.name == "t"
+        assert len(frame) == p.proj_len()
+        assert frame.index[0] == 0
+        assert frame.index[-1] == p.proj_len() - 1
+        assert list(frame.index) == list(range(p.proj_len()))
+
+    assert p.age(0) == p.issue_age()             # t = 0 is the issue month, not an instant
+    assert p.pols_if(0) == 1.0                   # pols_if_init on a single-policy point
+    assert p.policy_year(0) == 1                 # the label is 1-based, the index is not
+    assert p.policy_year(11) == 1
+    assert p.policy_year(12) == 2
+    assert p.prem_due_pp(0) > 0.0                # the first premium falls in month 0
 
 
 def test_a_whole_of_life_premium_term_runs_to_the_horizon(fx_whole_life):

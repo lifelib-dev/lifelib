@@ -18,16 +18,22 @@ print("model point {}: {} - {} cell, {}{} {}, cover {:,.0f}, premium {:,.2f}/mon
     point_id, proj.model_point()["policy_id"], proj.cell(), proj.sex(),
     proj.age_at_entry(), proj.smoker(), proj.sum_assured(), proj.premium_mth()))
 cess = proj.cessation_mths()
-print("basis = {} x {:.0%}   moratorium = {} months   premiums {}   escalation = {}".format(
-    proj.mort_basis(), proj.mort_loading(), proj.moratorium_mths(),
-    "cease at month {}".format(cess) if cess else "payable for life",
+mora = proj.moratorium_mths()
+print("basis = {} x {:.0%}   moratorium = {}   premiums {}   escalation = {}".format(
+    proj.mort_basis(), proj.mort_loading(),
+    "{} months (t < {})".format(mora, mora) if mora else "none",
+    "cease after {} months (none from t = {})".format(cess, cess) if cess
+    else "payable for life",
     proj.escalation()))
 xover = proj.crossover_mth()
 print("crossover = {}   paid-up variant = {}   accidental multiplier = {:.0f}x".format(
-    "month {} ({} years {} months)".format(xover, xover // 12, xover % 12)
-    if xover else "none", proj.pu_variant(), proj.adb_multiplier()))
+    "t = {} (the {}th premium: {} years {} months)".format(
+        xover, xover + 1, (xover + 1) // 12, (xover + 1) % 12)
+    if xover >= 0 else "none", proj.pu_variant(), proj.adb_multiplier()))
 print()
-rows = [1, 6, 12, 13, 24, 60, 120]
-print(proj.result_cf().loc[[t for t in rows if t <= proj.proj_len()]].round(2).to_string())
+print("policy months t = 0 .. {} (proj_len = {}); selected rows, policy year = t // 12 + 1:".format(
+    proj.proj_len() - 1, proj.proj_len()))
+rows = [0, 5, 11, 12, 23, 59, 119]
+print(proj.result_cf().loc[[t for t in rows if t < proj.proj_len()]].round(2).to_string())
 
 model.close()

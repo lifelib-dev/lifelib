@@ -22,7 +22,7 @@ premiums exceed the cash sum.
 
 **Neither cell has an account value, a unit fund or a surrender value.** Both are pure
 decrement protection models: premiums in, death benefits and expenses out, weighted by
-survivorship. That is the deliberate contrast with :mod:`.WholeLife_US_A`, the U.S.
+survivorship. That is the deliberate contrast with :mod:`.WholeLife_US_S`, the U.S.
 whole life model in the same library, which is built around a guaranteed cash value
 schedule, three-factor dividends, paid-up additions and policy loans. None of that
 machinery exists here, and a lapse on either UK cell pays exactly nothing.
@@ -55,13 +55,16 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 time rather than stored inside the model. The model folder itself holds no data, so
 the model and its inputs must travel together.
 
-**Projection basis.** Monthly steps. Policy month ``t`` runs 1, 2, ..., ``proj_len()``,
-where ``proj_len() = 12 x (omega_age - entry_age)``: whole of life has no maturity, so
-the projection is truncated at a limiting age rather than ending at a contractual date.
-Premiums and expenses fall at the beginning of the month; deaths at the end, against the
-beginning-of-month in-force; lapses at the end after deaths. Escalation steps at policy
-anniversaries. Age is **age last birthday**, unlike every other model in this library —
-the underwritten cell's specimen defines entry age that way.
+**Projection basis.** Monthly steps. Policy month ``t`` is 0-based and runs
+``0, 1, ..., proj_len() - 1``, where ``proj_len() = 12 x (omega_age - entry_age)`` is
+the number of projected months: ``t = 0`` is the issue month, ``pols_if(0)`` is
+``pols_if_init()``, and the policy year is the contractual label ``t // 12 + 1``. Whole
+of life has no maturity, so the projection is truncated at a limiting age rather than
+ending at a contractual date. Premiums and expenses fall at the beginning of the month;
+deaths at the end, against the beginning-of-month in-force; lapses at the end after
+deaths. Escalation steps at policy anniversaries (``t = 12, 24, ...``). Age is **age last
+birthday**, unlike every other model in this library — the underwritten cell's specimen
+defines entry age that way.
 
 **What is sourced and what is not.** The contractual mechanics are sourced: the
 moratorium and its return-of-premiums benefit, accidental death paying the full cash sum
@@ -76,7 +79,8 @@ first.
 
 **Verification.** ``tests/test_whole_of_life_uk.py`` asserts the notes' eleven-row
 worked example to the penny and the in-force column to five decimals, including the
-month-12/13 moratorium discontinuity and the month-167 crossover.
+moratorium discontinuity between ``t = 11`` and ``t = 12`` and the crossover at
+``t = 166``, the 167th monthly premium.
 
 Example:
 

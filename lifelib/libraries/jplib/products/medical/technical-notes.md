@@ -45,9 +45,14 @@ the frequency × severity × limit decomposition — rather than restating it.
 - **Projection frequency.** Monthly grid. This is not a refinement of an annual model: the
   daily benefit's unit of account is a **day**, the per-hospitalization limit is 60 days —
   about two months — and the premium mode is monthly (月払) at every carrier in the
-  composite [S1] [S4] [S10]. `t` is the **policy month**, `t = 0, 1, …, proj_len − 1`, and
-  month `t` is the interval from `t` to `t + 1` months after the contract date
-  (*keiyakubi*, 契約日).
+  composite [S1] [S4] [S10]. `t` is the **policy month**, and it is **0-based**: `t = 0`
+  is the first policy month, month `t` is the interval from `t` to `t + 1` months after
+  the contract date (*keiyakubi*, 契約日), and the frame is `t = 0, 1, …, proj_len − 1`,
+  so `proj_len` is the **number** of projected months — the exclusive end of the frame —
+  and the projection has exactly `proj_len` rows. The **policy year** is the contractual
+  **1-based** label derived from `t` and never an index into the frame:
+  `y(t) = floor(t / 12) + 1`, so months `t = 0 … 11` are policy year 1. This is the
+  convention every model in the library carries.
 - **Timing conventions [std].** Office premium received at the **start** of month `t`;
   maintenance expense at the start of month `t`; hospitalization, surgery and 先進医療
   benefits and the claim-handling expense at the **end** of month `t`; mortality then lapse
@@ -77,9 +82,10 @@ the frequency × severity × limit decomposition — rather than restating it.
   `point_id`; no aggregation logic is specified here.
 - **Termination.** Whole-of-life cover: the projection runs to the terminal age of
   第三分野標準生命表2018, **116 for males and 118 for females** [REG-R18] [REG-R20], so
-  `proj_len = 12 × (terminal_age − x + 1)` — 924 months for the anchor cell. There is no
-  maturity benefit and no 満期保険金; the only cash flow at the horizon is nothing at all
-  [S1] [S6]. The product does, uniquely on this chassis, carry a **benefit-driven
+  `proj_len = 12 × (terminal_age − x + 1)` — 924 months for the anchor cell, the frame
+  `t = 0, 1, …, 923`. There is no maturity benefit and no 満期保険金; the only cash flow
+  at the horizon is nothing at all [S1] [S6]. The product does, uniquely on this
+  chassis, carry a **benefit-driven
   termination**: cover ceases when both the 疾病 and 災害 aggregate day limits are exhausted
   [S9], which is why the aggregate limit is a tracked state variable and not a cap applied
   at the end (see *Cash flow components*).
@@ -328,7 +334,9 @@ table is anchored to that figure by construction:
 The first ten years average **5.5%**, at the sourced 5.6% [REG-R31]. The 21+ step down is
 [std] reasoning stated openly: on a contract with no surrender value and rising morbidity
 exposure, a long-duration policyholder has no cash incentive to lapse and a growing reason
-not to. `lapse_rate_mth(t) = 1 − (1 − lapse_rate(year(t)))^(1/12)` **[std]**.
+not to. `lapse_rate_mth(t) = 1 − (1 − lapse_rate(y(t)))^(1/12)` **[std]**, with
+`y(t) = floor(t/12) + 1` the contractual 1-based policy year: the table is keyed by
+policy year, not by `t`, so the twelve months `t = 0 … 11` all read the year-1 rate.
 
 **Premium waiver [std].** The base 保険料払込免除 is disability-triggered — 高度障害状態 from any
 cause, or a listed 身体障害の状態 from an 不慮の事故 within 180 days [S1] [S2] [S10]. Because
@@ -359,9 +367,9 @@ scale is public).**
 
 | Symbol | Meaning |
 |---|---|
-| `t` | policy month, `t = 0, 1, …, proj_len − 1` |
-| `x`, `age(t)` | 契約年齢 (満年齢); attained age `x + floor(t/12)` |
-| `y(t)` | policy year, `floor(t/12) + 1` |
+| `t` | policy month, 0-based: `t = 0, 1, …, proj_len − 1` |
+| `x`, `age(t)` | 契約年齢 (満年齢); attained age `x + floor(t/12)`, so `age(0) = x` |
+| `y(t)` | policy year — the contractual **1-based** label, `floor(t/12) + 1` |
 | `D` | 入院給付金日額, JPY per day |
 | `L1`, `LA` | per-hospitalization day limit (60); 通算 day limit per limb (1,095) |
 | `F` | five-day minimum floor: 5 when `min_days_5`, else 0 |

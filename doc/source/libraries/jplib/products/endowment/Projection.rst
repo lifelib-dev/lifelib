@@ -1,7 +1,7 @@
 The **Projection** Space
 ========================
 
-.. automodule:: jplib.products.endowment.Endowment_JP_A.Projection
+.. automodule:: jplib.products.endowment.Endowment_JP_S.Projection
 
 Cells Descriptions
 ------------------
@@ -50,25 +50,41 @@ Cells Descriptions
 
 .. autofunction:: wv_lapse_mult
 
+.. autofunction:: proj_years
+
 .. autofunction:: proj_len
+
+.. autofunction:: duration
+
+.. autofunction:: policy_year
 
 .. autofunction:: age
 
 .. autofunction:: age_ph
 
+.. autofunction:: prem_period_months
+
 .. autofunction:: prem_cum_pp
+
+.. autofunction:: prem_cum_pp_m
 
 .. autofunction:: mort_rate_at_age
 
 .. autofunction:: mort_rate
 
+.. autofunction:: mort_rate_mth
+
 .. autofunction:: mort_rate_ph
+
+.. autofunction:: mort_rate_ph_mth
 
 .. autofunction:: lapse_rate_base
 
 .. autofunction:: dyn_lapse_factor
 
 .. autofunction:: lapse_rate
+
+.. autofunction:: lapse_rate_mth
 
 .. autofunction:: default_rate
 
@@ -108,6 +124,14 @@ Cells Descriptions
 
 .. autofunction:: cv_pp
 
+.. autofunction:: pol_val_pre_at_m
+
+.. autofunction:: pol_val_at_m
+
+.. autofunction:: surr_charge_at_m
+
+.. autofunction:: cv_at_m
+
 .. autofunction:: death_ben_pp
 
 .. autofunction:: apl_advance_pp
@@ -145,6 +169,8 @@ Cells Descriptions
 .. autofunction:: claims
 
 .. autofunction:: claim_expenses
+
+.. autofunction:: inflation_factor
 
 .. autofunction:: maint_expenses
 
