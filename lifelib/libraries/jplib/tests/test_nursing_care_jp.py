@@ -14,6 +14,15 @@ year from 要介護3以上 capped at ten instalments and survival-tested, 保険
 compare them against the notes by eye. Every row of the notes' table sits at age 60 in
 policy year 1, so one set of rates drives all of them.
 
+Every time argument below is on the model's **0-based** index, the library-wide
+convention: ``t = 0`` is the first policy month, the frame is ``range(proj_len())`` so
+the last month is ``proj_len() - 1`` and ``len(result_cf()) == proj_len()``, ``age(0)``
+is the 契約年齢 and ``pols_if(0) = 1``. Where a test speaks in **policy years** it goes
+through the 1-based contractual label ``policy_year(t) = t // 12 + 1`` — policy year 1 is
+``t = 0 ... 11`` — and where it speaks in attained ages it goes through
+``t = 12 * (age - issue_age)``. The goldens are keyed the same way, so
+``WORKED_EXAMPLE[0]`` is the notes' ``t = 0`` row.
+
 Tolerances follow the precision the notes display: money to ¥0.01, in-force and the care
 ledgers to six decimals, rates to the ten decimals the notes print them at.
 
@@ -393,11 +402,14 @@ def test_new_business_strain_then_thin_positive_margins(jp_ltc_anchor):
     A deep month-0 strain from the upfront commission and acquisition expense against one
     month's premium, then thin positive margins for nineteen years, then a negative tail
     once the incidence curve has overtaken the level premium. The crossover falls in policy
-    month 228, at attained age 79 — long before the claims themselves peak.
+    month 228 on the 0-based index, at attained age 79 — long before the claims themselves
+    peak.
     """
     p = jp_ltc_anchor
     assert p.net_cf(0) < -200_000.0
     assert all(p.net_cf(t) > 0.0 for t in (1, 2, 3, 60, 120, 180))
+    # From t = 1, not t = 0: month 0 is the new business strain, negative by construction,
+    # and what is being located here is the crossover after it.
     first_negative = next(t for t in range(1, p.proj_len()) if p.net_cf(t) < 0.0)
     assert first_negative == 228 and p.age(first_negative) == 79
     assert all(p.net_cf(t) < 0.0 for t in (240, 300, 360))
@@ -1281,7 +1293,11 @@ def test_result_cf_publishes_the_worked_examples_columns(nursing_care, jp_ltc_an
                 "claim_expenses", "commissions", "net_cf"):
         assert col in df.columns
     assert df.index.name == "t"
+    # The 0-based frame: first row t = 0, last row proj_len() - 1, proj_len() rows.
     assert list(df.index) == list(range(jp_ltc_anchor.proj_len()))
+    assert df.index[0] == 0
+    assert df.index[-1] == jp_ltc_anchor.proj_len() - 1
+    assert len(df) == jp_ltc_anchor.proj_len()
     assert "liability_cf" not in nursing_care.Projection.cells
     rebuilt = (df["premiums"] - df["claims_lump"] - df["claims_annuity"]
                - df["claims_dementia"] - df["claims_lapse"] - df["expenses"]

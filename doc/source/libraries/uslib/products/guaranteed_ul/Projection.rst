@@ -158,6 +158,8 @@ Cells Descriptions
 
 .. autofunction:: av_change
 
+.. autofunction:: loan_bal_pp_at
+
 .. autofunction:: loan_bal_pp
 
 .. autofunction:: sg_pp_at

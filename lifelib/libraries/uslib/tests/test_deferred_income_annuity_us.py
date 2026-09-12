@@ -12,8 +12,12 @@ Tolerances follow the precision the notes display: money to the cent, survival t
 decimals, factors to the six decimals they are printed with.
 
 Note the projection index: `t` counts policy months from issue and is **0-based**, the
-notes' own convention ("Monthly, indexed t = 0, 1, 2, ... from issue").  The anchor
-cell's premiums fall at months 0 and 60 and its income start month is T = 240.
+library-wide convention and the notes' own ("Monthly, indexed t = 0, 1, 2, ... from
+issue").  `proj_len()` is the number of projected months, so the frame is
+`range(proj_len())` - months 0 .. 719 on the anchor cell - and the last row is
+`proj_len() - 1`.  The anchor cell's premiums fall at months 0 and 60 and its income
+start month is T = 240, the start of month 240; policy year y = t // 12 + 1 is a
+derived 1-based label and indexes only the annual display grid.
 """
 import modelx as mx
 import pytest
@@ -371,7 +375,7 @@ def test_the_payment_factor_is_a_max_not_a_sum(deferred_income_annuity):
     for pid in (1, 5, 7):
         p = deferred_income_annuity.Projection[pid]
         assert p.check_payment_factor() is True
-        for t in range(0, p.proj_len() + 1, 17):
+        for t in range(0, p.proj_len(), 17):
             assert p.check_payment_factor_resid(t) == 0.0
             assert p.payment_factor(t) <= 1.0
 
@@ -518,8 +522,8 @@ def test_payment_acceleration_is_a_timing_shift_not_a_withdrawal(
     assert (sum(acc.annuity_payments(t) for t in range(t_a, t_a + 6))
             == pytest.approx(acc.annuity_payments(t_a), abs=CENT))
     # lifetime outgo moves by (12)'s mortality element, not by five whole instalments
-    lifetime = sum(acc.annuity_payments(t) for t in range(240, acc.proj_len() + 1))
-    unaccel = sum(base.annuity_payments(t) for t in range(240, base.proj_len() + 1))
+    lifetime = sum(acc.annuity_payments(t) for t in range(240, acc.proj_len()))
+    unaccel = sum(base.annuity_payments(t) for t in range(240, base.proj_len()))
     eq12_mortality = inst * sum(
         acc.lives_if(t_a + 1, 1) - acc.lives_if(t_a + 1 + j, 1) for j in range(1, 6))
     assert lifetime - unaccel == pytest.approx(eq12_mortality, abs=CENT)
@@ -662,7 +666,7 @@ def test_inforce_rollforward_closes(anchor):
     signed residual a failure would be diagnosed with.
     """
     assert anchor.check_lives_roll_fwd() is True
-    for t in range(0, anchor.proj_len() + 1, 7):
+    for t in range(0, anchor.proj_len(), 7):
         assert anchor.check_lives_roll_fwd_resid(t) == pytest.approx(0.0, abs=1e-14)
 
 
@@ -703,7 +707,7 @@ def test_the_cross_model_names_are_the_canonical_ones(deferred_income_annuity, a
 
 
 def test_inforce_is_a_decreasing_probability(anchor):
-    for t in range(0, anchor.proj_len() + 1, 11):
+    for t in range(0, anchor.proj_len(), 11):
         assert 0.0 <= anchor.lives_if(t, 1) <= 1.0
         assert anchor.lives_if(t + 1, 1) <= anchor.lives_if(t, 1) + 1e-15
 
@@ -735,11 +739,20 @@ def test_there_is_no_lapse_decrement_and_no_account_value(deferred_income_annuit
 
 
 def test_result_cf_shape(anchor):
-    """t is 0-based: the frame starts at month 0, the issue month."""
+    """t is 0-based and proj_len() is the exclusive end: the frame is range(proj_len()).
+
+    The frame starts at month 0, the issue month, and its last row is proj_len() - 1;
+    the anchor cell runs 720 months, to omega_age = 120 on a life aged 60.
+    """
     df = anchor.result_cf()
-    assert list(df.index) == list(range(0, anchor.proj_len() + 1))
+    assert list(df.index) == list(range(anchor.proj_len()))
     assert df.index.name == "t"
-    assert anchor.proj_len() == 719                # to omega_age = 120, a life aged 60
+    assert anchor.proj_len() == 720                # months 0 .. 719, ages 60 to 119
+    assert len(df) == anchor.proj_len()
+    assert df.index[0] == 0
+    assert df.index[-1] == anchor.proj_len() - 1
+    assert anchor.phase(anchor.proj_len() - 1) == "PAYOUT"
+    assert anchor.phase(anchor.proj_len()) == "TERMINATED"
     assert df.loc[0, "premiums"] == 100000.0
     assert df.loc[60, "premiums"] == pytest.approx(48750.0, abs=CENT)
     assert df.loc[0, "net_cf"] == pytest.approx(
@@ -747,9 +760,17 @@ def test_result_cf_shape(anchor):
 
 
 def test_result_annual_shape(anchor):
+    """The display grid is indexed by the 1-based policy year, y = t // 12 + 1.
+
+    One row per complete policy year inside the proj_len() projected months: 720
+    months are policy years 1 .. 60 on the anchor cell.
+    """
     df = anchor.result_annual()
     assert list(df.index) == list(range(1, 61))
+    assert len(df) == anchor.proj_len() // 12
     assert df.index.name == "policy_year"
+    assert anchor.policy_year(0) == 1 and anchor.policy_year(11) == 1
+    assert anchor.policy_year(12) == 2
     assert set(df.columns) == {
         "age", "premium_pp", "cum_premium_pp", "annual_income", "lives_if",
         "claims_death", "claims_refund", "annuity_payments",
@@ -757,8 +778,11 @@ def test_result_annual_shape(anchor):
 
 
 def test_result_pols_shape(anchor):
+    """The same range(proj_len()) frame as result_cf(), with l(0) = 1 in its first row."""
     df = anchor.result_pols()
-    assert list(df.index) == list(range(0, anchor.proj_len() + 1))
+    assert list(df.index) == list(range(anchor.proj_len()))
+    assert df.index.name == "t"
+    assert len(df) == anchor.proj_len()
     assert df.loc[0, "lives_if_1"] == 1.0
     assert df.loc[0, "lives_if_2"] == 0.0       # single-life contract
 

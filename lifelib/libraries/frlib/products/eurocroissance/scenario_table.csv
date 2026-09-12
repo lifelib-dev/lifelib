@@ -1,0 +1,156 @@
+scenario,year,asset_return,provenance
+shock,0,0.0000,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,1,0.0400,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,2,0.0400,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,3,0.0400,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,4,0.0400,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,5,0.0400,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,6,-0.2500,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,7,0.0600,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,8,0.0600,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,9,0.0600,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,10,0.0600,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,11,0.0400,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,12,0.0400,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,13,0.0400,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,14,0.0400,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,15,0.0400,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,16,0.0400,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,17,0.0400,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,18,0.0400,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,19,0.0400,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,20,0.0400,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,21,0.0400,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,22,0.0400,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,23,0.0400,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,24,0.0400,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,25,0.0400,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,26,0.0400,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,27,0.0400,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,28,0.0400,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,29,0.0400,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+shock,30,0.0400,[std] the notes' worked-example path - +4% to t=5 then -25% at t=6 then +6%
+base,0,0.0000,[std] flat 4.0% p.a. - the notes' base asset return
+base,1,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,2,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,3,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,4,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,5,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,6,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,7,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,8,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,9,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,10,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,11,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,12,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,13,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,14,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,15,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,16,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,17,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,18,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,19,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,20,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,21,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,22,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,23,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,24,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,25,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,26,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,27,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,28,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,29,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+base,30,0.0400,[std] flat 4.0% p.a. - the notes' base asset return
+downside,0,0.0000,[std] a late equity shock that leaves the account under its guarantee
+downside,1,0.0100,[std] a late equity shock that leaves the account under its guarantee
+downside,2,0.0100,[std] a late equity shock that leaves the account under its guarantee
+downside,3,0.0100,[std] a late equity shock that leaves the account under its guarantee
+downside,4,0.0100,[std] a late equity shock that leaves the account under its guarantee
+downside,5,0.0100,[std] a late equity shock that leaves the account under its guarantee
+downside,6,0.0100,[std] a late equity shock that leaves the account under its guarantee
+downside,7,-0.3000,[std] a late equity shock that leaves the account under its guarantee
+downside,8,0.0200,[std] a late equity shock that leaves the account under its guarantee
+downside,9,0.0200,[std] a late equity shock that leaves the account under its guarantee
+downside,10,0.0200,[std] a late equity shock that leaves the account under its guarantee
+downside,11,0.0200,[std] a late equity shock that leaves the account under its guarantee
+downside,12,0.0200,[std] a late equity shock that leaves the account under its guarantee
+downside,13,0.0200,[std] a late equity shock that leaves the account under its guarantee
+downside,14,0.0200,[std] a late equity shock that leaves the account under its guarantee
+downside,15,0.0200,[std] a late equity shock that leaves the account under its guarantee
+downside,16,0.0200,[std] a late equity shock that leaves the account under its guarantee
+downside,17,0.0200,[std] a late equity shock that leaves the account under its guarantee
+downside,18,0.0200,[std] a late equity shock that leaves the account under its guarantee
+downside,19,0.0200,[std] a late equity shock that leaves the account under its guarantee
+downside,20,0.0200,[std] a late equity shock that leaves the account under its guarantee
+downside,21,0.0200,[std] a late equity shock that leaves the account under its guarantee
+downside,22,0.0200,[std] a late equity shock that leaves the account under its guarantee
+downside,23,0.0200,[std] a late equity shock that leaves the account under its guarantee
+downside,24,0.0200,[std] a late equity shock that leaves the account under its guarantee
+downside,25,0.0200,[std] a late equity shock that leaves the account under its guarantee
+downside,26,0.0200,[std] a late equity shock that leaves the account under its guarantee
+downside,27,0.0200,[std] a late equity shock that leaves the account under its guarantee
+downside,28,0.0200,[std] a late equity shock that leaves the account under its guarantee
+downside,29,0.0200,[std] a late equity shock that leaves the account under its guarantee
+downside,30,0.0200,[std] a late equity shock that leaves the account under its guarantee
+sloped,0,0.0000,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,1,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,2,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,3,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,4,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,5,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,6,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,7,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,8,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,9,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,10,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,11,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,12,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,13,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,14,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,15,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,16,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,17,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,18,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,19,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,20,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,21,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,22,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,23,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,24,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,25,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,26,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,27,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,28,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,29,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+sloped,30,0.0350,[std] flat 3.5% p.a. - paired with an upward-sloping TEC curve
+zero_rate,0,0.0000,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,1,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,2,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,3,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,4,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,5,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,6,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,7,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,8,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,9,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,10,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,11,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,12,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,13,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,14,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,15,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,16,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,17,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,18,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,19,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,20,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,21,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,22,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,23,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,24,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,25,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,26,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,27,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,28,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,29,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve
+zero_rate,30,0.0300,[std] flat 3.0% p.a. - paired with a negative TEC curve

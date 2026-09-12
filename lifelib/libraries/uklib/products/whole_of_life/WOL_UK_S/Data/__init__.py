@@ -93,6 +93,9 @@ def mort_table():
 def lapse_table():
     """The annual lapse rates by cell and policy year, from *lapse_table.csv*.
 
+    ``policy_year`` is the contractual 1-based label (1 for the first policy year), not
+    the projection's 0-based month index; ``Projection.lapse_rate_base`` maps into it
+    through ``policy_year(t) = t // 12 + 1``, so the file's keys are left as written.
     The two cells carry different tables: the guaranteed-acceptance one lapses faster
     early, on affordability attrition.  Both are **[std]** drafting constructions - no
     public UK whole of life lapse study was retrieved - and on a product with no

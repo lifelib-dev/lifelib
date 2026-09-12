@@ -48,12 +48,24 @@ substituted by overriding that one cells.
 
 .. rubric:: Projection basis
 
-``t`` counts **policy months**, 1-based: ``t = 1`` is the issue month of a
-new-business model point, and for an in-force point it is the first projected month,
-sitting ``duration_mth_init()`` completed months after issue. State variables the
-notes define at their own ``t = 0`` -- ``FA(0)``, ``S(0)``, ``L(0)``, ``l(0) = 1`` --
-are the ``t == 0`` branch of the corresponding recursion. The notes' own month index
-is therefore :func:`duration_mth`, not ``t``.
+``t`` counts **policy months from the projection start, 0-based**: ``t = 0`` is the
+first projected month -- the issue month of a new-business model point -- and policy
+month ``t`` runs from monthiversary ``t`` to monthiversary ``t + 1``. The frame is
+``t = 0, 1, ..., proj_len() - 1``, so :func:`proj_len` is the **number** of projected
+months and ``len(result_cf()) == proj_len()``. For an in-force point the elapsed time
+is carried separately: :func:`duration_mth` ``(t) = duration_mth_init() + t`` is the
+notes' own month index counted from issue, and :func:`policy_year` ``(t)`` is the
+contractual 1-based label ``duration(t) + 1``. For a new-business point the notes'
+``t`` and this ``t`` coincide.
+
+State cells are **closing balances**: :func:`av_pp` ``(t)``, :func:`fa_pp` ``(t)``,
+:func:`lca_pp` ``(t)``, :func:`loan_bal_pp` ``(t)``, :func:`seg_bal_pp` ``(t, m)``,
+:func:`sum_assured_at` ``(t)`` and the two cumulative-premium accumulators are the
+values at the **end** of month ``t`` (the notes' ``X_{t+1}``). The opening value of a
+month is the ``"BEF_PREM"`` timing (the notes' ``X_t``), which is the model point's
+opening value -- ``av_pp_init()``, ``loan_bal_init()``, ``sum_assured()``, ``0`` for the
+accumulators, ``pols_if_init()`` for :func:`pols_if` -- when ``t == 0`` and the previous
+month's closing balance otherwise. Nothing is indexed at ``t = -1``.
 
 Within each month the notes' monthiversary order is followed exactly:
 
@@ -105,10 +117,10 @@ segment ladder, the crediting formula, and the no-lapse guarantee test.
 =========================  ==============================  ==========================
 Notes symbol               Cells                           Meaning
 =========================  ==============================  ==========================
-t                          (the ``t`` argument)            Policy month, 1-based
-(notes' own t)             duration_mth(t)                 Completed policy months
-y                          policy_year(t)                  Policy year, 1-based
-(y - 1)                    duration(t)                     Completed policy years
+t                          (the ``t`` argument)            Policy month, 0-based, from the projection start
+(notes' t, from issue)     duration_mth(t)                 Completed policy months at BOM
+y                          policy_year(t)                  Policy year, 1-based, ``duration(t) + 1``
+(y - 1)                    duration(t)                     Completed policy years at BOM
 (issue age)                age_at_entry                    Issue age (ANB)
 Sex                        sex                             Sex, M or F
 Risk class                 rate_class                      Underwriting class, spec Table 1
@@ -116,9 +128,9 @@ DB option                  db_option                       Death benefit option,
 Tax test                   qual_test                       IRC 7702 test; only GPT modeled
 Premium mode               premium_mode                    ANNUAL **[std]** or MONTHLY
 x                          age(t)                          Attained age (ANB)
-(none)                     proj_len                        Last projected month
+(none)                     proj_len                        Number of projected months
 F                          sum_assured                     Initial face amount
-F(t)                       sum_assured_at(t)               Face after reductions
+F_{t+1}                    sum_assured_at(t)               Face after reductions, end of month t
 F/1000                     units(t)                        Face in $1,000 units
 P_t                        premium_pp(t)                   Gross premium per policy
 (planned)                  premium_pp_ann                  Planned annual premium
@@ -133,9 +145,10 @@ W^FA_t + B^FA_t            draw_from_fa_pp(t)              Step-3 draw sourced f
 W^seg_{k,t} + B^seg_{k,t}  draw_from_seg_pp(t)             Step-3 draw sourced from segments
 (segment k's share)        seg_wd_pp(t, m)                 Segment m's part of that draw
 (cumulative)               seg_wd_cum_pp(t, m)             Draws out of segment m to date
-FA_t                       fa_pp(t)                        Fixed (holding) account
+FA_{t+1}                   fa_pp(t)                        Fixed (holding) account, end of month t
+FA_t                       fa_pp_at(t, "BEF_PREM")         Fixed account, start of month t
 (FA intra-month)           fa_pp_at(t, timing)             Fixed account by timing
-S_{k,t}                    seg_bal_pp(t, m)                Balance of the segment born at m
+S_{k,t+1}                  seg_bal_pp(t, m)                Segment born at m, end of month t
 Sweep_t                    sweep_pp(t)                     Sweep into a new segment
 S_{k,m_k}                  seg_new_pp(m)                   Segment balance at creation
 (sum of segments)          seg_bal_tot_pp(t)               All live segment balances
@@ -156,13 +169,13 @@ Credit_k                   index_credit(...)               Index credit, engine 
 (the segment's r)          seg_return(t)                   Index change of the segment maturing at t
 (credit at t)              index_credit_pp(t)              Credit added at BOM of month t
 Roll^FA_t                  seg_roll_pp(t)                  Matured value rolled into FA
-LCA_t                      lca_pp(t)                       Loan collateral account
+LCA_{t+1}                  lca_pp(t)                       Loan collateral account, end of month t
 Existing loan balance      loan_bal_init                   L(0), the opening loan balance
-L_t                        loan_bal_pp(t)                  Loan principal plus interest
+L_{t+1}                    loan_bal_pp(t)                  Loan plus interest, end of month t
 i_L^c                      loan_rate_ann                   Loan charged rate
 i_L^e                      loan_credit_rate_ann(t)         Collateral credited rate
-AV_t                       av_pp(t)                        Account value, end of month
-AV_{t-1}                   av_pp_at(t, "BEF_PREM")         Account value, start of month
+AV_{t+1}                   av_pp(t)                        Account value, end of month t
+AV_t                       av_pp_at(t, "BEF_PREM")         Account value, start of month t
 (after premium)            av_pp_at(t, "BEF_CREDIT")       Before the maturity credit
 (after credit)             av_pp_at(t, "BEF_WD")           Before the withdrawal
 AV'_t                      av_pp_at(t, "BEF_FEE")          After premium and withdrawal
@@ -195,9 +208,9 @@ SC_t                       surr_charge_pp(t)               Surrender charge sche
 (AV - SC)                  csv_pp(t)                       Cash value before loan
 CSV_t                      ncsv_pp(t)                      Cash surrender value, loan netted
 (SC retained)              surr_charge(t)                  Surrender charge collected
-CumP_t                     cum_prem_net_pp(t)              Premiums less withdrawals and loans
-(GPT/7-pay base)           cum_prem_pp(t)                  Premiums less withdrawals
-CumMNLP_t                  cum_mnlp_pp(t)                  Cumulative no-lapse premium
+CumP_{t+1}                 cum_prem_net_pp(t)              Premiums less withdrawals and loans, end of month t
+(GPT/7-pay base)           cum_prem_pp(t)                  Premiums less withdrawals, end of month t
+CumMNLP_{t+1}              cum_mnlp_pp(t)                  Cumulative no-lapse premium through month t
 (MNLP rate)                mnlp_rate()                     No-lapse premium per $1,000 p.a.
 (MNLP monthly)             mnlp_pp_mth()                   Monthly no-lapse premium
 (no-lapse period)          nlg_period_years()              Length of the no-lapse period
@@ -246,10 +259,11 @@ where the ``W_t - $25 fee`` rule lives and :func:`withdrawals` weights it by
 decrement. Surrenders keep the ``"LAPSE"`` kind and are published as ``claims_lapse``,
 so the column name matches the kind that produces it.
 
-**The notes' ``t`` is not this model's ``t``.** The notes index policy months from
-``t = 0`` at issue; here ``t`` is 1-based, so the notes' index is
-:func:`duration_mth`. Every ``mod 12`` test -- the anniversary premium, the segment
-maturity -- is written against ``duration_mth(t)``, and the surrender charge run-off
+**The notes' ``t`` counts from issue; this model's ``t`` counts from the projection
+start.** Both are 0-based and they coincide for a new-business model point; for an
+in-force point the notes' index is :func:`duration_mth` ``(t) = duration_mth_init() + t``.
+Every ``mod 12`` test -- the anniversary premium, the segment maturity -- is therefore
+written against ``duration_mth(t)`` rather than ``t``, and the surrender charge run-off
 uses ``duration_mth(t) + 1`` because the notes' schedule counts the current month.
 
 **The notes' ``CSV_t`` is :func:`ncsv_pp`, not :func:`csv_pp`.** The notes define
@@ -378,9 +392,9 @@ def premium_type():
 def premium_mode():
     """The premium mode: ``"ANNUAL"`` **[std]** baseline, or ``"MONTHLY"``.
 
-    The notes fix the baseline at annual premiums paid at BOM of policy month 1 of
-    each policy year **[std]**; monthly mode is carried so the chassis' level-pay
-    pattern remains reachable.
+    The notes fix the baseline at annual premiums paid at BOM of the first month of
+    each policy year (``duration_mth(t) % 12 == 0``) **[std]**; monthly mode is carried
+    so the chassis' level-pay pattern remains reachable.
     """
     return model_point()["premium_mode"]
 
@@ -424,8 +438,9 @@ def pols_if_init():
 def duration_mth_init():
     """Completed policy months already elapsed when the projection starts.
 
-    0 for a new-business model point, so that ``t = 1`` is the issue month; positive
+    0 for a new-business model point, so that ``t = 0`` is the issue month; positive
     for an in-force cell.  This is the notes' issue-date / duration offset attribute.
+    It is an elapsed count and is already 0-based.
     """
     return int(model_point()["duration_mth"])
 
@@ -489,19 +504,28 @@ def seven_pay_prem():
 def duration_mth(t):
     """The notes' own month index: completed policy months at the beginning of month t.
 
-    ``duration_mth_init() + t - 1``, so it is 0 in the issue month of a new-business
-    model point.  Anniversary events test ``duration_mth(t) % 12 == 0``.
+    ``duration_mth_init() + t``, so it is 0 in the issue month of a new-business
+    model point and equals ``t`` throughout for one.  Anniversary events test
+    ``duration_mth(t) % 12 == 0``.
     """
-    return duration_mth_init() + t - 1
+    return duration_mth_init() + t
 
 
 def duration(t):
-    """Completed policy years at the beginning of policy month t."""
+    """Completed policy years at the beginning of policy month t, ``duration_mth(t) // 12``.
+
+    0 throughout the first policy year, as in lifelib.
+    """
     return duration_mth(t) // 12
 
 
 def policy_year(t):
-    """y: the policy year containing policy month t, 1-based."""
+    """y: the policy year containing policy month t, the 1-based contractual label.
+
+    ``duration(t) + 1``.  Derived, never indexed by: it is what the policy-year-keyed
+    schedules -- the COI scale, the lapse table, ``wd_first_year``, ``loan_first_year``,
+    the no-lapse period -- are looked up with.
+    """
     return duration(t) + 1
 
 
@@ -509,19 +533,22 @@ def age(t):
     """The attained age (ANB) in policy month t: ``age_at_entry() + duration(t)``.
 
     Attained age increments on the policy anniversary, not on the birthday, which is
-    the ANB convention the whole model is built on **[std]** (spec Table 1, F1).
+    the ANB convention the whole model is built on **[std]** (spec Table 1, F1).  It is
+    the issue age throughout ``t = 0 ... 11`` of a new-business point.
     """
     return age_at_entry() + duration(t)
 
 
 def proj_len():
-    """Projection length in policy months.
+    """The number of projected policy months: the frame is ``range(proj_len())``.
 
     ``12 * (maturity_age - age_at_entry()) - duration_mth_init()``: the projection runs
     to attained age 121 **[std]**, the notes' [unverified] maturity inference (spec
-    F5).  The contract itself is described as continuing in force with no further
-    charges at 121, so the horizon truncates the run rather than terminating the
-    policy; :func:`pols_maturity` is identically zero.
+    F5), so the last projected month ``t = proj_len() - 1`` is the last month of
+    attained age 120 and the run ends as the insured attains 121.  The contract itself
+    is described as continuing in force with no further charges at 121, so the horizon
+    truncates the run rather than terminating the policy; :func:`pols_maturity` is
+    identically zero.
     """
     return 12 * (maturity_age - age_at_entry()) - duration_mth_init()  # noqa: F821
 
@@ -662,14 +689,14 @@ def index_credit_rate(index_return, cap=None):
 
     Floor 0%, participation 100%, cap per :func:`index_cap_at` [S2].  ``cap`` defaults
     to the cap in force, which the base run holds level, so the default is read at
-    ``t = 1``; pass ``index_cap_guar`` for the guaranteed-basis credit -- the notes
+    ``t = 0``; pass ``index_cap_guar`` for the guaranteed-basis credit -- the notes
     price both on the worked example, at 10.00% and 2.00%.
 
     This is where the two-sided truncation lives: the cap binds on the way up, the
     floor on the way down, and the historical frequency of a 0% credit for a single
     index allocation was 12.55%-23.81% in a carrier's 2005-2017 issue-date study [S8].
     """
-    c = index_cap_at(1) if cap is None else cap
+    c = index_cap_at(0) if cap is None else cap
     return max(index_floor, min(c, index_par * index_return))        # noqa: F821
 
 
@@ -748,8 +775,8 @@ def premium_pp(t):
     ``LEVEL``  planned annual premium times :func:`prem_persistency`.
     ``SINGLE`` one premium in the issue month, capped at the guideline single premium.
     ``TARGET`` as ``LEVEL`` but capped so cumulative premium stays inside the guideline
-    premium limit **[std]**; the cap looks at ``cum_prem_pp(t - 1)``, so there is no
-    circularity.
+    premium limit **[std]**; the cap looks at the accumulator's opening value --
+    ``cum_prem_pp(t - 1)``, or 0 when ``t == 0`` -- so there is no circularity.
 
     Zero from attained age 121, when charges cease and premiums are no longer accepted
     (spec F5) -- inert in practice, because the projection horizon is that age.
@@ -769,7 +796,8 @@ def premium_pp(t):
     if premium_type() == "LEVEL":
         return gross
     elif premium_type() == "TARGET":
-        return min(gross, max(0.0, gpt_limit(t) - cum_prem_pp(t - 1)))
+        paid = 0.0 if t == 0 else cum_prem_pp(t - 1)
+        return min(gross, max(0.0, gpt_limit(t) - paid))
     else:
         raise ValueError("invalid premium type")
 
@@ -800,7 +828,7 @@ def wd_pp(t):
     A constant monthly amount from :func:`wd_first_year`, taken from the model point's
     ``wd_pp`` column and **0 in the baseline** [std]: the notes give no withdrawal
     utilization pattern, so the mechanics are implemented and the behaviour is left to
-    the data.  Model point 4 switches it on.
+    the data.  Model point 5 switches it on.
 
     The account is debited ``W_t``; the policyholder receives ``W_t - 25`` and the
     insurer keeps the $25 fee [S3].  This differs from the universal life chassis,
@@ -830,7 +858,7 @@ def loan_new_pp(t):
     The notes' distribution-scenario module borrows a level amount annually from a
     start age [S3]; here that is ``loan_new_pp_ann`` from the first month of policy
     year :func:`loan_first_year`.  **Zero in the baseline** -- the notes set loan
-    utilization to none -- and switched on by model point 4.
+    utilization to none -- and switched on by model point 5.
 
     Participating (indexed) loans are a documented variation, not modeled: the baseline
     uses standard loans only **[std]** (F18), which decouples loan modeling from index
@@ -852,18 +880,20 @@ def face_reduction_pp(t):
     """
     if db_option() != "A" or wd_pp(t) <= 0:
         return 0.0
-    return min(wd_pp(t), sum_assured_at(t - 1))
+    opening = sum_assured() if t == 0 else sum_assured_at(t - 1)
+    return min(wd_pp(t), opening)
 
 
 def sum_assured_at(t):
-    """F(t): the face amount after any withdrawal-driven reductions.
+    """F(t+1): the face amount at the end of month t, after any withdrawal-driven reductions.
 
-    ``F(0) = sum_assured()``; face increases, elective decreases and option changes are
-    not modeled, so the only movement is the Option A withdrawal reduction.
+    A closing balance: the opening face of month ``t`` is ``sum_assured()`` when
+    ``t == 0`` and ``sum_assured_at(t - 1)`` otherwise, less this month's Option A
+    reduction.  Face increases, elective decreases and option changes are not modeled,
+    so the withdrawal reduction is the only movement.
     """
-    if t == 0:
-        return sum_assured()
-    return max(0.0, sum_assured_at(t - 1) - face_reduction_pp(t))
+    opening = sum_assured() if t == 0 else sum_assured_at(t - 1)
+    return max(0.0, opening - face_reduction_pp(t))
 
 
 def units(t):
@@ -1132,9 +1162,10 @@ def seg_bal_active_pp(t):
     The segments born at ``t - 11 ... t - 1``, valued at the end of month ``t - 1``.
     The segment born at ``t - 12`` is **not** in the pool: it matured at step 2 of this
     month and its value is already in the fixed account.  The segment born at ``t``
-    does not exist yet -- it is created by the sweep at step 7.
+    does not exist yet -- it is created by the sweep at step 7.  No segment can be born
+    before ``t = 0``, so the pool is empty in the first month.
     """
-    lo = max(1, t - seg_term_mth + 1)                                # noqa: F821
+    lo = max(0, t - seg_term_mth + 1)                                # noqa: F821
     return sum(seg_bal_pp(t - 1, m) for m in range(lo, t))
 
 
@@ -1179,19 +1210,21 @@ def seg_new_pp(m):
 
 
 def seg_bal_pp(t, m):
-    """S_{k,t}: the balance at the end of month t of the segment created at month m.
+    """S_{k,t+1}: the balance at the end of month t of the segment created at month m.
 
     ``S_{k,t+1} = S_{k,t} - MD^seg - W^seg - B^seg``, with **no interim interest**: the
     0% floor design credits nothing during the segment term [S2], in contrast with
     one carrier's in-segment 0.75% [S3], which is a different guarantee and must not
-    be mixed with a 0% annual floor.
+    be mixed with a 0% annual floor.  A closing balance: the value at the end of
+    month ``t`` is the notes' ``S_{k,t+1}``.
 
-    Zero outside ``m <= t <= m + 11``.  A segment created at ``m`` is live through the
-    end of month ``m + 11`` and matures at step 2 of month ``m + 12``, before that
-    month's deduction -- so it bears eleven in-segment deductions.  The worked example
+    Zero outside ``m <= t <= m + 11`` and for any ``m < 0`` (no segment exists before
+    the projection starts).  A segment created at ``m`` is live through the end of
+    month ``m + 11`` and matures at step 2 of month ``m + 12``, before that month's
+    deduction -- so it bears eleven in-segment deductions.  The worked example
     stipulates twelve; see the README.
     """
-    if m < 1 or t < m or t > m + seg_term_mth - 1:                   # noqa: F821
+    if m < 0 or t < m or t > m + seg_term_mth - 1:                   # noqa: F821
         return 0.0
     if t == m:
         return seg_new_pp(m)
@@ -1199,22 +1232,32 @@ def seg_bal_pp(t, m):
 
 
 def seg_ded_cum_pp(t, m):
-    """Deductions charged to segment m from its creation through the end of month t."""
-    if m < 1 or t <= m or t > m + seg_term_mth - 1:                  # noqa: F821
+    """Deductions charged to segment m from its creation through the end of month t.
+
+    Zero in the creation month itself (the segment is created after that month's
+    deduction) and outside the segment's life.
+    """
+    if m < 0 or t <= m or t > m + seg_term_mth - 1:                  # noqa: F821
         return 0.0
     return seg_ded_cum_pp(t - 1, m) + seg_ded_pp(t, m)
 
 
 def seg_wd_cum_pp(t, m):
-    """Withdrawals and loan transfers out of segment m through the end of month t."""
-    if m < 1 or t <= m or t > m + seg_term_mth - 1:                  # noqa: F821
+    """Withdrawals and loan transfers out of segment m through the end of month t.
+
+    Zero in the creation month itself and outside the segment's life.
+    """
+    if m < 0 or t <= m or t > m + seg_term_mth - 1:                  # noqa: F821
         return 0.0
     return seg_wd_cum_pp(t - 1, m) + seg_wd_pp(t, m)
 
 
 def seg_bal_tot_pp(t):
-    """The sum of every live segment balance at the end of month t."""
-    lo = max(1, t - seg_term_mth + 1)                                # noqa: F821
+    """The sum of every live segment balance at the end of month t.
+
+    The segments born at ``max(0, t - 11) ... t``.
+    """
+    lo = max(0, t - seg_term_mth + 1)                                # noqa: F821
     return sum(seg_bal_pp(t, m) for m in range(lo, t + 1))
 
 
@@ -1224,7 +1267,7 @@ def seg_count(t):
     At most ``seg_term_mth`` (12), the contractual maximum [S3][S4]; zero throughout
     for a model point with ``index_alloc_rate() == 0``.
     """
-    lo = max(1, t - seg_term_mth + 1)                                # noqa: F821
+    lo = max(0, t - seg_term_mth + 1)                                # noqa: F821
     return sum(1 for m in range(lo, t + 1) if seg_bal_pp(t, m) > 0)
 
 
@@ -1234,6 +1277,8 @@ def seg_return(t):
     ``index_change(I(t - 12), I(t))``.  Each segment carries its own index start level,
     which is the whole point of a monthly ladder: collapsing twelve segments into one
     annual segment mis-times credits and distorts mid-segment surrender values [S3].
+    Defined for ``t >= 12`` only -- no segment matures before then -- and every caller
+    guards it.
     """
     return index_change(index_level(t - seg_term_mth), index_level(t))  # noqa: F821
 
@@ -1244,10 +1289,11 @@ def index_credit_pp(t):
     The segment created at ``t - 12`` matures now: its credit is
     :func:`index_credit` of its opening balance net of withdrawals and loan transfers,
     the deductions charged to it, and its own point-to-point return.  Zero in the first
-    twelve months, and in every month for a model point that never creates a segment.
+    twelve months ``t = 0 ... 11``, and in every month for a model point that never
+    creates a segment.
     """
     m = t - seg_term_mth                                             # noqa: F821
-    if m < 1:
+    if m < 0:
         return 0.0
     init = seg_new_pp(m) - seg_wd_cum_pp(t - 1, m)
     return index_credit(init, seg_ded_cum_pp(t - 1, m), seg_return(t))
@@ -1264,10 +1310,10 @@ def seg_roll_pp(t):
     Remaining balance plus index credit.  Under the standing allocation instruction it
     is swept straight back into a new segment at step 7 **[std]** (spec F11); routing
     it through the fixed account is what makes it available to pay this month's
-    deduction first, which is the notes' own sourcing rule.
+    deduction first, which is the notes' own sourcing rule.  Zero in ``t = 0 ... 11``.
     """
     m = t - seg_term_mth                                             # noqa: F821
-    if m < 1:
+    if m < 0:
         return 0.0
     return seg_bal_pp(t - 1, m) + index_credit_pp(t)
 
@@ -1280,7 +1326,11 @@ def fa_pp_at(t, timing):
     unrolled, with ``timing`` naming the point just before each event:
 
     ``"BEF_PREM"``
-        The closing balance of the previous month, ``FA_t``.
+        The opening balance, the notes' ``FA_t``: the closing balance of the previous
+        month, or, when ``t == 0``, the model point's opening account value less its
+        loan collateral -- the notes give no opening segment ladder, so an in-force
+        cell starts with everything in the holding account **[std]** (``FA(0) = 0``
+        at issue).
 
     ``"BEF_CREDIT"``
         After the net premium, before the maturing segment rolls in.
@@ -1301,6 +1351,8 @@ def fa_pp_at(t, timing):
         the deduction, every month.
     """
     if timing == "BEF_PREM":
+        if t == 0:
+            return av_pp_init() - loan_bal_init()
         return fa_pp(t - 1)
     elif timing == "BEF_CREDIT":
         return fa_pp_at(t, "BEF_PREM") + prem_to_av_pp(t)
@@ -1317,26 +1369,27 @@ def fa_pp_at(t, timing):
 
 
 def fa_pp(t):
-    """FA_t: the fixed (holding) account balance at the end of policy month t.
+    """FA_{t+1}: the fixed (holding) account balance at the end of policy month t.
 
-    ``FA(0)`` is the model point's opening account value less its loan collateral: the
-    notes give no opening segment ladder, so an in-force cell starts with everything in
-    the holding account **[std]**.  Thereafter the post-sweep balance plus one month's
-    interest at the fixed-account rate.
+    A closing balance: the post-sweep balance plus one month's interest at the
+    fixed-account rate.  The opening balance of the month, including the ``t == 0``
+    seed, is ``fa_pp_at(t, "BEF_PREM")``.
     """
-    if t == 0:
-        return av_pp_init() - loan_bal_init()
     return fa_pp_at(t, "BEF_INV") * (1 + inv_return_mth(t))
 
 
 def lca_pp_at(t, timing):
     """LCA: the loan collateral account at an intra-month point of month t.
 
-    ``"BEF_PREM"`` is the closing balance of the previous month; ``"BEF_INV"`` adds the
+    ``"BEF_PREM"`` is the opening balance, the notes' ``LCA_t``: the closing balance of
+    the previous month, or the model point's opening loan when ``t == 0`` (``LCA(0)``
+    is set equal to ``loan_bal_init()`` **[std]**, 0 at issue).  ``"BEF_INV"`` adds the
     collateral for any new loan taken at step 3, which is the balance one month's
     interest is credited on.
     """
     if timing == "BEF_PREM":
+        if t == 0:
+            return loan_bal_init()
         return lca_pp(t - 1)
     elif timing == "BEF_INV":
         return lca_pp_at(t, "BEF_PREM") + loan_new_pp(t)
@@ -1345,29 +1398,29 @@ def lca_pp_at(t, timing):
 
 
 def lca_pp(t):
-    """LCA_t: the loan collateral account at the end of policy month t.
+    """LCA_{t+1}: the loan collateral account at the end of policy month t.
 
     Standard loans move loaned value out of the fixed account and the segments into a
     collateral account credited at :func:`loan_credit_rate_ann` while the loan itself
     accrues at the charged rate; the collateral remains part of the account value, so a
     loan advance does not reduce ``AV`` -- it reduces the cash surrender value through
-    ``- L_t``.  ``LCA(0)`` is set equal to the model point's opening loan **[std]**.
+    ``- L_t``.  A closing balance; the opening value, including the ``t == 0`` seed, is
+    ``lca_pp_at(t, "BEF_PREM")``.
     """
-    if t == 0:
-        return loan_bal_init()
     return lca_pp_at(t, "BEF_INV") * (1 + loan_credit_rate_mth(t))
 
 
 def loan_bal_pp(t):
-    """L_t: the policy loan balance at the end of policy month t.
+    """L_{t+1}: the policy loan balance at the end of policy month t.
 
     ``L_{t+1} = (L_t + B_t) (1 + i_L^c)^(1/12)``, the notes' own recursion: new loans
     from step 3 are added to principal and the whole balance accrues at the charged
-    rate.  Repayments are not modeled -- the notes give no repayment pattern.
+    rate.  The opening balance ``L_t`` is ``loan_bal_init()`` when ``t == 0`` (``L(0)``,
+    0 at issue) and ``loan_bal_pp(t - 1)`` otherwise.  Repayments are not modeled --
+    the notes give no repayment pattern.
     """
-    if t == 0:
-        return loan_bal_init()
-    return (loan_bal_pp(t - 1) + loan_new_pp(t)) * (1 + loan_rate_mth())
+    opening = loan_bal_init() if t == 0 else loan_bal_pp(t - 1)
+    return (opening + loan_new_pp(t)) * (1 + loan_rate_mth())
 
 
 def inv_income_pp(t):
@@ -1400,7 +1453,9 @@ def av_pp_at(t, timing):
     collateral account; ``timing`` names the point just before each BOM event:
 
     ``"BEF_PREM"``
-        Before the premium: the closing balance of the previous month, ``AV_{t-1}``.
+        Before the premium: the opening balance, the notes' ``AV_t`` -- the closing
+        balance of the previous month, or ``av_pp_init()`` when ``t == 0`` (``AV(0)``,
+        0 at issue).
 
     ``"BEF_CREDIT"``
         After the net premium, before the maturing segment's index credit.
@@ -1418,11 +1473,13 @@ def av_pp_at(t, timing):
     ``"BEF_INV"``
         After the monthly deduction, before interest.
 
-    The end-of-month balance ``AV_t`` is :func:`av_pp`, and
+    The end-of-month balance, the notes' ``AV_{t+1}``, is :func:`av_pp`, and
     :func:`check_av_components` asserts that it still equals the sum of its three
     parts.
     """
     if timing == "BEF_PREM":
+        if t == 0:
+            return av_pp_init()
         return av_pp(t - 1)
     elif timing == "BEF_CREDIT":
         return av_pp_at(t, "BEF_PREM") + prem_to_av_pp(t)
@@ -1437,15 +1494,14 @@ def av_pp_at(t, timing):
 
 
 def av_pp(t):
-    """AV_t: the account value per policy at the end of policy month t.
+    """AV_{t+1}: the account value per policy at the end of policy month t.
 
-    ``AV(0) = av_pp_init()``; thereafter the post-deduction balance plus one month's
-    interest.  Interest is credited on the *post-deduction* balance, as on the
-    universal life chassis; the index credit is not part of it -- that arrives at BOM
-    when a segment matures.
+    A closing balance: the post-deduction balance plus one month's interest.  The
+    opening balance, including the ``AV(0) = av_pp_init()`` seed at ``t == 0``, is
+    ``av_pp_at(t, "BEF_PREM")``.  Interest is credited on the *post-deduction*
+    balance, as on the universal life chassis; the index credit is not part of it --
+    that arrives at BOM when a segment matures.
     """
-    if t == 0:
-        return av_pp_init()
     return av_pp_at(t, "BEF_INV") + inv_income_pp(t)
 
 
@@ -1533,26 +1589,26 @@ def surr_charge(t):
 def cum_prem_pp(t):
     """Cumulative premiums less withdrawals: the base of the GPT and 7-pay tests.
 
-    ``CumPrem(0) = 0`` even for an in-force model point, because the notes give no
-    opening accumulator **[std]**, so the compliance flags are only meaningful for
-    points projected from issue.  The statutory "less a portion of withdrawals" is
-    taken as the whole withdrawal **[std]**.
+    The value at the end of month ``t``.  The accumulator opens at 0 in ``t = 0`` even
+    for an in-force model point, because the notes give no opening accumulator
+    **[std]**, so the compliance flags are only meaningful for points projected from
+    issue.  The statutory "less a portion of withdrawals" is taken as the whole
+    withdrawal **[std]**.
     """
-    if t == 0:
-        return 0.0
-    return cum_prem_pp(t - 1) + premium_pp(t) - wd_pp(t)
+    opening = 0.0 if t == 0 else cum_prem_pp(t - 1)
+    return opening + premium_pp(t) - wd_pp(t)
 
 
 def cum_prem_net_pp(t):
-    """CumP_t: cumulative premiums less withdrawals **and loans**, for the no-lapse test.
+    """CumP_{t+1}: cumulative premiums less withdrawals **and loans**, for the no-lapse test.
 
     The notes define the no-lapse accumulator this way and the guideline premium
     accumulator differently; :func:`cum_prem_pp` is the other one.  Using one for the
-    other quietly changes both answers.
+    other quietly changes both answers.  The value at the end of month ``t``, opening
+    at 0 in ``t = 0``.
     """
-    if t == 0:
-        return 0.0
-    return cum_prem_net_pp(t - 1) + premium_pp(t) - wd_pp(t) - loan_new_pp(t)
+    opening = 0.0 if t == 0 else cum_prem_net_pp(t - 1)
+    return opening + premium_pp(t) - wd_pp(t) - loan_new_pp(t)
 
 
 def nlg_period_years():
@@ -1581,7 +1637,7 @@ def mnlp_pp_mth():
 
 
 def cum_mnlp_pp(t):
-    """CumMNLP_t: the cumulative minimum no-lapse premium through policy month t."""
+    """CumMNLP_{t+1}: the cumulative minimum no-lapse premium through policy month t."""
     return mnlp_pp_mth() * (duration_mth(t) + 1)
 
 
@@ -1613,13 +1669,16 @@ def nlg_expiry_shock(t):
 def is_shortfall(t):
     """The grace trigger: the cash surrender value cannot cover the monthly deduction.
 
-    ``AV'_t - SC_t - L_{t-1} < MD_t`` **and** the no-lapse test fails [S3][S4].  A
-    diagnostic.  The grace and lapse-for-insufficiency cascade (61 days, modeled as
-    lapse at ``t + 2`` months if unfunded **[std]**) is **not implemented**: the notes
-    leave the in-grace account value treatment and the cash flow of a cure payment
-    undetermined, so no policy is terminated for insufficiency here.
+    ``AV'_t - SC_t - L_t < MD_t`` -- with ``L_t`` the loan balance at the *start* of
+    the month, ``loan_bal_init()`` when ``t == 0`` and ``loan_bal_pp(t - 1)``
+    otherwise -- **and** the no-lapse test fails [S3][S4].  A diagnostic.  The grace
+    and lapse-for-insufficiency cascade (61 days, modeled as lapse at ``t + 2`` months
+    if unfunded **[std]**) is **not implemented**: the notes leave the in-grace account
+    value treatment and the cash flow of a cure payment undetermined, so no policy is
+    terminated for insufficiency here.
     """
-    csv = av_pp_at(t, "BEF_FEE") - surr_charge_pp(t) - loan_bal_pp(t - 1)
+    loan_opening = loan_bal_init() if t == 0 else loan_bal_pp(t - 1)
+    csv = av_pp_at(t, "BEF_FEE") - surr_charge_pp(t) - loan_opening
     return csv < mth_deduction_pp(t) and not nlg_in_effect(t)
 
 
@@ -1716,11 +1775,11 @@ def cred_rate_ann(t):
     """r_cred,t: the policy's trailing credited rate, driving dynamic lapse **[std]**.
 
     The credited rate of the segment that matured this month once the ladder is
-    running, and the fixed-account rate before that or when nothing is allocated to the
-    indexed account.  The notes say only "the policy's trailing credited rate"; this is
-    the reading the model uses.
+    running (``t >= 12``), and the fixed-account rate before that or when nothing is
+    allocated to the indexed account.  The notes say only "the policy's trailing
+    credited rate"; this is the reading the model uses.
     """
-    if index_alloc_rate() <= 0 or t <= seg_term_mth:                 # noqa: F821
+    if index_alloc_rate() <= 0 or t < seg_term_mth:                  # noqa: F821
         return fixed_rate_ann(t)
     return index_credit_rate(seg_return(t))
 
@@ -1780,9 +1839,10 @@ def pols_if(t):
     """l_t: the number of policies in force at the beginning of policy month t.
 
     Decrements are end-of-month events, so the number in force is constant through the
-    month and every BOM cash flow is weighted by it.  ``pols_if(1) = pols_if_init()``.
+    month and every BOM cash flow is weighted by it.  ``pols_if(0) = pols_if_init()``;
+    thereafter the previous month's count less its deaths and lapses.
     """
-    if t == 1:
+    if t == 0:
         return pols_if_init()
     return pols_if(t - 1) - pols_death(t - 1) - pols_lapse(t - 1)
 
@@ -2012,7 +2072,7 @@ def check_av_components():
     segment bookkeeping.
     """
     res = []
-    for t in range(1, proj_len() + 1):
+    for t in range(proj_len()):
         parts = fa_pp(t) + seg_bal_tot_pp(t) + lca_pp(t)
         res.append(math.isclose(av_pp(t), parts,                     # noqa: F821
                                 rel_tol=1e-9, abs_tol=1e-8))
@@ -2041,7 +2101,7 @@ def check_av_roll_fwd():
     withdrawal itself.
     """
     res = []
-    for t in range(1, proj_len() + 1):
+    for t in range(proj_len()):
         av = (av_at(t, "BEF_PREM")
               + prem_to_av(t)
               + index_credits(t)
@@ -2076,14 +2136,14 @@ def check_seg_ladder():
     without any check firing -- see :func:`mth_deduction_from_seg_pp`.
     """
     res = []
-    for t in range(1, proj_len() + 1):
+    for t in range(proj_len()):
         res.append(seg_count(t) <= seg_term_mth)                     # noqa: F821
         res.append(index_credit_pp(t) >= -1e-8)
-        lo = max(1, t - seg_term_mth + 1)                            # noqa: F821
+        lo = max(0, t - seg_term_mth + 1)                            # noqa: F821
         for k in range(lo, t + 1):
             res.append(seg_bal_pp(t, k) >= -1e-8)
         m = t - seg_term_mth                                         # noqa: F821
-        if m >= 1:
+        if m >= 0:
             closed = (seg_bal_pp(t - 1, m) + seg_ded_cum_pp(t - 1, m)
                       + seg_wd_cum_pp(t - 1, m))
             res.append(math.isclose(seg_new_pp(m), closed,           # noqa: F821
@@ -2110,7 +2170,7 @@ def check_margin():
     :func:`csv_pp` nor the :func:`ncsv_pp` floor binds against a policy loan.
     """
     res = []
-    for t in range(1, proj_len() + 1):
+    for t in range(proj_len()):
         rhs = (margin_expense(t) + margin_mortality(t)
                + av_change(t) - inv_income(t) - index_credits(t)
                + loan_bal_pp(t) * pols_lapse(t)
@@ -2123,6 +2183,8 @@ def check_margin():
 def result_cf():
     """Result table of cashflows, a DataFrame indexed by policy month ``t``.
 
+    One row per projected month, ``t = 0 ... proj_len() - 1``, so the frame has
+    ``proj_len()`` rows.
     ``pols_if`` is the number in force at the **start** of month ``t`` and is the weight
     on that same row's cash flows.  The cash flow columns are income-positive and sum to
     ``net_cf``: ``premiums - claims_death - claims_lapse - withdrawals - expenses
@@ -2130,7 +2192,7 @@ def result_cf():
     the ``"LAPSE"`` kind that produces it, and withdrawals are their own column because
     they are not claims.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -2148,8 +2210,11 @@ def result_cf():
 
 
 def result_pols():
-    """Result table of policy decrements, a DataFrame indexed by policy month ``t``."""
-    ts = list(range(1, proj_len() + 1))
+    """Result table of policy decrements, a DataFrame indexed by policy month ``t``.
+
+    One row per projected month, ``t = 0 ... proj_len() - 1``.
+    """
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -2170,9 +2235,11 @@ def result_av():
     premium, the index credit of any maturing segment, the account value before the
     deduction, the death benefit, the net amount at risk, the cost of insurance, the
     monthly deduction, the post-deduction balance, the interest credited, the closing
-    account value, and then the surrender and loan values.
+    account value, and then the surrender and loan values.  One row per projected
+    month, ``t = 0 ... proj_len() - 1``; ``av_pp_bef_prem`` on row ``t`` is the
+    opening balance and ``av_pp`` the closing one.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "av_pp_bef_prem": [av_pp_at(t, "BEF_PREM") for t in ts],
@@ -2199,9 +2266,10 @@ def result_seg():
 
     The index level, the fixed (holding) account, the sweep that creates this month's
     segment, the total and count of live segments, the credit paid by the segment
-    maturing this month and the return that produced it.
+    maturing this month and the return that produced it (0 in ``t = 0 ... 11``, when
+    nothing can mature yet).  One row per projected month, ``t = 0 ... proj_len() - 1``.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "index_level": [index_level(t) for t in ts],
@@ -2210,7 +2278,7 @@ def result_seg():
             "seg_bal_tot_pp": [seg_bal_tot_pp(t) for t in ts],
             "seg_count": [seg_count(t) for t in ts],
             "index_credit_pp": [index_credit_pp(t) for t in ts],
-            "seg_return": [seg_return(t) if t > seg_term_mth else 0.0  # noqa: F821
+            "seg_return": [seg_return(t) if t >= seg_term_mth else 0.0  # noqa: F821
                            for t in ts],
             "lca_pp": [lca_pp(t) for t in ts],
         },

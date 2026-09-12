@@ -41,9 +41,11 @@ mva_factor_file            mva_factor_table()              mva_factor_table.csv
 
 Three of these carry a compound key. ``surr_charge_table`` is indexed by
 ``(schedule, contract_year)`` so the initial 9/8/7/6/5 schedule [S10] and the renewal
-5/4/3/2/1 schedule [S2] sit in one file; ``rate_scenario`` by ``(scenario_id, t)`` and
-``withdrawal_table`` by ``(wd_schedule_id, t)``, both read as step functions of ``t`` so
-a scenario or a withdrawal programme is a handful of rows rather than one row per month.
+5/4/3/2/1 schedule [S2] sit in one file; ``rate_scenario`` by ``(scenario_id, t)``, read
+as a step function of ``t``, and ``withdrawal_table`` by ``(wd_schedule_id, t)``, an
+exact-key lookup, so a scenario or a withdrawal programme is a handful of rows rather
+than one row per month. In both, ``t`` is the model's 0-based policy month: ``t = 0`` is
+the first month, and a row keyed ``t = 12`` is the first month of contract year 2.
 
 To swap in a licensed mortality basis — the 2012 IAM Basic table with Projection Scale G2
 and the VM-22 Table 6.7 factors that the notes prescribe and that may not be redistributed
@@ -101,9 +103,10 @@ def surr_charge_age_cap_table():
 def rate_scenario():
     """The exogenous rate scenarios, read from *rate_scenario.csv*.
 
-    Indexed by ``(scenario_id, t)`` and read as a step function of ``t``: each row states
-    the MVA reference yield and the market competitor rate that hold from that month
-    until the next row of the same scenario.
+    Indexed by ``(scenario_id, t)``, ``t`` the 0-based policy month, and read as a step
+    function of ``t``: each row states the MVA reference yield and the market competitor
+    rate that hold from that month until the next row of the same scenario, so a flat
+    path is one row at ``t = 0``.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / rate_scenario_file,                            # noqa: F821
@@ -113,7 +116,9 @@ def rate_scenario():
 def withdrawal_table():
     """Scheduled gross withdrawals, read from *withdrawal_table.csv*.
 
-    Indexed by ``(wd_schedule_id, t)``; a month with no row takes no withdrawal.
+    Indexed by ``(wd_schedule_id, t)``, ``t`` the 0-based policy month; a month with no
+    row takes no withdrawal. The worked example's $4,000 sits at ``t = 12``, the first
+    month of contract year 2.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / withdrawal_file,                               # noqa: F821

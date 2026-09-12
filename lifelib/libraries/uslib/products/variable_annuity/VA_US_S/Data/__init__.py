@@ -48,6 +48,11 @@ step functions of ``t`` so a flat path is one row per subaccount; ``gawa_pct_tab
 ``(cdsc_schedule, completed_years)``; and ``transaction_table`` by ``(txn_id, t)``, a
 month with no row taking neither premium nor withdrawal.
 
+The ``t`` column of the three time-keyed files is the **elapsed policy month**, 0-based
+like the projection's own ``t``: ``t = 0`` is the first policy month and the reader looks
+it up as ``Projection.duration_mth(t)``. ``completed_years`` in *cdsc_table.csv* is an
+elapsed count too, read as ``Projection.duration(t)``, and is 0-based already.
+
 The mortality table shipped here is an illustrative **[std]** annuitant curve, *not* a
 published basis. The prescribed basis is the 2012 IAM **Basic** Table improved to
 December 31, 2017 on Projection Scale G2 [R1][REG-R59], which may not be redistributed
@@ -98,9 +103,10 @@ def fund_table():
 def return_scenario():
     """Gross subaccount returns, read from *return_scenario.csv*.
 
-    Indexed by ``(scenario_id, sub_id, t)`` and read as a step function of ``t``: each
-    row states the monthly gross fund return that holds from that month until the next
-    row for the same scenario and subaccount.
+    Indexed by ``(scenario_id, sub_id, t)`` and read as a step function of ``t``, the
+    **elapsed policy month** (0-based, so the first policy month is ``t = 0``): each row
+    states the monthly gross fund return that holds from that month until the next row
+    for the same scenario and subaccount.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / return_scenario_file,                          # noqa: F821
@@ -110,10 +116,11 @@ def return_scenario():
 def rate_scenario():
     """The exogenous market rate series, read from *rate_scenario.csv*.
 
-    Indexed by ``(scenario_id, t)`` and read as a step function of ``t``. It carries the
-    quarterly average of daily VIX-squared driving the optional non-discretionary fee
-    reset [S4][S6] and the 10-year Constant Maturity Treasury rate driving the optional
-    formula-linked GMDB roll-up [S7]. Neither is used by the base run.
+    Indexed by ``(scenario_id, t)`` and read as a step function of ``t``, the elapsed
+    policy month (0-based). It carries the quarterly average of daily VIX-squared driving
+    the optional non-discretionary fee reset [S4][S6] and the 10-year Constant Maturity
+    Treasury rate driving the optional formula-linked GMDB roll-up [S7]. Neither is used
+    by the base run.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / rate_scenario_file,                            # noqa: F821
@@ -144,10 +151,10 @@ def cdsc_table():
 def transaction_table():
     """Scheduled policyholder transactions, read from *transaction_table.csv*.
 
-    Indexed by ``(txn_id, t)`` with a gross premium and a gross withdrawal per month; a
-    month with no row takes neither. Scheduled withdrawals are **added to** the
-    utilization withdrawal the base run derives from the GLWB, which is how the excess
-    algebra is exercised.
+    Indexed by ``(txn_id, t)``, the elapsed policy month (0-based), with a gross premium
+    and a gross withdrawal per month; a month with no row takes neither. Scheduled
+    withdrawals are **added to** the utilization withdrawal the base run derives from the
+    GLWB, which is how the excess algebra is exercised.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / transaction_file, index_col=["txn_id", "t"])   # noqa: F821

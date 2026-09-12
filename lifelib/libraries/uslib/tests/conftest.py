@@ -14,8 +14,8 @@ from us_registry import LIB, ANNUAL, MONTHLY, MODELS, model_path  # noqa: F401
 
 @pytest.fixture(scope="module")
 def term_life():
-    """The Term_US_A model, closed after the module finishes."""
-    model = mx.read_model(model_path("Term_US_A"))
+    """The Term_US_S model, closed after the module finishes."""
+    model = mx.read_model(model_path("Term_US_S"))
     yield model
     model.close()
 

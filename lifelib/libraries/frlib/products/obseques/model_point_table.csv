@@ -1,0 +1,13 @@
+point_id,policy_id,cell,sex,entry_age,capital_0,premium_form,prem_term_y,prem_cease_age,annual_premium,prem_freq,carence_months,carence_refund_basis,carence_refund_rate,accident_mult,reval_rate,reval_prem_linked,reval_simple,surr_penalty_years,surr_penalty_rate,reduction_share,surr_scale,issue_month,pols_if_init
+1,OBS-000001,RefOBS-VIA,M,50,5000.0,lifetime,0,0,336.03,1,12,gross,0.0,1.0,0.01,False,False,0,0.0,0.0,axa_50_viager,1,1.0
+2,OBS-000002,RefOBS-TMP,M,50,5000.0,temporary,10,0,651.26,1,12,gross,0.0,1.0,0.01,False,False,0,0.0,0.0,axa_50_temp10,1,1.0
+3,OBS-000003,RefOBS-UNI,M,50,5000.0,single,1,0,4274.04,1,12,gross,0.0,1.0,0.0,False,False,0,0.0,0.0,cnp_50_unique,1,1.0
+4,OBS-000004,RefOBS-VIA,M,50,5000.0,lifetime,0,0,336.03,1,12,gross,0.0,1.0,0.01,True,False,0,0.0,0.0,axa_50_viager,1,1.0
+5,OBS-000005,RefOBS-VIA,M,50,5000.0,lifetime,0,0,336.03,1,12,gross,0.0,1.0,0.01,False,False,0,0.0,0.5,axa_50_viager,1,1.0
+6,OBS-000006,RefOBS-VIA,M,50,5000.0,lifetime,0,0,336.03,1,12,net_assistance,0.0,2.0,0.01,False,False,10,0.05,0.0,axa_50_viager,1,1.0
+7,OBS-000007,RefOBS-VIA,M,50,5000.0,lifetime,0,0,164.52,1,12,gross,0.0,1.0,0.0,False,False,0,0.0,0.0,cnp_50_viager,1,1.0
+8,OBS-000008,RefOBS-VIA,F,70,5000.0,lifetime,0,0,534.0,1,12,gross,0.0,1.0,0.0,False,False,0,0.0,0.0,sogecap_70_viager,1,1.0
+9,OBS-000009,RefOBS-TMP,F,50,5000.0,temporary,25,0,356.0,1,12,gross,0.0,1.0,0.0,False,False,0,0.0,0.0,mutex_50_temp25,1,1.0
+10,OBS-000010,RefOBS-VIA,M,50,5000.0,lifetime,0,80,336.03,1,12,gross,0.0,1.0,0.01,False,False,0,0.0,0.0,axa_50_viager,1,1.0
+11,OBS-000011,RefOBS-VIA,M,50,5000.0,lifetime,0,0,336.03,1,12,gross,0.0,1.0,0.01,False,True,0,0.0,0.0,axa_50_viager,1,1.0
+12,OBS-000012,RefOBS-VIA,M,50,5000.0,lifetime,0,0,343.42,12,12,net_instalment,0.0,1.0,0.01,False,False,0,0.0,0.0,axa_50_viager,1,1.0

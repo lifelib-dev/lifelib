@@ -1,0 +1,5 @@
+scenario_id,from_month,to_month,uc_return_mth,provenance
+stress_yr1,0,5,0.01,[std] deliberate stress; chosen so the worked example crosses the floor
+stress_yr1,6,11,-0.05,[std] deliberate stress; chosen so the worked example crosses the floor
+base_490,0,599,0.003994400555316968,[std] 4.90% p.a. -- the five-year average UC performance net of fund charges [R13]
+bear_5pct,0,599,-0.004265318777560645,[std] sustained -5.00% p.a. drawdown; the plancher is in the money throughout

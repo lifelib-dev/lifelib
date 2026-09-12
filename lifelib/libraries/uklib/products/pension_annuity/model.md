@@ -31,6 +31,40 @@ model = mx.read_model("products/pension_annuity/PA_UK_S")
 model.Projection[1].result_cf()
 ```
 
+## The time index, and the two kinds of index in this model
+
+`t` is the **month from the annuity start date, 0-based**: `t = 0` is the first
+projected month, month `t` runs from time `t` to time `t + 1`, and `proj_len()` is the
+*number* of months projected — the exclusive end of the frame, so `result_cf()` and
+`result_pols()` are indexed by `range(proj_len())` and the last row is `proj_len() - 1`. On
+the worked model point that is 636 rows, `t = 0 … 635`. The contractual **policy year** is
+the 1-based label `policy_year(t) = duration(t) + 1` with `duration(t) = t // 12`, derived
+and never indexed by; `age(t, life)` is `age_at_entry(life) + duration(t)`. This is the
+library-wide convention (`basiclife/BasicTerm_S`, `savings/CashValue_SE`:
+`for t in range(proj_len())`), asserted for every model point in
+`tests/test_model_conventions_uk.py`.
+
+The **state** cells are indexed differently, and deliberately: `lives_if(k, life)`,
+`lives_if_last(k)`, `cum_annuity_pp(k, kind)` and `vp_balance(k)` take a **time point**
+`k`, with `k = 0` at the start date. `l(0) = 1` and `G(0) = 0` are the seeds, month `t` opens
+with the state at `k = t` and closes with the state at `k = t + 1`, and that index does
+not move with the frame: the annuitant who dies in month 16 is alive at time 16 and
+dead at time 17, and the value-protection balance that nets "instalments already paid"
+is `G(16)` on either labelling. Every flow, rate and factor — `annuity_pp`,
+`payment_factor`, `certain_floor`, `lives_death`, `claims`, `pols_if`, `expenses` — is
+indexed by the month it belongs to. `payment_surv_mth(t)` maps between the two: it
+returns the *time point* at which survival is measured for month `t`'s instalment,
+`t + 1` on arrears and `t` on advance.
+
+`rpi_index(a)` and `rpi_peak(a)` sit on a third scale, an **anniversary count** with
+`a = 0` at outset and one step per policy year — `rpi_index(1)` is the reference level
+one *year* in, not one month — and it is likewise unmoved by the frame. The letter is
+`a`, not `k`, precisely so that the two cannot be read as the same index.
+
+The `result_pols()` state columns (`lives_if_1`, `lives_if_2`, `cum_annuity_all`,
+`vp_balance`) are therefore read at `t + 1`: they are the closing values of the month
+whose flows the same row of `result_cf()` carries.
+
 ## Mortality is the model
 
 After outset the contract has **no premiums, no surrender value, no account value and no
@@ -67,7 +101,7 @@ Where they part is the UK-specific machinery:
 
 ## Two mortality bases: table and scenario
 
-The notes' worked example is a **scenario** — "the annuitant dies in month 17; the
+The notes' worked example is a **scenario** — "the annuitant dies in month 16; the
 dependant survives throughout" — while the rest of the notes projects on an expected
 basis. Both readings ship, as a model point column, which is the same device `SPIA_US_S`
 uses for the same reason:
@@ -75,7 +109,7 @@ uses for the same reason:
 | `mort_basis` | `lives_if` | Model points |
 |---|---|---|
 | `table` | the generational recursion off the shipped table and improvement scale | 2, 5, 6, 7, 8 |
-| `scenario` **[std]** | the step function `1{t < death_mth(life)}`, blank meaning the life survives | 1, 3, 4, 9, 10 |
+| `scenario` **[std]** | the step function `1{k ≤ death_mth(life)}` — alive up to the start of the death month, dead from the end of it — blank meaning the life survives | 1, 3, 4, 9, 10 |
 
 Point 2 is the worked configuration on the `table` basis and is the run to read for a
 realistic cash flow shape; point 1 is the same contract as a scenario and reproduces the
@@ -107,7 +141,7 @@ only at the **end of the guarantee period**, not at the annuitant's death
 policy into the more expensive with-overlap form.
 
 Model points 3 and 4 are the same 10-year-guarantee contract on either side of that
-switch, and the difference is exactly the dependant's stream from month 18 to month 120 —
+switch, and the difference is exactly the dependant's stream from month 17 to month 119 —
 about £27,600 of total outgo on the shipped scenario. `overlap_gate(t)` is spelled that
 way, rather than as a rate, so that nothing in the model reads as a decrement that is not
 one.
@@ -122,7 +156,7 @@ one.
 | `rpi_catchup` | income indexed to the **running peak** of the RPI reference index [S2 defs] |
 
 The catch-up is a **ratchet**: a fall in the index freezes income rather than reducing
-it, and later rises bite only once the index passes its previous peak. `rpi_peak(k)`
+it, and later rises bite only once the index passes its previous peak. `rpi_peak(a)`
 carries that state across anniversaries. Resetting it each year turns the catch-up into a
 plain zero floor and overstates indexed income after a deflation-recovery path.
 
@@ -135,19 +169,21 @@ and the cap never pays off. A market-consistent value needs stochastic inflation
 tests assert the degeneracy so that the limitation is visible rather than implied.
 
 Escalation applies on the **anniversary**, not on payment dates: the year-2 rate does not
-reach the `t = 12` arrears instalment, which accrued in year 1 [S2 §3.3].
+reach the `t = 11` arrears instalment, which accrued in year 1 [S2 §3.3].
 
 ## Value protection, and where the balance is measured
 
-`VP(t) = d(t) × max(0, v·P − G(t−1))` — the death benefit measured against instalments
-**already paid** [S1 p11] [S2 §7]. Two timing rules matter and both are the notes'
+`VP(t) = d(t) × max(0, v·P − G(t))` — the death benefit measured against instalments
+**already paid** [S1 p11] [S2 §7], `G` being the time-point schedule: `G(k)` sums the
+instalments of months `0 … k − 1`, so month `t`'s instalment enters at `G(t+1)` whether it
+falls at the month's start or at its end. Two timing rules matter and both are the notes'
 pitfalls:
 
-- on **arrears** timing the balance is `G(t−1)`, because the instalment due at the end of
-  the death month is never paid;
+- on **arrears** timing the balance is `G(t)`, the opening one, because the instalment due
+  at the end of the death month is never paid;
 - on **advance** timing an instalment paid at the *start* of the death month **has** been
-  paid, so in an advance payment month the balance is `G(t)` — netting it, or the lump sum
-  is overstated by one instalment.
+  paid, so in an advance payment month the balance is `G(t+1)` — netting it, or the lump
+  sum is overstated by one instalment.
 
 ### `G(t)` means two things in the notes, so it takes a `kind`
 
@@ -180,8 +216,8 @@ period. With it,
 PROP(t) = d_a(t) × (h(t) + 0.5)/(12/m) × inst(next(t))     [std half-month accrual]
 ```
 
-On the worked configuration a death in month 17 with quarterly arrears payments at months
-3, 6, … gives `h = 1` — one complete month since the month-15 instalment — and a stub of
+On the worked configuration a death in month 16 with quarterly arrears payments at months
+2, 5, … gives `h = 1` — one complete month since the month-14 instalment — and a stub of
 `(1 + 0.5)/3 × 1,390.50 = 695.25`, which is the notes' own figure. Model point 9 is the
 worked configuration with the option elected, and reproduces it.
 
@@ -218,8 +254,22 @@ is read once per model rather than once per model point; a test counts the reads
 
 | File | Contents | Provenance |
 |---|---|---|
-| `model_point_table.csv` | Ten model points. **Point 1 is the worked configuration as a scenario** (£100,000, M65 with F62 dependant at 50%, quarterly arrears, fixed 3%, VP 50% first-death, no guarantee, `A(1) = £5,400`, annuitant dies month 17); point 2 is the same on the expected basis; 3 and 4 are a 10-year guarantee without and with overlap; 5 is single-life level monthly in advance; 6 and 7 are the RPI-catch-up and LPI bases; 8 is an enhanced life at θ = 1.35; 9 elects the proportionate final payment; 10 puts value protection on the last-survivor basis | anchor **[std]**, technical notes' worked example |
+| `model_point_table.csv` | Ten model points. **Point 1 is the worked configuration as a scenario** (£100,000, M65 with F62 dependant at 50%, quarterly arrears, fixed 3%, VP 50% first-death, no guarantee, `A(1) = £5,400`, annuitant dies month 16); point 2 is the same on the expected basis; 3 and 4 are a 10-year guarantee without and with overlap; 5 is single-life level monthly in advance; 6 and 7 are the RPI-catch-up and LPI bases; 8 is an enhanced life at θ = 1.35; 9 elects the proportionate final payment; 10 puts value protection on the last-survivor basis | anchor **[std]**, technical notes' worked example |
 | `mort_table.csv` | Base annual mortality by sex and age 50–115, capped at 1, with a `provenance` column | **[std]** proxy shaped like the ONS UK national life tables — *population* mortality, **not** an annuitant table. Anchored at `q(M, 65) = 0.0130` with 9.5% p.a. age progression and a 0.65 female factor |
+
+### Which input columns carry a time index
+
+Neither file is keyed by `t`: `model_point_table.csv` is keyed by `point_id` and
+`mort_table.csv` by `(sex, age)`, so no key column moved with the frame. Of the
+time-valued columns:
+
+| File, column | Decision | Why |
+|---|---|---|
+| `model_point_table.csv`, `death_mth_1` | **shifted −1** (17 → 16 on points 1, 3, 4, 9, 10); `death_mth_2` is blank on all ten rows, so nothing moved in it | a point on the frame's time axis: the month in which the scenario life dies. The blank sentinel moved from `0` to `-1` in `death_mth()`, because month 0 is a projectable month on the 0-based frame and can no longer double as "never" |
+| `model_point_table.csv`, `guarantee_months` | unchanged (120) | an elapsed count of months, not a point on the axis; the comparison moved instead, `certain_floor(t) = 1{t < n}` |
+| `model_point_table.csv`, `start_year` | unchanged (2026) | a calendar year, the improvement-scale anchor |
+| `model_point_table.csv`, `annuitant_age`, `dependant_age` | unchanged | entry ages |
+| `mort_table.csv`, `age` | unchanged | an attained age, not a duration |
 
 **Substituting a licensed basis** means replacing `mort_table.csv` with a same-schema
 file — SAPS S3/S4 or the PMA16/PFA16 family — and setting `Projection.annuitant_adj` to 1
@@ -259,8 +309,9 @@ mechanics demonstrations.
 The notes define `CF(t)` as total gross liability **outgo**, which is `liability_cf`;
 `net_cf` is its negative, the library-wide income-positive convention. Both are published
 as `result_cf()` columns rather than one being made to stand for the other — the same
-arrangement `SPIA_US_S`, `DIA_US_S` and `WholeLife_US_A` use. There is no premium income
-in the projection at all: the purchase price is a pricing input at `t = 0`.
+arrangement `SPIA_US_S`, `DIA_US_S` and `WholeLife_US_S` use. There is no premium income
+in the projection at all: the purchase price is a pricing input paid at outset, before
+the first projected month.
 
 ## Naming
 
@@ -281,7 +332,8 @@ scale and taper, θ; the limiting age of 115; the flat 3% RPI and expense inflat
 starting income; maintenance expense of £30 a year; the half-month accrual in the
 proportionate final payment; the scenario mortality switch; joint-life independence
 (which ignores broken-heart dependence and so modestly overstates the expected dependant
-stream); measuring the value-protection balance at `t − 1` on arrears; the age-based
+stream); measuring the value-protection balance at the start of the death month on
+arrears; the age-based
 stopping rule in place of the notes' `IF(t) < 1e-6` alternative; and reading the
 dependant's contractual "percentage of the higher of income at death and at guarantee
 end" as `δ × A(y(t))`, which is exact under a non-decreasing escalation path and would
@@ -295,11 +347,15 @@ dates, and RPI reform risk.
 
 `tests/test_pension_annuity_uk.py` asserts every row of the notes' worked example to the
 penny — the instalment schedule, the anniversary step to £1,390.50, the £43,209.50
-value-protection lump sum on the month-17 death, the G column including the dependant's
-instalment from month 18, and the £695.25 proportionate stub — plus the guarantee floor,
+value-protection lump sum on the month-16 death, the G column including the dependant's
+instalment from month 17, and the £695.25 proportionate stub — plus the guarantee floor,
 the overlap gate on both settings, the four escalation bases and their degeneracy under a
 deterministic RPI path, the advance-timing VP netting rule, the `v + δ ≤ 1` bound, the
-guarantee/VP exclusivity, and that no lapse machinery exists anywhere in the model.
+guarantee/VP exclusivity, and that no lapse machinery exists anywhere in the model. It
+also pins the frame: `result_cf()` is indexed by `range(636)` on the worked point.
+`tests/test_model_conventions_uk.py` asserts the 0-based frame itself — contiguous,
+opening at a `t_first >= 0`, which is 0 for every point of this model, and ending at
+`proj_len() - 1` — for every model point.
 
 ```bash
 python -m pytest tests -q

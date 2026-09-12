@@ -1,0 +1,931 @@
+scenario,year,maturity,tec_rate,provenance
+shock,0,1,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,0,2,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,0,5,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,0,10,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,0,20,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,0,30,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,1,1,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,1,2,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,1,5,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,1,10,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,1,20,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,1,30,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,2,1,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,2,2,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,2,5,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,2,10,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,2,20,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,2,30,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,3,1,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,3,2,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,3,5,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,3,10,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,3,20,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,3,30,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,4,1,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,4,2,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,4,5,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,4,10,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,4,20,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,4,30,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,5,1,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,5,2,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,5,5,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,5,10,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,5,20,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,5,30,0.025000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,6,1,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,6,2,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,6,5,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,6,10,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,6,20,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,6,30,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,7,1,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,7,2,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,7,5,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,7,10,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,7,20,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,7,30,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,8,1,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,8,2,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,8,5,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,8,10,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,8,20,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,8,30,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,9,1,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,9,2,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,9,5,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,9,10,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,9,20,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,9,30,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,10,1,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,10,2,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,10,5,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,10,10,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,10,20,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,10,30,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,11,1,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,11,2,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,11,5,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,11,10,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,11,20,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,11,30,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,12,1,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,12,2,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,12,5,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,12,10,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,12,20,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,12,30,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,13,1,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,13,2,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,13,5,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,13,10,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,13,20,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,13,30,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,14,1,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,14,2,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,14,5,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,14,10,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,14,20,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,14,30,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,15,1,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,15,2,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,15,5,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,15,10,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,15,20,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,15,30,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,16,1,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,16,2,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,16,5,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,16,10,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,16,20,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,16,30,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,17,1,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,17,2,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,17,5,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,17,10,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,17,20,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,17,30,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,18,1,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,18,2,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,18,5,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,18,10,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,18,20,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,18,30,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,19,1,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,19,2,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,19,5,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,19,10,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,19,20,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,19,30,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,20,1,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,20,2,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,20,5,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,20,10,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,20,20,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,20,30,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,21,1,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,21,2,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,21,5,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,21,10,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,21,20,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,21,30,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,22,1,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,22,2,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,22,5,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,22,10,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,22,20,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,22,30,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,23,1,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,23,2,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,23,5,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,23,10,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,23,20,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,23,30,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,24,1,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,24,2,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,24,5,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,24,10,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,24,20,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,24,30,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,25,1,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,25,2,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,25,5,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,25,10,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,25,20,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,25,30,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,26,1,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,26,2,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,26,5,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,26,10,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,26,20,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,26,30,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,27,1,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,27,2,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,27,5,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,27,10,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,27,20,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,27,30,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,28,1,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,28,2,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,28,5,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,28,10,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,28,20,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,28,30,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,29,1,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,29,2,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,29,5,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,29,10,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,29,20,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,29,30,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,30,1,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,30,2,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,30,5,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,30,10,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,30,20,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+shock,30,30,0.010000,[std] flat TEC 2.50% to t=5 then 1.00%; A. 134-1 90% haircut applies
+base,0,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,0,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,0,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,0,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,0,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,0,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,1,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,1,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,1,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,1,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,1,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,1,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,2,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,2,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,2,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,2,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,2,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,2,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,3,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,3,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,3,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,3,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,3,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,3,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,4,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,4,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,4,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,4,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,4,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,4,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,5,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,5,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,5,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,5,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,5,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,5,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,6,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,6,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,6,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,6,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,6,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,6,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,7,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,7,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,7,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,7,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,7,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,7,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,8,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,8,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,8,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,8,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,8,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,8,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,9,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,9,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,9,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,9,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,9,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,9,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,10,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,10,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,10,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,10,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,10,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,10,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,11,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,11,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,11,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,11,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,11,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,11,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,12,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,12,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,12,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,12,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,12,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,12,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,13,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,13,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,13,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,13,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,13,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,13,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,14,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,14,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,14,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,14,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,14,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,14,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,15,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,15,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,15,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,15,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,15,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,15,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,16,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,16,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,16,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,16,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,16,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,16,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,17,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,17,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,17,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,17,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,17,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,17,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,18,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,18,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,18,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,18,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,18,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,18,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,19,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,19,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,19,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,19,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,19,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,19,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,20,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,20,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,20,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,20,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,20,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,20,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,21,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,21,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,21,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,21,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,21,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,21,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,22,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,22,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,22,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,22,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,22,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,22,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,23,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,23,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,23,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,23,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,23,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,23,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,24,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,24,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,24,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,24,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,24,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,24,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,25,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,25,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,25,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,25,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,25,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,25,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,26,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,26,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,26,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,26,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,26,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,26,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,27,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,27,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,27,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,27,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,27,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,27,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,28,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,28,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,28,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,28,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,28,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,28,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,29,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,29,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,29,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,29,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,29,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,29,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,30,1,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,30,2,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,30,5,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,30,10,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,30,20,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+base,30,30,0.025000,[std] flat TEC 2.50% - OAT10 averaged 3.0% in 2023-2024 [R19]
+downside,0,1,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,0,2,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,0,5,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,0,10,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,0,20,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,0,30,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,1,1,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,1,2,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,1,5,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,1,10,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,1,20,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,1,30,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,2,1,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,2,2,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,2,5,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,2,10,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,2,20,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,2,30,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,3,1,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,3,2,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,3,5,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,3,10,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,3,20,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,3,30,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,4,1,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,4,2,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,4,5,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,4,10,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,4,20,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,4,30,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,5,1,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,5,2,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,5,5,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,5,10,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,5,20,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,5,30,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,6,1,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,6,2,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,6,5,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,6,10,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,6,20,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,6,30,0.020000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,7,1,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,7,2,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,7,5,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,7,10,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,7,20,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,7,30,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,8,1,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,8,2,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,8,5,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,8,10,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,8,20,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,8,30,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,9,1,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,9,2,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,9,5,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,9,10,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,9,20,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,9,30,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,10,1,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,10,2,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,10,5,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,10,10,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,10,20,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,10,30,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,11,1,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,11,2,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,11,5,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,11,10,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,11,20,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,11,30,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,12,1,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,12,2,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,12,5,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,12,10,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,12,20,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,12,30,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,13,1,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,13,2,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,13,5,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,13,10,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,13,20,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,13,30,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,14,1,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,14,2,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,14,5,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,14,10,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,14,20,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,14,30,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,15,1,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,15,2,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,15,5,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,15,10,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,15,20,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,15,30,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,16,1,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,16,2,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,16,5,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,16,10,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,16,20,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,16,30,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,17,1,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,17,2,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,17,5,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,17,10,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,17,20,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,17,30,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,18,1,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,18,2,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,18,5,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,18,10,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,18,20,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,18,30,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,19,1,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,19,2,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,19,5,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,19,10,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,19,20,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,19,30,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,20,1,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,20,2,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,20,5,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,20,10,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,20,20,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,20,30,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,21,1,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,21,2,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,21,5,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,21,10,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,21,20,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,21,30,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,22,1,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,22,2,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,22,5,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,22,10,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,22,20,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,22,30,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,23,1,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,23,2,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,23,5,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,23,10,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,23,20,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,23,30,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,24,1,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,24,2,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,24,5,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,24,10,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,24,20,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,24,30,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,25,1,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,25,2,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,25,5,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,25,10,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,25,20,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,25,30,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,26,1,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,26,2,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,26,5,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,26,10,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,26,20,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,26,30,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,27,1,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,27,2,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,27,5,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,27,10,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,27,20,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,27,30,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,28,1,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,28,2,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,28,5,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,28,10,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,28,20,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,28,30,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,29,1,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,29,2,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,29,5,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,29,10,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,29,20,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,29,30,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,30,1,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,30,2,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,30,5,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,30,10,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,30,20,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+downside,30,30,0.005000,[std] flat TEC 2.00% to t=6 then 0.50%
+sloped,0,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,0,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,0,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,0,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,0,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,0,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,1,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,1,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,1,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,1,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,1,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,1,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,2,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,2,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,2,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,2,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,2,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,2,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,3,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,3,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,3,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,3,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,3,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,3,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,4,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,4,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,4,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,4,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,4,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,4,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,5,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,5,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,5,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,5,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,5,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,5,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,6,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,6,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,6,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,6,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,6,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,6,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,7,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,7,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,7,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,7,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,7,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,7,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,8,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,8,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,8,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,8,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,8,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,8,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,9,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,9,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,9,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,9,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,9,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,9,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,10,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,10,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,10,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,10,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,10,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,10,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,11,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,11,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,11,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,11,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,11,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,11,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,12,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,12,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,12,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,12,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,12,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,12,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,13,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,13,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,13,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,13,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,13,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,13,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,14,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,14,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,14,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,14,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,14,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,14,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,15,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,15,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,15,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,15,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,15,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,15,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,16,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,16,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,16,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,16,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,16,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,16,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,17,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,17,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,17,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,17,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,17,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,17,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,18,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,18,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,18,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,18,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,18,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,18,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,19,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,19,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,19,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,19,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,19,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,19,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,20,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,20,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,20,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,20,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,20,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,20,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,21,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,21,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,21,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,21,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,21,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,21,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,22,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,22,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,22,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,22,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,22,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,22,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,23,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,23,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,23,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,23,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,23,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,23,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,24,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,24,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,24,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,24,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,24,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,24,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,25,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,25,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,25,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,25,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,25,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,25,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,26,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,26,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,26,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,26,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,26,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,26,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,27,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,27,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,27,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,27,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,27,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,27,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,28,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,28,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,28,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,28,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,28,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,28,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,29,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,29,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,29,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,29,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,29,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,29,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,30,1,0.010000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,30,2,0.012000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,30,5,0.015000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,30,10,0.025000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,30,20,0.030000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+sloped,30,30,0.032000,[std] upward-sloping TEC so A. 134-1 linear interpolation bites
+zero_rate,0,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,0,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,0,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,0,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,0,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,0,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,1,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,1,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,1,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,1,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,1,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,1,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,2,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,2,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,2,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,2,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,2,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,2,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,3,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,3,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,3,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,3,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,3,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,3,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,4,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,4,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,4,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,4,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,4,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,4,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,5,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,5,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,5,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,5,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,5,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,5,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,6,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,6,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,6,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,6,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,6,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,6,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,7,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,7,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,7,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,7,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,7,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,7,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,8,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,8,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,8,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,8,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,8,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,8,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,9,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,9,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,9,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,9,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,9,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,9,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,10,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,10,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,10,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,10,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,10,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,10,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,11,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,11,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,11,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,11,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,11,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,11,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,12,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,12,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,12,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,12,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,12,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,12,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,13,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,13,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,13,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,13,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,13,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,13,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,14,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,14,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,14,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,14,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,14,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,14,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,15,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,15,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,15,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,15,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,15,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,15,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,16,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,16,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,16,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,16,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,16,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,16,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,17,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,17,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,17,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,17,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,17,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,17,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,18,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,18,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,18,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,18,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,18,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,18,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,19,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,19,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,19,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,19,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,19,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,19,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,20,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,20,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,20,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,20,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,20,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,20,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,21,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,21,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,21,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,21,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,21,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,21,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,22,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,22,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,22,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,22,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,22,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,22,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,23,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,23,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,23,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,23,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,23,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,23,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,24,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,24,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,24,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,24,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,24,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,24,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,25,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,25,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,25,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,25,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,25,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,25,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,26,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,26,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,26,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,26,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,26,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,26,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,27,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,27,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,27,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,27,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,27,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,27,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,28,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,28,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,28,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,28,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,28,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,28,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,29,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,29,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,29,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,29,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,29,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,29,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,30,1,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,30,2,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,30,5,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,30,10,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,30,20,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites
+zero_rate,30,30,-0.005000,[std] TEC -0.50% at every maturity so the A. 134-1 zero floor bites

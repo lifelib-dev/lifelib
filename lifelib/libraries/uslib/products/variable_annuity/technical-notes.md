@@ -56,8 +56,18 @@ deterministic run.
   Divisions [S2]; the model applies one-twelfth of the annual rate at each month end
   **[std]**. Do not also compound daily — pick one discretization and document it, because
   reconciling to an admin system requires knowing which was used.
-- **Event calendar.** Contract Quarterly Anniversaries fall at the end of months
-  t ≡ 0 (mod 3); Contract Anniversaries at the end of months t ≡ 0 (mod 12) **[std]**. Rider
+- **Time index: `t` is 0-based.** `t` is the policy month index and `t = 0` is the **first**
+  policy month, so `t` counts the policy months already **elapsed** at the beginning of
+  month `t`. Month `t` runs from time `t` to time `t + 1`. For a contract projected from
+  issue the frame is `t = 0, 1, …, proj_len − 1`; a cell entered in force opens at its
+  elapsed policy month instead. The contract year is the 1-based label `y = t//12 + 1` and the
+  contract quarter the 1-based label `k = t//3 + 1`, so contract year 1 is months
+  `t = 0 … 11`. The single premium is a beginning-of-month flow of `t = 0`; there is no
+  separate issue-instant row, and the state entering the projection is the opening balance
+  of the first projected month — `S_init` at `t = 0` and `S(t − 1)` after it.
+- **Event calendar.** Contract Quarterly Anniversaries fall at the end of the months with
+  `t + 1 ≡ 0 (mod 3)` — that is `t = 2, 5, 8, …` — and Contract Anniversaries at the end of
+  those with `t + 1 ≡ 0 (mod 12)`, that is `t = 11, 23, 35, …` **[std]**. Rider
   charges are assessed at the *end* of a contract quarter, following the disclosed rule that
   the first deduction occurs at the end of the first quarter following election [S4] / on the
   three-month anniversary of the rider effective date [S8].
@@ -120,7 +130,7 @@ deterministic run.
 | `forlife_flag` | For Life Guarantee in effect (true from issue at age 59½+) [S1] | once |
 | `depleted_flag` | AV has reached zero with the GLWB in force [S1] | once |
 | `phi_G(t)`, `phi_D(t)` | current GLWB / GMDB charge rates | fifth-anniversary reset [S1] |
-| `l(t)` | in-force probability at end of month t; `l(0) = 1` | monthly decrements |
+| `l(t)` | in-force probability at the end of month t; `l(−1) = 1` entering month `t = 0` | monthly decrements |
 
 ---
 
@@ -209,7 +219,7 @@ for a **non-qualified FIA**, not a VA, and must be applied with care [R5].
 
 | Symbol | Meaning |
 |---|---|
-| `t` | policy month index, t = 1, 2, …; `y = ceil(t/12)` contract year; `k = ceil(t/3)` contract quarter |
+| `t` | policy month index, **0-based**: t = 0, 1, 2, … (a contract projected from issue runs t = 0 … proj_len − 1; one entered in force opens at its elapsed policy month); `y = t//12 + 1` contract year (1-based label); `k = t//3 + 1` contract quarter (1-based label) |
 | `x` | issue age (ANB) = 60 **[std]**; attained age `a(t) = x + y − 1` |
 | `i` | subaccount index, i ∈ {1, 2} (1 = equity, 2 = fixed income) |
 | `U_i(t)`, `V_i(t)` | units and unit value; `SA_i(t) = U_i(t)·V_i(t)`; `AV(t) = Σ_i SA_i(t)` |
@@ -309,11 +319,11 @@ At BOM of month t:
      year-to-date allowance `ρ · RB(prior anniversary)`; the adjustment is applied at the
      **end of the Contract Year** [S1].
 4. **Unit value growth** over month t per the formula above.
-5. **EOM quarterly charges** (t ≡ 0 mod 3): `Fee_G = (phi_G/4)·GWB`,
+5. **EOM quarterly charges** (t + 1 ≡ 0 mod 3): `Fee_G = (phi_G/4)·GWB`,
    `Fee_D = (phi_D/4)·RB`; cancel units pro rata [S1] [S3].
-6. **EOM annual contract fee** (t ≡ 0 mod 12): `f_c` if `AV < 50,000`, cancelled pro rata
-   [S2].
-7. **EOM anniversary guarantee events** (t ≡ 0 mod 12), in this order **[std]**:
+6. **EOM annual contract fee** (t + 1 ≡ 0 mod 12): `f_c` if `AV < 50,000`, cancelled pro
+   rata [S2].
+7. **EOM anniversary guarantee events** (t + 1 ≡ 0 mod 12), in this order **[std]**:
    1. Apply the accrued GMDB withdrawal adjustment: dollar-for-dollar up to
       `ρ · RB(prior anniversary)`, then `RB × (proportional CV reduction from the excess)`
       [S1].
@@ -522,10 +532,13 @@ single-life Core GLWB (`phi_G` = 1.25%, `b` = 6.00%, annual CV step-up, `s` = 10
 Roll-up GMDB (`phi_D` = 0.90%, `ρ` = 6.00%) [S3]; `m + α` = 1.30% [S2]; `e_1` = 0.95%, `e_2` = 0.65%
 **[std]**. No withdrawals to date.
 
-Carried state at the beginning of month 27 (contract year 3; month 27 is the 9th Contract
-Quarterly Anniversary). The guarantee bases follow from the anniversary events:
-`GWB` = 100,000 → +6,000 bonus at anniversary 1 = 106,000 (contract value 104,000 **[std]
-illustrative**, below GWB, so no step-up) → +6,000 bonus at anniversary 2 = 112,000, then
+Carried state at the beginning of month **`t` = 26** — the 27th policy month, contract
+year 3 (`y` = 26//12 + 1 = 3), and the month at whose end the 9th Contract Quarterly
+Anniversary falls (`k` = 26//3 + 1 = 9). The guarantee bases follow from the anniversary
+events:
+`GWB` = 100,000 → +6,000 bonus at anniversary 1, the end of month `t` = 11, giving 106,000
+(contract value 104,000 **[std] illustrative**, below GWB, so no step-up) → +6,000 bonus at
+anniversary 2, the end of month `t` = 23, giving 112,000, then
 stepped up to the anniversary contract value of **112,500** **[std illustrative]**, which
 sets `BB` = 112,500 and restarts the Bonus Period [S1]. `RB` = 100,000 × 1.06² = **112,360**
 [S1] [S3]. `NP` = `RP` = 100,000. Scenario month: `r_1` = +1.20%, `r_2` = −0.30% **[std]**.

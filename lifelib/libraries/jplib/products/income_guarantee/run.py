@@ -38,20 +38,21 @@ print("projection horizon = {} months, {} months past the end of cover   "
 print()
 
 df = proj.result_cf()
-print("first 12 policy months")
+print("first 12 policy months (t = 0 .. 11; t is 0-based, policy month = t + 1)")
 print(df.head(12).round(2).to_string())
 print()
-print("the last month of cover and the run-off tail after it")
-print(df.loc[proj.term_m():].head(6).round(2).to_string())
+print("the last month of cover (t = {}) and the run-off tail after it"
+      .format(proj.term_m() - 1))
+print(df.loc[proj.term_m() - 1:].head(6).round(2).to_string())
 print()
-print("totals over the {} projected months, undiscounted, per policy issued"
-      .format(proj.proj_len()))
+print("totals over the {} projected months (t = 0 .. {}), undiscounted, "
+      "per policy issued".format(proj.proj_len(), proj.proj_len() - 1))
 for col in df.columns:
     if col in ("pols_if", "annuities_if"):
         continue
     print("  {:<22} {:>16,.2f}".format(col, df[col].sum()))
 print("  {:<22} {:>16,.2f}".format(
-    "claim outgo after cover", df.loc[proj.term_m() + 1:, "claims_annuity"].sum()))
+    "claim outgo after cover", df.loc[proj.term_m():, "claims_annuity"].sum()))
 print()
 print("identity checks: " + "  ".join(
     "{}={}".format(name, getattr(proj, name)()) for name in sorted(

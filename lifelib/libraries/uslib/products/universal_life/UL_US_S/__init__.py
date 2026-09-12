@@ -35,13 +35,16 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 time rather than stored inside the model. The model folder itself holds no data, so
 the model and its inputs must travel together.
 
-**Projection basis.** Monthly steps. Policy month ``t`` runs 1, 2, ...,
-``proj_len()``, where ``t = 1`` is the **issue month** of a new-business model point
-and ``proj_len() = 12 * (omega_age - age_at_entry() + 1) - duration_mth_init()``, so
-the projection ends with the policy year in which the insured attains ``omega_age``
-(120), the last age of the mortality table, where the annual rate is 1.0. For an
-in-force model point ``duration_mth_init()`` is the number of completed policy months
-already elapsed at ``t = 1``. The contract itself has no maturity date [S2][S3];
+**Projection basis.** Monthly steps. Policy month ``t`` is 0-based and runs
+``0, 1, ..., proj_len() - 1``, where ``t = 0`` is the **issue month** of a new-business
+model point and ``proj_len() = 12 * (omega_age - age_at_entry() + 1) - duration_mth_init()``
+is the number of months projected, so the projection ends with the policy year in which
+the insured attains ``omega_age`` (120), the last age of the mortality table, where the
+annual rate is 1.0. Policy month ``t`` runs from the monthiversary at time ``t`` to the
+next; ``policy_year(t) = duration(t) + 1`` is the 1-based contractual label, derived and
+never indexed by. For an in-force model point ``duration_mth_init()`` is the number of
+completed policy months already elapsed at ``t = 0``, so ``duration_mth(t) =
+duration_mth_init() + t``. The contract itself has no maturity date [S2][S3];
 ``pols_maturity(t)`` is therefore identically zero and the projection is truncated by
 mortality, not by the contract.
 
@@ -141,7 +144,7 @@ test asserts every model point in the table actually projects.
 technical notes, and ``tests/test_universal_life_us.py`` asserts every cell of all
 three of its rows -- account value, net premium, death benefit, net amount at risk,
 cost of insurance, monthly deduction, post-deduction balance and credited interest --
-to the cent, together with the notes' month-1 trace at full precision.
+to the cent, together with the notes' issue-month (``t = 0``) trace at full precision.
 
 Example:
 

@@ -39,6 +39,11 @@ values are identical to those in `product-spec.md`.
 - **Projection frequency.** Monthly, indexed `t = 0, 1, 2, …` from issue **[std]**. Monthly is natural
   because the modal payment frequency is monthly [S1] [S2] [S3] [S4] and because the 13-month minimum deferral
   and the 13-month premium cut-off are expressed in months [S2] [S4] [R9].
+- **Time index [std].** `t` is 0-based: month `t = 0` is the issue month and a real projected month, running from
+  elapsed time `t` to `t + 1`. The frame is `t = 0, 1, …, N − 1`, where `N` (`proj_len` in the model) is the
+  number of projected months — to the limiting age of the youngest covered life, or to the end of the guarantee
+  period if that is later. The policy year is a derived 1-based label, `y = floor(t/12) + 1`, used only where
+  the contract speaks in policy years; it never indexes the projection.
 - **Timing conventions [std].** Premiums are received at the **start** of month `t`. Income is paid in
   **arrears** at the **end** of each payment period, matching `products/immediate_annuity/product-spec.md`;
   the model exposes `pay_timing ∈ {advance, arrears}` because no retrieved DIA document states the
@@ -93,8 +98,8 @@ benefit in deferral, no COLA. Used identically in `product-spec.md` and in the w
 
 | Variable | Description | Updated |
 |---|---|---|
-| `B(t)` | Guaranteed **annual** income purchased to date, before COLA | on each premium; on adjustment exercise |
-| `CP(t)` | Cumulative premiums paid — the deferral death benefit base and the refund base | on each premium |
+| `B(t)` | Guaranteed **annual** income in force **during** month `t`, before COLA — including any slice bought at its start | on each premium; on adjustment exercise |
+| `CP(t)` | Cumulative premiums paid **through the start of** month `t` — the deferral death benefit base and the refund base | on each premium |
 | `l(t)` | In-force (survival) probability at the **start** of month `t`; `l(0) = 1` | monthly |
 | `phase(t)` | {deferral, payout, terminated} | at `t = T`; on death; on exhaustion of a non-life-contingent form |
 | `T(t)` | Current income start month (mutable once) | on adjustment exercise |
@@ -205,7 +210,7 @@ risk is switched on by `guaranteed_future_rates` and is off in the base **[std]*
 
 | Symbol | Meaning |
 |---|---|
-| `t`, `y` | policy month index `t = 0, 1, 2, …`; elapsed years `t/12`; policy year `y = floor(t/12) + 1` |
+| `t`, `y`, `N` | policy month index `t = 0, 1, 2, …, N − 1`, 0-based, `t = 0` the issue month; `N` the number of projected months; elapsed years `t/12`; policy year `y = floor(t/12) + 1` |
 | `m` | payments per year (12 in the base) |
 | `x`, `x(t)` | issue age ANB; attained age `x + floor(t/12)` |
 | `T` | income start month (`13 ≤ T`; `x + T/12 ≤ 85`) |
@@ -274,9 +279,19 @@ been made.
 
 ### Deferral-phase recursions
 
-    CP(t)  =  CP(t−1)  +  Σ_{k : t_k = t} P_k,                                        CP(−1) = 0        (7)
-    B(t)   =  B(t−1)   +  Σ_{k : t_k = t} P_k · pr( x(t_k), (T − t_k)/12, f ),        B(−1)  = 0        (8)
+    CP(t)  =  CP(t−1)  +  Σ_{k : t_k = t} P_k,                                        t ≥ 1             (7)
+    B(t)   =  B(t−1)   +  Σ_{k : t_k = t} P_k · pr( x(t_k), (T − t_k)/12, f ),        t ≥ 1             (8)
     l(t+1) =  l(t) · (1 − q(t)),                                                      l(0)   = 1        (9)
+
+All three recursions open **on the first row of the frame**, not on a seed before it — nothing in this model is
+indexed at `t = −1`:
+
+    CP(0)  =  Σ_{k : t_k = 0} P_k
+    B(0)   =  Σ_{k : t_k = 0} P_k · pr( x(0), T/12, f )
+    l(0)   =  1
+
+The `CP(0)` and `B(0)` openers are the premiums received at the **start of month 0**, which is why `CP(t)` and
+`B(t)` are the values in force *during* month `t`, including a slice bought at its start.
 
 Equation (8) is the core of the product: **income is additive across slices**, each priced at the annuitant's
 attained age and the remaining deferral **at its own payment date** [R13 §3.B(1)(b)](#uslib-deferred_income_annuity-r13) [S3]. Nothing
@@ -503,11 +518,14 @@ income** for the same $150,000. That difference is the price of the return-of-pr
 mortality gain in the insurer's hands if the annuitant dies in deferral: at the year-10 death below, the ROP
 form pays $150,000 and the no-death-benefit form pays nothing while releasing the entire reserve.
 
-**Projection (annual display grid; the model runs monthly).** `E[DB]` is the expected deferral death benefit
-paid in policy year `t`, `= (l(t−1) − l(t)) × CP(t)`; `E[income]` is the expected income paid at the end of
-policy year `t` on an annual-payment display approximation.
+**Projection (annual display grid; the model runs monthly).** The rows are policy years `y = floor(t/12) + 1`,
+policy year `y` covering months `t = 12(y − 1) … 12y − 1`; the age at the start of the year is `x(12(y − 1))`.
+On this annual grid `l(y)` denotes survival to the **end** of policy year `y` — monthly `l(12y)` — and `CP(y)`,
+`B(y)` the values in force at the end of the year, `CP(12y − 1)` and `B(12y − 1)`. `E[DB]` is the expected
+deferral death benefit paid in policy year `y`, `= (l(y−1) − l(y)) × CP(y)`; `E[income]` is the expected income
+paid at the end of policy year `y` on an annual-payment display approximation.
 
-| Policy year `t` | Age at start of year (ANB) | Premium at start | `CP(t)` | `B(t)` (annual) | `l(t)` | `E[DB]` in year `t` | `E[income]` at `t` |
+| Policy year `y` | Age at start of year (ANB) | Premium at start | `CP(y)` | `B(y)` (annual) | `l(y)` | `E[DB]` in year `y` | `E[income]` at `y` |
 |---|---|---|---|---|---|---|---|
 | 1 | 60 | 100,000 | 100,000 | 32,176.50 | 0.994949 | 505.08 | — |
 | 5 | 64 | — | 100,000 | 32,176.50 | 0.975000 | 494.95 | — |
@@ -519,10 +537,11 @@ policy year `t` on an annual-payment display approximation.
 | 21 | 80 | — | 150,000 | 44,259.65 | 0.680338 | — | 30,111.54 |
 | 25 | 84 | — | 150,000 | 44,259.65 | 0.557700 | — | 24,683.61 |
 
-Trace, policy year 6: the $50,000 premium arrives at the start of the year while the annuitant is alive, so
-expected premium income is `50,000 × l(5) = $48,750.00`; it buys slice 2 at the age-65 / 15-year purchase
-rate, taking `B` from $32,176.50 to $44,259.65 by (8) and `CP` to $150,000 by (7). Deaths during year 6
-(`l(5) − l(6) = 0.0112569`) now attract the larger benefit `CP(6) = 150,000`, giving `E[DB] = $1,688.54`.
+Trace, policy year 6 (months `t = 60 … 71`): the $50,000 premium arrives at the start of the year — month
+`t = 60` — while the annuitant is alive, so expected premium income is `50,000 × l(5) = $48,750.00` (annual-grid
+`l(5)`, monthly `l(60)`); it buys slice 2 at the age-65 / 15-year purchase rate, taking `B` from $32,176.50 to
+$44,259.65 by (8) and `CP` to $150,000 by (7). Deaths during year 6 (`l(5) − l(6) = 0.0112569`, monthly
+`l(60) − l(72)`) now attract the larger benefit `CP(6) = 150,000`, giving `E[DB] = $1,688.54`.
 Nothing accumulates and nothing is credited: between premiums the only state change is the survivorship in
 (9). The income start date is the start of month index `T = 240` (20 years from issue); under arrears the
 first payment falls one month later, 241 months from issue — which is why policy year 20 (months 228–239)

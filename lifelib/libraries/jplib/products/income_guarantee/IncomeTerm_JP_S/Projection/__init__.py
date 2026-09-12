@@ -11,10 +11,12 @@ projecting model point 1::
     >>> Projection[1].result_cf()          # the worked example's anchor cell
     >>> Projection.point_id = 4            # or switch the default
 
-``t`` counts **policy months**, 1-based: ``t = 1`` is the first policy month and
-``t = proj_len()`` the last projected one. ``proj_len()`` is **not** the policy term.
-It is ``term_m() + guar_m() - 1``, because a claim arising in the last months of cover
-carries its guaranteed instalments past the expiry date — see *The run-off tail* below.
+``t`` counts **policy months**, 0-based: ``t = 0`` is the first policy month and
+``t = proj_len() - 1`` the last projected one, so the frame is ``range(proj_len())`` and
+the contractual policy month is ``t + 1``. ``proj_len()`` is the **number** of projected
+months and **not** the policy term. It is ``term_m() + guar_m() - 1``, because a claim
+arising in the last months of cover carries its guaranteed instalments past the expiry
+date — see *The run-off tail* below.
 
 .. rubric:: Input data
 
@@ -54,20 +56,20 @@ compact actuarial symbols instead. The mapping is:
 ===================  =====================  =================================
 Notes symbol         Cells                  Meaning
 ===================  =====================  =================================
-t                    (the cells argument)   Policy month, 1-based
+t                    (the cells argument)   Policy month, 0-based; t = 0 is the first
 x                    issue_age()            契約年齢, 満年齢 at issue
-x + floor((t-1)/12)  age(t)                 Attained age in month t
-y(t)                 policy_year(t)         Policy year of month t
+x + floor(t/12)      age(t)                 Attained age in month t
+y(t) = t // 12 + 1   policy_year(t)         Policy year of month t, 1-based
 (none)               sex(), rate_class()    Rating factors
 N                    term_m()               保険期間 in months
 G                    guar_m()               最低支払保証期間 in months
-T = N + G - 1        proj_len()             Projection horizon, months
+T = N + G - 1        proj_len()             Projected months; last t is T - 1
 A                    annuity_mth()          年金月額, JPY per month
 P_m                  premium_mth_pp()       Monthly office premium
 P_due(t)             prem_due_pp(t)         Premium falling due at t
 (none)               model_point()          The selected model point
 n_pay(m)             pay_count(m)           Instalments a claim at m makes
-ends_at(m)           pay_end(m)             Month of that stream's last
+ends_at(m)           pay_end(m)             Month index of that stream's last
 (table)              mort_rate_base(t)      死亡保険用 table rate at age(t)
 (class factor)       class_factor()         Rate class multiplier
 q(t)                 mort_rate(t)           Annual death-and-高度障害 rate
@@ -116,7 +118,7 @@ Four names needed care.
 ``claims_annuity`` names a **death** benefit here. The instalments are paid on the death
 of the insured, or on the contractual 高度障害 state carried inside the same decrement as
 its accelerated equivalent; the name records the benefit's *form*, not its trigger, and
-the same column carries a *living* benefit in ``LTC_JP_S`` and ``Annuity_JP_A``. So the
+the same column carries a *living* benefit in ``LTC_JP_S`` and ``Annuity_JP_S``. So the
 contingency is stated in :func:`claims` and in :func:`result_cf` rather than inferred.
 **There is no ``claims_death`` column**, and that absence is a product fact: this
 contract pays no lump sum on death at any duration — a claim *opens* an annuity stream
@@ -126,14 +128,14 @@ zero-valued ``claims_death`` would misdescribe the contract rather than document
 ``R(t)`` is spelled :func:`annuities_if` rather than ``pols_annuity`` because it is
 **not a population of policies**. It is a count of instalments falling due in month
 ``t``, per policy issued. ``pols_if`` and ``annuities_if`` are disjoint quantities that
-must never be summed: on the anchor cell ``annuities_if(420) = 0.016780`` while
-``pols_if(420) = 0.145023``, and adding them produces a number with no meaning.
+must never be summed: on the anchor cell ``annuities_if(419) = 0.016780`` while
+``pols_if(419) = 0.145023``, and adding them produces a number with no meaning.
 
 ``pols_maturity`` has no symbol in the notes. The notes give the roll-forward as
-``l(t+1) = l(t)(1-q_m)(1-w_m)`` for ``t < N`` and, separately, set ``l(t) = 0`` for
-``t > N``. Those do not reconcile in month ``N``: its survivors neither die nor lapse,
-their cover simply runs out. :func:`pols_maturity` names them, zero in every month but
-``N``, so that
+``l(t+1) = l(t)(1-q_m)(1-w_m)`` for ``t < N - 1`` and, separately, set ``l(t) = 0`` for
+``t >= N``. Those do not reconcile in the last month of cover, ``t = N - 1``: its
+survivors neither die nor lapse, their cover simply runs out. :func:`pols_maturity`
+names them, zero in every month but ``N - 1``, so that
 
     pols_if(t) + pols_reinst(t+1) - pols_if(t+1)
         = pols_death(t) + pols_lapse(t) + pols_maturity(t)
@@ -153,9 +155,9 @@ terms.
 .. rubric:: The in-payment ledger, and the rule it obeys
 
 The ledger is the whole model. A claim in month ``m`` opens a stream of
-``pay_count(m) = max(N - m + 1, G)`` monthly instalments whose last falls in month
-``pay_end(m) = max(N, m + G - 1)``, and :func:`annuities_if` counts the streams paying
-in month ``t``::
+``pay_count(m) = max(N - m, G)`` monthly instalments whose last falls in month
+``pay_end(m) = max(N - 1, m + G - 1)``, and :func:`annuities_if` counts the streams
+paying in month ``t``::
 
     annuities_if(t) = annuities_if(t-1) - annuities_ended(t) + annuities_open(t)
 
@@ -177,15 +179,15 @@ checks the instalments due to date against ``sum of D(s) x pay_count(s)``.
 
 .. rubric:: The run-off tail
 
-Every stream opened in months ``1 ... N - G + 1`` pays its last instalment in month
-``N`` *exactly*, whenever it opened, because the expiry date is fixed at issue. It
-follows that ``annuities_if(N)`` equals the sum of every claim the contract has ever
-made — the ledger peaks at exactly month ``N`` — and that the only streams surviving
-into month ``N + 1`` are those opened in the last ``G - 1`` months of cover. From
-``N + 1`` on, ``annuities_ended(t) = annuities_open(t - G)`` and the ledger runs down
-one month's claims at a time.
+Every stream opened in months ``0 ... N - G`` pays its last instalment in month
+``N - 1`` *exactly*, whenever it opened, because the expiry date is fixed at issue. It
+follows that ``annuities_if(N - 1)`` equals the sum of every claim the contract has ever
+made — the ledger peaks at exactly ``t = N - 1``, the last month of cover — and that the
+only streams surviving into ``t = N`` are those opened in the last ``G - 1`` months of
+cover. Beyond ``t = N``, ``annuities_ended(t) = annuities_open(t - G)`` and the ledger
+runs down one month's claims at a time.
 
-In months ``N + 1 ... T`` there is no premium, no maintenance expense, no commission
+In months ``N ... T - 1`` there is no premium, no maintenance expense, no commission
 and no new claim, because ``pols_if(t) = 0`` there: only the annuity instalments and
 the annuity administration expense remain. That is why ``expense_annuity`` is charged
 against the ledger rather than against ``pols_if`` — it is the one expense that
@@ -193,11 +195,11 @@ survives the end of the policy term, and an implementation that attaches every e
 to the in-force population charges nothing at all in those months.
 
 **最低支払保証期間 is a term extension, not a benefit floor.** Both readings pay the same
-``max(N - m + 1, G)`` instalments, so an undiscounted *total* cannot tell them apart;
+``max(N - m, G)`` instalments, so an undiscounted *total* cannot tell them apart;
 they differ in *when*. A floor implementation compresses the guaranteed instalments
-inside the term and produces zero cash flow after month ``N``. This model pays them
+inside the term and produces zero cash flow after ``t = N - 1``. This model pays them
 after expiry, on the same monthly timetable: on the anchor cell ¥2,645.21 of claim
-outgo — 0.5967% of the total — falls in months 421 to 443.
+outgo — 0.5967% of the total — falls in months ``t = 420 ... 442``.
 
 .. rubric:: Modules that are off in the base run
 
@@ -214,7 +216,7 @@ testable:
   barred once the first instalment has been paid, limited to once during the term at
   two carriers, and refused where the residual 年金月額 falls below ¥50,000, which makes
   it an election on a claim already open rather than a cash-flow shape. Model point 4
-  runs it on.
+  runs it on. Note that ``pay_count(m)`` is read at the 0-based claim month ``m``.
 - **リビング・ニーズ特約**, ``living_needs`` on the model point, false on the anchor. A
   **[std]** proportion ``ln_take_up`` of the month's claims is settled instead as an
   acceleration, at the 年金現価 of the designated 年金月額 less six months' interest and
@@ -222,7 +224,7 @@ testable:
   It is carved *out* of the death decrement rather than added to it, because the
   insured is by definition within six months of death; the ``<= 6``-month timing shift
   is ignored on this grid **[std]**. The product-specific consequence is that because
-  the amount is the present value of an income stream, the **cap binds from month 1**
+  the amount is the present value of an income stream, the **cap binds from ``t = 0``**
   and stops binding only once the unpaid stream falls below it — the opposite pattern
   to a level sum assured. Model point 5 runs it on.
 - **保険料払込免除**, ``wop`` on the model point, false on the anchor. A two-state
@@ -458,7 +460,7 @@ def reinstatement():
 
 
 def pols_if_init():
-    """l(1) = 1: the model point is a single policy on an expected basis.
+    """l(0) = 1: the model point is a single policy on an expected basis.
 
     Every cash flow below is therefore *per policy issued*, probability-weighted, which
     is the sense the ESR 現在推計 (*genzai suikei*, current estimate) requires.
@@ -467,33 +469,42 @@ def pols_if_init():
 
 
 def proj_len():
-    """T: the projection horizon in months, ``term_m() + guar_m() - 1``.
+    """T: the **number** of projected months, ``term_m() + guar_m() - 1``.
+
+    The exclusive end of the frame: ``t`` runs ``0 ... proj_len() - 1``, so
+    ``len(result_cf()) == proj_len()``.
 
     **Not the policy term.**  Where the insured event falls so late that fewer than
     ``G`` months remain, the annuity payment period is extended past the expiry date
-    until the guarantee has run, so the last instalment any claim can make falls in
-    month ``N + G - 1``.  On the anchor cell that is 443 against a term of 420.
-    Terminating the projection at ``t = N`` drops ¥2,645.21 of contractual claim outgo,
-    0.5967% of the total, all of it in months 421-443 — the most natural error to make
-    on this product and the least visible, because every remaining number still looks
+    until the guarantee has run, so the last instalment any claim can make falls at
+    ``t = N + G - 2``, the last row of the frame.  On the anchor cell that is 443 months
+    against a term of 420.  Terminating the projection at the end of cover
+    (``t = N - 1``) drops ¥2,645.21 of contractual claim outgo, 0.5967% of the total,
+    all of it in months ``t = 420 ... 442`` — the most natural error to make on this
+    product and the least visible, because every remaining number still looks
     reasonable.
     """
     return term_m() + guar_m() - 1
 
 
 def policy_year(t):
-    """y(t): the policy year containing month t, ``1 + floor((t - 1) / 12)``."""
-    return 1 + (t - 1) // 12
+    """y(t): the policy year containing month t, ``1 + floor(t / 12)``.
+
+    The contractual, **1-based** label beside the 0-based month index: ``t = 0 .. 11``
+    is policy year 1.  It is the key into ``lapse_table.csv``, whose ``policy_year``
+    column is 1-based for the same reason.
+    """
+    return 1 + t // 12
 
 
 def age(t):
     """The attained age of the insured at the start of policy month t.
 
-    ``x + floor((t - 1) / 12)`` on the 満年齢 basis of :func:`issue_age`.  Beyond
-    ``term_m()`` the value is nominal: cover has expired, ``pols_if(t)`` is zero and no
-    rate is read at it.
+    ``x + floor(t / 12)`` on the 満年齢 basis of :func:`issue_age`, so the issue age holds
+    for the twelve months ``t = 0 .. 11``.  Beyond the last month of cover the value is
+    nominal: cover has expired, ``pols_if(t)`` is zero and no rate is read at it.
     """
-    return issue_age() + (t - 1) // 12
+    return issue_age() + t // 12
 
 
 def inflation_factor(t):
@@ -547,9 +558,10 @@ def mort_rate(t):
     departures from the statutory basis therefore sit between this projection and a
     責任準備金, and no reserve is computed anywhere in this library.
 
-    Zero beyond ``term_m()``: cover has expired and there is nothing left to decrement.
+    Zero from ``t = term_m()`` on: cover has expired and there is nothing left to
+    decrement.
     """
-    if t < 1 or t > term_m():
+    if t < 0 or t > term_m() - 1:
         return 0.0
     return min(1.0, mort_be_factor * class_factor()                  # noqa: F821
                * mort_rate_base(t) * sel_lapse_factor(t))
@@ -570,8 +582,9 @@ def mort_rate_mth(t):
 def lapse_rate(t):
     """w(t): the **annual** ordinary lapse rate in policy month t **[std]**.
 
-    Read from ``lapse_table.csv`` by policy year — 9 / 7 / 6 / 5.5 / 5 percent, the last
-    row applying to policy year 5 and beyond.  Zero beyond ``term_m()``.
+    Read from ``lapse_table.csv`` by :func:`policy_year`, the 1-based contractual label
+    ``t // 12 + 1`` — 9 / 7 / 6 / 5.5 / 5 percent, the last row applying to policy year
+    5 and beyond.  Zero from ``t = term_m()`` on.
 
     A lapse pays nothing: there is no 解約返戻金 at any duration on the composite, so this
     moves :func:`pols_if` and nothing else.  Note that the *sign* of the lapse
@@ -579,7 +592,7 @@ def lapse_rate(t):
     expected claims exceed premiums, so lapse relieves the liability — undiscounted net
     cash flow is -¥269,617.32 at zero lapse against -¥103,051.56 on this table.
     """
-    if t < 1 or t > term_m():
+    if t < 0 or t > term_m() - 1:
         return 0.0
     tbl = data.lapse_table()                                         # noqa: F821
     return float(tbl.loc[min(policy_year(t), int(tbl.index.max())), "lapse_rate"])
@@ -593,19 +606,19 @@ def lapse_rate_mth(t):
 def pols_if(t):
     """l(t): the policies in force at the **start** of policy month t.
 
-    ``pols_if_init()`` at ``t = 1``, then the notes' recursion
-    ``l(t+1) = l(t)(1 - q_m(t))(1 - w_m(t))`` for ``t < N``, plus any 復活
+    ``pols_if_init()`` at ``t = 0``, then the notes' recursion
+    ``l(t+1) = l(t)(1 - q_m(t))(1 - w_m(t))`` for ``t < N - 1``, plus any 復活
     reinstatements.  This is the weight on the premium, maintenance and commission
     lines of the same ``result_cf()`` row — and on *nothing else*: the annuity
     instalments carry :func:`annuities_if` instead.
 
-    **Zero for every ``t > term_m()``.**  Cover ends at the expiry date with nothing
+    **Zero for every ``t >= term_m()``.**  Cover ends at the expiry date with nothing
     payable on survival, and the months after it belong entirely to the run-off of
     claims that arose inside the term.
     """
-    if t < 1 or t > term_m():
+    if t < 0 or t > term_m() - 1:
         return 0.0
-    if t == 1:
+    if t == 0:
         return pols_if_init()
     return pols_if_at(t - 1, "AFT_DECR") + pols_reinst(t)
 
@@ -623,16 +636,16 @@ def pols_if_at(t, timing):
         taken from.
 
     ``"AFT_DECR"``
-        the end-of-month state, and zero from ``term_m()`` on, because the
-        survivors of the last month of cover leave with nothing rather than
-        rolling forward.
+        the end-of-month state, and zero from the last month of cover
+        ``t = term_m() - 1`` on, because its survivors leave with nothing rather
+        than rolling forward.
     """
     if timing == "BEF_DECR":
         return pols_if(t)
     if timing == "BEF_LAPSE":
         return pols_if(t) * (1.0 - mort_rate_mth(t))
     if timing == "AFT_DECR":
-        if t < 1 or t >= term_m():
+        if t < 0 or t >= term_m() - 1:
             return 0.0
         return pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate_mth(t))
     raise ValueError("invalid timing")
@@ -661,13 +674,13 @@ def pols_lapse(t):
 
 
 def pols_maturity(t):
-    """Survivors whose cover expires at the end of month ``term_m()``; zero elsewhere.
+    """Survivors whose cover expires at the end of ``t = term_m() - 1``; zero elsewhere.
 
     Not a decrement and not a benefit — the contract simply runs out, with no 満期保険金
     and no 解約返戻金 — but needed for the in-force roll-forward to close in the last month
     of cover.  On the anchor cell it is 0.144342 of the original cohort.
     """
-    if t != term_m():
+    if t != term_m() - 1:
         return 0.0
     return pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate_mth(t))
 
@@ -681,7 +694,7 @@ def pols_reinst(t):
     because the class is a mortality parameter; the arrears with interest they pay are
     in :func:`premiums` through :func:`prem_arrears_pp`.
     """
-    if not reinstatement() or t <= reinst_lag_m or t > term_m():     # noqa: F821
+    if not reinstatement() or t < reinst_lag_m or t > term_m() - 1:  # noqa: F821
         return 0.0
     if reinst_lag_m > reinst_window_m:                               # noqa: F821
         raise ValueError("reinst_lag_m outside the 復活 window")
@@ -700,7 +713,7 @@ def wop_waived_frac(t):
     **[std]**, which is what lets the waived population be carried as a fraction of the
     in-force rather than as its own decrement.  Zero unless the module is on.
     """
-    if not wop() or t <= 1:
+    if not wop() or t <= 0:
         return 0.0
     inc_m = 1.0 - (1.0 - wop_inc_rate) ** (1.0 / 12.0)               # noqa: F821
     rec_m = 1.0 - (1.0 - wop_rec_rate) ** (1.0 / 12.0)               # noqa: F821
@@ -719,26 +732,31 @@ def pols_payer(t):
 
 
 def pay_count(m):
-    """n_pay(m) = max(N - m + 1, G): the instalments a claim in month m generates.
+    """n_pay(m) = max(N - m, G): the instalments a claim in month m generates.
 
-    One instalment per monthly payment date from the insured event to the 保険期間満了日,
-    floored at the 最低支払保証期間.  The rule reproduces every published illustration in
-    the source set: on ``N = 420``, 420 instalments for a claim in month 1, 240 for
-    month 181 and 60 for month 361; 411 for month 10 and 178 for month 243; and on a
-    5年 guarantee, 60 for a death 33 years in, where the remaining term is 24 months and
-    the guarantee binds.
+    ``m`` is the model's own 0-based month index, so the contractual policy month of
+    the event is ``m + 1``: a source that quotes an illustration for policy month ``k``
+    is read here at ``m = k - 1``, and its ``max(N - k + 1, G)`` becomes
+    ``max(N - m, G)``.  One instalment per monthly payment date from the insured
+    event to the 保険期間満了日, floored at the 最低支払保証期間.  The rule reproduces every
+    published illustration in the source set: on ``N = 420``, 420 instalments for a
+    claim at ``m = 0``, 240 at ``m = 180`` and 60 at ``m = 360``; 411 at ``m = 9`` and
+    178 at ``m = 242``; and on a 5年 guarantee, 60 for a death 33 years in, where the
+    remaining term is 24 months and the guarantee binds.
     """
-    return max(term_m() - m + 1, guar_m())
+    return max(term_m() - m, guar_m())
 
 
 def pay_end(m):
-    """ends_at(m) = max(N, m + G - 1): the month of that stream's last instalment.
+    """ends_at(m) = max(N - 1, m + G - 1): the month of that stream's last instalment.
 
-    The whole guarantee mechanic in one expression.  For ``m <= N - G + 1`` every
-    stream ends at exactly ``N``, whenever it opened, because the expiry date is fixed
-    at issue; only later claims run past it.
+    A 0-based month index like ``m`` itself, so ``pay_count(m) == pay_end(m) - m + 1``
+    exactly as in the notes.  The whole guarantee mechanic in one expression: for
+    ``m <= N - G`` every stream ends at exactly ``N - 1``, the last month of cover,
+    whenever it opened, because the expiry date is fixed at issue; only later claims
+    run past it.
     """
-    return max(term_m(), m + guar_m() - 1)
+    return max(term_m() - 1, m + guar_m() - 1)
 
 
 def commute_disc():
@@ -774,7 +792,7 @@ def commute_pp(t):
 
     ``A a(n_pay(t))``.  A full commutation **extinguishes the contract**, so with the
     module on the ledger must not open at all for that claim.  On the anchor cell a
-    death in month 1 commutes ¥63,000,000 of instalments to ¥56,352,381.90, a ratio of
+    death at ``t = 0`` commutes ¥63,000,000 of instalments to ¥56,352,381.90, a ratio of
     0.894482; at 300 remaining instalments the ratio is 0.922965, against the
     0.92133-0.92190 the three published illustrations show.
     """
@@ -786,13 +804,14 @@ def ln_benefit_pp(t):
 
     The 年金現価 of the designated 年金月額 — taken as the whole of it **[std]** — less six
     months' interest and six months' premium equivalent, capped at ``ln_cap`` and
-    barred in the final year before expiry.  Because the amount is the present value of
-    an income stream, **the cap binds from month 1** on the anchor cell, where the full
-    年金現価 at issue is ¥56,352,381.90, and stops binding only once the unpaid stream has
-    run down below ¥30,000,000 — the opposite pattern to a level sum assured, where a
-    cap either always binds or never does.
+    barred in the final year before expiry — the twelve months ``t = N - 12 ... N - 1``.
+    Because the amount is the present value of an income stream, **the cap binds from
+    ``t = 0``** on the anchor cell, where the full 年金現価 at issue is ¥56,352,381.90, and
+    stops binding only once the unpaid stream has run down below ¥30,000,000 — the
+    opposite pattern to a level sum assured, where a cap either always binds or never
+    does.
     """
-    if t > term_m() - 12:
+    if t >= term_m() - 12:
         return 0.0
     gross = (commute_pp(t) * (1.0 + commute_rate) ** (-ln_defer_m / 12.0)
              - ln_defer_m * premium_mth_pp())                           # noqa: F821
@@ -835,15 +854,15 @@ def annuities_open(t):
 def annuities_ended(t):
     """The streams whose last instalment fell in month ``t - 1``.
 
-    Two cases exhaust it.  At ``t = N + 1`` every stream opened in months
-    ``1 ... N - G + 1`` ends at once, because each of them ran to the fixed expiry
-    date whenever it opened.  Beyond that the ledger runs down one month's claims at a
-    time, ``annuities_open(t - G)``.
+    Two cases exhaust it.  At ``t = N`` — the first month past the end of cover — every
+    stream opened in months ``0 ... N - G`` ends at once, because each of them ran to
+    the fixed expiry date whenever it opened.  Beyond that the ledger runs down one
+    month's claims at a time, ``annuities_open(t - G)``.
     """
     n, g = term_m(), guar_m()
-    if t == n + 1:
-        return sum(annuities_open(s) for s in range(1, n - g + 2))
-    if t > n + 1:
+    if t == n:
+        return sum(annuities_open(s) for s in range(0, n - g + 1))
+    if t > n:
         return annuities_open(t - g)
     return 0.0
 
@@ -851,30 +870,31 @@ def annuities_ended(t):
 def annuities_if(t):
     """R(t): the annuity streams in payment during policy month t, per policy issued.
 
-    ``R(t) = R(t-1) - ended(t) + opened(t)``, ``R(0) = 0``.  **Never decremented** — not
-    by the insured's mortality, not by the recipient's, not by lapse.  It is a count of
-    instalments falling due, *not* a population of policies, and must never be summed
-    with :func:`pols_if`.
+    ``R(t) = R(t-1) - ended(t) + opened(t)``, seeded by ``R(t) = 0`` for ``t < 0``.
+    **Never decremented** — not by the insured's mortality, not by the recipient's, not
+    by lapse.  It is a count of instalments falling due, *not* a population of policies,
+    and must never be summed with :func:`pols_if`.
 
-    The ledger peaks at exactly month ``N``, where it equals the sum of every claim the
-    contract has ever made: 0.016779783 on the anchor cell.  An implementation that
-    ends streams one month early gets that identity wrong and nothing else visibly
-    changes, which is why :func:`check_annuity_ledger` rebuilds it directly.
+    The ledger peaks at exactly ``t = N - 1``, the last month of cover, where it equals
+    the sum of every claim the contract has ever made: 0.016779783 on the anchor cell.
+    An implementation that ends streams one month early gets that identity wrong and
+    nothing else visibly changes, which is why :func:`check_annuity_ledger` rebuilds it
+    directly.
     """
-    if t < 1 or t > proj_len():
+    if t < 0 or t > proj_len() - 1:
         return 0.0
     return annuities_if(t - 1) - annuities_ended(t) + annuities_open(t)
 
 
 def annuities_cum(t):
-    """The instalments due from month 1 to month t inclusive, per policy issued.
+    """The instalments due from ``t = 0`` to month t inclusive, per policy issued.
 
     The running total of :func:`annuities_if`.  Over the whole projection it reconciles
     to ``sum of D(s) x pay_count(s)`` — 2.955425 on the anchor cell, an average total
     benefit of ¥26,419,511.96 per claim — which is what :func:`check_annuity_total`
     asserts.
     """
-    if t < 1:
+    if t < 0:
         return 0.0
     return annuities_cum(t - 1) + annuities_if(t)
 
@@ -883,15 +903,15 @@ def prem_due_pp(t):
     """The office premium falling due per paying policy at the start of month t.
 
     ``P_m`` every month on 月払; on 半年払 and 年払, ``12 / f`` months' premium at the start
-    of each payment period and nothing in between.  Zero beyond ``term_m()``: the
-    保険料払込期間 equals the 保険期間, and premiums cease on the annuity event in any case —
-    which needs no term here, because a policy in claim has already left
-    :func:`pols_if`.
+    of each payment period and nothing in between, the first falling at ``t = 0``.  Zero
+    from ``t = term_m()`` on: the 保険料払込期間 equals the 保険期間, and premiums cease on the
+    annuity event in any case — which needs no term here, because a policy in claim has
+    already left :func:`pols_if`.
     """
-    if t < 1 or t > term_m():
+    if t < 0 or t > term_m() - 1:
         return 0.0
     p = prem_mode_months()
-    return premium_mth_pp() * p if (t - 1) % p == 0 else 0.0
+    return premium_mth_pp() * p if t % p == 0 else 0.0
 
 
 def prem_arrears_pp():
@@ -923,7 +943,7 @@ def claims(t, kind=None):
 
     The contingency is stated rather than left to the column names, because
     ``claims_annuity`` names a benefit paid on a **living** contingency in
-    ``LTC_JP_S`` and ``Annuity_JP_A``.  Here the name records the benefit's *form* — an
+    ``LTC_JP_S`` and ``Annuity_JP_S``.  Here the name records the benefit's *form* — an
     annuity — and the trigger is the death of the insured, or the contractual 高度障害
     state carried inside the same decrement as its accelerated equivalent.  Nothing in
     this model is paid on survival, on disability as such, or on lapse.
@@ -990,7 +1010,7 @@ def annuity_expenses(t):
     point.  It is charged against the **ledger**, not against :func:`pols_if`, and it is
     the one expense that survives the end of the policy term: an implementation that
     attaches every expense to the in-force population charges nothing at all in months
-    421-443, when instalments are still being paid.
+    ``t = 420 ... 442``, when instalments are still being paid.
     """
     return expense_annuity * (annuities_if(t)                        # noqa: F821
                               + pols_commute(t) + pols_living_needs(t))
@@ -1006,16 +1026,17 @@ def expenses(t):
     prints those two combined in a single "Claim + ann. exp" column, which is a
     presentational grouping in the notes and not a definition of ``expenses``.
 
-    ¥15,000 per policy at issue, then ¥4,000 p.a. taken as ``4,000 / 12`` a month and
-    inflating at 1.0% p.a., both at the start of the month and both on the in-force
-    population.  Zero beyond ``term_m()``, where there is no in-force population left.
+    ¥15,000 per policy at issue — the acquisition charge falls in the first row of the
+    frame, ``t = 0`` — then ¥4,000 p.a. taken as ``4,000 / 12`` a month and inflating at
+    1.0% p.a., both at the start of the month and both on the in-force population.  Zero
+    from ``t = term_m()`` on, where there is no in-force population left.
 
     Expense is heavy relative to this premium: ¥30,780 of annual premium carries ¥4,000
     of maintenance, and the five non-benefit lines total ¥120,768.70 against ¥461,030.83
     of premium on the anchor cell — 26.2%.  No Japanese public source supports any of
     these levels.
     """
-    acq = expense_acq * pols_if(t) if t == 1 else 0.0                # noqa: F821
+    acq = expense_acq * pols_if(t) if t == 0 else 0.0                # noqa: F821
     return acq + (expense_maint / 12.0) * inflation_factor(t) * pols_if(t)  # noqa: F821
 
 
@@ -1024,7 +1045,7 @@ def comm_init_pp():
 
     50% of the first-year annualized premium, paid upfront at issue.  With the
     acquisition expense it is what produces the deep first-month new business strain in
-    the worked example: -¥28,164.05 in month 1 against +¥2,203.68 in month 2.
+    the worked example: -¥28,164.05 at ``t = 0`` against +¥2,203.68 at ``t = 1``.
     """
     return comm_init_rate * 12.0 * premium_mth_pp()                     # noqa: F821
 
@@ -1032,12 +1053,13 @@ def comm_init_pp():
 def commissions(t):
     """Commission outgo in policy month t **[std]**.
 
-    The initial commission at ``t = 1``, then 5% of premium income from month 13.  Both
-    levels are chosen for the reference implementation; nothing about Japanese
-    protection commission is published in the source set.
+    The initial commission at ``t = 0``, then 5% of premium income from ``t = 12``, the
+    first month of policy year 2.  Both levels are chosen for the reference
+    implementation; nothing about Japanese protection commission is published in the
+    source set.
     """
-    init = comm_init_pp() * pols_if(t) if t == 1 else 0.0
-    renew = comm_renewal_rate * premiums(t) if t >= 13 else 0.0      # noqa: F821
+    init = comm_init_pp() * pols_if(t) if t == 0 else 0.0
+    renew = comm_renewal_rate * premiums(t) if t >= 12 else 0.0      # noqa: F821
     return init + renew
 
 
@@ -1063,7 +1085,7 @@ def check_pols_roll_fwd_resid(t):
     """The in-force roll-forward residual in policy month t; zero everywhere.
 
     ``l(t) + reinstatements(t+1) - l(t+1) - deaths - lapses - expiries``.  Expiries are
-    non-zero only in month ``term_m()``, where the survivors neither die nor lapse:
+    non-zero only at ``t = term_m() - 1``, where the survivors neither die nor lapse:
     their cover runs out and they are paid nothing.  Without that term the last month
     of cover appears to lose lives with no cause.
     """
@@ -1079,7 +1101,7 @@ def check_pols_roll_fwd():
     :func:`check_pols_roll_fwd_resid` gives the signed residual of the month that failed.
     """
     return all(abs(check_pols_roll_fwd_resid(t)) <= roll_fwd_tol           # noqa: F821
-               for t in range(1, term_m() + 1))
+               for t in range(term_m()))
 
 
 def check_annuity_ledger_resid(t):
@@ -1091,10 +1113,10 @@ def check_annuity_ledger_resid(t):
     whose streams end a month early, shows up here.
     """
     n, g = term_m(), guar_m()
-    lo = 1 if t <= n else t - g + 1
-    hi = min(t, n)
+    lo = 0 if t <= n - 1 else t - g + 1
+    hi = min(t, n - 1)
     direct = 0.0
-    for s in range(max(1, lo), hi + 1):
+    for s in range(max(0, lo), hi + 1):
         direct += annuities_open(s)
     return annuities_if(t) - direct
 
@@ -1106,7 +1128,7 @@ def check_annuity_ledger():
     signed residual of the month that failed.
     """
     return all(abs(check_annuity_ledger_resid(t)) <= roll_fwd_tol    # noqa: F821
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_annuity_total_resid(t):
@@ -1115,20 +1137,20 @@ def check_annuity_total_resid(t):
     :func:`annuities_cum` less an independent count built from the claim vector and the
     contractual instalment schedule: each claim in month ``s`` contributes the number of
     its instalments falling at or before ``t``, ``min(t, pay_end(s)) - s + 1``.  At
-    ``t = proj_len()`` this is the notes' identity
+    ``t = proj_len() - 1``, the last row of the frame, this is the notes' identity
     ``sum over t of R(t) = sum over s of D(s) x n_pay(s)``.
     """
     n, g = term_m(), guar_m()
     built = 0.0
-    for s in range(1, min(t, n) + 1):
-        built += annuities_open(s) * (min(t, max(n, s + g - 1)) - s + 1)
+    for s in range(min(t, n - 1) + 1):
+        built += annuities_open(s) * (min(t, max(n - 1, s + g - 1)) - s + 1)
     return annuities_cum(t) - built
 
 
 def check_annuity_total():
     """True when the instalments due to date reconcile in every projected month."""
     return all(abs(check_annuity_total_resid(t)) <= roll_fwd_tol     # noqa: F821
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_pay_count_resid(t):
@@ -1136,8 +1158,8 @@ def check_pay_count_resid(t):
 
     ``pay_count(t) - (pay_end(t) - t + 1)``.  The two express the same contractual rule
     from opposite ends — how many instalments a claim makes, and when the last of them
-    falls — and ``ends_at(m) = max(N, m + G - 1)`` is the whole guarantee mechanic in
-    one expression.  An off-by-one in either is invisible in any total.
+    falls — and ``ends_at(m) = max(N - 1, m + G - 1)`` is the whole guarantee mechanic
+    in one expression.  An off-by-one in either is invisible in any total.
     """
     return float(pay_count(t) - (pay_end(t) - t + 1))
 
@@ -1145,19 +1167,19 @@ def check_pay_count_resid(t):
 def check_pay_count():
     """True when the instalment count and the stream end date agree in every month."""
     return all(abs(check_pay_count_resid(t)) <= roll_fwd_tol         # noqa: F821
-               for t in range(1, term_m() + 1))
+               for t in range(term_m()))
 
 
 def check_expired_cover_resid(t):
     """What the model still charges to the in-force population after expiry; zero.
 
-    ``premiums(t) + expenses(t) + commissions(t) + pols_death(t)`` for ``t > N``, and
-    zero by construction at or before ``N``.  Cover ends at the expiry date with
-    nothing payable on survival, so every line carried on :func:`pols_if` must vanish
-    there while the annuity instalments and their administration expense run on — the
+    ``premiums(t) + expenses(t) + commissions(t) + pols_death(t)`` for ``t >= N``, and
+    zero by construction inside the term.  Cover ends at the expiry date with nothing
+    payable on survival, so every line carried on :func:`pols_if` must vanish there
+    while the annuity instalments and their administration expense run on — the
     asymmetry this product exists to model.
     """
-    if t <= term_m():
+    if t < term_m():
         return 0.0
     return premiums(t) + expenses(t) + commissions(t) + pols_death(t)
 
@@ -1165,7 +1187,7 @@ def check_expired_cover_resid(t):
 def check_expired_cover():
     """True when nothing is charged to the in-force population past the policy term."""
     return all(abs(check_expired_cover_resid(t)) <= roll_fwd_tol     # noqa: F821
-               for t in range(term_m() + 1, proj_len() + 1))
+               for t in range(term_m(), proj_len()))
 
 
 def check_class_factor_norm_resid(t):
@@ -1186,7 +1208,7 @@ def check_class_factor_norm_resid(t):
 
 def check_class_factor_norm():
     """True when the mix-weighted mean of the rate class factors is 1.000."""
-    return abs(check_class_factor_norm_resid(1)) <= roll_fwd_tol     # noqa: F821
+    return abs(check_class_factor_norm_resid(0)) <= roll_fwd_tol     # noqa: F821
 
 
 def check_net_cf_resid(t):
@@ -1217,11 +1239,14 @@ def check_net_cf():
     :func:`check_net_cf_resid`.
     """
     return all(abs(check_net_cf_resid(t)) <= cash_tol                # noqa: F821
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def result_cf():
-    """Result table of cash flows, indexed by policy month t.
+    """Result table of cash flows, indexed by the 0-based policy month t.
+
+    The index runs ``0 ... proj_len() - 1``, so the frame has ``proj_len()`` rows and
+    the contractual policy month of row ``t`` is ``t + 1``.
 
     ``pols_if`` is the start-of-month in-force probability and the weight on the
     premium, maintenance and commission lines of the same row; ``annuities_if`` is the
@@ -1232,7 +1257,7 @@ def result_cf():
     **``claims_annuity`` is a death benefit.**  The instalments are paid on the death of
     the insured, or on the contractual 高度障害 state treated as its accelerated
     equivalent — not on survival and not on disability as such.  The same column name
-    carries a *living* benefit in ``LTC_JP_S`` and ``Annuity_JP_A``, so on this product
+    carries a *living* benefit in ``LTC_JP_S`` and ``Annuity_JP_S``, so on this product
     the contingency is stated here: the name records the benefit's form, not its
     trigger.  **There is no ``claims_death`` column**, and that absence is a product
     fact rather than an omission — the contract pays no lump sum on death, so the whole
@@ -1240,11 +1265,11 @@ def result_cf():
     product design — there is no 解約返戻金 at any duration — and is published rather than
     dropped.
 
-    The table runs to ``proj_len()``, which is ``guar_m() - 1`` months longer than the
-    policy term: the last rows carry annuity instalments and their administration
+    The table is ``proj_len()`` rows long, which is ``guar_m() - 1`` months longer than
+    the policy term: the last rows carry annuity instalments and their administration
     expense alone.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1265,8 +1290,11 @@ def result_cf():
 
 
 def result_pols():
-    """Result table of populations and decrement rates, indexed by policy month t."""
-    ts = list(range(1, proj_len() + 1))
+    """Populations and decrement rates, indexed by the 0-based policy month t.
+
+    Same frame as :func:`result_cf`: ``t`` runs ``0 ... proj_len() - 1``.
+    """
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],

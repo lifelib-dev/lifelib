@@ -24,10 +24,12 @@ start = proj.income_start_mth()
 print("model point {}: {} - {} {} {} - premiums {}".format(
     point_id, proj.model_point()["policy_id"], proj.market_type(),
     proj.income_form(), lives, sched))
-print("deferral DB = {}   income starts month {} (attained age {})   "
+print("deferral DB = {}   income starts month t = {} (attained age {})   "
       "m = {} in {}   COLA = {:.0%}".format(
           proj.db_form(), start, proj.age(start, 1),
           proj.payment_freq(), proj.payment_timing(), proj.cola_rate()))
+print("frame: {} projected months, t = 0 .. {} (t is 0-based; month 0 is the issue "
+      "month), policy year = t // 12 + 1".format(proj.proj_len(), proj.proj_len() - 1))
 print("pricing factors = {}   CP(T) = {:,.0f}   B = {:,.2f}/yr = {:,.2f}/mth   "
       "guarantee = {:.4f} yrs ({} certain months)".format(
           proj.factor_basis(), proj.cum_premium_pp(start),
@@ -38,10 +40,12 @@ if proj.is_qlac():
     print("QLAC: room at issue {:,.0f}   compliance {}".format(
         proj.qlac_room(0), "OK" if not flags else "; ".join(flags)))
 print()
-print("annual display grid (the technical notes' worked-example table):")
+print("annual display grid, policy years 1 to 25 (the technical notes' worked-example "
+      "table):")
 print(proj.result_annual().head(25).round(2).to_string())
 print()
-print("monthly cash flows around the income start date:")
+print("monthly cash flows around the income start date, t = {} to {}:".format(
+    start - 2, start + 3))
 print(proj.result_cf().loc[start - 2:start + 3].round(2).to_string())
 
 model.close()

@@ -11,11 +11,13 @@ projecting model point 1::
     >>> Projection[1].result_cf()          # the O50 worked-example anchor cell
     >>> Projection.point_id = 5            # the underwritten cell
 
-``t`` counts **policy months**, 1-based. The notes index the in-force probability
-``l(t)`` at the **end** of month ``t`` with ``l(0) = 1``; the library indexes
-:func:`pols_if` at the **start**, so ``pols_if(t)`` is the notes' ``l(t-1)`` — which is
-the column their worked-example table prints, and the weight on every cash flow of the
-same ``result_cf()`` row.
+``t`` counts **policy months**, 0-based: ``t = 0`` is the first policy month (the issue
+month), policy month ``t`` runs from time ``t`` to time ``t + 1``, and the frame is
+``t = 0, 1, ..., proj_len() - 1``. The policy year is the contractual, 1-based label
+``policy_year(t) = t // 12 + 1``. The notes index the in-force probability ``l(t)`` at
+the **start** of month ``t`` with ``l(0) = 1``, and so does :func:`pols_if`: ``pols_if(t)``
+is the notes' ``l(t)`` — the column their worked-example table prints, and the weight on
+every cash flow of the same ``result_cf()`` row.
 
 .. rubric:: Input data
 
@@ -57,21 +59,21 @@ Notes symbol               Cells                           Meaning
 cell                       cell()                          O50 or UW
 entry_age                  age_at_entry()                  Entry age (ALB)
 a(t)                       age(t)                          Attained age (ALB) in month t
-y                          policy_year(t)                  Policy year containing month t
-(none)                     duration(t)                     Completed policy years, y - 1
-(none)                     duration_mth(t)                 Months elapsed at end of month t
+y                          policy_year(t)                  Policy year containing month t, t // 12 + 1
+(none)                     duration(t)                     Completed policy years, t // 12
+(none)                     duration_mth(t)                 Months elapsed at start of month t, t
 omega                      omega_age                       Limiting age, 120
-(none)                     proj_len()                      Last projected month
+(none)                     proj_len()                      Months projected; frame 0 .. proj_len() - 1
 SA                         sum_assured()                   Sum assured at outset
 SA(t)                      cover_pp(t)                     Sum assured in force in month t
 P                          premium_mth()                   Monthly premium at outset
 P(t)                       premium_pp(t)                   Monthly premium due in month t
-T_cess                     cessation_mths()                Months to premium cessation
-CumPrem(t)                 prem_cum_pp(t)                  Cumulative premiums paid
+T_cess                     cessation_mths()                Premium-paying months, t < T_cess
+CumPrem(t)                 prem_cum_pp(t)                  Cumulative premiums paid, end of month t
 (escalation)               esc_cover_step()                Annual cover increase
 (escalation)               esc_prem_step()                 Annual premium increase
 (moratorium)               moratorium_mths()               O50 moratorium, 12 months
-in_moratorium(t)           in_moratorium(t)                Indicator t <= moratorium
+in_moratorium(t)           in_moratorium(t)                Indicator t < moratorium
 DB_na(t)                   benefit_pp(t, "NON_ACC")        Non-accidental death benefit
 DB_ac(t)                   benefit_pp(t, "ACC")            Accidental death benefit
 (blended)                  benefit_pp(t, "DEATH")          Expected benefit per death
@@ -79,10 +81,10 @@ PU                         benefit_pp(t, "PAID_UP")        Paid-up payout on con
 k_adb                      adb_multiplier()                Accidental multiplier, 1 or 2
 delta_acc                  acc_share                       Accidental share of deaths, 3%
 delta_su                   suicide_share                   Suicide share of year-1 deaths
-N_paid(t)                  payments_made(t)                Monthly payments made
+N_paid(t)                  payments_made(t)                Monthly payments made by end of month t
 N_expected                 payments_expected()             Payments expected to cessation
 paid_up                    pu_eligible(t)                  Pro-rata paid-up qualifies
-t*                         crossover_mth()                 Month cumulative premiums pass SA
+t*                         crossover_mth()                 Month CumPrem passes SA; -1 if never
 (basis)                    mort_basis()                    population or assured
 (loading)                  mort_loading()                  Anti-selection loading
 q(y)                       mort_rate(t)                    Annual mortality rate applied
@@ -92,7 +94,7 @@ w(y)                       lapse_rate(t)                   Annual lapse rate in 
 (table)                    lapse_rate_base(t)              Table lapse rate before beta
 beta                       lapse_crossover_beta            Crossover lapse stress dial
 w_m(y)                     lapse_rate_mth(t)               Monthly lapse rate
-l(t-1)                     pols_if(t)                      Full-cover policies in force
+l(t)                       pols_if(t)                      Full-cover in force, start of month t
 (none)                     pols_pu(t)                      Paid-up policies in force
 (none)                     pu_benefit(t)                   Paid-up cover in force
 (none)                     pols_all(t)                     pols_if + pols_pu
@@ -152,13 +154,13 @@ basis is therefore derived from :func:`cell` rather than being a free parameter.
 
 During the O50 cell's first twelve months a **non-accidental** death returns the
 premiums paid — not the cash sum, not an annualized premium — while an **accidental**
-death pays the full cash sum from day one. At month 13 the full cash sum becomes payable
-for any death, and expected death outgo jumps about elevenfold on the anchor cell. That
-step is the signature of the product and must not be smoothed: an annual-grid
-implementation has to split policy year 1 explicitly, and the notes list smoothing it as
-a pitfall.
+death pays the full cash sum from day one. From ``t = 12`` (the thirteenth policy month)
+the full cash sum becomes payable for any death, and expected death outgo jumps about
+elevenfold on the anchor cell between ``t = 11`` and ``t = 12``. That step is the
+signature of the product and must not be smoothed: an annual-grid implementation has to
+split policy year 1 explicitly, and the notes list smoothing it as a pitfall.
 
-Note where the year-one outgo actually comes from. At month 1 the blended benefit is
+Note where the year-one outgo actually comes from. At ``t = 0`` the blended benefit is
 ``0.97 x £30 + 0.03 x £5,000 = £179.10``: five sixths of it is the small accidental
 tail paying the full cash sum, not the premium refund. An implementation that dropped
 the accidental split would understate year-one claims by about that much.
@@ -195,8 +197,9 @@ into the model rather than left as prose:
 .. rubric:: The crossover
 
 On the O50 cell cumulative premiums eventually exceed the cash sum. :func:`crossover_mth`
-finds the month: on the anchor cell ``floor(5000/30) + 1 = 167`` months, thirteen years
-and eleven months, which is the FCA's stylised example exactly. It is searched rather
+finds the month: on the anchor cell ``t = floor(5000/30) = 166``, the month in which the
+167th monthly premium is paid — thirteen years and eleven months of premiums, which is
+the FCA's stylised example exactly. It is searched rather
 than closed-form so that an escalating variant still resolves, and it is reported rather
 than acted on — the notes' crossover-aware lapse module, which raises lapse past the
 tipping point, is a pure stress dial and is off in the base run
@@ -305,10 +308,12 @@ def escalation():
 
 
 def cessation_mths():
-    """T_cess: months from outset to premium cessation; 0 means premiums for life.
+    """T_cess: the number of premium-paying months from outset; 0 means premiums for life.
 
-    The over-50s cells cease at the anniversary on or after the 90th birthday **[std]**
-    and cover continues; the underwritten cell has no cessation at all.
+    An elapsed count, not a month index: premiums are due in months ``t < T_cess`` and
+    ``t = T_cess`` is the first premium-free month.  The over-50s cells cease at the
+    anniversary on or after the 90th birthday **[std]** and cover continues; the
+    underwritten cell has no cessation at all.
     """
     return int(model_point()["cessation_months"])
 
@@ -316,6 +321,7 @@ def cessation_mths():
 def moratorium_mths():
     """The over-50s moratorium in months, 12; zero on the underwritten cell.
 
+    A count of months: the moratorium covers policy months ``t < moratorium_mths()``.
     The underwritten cell has a suicide clause over the same window instead, which is a
     different rule with a different denominator - see :func:`benefit_pp`.
     """
@@ -353,7 +359,11 @@ def pols_if_init():
 
 
 def proj_len():
-    """Projection length in months: ``12 x (omega_age - entry_age)``.
+    """The number of projected months: ``12 x (omega_age - entry_age)``.
+
+    The exclusive end of the frame: policy months run ``t = 0, 1, ..., proj_len() - 1``,
+    so the last projected month is the last month of age ``omega_age - 1`` and
+    :func:`result_cf` has ``proj_len()`` rows.
 
     Whole of life has no maturity date, so the horizon is a **limiting age** rather than
     a contractual one.  The shipped mortality tables reach 1 well before ``omega_age``,
@@ -365,26 +375,30 @@ def proj_len():
 
 
 def duration(t):
-    """Completed policy years at the start of month t: ``(t - 1) // 12``."""
-    return (t - 1) // 12
+    """Completed policy years at the start of month t: ``t // 12``; 0 in the first year."""
+    return t // 12
 
 
 def duration_mth(t):
-    """Months elapsed from outset at the end of month t; equal to t.
+    """Months elapsed from outset at the start of month t; equal to t.
 
-    ``t`` is 1-based, so the identity is trivial - the cells exists so the monthly
+    ``t`` counts from 0, so the identity is trivial - the cells exists so the monthly
     models in this library share one vocabulary.
     """
     return t
 
 
 def policy_year(t):
-    """y = floor((t-1)/12) + 1: the policy year containing month t; 1 for t = 1..12."""
+    """y = floor(t/12) + 1: the 1-based policy year containing month t; 1 for t = 0..11.
+
+    A contractual label, derived from ``t`` and never indexed by: the lapse table is
+    keyed by it, and the escalation and inflation steps count ``y - 1 = duration(t)``.
+    """
     return duration(t) + 1
 
 
 def age(t):
-    """a(t): the attained age (ALB) in the policy year containing month t."""
+    """a(t): the attained age (ALB) in month t, ``age_at_entry() + t // 12``."""
     return age_at_entry() + duration(t)
 
 
@@ -412,13 +426,14 @@ def mort_loading():
 def mort_improve_factor(t):
     """The mortality improvement factor in month t; 1 in the base run **[std]**.
 
-    ``(1 - improvement)^(y - 1)``.  The market-standard expression is a CMI projections
+    ``(1 - improvement)^(y - 1)`` with ``y - 1 = duration(t) = t // 12``, so the factor
+    steps at policy anniversaries.  The market-standard expression is a CMI projections
     model with a chosen long-term rate, but that model is subscriber-restricted, so a
     flat annual improvement is the **[std]** sensitivity proxy.  Improvements lengthen
     exactly the part of the liability that is pure outgo - past the crossover and past
     premium cessation - so this is not a second-order dial on this product.
     """
-    return (1.0 - mort_improvement) ** (policy_year(t) - 1)          # noqa: F821
+    return (1.0 - mort_improvement) ** duration(t)                   # noqa: F821
 
 
 def mort_rate(t):
@@ -474,23 +489,25 @@ def esc_prem_step():
 def cover_pp(t):
     """SA(t): the sum assured or cash sum in force in month t.
 
-    Steps at policy anniversaries.  On the RPI variant the cash sum **continues to
+    ``SA x (1 + step)^(y - 1)`` with ``y - 1 = duration(t)``, so it steps at policy
+    anniversaries (``t = 12, 24, ...``).  On the RPI variant the cash sum **continues to
     index after premiums cease at 90**, which is why this carries no cessation test -
     the premium step, being applied to a zero premium, stops of its own accord.
     """
-    return sum_assured() * (1.0 + esc_cover_step()) ** (policy_year(t) - 1)
+    return sum_assured() * (1.0 + esc_cover_step()) ** duration(t)
 
 
 def premium_pp(t):
     """P(t): the monthly premium due at the beginning of month t.
 
-    Zero once the premium cessation month has passed, and zero on a paid-up policy -
+    Due in months ``t < cessation_mths()`` - the T_cess premiums of the premium-paying
+    period - and zero from ``t = cessation_mths()`` on.  Zero too on a paid-up policy,
     which is carried as a separate population strand rather than as a premium of zero,
     so it does not appear here.
     """
-    if cessation_mths() > 0 and t > cessation_mths():
+    if cessation_mths() > 0 and t >= cessation_mths():
         return 0.0
-    return premium_mth() * (1.0 + esc_prem_step()) ** (policy_year(t) - 1)
+    return premium_mth() * (1.0 + esc_prem_step()) ** duration(t)
 
 
 def prem_cum_pp(t):
@@ -498,25 +515,34 @@ def prem_cum_pp(t):
 
     The premium falls at the beginning of the month and death at the end, so a death in
     month t has had the month-t premium paid on it - which is why the moratorium refund
-    at ``t = 1`` is one month's premium and not nothing.  This is the **refund base**: a
+    at ``t = 0`` is one month's premium and not nothing.  This is the **refund base**: a
     year-one non-accidental claim pays cumulative premiums paid, not the cash sum and
     not an annualized premium.
     """
-    if t <= 0:
+    if t < 0:
         return 0.0
+    if t == 0:
+        return premium_pp(0)
     return prem_cum_pp(t - 1) + premium_pp(t)
 
 
 def in_moratorium(t):
-    """Whether month t falls inside the over-50s moratorium; always False on the UW cell."""
-    return t <= moratorium_mths()
+    """Whether month t falls inside the over-50s moratorium, ``t < moratorium_mths()``.
+
+    Always False on the UW cell, whose moratorium is 0 months.
+    """
+    return t < moratorium_mths()
 
 
 def payments_made(t):
-    """N_paid(t): the number of monthly payments made by the end of month t."""
+    """N_paid(t): the number of monthly payments made by the end of month t.
+
+    ``min(t + 1, T_cess)``: the month-t premium is paid at its start, so ``t + 1``
+    payments have been made by its end until cessation caps the count.
+    """
     if cessation_mths() <= 0:
-        return t
-    return min(t, cessation_mths())
+        return t + 1
+    return min(t + 1, cessation_mths())
 
 
 def payments_expected():
@@ -544,27 +570,30 @@ def pu_eligible(t):
 def crossover_mth():
     """t*: the first month in which cumulative premiums exceed the cover in force.
 
-    ``floor(SA/P) + 1`` under level premiums - 167 months, thirteen years and eleven
-    months, on the anchor cell, which is the FCA's stylised example exactly - but
-    searched rather than closed-form so that an escalating variant still resolves.
-    Returns 0 where the crossover never happens, which is the case whenever the cash sum
-    exceeds the total premiums payable to cessation.
+    ``t* = floor(SA/P)`` under level premiums, the month in which the
+    ``floor(SA/P) + 1``-th premium is paid: ``t = 166`` on the anchor cell, the 167th
+    monthly premium, thirteen years and eleven months of premiums, which is the FCA's
+    stylised example exactly - but searched rather than closed-form so that an
+    escalating variant still resolves.  Returns ``-1`` where the crossover never
+    happens, which is the case whenever the cash sum exceeds the total premiums payable
+    to cessation; ``0`` is a real month, so it cannot be the sentinel.
 
     Reported, not acted on: the crossover-aware lapse module that would raise lapse past
     the tipping point is a pure stress dial and is off in the base run.
     """
     last = cessation_mths() if cessation_mths() > 0 else proj_len()
-    for t in range(1, last + 1):
+    for t in range(last):
         if prem_cum_pp(t) > cover_pp(t):
             return t
-    return 0
+    return -1
 
 
 def lapse_rate_base(t):
     """The table annual lapse rate in month t **[std]**, before the crossover stress.
 
-    Read from the cell's own row of the lapse table; policy years beyond the table take
-    its last row.  Both tables are drafting constructions - no public UK whole of life
+    Read from the cell's own row of the lapse table, which is keyed by the contractual
+    1-based policy year ``policy_year(t) = t // 12 + 1``; policy years beyond the table
+    take its last row.  Both tables are drafting constructions - no public UK whole of life
     lapse study was retrieved - and on a product with no surrender value they are the
     single largest lever on the liability.
     """
@@ -576,12 +605,12 @@ def lapse_rate_base(t):
 def lapse_rate(t):
     """w(y): the annual lapse rate applying at the end of month t.
 
-    **Zero once premiums have ceased**: there is nothing left to stop paying, and
-    applying a lapse decrement there silently destroys liability - the notes list it as
-    a pitfall.  Otherwise the table rate, optionally stressed by
-    ``1 + beta`` past the crossover, which is off in the base run.
+    **Zero once premiums have ceased**, from ``t = cessation_mths()`` on: there is
+    nothing left to stop paying, and applying a lapse decrement there silently destroys
+    liability - the notes list it as a pitfall.  Otherwise the table rate, optionally
+    stressed by ``1 + beta`` past the crossover, which is off in the base run.
     """
-    if cessation_mths() > 0 and t > cessation_mths():
+    if cessation_mths() > 0 and t >= cessation_mths():
         return 0.0
     w = lapse_rate_base(t)
     if lapse_crossover_beta > 0.0 and prem_cum_pp(t) > cover_pp(t):  # noqa: F821
@@ -595,16 +624,18 @@ def lapse_rate_mth(t):
 
 
 def pols_if(t):
-    """l(t-1): full-cover policies in force at the **start** of policy month t.
+    """l(t): full-cover policies in force at the **start** of policy month t.
 
     The notes' in-force probability, and the column their worked-example table prints.
+    ``pols_if(0)`` is :func:`pols_if_init`; each later month is the previous one net of
+    that month's deaths and lapses.  Zero outside the frame ``0 <= t < proj_len()``.
     Paid-up policies are **not** counted here: they are a separate strand,
     :func:`pols_pu`, because their benefit is a reduced amount.  On every model point
     without the pro-rata paid-up variant the two coincide with :func:`pols_all`.
     """
-    if t < 1 or t > proj_len():
+    if t < 0 or t >= proj_len():
         return 0.0
-    if t == 1:
+    if t == 0:
         return pols_if_init()
     return (pols_if(t - 1) * (1.0 - mort_rate_mth(t - 1))
             * (1.0 - lapse_rate_mth(t - 1)))
@@ -613,13 +644,14 @@ def pols_if(t):
 def pols_pu(t):
     """Paid-up policies in force at the start of month t.
 
-    Zero without the pro-rata paid-up variant.  Paid-up policies pay no premium, carry no
-    lapse decrement and do not escalate, so they roll forward on mortality alone and take
-    conversions in from the full-cover strand.
+    Zero without the pro-rata paid-up variant, and zero at ``t = 0``: every policy starts
+    on full cover.  Paid-up policies pay no premium, carry no lapse decrement and do not
+    escalate, so they roll forward on mortality alone and take conversions in from the
+    full-cover strand.
     """
-    if t < 1 or t > proj_len() or not pu_variant():
+    if t < 0 or t >= proj_len() or not pu_variant():
         return 0.0
-    if t == 1:
+    if t == 0:
         return 0.0
     return pols_pu(t - 1) * (1.0 - mort_rate_mth(t - 1)) + pols_convert(t - 1)
 
@@ -631,11 +663,12 @@ def pu_benefit(t):
     per-conversion cohort dimension: the paid-up payout depends on when the policy
     converted, but every paid-up policy thereafter rolls forward on the same survival
     factor, so the sum of their payouts satisfies the same recursion as the count.
-    Death outgo on the strand is then ``pu_benefit(t) x q_m(t)``.
+    Death outgo on the strand is then ``pu_benefit(t) x q_m(t)``.  Zero at ``t = 0``,
+    like :func:`pols_pu`.
     """
-    if t < 1 or t > proj_len() or not pu_variant():
+    if t < 0 or t >= proj_len() or not pu_variant():
         return 0.0
-    if t == 1:
+    if t == 0:
         return 0.0
     return (pu_benefit(t - 1) * (1.0 - mort_rate_mth(t - 1))
             + pols_convert(t - 1) * benefit_pp(t - 1, "PAID_UP"))
@@ -660,14 +693,15 @@ def pols_if_at(t, timing):
         **death before lapse** **[std]**.
 
     ``"AFT_DECR"``
-        the notes' ``l(t)``, the end-of-month count.
+        the end-of-month count, the notes' ``l(t+1)``; zero in the last projected
+        month, where the survivors are :func:`pols_maturity`.
     """
     if timing == "BEF_DECR":
         return pols_if(t)
     if timing == "BEF_LAPSE":
         return pols_if(t) * (1.0 - mort_rate_mth(t))
     if timing == "AFT_DECR":
-        if t < 1 or t >= proj_len():
+        if t < 0 or t >= proj_len() - 1:
             return 0.0
         return pols_if(t + 1)
     raise ValueError("invalid timing")
@@ -715,12 +749,13 @@ def pols_maturity(t):
     """Policies still in force when the projection is truncated at the limiting age.
 
     Not a maturity - whole of life has none - and not a benefit: it pays nothing.  It is
-    the truncation residual, non-zero only in the last projected month, and it exists so
-    that the roll-forward closes there.  :func:`check_truncation` asserts it is
-    negligible, which is the substantive statement: a limiting age set too low would
-    drop liability off the end of the projection instead.
+    the truncation residual, non-zero only in the last projected month
+    ``t = proj_len() - 1``, and it exists so that the roll-forward closes there.
+    :func:`check_truncation` asserts it is negligible, which is the substantive
+    statement: a limiting age set too low would drop liability off the end of the
+    projection instead.
     """
-    if t != proj_len():
+    if t != proj_len() - 1:
         return 0.0
     return (pols_all(t) - pols_death(t) - pols_death_pu(t) - pols_lapse(t))
 
@@ -743,7 +778,8 @@ def benefit_pp(t, kind):
         the expected benefit per death on the full-cover strand, blending the
         two above by the accidental share on O50, and the sum assured with
         the suicide refund by the suicide share inside the first twelve
-        months on UW.  This is what :func:`claims` multiplies by.
+        months (``t < suicide_mths``) on UW.  This is what :func:`claims`
+        multiplies by.
 
     ``"PAID_UP"``
         the pro-rata paid-up payout for a policy converting in month t,
@@ -763,7 +799,7 @@ def benefit_pp(t, kind):
         if cell() == "O50":
             return ((1.0 - acc_share) * benefit_pp(t, "NON_ACC")     # noqa: F821
                     + acc_share * benefit_pp(t, "ACC"))              # noqa: F821
-        if t <= suicide_mths:                                        # noqa: F821
+        if t < suicide_mths:                                         # noqa: F821
             return ((1.0 - suicide_share) * cover_pp(t)              # noqa: F821
                     + suicide_share * prem_cum_pp(t))                # noqa: F821
         return cover_pp(t)
@@ -827,27 +863,29 @@ def expense_maint_pp():
 def inflation_factor(t):
     """The expense inflation factor in month t: ``(1 + pi)^(y - 1)`` **[std]**.
 
-    Steps on policy anniversaries, not monthly, which is how the notes write it.
+    ``y - 1 = duration(t) = t // 12``: it steps on policy anniversaries, not monthly,
+    which is how the notes write it.
     """
-    return (1.0 + inflation_rate) ** (policy_year(t) - 1)            # noqa: F821
+    return (1.0 + inflation_rate) ** duration(t)                     # noqa: F821
 
 
 def expenses(t):
     """Acquisition and maintenance expense in month t **[std]**.
 
-    The acquisition charge falls once, at issue.  Maintenance is carried on
+    The acquisition charge falls once, at issue (``t = 0``).  Maintenance is carried on
     :func:`pols_all`, so a paid-up policy still costs money to administer even though it
     pays no premium - which is part of why the pro-rata paid-up variant is expensive.
     """
-    acq = expense_acq_pp() * pols_if(t) if t == 1 else 0.0
+    acq = expense_acq_pp() * pols_if(t) if t == 0 else 0.0
     return acq + expense_maint_pp() / 12.0 * inflation_factor(t) * pols_all(t)
 
 
 def commissions(t):
     """Initial commission in month t **[std]**: a share of the first year's premiums.
 
-    The existence of commission is sourced - an intermediary is "paid by commission as a
-    percentage of total annual premium" - and the level is a standardization.
+    Policy year 1 is ``t = 0..11``.  The existence of commission is sourced - an
+    intermediary is "paid by commission as a percentage of total annual premium" - and
+    the level is a standardization.
     """
     if policy_year(t) > 1:
         return 0.0
@@ -890,7 +928,7 @@ def check_pols_roll_fwd():
     ``pols_if_init()``, since the residual accumulates rounding on that many policies.
     """
     return all(abs(check_pols_roll_fwd_resid(t)) <= 1e-10 * max(pols_if_init(), 1.0)
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_truncation():
@@ -902,19 +940,20 @@ def check_truncation():
     residual should be vanishing; if it is not, the limiting age is too low and the
     model is understating the tail rather than merely rounding it.
     """
-    return pols_maturity(proj_len()) <= 1e-9 * max(pols_if_init(), 1.0)
+    return pols_maturity(proj_len() - 1) <= 1e-9 * max(pols_if_init(), 1.0)
 
 
 def result_cf():
-    """Result table of cashflows, indexed by policy month t.
+    """Result table of cashflows, indexed by policy month ``t = 0 .. proj_len() - 1``.
 
-    ``pols_if`` is the full-cover count at the start of the month, which is the weight
-    on premium income and on full-cover death outgo; ``pols_pu`` is the paid-up strand,
-    empty on every model point without the pro-rata paid-up variant.  ``claims_lapse`` is
-    a column of zeros by product design - there is no surrender value - and is published
-    rather than dropped.
+    One row per projected month, ``proj_len()`` rows in all.  ``pols_if`` is the
+    full-cover count at the start of the month, which is the weight on premium income
+    and on full-cover death outgo; ``pols_pu`` is the paid-up strand, empty on every
+    model point without the pro-rata paid-up variant.  ``claims_lapse`` is a column of
+    zeros by product design - there is no surrender value - and is published rather than
+    dropped.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -932,8 +971,11 @@ def result_cf():
 
 
 def result_pols():
-    """Result table of policy counts, benefits and rates, indexed by policy month t."""
-    ts = list(range(1, proj_len() + 1))
+    """Result table of policy counts, benefits and rates, indexed by policy month ``t``.
+
+    The same frame as :func:`result_cf`: ``t = 0 .. proj_len() - 1``.
+    """
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],

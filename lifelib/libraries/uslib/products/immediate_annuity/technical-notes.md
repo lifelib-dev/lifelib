@@ -31,19 +31,27 @@ carrier's [S2] [S3].
   decrement** — a point VM-22 makes prescriptively for this reserving category: the prescribed
   lapse table "is not applicable" for contracts with no account value or surrender benefit,
   and the prescribed annuitization rate is 0% [R2] [REG-R36].
-- **Projection frequency.** Monthly grid, `t = 1, 2, …` months from the annuity date
-  **[std]**. Payment dates fall on the grid per the frequency `m`; day-count and business-day
-  conventions are not modeled **[std]**.
+- **Projection frequency and time index.** Monthly grid, months from the annuity date
+  **[std]**. The index `t` is **0-based**: `t = 0` is the first projected month, the
+  projection runs `t = 0, 1, …, proj_len − 1`, and month `t` spans the interval from time
+  `t` to time `t + 1`. The contractual **policy year is the 1-based label
+  `y(t) = ⌊t/12⌋ + 1`**, derived from `t` and never used to index the projection. Two
+  quantities take a **time point** as their argument rather than a month — the survival
+  probabilities `lᵢ(·)`, with `lᵢ(0) = 1`, and the cumulative instalment schedule `G(·)`,
+  with `G(0) = 0` — so `lᵢ(t)` and `G(t)` are read at the *start* of month `t` and the
+  end-of-month values are `lᵢ(t+1)` and `G(t+1)`. Payment dates
+  fall on the grid per the frequency `m`; day-count and business-day conventions are not
+  modeled **[std]**.
 - **Timing conventions [std].** COLA increases apply at the start of the month containing the
-  anniversary of the annuity date (first at `t = 13`) [S1]. **Arrears is the default**: an
-  instalment due at the end of month `t` requires survival to the end of month `t`; on advance
-  timing it is paid at the period start and requires survival to the start. The arrears
+  anniversary of the annuity date (first at `t = 12`) [S1]. **Arrears is the default**: an
+  instalment due at the end of month `t` requires survival to time `t + 1`; on advance
+  timing it is paid at the period start and requires survival to time `t`. The arrears
   default follows VM-V's own prescribed weight-table cash flow model, which assumes "annuity
   payments are made at the end of each year" [R1]. Deaths are decremented at end of month; a
   death during month `t` means the life does not receive an arrears instalment due at the end
   of month `t`, and a survivor reduction likewise takes effect **from the instalment due at
   the end of the month of death** — not from the following payment date **[std]**. Both
-  follow from evaluating `L(t)` at end-of-month survival, `lᵢ(t)`, and both must be applied
+  follow from evaluating `L(t)` at end-of-month survival, `lᵢ(t+1)`, and both must be applied
   the same way or the two decrements disagree by one payment period.
 - **Age basis.** **Age nearest birthday (ANB)** **[std]**: one carrier defines contract age as
   age nearest birthday [S1]; the 2012 IAM/IAR family is tabulated ANB [R2] [R9]; IRS
@@ -122,12 +130,12 @@ model does **not** derive `B(1)` from `P`.
 | Variable | Description | Updated |
 |---|---|---|
 | `B(y)` | Annualized income in policy year y, unreduced ("as if all annuitants alive") | anniversaries |
-| `l₁(t)`, `l₂(t)` | Survival probabilities of primary / joint annuitant to end of month t; l(0) = 1 | monthly |
-| `d₁(t)`, `d₂(t)` | Death densities, `dᵢ(t) = lᵢ(t−1) − lᵢ(t)` | monthly |
-| `l_last(t)` | Probability at least one annuitant alive = l₁ + l₂ − l₁·l₂ **[std independence]** | monthly |
-| `d_last(t)` | Last-death density = l_last(t−1) − l_last(t) | monthly |
-| `G(t)` | Cumulative gross instalments scheduled through month t | payment dates |
-| `n_R` | Derived installment-refund certain period (months) | once, at t = 0 |
+| `l₁(t)`, `l₂(t)` | Survival probabilities of primary / joint annuitant **to time t**, the start of month t; l(0) = 1 | monthly |
+| `d₁(t)`, `d₂(t)` | Death densities of month t, `dᵢ(t) = lᵢ(t) − lᵢ(t+1)` | monthly |
+| `l_last(t)` | Probability at least one annuitant alive at time t = l₁ + l₂ − l₁·l₂ **[std independence]** | monthly |
+| `d_last(t)` | Last-death density of month t = l_last(t) − l_last(t+1) | monthly |
+| `G(t)` | Cumulative gross instalments scheduled **before time t** (the months 0 … t−1) | payment dates |
+| `n_R` | Derived installment-refund certain period (a count of months) | once, at time 0 |
 | `θ_cum(t)` | Cumulative commutation fraction applied to certain-period instalments | on withdrawal |
 | `CV(t)` | Commuted value of the remaining certain instalments | on request |
 
@@ -253,19 +261,20 @@ best-estimate one.
 
 | Symbol | Meaning |
 |---|---|
-| t | month index from the annuity date, t = 1, 2, …; policy year y(t) = ⌈t/12⌉ |
-| m | payments per year (12/4/2/1); payment months T = {12k/m : k = 1, 2, …} (arrears); on advance the k-th instalment falls one full payment period earlier, at the start of month 12(k−1)/m + 1 |
+| t | month index from the annuity date, **0-based**: t = 0, 1, …, proj_len − 1; month t spans time t to t + 1; policy year y(t) = ⌊t/12⌋ + 1 |
+| m | payments per year (12/4/2/1); payment months T are the months t with `(t + 1) mod (12/m) = 0` on arrears — the instalment falls at the month's **end** — and `t mod (12/m) = 0` on advance, one full payment period earlier, at the month's **start** |
 | P, τ | single premium; premium tax rate. P_net = P(1 − τ) |
 | B(y) | unreduced annualized income in policy year y; `inst(t) = B(y(t))/m` for t ∈ T |
 | g | fixed compound COLA rate (0.03 **[std]**, ∈ {1%…4%} [S1] [S5]) |
 | δ | survivor percentage (2/3 **[std]**, ∈ {50%, 66⅔%, 75%, 100%}) |
 | trig | reduction trigger ∈ {either, primary} [S1] [S2] [S3] |
-| n, n_R, n_eff | elected certain months; derived installment-refund months; effective certain months by form |
+| n, n_R, n_eff | elected certain months; derived installment-refund months; effective certain months by form — all **counts** of months, so a certain period of n covers months 0 … n − 1 |
 | x₁, x₂ | issue ages (ANB) of primary and joint annuitant |
-| l₁(t), l₂(t) | survival probabilities; dᵢ(t) = lᵢ(t−1) − lᵢ(t) |
-| l_last(t), d_last(t) | at-least-one-alive probability and last-death density |
-| L(t), C(t), Φ(t) | life-contingent payment factor; certain-floor indicator 1{t ≤ n_eff}; payment factor max(C, L) |
-| G(t) | cumulative gross instalments scheduled through month t |
+| l₁(t), l₂(t), l_last(t) | survival probabilities **at time t**, i.e. at the *start* of month t; lᵢ(0) = 1. Month t ends at time t + 1, so its end-of-month survival is lᵢ(t+1) |
+| dᵢ(t), d_last(t) | death densities **of month t**: dᵢ(t) = lᵢ(t) − lᵢ(t+1) |
+| p(t) | the payment point of month t, a time: p(t) = t + 1 on arrears; p(t) = t + 1 − 12/m on advance (= t at m = 12) |
+| L(t), C(t), Φ(t) | life-contingent payment factor; certain-floor indicator 1{t < n_eff}; payment factor max(C, L) |
+| G(t) | cumulative gross instalments scheduled **before time t**, i.e. the instalments of months 0 … t−1; G(0) = 0 |
 | CV(t), j(t), sc(y), θ | commuted value; commutation discount rate; surrender charge rate; withdrawal fraction |
 | c_e, π | maintenance expense p.a. (60 **[std]**) and expense inflation (0.025 **[std]**) |
 
@@ -273,7 +282,7 @@ Dimensional check: `B` is currency per annum; `inst = B/m` currency per payment;
 `CV` and refund lump sums currency; `Φ`, `L`, `C`, `δ`, `θ`, `l`, `d` dimensionless; `n`,
 `n_eff`, `n_R` months; `g`, `π`, `j`, `sc` rates. Every cash flow below is currency/month.
 
-### COLA update (start of month 12(y−1)+1, y ≥ 2) [S1] [S4]
+### COLA update (start of month 12(y−1), y ≥ 2) [S1] [S4]
 
     B(y) = B(y−1) × (1 + g)
 
@@ -285,13 +294,13 @@ difference is one instalment's escalation and is a **[std]** convention choice.
 
 ### The payment factor — one formula, five forms, two triggers
 
-**Life-contingent factor `L(t)`** (survival measured at the payment point: end of month t
-on arrears, end of month t − 12/m on advance — one full payment period earlier, i.e.
-t − 1 when m = 12 **[std]**):
+**Life-contingent factor `L(t)`** (survival measured at the payment point `p = p(t)`:
+time `t + 1`, the end of month t, on arrears; on advance one full payment period earlier,
+time `t + 1 − 12/m`, i.e. time `t` when m = 12 **[std]**):
 
-    single life:            L(t) = l₁(t)
-    joint, trig = either:   L(t) = l₁(t)·l₂(t) + δ · [ l₁(t) + l₂(t) − 2·l₁(t)·l₂(t) ]
-    joint, trig = primary:  L(t) = l₁(t) + δ · [ 1 − l₁(t) ] · l₂(t)
+    single life:            L(t) = l₁(p)
+    joint, trig = either:   L(t) = l₁(p)·l₂(p) + δ · [ l₁(p) + l₂(p) − 2·l₁(p)·l₂(p) ]
+    joint, trig = primary:  L(t) = l₁(p) + δ · [ 1 − l₁(p) ] · l₂(p)
     period certain only:    L(t) ≡ 0
 
 The `either` form pays the full instalment while **both** are alive and δ × instalment
@@ -302,7 +311,8 @@ only when the primary is dead and the joint annuitant alive [S2] [S3]; this is a
 mandatory structure for qualified contracts with a non-spouse joint annuitant, where "if
 the secondary annuitant dies first, 100% of payments continue while the primary lives" [S5].
 
-**Certain floor `C(t) = 1{t ≤ n_eff}`**, with
+**Certain floor `C(t) = 1{t < n_eff}`** — the certain period covers the `n_eff` months
+`t = 0 … n_eff − 1` — with
 
     n_eff = n     for life_certain and certain_only, single or joint  [S1] [S2] [S4] [S5]
     n_eff = n_R   for installment_refund                              [S1] [S5]
@@ -327,8 +337,8 @@ stream: during the certain period the full instalment is paid regardless of surv
 **Derived installment-refund period.** Payments continue until cumulative payments equal
 the premium [S1] [S4] [S5] [S6]:
 
-    n_R = min{ t ∈ T : G(t) ≥ P }
-    final instalment at n_R is trimmed to  P − G(n_R − 12/m)          **[std]**
+    n_R = min{ t + 1 : t ∈ T,  G(t+1) ≥ P }   (a count of months)
+    final instalment, in month n_R − 1, is trimmed to  P − G(n_R − 12/m)   **[std]**
 
 Under a level path (the relevant case — the anchor carrier does not offer the COLA with Life with
 Installment Refund [S1]) this closes to `n_R = (12/m)·⌈ m·P / B(1) ⌉` months, which is the
@@ -338,25 +348,26 @@ amount" [S5] rounded up to a payment date. Anchor check:
 
 **Cash refund lump sum** (at the death that terminates the income stream):
 
-    E[CR(t)] = d_term(t) × max( 0, P − G(t−1) )                        [S1] [S3] [S5]
+    E[CR(t)] = d_term(t) × max( 0, P − G(t) )                          [S1] [S3] [S5]
     d_term = d₁       single-life contract
     d_term = d_last   joint contract (offered only with δ = 100% [S5])
 
-Measuring the balance at `t−1` implements "instalments already paid" for a mid-month death
-under arrears **[std]**; on advance timing an instalment paid at the *start* of the death
-month **has** been paid, so use `G(t)` in advance payment months or the lump sum is
-overstated by one instalment.
+Measuring the balance at the time point `t` — everything paid before month `t` opened —
+implements "instalments already paid" for a mid-month death under arrears **[std]**; on
+advance timing an instalment paid at the *start* of the death month **has** been paid, so
+use `G(t+1)` in advance payment months or the lump sum is overstated by one instalment.
 
-**Maintenance expense** (`l_alive = l₁` single-life, `l_last` joint):
+**Maintenance expense** (`l_alive = l₁` single-life, `l_last` joint), the life-contingent
+leg measured at the **end** of the month:
 
-    IF(t)     = max( C(t), l_alive(t) )                                **[std]**
+    IF(t)     = max( C(t), l_alive(t+1) )                              **[std]**
     E[EXP(t)] = (c_e / 12) × (1 + π)^(y(t)−1) × IF(t)                  **[std]**
 
 **Total gross liability cash flow:**
 
     CF(t) = E[ANN(t)] + E[CR(t)] + E[COMM(t)] + E[EXP(t)]
 
-There is no premium income in the projection (the single premium at t = 0 is a pricing
+There is no premium income in the projection (the single premium at time 0 is a pricing
 input) and no surrender outgo [S1] [S4] [S5].
 
 ### Mortality construction
@@ -365,7 +376,9 @@ input) and no surrender outgo [S1] [S4] [S5].
     q_be(x, cal)      = min( 1, AE × q_base ),  AE = 1.084                **[std]** from [R9]
     q_rated(x, cal)   = min( 1, θ × q_be ),     θ = 1 in base             **[std]**
     q_m(t)            = 1 − (1 − q_rated)^(1/12)                          **[std]**
-    lᵢ(t)             = lᵢ(t−1) × (1 − q_m^{(i)}(t)),  i = 1, 2
+    lᵢ(t+1)           = lᵢ(t) × (1 − q_m^{(i)}(t)),  i = 1, 2
+
+the survival at the end of month `t` taking that month's own monthly rate; `lᵢ(0) = 1`.
 
 `k` is the number of calendar years from 2012 to the projection year, so the basis is
 **generational**, not period: each attained age in each future calendar year uses its own
@@ -376,9 +389,10 @@ rounding rule and must not be conflated with the best estimate (see Valuation po
 ### Commutation module (optional; certain-bearing forms only [S1])
 
 Eligibility per the composite: `commutation_enabled`, `n_eff > 0`, policy year ≥ 2, not
-Oregon, one withdrawal per contract year [S1].
+Oregon, one withdrawal per contract year [S1] — the first month of policy year y is
+`t = 12(y−1)`, so the earliest eligible month is `t = 12`.
 
-    CV(t) = Σ_{ s ∈ T,  t < s ≤ n_eff }  inst(s) · (1 − θ_cum(t)) · v(t, s)
+    CV(t) = Σ_{ s ∈ T,  t < s < n_eff }  inst(s) · (1 − θ_cum(t)) · v(t, s)
 
     compound (default **[std]**):  v(t, s) = (1 + j(t))^(−(s − t)/12)
     simple   (per [S7]):           v(t, s) = max( 0, 1 − j(t)·(s − t)/12 )
@@ -400,18 +414,23 @@ withdrawal ends the contract.
 
 ### Monthly processing order
 
-1. If `t = 12(y−1)+1`, y ≥ 2: apply `B(y) = B(y−1)(1+g)` [S1].
-2. Decrement mortality: update `l₁`, `l₂`, `d₁`, `d₂`, `l_last`, `d_last`.
+For each month `t = 0, 1, …`:
+
+1. If `t = 12(y−1)`, y ≥ 2: apply `B(y) = B(y−1)(1+g)` [S1].
+2. Decrement mortality over the month: carry `l₁`, `l₂` from time `t` to time `t + 1` and
+   set the month's densities `d₁(t)`, `d₂(t)`, `d_last(t)` as the differences between the
+   two.
 3. If `t ∈ T`: set `inst(t) = B(y(t))/m`; compute `C(t)`, `L(t)`, `Φ(t)`; record
-   `E[ANN(t)]`; update `G(t) = G(t−) + inst(t)` (deterministic as-if-alive schedule).
+   `E[ANN(t)]`; update `G(t+1) = G(t) + inst(t)` (deterministic as-if-alive schedule).
 4. Refund: if the form carries a cash refund, accrue
-   `E[CR(t)] = d_term(t) × max(0, P − G(t−1))`.
+   `E[CR(t)] = d_term(t) × max(0, P − G(t))`.
 5. Commutation (if enabled and eligible this contract year): evaluate `CV(t)`, apply `W`,
    record `E[COMM(t)]`, update `θ_cum`.
 6. Accrue `E[EXP(t)]`.
 7. Stop when `IF(t) < 10⁻⁶`, or when every covered life has passed the limiting age
-   (`t/12 + x₁ > ω` and, if joint, `t/12 + x₂ > ω`), ω = 120 **[std]** — stopping on the
-   primary's age alone would truncate a younger joint annuitant's tail.
+   (`(t+1)/12 + x₁ > ω` and, if joint, `(t+1)/12 + x₂ > ω`), ω = 120 **[std]** — stopping
+   on the primary's age alone would truncate a younger joint annuitant's tail. The rule
+   admits `12(ω − min xᵢ)` months, `t = 0 … 12(ω − min xᵢ) − 1`.
 
 ---
 
@@ -462,50 +481,55 @@ contracts [S8] whose valuation is governed by AG 9-C and VM-V's "rated age" defi
 τ = 0; B(1) = $6,000 p.a. **[std]** ⇒ `inst` = $500.00/month; joint form, primary male ANB
 65, joint annuitant female ANB 62 **[std]**; monthly (m = 12) in arrears **[std]**; fixed
 compound COLA g = 3% **[std]**; survivor percentage δ = 66⅔% **[std]**; no certain period
-(n = 0). **Scenario: the joint (secondary) annuitant dies during month 14**; the primary
-survives throughout. The two trigger conventions run side by side — this is the death that
-distinguishes them.
+(n = 0). **Scenario: the joint (secondary) annuitant dies during the fourteenth month,
+`t = 13`**; the primary survives throughout. The two trigger conventions run side by side
+— this is the death that distinguishes them.
 
-Income levels: year 1 (t = 1–12) B = 6,000.00 ⇒ 500.00/month; year 2 (from t = 13)
-B = 6,000 × 1.03 = 6,180.00 ⇒ 515.00/month; year 3 (from t = 25) B = 6,180 × 1.03 =
+Income levels: year 1 (t = 0–11) B = 6,000.00 ⇒ 500.00/month; year 2 (from t = 12)
+B = 6,000 × 1.03 = 6,180.00 ⇒ 515.00/month; year 3 (from t = 24) B = 6,180 × 1.03 =
 6,365.40 ⇒ 530.45/month. Reduced amounts: 2/3 × 515.00 = 343.33 and 2/3 × 530.45 = 353.63.
+
+The table is indexed by the 0-based month `t`; the ordinal in each Event cell is the
+contractual count, so the k-th instalment falls in month `t = k − 1`.
 
 | t | Event | Unreduced inst(t) | CF, trig = **either** | CF, trig = **primary** |
 |---|---|---|---|---|
-| 1 | first monthly instalment (arrears) | 500.00 | 500.00 | 500.00 |
-| 12 | 12th instalment | 500.00 | 500.00 | 500.00 |
-| 13 | anniversary: B ← 6,180.00; 13th instalment | 515.00 | 515.00 | 515.00 |
-| 14 | **joint annuitant dies during the month**; the instalment due at month end is the first scheduled payment date after the death | 515.00 | **343.33** | **515.00** |
-| 15 | 15th instalment | 515.00 | 343.33 | 515.00 |
-| 24 | 24th instalment | 515.00 | 343.33 | 515.00 |
-| 25 | anniversary: B ← 6,365.40 | 530.45 | **353.63** | **530.45** |
+| 0 | first monthly instalment (arrears) | 500.00 | 500.00 | 500.00 |
+| 11 | 12th instalment | 500.00 | 500.00 | 500.00 |
+| 12 | anniversary: B ← 6,180.00; 13th instalment | 515.00 | 515.00 | 515.00 |
+| 13 | **joint annuitant dies during the month**; the instalment due at month end is the first scheduled payment date after the death | 515.00 | **343.33** | **515.00** |
+| 14 | 15th instalment | 515.00 | 343.33 | 515.00 |
+| 23 | 24th instalment | 515.00 | 343.33 | 515.00 |
+| 24 | anniversary: B ← 6,365.40 | 530.45 | **353.63** | **530.45** |
 
 **Trace and checks.**
 
-- t = 14, `trig = either`. The death is decremented at the end of month 14, so the scenario
-  values at the payment point are l₁ = 1, l₂ = 0:
+- t = 13, `trig = either`. The death is decremented at the end of month 13, i.e. at time
+  14, so the scenario values at the payment point `p = t + 1 = 14` are l₁(14) = 1,
+  l₂(14) = 0:
   `L = l₁l₂ + δ(l₁ + l₂ − 2l₁l₂) = 0 + (2/3)(1 + 0 − 0) = 0.6667`; `C = 0`, so
   `Φ = 0.6667` and `CF = 515.00 × 2/3 = 343.33`, and the same at every later payment
-  date. ✔ (Note the timing convention bites here, not at t = 15: the instalment due at the
+  date. ✔ (Note the timing convention bites here, not at t = 14: the instalment due at the
   end of the month of death is already the first scheduled payment date after the death.)
-- t = 14, `trig = primary`, same values: `L = l₁ + δ(1 − l₁)l₂ = 1 + 0 = 1`, so
+- t = 13, `trig = primary`, same values: `L = l₁ + δ(1 − l₁)l₂ = 1 + 0 = 1`, so
   `CF = 515.00`. ✔ The joint annuitant's death is invisible to the payment stream while
   the primary lives [S2] [S3] [S5].
-- **Reverse the death** (primary dies in month 14, joint annuitant survives; l₁ = 0,
+- **Reverse the death** (primary dies in month t = 13, joint annuitant survives; l₁ = 0,
   l₂ = 1): `L_either = 0 + (2/3)(0 + 1 − 0) = 2/3` and `L_primary = 0 + (2/3)(1)(1) = 2/3`.
-  Both conventions pay 343.33 from t = 14. **The two triggers coincide on the primary's
+  Both conventions pay 343.33 from t = 13. **The two triggers coincide on the primary's
   death and differ only on the secondary's** — which is precisely why the trigger must be a
   model switch, not a footnote [S1] [S2] [S3] [S7].
 - **COLA continues after the reduction**, because δ applies to the *current* income payment
-  [S2]: 343.33 becomes 353.63 at t = 25, not a frozen 343.33.
-- **With a 10-year certain period** (n = 120): `C(t) = 1` for t ≤ 120, so
-  `Φ(t) = max(1, L(t)) = 1` and every instalment from t = 14 to t = 120 is the **full**
-  515.00 / 530.45 / …, with the reduction to δ beginning only at t = 121 — reproducing
+  [S2]: 343.33 becomes 353.63 at t = 24, not a frozen 343.33.
+- **With a 10-year certain period** (n = 120): `C(t) = 1` for t < 120, so
+  `Φ(t) = max(1, L(t)) = 1` and every instalment from t = 13 to t = 119 is the **full**
+  515.00 / 530.45 / …, with the reduction to δ beginning only at t = 120 — reproducing
   the cited deferral rule with no extra logic [S5].
-- **Single-life with cash refund**, death in month 14: lump sum =
-  `max(0, 100,000 − G(13)) = 100,000 − (12 × 500.00 + 515.00) = 93,485.00` [S1] [S3] [S5]. On
-  **installment refund** (level path, no COLA [S1]) the derived certain period is
-  `12 × 100,000/6,000 = 200 months` [S5].
+- **Single-life with cash refund**, death in month t = 13: lump sum =
+  `max(0, 100,000 − G(13)) = 100,000 − (12 × 500.00 + 515.00) = 93,485.00` [S1] [S3] [S5] —
+  `G(13)` being the thirteen instalments of months 0–12, paid by the time month 13 opens.
+  On **installment refund** (level path, no COLA [S1]) the derived certain period is
+  `12 × 100,000/6,000 = 200 months` [S5], i.e. months `t = 0 … 199`.
 
 ---
 
@@ -643,8 +667,9 @@ Known modeling pitfalls:
   advance instalments at the period start. Using end-of-period survival for advance payments
   understates the liability by about one period's mortality per payment — material at high
   ages. Symmetrically, **refund balance timing**: `G` must net instalments *paid before
-  death* on arrears (`G(t−1)`), but an advance instalment paid at the **start** of the death
-  month has been paid — use `G(t)` there or the cash refund is overstated by one instalment.
+  death* on arrears (`G(t)`, the balance at the time month `t` opens), but an advance
+  instalment paid at the **start** of the death month has been paid — use `G(t+1)` there or
+  the cash refund is overstated by one instalment.
 - **Refund-form certain period.** `n_R` is derived from `P/B(1)` and moves with the pricing
   input; hard-coding it (e.g. at 200 months) breaks every sensitivity run on `B(1)`.
 - **Joint-life independence.** The `l₁·l₂` products assume independence **[std]**;

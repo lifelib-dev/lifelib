@@ -21,16 +21,16 @@ print("declared rate = {:.2%}  GMIR = {:.2%}  GMSV rate = {:.2%}  "
       "renewal = {}  MVA = {} / {}".format(
           proj.declared_rate_initial(), proj.gmir(), proj.mgsv_rate(),
           proj.renewal_architecture(), proj.mva_family(), proj.mva_cap_rule()))
-print("months 1..{} (to attained age {}); shock lapse at contract year {} "
+print("policy months t = 0..{} (to attained age {}); shock lapse at contract year {} "
       "= {:.2%} p.a.".format(
-          proj.proj_len(), proj.age(proj.proj_len()) + 1,
+          proj.proj_len() - 1, proj.age(proj.proj_len() - 1) + 1,
           proj.guar_period() + 1,
-          proj.lapse_rate(12 * proj.guar_period() + 1)))
+          proj.lapse_rate(12 * proj.guar_period())))
 print()
-print("account value and Model #805 floor, first 12 months (per contract):")
-print(proj.result_av().iloc[:13, :5].round(2).to_string())
+print("account value and Model #805 floor, first contract year t = 0..11 (per contract):")
+print(proj.result_av().iloc[:12, :5].round(2).to_string())
 print()
-print("cash flows, first 12 months:")
-print(proj.result_cf().head(13).round(2).to_string())
+print("cash flows, first contract year t = 0..11:")
+print(proj.result_cf().head(12).round(2).to_string())
 
 model.close()

@@ -1,7 +1,7 @@
 The **Data** Space
 ==================
 
-.. automodule:: uslib.products.whole_life.WholeLife_US_A.Data
+.. automodule:: uslib.products.whole_life.WholeLife_US_S.Data
 
 Cells Descriptions
 ------------------

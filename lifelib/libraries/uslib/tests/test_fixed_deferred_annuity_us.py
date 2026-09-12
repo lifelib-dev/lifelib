@@ -8,11 +8,16 @@ withdrawal.  They are hard-coded here rather than pickled so that a reviewer can
 them against the notes by eye.
 
 Three blocks are asserted: the seven-row account value and Model #805 floor table; the
-full surrender trace at the end of month 30 (contract year 3, MVA reference yield 6.50%,
-neither the cap nor the floor binding); and the full surrender trace at the end of month
-6 under the 10.00% stress yield, where the symmetric cap **and** the nonforfeiture floor
-both bind.  The first two run on model point 1, the third on model point 2, which is the
-same contract on the stress scenario.
+full surrender trace at the end of month t = 29 (contract year 3, MVA reference yield
+6.50%, neither the cap nor the floor binding); and the full surrender trace at the end of
+month t = 5 under the 10.00% stress yield, where the symmetric cap **and** the
+nonforfeiture floor both bind.  The first two run on model point 1, the third on model
+point 2, which is the same contract on the stress scenario.
+
+``t`` is the 0-based policy month throughout: ``t = 0`` is the first month, the frame is
+``t = 0 .. proj_len() - 1``, the contract year is ``policy_year(t) = t // 12 + 1``, and
+the closing account value at the first anniversary is ``av_pp(11)``.  The purchase payment
+and the acquisition commission are beginning-of-month flows of ``t = 0``.
 
 The notes' own "Known modeling pitfalls" list is a test list in disguise; there is one
 test per entry below.
@@ -24,33 +29,33 @@ from us_registry import LIB
 
 MODEL_PATH = LIB / "products/fixed_deferred_annuity/MYGA_US_S"
 
-# Half a cent, plus a hair.  The notes round half-up for display and AV(24) =
+# Half a cent, plus a hair.  The notes round half-up for display and AV(23) =
 # 104,920.025 sits exactly on the boundary (shown as 104,920.03), so a strict 0.005 would
 # fail on a value that is right to the twelfth significant figure.
 CENT = 0.006
 
 # The notes state that "the surrender traces below are computed from the cent-rounded
-# values shown, so they reproduce by hand".  One quantity is visibly affected: E(30) is
-# printed as AV(30) - FW = 107,229.09 - 10,492.00 = 96,737.09 where full precision gives
+# values shown, so they reproduce by hand".  One quantity is visibly affected: E(29) is
+# printed as AV(29) - FW = 107,229.09 - 10,492.00 = 96,737.09 where full precision gives
 # 96,737.0843.  This tolerance covers that and nothing larger.
 ROUNDED = 0.01
 
 INFORCE = 5e-7          # in-force probabilities
 
-# Worked example, "Worked example" table.
-# t: (AV(t-1), W(t), AV'(t), AV(t), MGSV(t))
+# Worked example, "Worked example" table, keyed by the 0-based policy month t.
+# t: (AV(t-1), W(t), AV'(t), AV(t), MGSV(t)) -- AV(t-1) is the opening balance, P at t = 0
 WORKED_EXAMPLE = {
-    1:  (100000.00,    0.00, 100000.00, 100363.48, 87701.59),
-    2:  (100363.48,    0.00, 100363.48, 100728.28, 87903.65),
-    3:  (100728.28,    0.00, 100728.28, 101094.40, 88106.17),
-    12: (104071.72,    0.00, 104071.72, 104450.00, 89950.00),
-    13: (104450.00, 4000.00, 100450.00, 100815.11, 86148.02),
-    24: (104540.04,    0.00, 104540.04, 104920.03, 88356.60),
-    30: (106840.74,    0.00, 106840.74, 107229.09, 89585.05),
+    0:  (100000.00,    0.00, 100000.00, 100363.48, 87701.59),
+    1:  (100363.48,    0.00, 100363.48, 100728.28, 87903.65),
+    2:  (100728.28,    0.00, 100728.28, 101094.40, 88106.17),
+    11: (104071.72,    0.00, 104071.72, 104450.00, 89950.00),
+    12: (104450.00, 4000.00, 100450.00, 100815.11, 86148.02),
+    23: (104540.04,    0.00, 104540.04, 104920.03, 88356.60),
+    29: (106840.74,    0.00, 106840.74, 107229.09, 89585.05),
 }
 
-# Worked example, "Surrender trace, end of month 30" -- model point 1, it = 6.50%.
-SURRENDER_30 = {
+# Worked example, "Surrender trace, end of month t = 29" -- model point 1, it = 6.50%.
+SURRENDER_29 = {
     "free_wd": 10492.00,
     "excess": 96737.09,
     "charge": 6771.60,
@@ -64,8 +69,9 @@ SURRENDER_30 = {
     "charged_excess": 86337.85,
 }
 
-# Worked example, "A case where the floor binds" -- model point 2, it = 10.00%.
-SURRENDER_6 = {
+# Worked example, "A case where the floor binds" (end of month t = 5) -- model point 2,
+# it = 10.00%.
+SURRENDER_5 = {
     "av": 102200.78,
     "free_wd": 10000.00,      # year-1 base is purchase payments
     "excess": 92200.78,
@@ -130,102 +136,107 @@ def test_worked_example_is_result_av(anchor):
 
 def test_monthly_factors(anchor):
     """f = 1.0445^(1/12) = 1.0036348 and g = 1.028^(1/12) = 1.0023039, both derived."""
-    assert 1.0 + anchor.credit_rate_mth(1) == pytest.approx(1.0036348, abs=5e-8)
+    assert 1.0 + anchor.credit_rate_mth(0) == pytest.approx(1.0036348, abs=5e-8)
     assert 1.0 + anchor.mgsv_rate_mth() == pytest.approx(1.0023039, abs=5e-8)
 
 
 def test_twelve_monthly_factors_reproduce_the_annual_rate_exactly(anchor):
     """The notes' own checks on the table, asserted at full precision, not to the cent.
 
-    AV(12) = 100,000 x 1.0445 exactly; AV(24) = 100,450 x 1.0445 = 104,920.025 (the table
-    displays 104,920.03); MGSV(12) = 87,500 x 1.028 and, with the month-13 withdrawal
-    deducted gross, MGSV(24) = (89,950 - 4,000) x 1.028 = 88,356.60.
+    AV(11) = 100,000 x 1.0445 exactly at the first anniversary; AV(23) = 100,450 x 1.0445
+    = 104,920.025 at the second (the table displays 104,920.03); MGSV(11) = 87,500 x
+    1.028 and, with the month-12 withdrawal deducted gross, MGSV(23) = (89,950 - 4,000) x
+    1.028 = 88,356.60.  The opening floor of month 0 is 0.875 x P = 87,500.
     """
-    assert anchor.av_pp(12) == pytest.approx(100000.0 * 1.0445, rel=1e-12)
-    assert anchor.av_pp(24) == pytest.approx(100450.0 * 1.0445, rel=1e-12)
-    assert anchor.av_pp(24) == pytest.approx(104920.025, rel=1e-12)
-    assert anchor.mgsv_pp(0) == 87500.0
-    assert anchor.mgsv_pp(12) == pytest.approx(87500.0 * 1.028, rel=1e-12)
-    assert anchor.mgsv_pp(24) == pytest.approx((89950.0 - 4000.0) * 1.028, rel=1e-12)
+    assert anchor.av_pp(11) == pytest.approx(100000.0 * 1.0445, rel=1e-12)
+    assert anchor.av_pp(23) == pytest.approx(100450.0 * 1.0445, rel=1e-12)
+    assert anchor.av_pp(23) == pytest.approx(104920.025, rel=1e-12)
+    assert anchor.mgsv_pp_init() == 87500.0
+    assert anchor.mgsv_pp(11) == pytest.approx(87500.0 * 1.028, rel=1e-12)
+    assert anchor.mgsv_pp(23) == pytest.approx((89950.0 - 4000.0) * 1.028, rel=1e-12)
 
 
-def test_month_13_withdrawal_is_free_of_charge_and_mva(anchor):
-    """Contract year 2 allowance = 10% x AV(12) = 10,445.00, so the $4,000 is all free."""
+def test_month_12_withdrawal_is_free_of_charge_and_mva(anchor):
+    """Contract year 2 allowance = 10% x AV(11) = 10,445.00, so the $4,000 is all free.
+
+    Month t = 12 is the first month of contract year 2, when the allowance resets.
+    """
     assert anchor.free_wd_allow(2) == pytest.approx(10445.00, abs=CENT)
-    assert anchor.free_wd_avail(13) == pytest.approx(10445.00, abs=CENT)
-    assert anchor.wd_free_pp(13) == pytest.approx(4000.00, abs=CENT)
-    assert anchor.wd_excess_pp(13) == 0.0
-    assert anchor.wd_charge_pp(13) == 0.0
-    assert anchor.wd_mva_pp(13) == 0.0
-    assert anchor.wd_payment_pp(13) == pytest.approx(4000.00, abs=CENT)
-    assert anchor.free_wd_remain(13) == pytest.approx(6445.00, abs=CENT)
+    assert anchor.free_wd_avail(12) == pytest.approx(10445.00, abs=CENT)
+    assert anchor.wd_free_pp(12) == pytest.approx(4000.00, abs=CENT)
+    assert anchor.wd_excess_pp(12) == 0.0
+    assert anchor.wd_charge_pp(12) == 0.0
+    assert anchor.wd_mva_pp(12) == 0.0
+    assert anchor.wd_payment_pp(12) == pytest.approx(4000.00, abs=CENT)
+    assert anchor.free_wd_remain(12) == pytest.approx(6445.00, abs=CENT)
 
 
 # ---------------------------------------------------------------------------
-# Surrender trace, end of month 30
+# Surrender trace, end of month t = 29
 
 
-def test_surrender_trace_month_30(anchor):
-    """The notes' month-30 trace, line by line: cap not binding, floor not binding."""
-    g = SURRENDER_30
+def test_surrender_trace_month_29(anchor):
+    """The notes' month-29 trace, line by line: cap not binding, floor not binding."""
+    g = SURRENDER_29
     assert anchor.free_wd_allow(3) == pytest.approx(g["free_wd"], abs=CENT)
-    assert anchor.free_wd_remain(30) == pytest.approx(g["free_wd"], abs=CENT)
-    assert anchor.surr_excess_pp(30) == pytest.approx(g["excess"], abs=ROUNDED)
-    assert anchor.surr_charge_rate(30) == 0.07
-    assert anchor.surr_charge_pp(30) == pytest.approx(g["charge"], abs=CENT)
-    assert anchor.mva_term(30) == pytest.approx(g["mva_term"], rel=1e-12)
-    assert anchor.mva_rate(30) == pytest.approx(g["mva_rate"], abs=5e-7)
-    raw = anchor.mva_rate(30) * anchor.surr_excess_pp(30)
+    assert anchor.free_wd_remain(29) == pytest.approx(g["free_wd"], abs=CENT)
+    assert anchor.surr_excess_pp(29) == pytest.approx(g["excess"], abs=ROUNDED)
+    assert anchor.surr_charge_rate(29) == 0.07
+    assert anchor.surr_charge_pp(29) == pytest.approx(g["charge"], abs=CENT)
+    assert anchor.mva_term(29) == pytest.approx(g["mva_term"], rel=1e-12)
+    assert anchor.mva_rate(29) == pytest.approx(g["mva_rate"], abs=5e-7)
+    raw = anchor.mva_rate(29) * anchor.surr_excess_pp(29)
     assert raw == pytest.approx(g["mva_raw"], abs=CENT)
-    assert anchor.mva_pp(30) == pytest.approx(g["mva"], abs=CENT)
-    assert abs(anchor.mva_pp(30)) < anchor.surr_charge_pp(30)     # cap not binding
-    assert anchor.surr_value_pp(30) == pytest.approx(g["surr_value"], abs=CENT)
-    assert anchor.mgsv_pp(30) == pytest.approx(g["mgsv"], abs=CENT)
-    assert anchor.surr_value_pp(30) > anchor.mgsv_pp(30)          # floor not binding
-    assert anchor.surr_benefit_pp(30) == pytest.approx(g["benefit"], abs=CENT)
-    assert (anchor.surr_benefit_pp(30) - anchor.free_wd_remain(30)
+    assert anchor.mva_pp(29) == pytest.approx(g["mva"], abs=CENT)
+    assert abs(anchor.mva_pp(29)) < anchor.surr_charge_pp(29)     # cap not binding
+    assert anchor.surr_value_pp(29) == pytest.approx(g["surr_value"], abs=CENT)
+    assert anchor.mgsv_pp(29) == pytest.approx(g["mgsv"], abs=CENT)
+    assert anchor.surr_value_pp(29) > anchor.mgsv_pp(29)          # floor not binding
+    assert anchor.surr_benefit_pp(29) == pytest.approx(g["benefit"], abs=CENT)
+    assert (anchor.surr_benefit_pp(29) - anchor.free_wd_remain(29)
             == pytest.approx(g["charged_excess"], abs=CENT))
 
 
-def test_mva_reference_yields_at_month_30(anchor):
+def test_mva_reference_yields_at_month_29(anchor):
     """i0 = 5.00% locked at issue, it = 6.50% at surrender, both **[std]**."""
-    assert anchor.mva_ref_yield_locked(30) == 0.0500
-    assert anchor.mva_ref_yield(30) == 0.0650
+    assert anchor.mva_ref_yield_locked(29) == 0.0500
+    assert anchor.mva_ref_yield(29) == 0.0650
     assert anchor.mva_ref_yield_at_issue() == 0.0500
 
 
 def test_mva_term_is_six_months_plus_two_whole_years(anchor):
-    """T = 0.5 + 2: to the end of contract year 3, plus years 4 and 5 of the MVA period."""
-    months_to_year_end = 12 * anchor.policy_year(30) - 30
-    whole_years_left = anchor.guar_period() * anchor.gp_index(30) - anchor.policy_year(30)
+    """T = 0.5 + 2: from the end of month 29 to the end of contract year 3, plus years 4 and 5."""
+    months_to_year_end = 12 * anchor.policy_year(29) - (29 + 1)
+    whole_years_left = anchor.guar_period() * anchor.gp_index(29) - anchor.policy_year(29)
+    assert anchor.policy_year(29) == 3
     assert months_to_year_end == 6
     assert whole_years_left == 2
-    assert anchor.mva_term(30) == 2.5
+    assert anchor.mva_term(29) == 2.5
 
 
 # ---------------------------------------------------------------------------
-# Surrender trace, end of month 6 -- cap and floor both binding
+# Surrender trace, end of month t = 5 -- cap and floor both binding
 
 
-def test_surrender_trace_month_6_floor_binds(stress):
-    """The notes' month-6 stress trace: the symmetric cap bites, then the floor does."""
-    g = SURRENDER_6
-    assert stress.av_pp(6) == pytest.approx(g["av"], abs=CENT)
+def test_surrender_trace_month_5_floor_binds(stress):
+    """The notes' month-5 stress trace: the symmetric cap bites, then the floor does."""
+    g = SURRENDER_5
+    assert stress.av_pp(5) == pytest.approx(g["av"], abs=CENT)
     assert stress.free_wd_allow(1) == pytest.approx(g["free_wd"], abs=CENT)
-    assert stress.free_wd_remain(6) == pytest.approx(g["free_wd"], abs=CENT)
-    assert stress.surr_excess_pp(6) == pytest.approx(g["excess"], abs=CENT)
-    assert stress.surr_charge_rate(6) == 0.09
-    assert stress.surr_charge_pp(6) == pytest.approx(g["charge"], abs=CENT)
-    assert stress.mva_term(6) == pytest.approx(g["mva_term"], rel=1e-12)
-    assert stress.mva_rate(6) == pytest.approx(g["mva_rate"], abs=5e-7)
-    raw = stress.mva_rate(6) * stress.surr_excess_pp(6)
+    assert stress.free_wd_remain(5) == pytest.approx(g["free_wd"], abs=CENT)
+    assert stress.surr_excess_pp(5) == pytest.approx(g["excess"], abs=CENT)
+    assert stress.surr_charge_rate(5) == 0.09
+    assert stress.surr_charge_pp(5) == pytest.approx(g["charge"], abs=CENT)
+    assert stress.mva_term(5) == pytest.approx(g["mva_term"], rel=1e-12)
+    assert stress.mva_rate(5) == pytest.approx(g["mva_rate"], abs=5e-7)
+    raw = stress.mva_rate(5) * stress.surr_excess_pp(5)
     assert raw == pytest.approx(g["mva_raw"], abs=CENT)
-    assert stress.mva_pp(6) == pytest.approx(g["mva"], abs=CENT)
-    assert stress.mva_pp(6) == pytest.approx(-stress.surr_charge_pp(6), abs=CENT)
-    assert stress.surr_value_pp(6) == pytest.approx(g["surr_value"], abs=CENT)
-    assert stress.mgsv_pp(6) == pytest.approx(g["mgsv"], abs=CENT)
-    assert stress.surr_benefit_pp(6) == pytest.approx(g["benefit"], abs=CENT)
-    assert (stress.surr_benefit_pp(6) - stress.surr_value_pp(6)
+    assert stress.mva_pp(5) == pytest.approx(g["mva"], abs=CENT)
+    assert stress.mva_pp(5) == pytest.approx(-stress.surr_charge_pp(5), abs=CENT)
+    assert stress.surr_value_pp(5) == pytest.approx(g["surr_value"], abs=CENT)
+    assert stress.mgsv_pp(5) == pytest.approx(g["mgsv"], abs=CENT)
+    assert stress.surr_benefit_pp(5) == pytest.approx(g["benefit"], abs=CENT)
+    assert (stress.surr_benefit_pp(5) - stress.surr_value_pp(5)
             == pytest.approx(g["floor_top_up"], abs=CENT))
 
 
@@ -235,13 +246,13 @@ def test_symmetric_cap_worst_case_is_not_the_multiplicative_form(stress):
     They coincide only when the free amount is zero.  Here the free amount is $10,000, so
     the multiplicative reading understates the surrender value by 2 sc x FW.
     """
-    g = SURRENDER_6
-    two_charges = (stress.av_pp(6) - 2 * 0.09 * stress.surr_excess_pp(6))
+    g = SURRENDER_5
+    two_charges = (stress.av_pp(5) - 2 * 0.09 * stress.surr_excess_pp(5))
     assert two_charges == pytest.approx(g["surr_value"], abs=CENT)
-    multiplicative = stress.av_pp(6) * (1 - 2 * 0.09)
+    multiplicative = stress.av_pp(5) * (1 - 2 * 0.09)
     assert multiplicative == pytest.approx(g["wrong_multiplicative"], abs=CENT)
     assert two_charges - multiplicative == pytest.approx(
-        2 * 0.09 * stress.free_wd_remain(6), abs=CENT)
+        2 * 0.09 * stress.free_wd_remain(5), abs=CENT)
 
 
 # ---------------------------------------------------------------------------
@@ -285,8 +296,8 @@ def test_geometric_family_is_selectable(fixed_deferred_annuity):
     p4 = fixed_deferred_annuity.Projection[4]
     assert p4.mva_family() == "geometric"
     expected = p4.mva_factor_geometric(
-        p4.mva_ref_yield_locked(30), p4.mva_ref_yield(30), p4.mva_term(30)) - 1.0
-    assert p4.mva_rate(30) == pytest.approx(expected, rel=1e-12)
+        p4.mva_ref_yield_locked(29), p4.mva_ref_yield(29), p4.mva_term(29)) - 1.0
+    assert p4.mva_rate(29) == pytest.approx(expected, rel=1e-12)
 
 
 # ---------------------------------------------------------------------------
@@ -299,7 +310,7 @@ def test_pitfall_composition_order(anchor):
     Applying the charge first and the MVA to the net figure understates the adjustment by
     sc x |M|; this asserts the model does not do that.
     """
-    t = 30
+    t = 29
     excess = anchor.surr_excess_pp(t)
     charge = anchor.surr_charge_rate(t) * excess
     mva = anchor.mva_rate(t) * excess
@@ -317,13 +328,13 @@ def test_pitfall_composition_order(anchor):
 def test_pitfall_floor_before_mva_would_remove_the_downside(stress):
     """Flooring before the MVA silently removes the downside protection.
 
-    At month 6 the raw SV is below MGSV, so max() before the MVA is applied would return
+    At t = 5 the raw SV is below MGSV, so max() before the MVA is applied would return
     the account value less the charge only and lose the (capped) -8,298.07 adjustment.
     """
-    floor_first = max(stress.av_pp(6) - stress.surr_charge_pp(6), stress.mgsv_pp(6))
-    assert floor_first > stress.surr_benefit_pp(6)
-    assert stress.surr_benefit_pp(6) == pytest.approx(
-        max(stress.surr_value_pp(6), stress.mgsv_pp(6)), rel=1e-12)
+    floor_first = max(stress.av_pp(5) - stress.surr_charge_pp(5), stress.mgsv_pp(5))
+    assert floor_first > stress.surr_benefit_pp(5)
+    assert stress.surr_benefit_pp(5) == pytest.approx(
+        max(stress.surr_value_pp(5), stress.mgsv_pp(5)), rel=1e-12)
 
 
 def test_pitfall_free_amount_mva_interaction(fixed_deferred_annuity):
@@ -337,38 +348,38 @@ def test_pitfall_free_amount_mva_interaction(fixed_deferred_annuity):
     p4 = fixed_deferred_annuity.Projection[4]
     assert p2.free_wd_mva_exempt() is True
     assert p4.free_wd_mva_exempt() is False
-    assert p2.surr_excess_pp(30) == pytest.approx(
-        p2.av_pp(30) - p2.free_wd_remain(30), rel=1e-12)
-    assert p4.surr_excess_pp(30) == pytest.approx(p4.av_pp(30), rel=1e-12)
-    assert p4.surr_value_pp(30) == pytest.approx(
-        p4.av_pp(30) * (1 + p4.mva_rate(30) - p4.surr_charge_rate(30)), rel=1e-12)
-    assert p2.surr_excess_pp(30) < p4.surr_excess_pp(30)
+    assert p2.surr_excess_pp(29) == pytest.approx(
+        p2.av_pp(29) - p2.free_wd_remain(29), rel=1e-12)
+    assert p4.surr_excess_pp(29) == pytest.approx(p4.av_pp(29), rel=1e-12)
+    assert p4.surr_value_pp(29) == pytest.approx(
+        p4.av_pp(29) * (1 + p4.mva_rate(29) - p4.surr_charge_rate(29)), rel=1e-12)
+    assert p2.surr_excess_pp(29) < p4.surr_excess_pp(29)
 
 
 def test_pitfall_withdrawals_are_gross(anchor):
     """W(t) is the gross amount removed from the account value, not the check written."""
-    assert anchor.av_pp_at(13, "BEF_INV") == pytest.approx(
-        anchor.av_pp(12) - 4000.0, rel=1e-12)
-    assert anchor.wd_pp(13) == 4000.0
-    assert anchor.wd_from_av(13) == pytest.approx(
-        4000.0 * anchor.pols_if_at(13, "BEF_DECR"), rel=1e-12)
+    assert anchor.av_pp_at(12, "BEF_INV") == pytest.approx(
+        anchor.av_pp(11) - 4000.0, rel=1e-12)
+    assert anchor.wd_pp(12) == 4000.0
+    assert anchor.wd_from_av(12) == pytest.approx(
+        4000.0 * anchor.pols_if_at(12, "BEF_DECR"), rel=1e-12)
 
 
 def test_pitfall_model_805_withdrawal_convention(fixed_deferred_annuity):
     """gross [S11] and net_of_charges [S9] are both live and give different floors.
 
-    Model point 1 deducts the gross $4,000 at month 13.  Model point 5 takes the
-    net convention, and its month-30 excess withdrawal is charged and adjusted, so the
+    Model point 1 deducts the gross $4,000 at t = 12.  Model point 5 takes the
+    net convention, and its month-29 excess withdrawal is charged and adjusted, so the
     two deductions genuinely differ there.
     """
     anchor = fixed_deferred_annuity.Projection[1]
     p5 = fixed_deferred_annuity.Projection[5]
     assert anchor.mgsv_wd_convention() == "gross"
-    assert anchor.mgsv_wd_deduct_pp(13) == pytest.approx(anchor.wd_pp(13), rel=1e-12)
+    assert anchor.mgsv_wd_deduct_pp(12) == pytest.approx(anchor.wd_pp(12), rel=1e-12)
     assert p5.mgsv_wd_convention() == "net_of_charges"
-    assert p5.mgsv_wd_deduct_pp(30) == pytest.approx(p5.wd_payment_pp(30), rel=1e-12)
-    assert p5.wd_payment_pp(30) < p5.wd_pp(30)          # charged and adjusted downwards
-    assert p5.mgsv_wd_deduct_pp(30) != pytest.approx(p5.wd_pp(30), abs=1.0)
+    assert p5.mgsv_wd_deduct_pp(29) == pytest.approx(p5.wd_payment_pp(29), rel=1e-12)
+    assert p5.wd_payment_pp(29) < p5.wd_pp(29)          # charged and adjusted downwards
+    assert p5.mgsv_wd_deduct_pp(29) != pytest.approx(p5.wd_pp(29), abs=1.0)
 
 
 def test_pitfall_nonforfeiture_floor_is_15bp_not_1pct(anchor):
@@ -402,14 +413,14 @@ def test_pitfall_surrender_charge_clock_resets_on_renewal(anchor):
     Getting this wrong relocates the shock lapse by years.
     """
     assert anchor.renewal_architecture() == "rollover"
-    assert anchor.surr_charge_id(60) == "initial"
-    assert anchor.surr_charge_id(62) == "renewal"
-    assert anchor.surr_charge_year(60) == 5
-    assert anchor.surr_charge_year(62) == 1
-    assert anchor.surr_charge_year(122) == 1                # and again a period later
-    assert anchor.surr_charge_rate(62) == 0.05              # renewal year 1
-    assert anchor.surr_charge_rate(74) == 0.04              # renewal year 2
-    assert anchor.surr_charge_rate(122) == 0.05             # third period, year 1
+    assert anchor.surr_charge_id(59) == "initial"           # last month of the initial term
+    assert anchor.surr_charge_id(61) == "renewal"
+    assert anchor.surr_charge_year(59) == 5
+    assert anchor.surr_charge_year(61) == 1
+    assert anchor.surr_charge_year(121) == 1                # and again a period later
+    assert anchor.surr_charge_rate(61) == 0.05              # renewal year 1
+    assert anchor.surr_charge_rate(73) == 0.04              # renewal year 2
+    assert anchor.surr_charge_rate(121) == 0.05             # third period, year 1
 
 
 def test_pitfall_mortality_is_second_order_and_the_table_is_not_published(
@@ -419,10 +430,10 @@ def test_pitfall_mortality_is_second_order_and_the_table_is_not_published(
     And the shipped table is explicitly illustrative: the prescribed 2012 IAM Basic /
     Scale G2 / Table 6.7 basis may not be redistributed here.
     """
-    for t in (1, 30, 61, 200):
+    for t in (0, 29, 60, 199):
         assert anchor.claim_pp(t, "DEATH") == pytest.approx(
             max(anchor.av_pp(t), anchor.surr_benefit_pp(t)), rel=1e-12)
-    assert anchor.claim_pp(30, "DEATH") > anchor.claim_pp(30, "LAPSE")
+    assert anchor.claim_pp(29, "DEATH") > anchor.claim_pp(29, "LAPSE")
     table = fixed_deferred_annuity.Data.mort_table()
     assert (table["provenance"].str.contains(r"\[std\]")).all()
     assert (table["provenance"].str.contains("not a published table")).all()
@@ -433,61 +444,76 @@ def test_pitfall_mortality_is_second_order_and_the_table_is_not_published(
 
 
 def test_initial_surrender_charge_schedule(anchor):
-    """9, 8, 7, 6, 5 over contract years 1 to 5 [S10]; the period ends at t = 60."""
+    """9, 8, 7, 6, 5 over contract years 1 to 5 [S10]; the period covers t = 0 .. 59."""
     expected = [0.09, 0.08, 0.07, 0.06, 0.05]
     for year, rate in enumerate(expected, start=1):
-        assert anchor.surr_charge_rate(12 * year) == pytest.approx(rate, rel=1e-12)
-    assert anchor.gp_index(60) == 1
-    assert anchor.gp_index(61) == 2
-    assert anchor.gp_end(60) == 0
+        first, last = 12 * (year - 1), 12 * year - 1
+        assert anchor.policy_year(first) == anchor.policy_year(last) == year
+        assert anchor.surr_charge_rate(first) == pytest.approx(rate, rel=1e-12)
+        assert anchor.surr_charge_rate(last) == pytest.approx(rate, rel=1e-12)
+    assert anchor.gp_index(59) == 1
+    assert anchor.gp_index(60) == 2
+    assert anchor.gp_end(0) == 59
+    assert anchor.gp_end(59) == 0
 
 
 def test_guarantee_period_end_window(anchor):
-    """Month 61 is the 30-day window: full account value, no charge, no MVA [S1][S2]."""
-    assert anchor.in_gp_window(61) is True
-    assert anchor.in_gp_window(121) is True
-    assert anchor.in_gp_window(1) is False
-    assert anchor.in_gp_window(60) is False
-    assert anchor.in_gp_window(62) is False
-    assert anchor.surr_charge_rate(61) == 0.0
-    assert anchor.mva_rate(61) == 0.0
-    assert anchor.mva_in_force(61) is False
-    assert anchor.surr_benefit_pp(61) == pytest.approx(anchor.av_pp(61), rel=1e-12)
-    assert anchor.annuitization_pp(61) == pytest.approx(
-        anchor.av_pp_at(61, "BEF_INV"), rel=1e-12)
+    """Month t = 60 is the 30-day window: full account value, no charge, no MVA [S1][S2].
+
+    The first month after the initial guarantee period t = 0 .. 59.
+    """
+    assert anchor.in_gp_window(60) is True
+    assert anchor.in_gp_window(120) is True
+    assert anchor.in_gp_window(0) is False
+    assert anchor.in_gp_window(59) is False
+    assert anchor.in_gp_window(61) is False
+    assert anchor.surr_charge_rate(60) == 0.0
+    assert anchor.mva_rate(60) == 0.0
+    assert anchor.mva_in_force(60) is False
+    assert anchor.surr_benefit_pp(60) == pytest.approx(anchor.av_pp(60), rel=1e-12)
+    assert anchor.annuitization_pp(60) == pytest.approx(
+        anchor.av_pp_at(60, "BEF_INV"), rel=1e-12)
 
 
 def test_mva_expires_with_the_guarantee_period(anchor):
-    """mu = 0 once the MVA period has run out [S8][S13][S16]."""
-    assert anchor.mva_term(60) == 0.0
-    assert anchor.mva_rate(60) == 0.0
-    assert anchor.mva_in_force(59) is True
-    assert anchor.mva_term(59) == pytest.approx(1.0 / 12.0, rel=1e-12)
+    """mu = 0 once the MVA period has run out [S8][S13][S16].
+
+    Month t = 59 ends the five-year MVA period, so T is 0 there and 1/12 a month earlier.
+    """
+    assert anchor.mva_term(59) == 0.0
+    assert anchor.mva_rate(59) == 0.0
+    assert anchor.mva_in_force(58) is True
+    assert anchor.mva_term(58) == pytest.approx(1.0 / 12.0, rel=1e-12)
 
 
 def test_mva_term_equals_time_to_the_end_of_the_mva_period(anchor):
-    """The notes' two-part T collapses to (12 n k - t) / 12 on a monthly grid."""
+    """The notes' two-part T collapses to (12 n k - (t + 1)) / 12 on a monthly grid.
+
+    Measured from the end of month t to the end of guarantee period k = gp_index(t).
+    """
     n12 = 12 * anchor.guar_period()
-    for t in (1, 6, 13, 30, 59, 62, 90, 119):
-        expected = (n12 * anchor.gp_index(t) - t) / 12.0
+    for t in (0, 5, 12, 29, 58, 61, 89, 118):
+        expected = (n12 * anchor.gp_index(t) - (t + 1)) / 12.0
         assert anchor.mva_term(t) == pytest.approx(expected, rel=1e-12)
 
 
 def test_renewal_rate_is_redeclared_at_the_boundary(anchor):
     """Base run: MR = 4.45% and s_ren = 0, so the renewal rate equals the initial rate."""
-    assert anchor.credit_rate(60) == 0.0445
-    assert anchor.redeclare_month(61) == 61
-    assert anchor.credit_rate(61) == pytest.approx(0.0445, rel=1e-12)
-    assert anchor.credit_rate(61) >= anchor.gmir()
+    assert anchor.credit_rate(59) == 0.0445
+    assert anchor.redeclare_month(59) == 0
+    assert anchor.redeclare_month(60) == 60
+    assert anchor.credit_rate(60) == pytest.approx(0.0445, rel=1e-12)
+    assert anchor.credit_rate(60) >= anchor.gmir()
 
 
 def test_attained_age_cap_on_the_renewal_charge(anchor):
     """4% at 94, 3% at 95, 2% at 96, 1% at 97, 0% from 98 [S1][S2]."""
-    assert anchor.surr_charge_age_cap(1) == 1.0                  # age 60, no cap
+    assert anchor.surr_charge_age_cap(0) == 1.0                  # age 60, no cap
     caps = {94: 0.04, 95: 0.03, 96: 0.02, 97: 0.01, 98: 0.0, 99: 0.0}
     for attained, cap in caps.items():
-        t = 12 * (attained - anchor.age_at_entry()) + 1
+        t = 12 * (attained - anchor.age_at_entry())              # first month at that age
         assert anchor.age(t) == attained
+        assert anchor.age(t - 1) == attained - 1
         assert anchor.surr_charge_age_cap(t) == pytest.approx(cap, rel=1e-12)
         assert anchor.surr_charge_rate(t) <= cap + 1e-15
 
@@ -496,16 +522,16 @@ def test_camp_b_drops_the_charge_and_the_mva(fixed_deferred_annuity):
     """annual_redeclare: no new surrender charge and mu = 0 permanently [S13]."""
     p3 = fixed_deferred_annuity.Projection[3]
     assert p3.renewal_architecture() == "annual_redeclare"
-    assert p3.surr_charge_rate(30) == 0.07                       # initial term unchanged
-    for t in (62, 90, 130, 200):
+    assert p3.surr_charge_rate(29) == 0.07                       # initial term unchanged
+    for t in (61, 89, 129, 199):
         assert p3.surr_charge_id(t) == "none"
         assert p3.surr_charge_rate(t) == 0.0
         assert p3.mva_term(t) == 0.0
         assert p3.mva_rate(t) == 0.0
-    assert p3.in_gp_window(61) is True                           # exactly one window
-    assert p3.in_gp_window(121) is False
-    assert p3.redeclare_month(130) == 121                        # annual redeclaration
-    assert p3.redeclare_month(133) == 133
+    assert p3.in_gp_window(60) is True                           # exactly one window
+    assert p3.in_gp_window(120) is False
+    assert p3.redeclare_month(129) == 120                        # annual redeclaration
+    assert p3.redeclare_month(132) == 132
 
 
 # ---------------------------------------------------------------------------
@@ -514,7 +540,7 @@ def test_camp_b_drops_the_charge_and_the_mva(fixed_deferred_annuity):
 
 def test_base_deterministic_run_switches_the_dynamic_term_off(anchor):
     """MR = CR = 4.45% and s_ren = 0, so Market(t) = Rate(t) = 0 exactly."""
-    for t in (1, 30, 61, 120, 240):
+    for t in (0, 29, 60, 119, 239):
         assert anchor.market_rate(t) == 0.0445
         assert anchor.credit_rate(t) == pytest.approx(0.0445, rel=1e-12)
         assert anchor.lapse_dyn_market(t) == 0.0
@@ -522,13 +548,16 @@ def test_base_deterministic_run_switches_the_dynamic_term_off(anchor):
 
 
 def test_base_lapse_and_the_shock(anchor):
-    """1.25% in contract years 1-5 and 90% at the shock: 75% x 1.25 capped at 90% [R2]."""
+    """1.25% in contract years 1-5 and 90% at the shock: 75% x 1.25 capped at 90% [R2].
+
+    Contract year y opens at t = 12 (y - 1); the shock year 6 opens at t = 60.
+    """
     assert anchor.gmir_factor() == 1.25
     for year in range(1, 6):
-        t = 12 * (year - 1) + 1
+        t = 12 * (year - 1)
         assert anchor.lapse_rate_base(t) == 0.01
         assert anchor.lapse_rate(t) == pytest.approx(0.0125, rel=1e-12)
-    shock = 12 * 5 + 1
+    shock = 12 * 5
     assert anchor.lapse_rate_base(shock) == 0.75
     assert anchor.lapse_rate(shock) == pytest.approx(0.90, rel=1e-12)
     assert anchor.lapse_rate_mth(shock) == pytest.approx(
@@ -538,32 +567,32 @@ def test_base_lapse_and_the_shock(anchor):
 def test_rollover_repeats_the_shock_every_guarantee_period(anchor):
     """Camp A: a repeating shock at contract years 6, 11, 16, ... [S1][S2][S5][S11]."""
     shocks = [y for y in range(1, 41)
-              if anchor.lapse_rate_base(12 * (y - 1) + 1) == 0.75]
+              if anchor.lapse_rate_base(12 * (y - 1)) == 0.75]
     assert shocks == [6, 11, 16, 21, 26, 31, 36]
 
 
 def test_camp_b_shocks_once_then_runs_off(fixed_deferred_annuity):
     """Camp B: 1,1,1,1,1,75,10,7.5,3,3,3,... [R2 Example 1 scaled to five years]."""
     p3 = fixed_deferred_annuity.Projection[3]
-    pattern = [p3.lapse_rate_base(12 * (y - 1) + 1) for y in range(1, 12)]
+    pattern = [p3.lapse_rate_base(12 * (y - 1)) for y in range(1, 12)]
     assert pattern == [0.01, 0.01, 0.01, 0.01, 0.01, 0.75, 0.10, 0.075, 0.03, 0.03, 0.03]
 
 
 def test_annuitization_only_in_the_window(anchor):
     """a(t) = 1.0% in each window after contract year 1, 0% elsewhere **[std]**."""
-    assert anchor.annuitization_rate(61) == 0.01
-    assert anchor.annuitization_rate(121) == 0.01
-    for t in (1, 12, 60, 62, 100):
+    assert anchor.annuitization_rate(60) == 0.01
+    assert anchor.annuitization_rate(120) == 0.01
+    for t in (0, 11, 59, 61, 99):
         assert anchor.annuitization_rate(t) == 0.0
-    assert anchor.pols_annuitization(61) > 0.0
-    assert anchor.pols_annuitization(62) == 0.0
+    assert anchor.pols_annuitization(60) > 0.0
+    assert anchor.pols_annuitization(61) == 0.0
 
 
 def test_mva_lapse_factor_defaults_to_the_best_estimate(anchor):
     """Phi_MVA = 0.35 while an MVA is in force **[std]**, 1 once it has expired [R2]."""
-    assert anchor.mva_lapse_factor_at(30) == 0.35
-    assert anchor.mva_lapse_factor_at(60) == 1.0                 # MVA period expired
-    assert anchor.mva_lapse_factor_at(61) == 1.0                 # the window
+    assert anchor.mva_lapse_factor_at(29) == 0.35
+    assert anchor.mva_lapse_factor_at(59) == 1.0                 # MVA period expired
+    assert anchor.mva_lapse_factor_at(60) == 1.0                 # the window
 
 
 # ---------------------------------------------------------------------------
@@ -578,26 +607,33 @@ def test_inforce_rollforward_closes(anchor):
     ``check_pols_roll_fwd_resid(t)``.
     """
     assert anchor.check_pols_roll_fwd() is True
-    for t in range(1, anchor.proj_len() + 1):
+    for t in range(anchor.proj_len()):
         assert anchor.check_pols_roll_fwd_resid(t) == pytest.approx(0.0, abs=1e-12)
 
 
 def test_account_value_rollforward_closes(anchor):
-    """check_av_roll_fwd() is a no-argument bool; the residual is zero at every month."""
+    """check_av_roll_fwd() is a no-argument bool; the residual is zero at every month.
+
+    Including t = 0, where the block opens empty and the purchase payment is the
+    ``premium in`` term of the identity.
+    """
     assert anchor.check_av_roll_fwd() is True
-    for t in range(1, anchor.proj_len() + 1):
+    for t in range(anchor.proj_len()):
         assert anchor.check_av_roll_fwd_resid(t) == pytest.approx(0.0, abs=1e-6)
+    assert anchor.av_change(0) == pytest.approx(anchor.av_at(0, "EOM"), rel=1e-12)
+    assert anchor.prem_to_av(0) == pytest.approx(100000.0, rel=1e-12)
 
 
 def test_pols_if_is_the_start_of_month_count_and_weights_its_own_row(anchor):
     """pols_if(t) opens month t and is the weight on that same row's cash flows.
 
-    The library-wide convention, matching ``Term_US_A.pols_if(1) == pols_if_init()``.
+    The library-wide convention, matching ``Term_US_S.pols_if(0) == pols_if_init()``.
     The notes' end-of-month ``l(t)`` is ``pols_if_at(t, "AFT_DECR")`` and is unchanged.
     """
-    assert anchor.pols_if(1) == anchor.pols_if_init()
     assert anchor.pols_if(0) == anchor.pols_if_init()
-    for t in (1, 13, 30, 61, 120):
+    assert anchor.pols_if_at(0, "BEF_DECR") == anchor.pols_if_init()
+    assert anchor.pols_if(1) < anchor.pols_if_init()             # month 0 decrements
+    for t in (0, 12, 29, 60, 119):
         assert anchor.pols_if(t) == pytest.approx(
             anchor.pols_if_at(t, "BEF_DECR"), rel=1e-15)
         assert anchor.pols_if(t + 1) == pytest.approx(
@@ -605,10 +641,10 @@ def test_pols_if_is_the_start_of_month_count_and_weights_its_own_row(anchor):
 
     # The reconciliation the convention buys: the printed in-force divides the printed
     # flows on the same row.
-    assert anchor.wd_pp(13) == 4000.0
-    assert anchor.withdrawals(13) / anchor.wd_payment_pp(13) == pytest.approx(
-        anchor.pols_if(13), rel=1e-12)
-    for t in (1, 13, 30, 120):
+    assert anchor.wd_pp(12) == 4000.0
+    assert anchor.withdrawals(12) / anchor.wd_payment_pp(12) == pytest.approx(
+        anchor.pols_if(12), rel=1e-12)
+    for t in (0, 12, 29, 119):
         per_contract = (50.0 / 12.0) * anchor.inflation_factor(t)
         assert anchor.expenses(t) / per_contract == pytest.approx(
             anchor.pols_if(t), rel=1e-12)
@@ -617,18 +653,21 @@ def test_pols_if_is_the_start_of_month_count_and_weights_its_own_row(anchor):
 
 
 def test_maturity_is_confined_to_the_last_month(anchor):
-    for t in range(1, anchor.proj_len()):
+    """pols_maturity is zero everywhere but t = proj_len() - 1, the last projected month."""
+    last = anchor.proj_len() - 1
+    for t in range(last):
         assert anchor.pols_maturity(t) == 0.0
-    assert anchor.pols_maturity(anchor.proj_len()) > 0.0
-    # The horizon month still opens with contracts in force; it is the month *after* it
-    # that opens empty, the deemed maturity having annuitized the survivors out.
-    assert anchor.pols_if(anchor.proj_len()) > 0.0
-    assert anchor.pols_if(anchor.proj_len() + 1) == 0.0
+    assert anchor.pols_maturity(last) > 0.0
+    # The horizon month still opens with contracts in force; it is the month *after* it,
+    # t = proj_len(), outside the frame, that opens empty, the deemed maturity having
+    # annuitized the survivors out.
+    assert anchor.pols_if(last) > 0.0
+    assert anchor.pols_if(anchor.proj_len()) == 0.0
     assert anchor.proj_len() == 12 * (100 - 60)
 
 
 def test_inforce_is_a_decreasing_probability(anchor):
-    for t in range(0, anchor.proj_len() + 1):
+    for t in range(anchor.proj_len()):
         assert 0.0 <= anchor.pols_if(t) <= 1.0
         assert anchor.pols_if(t + 1) <= anchor.pols_if(t) + 1e-15
 
@@ -639,7 +678,7 @@ def test_internal_transfers_are_not_cash_flows(anchor):
     for internal in ("inv_income", "surr_charge", "mva_pp", "mgsv_pp",
                      "interest_credited", "claims_over_av"):
         assert internal not in columns
-    for t in (0, 1, 30, 61):
+    for t in (0, 1, 29, 60):
         assert anchor.net_cf(t) == pytest.approx(
             anchor.premiums(t) - anchor.withdrawals(t) - anchor.claims(t)
             - anchor.commissions(t) - anchor.expenses(t) - anchor.premium_taxes(t),
@@ -649,25 +688,25 @@ def test_internal_transfers_are_not_cash_flows(anchor):
 def test_a_binding_floor_is_not_a_separate_cash_flow(stress):
     """It raises SB(t); MGSV - SV is a reconciliation quantity, never a ledger line.
 
-    At month 6 the floor adds $3,111.90 per contract on top of the gross surrender value
+    At t = 5 the floor adds $3,111.90 per contract on top of the gross surrender value
     - and the ledger still shows one surrender payment, not a payment plus a top-up.
     """
-    top_up = stress.surr_benefit_pp(6) - stress.surr_value_pp(6)
-    assert top_up == pytest.approx(SURRENDER_6["floor_top_up"], abs=CENT)
-    assert stress.claims(6, "LAPSE") == pytest.approx(
-        stress.surr_benefit_pp(6) * stress.pols_lapse(6), rel=1e-12)
-    assert stress.claims(6, "LAPSE") == pytest.approx(
-        stress.claims_from_av(6, "LAPSE") + stress.claims_over_av(6, "LAPSE"), rel=1e-12)
+    top_up = stress.surr_benefit_pp(5) - stress.surr_value_pp(5)
+    assert top_up == pytest.approx(SURRENDER_5["floor_top_up"], abs=CENT)
+    assert stress.claims(5, "LAPSE") == pytest.approx(
+        stress.surr_benefit_pp(5) * stress.pols_lapse(5), rel=1e-12)
+    assert stress.claims(5, "LAPSE") == pytest.approx(
+        stress.claims_from_av(5, "LAPSE") + stress.claims_over_av(5, "LAPSE"), rel=1e-12)
     # Signed, and negative here: the surrender pays out less than the account value it
     # releases even with the floor binding, because the charge is larger than the top-up.
-    assert stress.claims_over_av(6, "LAPSE") == pytest.approx(
-        (stress.surr_benefit_pp(6) - stress.av_pp(6)) * stress.pols_lapse(6), rel=1e-12)
-    assert stress.claims_over_av(6, "LAPSE") < 0.0
+    assert stress.claims_over_av(5, "LAPSE") == pytest.approx(
+        (stress.surr_benefit_pp(5) - stress.av_pp(5)) * stress.pols_lapse(5), rel=1e-12)
+    assert stress.claims_over_av(5, "LAPSE") < 0.0
     assert "claims_over_av" not in set(stress.result_cf().columns)
 
 
 def test_claims_split_by_kind_sums_to_the_total(anchor):
-    for t in (1, 30, 61, anchor.proj_len()):
+    for t in (0, 29, 60, anchor.proj_len() - 1):
         assert anchor.claims(t) == pytest.approx(
             anchor.claims(t, "DEATH") + anchor.claims(t, "LAPSE")
             + anchor.claims(t, "ANNUITIZATION") + anchor.claims(t, "MATURITY"),
@@ -675,30 +714,40 @@ def test_claims_split_by_kind_sums_to_the_total(anchor):
 
 
 def test_premium_and_acquisition_costs_fall_at_t_zero(anchor):
-    """The notes' ledger indexes the single premium and the commission at t = 0."""
+    """The notes' ledger indexes the single premium and the commission at t = 0.
+
+    They are beginning-of-month flows of the first policy month, so row 0 also carries
+    month 0's own claims and maintenance expense: net_cf(0) is the +98,000 deposit net of
+    commission less those.
+    """
     assert anchor.premiums(0) == 100000.0
     assert anchor.commissions(0) == pytest.approx(2000.0, abs=CENT)
     assert anchor.premium_taxes(0) == 0.0
-    assert anchor.net_cf(0) == pytest.approx(98000.0, abs=CENT)
+    assert anchor.withdrawals(0) == 0.0
+    assert anchor.net_cf(0) == pytest.approx(
+        98000.0 - anchor.claims(0) - anchor.expenses(0), abs=CENT)
+    assert 0.0 < anchor.claims(0) + anchor.expenses(0) < 1000.0
     assert all(anchor.premiums(t) == 0.0 for t in range(1, 25))
     assert all(anchor.commissions(t) == 0.0 for t in range(1, 25))
 
 
 def test_maintenance_expense_inflates_by_contract_year(anchor):
-    """(50 / 12) x 1.025^(y-1) per contract per month **[std]**."""
-    assert anchor.expenses(1) == pytest.approx(
-        (50.0 / 12.0) * anchor.pols_if_at(1, "BEF_DECR"), rel=1e-12)
-    assert anchor.inflation_factor(1) == 1.0
-    assert anchor.inflation_factor(13) == pytest.approx(1.025, rel=1e-12)
-    assert anchor.inflation_factor(25) == pytest.approx(1.025 ** 2, rel=1e-12)
+    """(50 / 12) x 1.025^(y-1) per contract per month **[std]**, from month 0."""
+    assert anchor.expenses(0) == pytest.approx(
+        (50.0 / 12.0) * anchor.pols_if_at(0, "BEF_DECR"), rel=1e-12)
+    assert anchor.inflation_factor(0) == 1.0
+    assert anchor.inflation_factor(11) == 1.0
+    assert anchor.inflation_factor(12) == pytest.approx(1.025, rel=1e-12)
+    assert anchor.inflation_factor(24) == pytest.approx(1.025 ** 2, rel=1e-12)
 
 
 def test_tax_basis_is_income_first_and_generates_no_cash_flow(anchor):
-    """IRC 72(e)(3)(A): the $4,000 at month 13 is all gain, so the basis is untouched."""
-    assert anchor.tax_basis_pp(0) == 100000.0
-    assert anchor.av_pp_at(13, "BEF_WD") > anchor.tax_basis_pp(12)
-    assert anchor.taxable_wd_pp(13) == pytest.approx(4000.0, rel=1e-12)
-    assert anchor.tax_basis_pp(13) == pytest.approx(100000.0, rel=1e-12)
+    """IRC 72(e)(3)(A): the $4,000 at t = 12 is all gain, so the basis is untouched."""
+    assert anchor.tax_basis_pp_init() == 100000.0
+    assert anchor.tax_basis_pp(0) == 100000.0                    # no withdrawal in month 0
+    assert anchor.av_pp_at(12, "BEF_WD") > anchor.tax_basis_pp(11)
+    assert anchor.taxable_wd_pp(12) == pytest.approx(4000.0, rel=1e-12)
+    assert anchor.tax_basis_pp(12) == pytest.approx(100000.0, rel=1e-12)
     assert "taxable_wd_pp" not in set(anchor.result_cf().columns)
 
 
@@ -707,15 +756,23 @@ def test_tax_basis_is_income_first_and_generates_no_cash_flow(anchor):
 
 
 def test_result_cf_shape(anchor):
+    """One row per projected month: t = 0 .. proj_len() - 1, proj_len() rows."""
     df = anchor.result_cf()
-    assert list(df.index) == list(range(0, anchor.proj_len() + 1))
+    assert list(df.index) == list(range(anchor.proj_len()))
+    assert len(df) == anchor.proj_len()
+    assert df.index[-1] == anchor.proj_len() - 1
     assert df.index.name == "t"
     assert set(df.columns) == {
         "pols_if", "premiums", "withdrawals", "claims_death", "claims_lapse",
         "claims_annuitization", "claims_maturity", "commissions", "expenses",
         "premium_taxes", "net_cf",
     }
-    assert df.loc[0, "net_cf"] == pytest.approx(98000.0, abs=CENT)
+    # The purchase payment and the commission sit on row 0 with month 0's own flows.
+    assert df.loc[0, "premiums"] - df.loc[0, "commissions"] == pytest.approx(
+        98000.0, abs=CENT)
+    assert df.loc[0, "net_cf"] == pytest.approx(anchor.net_cf(0), rel=1e-12)
+    assert df.loc[0, "net_cf"] < 98000.0
+    assert (df["premiums"].iloc[1:] == 0.0).all()
 
 
 def test_result_pols_and_result_av_shape(anchor):
@@ -724,8 +781,9 @@ def test_result_pols_and_result_av_shape(anchor):
         "pols_if", "pols_annuitization", "pols_death", "pols_lapse",
         "pols_maturity", "pols_if_aft_decr"}
     assert pols.index.name == "t"
+    assert list(pols.index) == list(range(anchor.proj_len()))
     # The movement table closes: opening less the four exits is next month's opening.
-    for t in (1, 30, 120):
+    for t in (0, 29, 119):
         exits = sum(pols.loc[t, c] for c in (
             "pols_annuitization", "pols_death", "pols_lapse", "pols_maturity"))
         assert pols.loc[t, "pols_if"] - exits == pytest.approx(
@@ -735,7 +793,9 @@ def test_result_pols_and_result_av_shape(anchor):
         "av_pp_bef_wd", "wd_pp", "av_pp_bef_inv", "av_pp", "mgsv_pp", "free_wd_avail",
         "surr_charge_pp", "mva_pp", "surr_value_pp", "surr_benefit_pp"}
     assert av.index.name == "t"
-    assert len(av) == anchor.proj_len() + 1
+    assert len(av) == anchor.proj_len()
+    assert av.index[0] == 0 and av.index[-1] == anchor.proj_len() - 1
+    assert av.loc[0, "av_pp_bef_wd"] == anchor.av_pp_init()       # opening balance is P
 
 
 def test_every_mva_switch_is_exercised_by_a_model_point(fixed_deferred_annuity):
@@ -764,14 +824,14 @@ def test_declared_differential_family(fixed_deferred_annuity):
     """
     p7 = fixed_deferred_annuity.Projection[7]
     assert p7.mva_family() == "declared_differential"
-    assert p7.credit_rate(30) == 0.0445 and p7.market_rate(30) == 0.0600
-    assert p7.mva_duration_factor(30) == pytest.approx(2.20, rel=1e-12)
-    assert p7.mva_rate(30) == pytest.approx((0.0445 - 0.0600) * 2.20, rel=1e-12)
-    assert p7.mva_pp(30) < 0.0                       # rising rates, negative adjustment
+    assert p7.credit_rate(29) == 0.0445 and p7.market_rate(29) == 0.0600
+    assert p7.mva_duration_factor(29) == pytest.approx(2.20, rel=1e-12)
+    assert p7.mva_rate(29) == pytest.approx((0.0445 - 0.0600) * 2.20, rel=1e-12)
+    assert p7.mva_pp(29) < 0.0                       # rising rates, negative adjustment
     # The renewal rate is redeclared to max(GMIR, MR) = 6.00%, which flips the table to
     # the Ic >= 6% column: modified durations are uniformly lower there.
-    assert p7.credit_rate(90) == pytest.approx(0.0600, rel=1e-12)
-    assert p7.mva_duration_factor(90) < 2.60
+    assert p7.credit_rate(89) == pytest.approx(0.0600, rel=1e-12)
+    assert p7.mva_duration_factor(89) < 2.60
 
 
 def test_dynamic_lapse_is_live_when_the_credited_rate_trails_the_market(
@@ -784,47 +844,53 @@ def test_dynamic_lapse_is_live_when_the_credited_rate_trails_the_market(
     """
     p7 = fixed_deferred_annuity.Projection[7]
     market = 1.25 * (0.0600 - 0.005 - 0.0445) ** 2
-    assert p7.lapse_dyn_exponent(30) == 2.0
-    assert p7.lapse_dyn_market(30) == pytest.approx(market, rel=1e-12)
+    assert p7.lapse_dyn_exponent(29) == 2.0
+    assert p7.lapse_dyn_market(29) == pytest.approx(market, rel=1e-12)
 
-    gate = max(0.0, 1 - 5 * (1 - p7.surr_benefit_pp(30) / p7.av_pp(30)))
+    gate = max(0.0, 1 - 5 * (1 - p7.surr_benefit_pp(29) / p7.av_pp(29)))
     assert 0.0 < gate < 1.0
-    assert p7.lapse_dyn_rate(30) == pytest.approx(market * gate, rel=1e-12)
-    assert p7.mva_lapse_factor_at(30) == 0.35
-    assert p7.lapse_rate(30) == pytest.approx(0.0125 + market * gate * 0.35, rel=1e-12)
+    assert p7.lapse_dyn_rate(29) == pytest.approx(market * gate, rel=1e-12)
+    assert p7.mva_lapse_factor_at(29) == 0.35
+    assert p7.lapse_rate(29) == pytest.approx(0.0125 + market * gate * 0.35, rel=1e-12)
 
-    # At month 60 the MVA period has expired, so Phi_MVA is 1 and the same market term
-    # comes through undamped: the assumption the notes rank third in sensitivity.
-    gate_60 = max(0.0, 1 - 5 * (1 - p7.surr_benefit_pp(60) / p7.av_pp(60)))
-    assert p7.mva_lapse_factor_at(60) == 1.0
-    assert p7.lapse_rate(60) == pytest.approx(
-        0.0125 + p7.lapse_dyn_market(60) * gate_60, rel=1e-12)
-    assert p7.lapse_rate(60) > p7.lapse_rate(30)
+    # At t = 59, the month that ends the MVA period, T is 0 and the MVA has expired, so
+    # Phi_MVA is 1 and the same market term comes through undamped: the assumption the
+    # notes rank third in sensitivity.
+    gate_59 = max(0.0, 1 - 5 * (1 - p7.surr_benefit_pp(59) / p7.av_pp(59)))
+    assert p7.mva_lapse_factor_at(59) == 1.0
+    assert p7.lapse_rate(59) == pytest.approx(
+        0.0125 + p7.lapse_dyn_market(59) * gate_59, rel=1e-12)
+    assert p7.lapse_rate(59) > p7.lapse_rate(29)
 
     # Once the renewal declaration catches the market the dynamic term vanishes again.
-    assert p7.credit_rate(90) == pytest.approx(0.0600, rel=1e-12)
-    assert p7.lapse_dyn_market(90) == 0.0
-    assert p7.lapse_dyn_exponent(90) == 2.5
+    assert p7.credit_rate(89) == pytest.approx(0.0600, rel=1e-12)
+    assert p7.lapse_dyn_market(89) == 0.0
+    assert p7.lapse_dyn_exponent(89) == 2.5
 
 
 def test_asymmetric_cap_limits_only_the_upside(fixed_deferred_annuity):
     """asym_sc_snfl: M <= +C, no downside cap; only SB >= MGSV binds below [S12]."""
     p6 = fixed_deferred_annuity.Projection[6]
     assert p6.mva_cap_rule() == "asym_sc_snfl"
-    raw = p6.mva_rate(6) * p6.surr_excess_pp(6)
-    assert raw < -p6.surr_charge_pp(6)
-    assert p6.mva_pp(6) == pytest.approx(raw, rel=1e-12)      # uncapped downwards
-    assert p6.surr_benefit_pp(6) == pytest.approx(p6.mgsv_pp(6), rel=1e-12)
+    raw = p6.mva_rate(5) * p6.surr_excess_pp(5)
+    assert raw < -p6.surr_charge_pp(5)
+    assert p6.mva_pp(5) == pytest.approx(raw, rel=1e-12)      # uncapped downwards
+    assert p6.surr_benefit_pp(5) == pytest.approx(p6.mgsv_pp(5), rel=1e-12)
 
 
 def test_gmir_floor_cap_holds_av_plus_mva_above_the_accumulated_premium(
         fixed_deferred_annuity):
-    """gmir_floor: AV + M >= premium less prior withdrawals accumulated at the GMIR [S13]."""
+    """gmir_floor: AV + M >= premium less prior withdrawals accumulated at the GMIR [S13].
+
+    ``prem_accum_gmir_pp(t)`` is a closing balance: one month of GMIR accretion on the
+    premium at t = 0, a full year of it at t = 11.
+    """
     p3 = fixed_deferred_annuity.Projection[3]
     assert p3.mva_cap_rule() == "gmir_floor"
-    assert p3.av_pp(6) + p3.mva_pp(6) == pytest.approx(p3.prem_accum_gmir_pp(6), rel=1e-9)
-    assert p3.prem_accum_gmir_pp(0) == 100000.0
-    assert p3.prem_accum_gmir_pp(12) == pytest.approx(100000.0 * 1.0025, rel=1e-12)
+    assert p3.av_pp(5) + p3.mva_pp(5) == pytest.approx(p3.prem_accum_gmir_pp(5), rel=1e-9)
+    assert p3.prem_accum_gmir_pp(0) == pytest.approx(
+        100000.0 * 1.0025 ** (1 / 12), rel=1e-12)
+    assert p3.prem_accum_gmir_pp(11) == pytest.approx(100000.0 * 1.0025, rel=1e-12)
 
 
 def test_min_sc_interest_cap_and_interest_only_allowance(fixed_deferred_annuity):
@@ -834,9 +900,10 @@ def test_min_sc_interest_cap_and_interest_only_allowance(fixed_deferred_annuity)
     assert p5.free_wd_rule() == "interest_only"
     assert p5.free_wd_allow(1) == 0.0                            # no prior year
     assert p5.free_wd_allow(2) == pytest.approx(4450.0, abs=CENT)   # 100,000 x 4.45%
-    assert p5.free_wd_avail(30) == pytest.approx(p5.free_wd_allow(3), rel=1e-12)
-    limit = min(p5.wd_charge_pp(30), p5.interest_credited_pp(30))
-    assert p5.wd_mva_pp(30) == pytest.approx(-limit, rel=1e-12)
+    assert p5.free_wd_allow(2) == pytest.approx(p5.interest_credited_pp(11), rel=1e-12)
+    assert p5.free_wd_avail(29) == pytest.approx(p5.free_wd_allow(3), rel=1e-12)
+    limit = min(p5.wd_charge_pp(29), p5.interest_credited_pp(29))
+    assert p5.wd_mva_pp(29) == pytest.approx(-limit, rel=1e-12)
 
 
 def test_invalid_timing_and_kind_arguments_raise(anchor):
@@ -870,7 +937,7 @@ def test_annuitization_outside_the_window_is_valued_before_crediting(anchor):
     the same AV'(t) that ``claim_from_av_pp`` releases.  Reading ``SV(t)`` literally would
     pay a month of interest the block never credited to those contracts.
     """
-    t = 30
+    t = 29
     assert anchor.in_gp_window(t) is False
     assert anchor.free_wd_mva_exempt() is True
 
@@ -890,9 +957,9 @@ def test_annuitization_outside_the_window_is_valued_before_crediting(anchor):
         interest * (1 - anchor.surr_charge_rate(t)), rel=1e-9)
 
     # In the window it is the full pre-crediting account value, no charge and no MVA.
-    assert anchor.in_gp_window(61) is True
-    assert anchor.annuitization_pp(61) == pytest.approx(
-        anchor.av_pp_at(61, "BEF_INV"), rel=1e-12)
+    assert anchor.in_gp_window(60) is True
+    assert anchor.annuitization_pp(60) == pytest.approx(
+        anchor.av_pp_at(60, "BEF_INV"), rel=1e-12)
 
     # Inert as shipped: a(t) is zero outside the window on every model point.
     assert anchor.annuitization_rate(t) == 0.0
@@ -942,16 +1009,21 @@ def test_symbol_table_covers_the_gmir_floor_level_and_the_scalar_spreads(
     assert proj.renewal_spread == 0.0                 # base run [std]
     assert proj.lapse_buffer == 0.005                 # BF = 50 bp
     assert proj.mva_admin_spread == 0.0025            # s_adm = 25 bp [S4]
-    assert proj[1].prem_accum_gmir_pp(0) == 100000.0
+    assert proj[1].prem_accum_gmir_pp(0) == pytest.approx(
+        100000.0 * 1.0025 ** (1 / 12), rel=1e-12)
 
 
-def test_readme_contrasts_t_zero_with_term_life_only():
-    """The t = 0 index is contrasted with Term_US_A, not claimed across the library.
+def test_readme_states_the_zero_based_frame():
+    """The README describes the frame the model actually publishes.
 
-    Sibling models in ``products/`` also index their result tables from 0, so the
-    library-wide claim this README used to make was false.
+    ``t`` is the 0-based policy month and ``result_cf()`` has one row per projected
+    month, ``t = 0`` to ``proj_len() - 1``; the issue instant is not a row.  The two
+    claims this README used to make -- that the table starts at ``t = 0`` *unlike*
+    ``Term_US_S``, and that every other model starts at 1 -- are both gone.
     """
     readme = _flat((MODEL_PATH.parent / "model.md").read_text(encoding="utf-8"))
     assert "Every other model in the library starts its result table at 1" not in readme
-    assert ("contrast with `Term_US_A`, the model this one takes its structure from, "
-            "whose result table starts at `t = 1`") in readme
+    assert "whose result table starts at `t = 1`" not in readme
+    assert "The issue instant is not a row" in readme
+    assert "one row per projected month, `t = 0` to `proj_len() - 1`" in readme
+    assert "`t` counts **policy months** from 0" in readme

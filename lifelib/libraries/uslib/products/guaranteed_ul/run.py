@@ -21,27 +21,29 @@ print("model point {}: {} - {}{} {} face {:,.0f} guarantee to age {} {}".format(
 print("premium {:,.2f} mode {}   base load {:.0%} / shadow load {:.0%}   "
       "credited {:.2%} (guaranteed {:.2%}) / shadow {:.2%}".format(
           proj.premium_pp_ann(), proj.premium_mode(), proj.load_prem_rate(),
-          proj.load_prem_rate_sg, proj.crediting_rate_ann(1),
+          proj.load_prem_rate_sg, proj.crediting_rate_ann(0),
           proj.guar_rate_ann, proj.sg_rate_ann))
 print("current COI {:.0%} / shadow COI {:.0%} of guaranteed max   "
       "NAAR factors {:.7f} base / {:.7f} shadow".format(
           proj.coi_curr_factor, proj.coi_sg_factor,
           proj.naar_factor(), proj.sg_naar_factor()))
-print("opening AV {:,.2f}   opening SG {:,.2f}   projection = {} policy months "
-      "from policy month {} to attained age {}".format(
+print("opening AV {:,.2f}   opening SG {:,.2f}   projection = {} policy months, "
+      "t = 0 .. {} (policy months {} to {}), to attained age {}".format(
           proj.av_pp_init(), proj.sg_pp_init(), proj.proj_len(),
-          proj.duration_mth_init() + 1, proj.age(proj.proj_len()) + 1))
+          proj.proj_len() - 1, proj.duration_mth_init() + 1,
+          proj.duration_mth_init() + proj.proj_len(),
+          proj.age(proj.proj_len() - 1) + 1))
 print()
 
-print("Account values (per policy) - first 12 projected months")
+print("Account values (per policy) - first 12 projected months, t = 0 .. 11")
 print(proj.result_av().head(12).round(2).to_string())
 print()
 
-print("Guarantee diagnostics - first 12 projected months")
+print("Guarantee diagnostics - first 12 projected months, t = 0 .. 11")
 print(proj.result_guar().head(12).round(2).to_string())
 print()
 
-print("Liability cash flows - first 12 projected months")
+print("Liability cash flows - first 12 projected months, t = 0 .. 11")
 print(proj.result_cf().head(12).round(2).to_string())
 
 model.close()

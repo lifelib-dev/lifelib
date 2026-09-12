@@ -12,11 +12,19 @@ nothing.
 
 :data:`MODELS` is the registry ``test_model_conventions_jp.py`` is parametrized over, so
 registering a model here subjects it to the whole house style: it then either conforms or
-fails.  The metadata records the projection basis, which is not uniform across the
-library — some products run on an annual grid and some on a monthly one — and records
-that none of them discount.  That last entry is a property of the library, not an
-omission: every ``technical-notes.md`` specifies *gross liability cash flows* and leaves
-discounting and reserves to a separate layer that consumes them.
+fails.  The metadata records the projection basis and that none of the models discount.
+
+**Every model in this library now runs on a monthly grid**, so :data:`ANNUAL` is unused by
+:data:`MODELS` and is kept only so that a model added on an annual step can still be
+registered.  It was not always so: 定期保険, 終身保険, 養老保険 and 個人年金保険 were annual-step
+models, and the conversion is what gives the library one grid.  What it did **not** change
+is the contractual constructions underneath — the 解約返戻金, the 保険料積立金, the 責任準備金
+and every schedule quoted by policy year are still defined at the 年単位の契約応当日 in the
+four converted models, with the monthly projection reading them between anniversaries.
+
+The "discounted" entry is a property of the library, not an omission: every
+``technical-notes.md`` specifies *gross liability cash flows* and leaves discounting and
+reserves to a separate layer that consumes them.
 
 **Why this is not in `conftest.py`.**  Three libraries now ship in-library suites, and
 ``conftest.py`` is a name pytest fixes.  Collecting them in one run puts several files
@@ -65,25 +73,27 @@ HOKEN = {"age_basis": "保険年齢"}   # insurance age, nearest birthday
 # The name is <short name>_<country>_<grid>: a short English descriptor of the product,
 # then JP, then _A for an annual step or _S for a monthly one.  The grid letters follow
 # lifelib, where annuallife/TradLife_A is the annual-step model and basiclife/BasicTerm_S
-# and savings/CashValue_SE are the monthly ones.
+# and savings/CashValue_SE are the monthly ones.  All nine here are _S, and the letter
+# carries lifelib's second sense as well: scalar, one model point at a time, as against
+# the vectorized _M models.
 #
 # This pairing is not derivable from the folder slug — "individual_annuity" spelled out is
 # unusable in a model name — so it lives here, and test_model_conventions_jp.py asserts
 # that the name, the folder and the model's own _name all agree.
 MODELS = {
     # Protection
-    "Term_JP_A": ("products/term_life/Term_JP_A", ANNUAL | MAN),
+    "Term_JP_S": ("products/term_life/Term_JP_S", MONTHLY | MAN),
     "IncomeTerm_JP_S": ("products/income_guarantee/IncomeTerm_JP_S", MONTHLY | MAN),
     # Savings
-    "WholeLife_JP_A": ("products/whole_life/WholeLife_JP_A", ANNUAL | MAN),
-    "Endowment_JP_A": ("products/endowment/Endowment_JP_A", ANNUAL | MAN),
+    "WholeLife_JP_S": ("products/whole_life/WholeLife_JP_S", MONTHLY | MAN),
+    "Endowment_JP_S": ("products/endowment/Endowment_JP_S", MONTHLY | MAN),
     "FXWholeLife_JP_S": ("products/fx_whole_life/FXWholeLife_JP_S", MONTHLY | MAN),
     # Third sector (第三分野)
     "Medical_JP_S": ("products/medical/Medical_JP_S", MONTHLY | MAN),
     "Cancer_JP_S": ("products/cancer/Cancer_JP_S", MONTHLY | MAN),
     "LTC_JP_S": ("products/nursing_care/LTC_JP_S", MONTHLY | MAN),
     # Annuity — the one product quoted on 保険年齢 rather than 満年齢
-    "Annuity_JP_A": ("products/individual_annuity/Annuity_JP_A", ANNUAL | HOKEN),
+    "Annuity_JP_S": ("products/individual_annuity/Annuity_JP_S", MONTHLY | HOKEN),
 }
 
 
@@ -100,7 +110,7 @@ MODELS = {
 # ``fx_path_table.csv`` is first read at model point 7 of 8, because the 為替 path only
 # differs from the flat TTM there.  A check over a truncated table would drop it silently.
 INPUT_FILES = {
-    "Annuity_JP_A": {
+    "Annuity_JP_S": {
         "commute_factor_table.csv", "expense_table.csv", "lapse_table.csv",
         "model_point_table.csv", "mort_anchor_table.csv", "mort_table.csv",
         "pricing_table.csv"},
@@ -108,7 +118,7 @@ INPUT_FILES = {
         "hosp_stay_table.csv", "incidence_table.csv", "lapse_table.csv",
         "model_point_table.csv", "mort_table.csv", "sex_factor_table.csv",
         "survival_table.csv"},
-    "Endowment_JP_A": {
+    "Endowment_JP_S": {
         "benefit_schedule_table.csv", "lapse_table.csv", "model_point_table.csv",
         "mort_table.csv"},
     "FXWholeLife_JP_S": {
@@ -123,10 +133,10 @@ INPUT_FILES = {
     "Medical_JP_S": {
         "incidence_table.csv", "lapse_table.csv", "los_table.csv",
         "model_point_table.csv", "mort_table.csv"},
-    "Term_JP_A": {
+    "Term_JP_S": {
         "lapse_table.csv", "model_point_table.csv", "mort_table.csv",
         "prem_rate_table.csv"},
-    "WholeLife_JP_A": {
+    "WholeLife_JP_S": {
         "lapse_table.csv", "model_point_table.csv", "mort_table.csv"},
 }
 

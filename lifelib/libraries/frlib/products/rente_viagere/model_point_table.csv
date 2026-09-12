@@ -1,0 +1,12 @@
+point_id,policy_id,purchase_price,effective_year,effective_month,annuitant_age,annuitant_birth_year,annuitant_sex,annuity_rate,reversion_pct,reversion_age,reversion_birth_year,reversion_sex,guarantee_years,palier_scheme,palier_step_years,payment_freq,payment_timing,arrerage_charge_rate,technical_rate,mort_basis,death_mth_1,death_mth_2,pols_if_init
+1,RV-000001,200000.0,2026,4,65,1961,M,0.033000,0.60,61,1965,F,0,none,0,12,arrears,0.0300,0.0000,scenario,25,-1,1.0
+2,RV-000002,200000.0,2026,4,65,1961,M,0.033000,0.60,61,1965,F,0,none,0,12,arrears,0.0300,0.0000,table,,,1.0
+3,RV-000003,200000.0,2026,4,65,1961,M,0.033000,0.00,,,,15,none,0,12,arrears,0.0300,0.0000,scenario,25,-1,1.0
+4,RV-000004,200000.0,2026,4,65,1961,M,0.033000,0.00,,,,15,none,0,12,arrears,0.0300,0.0000,table,,,1.0
+5,RV-000005,150000.0,2026,1,70,1956,F,0.039568,0.00,,,,0,dec2,5,12,arrears,0.0000,0.0000,table,,,1.0
+6,RV-000006,120000.0,2026,4,68,1958,M,0.036685,0.00,,,,0,none,0,4,arrears,0.0300,0.0000,scenario,25,-1,1.0
+7,RV-000007,250000.0,2026,7,65,1961,M,0.033000,0.00,,,,0,inc2,5,12,arrears,0.0200,0.0000,table,,,1.0
+8,RV-000008,90000.0,2026,4,65,1961,F,0.033000,0.00,,,,0,dec1,10,12,arrears,0.0300,0.0000,table,,,1.0
+9,RV-000009,300000.0,2026,10,70,1956,mix,0.039568,1.00,76,1950,F,0,none,0,12,arrears,0.0100,0.0000,table,,,1.0
+10,RV-000010,200000.0,2028,4,65,1963,M,0.032814,0.00,,,,0,inc1,10,12,arrears,0.0300,0.0000,table,,,1.0
+11,RV-000011,180000.0,2026,4,65,1961,M,0.038697,0.00,,,,0,none,0,12,advance,0.0300,0.0100,table,,,1.0

@@ -46,17 +46,21 @@ notes' symbols and the cells names, and `model.Data.doc` the input arrangement.
 
 ## Monthly, not annual
 
-`t` counts **policy months**, 1-based, and `policy_year(t) = ceil(t/12)`, so anniversaries
-fall at `t = 12, 24, …` and the five-year guarantee period ends at `t = 60`. **Note the
-contrast with `Term_US_A`, where `t` counts years.** The contract credits interest daily
-against a quoted *annual effective* rate, while surrender charges and the MVA step on
-contract-year boundaries; monthly is the coarsest grid that resolves both. It hits every
+`t` counts **policy months** from 0: `t = 0` is the first policy month, month `t` runs from
+time `t` to time `t + 1`, and the frame is `t = 0 … proj_len() − 1`. The contract year is
+the 1-based label `policy_year(t) = t // 12 + 1`, derived from `t` and never indexed by;
+anniversaries fall at the *start* of `t = 12, 24, …`, so the closing account value at the
+first anniversary is `av_pp(11)`, and the five-year guarantee period covers `t = 0 … 59`.
+Monthly is the library-wide grid, and it is the right one here on its own merits: the
+contract credits interest daily against a quoted *annual effective* rate, while surrender
+charges and the MVA step on contract-year boundaries, and monthly is the coarsest grid
+that resolves both. It hits every
 anniversary exactly and puts the guarantee-period-end window and the shock-lapse boundary
 within one step. Finer grids buy nothing on a book-value chassis with no daily-valued
 index.
 
 Twelve monthly factors `(1 + i_cr)^(1/12)` reproduce the declared annual effective rate
-**exactly** — `av_pp(12) == 100,000 × 1.0445` to the twelfth significant figure — so the
+**exactly** — `av_pp(11) == 100,000 × 1.0445` to the twelfth significant figure — so the
 discretization moves interest only *within* a month. Do not compound daily as well; a test
 pins this.
 
@@ -128,9 +132,32 @@ with no formula change.
 | `mort_table.csv` | Annual mortality by attained age 40–120 and sex, with a `provenance` column | **[std]** illustrative Makeham annuitant curve. **Not a published table.** The prescribed basis is 2012 IAM **Basic** with Projection Scale G2 and the VM-22 Table 6.7 factors [R2 §6.B.8](#uslib-fixed_deferred_annuity-r2) [R9], which may not be redistributed here — swap it in by repointing `Data.mort_table_file` |
 | `surr_charge_table.csv` | The initial and renewal schedules, keyed by `(schedule, contract_year)` | initial 9/8/7/6/5 sourced [S10]; renewal 5/4/3/2/1 sourced [S2], adoption **[std]** |
 | `surr_charge_age_cap.csv` | The attained-age cap on the renewal charge, 4% at 94 down to 0% at 98–100 | sourced [S1] [S2] |
-| `rate_scenario.csv` | Three deterministic scenarios keyed by `(scenario_id, t)`, read as step functions: `base` (it = 6.50%, MR = CR = 4.45%), `stress` (it = 10.00%) and `differential` (MR = 6.00%) | **[std]**; the index is a state-filed variable [S8] [S12], so the model takes a scalar series rather than hard-coding one |
-| `withdrawal_table.csv` | Three withdrawal programmes keyed by `(wd_schedule_id, t)`: the worked example's $4,000 at month 13, an empty one, and one charged excess withdrawal | worked example [S10] [S11]; the variant **[std]** |
+| `rate_scenario.csv` | Three deterministic scenarios keyed by `(scenario_id, t)`, `t` the 0-based policy month, read as step functions: `base` (it = 6.50%, MR = CR = 4.45%), `stress` (it = 10.00%) and `differential` (MR = 6.00%) | **[std]**; the index is a state-filed variable [S8] [S12], so the model takes a scalar series rather than hard-coding one |
+| `withdrawal_table.csv` | Three withdrawal programmes keyed by `(wd_schedule_id, t)`, `t` the 0-based policy month: the worked example's $4,000 at `t = 12` (the first month of contract year 2), an empty one, and one charged excess withdrawal at `t = 29` | worked example [S10] [S11]; the variant **[std]** |
 | `mva_factor_table.csv` | The declared-differential duration factors `F_s` by whole years remaining, both rate columns | specimen table [S14] |
+
+### Time-keyed columns under the 0-based index
+
+Two input files carry a column literally named `t`, and in both it is the model's own
+policy-month index, so it moved with the frame when the model went 0-based:
+
+- `withdrawal_table.csv`, column `t` — the month a scheduled withdrawal is taken, an
+  exact-key lookup in `wd_scheduled_pp(t)`. The worked example's $4,000 was re-keyed from
+  the old month 13 to `t = 12` and the `charged` programme's $20,000 from 30 to `t = 29`
+  (the first month is `t = 0`, so every projected month moved down by one). The `none`
+  programme's placeholder row, which sat at the old issue instant 0 with a zero amount,
+  stays at `t = 0`: the instant merged into month 0, and a $0 row is inert.
+- `rate_scenario.csv`, column `t` — the month from which a row's rates hold, read as a
+  step function in `scenario_rate(t, name)`. All three shipped scenarios are a single row
+  at `t = 0`, which under the merge is still `t = 0`; a row at a later old month `m` would
+  have moved to `m − 1`.
+
+The remaining keys are not time indices and were left alone: `surr_charge_table.csv` is
+keyed by the contractual 1-based `contract_year`, reached through
+`surr_charge_year(t) = policy_year(t) − n (gp_index(t) − 1)`; `mva_factor_table.csv` by
+`years_remaining`, reached through `mva_term(t)`; `surr_charge_age_cap.csv` and
+`mort_table.csv` by attained `age`; and `model_point_table.csv` carries no time column —
+every point is new business, opening the frame at `t = 0`.
 
 Every model point projects to completion, and a test asserts it. Between them they exercise
 **all three MVA formula families, all five cap rules, both renewal architectures, both
@@ -153,10 +180,10 @@ notes themselves carry:
 
 | Notes | Cells | Why |
 |---|---|---|
-| `d(t)` — the floor deduction | `mgsv_wd_deduct_pp` | `d(t)` is deaths in `Term_US_A`; here it is the withdrawal deducted from the Model #805 floor in step 7 |
-| `c(t)` — the contract charge | `mgsv_charge_pp` | `c(t)` is conversions in `Term_US_A` |
-| `E(t)` — two different bases | `wd_excess_pp` / `surr_excess_pp` | The excess of a *withdrawal* over the allowance and the excess of the whole *account value* over it are both written `E(t)`; `E(t)` is also expenses in `Term_US_A`, here `expenses` |
-| `X` — the lapse exponent | `lapse_dyn_exponent` | `X(t)` is premium tax in `Term_US_A`, here `premium_taxes` |
+| `d(t)` — the floor deduction | `mgsv_wd_deduct_pp` | `d(t)` is deaths in `Term_US_S`; here it is the withdrawal deducted from the Model #805 floor in step 7 |
+| `c(t)` — the contract charge | `mgsv_charge_pp` | `c(t)` is conversions in `Term_US_S` |
+| `E(t)` — two different bases | `wd_excess_pp` / `surr_excess_pp` | The excess of a *withdrawal* over the allowance and the excess of the whole *account value* over it are both written `E(t)`; `E(t)` is also expenses in `Term_US_S`, here `expenses` |
+| `X` — the lapse exponent | `lapse_dyn_exponent` | `X(t)` is premium tax in `Term_US_S`, here `premium_taxes` |
 | `T(t)` — the MVA duration | `mva_term` | `T` is in years while `t` is the policy month |
 | `MGSV` / `GMSV` / `MGV` | `mgsv_pp` | One concept, three labels across the sources; MGSV is the library's term |
 
@@ -166,7 +193,7 @@ than being dropped:
 
 | Notes | Cells | Why |
 |---|---|---|
-| `l(t)` — end-of-month in-force | `pols_if(t)` is the **start**-of-month count; the notes' `l(t)` is `pols_if_at(t, "AFT_DECR")` | `pols_if(t)` is the weight applied to month `t`'s cash flows, so the `pols_if` column of `result_cf()` reconciles with the row it sits on — `withdrawals(t) / wd_payment_pp(t)` and `expenses(t) / ((expense_maint/12) × inflation_factor(t))` both return it. This matches `Term_US_A` (`pols_if(1) == pols_if_init()`) and `CashValue_SE`. `pols_if(t+1) == pols_if_at(t, "AFT_DECR")` in every month but the last |
+| `l(t)` — end-of-month in-force | `pols_if(t)` is the **start**-of-month count; the notes' `l(t)` is `pols_if_at(t, "AFT_DECR")` | `pols_if(t)` is the weight applied to month `t`'s cash flows, so the `pols_if` column of `result_cf()` reconciles with the row it sits on — `withdrawals(t) / wd_payment_pp(t)` and `expenses(t) / ((expense_maint/12) × inflation_factor(t))` both return it. This matches `Term_US_S` and `CashValue_SE` (`pols_if(0) == pols_if_init()`). `pols_if(t+1) == pols_if_at(t, "AFT_DECR")` in every month but the last, `t = proj_len() − 1` |
 | `w(t)` monthly, `w_annual(t)` annual | `lapse_rate_mth` / `lapse_rate` | `lapse_rate` is the **annual** rate everywhere in the library, pairing with `lapse_rate_mth` exactly as `mort_rate` pairs with `mort_rate_mth`. The notes already carry both quantities; only the suffixes move |
 
 The roll-forward self-checks follow `CashValue_SE`: `check_av_roll_fwd()` and
@@ -183,7 +210,8 @@ is nothing in the contract that ends it: the guarantee period renews indefinitel
 notes write the base-lapse pattern as a repeating five-year cycle with no terminal date.
 
 The model runs to the contract anniversary at attained age **100 [std]** —
-`proj_len() = 12 × (maturity_age − age_at_entry())`, 480 months on the anchor cell. Age 100
+`proj_len() = 12 × (maturity_age − age_at_entry())` projected months, 480 on the anchor
+cell, so the frame is `t = 0 … 479` and the last month ends at that anniversary. Age 100
 is not arbitrary: it is the last attained age in the *sourced* cap band on the renewal
 surrender charge — 4% at 94, 3% at 95, 2% at 96, 1% at 97, 0% at 98–100 [S1] [S2]. The cap
 *reaches* zero at 98; 100 is where the sourced band stops, so past it the model would be
@@ -199,36 +227,44 @@ closes for every `t` — `pols_if(t)` is the start-of-month count, so it opens t
 four exits are taken during the month, and the next month opens on what is left. Including
 the last month, where the block would otherwise appear to lose
 lives with no cause. This is bookkeeping determined by the horizon, not a new assumption; the
-name and the construction follow `BasicTerm_S.pols_maturity` and `Term_US_A`. It matters
+name and the construction follow `BasicTerm_S.pols_maturity` and `Term_US_S`. It matters
 little in practice: with a 90% shock lapse every five years, in-force falls by roughly a
-factor of ten per cycle — end of month 60 `pols_if_at(60, "AFT_DECR")` = 0.9077, end of
-month 120 = 0.0808, end of month 240 = 5.6e-4 — so what enters the horizon month,
-`pols_if(480)`, is 3.0e-9 of the contract and the choice of horizon moves nothing
+factor of ten per cycle — at the end of the fifth contract year `pols_if_at(59, "AFT_DECR")`
+= 0.9077, at the end of the tenth (`t = 119`) 0.0808, at the end of the twentieth
+(`t = 239`) 5.6e-4 — so what enters the horizon month, `pols_if(479)`, is 3.0e-9 of the
+contract and the choice of horizon moves nothing
 material. Under `annual_redeclare` the shock happens once, so it matters more; run
 both architectures before quoting a duration, as the notes' first sensitivity says.
 
-## `result_cf()` starts at `t = 0`, not `t = 1`
+## The issue instant is not a row
 
 The notes' cash flow ledger indexes the single premium, the acquisition commission and the
-premium tax at `t = 0`, and `AV(0)`, `MGSV(0)` and `l(0)` are the initial branches of the
-three recursions. Putting those three flows in month 1 instead would double-count them
-against a month that also credits interest. So `result_cf()` runs `t = 0 … proj_len()` and
-`net_cf(0) = +98,000` on the anchor cell. Note the contrast with `Term_US_A`, the model
-this one takes its structure from, whose result table starts at `t = 1`: the index here is
-the notes' own, not a house convention, so read `t = 0` before comparing the two ledgers.
+premium tax "at `t = 0`", and the opening values `P`, `0.875 × P` and `1` seed the three
+recursions. In the model those three flows are *beginning-of-month* flows of the first
+policy month, `t = 0`, and the opening values are read through the opening timings —
+`av_pp_at(0, "BEF_WD") == av_pp_init()`, `pols_if(0) == pols_if_init()` — while
+`av_pp(0)` and `mgsv_pp(0)` are the closing balances one month of crediting later. There
+is no separate row for the instant: `result_cf()` has one row per projected month, `t = 0`
+to `proj_len() - 1`, and `net_cf(0)` on the anchor cell is the +98,000 deposit net of
+commission less month 0's own claims and maintenance expense. The account value
+roll-forward treats the deposit as the `premium in` term of month 0, opening from an empty
+block, so `check_av_roll_fwd()` closes there too. This is the library-wide frame; the
+account value, floor and in-force reported at any `t` are the same numbers the notes
+give at that `t`.
 
 ## The 30-day window sits *after* the boundary, not before it
 
 The product spec describes the free-out window as "the 30 days **before** each guarantee
 period ends"; the technical notes' processing order places it in the month *after* the
-period closes — "if the previous month ended a guarantee period (`t − 1 ≡ 0 mod 12n`)".
+period closes — "if the previous month ended a guarantee period (`t ≡ 0 mod 12n`, `t > 0`)".
 On a monthly grid the two readings differ by one step and cannot both be implemented.
 
 **The technical notes are the specification, so the model follows them:** `in_gp_window(t)`
-is true at `t = 61, 121, 181, …`. This is also the reading that makes the rest of the notes
-consistent — the annuitization rule is stated as "only in a 30-day window, `t > 12`", and
-the prescribed base lapse puts the 75% shock in contract **year 6**, which is months 61–72.
-Under `annual_redeclare` there is exactly one window, at the end of the initial term.
+is true at `t = 60, 120, 180, …`, the first month of each renewal period. This is also the
+reading that makes the rest of the notes consistent — the annuitization rule is stated as
+"only in a 30-day window, `t ≥ 12`", and the prescribed base lapse puts the 75% shock in
+contract **year 6**, which is months `t = 60 … 71`. Under `annual_redeclare` there is
+exactly one window, `t = 60`, the month after the initial term.
 
 ## The annuitization transfer is valued at BOM, though the notes name `SV(t)`
 
@@ -256,8 +292,8 @@ there and move the claim's release basis with it.
 The notes give the base lapse annually by contract year and convert it with
 `w_base_m = 1 − (1 − w_base_annual)^(1/12)`. Applied to the 90% shock year that is 17.5% per
 month for twelve months, not a point event at the window. Only the first of those months —
-the window itself — is free of surrender charge and MVA; months 62–72 carry the fresh 5%
-renewal charge while still lapsing at 17.5% a month.
+the window itself, `t = 60` — is free of surrender charge and MVA; months `t = 61 … 71`
+carry the fresh 5% renewal charge while still lapsing at 17.5% a month.
 
 That is what the notes prescribe and the model implements it literally, but it is worth
 knowing before quoting a liability duration: a design that concentrates the shock in the
@@ -270,8 +306,9 @@ second-order one.
 The notes define the linear-duration `T(t)` as (days to the end of the current contract year
 ÷ 365) + whole years remaining in the MVA period, and the geometric `tau` as days to
 maturity ÷ 365.25 — two different day-count conventions, from two different carriers. On a
-monthly grid the first collapses algebraically to `(12·n·k − t)/12`, which is exactly the
-second on exact twelfths. `mva_term(t)` therefore serves both branches, and a test asserts
+monthly grid the first collapses algebraically to `(12·n·k − (t + 1))/12` — the time from
+the end of month `t` to the end of the current MVA period, `k = gp_index(t)` — which is
+exactly the second on exact twelfths. `mva_term(t)` therefore serves both branches, and a test asserts
 the identity. Reconciling to an admin system that runs actual days will reintroduce the
 difference; that is a discretization consequence, not a modelling choice.
 
@@ -340,20 +377,22 @@ alternatives.
 ## Tests
 
 `tests/test_fixed_deferred_annuity_us.py` asserts all seven rows and five columns of the
-notes' worked example table to the cent; the notes' own exactness checks (`AV(12) =
-100,000 × 1.0445`, `AV(24) = 100,450 × 1.0445`, `MGSV(24) = (89,950 − 4,000) × 1.028`) to the
-twelfth significant figure; the month-30 surrender trace line by line, cap and floor both
-inactive; the month-6 stress trace, where the symmetric cap bites at −8,298.07 and the Model
-#805 floor then adds 3,111.90; one registered contract's geometric-branch factors 1.01897
-and 0.96944 and its −2.06% expense-adder case [S4]; both roll-forwards at every month; and
+notes' worked example table to the cent, at the notes' own 0-based months `t = 0, 1, 2, 11,
+12, 23, 29`; the notes' own exactness checks (`AV(11) = 100,000 × 1.0445`, `AV(23) = 100,450
+× 1.0445`, `MGSV(23) = (89,950 − 4,000) × 1.028`) to the twelfth significant figure; the
+month-29 surrender trace line by line, cap and floor both inactive; the month-5 stress
+trace, where the symmetric cap bites at −8,298.07 and the Model #805 floor then adds
+3,111.90; one registered contract's geometric-branch factors 1.01897 and 0.96944 and its
+−2.06% expense-adder case [S4]; both roll-forwards at every month `t = 0 … proj_len() − 1`
+and the frame itself (`proj_len()` rows, `t = 0` to `proj_len() − 1`); and
 one test per entry in the notes' "Known modeling pitfalls" list — composition order, the
 free-amount/MVA interaction, gross versus net withdrawals, the two Model #805 withdrawal
 conventions, the 15 bp floor (and that the statute states a *minimum*, not a cap), the
 surrender-charge clock on renewal, and the mortality plumbing.
 
 Two tolerances are worth knowing. Money is asserted to **0.006** rather than 0.005 because
-the notes round half-up for display and `AV(24) = 104,920.025` sits exactly on the boundary.
-And `E(30)` is asserted to **0.01**, because the notes state that "the surrender traces below
+the notes round half-up for display and `AV(23) = 104,920.025` sits exactly on the boundary.
+And `E(29)` is asserted to **0.01**, because the notes state that "the surrender traces below
 are computed from the cent-rounded values shown": they print
 `107,229.09 − 10,492.00 = 96,737.09` where full precision gives `96,737.0843`. Everything
 else in the traces agrees to well under a cent.

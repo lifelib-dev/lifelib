@@ -9,6 +9,12 @@ can compare them against the notes by eye.
 Tolerances follow the precision the notes display: money to the penny, in-force to six
 decimals.
 
+The time index ``t`` is 0-based, as everywhere in lifelib: ``t = 0`` is the issue
+month, ``result_cf()`` is indexed ``0 .. proj_len() - 1`` with ``proj_len() = 12 x
+term`` rows, and ``policy_year(t) = t // 12 + 1``.  The notes' ``l(t)`` is the in-force
+at the start of month ``t``, which is ``pols_if(t)``; the end-of-month state ``l(t+1)``
+is ``pols_if_at(t, "AFT_DECR")``.
+
 Beyond the worked example this module asserts the four product facts the notes call out
 as modelling pitfalls, because each is a way an implementation can look right and be
 wrong:
@@ -43,18 +49,18 @@ INFORCE = 5e-7        # in-force displayed to 6 d.p.
 
 MODEL_DIR = LIB / MODELS["CI_UK_S"][0]
 
-# t: (l(t-1), premium, main claim, claim expense, additional payment, children's,
-#     maintenance, notes' Net CF, l(t))
+# t: (l(t), premium, main claim, claim expense, additional payment, children's,
+#     maintenance, notes' Net CF, l(t+1))   -- t = 0 is the issue month
 #
 # The notes' Net CF column EXCLUDES the GBP 200 initial expense, which they carry
-# separately: month 1 is 31.88 in the table and -168.12 in total.
+# separately: t = 0 is 31.88 in the table and -168.12 in total.
 WORKED_EXAMPLE = {
-    1: (1.000000, 55.00, 19.27, 0.05, 0.47, 0.83, 2.50, 31.88, 0.991067),
-    2: (0.991067, 54.51, 19.10, 0.05, 0.46, 0.83, 2.48, 31.59, 0.982215),
-    3: (0.982215, 54.02, 18.93, 0.05, 0.46, 0.82, 2.46, 31.31, 0.973441),
+    0: (1.000000, 55.00, 19.27, 0.05, 0.47, 0.83, 2.50, 31.88, 0.991067),
+    1: (0.991067, 54.51, 19.10, 0.05, 0.46, 0.83, 2.48, 31.59, 0.982215),
+    2: (0.982215, 54.02, 18.93, 0.05, 0.46, 0.82, 2.46, 31.31, 0.973441),
 }
 
-# The notes' month-1 rate trace for the anchor cell.
+# The notes' first-month (t = 0) rate trace for the anchor cell.
 Q_CLAIM = 0.00231            # 0.0015 + 0.0009 x 0.90
 Q_M = 0.00019270             # 1 - (1 - 0.00231)^(1/12)
 W_M = 0.0087416              # 1 - 0.90^(1/12)
@@ -78,47 +84,53 @@ def test_worked_example_row(uk_ci_anchor, t):
     assert a.claims(t, "AP") == pytest.approx(ap, abs=PENNY)
     assert a.claims(t, "CHILD") == pytest.approx(child, abs=PENNY)
     # The notes' maintenance column is the monthly expense excluding the initial one.
-    initial = 200.0 if t == 1 else 0.0
+    initial = 200.0 if t == 0 else 0.0
     assert a.expenses(t) - initial == pytest.approx(maint, abs=PENNY)
     assert a.net_cf(t) + initial == pytest.approx(net, abs=PENNY)
     assert a.pols_if_at(t, "AFT_DECR") == pytest.approx(pols_end, abs=INFORCE)
 
 
-def test_month_one_total_includes_the_initial_expense(uk_ci_anchor):
-    """The notes' Net CF column is 31.88; the month's total cash flow is -168.12.
+def test_first_month_total_includes_the_initial_expense(uk_ci_anchor):
+    """The notes' Net CF column is 31.88 at t = 0; the month's total cash flow is -168.12.
 
     The initial expense is carried outside the table, so a reader comparing the two by
     eye needs the difference stated rather than discovered.
     """
     a = uk_ci_anchor
-    assert a.net_cf(1) == pytest.approx(-168.12, abs=PENNY)
-    assert a.net_cf(1) + 200.0 == pytest.approx(31.88, abs=PENNY)
-    assert a.expenses(1) == pytest.approx(202.50, abs=PENNY)
-    assert a.expenses(2) == pytest.approx(2.50 * a.pols_if(2), abs=PENNY)
+    assert a.net_cf(0) == pytest.approx(-168.12, abs=PENNY)
+    assert a.net_cf(0) + 200.0 == pytest.approx(31.88, abs=PENNY)
+    assert a.expenses(0) == pytest.approx(202.50, abs=PENNY)
+    assert a.expenses(1) == pytest.approx(2.50 * a.pols_if(1), abs=PENNY)
 
 
 def test_worked_example_rate_trace(uk_ci_anchor):
-    """The notes' month-1 rate trace, line by line."""
+    """The notes' rate trace for the issue month t = 0, line by line."""
     a = uk_ci_anchor
-    assert a.ci_rate(1) == pytest.approx(0.0015, rel=1e-12)
-    assert a.mort_rate(1) == pytest.approx(0.0009, rel=1e-12)
-    assert a.claim_rate(1) == pytest.approx(Q_CLAIM, rel=1e-12)
-    assert a.claim_rate_mth(1) == pytest.approx(Q_M, abs=5e-9)
-    assert a.lapse_rate(1) == 0.10
-    assert a.lapse_rate_mth(1) == pytest.approx(W_M, abs=5e-8)
-    assert a.ap_rate_mth(1) == pytest.approx(A_M, rel=1e-12)
+    assert a.ci_rate(0) == pytest.approx(0.0015, rel=1e-12)
+    assert a.mort_rate(0) == pytest.approx(0.0009, rel=1e-12)
+    assert a.claim_rate(0) == pytest.approx(Q_CLAIM, rel=1e-12)
+    assert a.claim_rate_mth(0) == pytest.approx(Q_M, abs=5e-9)
+    assert a.lapse_rate(0) == 0.10
+    assert a.lapse_rate_mth(0) == pytest.approx(W_M, abs=5e-8)
+    assert a.ap_rate_mth(0) == pytest.approx(A_M, rel=1e-12)
     assert a.child_rate_mth() == pytest.approx(LAMBDA_M, rel=1e-12)
-    assert a.benefit_pp(1, "AP") == 25000.0
-    assert a.benefit_pp(1, "CHILD") == 25000.0
+    assert a.benefit_pp(0, "AP") == 25000.0
+    assert a.benefit_pp(0, "CHILD") == 25000.0
 
 
 def test_worked_example_survivor_factor(uk_ci_anchor):
-    """s = (1 - q_m)(1 - w_m) = 0.9910674, so l(t) = s^t while the rates hold."""
+    """s = (1 - q_m)(1 - w_m) = 0.9910674, so l(t) = s^t while the rates hold.
+
+    ``pols_if(t)`` is the notes' ``l(t)`` and ``pols_if_at(t, "AFT_DECR")`` is
+    ``l(t+1)``, so the end-of-month state of month t is ``s ** (t + 1)``.
+    """
     a = uk_ci_anchor
-    s = (1 - a.claim_rate_mth(1)) * (1 - a.lapse_rate_mth(1))
+    s = (1 - a.claim_rate_mth(0)) * (1 - a.lapse_rate_mth(0))
     assert s == pytest.approx(0.9910674, abs=5e-8)
-    for t in (1, 2, 3):
-        assert a.pols_if_at(t, "AFT_DECR") == pytest.approx(s ** t, rel=1e-12)
+    assert a.pols_if(0) == a.pols_if_init() == 1.0
+    for t in (0, 1, 2):
+        assert a.pols_if(t) == pytest.approx(s ** t, rel=1e-12)
+        assert a.pols_if_at(t, "AFT_DECR") == pytest.approx(s ** (t + 1), rel=1e-12)
 
 
 # ---------------------------------------------------------------------------
@@ -132,7 +144,7 @@ def test_death_and_ci_are_not_simply_added(uk_ci_anchor):
     same period - the notes' first-listed pitfall.
     """
     a = uk_ci_anchor
-    for t in (1, 60, 200):
+    for t in (0, 59, 199):
         naive = a.ci_rate(t) + a.mort_rate(t)
         assert a.claim_rate(t) == pytest.approx(
             a.ci_rate(t) + a.mort_rate(t) * 0.90, rel=1e-12)
@@ -143,15 +155,15 @@ def test_the_overlap_factor_is_a_reference_not_a_literal(critical_illness):
     """k is the notes' third-largest lever, with bounds 0 and 0.25 either side."""
     model = mx.read_model(MODEL_DIR, name="CI_UK_S_overlap")
     try:
-        base = model.Projection[1].claim_rate(1)
+        base = model.Projection[1].claim_rate(0)
         model.Projection.overlap_k = 0.0          # maximal double-counting
         model.Projection.clear_all()
-        assert model.Projection[1].claim_rate(1) == pytest.approx(
+        assert model.Projection[1].claim_rate(0) == pytest.approx(
             0.0015 + 0.0009, rel=1e-12)
-        assert model.Projection[1].claim_rate(1) > base
+        assert model.Projection[1].claim_rate(0) > base
         model.Projection.overlap_k = 0.25
         model.Projection.clear_all()
-        assert model.Projection[1].claim_rate(1) < base
+        assert model.Projection[1].claim_rate(0) < base
     finally:
         model.close()
 
@@ -163,7 +175,7 @@ def test_the_survival_period_does_not_bite_on_the_accelerated_contract(uk_ci_anc
     """
     a = uk_ci_anchor
     assert a.contract_type() == "accelerated"
-    for t in (1, 100, 300):
+    for t in (0, 99, 299):
         assert a.claim_rate_paid(t) == a.claim_rate(t)
         assert a.claim_rate_paid_mth(t) == a.claim_rate_mth(t)
         assert a.claim_rate_exit_mth(t) == 0.0
@@ -173,7 +185,7 @@ def test_the_survival_period_bites_on_the_standalone_contract(critical_illness):
     """q_pay = i_ci(1 - delta); death pays nothing and delta slips 3% of diagnoses."""
     p = critical_illness.Projection[2]
     assert p.contract_type() == "standalone"
-    for t in (1, 100, 300):
+    for t in (0, 99, 299):
         assert p.claim_rate_paid(t) == pytest.approx(p.ci_rate(t) * 0.97, rel=1e-12)
         assert p.claim_rate_paid(t) < p.claim_rate(t)
         assert p.claim_rate_exit_mth(t) > 0.0
@@ -186,7 +198,7 @@ def test_the_overlap_factor_stays_off_the_paid_decrement(critical_illness):
     are separate cells rather than one scaled by a share.
     """
     p = critical_illness.Projection[2]
-    for t in (1, 150):
+    for t in (0, 149):
         # q_pay depends on i_ci and delta alone - no k anywhere in it.
         assert p.claim_rate_paid(t) == pytest.approx(
             p.ci_rate(t) * (1 - 0.03), rel=1e-12)
@@ -199,7 +211,7 @@ def test_the_overlap_factor_stays_off_the_paid_decrement(critical_illness):
 def test_the_standalone_runoff_matches_the_accelerated_one(critical_illness):
     """Same total decrement, so the in-force paths coincide; only the outgo differs."""
     p1, p2 = critical_illness.Projection[1], critical_illness.Projection[2]
-    for t in (1, 60, 180, 300):
+    for t in (0, 59, 179, 299):
         assert p2.claim_rate(t) == pytest.approx(p1.claim_rate(t), rel=1e-12)
         assert p2.pols_if(t) == pytest.approx(p1.pols_if(t), rel=1e-12)
         assert p2.claims(t, "MAIN") < p1.claims(t, "MAIN")
@@ -215,12 +227,12 @@ def test_the_monthly_split_artefact_is_bounded_not_hidden(critical_illness):
     """
     p = critical_illness.Projection[2]
     assert p.check_claim_split() is True
-    resids = [abs(p.check_claim_split_resid(t)) for t in range(1, p.proj_len() + 1)]
+    resids = [abs(p.check_claim_split_resid(t)) for t in range(p.proj_len())]
     assert max(resids) < 1e-4            # inside the shipped tolerance
     assert max(resids) > 0.0             # but genuinely non-zero: it is a real artefact
     # Exact on the accelerated contract, where there is no split to make.
     assert all(critical_illness.Projection[1].check_claim_split_resid(t) == 0.0
-               for t in (1, 150, 300))
+               for t in (0, 149, 299))
 
 
 # ---------------------------------------------------------------------------
@@ -234,7 +246,7 @@ def test_the_ancillary_benefits_do_not_deplete_the_sum_assured(uk_ci_anchor):
     different product, and is the notes' third pitfall.
     """
     a = uk_ci_anchor
-    for t in (1, 100, 300):
+    for t in (0, 99, 299):
         assert a.benefit_pp(t, "MAIN") == 100000.0
         assert a.benefit_pp(t, "AP") == 25000.0
         assert a.benefit_pp(t, "CHILD") == 25000.0
@@ -248,11 +260,11 @@ def test_the_ancillary_benefits_do_not_decrement_the_inforce(uk_ci_anchor):
     """
     a = uk_ci_anchor
     assert a.check_pols_roll_fwd() is True
-    for t in range(1, a.proj_len() + 1):
+    for t in range(a.proj_len()):
         out = a.pols_claim(t) + a.pols_lapse(t) + a.pols_maturity(t)
         assert a.pols_if(t) - a.pols_if(t + 1) == pytest.approx(out, abs=1e-12)
     # The decrement is the combined claim rate alone, with no frequency loading in it.
-    for t in (1, 150):
+    for t in (0, 149):
         assert a.pols_claim(t) == pytest.approx(
             a.pols_if(t) * a.claim_rate_mth(t), rel=1e-14)
 
@@ -264,7 +276,7 @@ def test_the_ancillary_frequencies_are_divided_by_twelve_not_transformed(uk_ci_a
     here, but the reason is structural rather than numerical.
     """
     a = uk_ci_anchor
-    for t in (1, 150, 300):
+    for t in (0, 149, 299):
         assert a.ap_rate_mth(t) == pytest.approx(a.ap_rate(t) / 12.0, rel=1e-14)
         assert a.ap_rate_mth(t) != pytest.approx(
             1 - (1 - a.ap_rate(t)) ** (1 / 12), rel=1e-9)
@@ -276,11 +288,11 @@ def test_children_cover_can_be_switched_off(critical_illness):
     p5 = critical_illness.Projection[5]
     assert p5.children_cover() is False
     assert p5.child_rate_mth() == 0.0
-    assert p5.benefit_pp(1, "CHILD") == 0.0
-    assert all(p5.claims(t, "CHILD") == 0.0 for t in range(1, p5.proj_len() + 1))
+    assert p5.benefit_pp(0, "CHILD") == 0.0
+    assert all(p5.claims(t, "CHILD") == 0.0 for t in range(p5.proj_len()))
     # Everything else is unchanged, so the difference is exactly the children's outgo.
     p1 = critical_illness.Projection[1]
-    for t in (1, 150):
+    for t in (0, 149):
         assert p5.net_cf(t) - p1.net_cf(t) == pytest.approx(
             p1.claims(t, "CHILD"), abs=1e-9)
 
@@ -295,7 +307,7 @@ def test_the_ancillary_caps_track_the_indexed_sum_assured(critical_illness):
     try:
         proj = model.Projection[4]                # the indexed point
         assert proj.indexation() is True
-        t_year3 = 25                             # policy year 3
+        t_year3 = 24                             # policy year 3 opens at t = 24
         main = proj.benefit_pp(t_year3, "MAIN")
         assert main == pytest.approx(100000.0 * 1.03 ** 2, rel=1e-12)
         # The cash caps bind at this size, so both are 25,000 regardless.
@@ -349,7 +361,7 @@ def test_the_rates_are_monotone_in_age_over_the_projection(critical_illness):
     """Diagnosis and mortality both rise with age on every shipped model point."""
     for point_id in critical_illness.Data.model_point_table().index:
         proj = critical_illness.Projection[point_id]
-        years = range(1, proj.proj_len() + 1, 12)
+        years = range(0, proj.proj_len(), 12)    # the first month of each policy year
         ci = [proj.ci_rate(t) for t in years]
         qd = [proj.mort_rate(t) for t in years]
         assert ci == sorted(ci), point_id
@@ -393,18 +405,19 @@ def test_the_smoker_and_female_cells_are_flat_factors(uk_ci_anchor):
 def test_the_ci_trend_is_off_and_works_when_switched_on(critical_illness):
     """tau = 0 in the base run; it is the notes' first-listed sensitivity anyway."""
     a = critical_illness.Projection[1]
-    assert all(a.ci_trend_factor(t) == 1.0 for t in (1, 150, 300))
+    assert all(a.ci_trend_factor(t) == 1.0 for t in (0, 149, 299))
 
     model = mx.read_model(MODEL_DIR, name="CI_UK_S_trend")
     try:
         model.Projection.ci_trend = 0.02
         model.Projection.clear_all()
         proj = model.Projection[1]
-        assert proj.ci_trend_factor(1) == 1.0                     # policy year 1
-        assert proj.ci_trend_factor(13) == pytest.approx(1.02, rel=1e-12)
-        assert proj.ci_trend_factor(300) == pytest.approx(1.02 ** 24, rel=1e-12)
-        assert proj.ci_rate(300) > a.ci_rate(300)
-        assert proj.mort_rate(300) == a.mort_rate(300)            # trend is CI-only
+        assert proj.ci_trend_factor(0) == 1.0                     # policy year 1
+        assert proj.ci_trend_factor(11) == 1.0                    # still year 1
+        assert proj.ci_trend_factor(12) == pytest.approx(1.02, rel=1e-12)
+        assert proj.ci_trend_factor(299) == pytest.approx(1.02 ** 24, rel=1e-12)
+        assert proj.ci_rate(299) > a.ci_rate(299)
+        assert proj.mort_rate(299) == a.mort_rate(299)            # trend is CI-only
     finally:
         model.close()
 
@@ -417,8 +430,8 @@ def test_the_reviewable_snapshot_is_identical_to_the_guaranteed_run(critical_ill
     """rho_review = 0, so model point 3 differs from point 1 in nothing but the flag."""
     p1, p3 = critical_illness.Projection[1], critical_illness.Projection[3]
     assert p3.premium_guarantee() == "reviewable"
-    assert p3.reviews_passed(300) == 4                # months 61, 121, 181, 241
-    assert all(not p3.review_shock_active(t) for t in (61, 65, 121, 300))
+    assert p3.reviews_passed(299) == 4                # reviews at t = 60, 120, 180, 240
+    assert all(not p3.review_shock_active(t) for t in (60, 64, 120, 299))
     df1, df3 = p1.result_cf(), p3.result_cf()
     assert (df1 - df3).abs().max().max() == pytest.approx(0.0, abs=1e-12)
 
@@ -427,9 +440,9 @@ def test_guaranteed_premiums_are_never_reviewed(uk_ci_anchor):
     """Nothing on a guaranteed policy can move the premium, review Reference or not."""
     a = uk_ci_anchor
     assert a.premium_guarantee() == "guaranteed"
-    assert all(a.reviews_passed(t) == 0 for t in (1, 61, 121, 300))
-    assert all(a.premium_pp(t) == 55.0 for t in (1, 61, 121, 300))
-    assert a.ci_sel_factor(300) == 1.0
+    assert all(a.reviews_passed(t) == 0 for t in (0, 60, 120, 299))
+    assert all(a.premium_pp(t) == 55.0 for t in (0, 60, 120, 299))
+    assert a.ci_sel_factor(299) == 1.0
 
 
 def test_a_review_raises_the_premium_and_shocks_lapse(critical_illness):
@@ -439,22 +452,24 @@ def test_a_review_raises_the_premium_and_shocks_lapse(critical_illness):
         model.Projection.review_prem_shock = 0.20     # well past the 5% threshold
         model.Projection.clear_all()
         proj = model.Projection[3]
-        # First review bites in month 61, not month 60.
-        assert proj.premium_pp(60) == pytest.approx(55.0, rel=1e-12)
-        assert proj.premium_pp(61) == pytest.approx(55.0 * 1.20, rel=1e-12)
-        assert proj.premium_pp(121) == pytest.approx(55.0 * 1.20 ** 2, rel=1e-12)
+        # The first review is the fifth anniversary, the start of month t = 60: it
+        # bites there and not in t = 59, the last month of policy year 5.
+        assert proj.policy_year(59) == 5 and proj.policy_year(60) == 6
+        assert proj.premium_pp(59) == pytest.approx(55.0, rel=1e-12)
+        assert proj.premium_pp(60) == pytest.approx(55.0 * 1.20, rel=1e-12)
+        assert proj.premium_pp(120) == pytest.approx(55.0 * 1.20 ** 2, rel=1e-12)
         # Shock lapse for twelve months, then back to the table rate.
-        base = proj.lapse_rate_base(61)
-        assert proj.review_shock_active(61) is True
-        assert proj.review_shock_active(72) is True
-        assert proj.review_shock_active(73) is False
-        assert proj.lapse_rate(61) == pytest.approx(
+        base = proj.lapse_rate_base(60)
+        assert proj.review_shock_active(60) is True
+        assert proj.review_shock_active(71) is True
+        assert proj.review_shock_active(72) is False
+        assert proj.lapse_rate(60) == pytest.approx(
             min(0.30, base + 2.0 * (0.20 - 0.05)), rel=1e-12)
-        assert proj.lapse_rate(73) == pytest.approx(base, rel=1e-12)
+        assert proj.lapse_rate(72) == pytest.approx(base, rel=1e-12)
         # Anti-selection loads the diagnosis rate from the first shock onwards.
-        assert proj.ci_sel_factor(60) == 1.0
-        assert proj.ci_sel_factor(61) == pytest.approx(1.10, rel=1e-12)
-        assert proj.ci_sel_factor(300) == pytest.approx(1.10, rel=1e-12)
+        assert proj.ci_sel_factor(59) == 1.0
+        assert proj.ci_sel_factor(60) == pytest.approx(1.10, rel=1e-12)
+        assert proj.ci_sel_factor(299) == pytest.approx(1.10, rel=1e-12)
     finally:
         model.close()
 
@@ -466,10 +481,10 @@ def test_a_small_review_change_produces_no_shock(critical_illness):
         model.Projection.review_prem_shock = 0.03
         model.Projection.clear_all()
         proj = model.Projection[3]
-        assert proj.premium_pp(61) == pytest.approx(55.0 * 1.03, rel=1e-12)
-        assert proj.review_shock_active(61) is False
-        assert proj.lapse_rate(61) == proj.lapse_rate_base(61)
-        assert proj.ci_sel_factor(300) == 1.0
+        assert proj.premium_pp(60) == pytest.approx(55.0 * 1.03, rel=1e-12)
+        assert proj.review_shock_active(60) is False
+        assert proj.lapse_rate(60) == proj.lapse_rate_base(60)
+        assert proj.ci_sel_factor(299) == 1.0
     finally:
         model.close()
 
@@ -483,14 +498,14 @@ def test_indexation_compounds_cover_and_premium(critical_illness):
     p = critical_illness.Projection[4]
     assert p.indexation() is True
     assert p.idx_increase() == pytest.approx(0.03, rel=1e-12)
-    for y, t in ((1, 1), (2, 13), (3, 25)):
+    for y, t in ((1, 0), (2, 12), (3, 24)):       # policy year y opens at t = 12(y-1)
         assert p.policy_year(t) == y
         assert p.idx_factor(t) == pytest.approx(1.03 ** (y - 1), rel=1e-12)
         assert p.idx_prem_factor(t) == pytest.approx(1.045 ** (y - 1), rel=1e-12)
         assert p.premium_pp(t) == pytest.approx(55.0 * 1.045 ** (y - 1), rel=1e-12)
-    # It steps on anniversaries, not monthly.
-    assert p.idx_factor(12) == p.idx_factor(1)
-    assert p.idx_factor(13) > p.idx_factor(12)
+    # It steps on anniversaries, not monthly: t = 11 is still year 1, t = 12 is year 2.
+    assert p.idx_factor(11) == p.idx_factor(0)
+    assert p.idx_factor(12) > p.idx_factor(11)
 
 
 def test_joint_first_event_is_one_policy_with_one_decrement(critical_illness):
@@ -498,19 +513,19 @@ def test_joint_first_event_is_one_policy_with_one_decrement(critical_illness):
     p = critical_illness.Projection[7]
     assert p.is_joint() is True
     assert p.age_at_entry(2) == 38 and p.sex(2) == "F"
-    for t in (1, 150, 300):
+    for t in (0, 149, 299):
         q1, q2 = p.claim_rate_life(t, 1), p.claim_rate_life(t, 2)
         assert p.claim_rate(t) == pytest.approx(1 - (1 - q1) * (1 - q2), rel=1e-12)
         assert p.claim_rate(t) < q1 + q2
     assert p.check_pols_roll_fwd() is True
     # Two lives at risk, so the policy runs off faster than the single-life anchor.
-    assert p.pols_if(300) < critical_illness.Projection[1].pols_if(300)
+    assert p.pols_if(299) < critical_illness.Projection[1].pols_if(299)
 
 
 def test_single_life_collapses_to_the_first_life(uk_ci_anchor):
     a = uk_ci_anchor
     assert a.is_joint() is False
-    for t in (1, 150):
+    for t in (0, 149):
         assert a.claim_rate(t) == pytest.approx(a.claim_rate_life(t, 1), rel=1e-14)
     with pytest.raises(FormulaError):
         a.age_at_entry(2)          # modelx wraps the formula's ValueError
@@ -539,11 +554,11 @@ def test_only_the_level_cover_basis_is_in_scope(critical_illness):
 def test_invalid_enum_values_raise(uk_ci_anchor):
     """The enum accessors validate rather than propagating a typo into a lookup."""
     with pytest.raises(FormulaError):
-        uk_ci_anchor.pols_if_at(1, "BEF_NOTHING")
+        uk_ci_anchor.pols_if_at(0, "BEF_NOTHING")
     with pytest.raises(FormulaError):
-        uk_ci_anchor.claims(1, "SURRENDER")
+        uk_ci_anchor.claims(0, "SURRENDER")
     with pytest.raises(FormulaError):
-        uk_ci_anchor.benefit_pp(1, "MATURITY")
+        uk_ci_anchor.benefit_pp(0, "MATURITY")
 
 
 # ---------------------------------------------------------------------------
@@ -580,15 +595,22 @@ def test_there_is_no_account_value_or_dynamic_lapse(critical_illness):
 
 
 def test_expiry_at_the_end_of_the_term(uk_ci_anchor):
-    """proj_len() = 12 x term, and nothing survives past it."""
+    """proj_len() = 12 x term months, t = 0 .. proj_len() - 1, and nothing survives past it.
+
+    The cover expires at the end of the last month, ``t = proj_len() - 1``: the
+    survivors of that month are the expiries, its end-of-month in-force is zero, and
+    ``pols_if`` is zero from ``t = proj_len()`` on.
+    """
     a = uk_ci_anchor
     assert a.proj_len() == 300 == 12 * a.policy_term()
-    assert a.pols_if(300) > 0.0
-    assert a.pols_if(301) == 0.0
-    assert a.pols_if_at(300, "AFT_DECR") == 0.0
-    for t in range(1, 300):
+    assert a.pols_if(299) > 0.0
+    assert a.pols_if(300) == 0.0
+    assert a.pols_if(-1) == 0.0
+    assert a.pols_if_at(299, "AFT_DECR") == 0.0
+    assert a.pols_if_at(298, "AFT_DECR") > 0.0
+    for t in range(299):
         assert a.pols_maturity(t) == 0.0
-    assert a.pols_maturity(300) > 0.0
+    assert a.pols_maturity(299) > 0.0
 
 
 # ---------------------------------------------------------------------------
@@ -596,13 +618,21 @@ def test_expiry_at_the_end_of_the_term(uk_ci_anchor):
 
 
 def test_result_cf_shape(uk_ci_anchor):
-    df = uk_ci_anchor.result_cf()
-    assert list(df.index) == list(range(1, 301))
+    """The frame is t = 0 .. proj_len() - 1, contiguous, with proj_len() rows."""
+    a = uk_ci_anchor
+    df = a.result_cf()
+    assert list(df.index) == list(range(300))
+    assert df.index.name == "t"
+    assert df.index[0] == 0
+    assert df.index[-1] == a.proj_len() - 1
+    assert len(df) == a.proj_len()
     assert list(df.columns) == [
         "pols_if", "premiums", "claims_main", "claims_ap", "claims_child",
         "claims_lapse", "claim_expenses", "expenses", "net_cf",
     ]
-    assert df.loc[1, "net_cf"] == pytest.approx(-168.12, abs=PENNY)
+    assert df.loc[0, "pols_if"] == a.pols_if_init()
+    assert df.loc[0, "net_cf"] == pytest.approx(-168.12, abs=PENNY)
+    assert list(a.result_pols().index) == list(range(300))
 
 
 def test_result_cf_rows_sum_to_net_cf(uk_ci_anchor):
@@ -622,7 +652,7 @@ def test_model_docstring_describes_the_current_structure(critical_illness):
     assert "external" in doc                     # inputs are not stored in the model
     assert "once per model" in doc               # why Data exists
     assert "non-terminating" in doc
-    assert "Term_UK_A" in doc                    # the chassis it sits on
+    assert "Term_UK_S" in doc                    # the chassis it sits on
 
 
 def test_space_docstrings_carry_their_reference_material(critical_illness):
@@ -677,11 +707,11 @@ def test_an_input_can_be_swapped_without_touching_formulas():
         alt_name = "ci_rate_table_doubled.csv"
         doubled.to_csv(model.Data.input_dir() / alt_name)
         try:
-            base = model.Projection[1].ci_rate(1)
+            base = model.Projection[1].ci_rate(0)
             model.Data.ci_rate_file = alt_name
             model.Data.clear_all()
             model.Projection.clear_all()
-            assert model.Projection[1].ci_rate(1) == pytest.approx(
+            assert model.Projection[1].ci_rate(0) == pytest.approx(
                 2 * base, rel=1e-12)
         finally:
             (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
@@ -708,7 +738,7 @@ def test_round_trip_is_stable(tmp_path):
         anchor = reread.Projection[1]
         for t, row in WORKED_EXAMPLE.items():
             assert anchor.pols_if(t) == pytest.approx(row[0], abs=INFORCE)
-            initial = 200.0 if t == 1 else 0.0
+            initial = 200.0 if t == 0 else 0.0
             assert anchor.net_cf(t) + initial == pytest.approx(row[7], abs=PENNY)
         assert "Notes symbol" in reread.Projection.doc
     finally:

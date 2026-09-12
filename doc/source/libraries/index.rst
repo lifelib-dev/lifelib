@@ -57,6 +57,7 @@ in the notes, asserted cell by cell.
    :doc:`uslib/index`              |modelx badge|  U.S. life and annuity reference products and models
    :doc:`uklib/index`              |modelx badge|  UK life and pension annuity reference products and models
    :doc:`jplib/index`              |modelx badge|  Japanese life and third-sector reference products and models
+   :doc:`frlib/index`              |modelx badge|  French life, savings and annuity reference products and models
    =============================== =============== ===============================================================
 
 .. toctree::
@@ -67,6 +68,7 @@ in the notes, asserted cell by cell.
    uslib/index.md
    uklib/index.md
    jplib/index.md
+   frlib/index.md
 
 
 Miscellaneous Models

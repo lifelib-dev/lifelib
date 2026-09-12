@@ -9,7 +9,8 @@ carried verbatim from `_research/income-guarantee.md` and frozen; [REG-R#] resol
 `references/regulatory-and-actuarial-references.md`, whose own R-numbering is distinct and
 must never be read across. **[std]** marks a standardization introduced for the reference
 implementation; [unverified] marks a claim not confirmed against a retrieved document.
-**Every contractual parameter here is identical to `product-spec.md`'s.** Two parameters are
+**Every contractual parameter here is identical to `product-spec.md`'s, save that every
+month index is restated on the 0-based `t` (see Time index).** Two parameters are
 new, and both are named as such where they appear: a **rate-class mortality factor**, which
 `product-spec.md` footnote 6 explicitly defers to this file because no carrier publishes the
 premium differential between classes, and a **per-instalment annuity administration
@@ -23,7 +24,7 @@ this file models a disability decrement.
 
 **This file states deltas.** The [term life technical notes (定期保険)](../term_life/technical-notes.md)
 are the library's protection chassis, implemented in
-[`Term_JP_A`](../term_life/model.md). Inherited unchanged and **not restated here**: the
+[`Term_JP_S`](../term_life/model.md). Inherited unchanged and **not restated here**: the
 decrement recursion and its processing order, the premium chassis, the **[std]** mortality
 construction with its 0.80 best-estimate factor, the lapse table, the expense and commission
 levels, the age last birthday (*man-nenrei*, 満年齢) / age nearest birthday (*hoken-nenrei*,
@@ -51,8 +52,19 @@ projection horizon that is **longer than the policy term**.
   refinement here, it is the contract: the benefit is one instalment per monthly payment
   date [S1 第3条第2項] [S5], the instalment count is a month count [S5] [S14] [S15], and the
   minimum payment guarantee period (*saitei shiharai hoshō kikan*, 最低支払保証期間) is stated in
-  years but binds in months. An annual grid cannot represent `max(N − m + 1, G)` without
+  years but binds in months. An annual grid cannot represent `max(N − m, G)` without
   inventing a within-year convention for both `m` and `G`.
+- **Time index [std convention].** `t` is the **0-based** policy month, library-wide:
+  `t = 0` is the first policy month and the frame runs `t = 0, 1, …, T − 1`, so `T` is
+  the **number** of projected months and not the last index. Period `t` runs from time
+  `t` to time `t + 1`; flows "at the start of month `t`" fall at time `t` and flows "at
+  the end" at time `t + 1`. The contractual **policy month** is the 1-based label
+  `t + 1` and the **policy year** is `y(t) = t // 12 + 1`, so policy year 1 is
+  `t = 0 … 11`. The claim month `m` in the instalment arithmetic below is the same
+  0-based index, which is why the notes' instalment count reads `max(N − m, G)` rather
+  than the `max(N − m + 1, G)` a 1-based month number would give. Where a source's
+  published illustration counts policy months from 1 it is restated on this index and
+  said so at the point of use.
 - **Timing conventions [std].** Premium at the **start** of each policy month, in advance,
   on the in-force population only; maintenance expense at the start of the month;
   acquisition expense and initial commission at issue. Claims arise at the **end** of the
@@ -70,7 +82,8 @@ projection horizon that is **longer than the policy term**.
   in [S6].
 - **Age basis [std].** Issue age (*keiyaku nenrei*, 契約年齢) is 満年齢 with the fraction
   truncated [S1 第37条] [S14]; attained age in month `t` is
-  `x + floor((t − 1) / 12)`. 生保標準生命表2018（死亡保険用）is built for a 保険年齢
+  `x + floor(t / 12)`, so the issue age holds for the twelve months
+  `t = 0 … 11`. 生保標準生命表2018（死亡保険用）is built for a 保険年齢
   basis [REG-R20] [R2], so reading it at 満年齢 reads it
   half a year early and understates mortality. The chassis states the bias and the optional
   `sqrt(q_x · q_{x+1})` shift; both apply here unchanged.
@@ -87,23 +100,25 @@ projection horizon that is **longer than the policy term**.
 
       T = N + G − 1
 
-  months, not `N`. On the anchor cell `N = 420` and `G = 24`, so `T = 443`: a death in
-  policy month 420 pays its twenty-fourth instalment in month 443, twenty-three months after
-  cover ended. Terminating the projection at `t = N` truncates real, contractual liability,
-  and it is the single easiest error to make in an implementation of this product.
+  months, not `N` — 443 rows `t = 0 … 442`, not 420. On the anchor cell `N = 420` and
+  `G = 24`, so `T = 443`: a death in the last month of cover, `t = 419`, pays its
+  twenty-fourth instalment at `t = 442`, twenty-three months after cover ended.
+  Terminating the projection at the end of cover, `t = N − 1`, truncates real,
+  contractual liability, and it is the single easiest error to make in an implementation
+  of this product.
 - **Contract boundary.** Unlike the chassis, this contract has no renewal (*kōshin*, 更新) in
   any retrieved document [S5] [S6] [S8], and the premium is level and guaranteed for the
   whole 保険期間 with no review mechanic [S1] [S2] [S5] [S6] [S8] [S12]. The insurer therefore
   has no unilateral repricing right, the boundary is the full term, and the boundary
   argument that dominates the [term life technical notes (定期保険)](../term_life/technical-notes.md) does
   not arise here. The run-off
-  tail in months `N + 1 … T` is inside the boundary: it is the settlement of a claim that
-  arose inside it.
+  tail in months `t = N … T − 1` is inside the boundary: it is the settlement of a claim
+  that arose inside it.
 - **Rounding.** Intermediates at full precision; displayed cash flows to two decimals of a
   yen; in-force to six decimals; **the claim and annuity-ledger populations to nine
   decimals** **[std]**. Nine is not decoration: on a monthly grid at age 30 the monthly
   claim probability is about 3.2e−5, so six decimals leaves the first policy year's claim
-  and ledger populations with two significant figures — `D(1) = 0.000031739` displays as
+  and ledger populations with two significant figures — `D(0) = 0.000031739` displays as
   0.000032, a 0.8% distortion of the largest single component of the benefit, and the
   twelve months of policy year 1 collapse onto four distinct displayed values.
 
@@ -147,7 +162,7 @@ have.
 
 | Variable | Description | Updated |
 |---|---|---|
-| `l(t)` | In-force probability at the **start** of month t; `l(1) = 1`; **`l(t) = 0` for t > N** | monthly recursion |
+| `l(t)` | In-force probability at the **start** of month t; `l(0) = 1`; **`l(t) = 0` for t ≥ N** | monthly recursion |
 | `q(t)` | Best-estimate annual death-and-高度障害 rate (**one** decrement) at attained age | assumption lookup |
 | `q_m(t)` | Monthly equivalent, `1 − (1 − q(t))^(1/12)` | derived |
 | `w(t)`, `w_m(t)` | Annual and monthly ordinary lapse rate | assumption lookup |
@@ -190,7 +205,7 @@ Three classes, kept separate.
 |---|---|---|
 | Survivor annuity (*izoku nenkin*, 遺族年金) | `A` per month from the insured event to the 保険期間満了日, extended where the guarantee requires | [S1 第3条] [S3 第3条] [S5] [S9] [S12] [S14] |
 | 高度障害年金 | **The same `A`**, same timetable, same guarantee; mutually exclusive with the death annuity | [S1 第3条] [S3 第3条] [S5] [S9] |
-| Instalment count | `n_pay(m) = max(N − m + 1, G)` | derivation below; [S5] [S14] [S15] |
+| Instalment count | `n_pay(m) = max(N − m, G)`, `m` the 0-based claim month | derivation below; [S5] [S14] [S15] |
 | Guarantee mechanic | A **term extension past expiry**, not a benefit floor inside the term | [S1 第3条第2項] [S3 第3条第3項] [S5] [S12] [S14] |
 | Survival condition | **None**; the stream is an annuity-certain | [S1] [S5] [S14] |
 | Premium | Level for the whole 保険期間; 保険料払込期間 = 保険期間; no review, no 更新 | [S1] [S2] [S5] [S6] [S8] [S12] |
@@ -205,22 +220,24 @@ Three classes, kept separate.
 | リビング・ニーズ特約 | 年金現価 of the designated 年金月額 less 6 months' interest and premium; cap ¥30,000,000; barred in the final year | [S2] [S5] [S7] |
 | 保険料払込免除 | 不慮の事故 on or after 責任開始期, 別表4 state within 180 days; disease-based waiver is a rider only | [S1 第6条] [S3 第8条] [S5] [S6] |
 
-**Deriving the instalment count.** With `N` the term in months, `m` the policy month of the
-insured event and `G` the guarantee in months, `n_pay(m) = max(N − m + 1, G)` reproduces
-every published illustration in the source set. On `N = 420`: 420 instalments for `m = 1`,
-240 for `m = 181`, 60 for `m = 361` [S14]; 411 for `m = 10` and 178 for `m = 243` [S15]; and
-on a 5年 guarantee, 420 for `m = 1`, 246 for `m = 175`, and **60** for a death 33 years in,
-where the remaining term is 24 months and the guarantee binds [S5]. Carriers label elapsed
-duration inconsistently — one counts the month of the event, another counts completed months
-— but the guarantee case is the only one where the two conventions could not both hold, and
-it holds.
+**Deriving the instalment count.** With `N` the term in months, `m` the **0-based** month
+index of the insured event and `G` the guarantee in months, `n_pay(m) = max(N − m, G)`
+reproduces every published illustration in the source set. On `N = 420`, restating each
+published policy-month number on the 0-based index (`m = policy month − 1`): 420
+instalments for `m = 0`, 240 for `m = 180`, 60 for `m = 360` [S14]; 411 for `m = 9` and 178
+for `m = 242` [S15]; and on a 5年 guarantee, 420 for `m = 0`, 246 for `m = 174`, and **60**
+for a death 33 years in, where the remaining term is 24 months and the guarantee binds [S5].
+Carriers label elapsed duration inconsistently — one counts the month of the event, another
+counts completed months — but the guarantee case is the only one where the two conventions
+could not both hold, and it holds.
 
 The stream opened in month `m` therefore pays its **last** instalment in month
 
-      ends_at(m) = m + n_pay(m) − 1 = max(N, m + G − 1)
+      ends_at(m) = m + n_pay(m) − 1 = max(N − 1, m + G − 1)
 
 which is the whole guarantee mechanic in one expression, and the expression a test should
-assert. For `m ≤ N − G + 1` every stream ends at exactly `N`; only later claims run past it.
+assert. For `m ≤ N − G` every stream ends at exactly `N − 1`, the last month of cover; only
+later claims run past it.
 
 ### (b) Insurer-discretionary current elements
 
@@ -307,7 +324,7 @@ entries.
 **Lapse.** The chassis table, unchanged and reconciled there to the LIAJ's FY2024 個人保険
 解約・失効率 of **5.6%** [REG-R31]:
 
-| Policy year | 1 | 2 | 3 | 4 | 5+ |
+| Policy year `y(t) = t // 12 + 1` | 1 | 2 | 3 | 4 | 5+ |
 |---|---|---|---|---|---|
 | Annual `w(t)` **[std]** | 9% | 7% | 6% | 5.5% | 5% |
 
@@ -316,13 +333,18 @@ with `w_m(t) = 1 − (1 − w(t))^(1/12)` **[std]**. Lapse pays nothing: there i
 survey does not break 収入保障保険 out at all [R11] [REG-R32] — so this table is the chassis's
 table used because it is the only one the library has, not because it was calibrated here.
 
+The key is the **contractual, 1-based** policy year, so `lapse_table.csv` is keyed
+`policy_year = 1 … 5` — the file is unchanged by the 0-based time index — and the reader
+maps `t` through `y(t)`: policy year 1 is `t = 0 … 11`, policy year 2 begins at `t = 12`,
+and the last row applies to policy year 5 and beyond.
+
 **Expenses and commission.** All chassis levels, unchanged, plus one new item.
 
 | Input | Value | Note |
 |---|---|---|
 | Acquisition expense `E0` | ¥15,000 per policy at issue | chassis **[std]** |
 | Initial commission `c0` | 50% of the first-year annualized premium | chassis **[std]** |
-| Renewal commission `c_r` | 5% of premiums from month 13 | chassis **[std]** |
+| Renewal commission `c_r` | 5% of premiums from `t = 12` (policy year 2 on) | chassis **[std]** |
 | Maintenance `e_m(t)` | ¥4,000 p.a. inflating 1.0% p.a., taken as `4,000 / 12` per month | chassis **[std]** |
 | Claim expense `ec` | ¥30,000 per claim, once, when the stream opens | chassis **[std]** |
 | **Annuity expense `ea`** | **¥200 per instalment paid** | **new [std]** (3) |
@@ -334,7 +356,7 @@ table used because it is the only one the library has, not because it was calibr
    level is a **[std]** placeholder; its cash-flow weight on the anchor cell is small
    (¥591.08 undiscounted per policy issued against ¥443,313.69 of claims) but its
    *structure* is the point: an implementation that attaches every expense to `l(t)` charges
-   nothing at all in months 421–443, when instalments are still being paid.
+   nothing at all in months `t = 420 … 442`, when instalments are still being paid.
 
 ---
 
@@ -344,17 +366,17 @@ table used because it is the only one the library has, not because it was calibr
 
 | Symbol | Meaning | cells |
 |---|---|---|
-| `t` | policy month, `t = 1 .. T` | — |
-| `x` | 契約年齢 (満年齢); attained age in month t is `x + floor((t − 1) / 12)` | `age` |
-| `y(t)` | policy year, `1 + floor((t − 1) / 12)` | `policy_year` |
-| `N` | 保険期間 in months, `12 × (expiry_age − x)` | `term_m` |
+| `t` | policy month, **0-based**: `t = 0, 1, …, T − 1` | — |
+| `x` | 契約年齢 (満年齢); attained age in month t is `x + floor(t / 12)` | `age` |
+| `y(t)` | policy year, the 1-based contractual label `1 + floor(t / 12)` | `policy_year` |
+| `N` | 保険期間 in months, `12 × (expiry_age − x)`; cover is `t = 0 … N − 1` | `term_m` |
 | `G` | 最低支払保証期間 in months | `guar_m` |
-| `T` | projection horizon in months, `N + G − 1` | `proj_len` |
+| `T` | number of projected months, `N + G − 1`; the last index is `T − 1` | `proj_len` |
 | `A` | 年金月額, JPY per month | `annuity_mth` |
 | `P_m` | monthly office premium, JPY per month | `premium_mth_pp` |
 | `P_due(t)` | office premium falling due at the start of month t | `prem_due_pp` |
-| `n_pay(m)` | instalments generated by a claim in month m, `max(N − m + 1, G)` | `pay_count` |
-| `ends_at(m)` | month of that stream's last instalment, `max(N, m + G − 1)` | `pay_end` |
+| `n_pay(m)` | instalments generated by a claim in month m, `max(N − m, G)` | `pay_count` |
+| `ends_at(m)` | month of that stream's last instalment, `max(N − 1, m + G − 1)` | `pay_end` |
 | `q(t)`, `q_m(t)` | annual and monthly death-and-高度障害 rate | `mort_rate`, `mort_rate_mth` |
 | `w(t)`, `w_m(t)` | annual and monthly ordinary lapse rate | `lapse_rate`, `lapse_rate_mth` |
 | `l(t)` | in-force probability at the start of month t | `pols_if` |
@@ -376,24 +398,24 @@ outgo) while `A × n_pay(m)` is JPY (the total benefit for one claim).
 
 ### The in-payment ledger
 
-The ledger is the whole model. For `t = 1 .. T`:
+The ledger is the whole model. For `t = 0 .. T − 1`:
 
-    R(t) = R(t−1) − ended(t) + D(t),        R(0) = 0
+    R(t) = R(t−1) − ended(t) + D(t),        R(t) = 0 for t < 0
 
     ended(t) = sum of D(s) over all s with ends_at(s) = t − 1
 
 `D(t)` enters `R(t)` in the **same** month, because the first instalment falls at the end of
 the month of the event. Two cases exhaust `ended(t)`:
 
-    ended(t) = sum of D(s) for s = 1 .. N − G + 1     if t = N + 1
-             = D(t − G)                               if t > N + 1
-             = 0                                      otherwise
+    ended(t) = sum of D(s) for s = 0 .. N − G     if t = N
+             = D(t − G)                           if t > N
+             = 0                                  otherwise
 
-The first case is the structural fact worth a test: **every stream opened in months 1 … N −
-G + 1 pays its last instalment in month `N` exactly**, whenever it opened, because the
+The first case is the structural fact worth a test: **every stream opened in months
+0 … N − G pays its last instalment at `t = N − 1` exactly**, whenever it opened, because the
 expiry date is fixed at issue. It follows immediately that
 
-    R(N) = sum of D(s) for s = 1 .. N
+    R(N − 1) = sum of D(s) for s = 0 .. N − 1
 
 — the ledger at the last month of cover equals every claim the contract has ever made. Two
 further identities a model must satisfy:
@@ -406,31 +428,34 @@ returns a single `bool`.
 
 ### Processing order
 
-For `t = 1 .. T`, in this order **[std]**:
+For `t = 0 .. T − 1`, in this order **[std]**:
 
 1. **Start of month — income and standing outgo, on the in-force population only.** Premium
    `P_due(t) × l(t)`; maintenance `e_m(t) × l(t)`; renewal commission `c_r × P_due(t) × l(t)`
-   for `t ≥ 13`. At `t = 1` additionally `E0 + c0` per policy issued (`l(1) = 1`). For
-   `t > N` all four are zero: cover has expired and `l(t) = 0`. `P_due(t)` is the premium
+   for `t ≥ 12`. At `t = 0` additionally `E0 + c0` per policy issued (`l(0) = 1`). For
+   `t ≥ N` all four are zero: cover has expired and `l(t) = 0`. `P_due(t)` is the premium
    *falling due* in month `t`, which on the anchor cell's 月払 is `P_m` every month; see the
    frequency rule in Timing conventions.
-2. **Decrement lookup.** `q(t)` at attained age `x + floor((t − 1) / 12)`; `q_m(t)` from it;
-   `w(t)` from the lapse table by `y(t)`; `w_m(t)` from it. For `t > N`, all zero.
+2. **Decrement lookup.** `q(t)` at attained age `x + floor(t / 12)`; `q_m(t)` from it;
+   `w(t)` from the lapse table by `y(t)`; `w_m(t)` from it. For `t ≥ N`, all zero.
 3. **End of month — new claims.** `D(t) = l(t) × q_m(t)`. Claim expense `ec × D(t)`. **No
    lump sum is paid.** The claim opens an annuity stream; it does not settle one.
 4. **End of month — the ledger.** `R(t) = R(t−1) − ended(t) + D(t)`. Annuity outgo `A ×
-   R(t)`; annuity expense `ea × R(t)`. This step runs for every `t` up to `T`, including the
-   months after the policy term has ended.
+   R(t)`; annuity expense `ea × R(t)`. This step runs for every `t` up to `T − 1`, including
+   the months after the policy term has ended.
 5. **End of month — ordinary lapse.** `l(t) × (1 − q_m(t)) × w_m(t)` leave, applied to
    survivors of mortality. **Nothing is paid.**
 6. **Roll forward.**
 
-       l(t+1) = l(t) * (1 - q_m(t)) * (1 - w_m(t))     for t < N
-       l(t+1) = 0                                       for t >= N
+       l(t+1) = l(t) * (1 - q_m(t)) * (1 - w_m(t))     for t < N - 1
+       l(t+1) = 0                                       for t >= N - 1
 
-   The identity `l(t) − l(t+1) = D(t) + lapses(t)` holds for `t < N`, and `check_pols_roll_fwd()`
-   asserts it over all such `t`. At `t = N` the survivors leave with nothing: on the anchor
-   cell that is 0.144342 of the original cohort.
+   The identity `l(t) − l(t+1) = D(t) + lapses(t)` holds for `t < N − 1`. At `t = N − 1`
+   the survivors neither die nor lapse: their cover runs out, and on the anchor cell that
+   is 0.144342 of the original cohort. `check_pols_roll_fwd()` therefore asserts the
+   extended form `l(t) + reinstatements(t+1) − l(t+1) = D(t) + lapses(t) + expiries(t)`
+   over the whole of cover, `t = 0 … N − 1`, with `expiries(t)` (the model's
+   `pols_maturity`) zero in every month but `N − 1`.
 
 ### Net cash flow
 
@@ -439,8 +464,8 @@ For `t = 1 .. T`, in this order **[std]**:
           - ea * R(t)                              (annuity administration)
           - ec * D(t)                              (claim expense)
           - e_m(t) * l(t)                          (maintenance)
-          - c_r * P_due(t) * l(t) * 1{t >= 13}     (renewal commission)
-          - (E0 + c0) * 1{t = 1}                   (acquisition)
+          - c_r * P_due(t) * l(t) * 1{t >= 12}     (renewal commission)
+          - (E0 + c0) * 1{t = 0}                   (acquisition)
 
 `net_cf` is income-positive, per the library convention. Lapse contributes no term: it acts
 only through `l(t)`, and `claims_lapse` is identically zero — the zero is the product fact
@@ -480,7 +505,7 @@ rather than calibrate to it.
       L(n) = A * v * (1 - v^n) / (1 - v),    v = (1 + i_c)^(-1/12),  n = n_pay(m)
 
   at `i_c = 0.65%` **[std]**. The ledger is then not opened and the annuity expense
-  collapses to one payment. On the anchor cell a death in month 1 commutes ¥63,000,000 of
+  collapses to one payment. On the anchor cell a death at `t = 0` commutes ¥63,000,000 of
   instalments to **¥56,352,381.90**, a ratio of **0.894482**; at 300 remaining instalments
   the ratio is **0.922965**, against the 0.92133–0.92190 the three published illustrations
   show [S6] [S10] [S17]. Contractually a full commutation **extinguishes the contract** [S1
@@ -495,7 +520,7 @@ rather than calibrate to it.
   equivalent, capped at **¥30,000,000** and barred in the final year [S2] [S5] [S7]. The
   product-specific consequence: because the amount is the present value of an income stream,
   the cap **binds far earlier in the term** than it does on a level sum assured — on the
-  anchor cell the full 年金現価 is ¥56,352,381.90 at issue, so the cap bites from month 1 and
+  anchor cell the full 年金現価 is ¥56,352,381.90 at issue, so the cap bites from `t = 0` and
   keeps biting until the unpaid stream has run down below ¥30,000,000 of present value.
 - **保険料払込免除.** A waiver state on the accident-plus-180-days-plus-別表4 test [S1 第6条] [S3
   第8条] [S5] [S6] with **[std]** incidence. 別表4 is a materially lower bar than the 別表3
@@ -551,11 +576,14 @@ All dynamic formulas are **[std]** reference constructions.
 `A = ¥150,000`, rate class 非喫煙者優良体, 月払保険料 `P_m = ¥2,565` [S6]. Base run: no commutation,
 no リビング・ニーズ, no waiver, no 復活, no selective lapsation.
 
-Headline arithmetic, for orientation. A death in policy month 1 pays 420 instalments of
-¥150,000 = **¥63,000,000** [S14]; total premium if the contract runs to expiry is
-¥2,565 × 420 = **¥1,077,300**, about 1.7% of that. A death in policy month 419 pays
-`max(420 - 419 + 1, 24) = 24` instalments, running from month 419 to month **442** —
-twenty-two months past the expiry date.
+Every month index below is the model's own **0-based** `t`, so the frame is `t = 0 … 442`
+and the contractual policy month is `t + 1`.
+
+Headline arithmetic, for orientation. A death in the first policy month, `t = 0`, pays 420
+instalments of ¥150,000 = **¥63,000,000** [S14]; total premium if the contract runs to
+expiry is ¥2,565 × 420 = **¥1,077,300**, about 1.7% of that. A death at `t = 418` pays
+`max(420 − 418, 24) = 24` instalments, running from `t = 418` to **`t = 441`** —
+twenty-two months past the expiry date, which falls at the end of `t = 419`.
 
 **Every assumption value the cell uses.** The mortality anchor `q30 = 0.00068` is **read
 from 生保標準生命表2018（死亡保険用）男** [R1] [REG-R18]; it is a sourced value, not an illustration. The
@@ -567,7 +595,7 @@ this product's 0.70 [std] 非喫煙者優良体 class factor — so at attained 
 
 Policy-year-1 lapse is 9% **[std]**, so `w_m = 1 − 0.91^(1/12) = 0.007828420342`. Expenses
 and commission, all **[std]** chassis levels: `E0 = ¥15,000`; `c0 = 0.50 × 12 × 2,565 =
-¥15,390`; `c_r = 5%` from month 13; `e_m(t) = (4,000 / 12) × 1.01^(y(t) − 1)`, so
+¥15,390`; `c_r = 5%` from `t = 12`; `e_m(t) = (4,000 / 12) × 1.01^(y(t) − 1)`, so
 ¥333.333333 a month in policy year 1 and ¥336.666667 in year 2; `ec = ¥30,000`; `ea = ¥200`.
 
 Further table rates used later in the projection. Three are themselves sourced anchors —
@@ -577,79 +605,80 @@ interpolations in `ln q` between the neighbouring anchors, rounded to 5 decimals
 
 | t | age | `l(t)` | Premiums | `D(t)` | `R(t)` | Annuity claims | Claim + ann. exp | Maint. + acq. | Comm. | `CF(t)` |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 1 | 30 | 1.000000 | 2,565.00 | 0.000031739 | 0.000031739 | 4.76 | 0.96 | 30,723.33 | 0.00 | −28,164.05 |
-| 2 | 30 | 0.992140 | 2,544.84 | 0.000031489 | 0.000063228 | 9.48 | 0.96 | 330.71 | 0.00 | +2,203.68 |
-| 3 | 30 | 0.984342 | 2,524.84 | 0.000031242 | 0.000094470 | 14.17 | 0.96 | 328.11 | 0.00 | +2,181.60 |
-| 13 | 31 | 0.909653 | 2,333.26 | 0.000029296 | 0.000394122 | 59.12 | 0.96 | 306.25 | 116.66 | +1,850.27 |
-| 420 | 64 | 0.145023 | 371.98 | 0.000063023 | 0.016779783 | 2,516.97 | 5.25 | 67.80 | 18.60 | −2,236.63 |
-| 421 | — | 0.000000 | 0.00 | 0.000000000 | 0.001463980 | 219.60 | 0.29 | 0.00 | 0.00 | −219.89 |
-| 443 | — | 0.000000 | 0.00 | 0.000000000 | 0.000063023 | 9.45 | 0.01 | 0.00 | 0.00 | −9.47 |
+| 0 | 30 | 1.000000 | 2,565.00 | 0.000031739 | 0.000031739 | 4.76 | 0.96 | 30,723.33 | 0.00 | −28,164.05 |
+| 1 | 30 | 0.992140 | 2,544.84 | 0.000031489 | 0.000063228 | 9.48 | 0.96 | 330.71 | 0.00 | +2,203.68 |
+| 2 | 30 | 0.984342 | 2,524.84 | 0.000031242 | 0.000094470 | 14.17 | 0.96 | 328.11 | 0.00 | +2,181.60 |
+| 12 | 31 | 0.909653 | 2,333.26 | 0.000029296 | 0.000394122 | 59.12 | 0.96 | 306.25 | 116.66 | +1,850.27 |
+| 419 | 64 | 0.145023 | 371.98 | 0.000063023 | 0.016779783 | 2,516.97 | 5.25 | 67.80 | 18.60 | −2,236.63 |
+| 420 | — | 0.000000 | 0.00 | 0.000000000 | 0.001463980 | 219.60 | 0.29 | 0.00 | 0.00 | −219.89 |
+| 442 | — | 0.000000 | 0.00 | 0.000000000 | 0.000063023 | 9.45 | 0.01 | 0.00 | 0.00 | −9.47 |
 
-**Trace, month 1.** `l(1) = 1`; premium `= 2,565 × 1 = 2,565.00`. `D(1) = 1 × 0.000031738873
-= 0.000031738873`. The claim opens a stream and pays no lump sum, so `R(1) = R(0) − 0 + D(1)
-= 0.000031738873` and annuity outgo `= 150,000 × 0.000031738873 = 4.76083098`. Annuity
-expense `= 200 × 0.000031738873 = 0.00634777`; claim expense `= 30,000 × 0.000031738873 =
-0.95216620`; the two together are 0.95851397. Maintenance `= 4,000 / 12 = 333.33333333`;
-acquisition `= E0 + c0 = 15,000.00 + 15,390.00 = 30,390.00`, so the column shows
-30,723.33333333. `CF(1) = 2,565.00 − 4.76083098 − 0.00634777 − 0.95216620 − 333.33333333 −
-30,390.00 = −28,164.05267828` → **−¥28,164.05**. Roll forward: `l(2) = 1 × (1 −
-0.000031738873) × (1 − 0.007828420342) = 0.9921400892`.
+**Trace, `t = 0` — the first policy month.** `l(0) = 1`; premium `= 2,565 × 1 = 2,565.00`.
+`D(0) = 1 × 0.000031738873 = 0.000031738873`. The claim opens a stream and pays no lump sum,
+so `R(0) = 0 − 0 + D(0) = 0.000031738873` and annuity outgo `= 150,000 × 0.000031738873 =
+4.76083098`. Annuity expense `= 200 × 0.000031738873 = 0.00634777`; claim expense
+`= 30,000 × 0.000031738873 = 0.95216620`; the two together are 0.95851397. Maintenance
+`= 4,000 / 12 = 333.33333333`; acquisition `= E0 + c0 = 15,000.00 + 15,390.00 = 30,390.00`,
+so the column shows 30,723.33333333. `CF(0) = 2,565.00 − 4.76083098 − 0.00634777 −
+0.95216620 − 333.33333333 − 30,390.00 = −28,164.05267828` → **−¥28,164.05**. Roll forward:
+`l(1) = 1 × (1 − 0.000031738873) × (1 − 0.007828420342) = 0.9921400892`.
 
-**Trace, month 2.** Premium `= 2,565 × 0.9921400892 = 2,544.83932893`. `q_m(2) =
-0.000031738873` still — the attained age is unchanged for the first twelve months — so `D(2)
-= 0.9921400892 × 0.000031738873 = 0.000031489408`. `R(2) = 0.000031738873 + 0.000031489408 =
-0.000063228282`: **nothing ended, because the first stream runs to month 420.** Annuity
-outgo `= 150,000 × 0.000063228282 = 9.48424226` — already double month 1's, on 0.99 of the
-population, because the ledger accumulates while `l(t)` decays. Annuity expense `= 200 ×
-0.000063228282 = 0.01264566`; claim expense `= 30,000 × 0.000031489408 = 0.94468225`.
-Maintenance `= 333.33333333 × 0.9921400892 = 330.71336308`. No commission before month 13.
-`CF(2) = 2,544.83932893 − 9.48424226 − 0.01264566 − 0.94468225 − 330.71336308 =
-+2,203.68439568` → **+¥2,203.68**. Roll forward: `l(3) = 0.9921400892 × (1 − 0.000031738873)
-× (1 − 0.007828420342) = 0.9843419567`.
+**Trace, `t = 1`.** Premium `= 2,565 × 0.9921400892 = 2,544.83932893`. `q_m(1) =
+0.000031738873` still — the attained age is unchanged for the first twelve months — so `D(1)
+= 0.9921400892 × 0.000031738873 = 0.000031489408`. `R(1) = 0.000031738873 + 0.000031489408 =
+0.000063228282`: **nothing ended, because the first stream runs to `t = 419`.** Annuity
+outgo `= 150,000 × 0.000063228282 = 9.48424226` — already double the first month's, on 0.99
+of the population, because the ledger accumulates while `l(t)` decays. Annuity expense
+`= 200 × 0.000063228282 = 0.01264566`; claim expense `= 30,000 × 0.000031489408 =
+0.94468225`. Maintenance `= 333.33333333 × 0.9921400892 = 330.71336308`. No commission
+before `t = 12`. `CF(1) = 2,544.83932893 − 9.48424226 − 0.01264566 − 0.94468225 −
+330.71336308 = +2,203.68439568` → **+¥2,203.68**. Roll forward: `l(2) = 0.9921400892 ×
+(1 − 0.000031738873) × (1 − 0.007828420342) = 0.9843419567`.
 
-**Trace, month 3.** Premium `= 2,565 × 0.9843419567 = 2,524.83711893`.
-`D(3) = 0.9843419567 × 0.000031738873 = 0.000031241905`;
-`R(3) = 0.000063228282 + 0.000031241905 = 0.000094470186`; annuity outgo
+**Trace, `t = 2`.** Premium `= 2,565 × 0.9843419567 = 2,524.83711893`.
+`D(2) = 0.9843419567 × 0.000031738873 = 0.000031241905`;
+`R(2) = 0.000063228282 + 0.000031241905 = 0.000094470186`; annuity outgo
 `= 150,000 × 0.000094470186 = 14.17052794`; annuity expense `= 0.01889404`; claim expense
 `= 0.93725714`; maintenance `= 333.33333333 × 0.9843419567 = 328.11398557`.
-`CF(3) = 2,524.83711893 − 14.17052794 − 0.01889404 − 0.93725714 − 328.11398557 =
+`CF(2) = 2,524.83711893 − 14.17052794 − 0.01889404 − 0.93725714 − 328.11398557 =
 +2,181.59645425` → **+¥2,181.60**.
 
-**Trace, month 13 — the first month of policy year 2.** Three things change at once and an
-implementation can get any of them wrong. The attained age moves to 31, so `q(13) = 0.80 ×
-0.70 × 0.00069 = 0.000386400` and `q_m(13) = 0.000032205704`. The lapse rate moves to the
-year-2 row, `w = 7%`, `w_m = 0.006029308066`. And maintenance inflates: `e_m(13) = (4,000 /
-12) × 1.01 = 336.66666667`. With `l(13) = 0.9096534720`: premium `= 2,565 × 0.9096534720 =
+**Trace, `t = 12` — the first month of policy year 2.** Three things change at once and an
+implementation can get any of them wrong. The attained age moves to 31, so `q(12) = 0.80 ×
+0.70 × 0.00069 = 0.000386400` and `q_m(12) = 0.000032205704`. The lapse rate moves to the
+year-2 row, `w = 7%`, `w_m = 0.006029308066`. And maintenance inflates: `e_m(12) = (4,000 /
+12) × 1.01 = 336.66666667`. With `l(12) = 0.9096534720`: premium `= 2,565 × 0.9096534720 =
 2,333.26115568`; renewal commission `= 0.05 × 2,333.26115568 = 116.66305778`, the first one
-paid; `D(13) = 0.9096534720 × 0.000032205704 = 0.000029296030`; `R(13) = 0.000364825643 +
+paid; `D(12) = 0.9096534720 × 0.000032205704 = 0.000029296030`; `R(12) = 0.000364825643 +
 0.000029296030 = 0.000394121674`; annuity outgo `= 150,000 × 0.000394121674 = 59.11825109`;
 annuity expense `= 0.07882433`; claim expense `= 0.87888091`; maintenance `= 336.66666667 ×
-0.9096534720 = 306.25000224`. `CF(13) = 2,333.26115568 − 59.11825109 − 0.07882433 −
+0.9096534720 = 306.25000224`. `CF(12) = 2,333.26115568 − 59.11825109 − 0.07882433 −
 0.87888091 − 306.25000224 − 116.66305778 = +1,850.27213932` → **+¥1,850.27**.
 
-**Trace, month 420 — the last month of cover.** `l(420) = 0.1450233243`; premium `= 2,565 ×
-0.1450233243 = 371.98482677`, the four-hundred-and-twentieth and last. `q(420) = 0.80 × 0.70
-× 0.00929 = 0.005202400`, `q_m(420) = 0.000434570514`, so `D(420) = 0.000063022861`. Nothing
-has ended yet, so `R(420) = 0.016716760543 + 0.000063022861 = 0.016779783403` — and this is
-exactly the sum of `D(s)` over the whole term, because **every stream is still paying in
-month 420**. Annuity outgo `= 150,000 × 0.016779783403 = 2,516.96751047`; annuity expense `=
+**Trace, `t = 419` — the last month of cover.** `l(419) = 0.1450233243`; premium `= 2,565 ×
+0.1450233243 = 371.98482677`, the four-hundred-and-twentieth and last. `q(419) = 0.80 × 0.70
+× 0.00929 = 0.005202400`, `q_m(419) = 0.000434570514`, so `D(419) = 0.000063022861`. Nothing
+has ended yet, so `R(419) = 0.016716760543 + 0.000063022861 = 0.016779783403` — and this is
+exactly the sum of `D(s)` over the whole term, because **every stream is still paying at
+`t = 419`**. Annuity outgo `= 150,000 × 0.016779783403 = 2,516.96751047`; annuity expense `=
 3.35595668`; claim expense `= 1.89068582`; maintenance `= (4,000/12) × 1.01^34 ×
-0.1450233243 = 67.80212570`; commission `= 18.59924134`. `CF(420) = 371.98482677 −
+0.1450233243 = 67.80212570`; commission `= 18.59924134`. `CF(419) = 371.98482677 −
 2,516.96751047 − 3.35595668 − 1.89068582 − 67.80212570 − 18.59924134 = −2,236.63069323` →
 **−¥2,236.63**. Survivors leave with nothing: `0.1450233243 × (1 − 0.000434570514) × (1 −
-0.004265318778) = 0.1443419995`, and `l(421) = 0`.
+0.004265318778) = 0.1443419995`, and `l(420) = 0`.
 
-**Trace, month 421 — the first month past expiry, and the row a wrong model does not have.**
-No premium, no maintenance, no commission, no new claims: `l(421) = 0`. Every stream opened
-in months 1–397 ended at month 420, so `ended(421) = sum of D(s) for s = 1 .. 397 =
-0.015315803299`, and `R(421) = 0.016779783403 − 0.015315803299 + 0 = 0.001463980104` — the
-streams from months 398–420, which the guarantee carries past expiry. Annuity outgo `=
-150,000 × 0.001463980104 = 219.59701556`; annuity expense `= 0.29279602`. `CF(421) =
+**Trace, `t = 420` — the first month past expiry, and the row a wrong model does not have.**
+No premium, no maintenance, no commission, no new claims: `l(420) = 0`. Every stream opened
+in months `t = 0 … 396` ended at `t = 419`, so `ended(420) = sum of D(s) for s = 0 .. 396 =
+0.015315803299`, and `R(420) = 0.016779783403 − 0.015315803299 + 0 = 0.001463980104` — the
+streams from `t = 397 … 419`, which the guarantee carries past expiry. Annuity outgo `=
+150,000 × 0.001463980104 = 219.59701556`; annuity expense `= 0.29279602`. `CF(420) =
 −219.59701556 − 0.29279602 = −219.88981158` → **−¥219.89**. From here `ended(t) = D(t −
-24)`, so the ledger runs down one month's claims at a time until `R(443) = D(420) =
-0.000063022861` and `CF(443) = −9.46603365` → **−¥9.47**. The projection ends at `t = 443`.
+24)`, so the ledger runs down one month's claims at a time until `R(442) = D(419) =
+0.000063022861` and `CF(442) = −9.46603365` → **−¥9.47**. The projection ends at `t = 442`,
+the 443rd and last row.
 
-**Totals over the 443 months, undiscounted, per policy issued.**
+**Totals over the 443 months `t = 0 … 442`, undiscounted, per policy issued.**
 
 | Line | Amount |
 |---|---|
@@ -666,7 +695,8 @@ Structural quantities behind those totals: expected claims over the term `sum D(
 0.016779783`; expected instalments `sum R(t) = 2.955425` per policy issued, which reconciles
 exactly to `sum D(s) × n_pay(s)`; average total benefit per claim **¥26,419,511.96**; lapses
 over the term 0.838878 and survivors at expiry 0.144342 of the original cohort. **¥2,645.21
-of the claim outgo — 0.5967% — falls in months 421 to 443**, after the policy has expired.
+of the claim outgo — 0.5967% — falls in months `t = 420 … 442`**, after the policy has
+expired.
 
 **Read the sign honestly.** The undiscounted net is negative, and the reason is not a bug.
 The premium is a *published preferred-non-smoker rate* and the assumption basis is a
@@ -783,17 +813,18 @@ cash flow or claim outgo per policy issued, from the same projection.
 
 Known modeling pitfalls:
 
-- **The projection horizon is not the policy term.** `T = N + G − 1`, not `N` [S1 第3条第2項]
-  [S3 第3条第3項] [S5] [S12] [S14]. Terminating at `t = N` on the anchor cell drops
+- **The projection horizon is not the policy term.** `T = N + G − 1` months, not `N`
+  [S1 第3条第2項] [S3 第3条第3項] [S5] [S12] [S14] — the frame is `t = 0 … N + G − 2`, not
+  `t = 0 … N − 1`. Terminating at the end of cover, `t = N − 1`, on the anchor cell drops
   **¥2,645.21** of contractual claim outgo, 0.5967% of the total, all of it in months
-  421–443. It is the most natural error to make and the least visible, because every
-  remaining number still looks reasonable.
+  `t = 420 … 442`. It is the most natural error to make and the least visible, because
+  every remaining number still looks reasonable.
 - **最低支払保証期間 is a term extension, not a benefit floor.** Both readings pay the same
-  `max(N - m + 1, G)` instalments, so an undiscounted *total* cannot distinguish them; they
+  `max(N - m, G)` instalments, so an undiscounted *total* cannot distinguish them; they
   differ in **when**. A floor implementation compresses the guaranteed instalments inside
-  the term and produces zero cash flow after month 420; the contract pays them after expiry,
-  on the same monthly timetable [S1 第3条第2項]. Test months 421–443 individually, not the
-  total.
+  the term and produces zero cash flow after `t = 419`; the contract pays them after expiry,
+  on the same monthly timetable [S1 第3条第2項]. Test months `t = 420 … 442` individually, not
+  the total.
 - **The in-payment ledger is never decremented.** Not by the insured's mortality, not by the
   recipient's, not by lapse [S1] [S5] [S14] [S13 別表1]. Applying the surviving-policy factor
   `(1 − q_m)(1 − w_m)` to `R(t)` — the natural thing to do if `R` is mistaken for a
@@ -806,13 +837,13 @@ Known modeling pitfalls:
   that are in claim and paying nothing.
 - **`l(t)` and `R(t)` are disjoint and must never be summed.** `l(t)` is a probability of
   being in force; `R(t)` is a count of instalments falling due. They have different units in
-  the model's economics even though both are dimensionless, and `R(420) = 0.016779783` while
-  `l(420) = 0.145023` — adding them produces a number with no meaning.
-- **The ledger peaks at exactly month `N`.** Every stream opened in months 1 … `N − G + 1`
-  ends at month `N` whenever it opened, so `R(N)` equals the sum of `D(s)` over the whole
-  term: 0.016779783 on the anchor cell. An implementation that ends streams at
-  `m + n_pay(m) - 1` computed with an off-by-one gets this identity wrong by one month's
-  claims and nothing else visibly changes.
+  the model's economics even though both are dimensionless, and `R(419) = 0.016779783` while
+  `l(419) = 0.145023` — adding them produces a number with no meaning.
+- **The ledger peaks at exactly `t = N − 1`, the last month of cover.** Every stream opened
+  in months `0 … N − G` ends at `t = N − 1` whenever it opened, so `R(N − 1)` equals the sum
+  of `D(s)` over the whole term: 0.016779783 on the anchor cell. An implementation that ends
+  streams at `m + n_pay(m) - 1` computed with an off-by-one gets this identity wrong by one
+  month's claims and nothing else visibly changes.
 - **高度障害 is not a second decrement.** 生保標準生命表2018（死亡保険用）includes 高度障害 in its death
   rate [R2] [REG-R20], and the two annuities are mutually exclusive [S1 第3条] [S3 第3条] [S5]
   [S9]. Adding a 高度障害 incidence on top of the table double-counts the benefit.
@@ -836,7 +867,7 @@ Known modeling pitfalls:
   *and* opens the stream doubles the benefit.
 - **The リビング・ニーズ cap binds early here, not late.** The payout is the present value of an
   income stream capped at ¥30,000,000 [S2] [S5] [S7], and on the anchor cell the full 年金現価
-  at issue is ¥56,352,381.90. The cap therefore bites from month 1 and stops biting only
+  at issue is ¥56,352,381.90. The cap therefore bites from `t = 0` and stops biting only
   once the unpaid stream falls below it — the opposite pattern to a level sum assured, where
   a cap either always binds or never does.
 - **Read the table at the right age, and only on the death basis.** 契約年齢 is 満年齢 [S1 第37条]

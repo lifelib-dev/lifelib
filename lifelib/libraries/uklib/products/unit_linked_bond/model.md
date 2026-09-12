@@ -32,6 +32,15 @@ model.Projection[1].result_cf()
 `result_uf()` gives the unit fund recursion column for column as the notes' worked
 example prints it; `result_cf()` gives the cash flows.
 
+Both are indexed by the policy month `t`, counted from issue and **0-based**: `t = 0` is
+the first month, month `t` runs from time `t` to time `t + 1`, and the frame is
+`range(proj_len())` — `t = 0, 1, …, proj_len() − 1`, with `proj_len()` the number of
+projected months (353 rows, `t = 0 … 352`, on the anchor cell). `av_pp(t)` and
+`pols_if(t)` are the notes' `UF(t)` and `l(t)`, values at time `t` — the start of the
+month, so `av_pp(0)` is the premium — and `av_pp_end` in `result_uf()` is `UF(t+1)`, the
+fund after the month's cancellations. The policy year is the derived 1-based label
+`policy_year(t) = t // 12 + 1`, and `duration(t) = t // 12` the completed policy years.
+
 ## The unit / non-unit decomposition is the model
 
 UK practice splits this product into two streams, and so does this implementation:
@@ -70,12 +79,12 @@ The sum assured is `u × UF`, of which `UF` is funded by cancelling units. The i
 cost per death is
 
 ```
-DS(t) = (u − 1)·UF(t) + max(0, G(t) − u·UF(t))·1{gmdb}
+DS(t) = (u − 1)·UF(t+1) + max(0, G(t) − u·UF(t+1))·1{gmdb}
 ```
 
-— a tenth of a percent of the fund on the composite, plus any in-the-money guarantee. At
-month 12 of the anchor cell the death benefit per death is £97,876.92 and the strain is
-**£97.78**.
+— a tenth of a percent of the end-of-month fund on the composite, plus any in-the-money
+guarantee. In the anchor cell's twelfth month (`t = 11`) the death benefit per death is
+£97,876.92 and the strain is **£97.78**.
 
 **The uplift is a parameter and never a literal.** 100.1% against 101% is a *tenfold*
 difference in death strain, which the notes list as a pitfall; model point 5 is the
@@ -99,17 +108,17 @@ precisely so their *exclusion* from `net_cf` is visible rather than merely asser
 
 ## The charge ordering, and why all three points are exposed
 
-Per policy, within month `t`:
+Per policy, within month `t` (from time `t` to time `t + 1`):
 
 ```
-UF_g(t) = UF(t−1) × (1 + g_m(1 − t_pf))        growth, net of the tax provision
+UF_g(t) = UF(t) × (1 + g_m(1 − t_pf))          growth, net of the tax provision
 UF'(t)  = UF_g(t) × (1 − c_m − f_m)            AMC and further costs
-UF(t)   = UF'(t) − W(t) − AC(t) − GC(t)        unit cancellations at end of month
+UF(t+1) = UF'(t) − W(t) − AC(t) − GC(t)        unit cancellations at end of month
 ```
 
 **The order matters and is a listed pitfall.** The AMC accrues daily through the unit
 price, so it is levied on the **post-growth, pre-cancellation** fund. Charging it on
-`UF(t−1)` instead, or after the withdrawal, moves the margin by about half a month's
+`UF(t)` instead, or after the withdrawal, moves the margin by about half a month's
 growth or withdrawal — small in one month and systematic over decades.
 
 `av_pp_at(t, timing)` exposes all three points — `"BEF_GROWTH"`, `"AFT_GROWTH"`,
@@ -120,14 +129,18 @@ expression, and `check_av_roll_fwd()` asserts the identity every month.
 
 A 5% withdrawal against a 5% gross return is **not sustainable** once the 20% tax
 provision and the 1.1% of charges are taken. The anchor cell's fund drifts down from
-£100,000 and is exhausted at **month 354** — policy year 30, when the policyholder is 94.
-`wd_pp()` caps the withdrawal at what the fund can pay, so the fund is drawn to nothing
-rather than through it, and `proj_len()` ends the projection there: a bond with no units
-has no liability, no margin and nothing left to project.
+£100,000 and is drawn to nothing at the end of month **`t = 352`** — its 353rd month,
+in policy year 30, when the policyholder is 94. `fund_exhaust_mth()` is the time point at
+which `av_pp` reaches zero, 353, and it is a time, not a row: the last projected month is
+`t = 352`, whose closing fund is exactly zero. `wd_pp()` caps the withdrawal at what the
+fund can pay, so the fund is drawn to nothing rather than through it, and `proj_len()`
+ends the projection there — 353 months, `t = 0 … 352`: a bond with no units has no
+liability, no margin and nothing left to project.
 
 That is a product fact worth seeing rather than an artefact to hide. Every margin the
-insurer was counting on stops at month 354, and the accumulation cell (model point 2,
-no withdrawals) runs the full 660 months to the limiting age instead.
+insurer was counting on stops there, after 353 months, and the accumulation cell (model
+point 2, no withdrawals) runs the full 660 months (`t = 0 … 659`) to the limiting age
+instead.
 
 ## The 5% allowance is policyholder tax machinery, not a product feature
 
@@ -206,11 +219,20 @@ Reference, because the base run is deterministic.
 | `mort_table.csv` | Base annual mortality by sex and age 18–120, capped at 1 | **[std]** proxy shaped like the ONS national life tables, anchored so that the 80% best-estimate factor gives the notes' `q(65) = 1.0%` placeholder exactly — *not* an assured-lives table |
 | `surr_table.csv` | Annual full-surrender rates by policy year, 2 / 3 / 5 / 8 / 10 % | **[std]**; low early, rising as the advised holding period completes. No public UK bond persistency study was fetched |
 
+None of the three files carries the model's time index `t`, so the 0-based frame changed
+no CSV. The decisions, column by column: `surr_table.csv` is keyed by `policy_year`, a
+contractual 1-based label (1, 2, …, 11+), left as it is — `surr_rate_base(t)` reaches it
+through `policy_year(t) = t // 12 + 1`, clamped to the last row; `mort_table.csv` is keyed
+by `(sex, age)`, not time, and is reached through `age(t) = age_at_entry + t // 12`;
+`model_point_table.csv` has no time-axis column — `uf_init` and `pols_if_init` are the
+opening state at `t = 0`, and nothing in it is a month number or an elapsed count.
+
 ## The GMDB rider, and why it never bites in the base run
 
 The return-of-premium rider guarantees `G(t) = premium − withdrawals − adviser charges`,
 so the guarantee **erodes as the policyholder draws the fund down**. On the anchor
-withdrawal pattern it reaches zero at month 240, well before the fund does — so on the
+withdrawal pattern it reaches zero at `t = 240`, once twenty years of withdrawals
+(`t = 0 … 239`) have been drawn, well before the fund does — so on the
 base assumptions the guarantee never bites and model point 4's cash flows differ from
 point 1's only by the (zero) rider charge.
 
@@ -221,7 +243,8 @@ charge scale is unpublished [S2 §5.2], so the cost-of-insurance form used here 
 right shape and no authority — enable it only with its own sensitivity set.
 
 One implementation note. `gmdb_guarantee_pp(t)` is measured **before** the current
-month's cancellations, at `wd_cum_pp(t − 1)`. That is the only reading that resolves: the
+month's cancellations, at `wd_cum_pp(t − 1)` — nothing drawn yet when `t = 0`. That is
+the only reading that resolves: the
 rider charge is itself a cancellation alongside the withdrawal, so a guarantee net of the
 same month's withdrawal would make the charge depend on a withdrawal that depends on the
 charge.
@@ -265,7 +288,9 @@ closes them — plus the per-policy insurer-side extraction beside it, the charg
 that the pass-throughs stay out of `net_cf`, the death-strain arithmetic and the tenfold
 uplift sensitivity, the withdrawal caps, the fund exhausting the projection, the
 allowance tracker generating no cash flow, both behavioural overlays, and the GMDB rider
-under a falling fund.
+under a falling fund. The goldens are keyed by the 0-based month — the notes' row
+`t = 0` is `av_pp(0)`, `t = 11` is the twelfth month — and the frame is pinned as
+`range(353)` on the anchor cell, `t = 0 … proj_len() − 1`.
 
 ```bash
 python -m pytest tests -q

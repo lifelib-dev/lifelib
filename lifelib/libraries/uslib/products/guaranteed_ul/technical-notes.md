@@ -29,7 +29,23 @@ verify from a retrieved document.
   the modeled charge levels, but kept explicit for reconciliation.
 - **Projection frequency**: monthly, on policy monthiversaries, from issue (or
   in-force date) to attained age 121, at which point charges and premiums cease and
-  coverage continues [S7]. Maximum projection length: (121 − issue age) × 12 months.
+  coverage continues [S7]. Maximum projection length: (121 − issue age) × 12 months
+  from issue, less `duration_months` for an in-force model point.
+- **Time index** **[std]**: `t` is 0-based and counts policy months from the
+  projection start: `t = 0` is the first projected month — the issue month of a
+  new-business model point, or the month following `duration_months` completed
+  months for an in-force one — and policy month `t` runs from monthiversary `t` to
+  monthiversary `t + 1`. The frame is `t = 0, 1, …, proj_len − 1` with
+  `proj_len = (121 − issue_age)·12 − duration_months` the number of projected months.
+  Completed policy months at the start of month `t` are `duration_months + t`; the
+  policy year is the 1-based contractual label `(duration_months + t) // 12 + 1`; and
+  the contractual policy month *number* is `duration_months + t + 1` (1 in the issue
+  month), which is what the surrender charge schedule counts. Attained age is
+  `issue_age + (duration_months + t) // 12`. The opening balances of a model point
+  (`av_init`, `sg_init`, `loan_init`, `cumprem_init`) are the values carried into the
+  start of `t = 0`; every closing balance `AV_t`, `SG_t`, `L_t`, `CumPrem_t` is the
+  value at the end of month `t`, and `l_0 = 1` is the in-force at the start of
+  `t = 0`.
 - **Timing** **[std]**: monthiversary (BOM) processing — premium receipt, expense
   charges, COI deduction in that order at the start of the policy month; interest
   credited over the month; decrements (death, lapse/surrender, ROP exercise) at end
@@ -72,19 +88,24 @@ for single-pay [R8]; premium persistency study basis [REG-R21]).
 
 ## State variables
 
-| Variable | Meaning | Initial value |
+| Variable | Meaning | Opening value (carried into the start of `t = 0`) |
 |---|---|---|
-| `t` | policy month index (1, 2, …) | `duration_months` + 1 |
-| `AV_t` | base account value, EOM, floored at 0 | `av_init` |
-| `SG_t` | shadow account value, EOM, NOT floored (negative = catch-up shortfall) | `sg_init` |
-| `L_t` | loan balance including accrued interest | `loan_init` |
-| `DB_t` | death benefit = max(F, κ(x_t)·AV_t) [S2, S4; R4 corridor] | — |
-| `l_t` | in-force probability (survivorship from all decrements) | 1.0 |
-| `g_t` | grace-period counter, months (0 = not in grace) [S7] | 0 |
-| `D_t` | monthly deduction forgone because AV = 0 under active guarantee | 0 |
-| `CumPrem_t` | cumulative premiums paid (drives ROP refund [S1] and MEC testing [R5]) | per model point |
-| `SC_t` | surrender charge = 18/1000 · F · max(0, (180 − t)/180) **[std]** | — |
-| `C_t` | catch-up premium required to restore guarantee = max(0, −(SG_t − L_t))/(1 − π^g) **[std]** | 0 |
+| `t` | policy month index, 0-based from the projection start (0, 1, …, `proj_len` − 1); completed policy months at the start of month `t` are `duration_months + t` | first row `t = 0` |
+| `AV_t` | base account value, EOM of month `t`, floored at 0 | `av_init` (read as `AV_{t−1}` when `t = 0`) |
+| `SG_t` | shadow account value, EOM, NOT floored (negative = catch-up shortfall) | `sg_init` (read as `SG_{t−1}` when `t = 0`) |
+| `L_t` | loan balance including accrued interest, EOM | `loan_init` (read as `L_{t−1}` when `t = 0`) |
+| `DB_t` | death benefit = max(F, κ(x_t)·max(AV_t', 0)) [S2, S4; R4 corridor] | — |
+| `l_t` | in-force probability at BOM of month `t` (survivorship from all decrements) | `l_0` = 1.0 |
+| `g_t` | grace-period counter, months (0 = not in grace) [S7] | 0 (read as `g_{t−1}` when `t = 0`) |
+| `D_t` | monthly deduction forgone because AV = 0 under active guarantee | — |
+| `CumPrem_t` | cumulative premiums paid after the premium of month `t` (drives ROP refund [S1] and MEC testing [R5]) | `cumprem_init`, per model point (read as `CumPrem_{t−1}` when `t = 0`) |
+| `SC_t` | surrender charge = 18/1000 · F · max(0, (180 − n_t)/180), `n_t = duration_months + t + 1` the contractual policy month number **[std]** | — |
+| `C_t` | catch-up premium required to restore guarantee = max(0, −(SG_t − L_t))/(1 − π^g) **[std]** | — |
+
+Every recursion below is written for a general month `t` with the previous month's
+closing values on its right-hand side; at `t = 0` those are the opening values in the
+last column, so the first projected month is an ordinary row and nothing is defined at
+`t = −1`.
 
 ## Assumption inputs
 
@@ -129,7 +150,7 @@ guaranteed bounds above define the admissible envelope [R3; REG-R26](#uslib-guar
 |---|---|---|
 | Best-estimate mortality | 2015 VBT primary tables (sex/smoker-distinct, ANB) [REG-R18], with company A/E positioning informed by the ILEC 2012–2019 study [REG-R19] | 100% of 2015 VBT **[std]** |
 | Mortality improvement | — | 1.0%/yr to attained age 85, grading linearly to 0% at 95, applied for max 20 years **[std]** |
-| Base lapse (annual) | SOA/LIMRA UL lapse studies: 2009–2013 persistency update [REG-R20]; 2015–2021 UL lapse/surrender study ([R7]; [REG-R21]) | Duration 1: 4.0%; 2: 3.0%; 3: 2.5%; 4–5: 2.0%; 6–10: 1.5%; 11–20: 1.0%; 21+: 0.75% **[std]** |
+| Base lapse (annual) | SOA/LIMRA UL lapse studies: 2009–2013 persistency update [REG-R20]; 2015–2021 UL lapse/surrender study ([R7]; [REG-R21]) | Policy year 1: 4.0%; 2: 3.0%; 3: 2.5%; 4–5: 2.0%; 6–10: 1.5%; 11–20: 1.0%; 21+: 0.75% **[std]** (looked up by the 1-based policy year `(duration_months + t) // 12 + 1`) |
 | Lifetime-guarantee lapse multiplier | Lifetime-SG lapse rates are 45% lower than non-lifetime-SG rates (count and amount bases, 2015–2021) [R7] | 0.55 × base at all durations when `guarantee_age` = 121 **[std]** (level derived from the [R7] finding; duration shape [std]) |
 | Dynamic lapse | 63% of surveyed ULSG writers use dynamic lapse; lapse and tail investment returns rated the most critical ULSG assumptions [R8] | formulas below, **[std]** |
 | Premium persistency | 2015–2021 UL premium persistency study [REG-R21]; premium-pattern-dependent lapse [R8] | level-pay: scheduled premium paid with 98% annual probability, missed premiums not made up **[std]**; single-pay/ten-pay: as scheduled |
@@ -152,7 +173,7 @@ anchored to the public highlights findings.
 | Symbol | Meaning |
 |---|---|
 | `F` | face amount |
-| `P_t` | premium received at BOM of month t (0 in non-premium months) |
+| `P_t` | premium received at BOM of month t (0 in non-premium months); a scheduled premium falls due when `duration_months + t` is a multiple of 12 / (payments per year), so at `t = 0` for a new-business point |
 | `π`, `π^g` | base (0.25) and shadow (0.08) premium loads |
 | `e_pol` | per-policy charge, $5.50/month |
 | `e_u`, `e_u^g` | per-unit charges: 0.20 and 0.05 per $1,000 initial face /month |
@@ -165,20 +186,25 @@ anchored to the public highlights findings.
 | `SG_t', SG_t''` | shadow analogues |
 | `W_t` | withdrawal amount (plus $25 fee) |
 | `q_t^d, w_t` | monthly best-estimate death and lapse rates (converted from annual) |
-| `l_t` | in-force probability at BOM of month t |
+| `l_t` | in-force probability at BOM of month t, `l_0 = 1` |
+| `x_t` | attained age (ANB) in month t, `issue_age + (duration_months + t) // 12` |
 | `κ(x)` | GPT corridor factor at attained age x [R4; REG-R13](#uslib-guaranteed_ul-r4) |
 
 ### Monthly processing order **[std]**
 
 1. **Status check.** If `g_{t−1} > 0` (in grace) and cumulative grace ≥ 61 days
    without the required payment, the policy lapses at BOM with no value
-   (`CSV ≤ 0` in grace by construction) [S7].
-2. **Premium.** `CumPrem_t = CumPrem_{t−1} + P_t`. Base credit `(1 − π)·P_t`; shadow
-   credit `(1 − π^g)·P_t`. (Catch-up premiums route identically **[std]**.)
+   (`CSV ≤ 0` in grace by construction) [S7]. Never at `t = 0`: `g_{t−1}` is read as
+   the opening value 0.
+2. **Premium.** `CumPrem_t = CumPrem_{t−1} + P_t`, with `CumPrem_{t−1}` read as
+   `cumprem_init` when `t = 0`.
+   Base credit `(1 − π)·P_t`; shadow credit `(1 − π^g)·P_t`. (Catch-up premiums route
+   identically **[std]**.)
 3. **Expense charges.**
    `AV_t' = AV_{t−1} + (1−π)P_t − e_pol − e_u·F/1000 − W_t − 25·1{W_t>0}`
    `SG_t' = SG_{t−1} + (1−π^g)P_t − e_u^g·F/1000 − W_t`  (withdrawal reduces shadow
-   dollar-for-dollar **[std]**, spec note).
+   dollar-for-dollar **[std]**, spec note), with `AV_{t−1}` and `SG_{t−1}` read as
+   `av_init` and `sg_init` when `t = 0`.
 4. **Death benefit and NAAR.** `DB_t = max(F, κ(x_t)·max(AV_t',0))`;
    `NAAR_t = max(DB_t/(1+j_g) − max(AV_t', 0), 0)`;
    `NAAR_t^g = max(DB_t/(1+j^g) − max(SG_t', 0), 0)` **[std]** (discount convention;
@@ -199,7 +225,7 @@ anchored to the public highlights findings.
    `AV_t = AV_t''·(1+j_c)` (split loaned/unloaned when `L > 0`).
    `SG_t = SG_t''·(1+j^g)` — no floor at zero.
 8. **Loan interest.** `L_t = L_{t−1}·(1 + (1.05)^{1/12} − 1)` (5% in arrears [S4],
-   accrued monthly **[std]**).
+   accrued monthly **[std]**; `L_{t−1}` is `loan_init` when `t = 0`).
 9. **In-force test.** Guarantee active iff `SG_t − L_t > 0` [S4; S2, S9]. The policy
    is in force iff (base account can cover deductions, i.e., not in expired grace)
    OR the guarantee is active. Lapse occurs ONLY if all three hold: (i) base AV net
@@ -214,9 +240,12 @@ anchored to the public highlights findings.
     - ROP exercise (window months only): rate `w^ROP` **[std]**, benefit
       `min(ρ·CumPrem_t, 0.40·F) − L_t`, ρ ∈ {50%, 100%} [S1]; exercise is a full
       surrender [S1], [S3].
-    - `l_{t+1} = l_t·(1−q_t^d)·(1−w_t)·(1−w_t^ROP)`
-12. **Age/duration update**; at attained age 121 all charges and premiums cease,
-    recursion continues with `COI = expenses = P = 0` and interest only [S7].
+    - `l_{t+1} = l_t·(1−q_t^d)·(1−w_t)·(1−w_t^ROP)`, from `l_0 = 1`
+12. **Age/duration update**: `t → t + 1`; the attained age steps when
+    `duration_months + t + 1` reaches a multiple of 12. At attained age 121 all
+    charges and premiums cease, recursion continues with `COI = expenses = P = 0` and
+    interest only [S7]; the last projected month, `t = proj_len − 1`, is the last
+    month of attained age 120.
 
 ### Cash flow outputs (per month, expected per initial policy)
 
@@ -225,7 +254,8 @@ anchored to the public highlights findings.
 - Death claims: as step 11 (net of loan repayment from proceeds — standard UL
   treatment **[std]**; see spec, "Loans").
 - Surrender/ROP benefits: as step 11.
-- Expenses: acquisition (month 1), maintenance /12 monthly, claim expense.
+- Expenses: acquisition (the issue month, `duration_months + t = 0`, and 90% of the
+  premiums of policy year 1), maintenance /12 monthly, claim expense.
 - Loan cash flows (drawdown/repayment): 0 in base model point **[std]**.
 - Internal transfers (loads, COI, expense charges, interest credits, shadow-account
   entries) are NOT external cash flows; they drive `AV`, `CSV` and the in-force test
@@ -237,9 +267,13 @@ Objective: the smallest level annual premium such that the guarantee never fails
 before the elected guarantee age:
 
 ```
-g(P) = min over t in [1, (guarantee_age − issue_age)·12] of (SG_t(P) − L_t)
+g(P) = min over t = 0, 1, …, (guarantee_age − issue_age)·12 − duration_months − 1
+       of (SG_t(P) − L_t)
 P*   = min { P : g(P) > 0 }
 ```
+
+The stopping time counts projected months on the same 0-based `t` as the projection:
+`(guarantee_age − issue_age)·12` months from issue, less the months already elapsed.
 
 `SG_t(P)` is monotone non-decreasing in P (every premium enters the shadow account
 at `(1 − π^g)` and accumulates at `i^g` net of charges that do not increase with P
@@ -323,35 +357,38 @@ healthy lives disproportionately lapse or exercise ROP — flagged under model r
 ## Worked example **[std]** (all figures illustrative)
 
 Model point: male 60 ANB NT Standard, F = $500,000, lifetime guarantee, level
-P* = $10,800 paid annually; projection months 301–305 (policy year 26, attained age
-85, anniversary premium in month 301). Illustrative COI rates at age 85: guaranteed
-max monthly `m^max` = 8.615 per $1,000 **[std]**; current `m` = 5.60 (65%); shadow
-`m^g` = 4.74 (55%). Monthly interest factors: base current 1.0028709; shadow
-1.0044717. Opening: AV = 2,400.00; SG = 118,000.00; L = 0. Deductions column =
-expenses + COI. Decrements are suppressed for clarity (contract-mechanics view).
+P* = $10,800 paid annually; an in-force model point with `duration_months` = 300, so
+the projection's first five months `t = 0 … 4` are policy months 301–305 (policy
+year 26, attained age 85, anniversary premium at `t = 0`). The table carries both
+labels: `t` is the projection index and the policy month is `duration_months + t + 1`.
+Illustrative COI rates at age 85: guaranteed max monthly `m^max` = 8.615 per $1,000
+**[std]**; current `m` = 5.60 (65%); shadow `m^g` = 4.74 (55%). Monthly interest
+factors: base current 1.0028709; shadow 1.0044717. Opening (carried into the start of
+`t = 0`): AV = 2,400.00; SG = 118,000.00; L = 0. Deductions column = expenses + COI.
+Decrements are suppressed for clarity (contract-mechanics view).
 
-| Mo. | Prem | Base net prem | Base deductions | Base int. | AV (EOM) | Shdw net prem | Shdw deductions | Shdw int. | SG (EOM) | Status |
-|----:|-----:|-----:|-----:|-----:|-----:|-----:|-----:|-----:|-----:|---|
-| 301 | 10,800.00 | 8,100.00 | 2,842.68 | 21.98 | 7,679.30 | 9,936.00 | 1,778.15 | 564.13 | 126,721.98 | in force |
-| 302 | 0 | 0 | 2,858.47 | 13.84 | 4,834.67 | 0 | 1,783.90 | 558.66 | 125,496.74 | in force |
-| 303 | 0 | 0 | 2,874.40 | 5.63 | 1,965.90 | 0 | 1,789.71 | 553.16 | 124,260.19 | in force |
-| 304 | 0 | 0 | 2,890.47 → 1,965.90 taken; 924.57 forgone | 0.00 | **0.00** | 0 | 1,795.57 | 547.62 | 123,012.24 | in force — guarantee |
-| 305 | 0 | 0 | 2,900.89 forgone (AV = 0) | 0.00 | 0.00 | 0 | 1,801.49 | 542.01 | 121,752.76 | in force — guarantee |
+| `t` | Policy month | Prem | Base net prem | Base deductions | Base int. | AV (EOM) | Shdw net prem | Shdw deductions | Shdw int. | SG (EOM) | Status |
+|----:|----:|-----:|-----:|-----:|-----:|-----:|-----:|-----:|-----:|-----:|---|
+| 0 | 301 | 10,800.00 | 8,100.00 | 2,842.68 | 21.98 | 7,679.30 | 9,936.00 | 1,778.15 | 564.13 | 126,721.98 | in force |
+| 1 | 302 | 0 | 0 | 2,858.47 | 13.84 | 4,834.67 | 0 | 1,783.90 | 558.66 | 125,496.74 | in force |
+| 2 | 303 | 0 | 0 | 2,874.40 | 5.63 | 1,965.90 | 0 | 1,789.71 | 553.16 | 124,260.19 | in force |
+| 3 | 304 | 0 | 0 | 2,890.47 → 1,965.90 taken; 924.57 forgone | 0.00 | **0.00** | 0 | 1,795.57 | 547.62 | 123,012.24 | in force — guarantee |
+| 4 | 305 | 0 | 0 | 2,900.89 forgone (AV = 0) | 0.00 | 0.00 | 0 | 1,801.49 | 542.01 | 121,752.76 | in force — guarantee |
 
-Reading the table: the base account exhausts in month 304 — monthly deductions
-(~$2,900, dominated by COI on a ~$497K NAAR) exceed the annual net premium spread
-over the year, and the residual $924.57 of month-304 deductions is forgone by the
-insurer (`D_304`), not carried as a receivable. The policy does NOT enter grace:
+Reading the table: the base account exhausts at `t = 3` (policy month 304) — monthly
+deductions (~$2,900, dominated by COI on a ~$497K NAAR) exceed the annual net premium
+spread over the year, and the residual $924.57 of that month's deductions is forgone
+by the insurer (`D_3`), not carried as a receivable. The policy does NOT enter grace:
 the shadow account, charged at the lighter [std] shadow parameter set and credited
 at 5.5%, stands at ~$123K, so the in-force test `SG − L > 0` holds and coverage
-continues with `NAAR ≈ DB = $500,000`. From month 305 onward the insurer is funding
-the full mortality cost of the guarantee — the "negative account economics" regime
-that dominates late-duration GUL liability cash flows. Arithmetic: net premium =
-P × (1 − load); deductions = per-policy 5.50 + per-unit 100.00 + COI m·NAAR/1000
-(base; shadow analogues 0/25.00/m^g·NAAR^g/1000); NAAR = 499,176 − max(AV′, 0)
-(base — the floor binds in month 305, where AV′ = −105.50 but COI is charged on the
-full 499,176 NAAR), 497,774 − SG′ (shadow; SG′ > 0 throughout); interest = balance
-after deductions × monthly factor − 1.
+continues with `NAAR ≈ DB = $500,000`. From `t = 4` (policy month 305) onward the
+insurer is funding the full mortality cost of the guarantee — the "negative account
+economics" regime that dominates late-duration GUL liability cash flows. Arithmetic:
+net premium = P × (1 − load); deductions = per-policy 5.50 + per-unit 100.00 + COI
+m·NAAR/1000 (base; shadow analogues 0/25.00/m^g·NAAR^g/1000); NAAR = 499,176 −
+max(AV′, 0) (base — the floor binds at `t = 4`, where AV′ = −105.50 but COI is
+charged on the full 499,176 NAAR), 497,774 − SG′ (shadow; SG′ > 0 throughout);
+interest = balance after deductions × monthly factor − 1.
 Independent recomputation may differ by cents due to rounding.
 
 ---

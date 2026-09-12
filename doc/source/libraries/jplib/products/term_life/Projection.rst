@@ -1,7 +1,7 @@
 The **Projection** Space
 ========================
 
-.. automodule:: jplib.products.term_life.Term_JP_A.Projection
+.. automodule:: jplib.products.term_life.Term_JP_S.Projection
 
 Cells Descriptions
 ------------------
@@ -34,9 +34,15 @@ Cells Descriptions
 
 .. autofunction:: proj_len
 
+.. autofunction:: duration
+
+.. autofunction:: policy_year
+
 .. autofunction:: age
 
 .. autofunction:: term_index
+
+.. autofunction:: term_months
 
 .. autofunction:: term_start_age
 
@@ -54,7 +60,11 @@ Cells Descriptions
 
 .. autofunction:: mort_rate
 
+.. autofunction:: mort_rate_mth
+
 .. autofunction:: lapse_rate
+
+.. autofunction:: lapse_rate_mth
 
 .. autofunction:: decline_rate
 
@@ -63,6 +73,10 @@ Cells Descriptions
 .. autofunction:: prem_rate_m
 
 .. autofunction:: premium_mth_pp
+
+.. autofunction:: prem_mode_months
+
+.. autofunction:: prem_due_pp
 
 .. autofunction:: prem_pp
 
@@ -80,11 +94,19 @@ Cells Descriptions
 
 .. autofunction:: reinstate_rate_eff
 
+.. autofunction:: reinstate_window_m
+
 .. autofunction:: pols_lapse_pool
+
+.. autofunction:: reinstate_rate_mth
 
 .. autofunction:: pols_reinstate
 
 .. autofunction:: pols_lapse_expire
+
+.. autofunction:: wop_inc_rate_mth
+
+.. autofunction:: wop_rec_rate_mth
 
 .. autofunction:: wop_waived_frac
 

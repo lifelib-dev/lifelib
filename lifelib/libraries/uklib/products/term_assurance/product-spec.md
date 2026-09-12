@@ -215,8 +215,10 @@ Footnotes to [std] rows:
 ### Premium provisions
 
 The office premium is level and guaranteed for the full term for life-only cover
-[S2] [S6] [S9]: monthly premium `P_m` (composite default mode), annualized premium
-`P_a = 12 × P_m` **[std annualization for the annual-grid model]**. Premiums are due
+[S2] [S6] [S9]: monthly premium `P_m` (composite default mode), with the annualized
+premium `P_a = 12 × P_m` used where a figure per policy year is wanted. The model runs
+on a monthly grid, so `P_m` is charged in the month it falls due and the annual mode is
+twelve months' premium in the first month of each policy year. Premiums are due
 monthly by direct debit [S6]; a 60-day grace period applies from each due date, after
 which the policy is cancelled with no refund and no residual value [S1] [S6]. There are
 no premium reviews on the composite: reviewable premiums exist in the market only on

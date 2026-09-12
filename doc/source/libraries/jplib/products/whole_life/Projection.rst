@@ -1,7 +1,7 @@
 The **Projection** Space
 ========================
 
-.. automodule:: jplib.products.whole_life.WholeLife_JP_A.Projection
+.. automodule:: jplib.products.whole_life.WholeLife_JP_S.Projection
 
 Cells Descriptions
 ------------------
@@ -18,6 +18,8 @@ Cells Descriptions
 
 .. autofunction:: prem_period
 
+.. autofunction:: prem_period_months
+
 .. autofunction:: prem_end
 
 .. autofunction:: premium_pp
@@ -29,6 +31,8 @@ Cells Descriptions
 .. autofunction:: apl_elected
 
 .. autofunction:: default_rate
+
+.. autofunction:: apl_active
 
 .. autofunction:: pol_loan_util
 
@@ -46,7 +50,13 @@ Cells Descriptions
 
 .. autofunction:: omega_age
 
+.. autofunction:: proj_years
+
 .. autofunction:: proj_len
+
+.. autofunction:: duration
+
+.. autofunction:: policy_year
 
 .. autofunction:: age
 
@@ -56,13 +66,21 @@ Cells Descriptions
 
 .. autofunction:: mort_rate
 
+.. autofunction:: mort_rate_mth
+
 .. autofunction:: lapse_rate_base
 
 .. autofunction:: cum_prem_pp
 
+.. autofunction:: cum_prem_pp_m
+
 .. autofunction:: lapse_dyn_factor
 
 .. autofunction:: lapse_rate
+
+.. autofunction:: lapse_rate_mth
+
+.. autofunction:: lapse_spike_rate
 
 .. autofunction:: disc_factor
 
@@ -102,6 +120,14 @@ Cells Descriptions
 
 .. autofunction:: cv_pp
 
+.. autofunction:: pol_val_at_m
+
+.. autofunction:: cv_mult_at_m
+
+.. autofunction:: cv_at_m
+
+.. autofunction:: cv_susp_at_m
+
 .. autofunction:: cv_pp_susp
 
 .. autofunction:: reserve_pp
@@ -116,15 +142,21 @@ Cells Descriptions
 
 .. autofunction:: loan_fail_year
 
+.. autofunction:: loan_fail_month
+
 .. autofunction:: apl_advance_due
 
 .. autofunction:: apl_test_val
+
+.. autofunction:: apl_test_val_m
 
 .. autofunction:: apl_fires
 
 .. autofunction:: loan_apl_pp
 
 .. autofunction:: apl_fail_year
+
+.. autofunction:: apl_fail_month
 
 .. autofunction:: apl_advances
 
@@ -156,6 +188,10 @@ Cells Descriptions
 
 .. autofunction:: pols_death
 
+.. autofunction:: pols_lapse_base
+
+.. autofunction:: pols_lapse_spike
+
 .. autofunction:: pols_lapse
 
 .. autofunction:: premiums
@@ -177,6 +213,8 @@ Cells Descriptions
 .. autofunction:: check_pols_roll_fwd_resid
 
 .. autofunction:: check_pols_roll_fwd
+
+.. autofunction:: pols_exit_cum
 
 .. autofunction:: check_decrement_sum_resid
 

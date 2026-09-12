@@ -570,7 +570,7 @@ inside the five-year statutory ceiling [REG-R35].
 **Out of scope:** the accelerated-benefit whole-life chassis and its 低解約返戻金型 surrender
 progression, 自動振替貸付, 延長定期保険, 払済保険 and 減額 [S12] — that machinery belongs to the
 [whole life product specification (終身保険)](../whole_life/product-spec.md) and its model
-[`WholeLife_JP_A`](../whole_life/model.md);
+[`WholeLife_JP_S`](../whole_life/model.md);
 介護保険金割増年金支払特約 and the 介護年金移行特約, which convert a lump sum into an enhanced annuity with 要介護4
 / 要介護5 top tiers [S12]; 軽度介護一時金給付特則 and 軽度認知障害診断一時金給付特則 as separate extinguishing benefit
 lines [S5]; 新保険料払込免除特約 [S5]; 健康祝金特則 [S7]; the 5%-of-benefit post-払込満了 surrender value and

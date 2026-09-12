@@ -26,7 +26,8 @@ The composite is a **level-annual-premium 生存保障重視型** (*seizon hosh�
 survival-benefit-weighted) fixed deferred annuity with the tax-qualification rider (*zeisei
 tekikaku tokuyaku*, **税制適格特約**) attached, paying a **10年確定年金** (*kakutei nenkin*,
 annuity-certain) from age 65. Its two phases — accumulation to an annuity fund (*nenkin
-genshi*, 年金原資), then payout — run on one annual grid in `Annuity_JP_A`. Variable (変額) and
+genshi*, 年金原資), then payout — run on one monthly grid in `Annuity_JP_S`, with the
+contractual value family kept on the annual anniversary clock it is defined on. Variable (変額) and
 foreign-currency (外貨建) annuities are out of scope and appear below as scope boundaries.
 
 ---
@@ -156,10 +157,13 @@ Footnotes to [std] rows:
 | Refund of unused premium | Whole unused months refunded on annual and semi-annual modes; nothing on monthly | [S4] |
 
 5. Modes are 月払 / 年払 / 半年払 plus 一時払 on single-premium products [S4] [R16]. The composite
-   takes **annual**, matching the annual grid. This is cheaper than it looks: two carriers
-   define the deferral-phase death benefit as 月払保険料 × 経過月数 — *the same amount whichever mode
-   is in force* [S2] [S4] — so the benefit is mode-invariant by construction. What the
-   annual grid does lose is the sub-annual grace mechanics; footnote 18.
+   takes **年払**, which is a choice about the contract and not about the projection grid:
+   `Annuity_JP_S` steps in months and the annual premium falls in one month of twelve. This
+   is cheaper than it looks: two carriers define the deferral-phase death benefit as
+   月払保険料 × 経過月数 — *the same amount whichever mode is in force* [S2] [S4] — so the benefit
+   is mode-invariant by construction, and the monthly grid states that clause as written
+   rather than approximating it at anniversaries. What is still out of scope is the
+   sub-annual grace mechanics; footnote 18.
 6. Published 予定利率 for level-premium annuity business: **1.00%** from 0.60%, for 契約日 from
    2025-01-02 [S8]; **1.20%** where 30 or more years remain to annuitisation and **1.00%**
    where fewer do, from 0.80% / 0.65%, for 契約日 from 2025-10-02 [S5]; and a
@@ -330,12 +334,14 @@ Footnotes to [std] rows:
     and semi-annual**, from the first day of the next month to the monthly contract
     anniversary of the month after that, with special handling where the anniversary falls
     on the last day of February, June or November (running then to the last day of April,
-    August or January). On an annual grid the composite maps this to a **[std]** rule: a
-    premium unpaid at `t` terminates the contract at `t` unless the 自動振替貸付 module is on,
-    with no partial-year grace state. One further sourced fact does not survive the annual
-    grid and is recorded here because the monthly-grid products reuse it: where a death
-    claim or waiver trigger arises during grace on a monthly direct-debit contract, **two
-    months** of premium are deducted from the claim or must be paid [S4].
+    August or January). The composite maps this to a **[std]** rule: a premium unpaid in a
+    premium month terminates the contract in that month unless the 自動振替貸付 module is on,
+    with no grace state at all. The monthly grid makes a grace window a representable
+    length but does not supply what it would need — grace runs from a calendar 払込期月 that
+    the model point table carries no date for. One further sourced fact is recorded here
+    for the same reason: where a death claim or waiver trigger arises during grace on a
+    monthly direct-debit contract, **two months** of premium are deducted from the claim or
+    must be paid [S4].
 
 ---
 
@@ -348,10 +354,11 @@ starts the suicide-exclusion and contestability clocks [S2] [S4]. The **年金�
 年単位の契約応当日 on which the insured's 保険年齢 reaches the 年金支払開始年齢 chosen at issue, and the 年金支払日
 are that date and its annual anniversaries [S2] [S4] [S9]. Almost no mechanic survives it:
 surrender, policy loans, reduction and reinstatement all stop there, leaving commutation as
-the annuitant's only remaining lever [S2] [S4] [R16]. On the annual grid, write `t` for
-years since issue, `m` for the premium term (30 at the anchor cell), `d` for the 据置期間 (5)
-and `n = m + d` (35). Premiums fall at `t = 0 … m − 1`; the fund accumulates over `t = 0 …
-n`; the annuity is paid at `t = n … n + 9`.
+the annuitant's only remaining lever [S2] [S4] [R16]. Write `m` for the premium term (30 at
+the anchor cell), `d` for the 据置期間 (5) and `n_y = m + d` (35) — all in years, all
+anniversaries of the 契約日. Premiums fall at the anniversaries `0 … m − 1`; the fund
+accumulates over `0 … n_y`; the annuity is paid at `n_y … n_y + 9`. `Annuity_JP_S` projects
+in months and reaches each of those dates as the month `12 ×` the anniversary.
 
 The office premium is level and guaranteed for the whole 保険料払込期間 [S2] [S4] [S5] [S6]; the
 only in-force mechanisms that change it are 減額 and paid-up conversion, both constrained by
@@ -371,10 +378,10 @@ the reinstated policy carries a fresh three-year suicide clock from the 復活�
 
 The composite's deferral-phase death benefit is cumulative premiums paid:
 
-    DB(t) = P * min(t, m)          (annual grid; P = the level annual premium)
+    DB(u) = rho * (P / 12) * min(u, 12m)     (u = elapsed months; P = the annual premium)
 
-which is the annual-grid form of the contractual 月払保険料 × 経過月数 [S2] [S4] and of the 既払込保険料相当額
-wording a third carrier uses [S6]. The three market designs [R16] differ only in the
+which is the contractual 月払保険料 × 経過月数 [S2] [S4] read literally, and equals the 既払込保険料相当額
+wording a third carrier uses [S6] at every anniversary. The three market designs [R16] differ only in the
 multiplier on that base: **生存保障重視型** holds the benefit down *to* cumulative premiums, buying
 a larger annuity; a **tontine** holds it to about **70%** of them, buying a larger annuity
 still; a third family adds a 災害死亡給付金 at an uplift (e.g. 110%). The composite takes the
@@ -636,7 +643,7 @@ force.
    Composite: **excluded**, but built so
    that the tontine is a *parameterization* of it rather than a different chassis — a
    death-benefit ratio of 0.70 instead of 1.00 on the same cumulative-premium base, under
-   the same surrender ceiling. `Annuity_JP_A` carries the ratio as a model-point field. One
+   the same surrender ceiling. `Annuity_JP_S` carries the ratio as a model-point field. One
    of the two is sold explicitly as a 低解約返戻金型 product [S10], a category 監督指針 IV-1-9 names as
    needing extra explanation [REG-R14] and one of the three features 金融サービス提供法第4条 requires
    to be explained as a restriction on cancellation [REG-R39]; `jplib`'s 低解約返戻金型 cliff
@@ -708,7 +715,8 @@ reproduced. The appointed actuary (*hoken keirinin*, 保険計理人) must submi
 the reserve is properly accumulated [REG-R6], and the 実務基準 sets out how: the **1号収支分析** is a
 forward income-and-outgo analysis run annually by 区分経理 segment over **at least ten future
 years**, with sufficiency tested against the standard reserve being accumulable at each year
-end over the first five [REG-R22]. That is precisely the shape `Annuity_JP_A` produces.
+end over the first five [REG-R22]. That is the shape `Annuity_JP_S` produces once its
+monthly rows are grouped into policy years.
 
 **The two valuation tables, and why this product needs both.** For contracts concluded from
 2018-04-01 the standard-reserve mortality basis is 生保標準生命表2018（死亡保険用）for death cover — and

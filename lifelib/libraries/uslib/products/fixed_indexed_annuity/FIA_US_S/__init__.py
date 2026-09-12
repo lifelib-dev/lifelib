@@ -48,21 +48,37 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 time rather than stored inside the model. The model folder itself holds no data, so the
 model and its inputs must travel together.
 
-**Projection basis.** Annual steps. ``t`` counts **contract years**, and each ``t`` is
-also the anniversary that ends contract year ``t``, because the notes make the
-anniversary the single event date: every mechanic in the composite is annual — annual
-point-to-point crediting [S2][S4][S10], the rider charge at the end of each contract
-year [S9], the annual benefit base update [S9] and the annual lifetime withdrawal. Note
-the contrast with :mod:`.MYGA_US_S`, whose ``t`` counts **months**: that
-chassis credits daily and needs a grid fine enough to resolve a 30-day window, whereas
-here a monthly grid would buy nothing but the excluded variants (monthly-sum crediting,
-one carrier's monthly charge deduction, daily interim values, mid-year withdrawal
-crediting). **The product assignment table records this product as monthly; its own
-technical notes state annual, and the notes govern.**
+**Projection basis.** Monthly steps, as the ``_S`` suffix and the product assignment table
+both say. ``t`` is the **0-based month index**: ``duration(t) = t // 12`` is the completed
+contract years, ``policy_year(t) = duration(t) + 1`` is the contractual label, and the
+frame is ``t = entry_mth() … proj_len() - 1`` with ``proj_len() = 12 * policy_term()``.
 
-``age(t)`` is the attained age **at anniversary** ``t``, ``age_at_entry() + t``, exactly
-as the notes define it — the age that reads the lifetime-withdrawal percentage table.
-Mortality over contract year ``t`` is therefore read one year lower, at ``age(t - 1)``.
+**Every mechanic of the contract is still annual.** Annual point-to-point crediting
+[S2][S4][S10], the rider charge at the end of each contract year [S9], the benefit base
+update [S9] and the lifetime withdrawal are all annual, and the notes make the anniversary
+the single event date — so each of them happens once a year, in the **anniversary month**
+``is_anniv(t)``, and the contract moves no cash between anniversaries. What the finer grid
+resolves is everything that is not a contractual event: mortality and surrender fall in the
+month they happen, the Model #805 floor and the fixed account accrue month by month so a
+mid-year death or surrender is valued on the balance it actually has, and maintenance
+expense accrues where it is incurred. The excluded variants stay excluded — monthly-sum
+crediting, one carrier's monthly charge deduction, daily interim values, mid-year
+withdrawal crediting are all still absent, and the indexed account is deliberately flat
+between anniversaries.
+
+Because the monthly decrement rates compound to the annual ones and every contractual step
+is unmoved, **every state value at an anniversary equals the annual-step model's**: account
+value, benefit base, rollup base, lifetime withdrawal, Model #805 floor, phase and
+``pols_if`` at ``t = 12k``. The cash differs, and that is the point — ``result_cf_annual()``
+sums the monthly frame into contract years and agrees exactly on ``pols_if``, ``premiums``,
+``commissions`` and ``premium_taxes``, but not on the withdrawals, the claims or the
+expenses.
+
+``age(t) = age_at_entry() + duration(t)`` is the attained age opening the contract year of
+month ``t``, so that year's mortality reads ``age(t)`` itself; ``mort_rate_mth(t)`` converts
+it for the month. The transactions at the closing anniversary are one year older:
+``exercise_age(t)`` is the age that reads the lifetime-withdrawal percentage table and
+clears the minimum exercise age.
 
 The anniversary's processing order is the notes' own, and every quantity that changes
 inside it is exposed through a ``timing`` argument rather than being buried:
@@ -77,19 +93,21 @@ inside it is exposed through a ``timing`` argument rather than being buried:
 7. phase transition including the depletion test --- ``phase(t)``
 8. decrements --- ``pols_if_at(t, "AFT_DECR")``
 
-``pols_if(t)`` is the in-force count at the **start** of contract year ``t``, the
-library-wide convention set by :mod:`.Term_US_A` and ``savings.CashValue_SE``, and it is
-the weight carried by every cash flow reported on the same row of ``result_cf()``. The
-technical notes define ``l(t)`` the other way round, as the probability at the *end* of
-the year; that quantity is kept as ``pols_if_at(t, "AFT_DECR")``, which is also
-``pols_if(t + 1)``. Neither reading is discarded and the two never share a name.
+``pols_if(t)`` is the in-force count at the **start** of month ``t``, the library-wide
+convention set by :mod:`.Term_US_S` and ``savings.CashValue_SE``, and it is the weight
+carried by every cash flow reported on the same row of ``result_cf()``. At ``t = 12k`` it
+is the technical notes' own ``l(k)``, the probability in force at the end of contract year
+``k``, and the equality is exact. At an anniversary month it is the count that **reaches**
+the anniversary, which is the weight that month's withdrawal and charges carry — where the
+annual grid could only weight them by the count that entered the year.
 
-Steps 1--3 are skipped in ``DEPLETED`` and steps 1--7 in ``TERMINATED``. ``t = 0`` is
-the issue instant for a new-issue model point and carries the premium, the acquisition
-expense and the initial branch of every recursion. A model point may instead be entered
-**in force** at anniversary ``entry_year()`` on stated balances, which is what the
-worked example does and why ``result_cf()`` is indexed from ``entry_year()`` rather than
-always from zero.
+Steps 1--3 are skipped in ``DEPLETED`` and steps 1--7 in ``TERMINATED``; step 8 is the one
+that runs every month. **There is no issue-instant row:** the premium, the premium bonus
+and the acquisition expense are beginning-of-month flows of month ``0`` on a new-issue
+model point, alongside that month's own activity. A model point may instead be entered **in
+force** after ``entry_year()`` completed contract years on stated balances — which is what
+the worked example does, and why ``result_cf()`` is indexed from
+``entry_mth() = 12 * entry_year()`` rather than always from zero.
 
 **Undiscounted.** Like every model in this library, this one projects *gross liability
 cash flows* only; reserves and discounting are a separate layer, and the notes' own
@@ -110,8 +128,8 @@ treatment of account-value exhaustion [S1][S5][S9]; and the Model #805 construct
 87.5% of premium **excluding the bonus** accumulated at a nonforfeiture rate inside the
 0.15%-3% corridor, whose statutory floor is **15 basis points, not 1%** [R2][R3].
 
-Everything behavioural and expense-related is a standardization: the annual grid and the
-anniversary-only event date; the annual step-up (no retrieved document describes an
+Everything behavioural and expense-related is a standardization: the anniversary-only
+event date; the annual step-up (no retrieved document describes an
 automatic ratchet during deferral); the 1.00% flat nonforfeiture rate inside the
 corridor; the insurer-favourable reading under which the guaranteed withdrawal consumes
 the free withdrawal amount; the base surrender vector 2/3/4/5/6% and the three-way shock
@@ -148,8 +166,9 @@ agree on the surrender path so the worked example reproduces under either, and a
 pins the gap open rather than closing it in either direction.
 
 **Not implemented.** Named here so the gaps cannot be mistaken for oversights. The
-monthly-sum crediting method ``max(f, sum_k min(R_k, c_m))``, which needs a monthly grid
-the notes deliberately exclude [S4][R1]; interim values in either documented form, both
+monthly-sum crediting method ``max(f, sum_k min(R_k, c_m))``, which needs a **monthly
+index path** — a grid of months is not the same thing, and ``rate_scenario.csv`` states
+index levels at anniversaries only [S4][R1]; interim values in either documented form, both
 daily marks of the embedded option rather than interpolations [S10][S11]; the cap
 re-declaration rule, because the notes state the *target* (set the cap so the one-year
 call-spread cost equals the option budget) but give no option-pricing function, so the
@@ -170,8 +189,9 @@ issue, income from attained age 70. Point 1 is the worked example, entered **in 
 at anniversary 7 on the balances the notes state there; point 2 is the same cell issued
 at ``t = 0``; point 3 is the notes' "Where the step-up binds" block, growth mechanism (a);
 point 4 is growth mechanism (b), pure stacking with only half of index credits reaching
-the account value; point 5 is joint life; point 6 carries no rider, so its shock lapse is
-33%; point 7 overdraws at 105% of the maximum and so loses the guarantee at exhaustion;
+the account value and the only non-zero fixed allocation, so it is the point that exercises
+the monthly fixed-account accrual; point 5 is joint life; point 6 carries no rider, so its
+shock lapse is 33%; point 7 overdraws at 105% of the maximum and so loses the guarantee at exhaustion;
 point 8 takes a pre-exercise withdrawal that attracts the charge, the clawback and the
 MVA; and point 9 defers income to attained age 85, past both the year the surrender charge
 expires and the end of the twenty-year growth window, so its shock lapse is the 10%
@@ -191,8 +211,11 @@ new issue with a zero index credit; the depletion arithmetic — $11,997.42 a ye
 exhausted during contract year 19 at attained age 81 — and the survival of the income
 stream after it; the verbatim [S9] excess-withdrawal reduction and the verbatim [S10]
 clawback; the in-force and account-value roll-forwards, both through the no-argument
-``check_pols_roll_fwd()`` and ``check_av_roll_fwd()`` and through the per-anniversary
-``check_*_resid(t)`` residuals they are built on; that the ``pols_if`` column of
+``check_pols_roll_fwd()`` and ``check_av_roll_fwd()`` and through the per-month
+``check_*_resid(t)`` residuals they are built on; that every anniversary value of the
+account value, the benefit base, the Model #805 floor, the lifetime withdrawal, the phase
+and ``pols_if`` reproduces the annual-step model exactly, and that no contractual cash
+moves between anniversaries; that the ``pols_if`` column of
 ``result_cf()`` is the weight carried by the cash flows on its own row; the payment cap
 on the terminating exhaustion branch; and one test per pitfall the notes state as a model
 mechanic. Three of the thirteen entries in the notes' Known modeling pitfalls list are
@@ -213,7 +236,8 @@ Example:
 
     >>> import modelx as mx
     >>> model = mx.read_model("products/fixed_indexed_annuity/FIA_US_S")
-    >>> model.Projection[1].result_cf()
+    >>> model.Projection[1].result_cf()            # by month
+    >>> model.Projection[1].result_cf_annual()     # summed into contract years
 """
 
 from modelx.serialize.jsonvalues import *

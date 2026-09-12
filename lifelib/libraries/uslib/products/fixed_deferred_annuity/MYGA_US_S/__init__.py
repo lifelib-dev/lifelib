@@ -38,12 +38,14 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 time rather than stored inside the model. The model folder itself holds no data, so the
 model and its inputs must travel together.
 
-**Projection basis.** Monthly steps. ``t`` counts **policy months**, ``t = 1, 2, ...,
-proj_len()``, and the contract year is ``policy_year(t) = ceil(t / 12)``, so
-anniversaries fall at ``t = 12, 24, ...``. Note the contrast with :mod:`.Term_US_A`,
-where ``t`` counts **years**: monthly is the coarsest grid that hits every contract
-anniversary exactly while still resolving the guarantee-period-end window and the
-shock-lapse boundary to within one step **[std]**.
+**Projection basis.** Monthly steps. ``t`` counts **policy months** from 0, ``t = 0, 1,
+..., proj_len() - 1``: ``t = 0`` is the first policy month and month ``t`` runs from time
+``t`` to time ``t + 1``. The contract year is the 1-based label ``policy_year(t) = t // 12
++ 1``, so anniversaries fall at the start of ``t = 12, 24, ...`` and the closing account
+value at the first anniversary is ``av_pp(11)``. Monthly is the library-wide grid, and
+for this product it is also the coarsest one that hits every contract anniversary exactly
+while still resolving the guarantee-period-end window and the shock-lapse boundary to
+within one step **[std]**.
 
 The month's processing order follows the technical notes exactly. At the beginning of
 the month (BOM): roll the free-withdrawal counters; apply the guarantee-period boundary
@@ -57,21 +59,24 @@ the month (EOM): credit interest, giving ``av_pp(t)``; roll the Model #805 floor
 ``mgsv_pp(t)``; and apply decrements in the order annuitization, mortality, surrender
 **[std]**, with every decrement benefit valued on the post-crediting account value.
 
-``t = 0`` is the issue instant. The single premium, the acquisition commission and the
-premium tax all fall there, as they do in the notes' cash flow ledger, and ``av_pp(0)``,
-``mgsv_pp(0)`` and ``pols_if(0)`` are the initial branches of the three recursions.
-``result_cf()`` therefore starts at ``t = 0``, not at ``t = 1``.
+The issue instant is not a row. The single premium, the acquisition commission and the
+premium tax are beginning-of-month flows of ``t = 0`` — the notes' "at ``t = 0``" — and
+the opening state of month 0 is ``av_pp_init()``, ``mgsv_pp_init()`` and
+``pols_if_init()``, read as ``av_pp_at(0, "BEF_WD")`` and ``pols_if(0)``; ``av_pp(0)``
+and ``mgsv_pp(0)`` are the closing balances of month 0, one month of crediting later.
+``result_cf()`` therefore has exactly ``proj_len()`` rows, ``t = 0 .. proj_len() - 1``.
 
 ``pols_if(t)`` is the count in force at the **start** of month ``t``, the library-wide
-convention (``pols_if(1) == pols_if_init()``, as in :mod:`.Term_US_A`), and it is the
+convention (``pols_if(0) == pols_if_init()``, as in :mod:`.Term_US_S`), and it is the
 weight applied to that same month's cash flows, so the ``pols_if`` column of
 ``result_cf()`` reconciles with the row it sits on. The technical notes' end-of-month
 ``l(t)`` is unchanged and is read as ``pols_if_at(t, "AFT_DECR")``. Likewise
 ``lapse_rate(t)`` is the **annual** total surrender rate and ``lapse_rate_mth(t)`` the
 monthly one, pairing as ``mort_rate`` / ``mort_rate_mth`` do.
 
-``proj_len()`` is ``12 * (maturity_age - age_at_entry())`` months, running to the
-contract anniversary at attained age 100 **[std]** — the last attained age in the sourced
+``proj_len()`` is ``12 * (maturity_age - age_at_entry())``, the number of projected
+months; the last month, ``t = proj_len() - 1``, ends at the contract anniversary at
+attained age 100 **[std]** — the last attained age in the sourced
 cap band on the renewal surrender charge, tabulated as 4% at 94 down to 0% at 98-100
 [S1][S2]. The cap *reaches* zero at 98; 100 is where the sourced band stops, which is why
 it is the horizon. The technical notes state no projection horizon; the choice is the

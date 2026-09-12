@@ -128,6 +128,9 @@ def mort_table():
     docstring.  The rate here is the *table* rate; ``Projection`` applies
     ``mort_be_factor`` to it to reach a best estimate.  The largest age present for a
     sex is that sex's terminal age, which is what ``Projection.omega_age()`` reads.
+
+    The ``age`` key is an **attained age**, not a time index: ``Projection`` reads it at
+    ``age(t) = issue_age() + t // 12``.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / mort_table_file,                               # noqa: F821
@@ -136,6 +139,11 @@ def mort_table():
 
 def lapse_table():
     """The annual lapse rates by policy year, read from *lapse_table.csv*.
+
+    The ``policy_year`` key is a **contractual, 1-based label**, not the model's 0-based
+    time index: the first row, ``policy_year = 1``, is the first policy year and covers
+    policy months ``t = 0 ... 11``.  ``Projection.lapse_rate`` maps the index onto it
+    through ``Projection.policy_year(t) = t // 12 + 1``.
 
     The last row is the terminal rate: ``Projection.lapse_rate`` caps the policy year
     at the largest year in the table, so a whole-of-life projection does not run off

@@ -71,8 +71,20 @@ Model names are `<short name>_<country>_<grid>`: a short descriptor, then `JP`, 
 annual step or `_S` for a monthly one. The grid letters follow lifelib, where
 `annuallife/TradLife_A` is the annual-step model and `basiclife/BasicTerm_S` and
 `savings/CashValue_SE` are the monthly ones. `S` carries a second sense in lifelib — scalar, one
-model point at a time, as against the vectorized `_M` models — and that is true of all nine here,
-whether or not they carry the letter.
+model point at a time, as against the vectorized `_M` models — and that is true of all nine here.
+
+**All nine models now step monthly**, so every name carries `_S`; the `_A` suffix is still
+reserved for an annual-step model and no model in this library uses it. What the finer grid
+buys differs by product and each model's notes say so, but the pattern is the same everywhere:
+a 年払 premium falls in one month out of twelve instead of being smeared across a year, a
+benefit payable on a date occupies the month whose end is that date, and an exit between
+anniversaries is valued at the month it happens. What it does **not** change is the contractual
+constructions — the 保険料積立金, the 解約返戻金, the surrender charge, the loan balances and the
+staged benefit schedules are defined at the 年単位の契約応当日 and stay on an anniversary index in
+**years**, because the 算出方法書 that would give a within-year rule is a 基礎書類 filed with the
+金融庁 and is not published [REG-R2]. Rates quoted per annum are applied per month on the
+effective convention `r_m = 1 − (1 − r)^(1/12)`, so twelve months compound back to the annual
+rate exactly and survivorship at every anniversary is what the annual grid produced.
 
 The short names are **English, and chosen rather than found**. Everywhere else in this library
 the Japanese name leads, because it is what the product is called; a model name cannot follow,
@@ -85,15 +97,15 @@ written down here and in `tests/jp_registry.py` rather than inferred.
 
 | Product | Model | Grid | Representative design |
 |---|---|---|---|
-| [term life (定期保険)](products/term_life/index.md) | `Term_JP_A` | annual | 平準定期保険, 無配当, 無解約返戻金型: one decrement carrying both 死亡保険金 and 高度障害保険金 at the same sum assured, and **年満了 更新型** (*nen-manryō kōshin-gata*, a fixed-year term that auto-renews) — the term renews at attained-age rates to a ceiling of 80, which is what makes the liability longer than the term |
+| [term life (定期保険)](products/term_life/index.md) | `Term_JP_S` | monthly | 平準定期保険, 無配当, 無解約返戻金型: one decrement carrying both 死亡保険金 and 高度障害保険金 at the same sum assured, and **年満了 更新型** (*nen-manryō kōshin-gata*, a fixed-year term that auto-renews) — the term renews at attained-age rates to a ceiling of 80, which is what makes the liability longer than the term |
 | [survivor income term (収入保障保険)](products/income_guarantee/index.md) | `IncomeTerm_JP_S` | monthly | A **death** benefit paid as a level 年金月額 to a fixed expiry date, so the total falls month by month, floored by the 最低支払保証期間 — which is implemented as a *term extension*, not a benefit floor, and so carries the projection past policy expiry. On the 定期保険 chassis, with 非喫煙者優良体 rate classes |
 
 **Savings**
 
 | Product | Model | Grid | Representative design |
 |---|---|---|---|
-| [whole life (終身保険)](products/whole_life/index.md) | `WholeLife_JP_A` | annual | Level-premium 終身保険, 無配当, carrying the policy reserve (*hokenryō tsumitatekin*, 保険料積立金) and the surrender value (*kaiyaku henreikin*, 解約返戻金) — the **base chassis** for the two below. The suppressed-surrender-value form (*tei-kaiyaku-henreikin-gata*, **低解約返戻金型**) suppresses the surrender value during the premium-paying period and steps it up at 払込満了: a cliff, not a curve. The automatic premium loan (*jidō furikae kashitsuke*, 自動振替貸付) is a modelled state |
-| [endowment (養老保険)](products/endowment/index.md) | `Endowment_JP_A` | annual | 死亡保険金 = 満期保険金 over a fixed term, on the 終身保険 chassis; plus a **学資保険** cell whose premium waiver (*hokenryō haraikomi menjo*, 保険料払込免除) runs on the death of the policyholder (*keiyakusha*, 契約者) — a decrement on a life who is not the insured, with no analogue anywhere in the sister libraries |
+| [whole life (終身保険)](products/whole_life/index.md) | `WholeLife_JP_S` | monthly | Level-premium 終身保険, 無配当, carrying the policy reserve (*hokenryō tsumitatekin*, 保険料積立金) and the surrender value (*kaiyaku henreikin*, 解約返戻金) — the **base chassis** for the two below. The suppressed-surrender-value form (*tei-kaiyaku-henreikin-gata*, **低解約返戻金型**) suppresses the surrender value during the premium-paying period and steps it up at 払込満了: a cliff, not a curve. The automatic premium loan (*jidō furikae kashitsuke*, 自動振替貸付) is a modelled state |
+| [endowment (養老保険)](products/endowment/index.md) | `Endowment_JP_S` | monthly | 死亡保険金 = 満期保険金 over a fixed term, on the 終身保険 chassis; plus a **学資保険** cell whose premium waiver (*hokenryō haraikomi menjo*, 保険料払込免除) runs on the death of the policyholder (*keiyakusha*, 契約者) — a decrement on a life who is not the insured, with no analogue anywhere in the sister libraries |
 | [FX whole life (外貨建終身保険)](products/fx_whole_life/index.md) | `FXWholeLife_JP_S` | monthly | 米ドル建 積立利率変動型 on the 終身保険 chassis, with three layers on top: a declared crediting rate over a guaranteed floor, 解約控除 plus MVA (市場価格調整) on surrender, and the currency itself. A **特定保険契約** under 保険業法第300条の2, and the library's one product projected in a currency other than yen |
 
 **Third sector (第三分野)**
@@ -108,7 +120,7 @@ written down here and in `tests/jp_registry.py` rather than inferred.
 
 | Product | Model | Grid | Representative design |
 |---|---|---|---|
-| [individual annuity (個人年金保険)](products/individual_annuity/index.md) | `Annuity_JP_A` | annual | 定額個人年金保険: accumulation to the annuitisation proceeds (*nenkin genshi*, 年金原資), then a 10年確定年金 payout, with the tax-qualification rider (*zeisei tekikaku tokuyaku*, 税制適格特約) attached. **Two standard tables in one model** — 死亡保険用 in deferral, 年金開始後用 in payment — and using one for both is a pitfall the tests assert against |
+| [individual annuity (個人年金保険)](products/individual_annuity/index.md) | `Annuity_JP_S` | monthly | 定額個人年金保険: accumulation to the annuitisation proceeds (*nenkin genshi*, 年金原資), then a 10年確定年金 payout, with the tax-qualification rider (*zeisei tekikaku tokuyaku*, 税制適格特約) attached. **Two standard tables in one model** — 死亡保険用 in deferral, 年金開始後用 in payment — and using one for both is a pitfall the tests assert against |
 
 (jplib-one-shape)=
 
@@ -146,7 +158,7 @@ Five things recur across the set and are worth knowing before reading any one of
 published in full, free, at stable public URLs [REG-R18] [REG-R19]. The 2018 PDF holds four
 tables and no 年金開始後用 among them — the annuity-in-payment table still in force is the 2007
 one, and the consolidated workbook [REG-R19] is its only public source, which is why
-`Annuity_JP_A` reads two tables of different vintages. Anyone can retrieve any of them and check
+`Annuity_JP_S` reads two tables of different vintages. Anyone can retrieve any of them and check
 a rate. That
 is a real contrast with [uklib](../uklib/index.md), where the CMI tables are restricted to
 Authorised Users and cannot be read at all without a subscription. But the publisher's site terms
@@ -162,7 +174,7 @@ statutory tables.** It ships a documented proxy anchored to tables you can go an
 publish premium scales by age and sex, two of them as full grids across sums assured, and one
 grid is linear enough in the sum assured that a marginal rate and a flat monthly policy fee can
 be **derived** from it — derived, not disclosed: no carrier publishes either component. So the
-anchor premium of `Term_JP_A`, `IncomeTerm_JP_S`, `WholeLife_JP_A`, `Endowment_JP_A` and
+anchor premium of `Term_JP_S`, `IncomeTerm_JP_S`, `WholeLife_JP_S`, `Endowment_JP_S` and
 `FXWholeLife_JP_S` is a **sourced** number rather than a modelling value. uslib reaches that
 for a handful of products from specimen policies and prospectuses; uklib reaches it for none,
 because UK protection pricing is quote-driven. The third-sector three are the exception and their anchor premiums
@@ -182,11 +194,11 @@ with a citation on it rather than an invention — and why the modelling work th
 **Two contractual mechanics have no analogue in uslib or uklib, and both change the liability
 rather than a parameter.** Renewal (更新): a 年満了 定期保険 renews automatically at attained-age
 rates unless the owner declines, so the contract boundary question is real and the answer changes
-the sign of the reported result — `Term_JP_A` publishes both readings rather than picking one
+the sign of the reported result — `Term_JP_S` publishes both readings rather than picking one
 silently. Automatic premium loan (自動振替貸付): where a premium is unpaid and there is a
 解約返戻金, the insurer *lends* the premium against it, so a policy with a surrender value does
-not lapse while the loan can carry it. It is a modelled state in `WholeLife_JP_A`, and its
-absence from `Term_JP_A` is a product fact — 無解約返戻金型 leaves nothing to lend against.
+not lapse while the loan can carry it. It is a modelled state in `WholeLife_JP_S`, and its
+absence from `Term_JP_S` is a product fact — 無解約返戻金型 leaves nothing to lend against.
 
 **Scope limits are stated and validated against, not faked.** Where a deterministic run cannot
 reach a mechanic, the notes say so: `FXWholeLife_JP_S`'s 目標到達時円建終身保険移行特約 is a
@@ -238,13 +250,32 @@ or read it and take the cash flow statement:
 ```python
 >>> import modelx as mx
 
->>> model = mx.read_model("products/term_life/Term_JP_A")
+>>> model = mx.read_model("products/term_life/Term_JP_S")
 
 >>> model.Projection[1].result_cf()
 ```
 
 `Projection` takes a `point_id`; `Projection[1]` is each model's worked-example anchor cell.
 `result_cf()` returns a tidy `DataFrame` indexed by `t` with one column per cash flow line.
+
+The time index `t` is 0-based and, in every model of this library, counts **policy months**:
+`t = 0` is the issue month of a policy projected from issue, month `t` runs from time `t` to
+time `t + 1`, and the attained age is `age_at_entry + duration(t)` with
+`duration(t) = t // 12`. `proj_len()` is the number of months from `t = 0`, i.e. the
+exclusive end of the frame: `result_cf()` covers `t = t_first, ..., proj_len() - 1`, where
+`t_first` is 0 for a point projected from issue and the elapsed months for an in-force
+point. This is lifelib's own convention (`basiclife/BasicTerm_S`,
+`savings/CashValue_SE`: `for t in range(proj_len())`). A contractual policy year is the
+1-based label `duration(t) + 1` and is derived, never indexed by;
+`tests/test_model_conventions_jp.py` asserts the frame rule for every model point.
+
+Where a product's own construction is annual — a policy value defined at the
+年単位の契約応当日, a staged benefit schedule, a loan balance capitalised once a year — it keeps
+a second index, an **anniversary in years**, and the models spell that index `s`, `k` or `d`
+rather than `t` so that the two cannot be confused. Values read between anniversaries carry
+an `_at_m` suffix and take an **elapsed month**. Which index a cells takes is stated in its
+docstring, and the anniversary families reproduce their own anniversary values exactly, so
+the two clocks agree wherever both are defined.
 
 The tests ship inside the library and run against *your* copy:
 

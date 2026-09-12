@@ -30,6 +30,32 @@ model = mx.read_model("products/income_protection/IP_UK_S")
 model.Projection[1].result_cf()
 ```
 
+## The clock: policy month `t` is 0-based
+
+`t` counts policy months from the start of the projection and is **0-based**, lifelib's
+own convention (`basiclife/BasicTerm_S`, `savings/CashValue_SE`): `t = 0` is the first
+projected month, month `t` runs from time `t` to time `t + 1`, and the frame is
+`range(proj_len())` with `proj_len() = 12 × (expiry_age − entry_age)` the **number** of
+projected months — 360 rows on the anchor cell, `t = 0 … 359`, and `proj_len() − 1` the
+last month. Every count on a `result_cf()` row is the population at the **start** of
+month `t` (`pols_if(0) == pols_if_init()`), and every flow on the row falls during it:
+premiums at its start, transitions and the benefit at its end. The notes' `l_H(t)` and
+`l_S(t, z)` are indexed the same way, so `pols_active(t)` *is* `l_H(t)` with no offset.
+
+The contractual policy year is a derived 1-based label, `policy_year(t) = t // 12 + 1`,
+used only where a contractual schedule is keyed by it — the lapse table and the
+escalation exponent `(1 + j)^(y − 1)`; `duration(t) = t // 12` and
+`age(t) = age_at_entry() + duration(t)` follow lifelib. Anniversaries therefore fall at
+the start of `t = 12, 24, …`. On an `in_claim` cell `t = 0` is the valuation month and
+the policy-year clock restarts there **[std]**.
+
+Two things do **not** move with `t`. The claim duration `z` is a separate, 1-based cohort
+index — cohort 1 is a claim that has just started paying — and `claim_dur_year(z)`, the
+termination table and the second argument of `pols_sick_dur(t, z)` all live on that
+clock. And `disc_factor(t)` is the factor to the **end** of month `t`, `(1 + i)^(−(t+1)/12)`,
+because that is when the month's benefit is paid: `disc_factor(0)` is one month's
+discount, which is what the worked example's first row needs.
+
 ## The only multiple-state model in the library
 
 Every other model here runs a single in-force probability down through decrements. This
@@ -63,12 +89,12 @@ protection terminations.
 
 `sick_cohorts(t)` holds the whole vector for one month and is the model's only
 list-valued cells. The alternative — a two-argument `pols_sick_dur(t, z)` recursion —
-would be `proj_len() × max_dur()` separate cells, 130,000 of them on the anchor cell,
-each with its own cache entry. Keeping the vector in one cells per month makes it
-`proj_len()` cells with a loop inside; `pols_sick_dur(t, z)` reads an element out of it,
-so the notes' two-dimensional object is still addressable by name. `claim_rate_vectors()`
-is the same trick for the three per-duration rate vectors, and takes the anchor cell from
-about sixteen seconds to five.
+would be `proj_len() × max_dur()` separate cells, 130,000 of them on the anchor cell
+(360 months × 361 cohorts), each with its own cache entry. Keeping the vector in one
+cells per month makes it `proj_len()` cells with a loop inside; `pols_sick_dur(t, z)`
+reads an element out of it, so the notes' two-dimensional object is still addressable by
+name. `claim_rate_vectors()` is the same trick for the three per-duration rate vectors,
+and takes the anchor cell from about sixteen seconds to five.
 
 **The shipped termination basis suppresses the age dimension** **[std]**. IP11 is
 two-dimensional in age and duration, with claimant mortality duration-dependent to five
@@ -142,11 +168,12 @@ a pro-rated amount in reality.
 ## Expiry truncates everything
 
 All cover and any claim in payment terminate at the policy end date with no value.
-`pols_maturity(t)` is that termination, non-zero only in the last month, and it is what
-makes the in-force roll-forward close. **An untruncated disabled-life annuity materially
-overstates the liability for claims incepting near expiry** — model point 5 is a claim at
-duration 30 months on a policy with 15 years to run, and its benefit stream stops dead at
-`proj_len()`.
+`pols_maturity(t)` is that termination, non-zero only in the last month,
+`t = proj_len() − 1`, and it is what makes the in-force roll-forward close. **An
+untruncated disabled-life annuity materially overstates the liability for claims incepting
+near expiry** — model point 5 is a claim at duration 30 months on a policy with 15 years
+to run, and its benefit stream stops dead at the end of month `proj_len() − 1`:
+`pols_sick(proj_len())` is zero.
 
 ## Amount payable is not the chosen benefit
 
@@ -170,9 +197,10 @@ so that it can be checked.
 
 Every other model in this library projects **undiscounted** gross liability cash flows
 and leaves discounting to the layer that consumes them. This one also carries
-`disc_factor(t)`, `pv_benefits()` and `annuity_dis()`, because the notes' worked example
-is a present value and because the disabled-life annuity is the object a claims-in-payment
-reserve is quoted as.
+`disc_factor(t)` — the factor to the end of month `t`, when the benefit is paid —
+`pv_benefits()` and `annuity_dis()`, because the notes' worked example is a present value
+and because the disabled-life annuity is the object a claims-in-payment reserve is quoted
+as.
 
 They are a **companion**, not part of the projection: no line of `result_cf()` is
 discounted, and `disc_rate` is the worked example's flat 3% **[std]**, not a valuation
@@ -234,6 +262,16 @@ beyond them (floored at zero), which is what the notes specify — note the cont
 `CI_UK_S`, whose notes specify *log*-linear interpolation of its pivot table. Two products,
 two rules, and each model follows its own notes.
 
+**No input column is the frame's `t`**, so the 0-based time index changed no CSV:
+
+| File | Column | Decision |
+|---|---|---|
+| `lapse_table.csv` | `policy_year` (1 … 6) | a contractual 1-based label; unchanged, read through `policy_year(t) = t // 12 + 1` and capped at the last row |
+| `termination_table.csv` | `claim_duration_year` (1 … 5) | keyed by the claim-duration clock `z` via `claim_dur_year(z)`, not by `t`; unchanged |
+| `inception_table.csv`, `mort_table.csv` | `age` | attained-age pivots, reached through `age(t)`; unchanged |
+| `model_point_table.csv` | `claim_duration_months` | an elapsed count on the `z` clock (the seed enters cohort `z0 + 1` at `t = 0`); already 0-based by nature, unchanged |
+| `model_point_table.csv` | `entry_age`, `expiry_age` | ages, which set `proj_len()`; unchanged |
+
 ## Naming
 
 Cells follow lifelib's `basiclife/BasicTerm_S` and `savings/CashValue_SE`: `pols_*` for
@@ -246,7 +284,7 @@ cases needed care:
 |---|---|---|
 | `q_H` vs `q_S` | `mort_rate` / `mort_rate_sick` | `mort_rate` means the active-life rate in every model in this library; reading a claimant rate out of it is the mistake the naming prevents |
 | `BEN(t)` | `claims(t, "BENEFIT")` | An income stream rather than a lump sum, but reached through the library's one benefit-outgo cells. The other two kinds are zero and say so: **no death benefit** on this composite, and **no surrender value** at any time |
-| `t` vs `z` | the two arguments | Different clocks, never mixed: rates out of S take `z`, rates out of H take `t` |
+| `t` vs `z` | the two arguments | Different clocks, never mixed: rates out of S take `z`, the 1-based claim-duration cohort index; rates out of H take `t`, the 0-based policy month |
 
 ## Standardizations used
 
@@ -260,17 +298,18 @@ multiplier `M_esc`; the economic-cycle overlay `M_cycle` (held at 1, a scenario 
 rather than a calibrated assumption); `AP = B` and `k = 1`; whole-month benefit payment
 in place of daily pro-rating; the annual-to-monthly conversions; death-then-lapse-then-
 inception as the order out of H and recovery-then-death out of S; and, on an `in_claim`
-cell, treating the valuation date as a policy anniversary so the escalation clock
-restarts there.
+cell, treating the valuation date (`t = 0`) as a policy anniversary so the escalation
+clock restarts there.
 
 ## Tests
 
 `tests/test_income_protection_uk.py` asserts the notes' three-month claims-in-payment
-worked example to the penny including its present values, the month-one active-lives
-figures beside it, the duration gradient and what collapsing it would cost, that premiums
-come from H alone, the in-arrears payment timing, expiry truncation, the two recovery
-bases against each other, the three-state population identity, the two-band benefit
-maximum, and that death and lapse pay nothing.
+worked example (`t = 0, 1, 2`) to the penny including its present values, the first-month
+(`t = 0`) active-lives figures beside it, the duration gradient and what collapsing it
+would cost, that premiums come from H alone, the in-arrears payment timing, expiry
+truncation at `t = proj_len() − 1`, the two recovery bases against each other, the
+three-state population identity, the two-band benefit maximum, that death and lapse pay
+nothing, and that `result_cf()` is indexed `0 … proj_len() − 1`.
 
 ```bash
 python -m pytest tests -q

@@ -55,9 +55,19 @@ outside Model #805, which reaches only a VA fixed account via Model #250 §7.B
   with a Balducci exposure adjustment [R8].
 - **Model points.** Single-contract model points on an expected (probability-weighted) basis:
   an in-force factor `l(t)` multiplies per-contract cash flows. Grouping is a caller concern.
-- **Contract-year indexing.** `y(t) = ceil(t / 12)`; anniversaries at `t = 12, 24, …`.
-  Guarantee period `n = 5`, so the initial guarantee and surrender charge periods both end at
-  `t = 60`.
+- **Time index.** `t` is the 0-based policy month: `t = 0` is the first policy month, month
+  `t` runs from time `t` to time `t + 1`, and the frame is `t = 0, 1, …, proj_len − 1`.
+  The issue instant is not a month of its own: the purchase payment and the acquisition
+  flows are beginning-of-month flows of month 0, and the opening values `P`, `0.875 × P`
+  and `1` of the three recursions are the state at the start of month 0. Closing balances
+  (`AV(t)`, `MGSV(t)`, `l(t)`) are end-of-month values, and the opening value of month `t`
+  is written `AV(t−1)`, `MGSV(t−1)`, `l(t−1)` with the understanding that at `t = 0` it is
+  the opening value just stated.
+- **Contract-year indexing.** The contract year is the 1-based label
+  `y(t) = floor(t / 12) + 1`, derived from `t`; anniversaries fall at the **start** of
+  `t = 12, 24, …`, so the closing value at the first anniversary is `AV(11)`. Guarantee
+  period `n = 5`, so the initial guarantee and surrender charge periods both cover
+  `t = 0 … 59` and end at the end of month 59.
 - **Rounding.** Full precision internally; cash flows reported to cents **[std]**.
 
 ---
@@ -70,7 +80,7 @@ outside Model #805, which reaches only a VA fixed account via Model #250 §7.B
 | `sex` | enum {M, F} | M |
 | `tax_status` | enum {NQ, IRA, Roth, inherited} | NQ **[std]** |
 | `premium` | currency | 100,000 [S11 rate band ≥$100,000] |
-| `issue_date` | date | contract month 0 |
+| `issue_date` | date | the start of contract month `t = 0` |
 | `guarantee_period_years` | int | 5 [S10] [S11] |
 | `declared_rate_initial` | rate p.a. | 0.0445 [S11] |
 | `gmir` | rate p.a. | 0.0025 [S11] |
@@ -95,16 +105,16 @@ outside Model #805, which reaches only a VA fixed account via Model #250 §7.B
 
 | Variable | Description | Updated |
 |---|---|---|
-| `AV(t)` | Account value at end of policy month `t` | monthly recursion |
-| `MGSV(t)` | Model #805 minimum guaranteed surrender value at end of month `t` | monthly recursion |
+| `AV(t)` | Account value at end of policy month `t`; opening value `P` at `t = 0` | monthly recursion |
+| `MGSV(t)` | Model #805 minimum guaranteed surrender value at end of month `t`; opening value `0.875 × P` at `t = 0` | monthly recursion |
 | `FWB(y)` | Free-withdrawal base fixed at the start of contract year `y` | each anniversary |
 | `FW(t)` | Unused free-withdrawal allowance remaining in contract year `y(t)` | on withdrawal / anniversary |
 | `i_cr(t)` | Declared credited rate in force | at each guarantee-period boundary |
-| `gp_end(t)` | Months remaining in the current guarantee period | monthly |
-| `sc_clock(t)` | Months elapsed in the current surrender-charge schedule | monthly (resets on renewal under `rollover`) |
+| `gp_end(t)` | Months remaining in the current guarantee period at the **end** of month `t`: `12 n k − (t + 1)`, with `k` the 1-based guarantee-period index, so 59 at `t = 0` and 0 at `t = 12n − 1` | monthly |
+| `sc_clock(t)` | Contract year within the current surrender-charge schedule, `1..n`: `y(t) − n(k − 1)`, so 1 at `t = 0` — a 1-based contract-year label, not an elapsed month count | monthly (resets on renewal under `rollover`) |
 | `i0_locked` | MVA reference yield locked at the start of the current guarantee period | each renewal |
 | `basis(t)` | Investment in the contract (IRC §72 tax basis) | on withdrawal [R6] |
-| `l(t)` | In-force probability at end of month `t`; `l(0) = 1` | monthly decrements |
+| `l(t)` | In-force probability at end of month `t`; the opening in-force of month 0 is 1 | monthly decrements |
 
 ---
 
@@ -136,7 +146,7 @@ Three classes are distinguished explicitly and must never be blended in a parame
 
 | Input | Value | Basis |
 |---|---|---|
-| Initial declared rate `i_cr`, months 1–60 | **4.45%** effective annual | [S11] (eff. 09/22/25, payments ≥$100,000; 4.10% under $100,000) |
+| Initial declared rate `i_cr`, months `t = 0 … 59` | **4.45%** effective annual | [S11] (eff. 09/22/25, payments ≥$100,000; 4.10% under $100,000) |
 | Renewal declared rate | `i_cr^ren(t) = max(GMIR, MR(t) − s_ren)` | rule **[std]**; discretion + GMIR floor [S1] [S2] [S11] [S16] |
 | Renewal spread `s_ren` | 0.00% base run; 1.00% scenario | **[std]** (a) |
 | Renewal surrender charge schedule | 5%, 4%, 3%, 2%, 1% | [S2]; adoption **[std]** |
@@ -198,27 +208,28 @@ contracts the company does **not** administer [R2 §6.B.3](#uslib-fixed_deferred
 
 | Symbol | Meaning |
 |---|---|
-| `t` | policy month index, `t = 1, 2, …`; `y = y(t) = ceil(t/12)` contract year |
+| `t` | policy month index, 0-based, `t = 0, 1, …, proj_len − 1`; `y = y(t) = floor(t/12) + 1` the 1-based contract year |
 | `n` | guarantee period in years (5); the surrender charge and MVA periods equal it |
 | `P` | single purchase payment (100,000) |
 | `i_cr(t)` | declared credited rate in force, effective annual |
 | `f(t)` | monthly crediting factor = `(1 + i_cr(t))^(1/12)` |
 | `i_nf` | GMSV / minimum-nonforfeiture accumulation rate (0.0280); `g = (1 + i_nf)^(1/12)` |
 | `sc(y)` | surrender charge rate in contract year `y` of the current schedule |
-| `FWB(y)` | free-withdrawal base: `P` for `y = 1`, else `AV(12(y−1))` [S10] |
+| `FWB(y)` | free-withdrawal base: `P` for `y = 1`, else `AV(12(y−1) − 1)`, the closing value at the anniversary that opens year `y` [S10] |
 | `FW(t)` | unused free allowance in contract year `y(t)`; reset to `0.10 × FWB(y)` at each anniversary |
 | `W(t)` | **gross** amount removed from the account value at BOM of month `t` |
 | `E(t)` | amount exposed to charge and adjustment = `max(0, W(t) − FW(t))` |
 | `μ(t)` | MVA rate (signed, dimensionless) |
 | `M(t)` | MVA amount (signed currency) |
 | `C(t)` | surrender charge amount (currency, ≥ 0) |
+| `AV(t−1)` | account value at the start of month `t` (the previous month's closing value; `P` at `t = 0`) |
 | `AV'(t)` | account value after the BOM transaction, before crediting |
 | `SV(t)` | gross surrender value before the nonforfeiture floor |
 | `SB(t)` | surrender benefit actually paid |
 | `MGSV(t)` | minimum guaranteed surrender value (Model #805 floor); the specimen [S11] calls it the "GMSV", `products/fixed_indexed_annuity/` the "guaranteed minimum value (`MGV`)" — one concept |
 | `q(t)`, `w(t)` | monthly mortality and monthly total surrender rates |
 | `a(t)` | monthly annuitization election rate |
-| `l(t)` | in-force probability at end of month `t` |
+| `l(t)` | in-force probability at end of month `t`; `l(t−1)` is the in-force at the start of month `t`, 1 at `t = 0` |
 
 Dimensional check: `μ(t)` and `sc(y)` are both pure rates multiplying the same currency
 base `E(t)`; `M(t)`, `C(t)`, `AV(t)`, `MGSV(t)` and every ledger line are currency.
@@ -230,17 +241,17 @@ because it is the **first-order duration approximation** of the geometric factor
 
 At month `t` (BOM steps 1–5, EOM steps 6–8):
 
-1. **Roll counters.** Set `y = y(t)`. If `t ≡ 1 (mod 12)` (a contract anniversary has just
-   passed), reset `FWB(y)` and `FW = 0.10 × FWB(y)` [S10].
+1. **Roll counters.** Set `y = y(t)`. If `t ≡ 0 (mod 12)` (the month opens at issue or on a
+   contract anniversary), reset `FWB(y)` and `FW = 0.10 × FWB(y)` [S10].
 2. **Guarantee-period boundary.** If the previous month ended a guarantee period
-   (`t − 1 ≡ 0 mod 12n`): apply the 30-day window (full account value available, no charge,
+   (`t ≡ 0 mod 12n`, `t > 0`): apply the 30-day window (full account value available, no charge,
    no MVA [S1] [S2]); redeclare `i_cr`; under `rollover`, reset `sc_clock` and start the
    renewal surrender charge and MVA schedule, and re-lock `i0` at the current reference
    yield [S2] [S11]; under `annual_redeclare`, set `sc(·) ≡ 0` and `μ ≡ 0` permanently and
    redeclare the rate each anniversary thereafter [S13].
 3. **Elective withdrawal.** Compute `E(t)`, `C(t)`, `M(t)` (below); reduce `FW` by
    `min(W(t), FW)`; set `AV'(t) = AV(t−1) − W(t)`; emit the cash flow `W(t) + M(t) − C(t)`.
-4. **Annuitization election** (only in a 30-day window, `t > 12`): a fraction `a(t)` of
+4. **Annuitization election** (only in a 30-day window, `t ≥ 12`): a fraction `a(t)` of
    in-force transfers `AV'(t)` to the payout model (full account value in the window
    [S1] [S2]).
 5. **Update the tax basis** for IRC §72 reporting: withdrawals are income-first, taxable to
@@ -256,12 +267,15 @@ At month `t` (BOM steps 1–5, EOM steps 6–8):
 8. **Decrements.** Deaths at `q(t)`, then surrenders at `w(t)` on survivors **[std order]**:
    `l(t) = l(t−1) × (1 − a(t)) × (1 − q(t)) × (1 − w(t))`.
 
-With no withdrawals, steps 3–8 collapse to the core recursion:
+With no withdrawals, steps 3–8 collapse to the core recursion, `t = 0, 1, …`:
 
     AV(t) = AV(t−1) × (1 + i_cr(t))^(1/12)                                [S4] [S5] [S16]
     MGSV(t) = MGSV(t−1) × (1 + i_nf)^(1/12)                               [R1] [S11]
 
-with `AV(0) = P` [S5] [S10] [S16] and `MGSV(0) = 0.875 × P` [R1 §4.A(2)](#uslib-fixed_deferred_annuity-r1) [S11].
+seeded at `t = 0` by the opening values `P` [S5] [S10] [S16] and `0.875 × P`
+[R1 §4.A(2)](#uslib-fixed_deferred_annuity-r1) [S11], so `AV(0) = P × (1 + i_cr(0))^(1/12)` is the closing
+value of the first month and `AV(11) = P × (1 + i_cr)` the closing value at the first
+anniversary.
 
 ### Surrender benefit — the exact composition order
 
@@ -350,8 +364,8 @@ window [S2]; the MVA period has expired [S8] [S13] [S16]; the benefit is a death
 
 ### Minimum guaranteed surrender value (Model #805)
 
-    MGSV(0) = 0.875 × P
-    MGSV(t) = [ MGSV(t−1) − d(t) − c(t) ] × (1 + i_nf)^(1/12)
+    MGSV(t) = [ MGSV(t−1) − d(t) − c(t) ] × (1 + i_nf)^(1/12),   t = 0, 1, …
+    with the opening value MGSV(t−1) = 0.875 × P at t = 0
 
 with `i_nf` the contract GMSV rate (**2.80%** [S11]). The statute *defines* the indexed
 nonforfeiture rate — it is not a band the contract rate sits inside:
@@ -397,15 +411,19 @@ reduction of up to 100 bp) does not apply to a book-value MYGA [R1 §4.C](#uslib
 
 | Cash flow | Formula (per contract, month `t`) | In-force weight | Sign |
 |---|---|---|---|
-| Single premium | `P` at `t = 0` | 1 | + |
+| Single premium | `P` at the beginning of month `t = 0` | 1 | + |
 | Free withdrawal payment | `W(t)` where `W(t) ≤ FW(t)` | `l(t−1)` | − |
 | Excess withdrawal payment | `W(t) + M(t) − C(t)` | `l(t−1)` | − |
 | Full surrender payment | `SB(t) = max(AV(t) + M(t) − C(t), MGSV(t))` | `l(t−1)(1 − a(t))(1 − q(t)) w(t)` | − |
 | Death benefit | `AV(t)` | `l(t−1)(1 − a(t)) q(t)` | − |
 | Annuitization transfer | `AV'(t)` (window) or `SV(t)` | `l(t−1) a(t)` | − |
-| Acquisition commission | `0.02 × P` at `t = 0` **[std]** | 1 | − |
+| Acquisition commission | `0.02 × P` at the beginning of month `t = 0` **[std]** | 1 | − |
 | Maintenance expense | `(50/12) × 1.025^(y−1)` **[std]** | `l(t−1)` | − |
-| Premium tax | `premium_tax_rate × P` **[std]** = 0 | 1 | − |
+| Premium tax | `premium_tax_rate × P` at the beginning of month `t = 0` **[std]** = 0 | 1 | − |
+
+The in-force weight `l(t−1)` is the count at the start of month `t`, which is 1 at `t = 0`;
+the three issue flows therefore share row `t = 0` of the ledger with the first month's
+withdrawals, benefits and maintenance expense — the issue instant is not a row of its own.
 
 **Internal transfers are not cash flows.** Interest credited to the account value, the
 surrender charge, the market value adjustment, and the movement of the Model #805 floor
@@ -526,56 +544,58 @@ Anchor cell: Male 60 ANB, non-qualified, `P` = $100,000, 5-year guarantee period
 `i_cr` = 4.45% [S11], `i_nf` = 2.80% [S11], surrender charge 9/8/7/6/5 [S10], free
 withdrawal 10% [S10]. Monthly factors: `f = 1.0445^(1/12) = 1.0036348`,
 `g = 1.028^(1/12) = 1.0023039` (both derived). A free withdrawal of $4,000 is taken at BOM
-of month 13 (contract year 2 allowance = 10% × AV(12) = $10,445.00, so the whole amount is
-free of charge and MVA [S10] [S11]). Full surrender at end of month 30. All figures in
-dollars; full precision carried, displayed to cents.
+of month `t = 12`, the first month of contract year 2 (allowance = 10% × AV(11)
+= $10,445.00, so the whole amount is free of charge and MVA [S10] [S11]). Full surrender at
+end of month `t = 29`, the sixth month of contract year 3. All figures in dollars; full
+precision carried, displayed to cents. `t` is the 0-based policy month of the model's
+`result_av()`; the contract year is `y = floor(t/12) + 1`.
 
 | `t` | Event | `AV(t−1)` | `W(t)` | `AV'(t)` | `AV(t)` | `MGSV(t)` |
 |---|---|---|---|---|---|---|
-| 1 | — | 100,000.00 | 0.00 | 100,000.00 | 100,363.48 | 87,701.59 |
-| 2 | — | 100,363.48 | 0.00 | 100,363.48 | 100,728.28 | 87,903.65 |
-| 3 | — | 100,728.28 | 0.00 | 100,728.28 | 101,094.40 | 88,106.17 |
-| 12 | 1st anniversary | 104,071.72 | 0.00 | 104,071.72 | 104,450.00 | 89,950.00 |
-| 13 | free withdrawal | 104,450.00 | 4,000.00 | 100,450.00 | 100,815.11 | 86,148.02 |
-| 24 | 2nd anniversary | 104,540.04 | 0.00 | 104,540.04 | 104,920.03 | 88,356.60 |
-| 30 | full surrender | 106,840.74 | 0.00 | 106,840.74 | 107,229.09 | 89,585.05 |
+| 0 | first month | 100,000.00 | 0.00 | 100,000.00 | 100,363.48 | 87,701.59 |
+| 1 | — | 100,363.48 | 0.00 | 100,363.48 | 100,728.28 | 87,903.65 |
+| 2 | — | 100,728.28 | 0.00 | 100,728.28 | 101,094.40 | 88,106.17 |
+| 11 | ends at 1st anniversary | 104,071.72 | 0.00 | 104,071.72 | 104,450.00 | 89,950.00 |
+| 12 | free withdrawal | 104,450.00 | 4,000.00 | 100,450.00 | 100,815.11 | 86,148.02 |
+| 23 | ends at 2nd anniversary | 104,540.04 | 0.00 | 104,540.04 | 104,920.03 | 88,356.60 |
+| 29 | full surrender | 106,840.74 | 0.00 | 106,840.74 | 107,229.09 | 89,585.05 |
 
-Checks on the table: `AV(12) = 100,000 × 1.0445 = 104,450.00` exactly, and
-`AV(24) = 100,450 × 1.0445 = 104,920.025` (displayed 104,920.03) — twelve monthly factors
-reproduce the annual effective rate exactly. `MGSV(0) = 0.875 × 100,000 = 87,500.00`;
-`MGSV(12) = 87,500 × 1.028 = 89,950.00`; the month-13 withdrawal is deducted **gross** (not
-reduced by charges or MVA) under the [S11] convention, giving
-`MGSV(24) = (89,950 − 4,000) × 1.028 = 88,356.60`. The surrender traces below are computed
-from the cent-rounded values shown, so they reproduce by hand.
+Checks on the table: `AV(11) = 100,000 × 1.0445 = 104,450.00` exactly, and
+`AV(23) = 100,450 × 1.0445 = 104,920.025` (displayed 104,920.03) — twelve monthly factors
+reproduce the annual effective rate exactly. The opening floor is
+`0.875 × 100,000 = 87,500.00`; `MGSV(11) = 87,500 × 1.028 = 89,950.00`; the month-12
+withdrawal is deducted **gross** (not reduced by charges or MVA) under the [S11]
+convention, giving `MGSV(23) = (89,950 − 4,000) × 1.028 = 88,356.60`. The surrender traces
+below are computed from the cent-rounded values shown, so they reproduce by hand.
 
-**Surrender trace, end of month 30** (contract year 3, `sc = 7%` [S10]; MVA reference yield
-`i0` = 5.00% at issue, `it` = 6.50% at surrender, both **[std]**):
+**Surrender trace, end of month `t = 29`** (contract year 3, `sc = 7%` [S10]; MVA reference
+yield `i0` = 5.00% at issue, `it` = 6.50% at surrender, both **[std]**):
 
-- Free allowance for contract year 3: `FW = 0.10 × AV(24) = 10,492.00` [S10], unused.
+- Free allowance for contract year 3: `FW = 0.10 × AV(23) = 10,492.00` [S10], unused.
 - `E = 107,229.09 − 10,492.00 = 96,737.09` [S8] [S11].
 - `C = 0.07 × 96,737.09 = 6,771.60` [S8] [S10].
-- `T = 0.5 + 2 = 2.5` years (six months to the end of contract year 3, plus contract years
-  4 and 5 remaining in the 5-year MVA period) [S8].
+- `T = 0.5 + 2 = 2.5` years (six months from the end of month 29 to the end of contract
+  year 3, plus contract years 4 and 5 remaining in the 5-year MVA period) [S8].
 - `μ = (0.0500 − 0.0650) × 2.5 = −0.037500` [S8] [S9]; `M_raw = −3,627.64`.
 - Symmetric cap: `|M| ≤ C = 6,771.60` [S2] — **not binding**, so `M = −3,627.64`.
 - `SV = 107,229.09 − 3,627.64 − 6,771.60 = 96,829.85`.
-- `MGSV(30) = 88,356.60 × 1.028^(1/2) = 89,585.05` — **floor not binding**.
-- **`SB(30) = 96,829.85`**, of which $10,492.00 is the untouched free amount and
+- `MGSV(29) = 88,356.60 × 1.028^(1/2) = 89,585.05` — **floor not binding**.
+- **`SB(29) = 96,829.85`**, of which $10,492.00 is the untouched free amount and
   $86,337.85 the adjusted, charged excess.
 
-**A case where the floor binds.** Same contract, full surrender at end of month **6**
-(contract year 1, `sc = 9%` [S10]) with the reference yield at 10.00% (a stress level,
-**[std]**, chosen to force both the cap and the floor to bind):
-`AV(6) = 102,200.78`; `FW = 0.10 × 100,000 = 10,000.00` (year-1 base is purchase payments
+**A case where the floor binds.** Same contract, full surrender at end of month **`t = 5`**
+(the sixth month, contract year 1, `sc = 9%` [S10]) with the reference yield at 10.00% (a
+stress level, **[std]**, chosen to force both the cap and the floor to bind):
+`AV(5) = 102,200.78`; `FW = 0.10 × 100,000 = 10,000.00` (year-1 base is purchase payments
 [S10]); `E = 92,200.78`; `C = 8,298.07`; `T = 0.5 + 4 = 4.5`; `μ = −0.225`;
 `M_raw = −20,745.18`, **capped to −8,298.07** by the symmetric rule [S2];
-`SV = 102,200.78 − 8,298.07 − 8,298.07 = 85,604.64`; `MGSV(6) = 87,500 × 1.028^(1/2)
-= 88,716.54`. **`SB(6) = 88,716.54`** — the Model #805 floor binds and adds $3,111.90.
+`SV = 102,200.78 − 8,298.07 − 8,298.07 = 85,604.64`; `MGSV(5) = 87,500 × 1.028^(1/2)
+= 88,716.54`. **`SB(5) = 88,716.54`** — the Model #805 floor binds and adds $3,111.90.
 Note the ordering lesson: with a symmetric cap the worst case is `AV − 2·sc·E`
 (= `AV × (1 − 2·sc)` only when the free amount is zero — here it is
 $102,200.78 − 2 × 0.09 × $92,200.78 = $85,604.64, not $102,200.78 × 0.82 = $83,804.64),
 and it is only at short durations with a high surrender charge that this falls below
-`0.875 × P × (1 + i_nf)^t`.
+`0.875 × P × g^(t+1)`, the floor at the end of month `t`.
 
 **Geometric-branch unit test [S4].** For `mva_family = geometric` one registered contract
 supplies fully worked arithmetic that a regression test should reproduce exactly: a 5-year

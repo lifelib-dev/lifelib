@@ -1,7 +1,7 @@
 The **Projection** Space
 ========================
 
-.. automodule:: jplib.products.individual_annuity.Annuity_JP_A.Projection
+.. automodule:: jplib.products.individual_annuity.Annuity_JP_S.Projection
 
 Cells Descriptions
 ------------------
@@ -40,9 +40,17 @@ Cells Descriptions
 
 .. autofunction:: rate_new
 
+.. autofunction:: annuitisation_y
+
 .. autofunction:: annuitisation_t
 
+.. autofunction:: proj_years
+
 .. autofunction:: proj_len
+
+.. autofunction:: duration
+
+.. autofunction:: policy_year
 
 .. autofunction:: age
 
@@ -72,11 +80,15 @@ Cells Descriptions
 
 .. autofunction:: mort_rate
 
+.. autofunction:: mort_rate_mth
+
 .. autofunction:: lapse_rate_base
 
 .. autofunction:: lapse_dyn_factor
 
 .. autofunction:: lapse_rate
+
+.. autofunction:: lapse_rate_mth
 
 .. autofunction:: prem_to_av_pp
 
@@ -84,15 +96,27 @@ Cells Descriptions
 
 .. autofunction:: av_pp_at
 
+.. autofunction:: av_at_m
+
 .. autofunction:: db_pp
+
+.. autofunction:: db_at_m
 
 .. autofunction:: db_pp_net
 
+.. autofunction:: db_net_at_m
+
 .. autofunction:: surr_charge_pp
+
+.. autofunction:: surr_charge_at_m
 
 .. autofunction:: cv_pp
 
+.. autofunction:: cv_at_m
+
 .. autofunction:: cv_pp_net
+
+.. autofunction:: cv_net_at_m
 
 .. autofunction:: apl_engaged
 

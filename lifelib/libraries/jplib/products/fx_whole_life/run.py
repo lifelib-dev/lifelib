@@ -8,6 +8,10 @@ whole life assurance. Every figure the model computes is in USD; the JPY columns
 are a three-rate translation of the USD ledger, not a single-rate conversion of the
 net figure, and 'fx_spread_jpy' is the difference.
 
+The time index is 0-based: t = 0 is the policy month beginning at issue, the frame
+runs t = 0 .. proj_len() - 1, and result_cf() has proj_len() rows. The contractual
+policy year is the derived 1-based label policy_year(t) = t // 12 + 1.
+
 Output is ASCII-only so it prints on a Windows console under any code page.
 """
 import sys
@@ -26,9 +30,10 @@ else:
            else "{} months".format(proj.prem_months()))
     prem = "premium USD {:,.2f}/month for {}".format(proj.premium_mth_pp(), pay)
 
-print("model point {}: {} - {} {}, {} shape, cover USD {:,.0f}, {} months".format(
-    point_id, proj.model_point()["policy_id"], proj.sex(), proj.issue_age(),
-    proj.shape(), proj.sum_assured(), proj.proj_len()))
+print("model point {}: {} - {} {}, {} shape, cover USD {:,.0f}, {} months "
+      "(t = 0 .. {})".format(
+          point_id, proj.model_point()["policy_id"], proj.sex(), proj.issue_age(),
+          proj.shape(), proj.sum_assured(), proj.proj_len(), proj.proj_len() - 1))
 print("{}   crediting {:.2%} over a floor of {:.2%}   TTM JPY {:,.2f}/USD "
       "+/- {:.2f}".format(prem, proj.credit_rate(), proj.guar_floor(),
                           proj.fx_rate(0), proj.fx_spread()))
@@ -44,8 +49,12 @@ if proj.target_on():
 print()
 
 df = proj.result_cf()
+print("result_cf(): {} rows, policy months t = {} .. {}".format(
+    len(df), df.index[0], df.index[-1]))
+print("first six months, t = 0 .. 5 (av_pp and cv_pp are end-of-month, AV(t+1)/CV(t+1)):")
 print(df.head(6).round(4).to_string())
 print("...")
+print("last three months, t = {} .. {}:".format(df.index[-3], df.index[-1]))
 print(df.tail(3).round(4).to_string())
 print()
 

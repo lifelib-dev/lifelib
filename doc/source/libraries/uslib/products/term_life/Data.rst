@@ -1,7 +1,7 @@
 The **Data** Space
 ==================
 
-.. automodule:: uslib.products.term_life.Term_US_A.Data
+.. automodule:: uslib.products.term_life.Term_US_S.Data
 
 Cells Descriptions
 ------------------

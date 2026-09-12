@@ -1,7 +1,7 @@
 The **Projection** Space
 ========================
 
-.. automodule:: uslib.products.whole_life.WholeLife_US_A.Projection
+.. automodule:: uslib.products.whole_life.WholeLife_US_S.Projection
 
 Cells Descriptions
 ------------------
@@ -24,6 +24,8 @@ Cells Descriptions
 
 .. autofunction:: dividend_option
 
+.. autofunction:: premium_mode
+
 .. autofunction:: pols_if_init
 
 .. autofunction:: duration_inforce
@@ -44,6 +46,16 @@ Cells Descriptions
 
 .. autofunction:: policy_term
 
+.. autofunction:: duration_mth
+
+.. autofunction:: duration
+
+.. autofunction:: policy_year
+
+.. autofunction:: is_anniv
+
+.. autofunction:: anniv_mth
+
 .. autofunction:: age
 
 .. autofunction:: age_anniv
@@ -52,19 +64,35 @@ Cells Descriptions
 
 .. autofunction:: premium_rate
 
+.. autofunction:: modal_factor
+
+.. autofunction:: prem_cycle
+
+.. autofunction:: prem_due
+
+.. autofunction:: premium_pp_ann
+
+.. autofunction:: premium_net_pp_ann
+
 .. autofunction:: premium_pp
 
 .. autofunction:: premium_net_pp
 
+.. autofunction:: rider_premium_pp_ann
+
 .. autofunction:: rider_premium_pp
 
 .. autofunction:: prem_cum
+
+.. autofunction:: cv_pp_anniv
 
 .. autofunction:: cv_pp
 
 .. autofunction:: net_amt_at_risk
 
 .. autofunction:: nsp
+
+.. autofunction:: nsp_mth
 
 .. autofunction:: np_guar
 
@@ -76,9 +104,15 @@ Cells Descriptions
 
 .. autofunction:: mort_rate
 
+.. autofunction:: mort_rate_mth
+
 .. autofunction:: dyn_lapse_factor
 
 .. autofunction:: lapse_rate
+
+.. autofunction:: lapse_rate_mth
+
+.. autofunction:: div_prev_anniv
 
 .. autofunction:: div_int
 
@@ -151,6 +185,8 @@ Cells Descriptions
 .. autofunction:: net_cf
 
 .. autofunction:: result_cf
+
+.. autofunction:: result_cf_annual
 
 .. autofunction:: result_pols
 

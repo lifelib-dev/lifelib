@@ -12,11 +12,10 @@ nothing.
 
 :data:`MODELS` is the registry ``test_model_conventions.py`` is parametrized over, so
 registering a model here subjects it to the whole house style: it then either conforms or
-fails.  The metadata records the projection basis, which is not uniform across the
-library — some products run on an annual grid and some on a monthly one — and records
-that none of them discount.  That last entry is a property of the library, not an
-omission: every ``technical-notes.md`` specifies *gross liability cash flows* and leaves
-discounting and reserves to a separate layer that consumes them.
+fails.  The metadata records the projection basis and records that none of them discount.
+That last entry is a property of the library, not an omission: every ``technical-notes.md``
+specifies *gross liability cash flows* and leaves discounting and reserves to a separate
+layer that consumes them.
 
 **Why this is not in `conftest.py`.**  Two libraries now ship in-library suites, and
 ``conftest.py`` is a name pytest fixes.  Collecting both in one run puts two files called
@@ -32,6 +31,13 @@ LIB = pathlib.Path(__file__).resolve().parents[1]
 ANNUAL = {"grid": "annual", "age_basis": "ANB", "discounted": False}
 MONTHLY = {"grid": "monthly", "age_basis": "ANB", "discounted": False}
 
+# ``ANNUAL`` has no members below, and that is **not** the same as saying the library has no
+# use for it.  The metadata is a statement about a model rather than about the library: a
+# model added or converted to an annual step registers ``ANNUAL`` here, and
+# ``test_the_name_carries_the_right_grid_suffix`` then requires its name to end ``_A``.  The
+# row and the name move together, which is the point of asserting the suffix from the
+# metadata rather than from the folder.
+
 # name -> (path relative to the library root, metadata)
 #
 # The name is <market short name>_<country>_<grid>: the name the product is actually known
@@ -45,8 +51,8 @@ MONTHLY = {"grid": "monthly", "age_basis": "ANB", "discounted": False}
 # test_model_conventions.py asserts name, folder and the model's own _name all agree.
 MODELS = {
     # Life
-    "Term_US_A": ("products/term_life/Term_US_A", ANNUAL),
-    "WholeLife_US_A": ("products/whole_life/WholeLife_US_A", ANNUAL),
+    "Term_US_S": ("products/term_life/Term_US_S", MONTHLY),
+    "WholeLife_US_S": ("products/whole_life/WholeLife_US_S", MONTHLY),
     "UL_US_S": ("products/universal_life/UL_US_S", MONTHLY),
     "IUL_US_S": ("products/indexed_ul/IUL_US_S", MONTHLY),
     "VUL_US_S": ("products/variable_ul/VUL_US_S", MONTHLY),
@@ -101,7 +107,7 @@ INPUT_FILES = {
     "SPIA_US_S": {
         "improvement_scale.csv", "model_point_table.csv", "mort_table.csv",
         "surr_charge_table.csv"},
-    "Term_US_A": {
+    "Term_US_S": {
         "class_factor_table.csv", "model_point_table.csv", "mort_table.csv",
         "premium_rates.csv", "shock_lapse_table.csv"},
     "ULSG_US_S": {
@@ -120,7 +126,7 @@ INPUT_FILES = {
         "class_factor_table.csv", "coi_rates.csv", "corridor_factors.csv",
         "lapse_table.csv", "model_point_table.csv", "mort_table.csv",
         "scenario_table.csv", "subaccount_table.csv", "surr_charge_table.csv"},
-    "WholeLife_US_A": {
+    "WholeLife_US_S": {
         "cv_table.csv", "model_point_table.csv", "mort_table.csv",
         "np_guar_table.csv", "nsp_table.csv", "premium_rates.csv"},
 }

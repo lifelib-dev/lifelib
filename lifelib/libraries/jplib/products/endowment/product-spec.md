@@ -138,8 +138,10 @@ Footnotes to [std] rows:
    年単位の契約応当日 [S1] [S2] [S10] [S13]. The composite truncates, matching the savings chassis.
    Both model cells are at exact integer ages at issue, so the rule does not bind on either
    — it is recorded because it does bind on any model point built off a real date of birth.
-5. `Endowment_JP_A` runs on an annual grid, so the annual premium is standardized as 12 ×
-   the published monthly figure: 12 × ¥15,095 = ¥181,140. No carrier publishes an
+5. `Endowment_JP_S` collects a 年払 premium, so it is standardized as 12 × the published
+   monthly figure: 12 × ¥15,095 = ¥181,140. The projection steps in months, but the payment
+   frequency is the 契約者's choice and not the grid's: the annual premium falls in one month
+   of twelve rather than being spread across the year. No carrier publishes an
    annual-mode premium for this cell, so the modal discount a real 年払 scale would carry is
    **not** applied and the annual premium is slightly overstated; the direction of the error
    is stated in `technical-notes.md` rather than hidden. The cell reconciles end to end: 30
@@ -261,13 +263,16 @@ Footnotes to [std] rows:
     months — the 11月1日 following 17歳7ヵ月 at the adopted carrier [S10], and elsewhere the 2月1日
     following 満15歳 [S1], the 2月1日 following 5歳10カ月 [S7], the 12月1日 following 満5歳8か月 [S3] and
     the 10月1日 following age 18 [S13] — with the stated age reduced by one for children born
-    inside a named window at two carriers [S1] [S13]. `Endowment_JP_A` runs on annual policy
-    years, so each payment is standardized to the **policy anniversary following the stated
-    attained age**: t = 3, 6, 12, 15, 18, 20. On the second model cell the child's 契約年齢 is
-    0, so attained age equals t and the standardization moves each payment forward by
-    between one and five months. No amount changes; only timing does, and only inside a
-    policy year. It is a known modelling pitfall and is listed as one in
-    `technical-notes.md`.
+    inside a named window at two carriers [S1] [S13]. The model point table carries no date
+    of birth and no calendar date, so each payment is standardized to the **policy
+    anniversary following the stated attained age**: k = 3, 6, 12, 15, 18, 20. On the second
+    model cell the child's 契約年齢 is 0, so attained age equals k and the standardization moves
+    each payment forward by between one and five months. No amount changes; only timing does,
+    and only inside a policy year. `Endowment_JP_S` steps in months, which does not remove
+    the approximation — there is still no date to place the payment on — but it does make it
+    visible: each 学資金 now occupies the single month `t = 12k - 1`, and the months it might
+    otherwise have fallen in are rows a reader can point at. It is a known modelling pitfall
+    and is listed as one in `technical-notes.md`.
 14. Five death-benefit definitions are observed and none is a sum assured: cumulative
     monthly premium × elapsed months [S1]; the **greater** of (premiums × elapsed months −
     学資祝金 paid − unpaid premiums and loans) and the 積立金 [S3]; the same maximum form on
@@ -390,7 +395,9 @@ Notation used below and carried into `technical-notes.md`:
 
     x        被保険者's 契約年齢 (満年齢, fractional year discarded)
     y        契約者's 契約年齢 — the 学資 cell only, and a life who is NOT the insured
-    t        completed policy years since 契約日 (the annual grid step)
+    t        completed policy years since 契約日 — the 年単位の契約応当日, which is where the
+             contract defines every value below; `Endowment_JP_S` projects in months and
+             carries this anniversary index beside it, spelled `k`
     n        保険期間 in years
     m        保険料払込期間 in years; m = n on the 養老 cell, m < n on the 学資 cell
     S        基準保険金額
@@ -490,8 +497,10 @@ state**, because there is no premium to miss.
 **What the waiver actually promises.** Every future benefit — 学資金, 満期保険金, 死亡給付金 — is paid on
 schedule, and each future premium is *treated as having been paid* on its 契約応当日 [S1] [S10]
 [S13]. The waiver bites from the next 払込期月 or 月単位の契約応当日 after the triggering event [S1]
-[S10] [S13]; on the annual grid this is standardized to "premiums cease from `t+1`" where
-the trigger falls in year `t`. Contract alterations are frozen afterwards: one carrier
+[S10] [S13]; the composite standardizes this to "premiums cease from the anniversary `t+1`"
+where the trigger falls in policy year `t`, because the model point table carries no
+calendar date for the 払込期月 — a monthly projection makes the one-to-twelve-month lag
+representable but does not supply the date it would need. Contract alterations are frozen afterwards: one carrier
 disallows 減額, 保険契約者の変更 and 転換 [S1], a second disallows everything from a change of payment
 mode to a change of policyholder [S10], and a third refuses a change of policyholder while
 premiums are waived [S6].
@@ -614,7 +623,10 @@ than product mechanics [unverified].
    after it [S3]; the 11月1日 after it [S10]; the 10月1日 after it [S13]; the 契約応当日 for the 学資年金
    [S7]. Two carriers reduce the stated age by one for children born in a named window [S1]
    [S13]. Composite: the policy anniversary following the stated attained age (footnote 13)
-   — the only rule an annual grid can express without inventing a birth date.
+   — the only rule expressible without inventing a birth date, on any grid. The monthly
+   projection does not fix it; what it does is make it visible, since each 学資金 now
+   occupies one month and the months it might otherwise have fallen in are rows a reader
+   can point at.
 3. **The child's death benefit.** Cumulative premium × elapsed months [S1]; max(premiums −
    benefits − loans, 積立金) [S3] [S13]; 責任準備金相当額 [S10]; a 別表2 schedule that was not retrieved
    and is [unverified] [S7]. Composite: the maximum form (footnote 14), which dominates

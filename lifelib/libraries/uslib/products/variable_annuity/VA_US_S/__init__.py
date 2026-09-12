@@ -45,18 +45,24 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 rather than stored inside the model. The model folder itself holds no data, so the model
 and its inputs must travel together.
 
-**Projection basis.** Monthly steps. ``t`` counts **projection months**, ``t = 1, 2, ...,
-proj_len()``, with ``t = 0`` the entry instant carrying the single premium and the
-initial branch of every recursion. The *policy* month is
-``duration_mth(t) = duration_mth_init() + t``; the two coincide for an at-issue cell and
-differ for an in-force cell, and every calendar test is written on ``duration_mth``.
-``policy_year(t) = ceil(duration_mth(t)/12)``, so Contract Anniversaries fall at the end
-of policy months 12, 24, ... and Contract Quarterly Anniversaries at the end of policy
-months 3, 6, 9, ... **[std]**. Note the contrast with :mod:`.Term_US_A`, where ``t``
-counts years: monthly is required here because the base contract charge accrues daily on
-separate-account value, the rider charges are assessed quarterly on benefit bases, and
-the roll-up and bonus are credited annually — three different clocks, and changing any
-one changes the answer.
+**Projection basis.** Monthly steps. ``t`` counts **projection months** and is
+**0-based**: ``t = 0`` is the first projected month, the frame is
+``t = 0, 1, ..., proj_len() - 1`` and ``len(result_cf()) == proj_len()``. The purchase
+payment falls at the beginning of month ``t = 0``, not on a separate entry-instant row,
+and the state carried into the frame — ``av_pp_init()``, ``gwb_pp_init()`` and the rest
+of the ``*_init()`` family — is the opening balance every recursion reads at ``t = 0``,
+``S_init() if t == 0 else S(t - 1)``, never at a negative index. The *policy*
+month is ``duration_mth(t) = duration_mth_init() + t``, the months already **elapsed** at
+the start of month ``t``: 0 in an at-issue cell's first month and
+``duration_mth_init()`` in an in-force cell's. Every calendar test is written on
+``duration_mth``, never on ``t``. ``policy_year(t) = duration_mth(t)//12 + 1`` is the
+1-based contract year, so Contract Anniversaries fall at the **end** of the months with
+11, 23, 35, ... elapsed policy months and Contract Quarterly Anniversaries at the end of
+those with 2, 5, 8, ... **[std]**. Every model in this library runs on a monthly grid;
+here it is not merely the house convention but forced, because the base contract charge
+accrues daily on separate-account value, the rider charges are assessed quarterly on
+benefit bases, and the roll-up and bonus are credited annually — three different clocks,
+and changing any one changes the answer.
 
 Within a month: at the beginning of the month (BOM) the premium buys units at the prior
 unit value and raises ``GWB``, ``BB``, ``NP``, ``RP``, ``RB``, ``GAWA`` and ``ADJ``, then
@@ -69,10 +75,11 @@ the seven guarantee events in the notes' order; then the depletion test; then de
 **death first, then surrender** **[std]**. If the contract is already depleted the whole
 of that is skipped and the post-depletion GLWB payment routine runs instead.
 
-``proj_len()`` runs to attained age ``omega_age`` = 120 **[std]**, the terminal age of
-the mortality table, because once the account is exhausted the For Life Guarantee is a
-pure life-contingent annuity at GAWA. The survivors at that horizon are carried out
-through ``pols_maturity()`` so the in-force roll-forward closes.
+``proj_len()`` is the **number of months projected** and runs to attained age
+``omega_age`` = 120 **[std]**, the terminal age of the mortality table, because once the
+account is exhausted the For Life Guarantee is a pure life-contingent annuity at GAWA.
+The horizon month is therefore ``t = proj_len() - 1``, and the survivors there are
+carried out through ``pols_maturity()`` so the in-force roll-forward closes.
 
 ``pols_if(t)`` is the count in force at the **start** of month ``t`` — the notes'
 ``l(t-1)`` — and is the weight carried by every cash flow on that row, so the in-force
@@ -157,11 +164,12 @@ cell — male 60 ANB, single Designated Life, non-qualified, $100,000 single pre
 60/40 allocation, the single-life Core GLWB and the Roll-up GMDB — that differ only in the
 switches the technical notes make first-class parameters. Point 1 is the worked-example
 anchor, projected from issue on a return path reverse-engineered so that the notes' own
-carried state at the beginning of month 27 falls out of the projection exactly. Point 2
-is the same carried state entered directly as an **in-force cell**, so the worked-example
-month reproduces without depending on that return path — the two readings agree to the
-cent and a test pins both. Point 3 runs a declining market to exhaustion and exercises
-depletion and the insurer-funded GLWB payment stream; point 4 the excess-withdrawal
+carried state at the beginning of the 27th policy month — ``t = 26`` there — falls out of
+the projection exactly. Point 2 is the same carried state entered directly as an
+**in-force cell** with 26 elapsed policy months, so the worked-example month is its
+``t = 0`` and reproduces without depending on that return path — the two readings agree
+to the cent and a test pins both. Point 3 runs a declining market to exhaustion and
+exercises depletion and the insurer-funded GLWB payment stream; point 4 the excess-withdrawal
 algebra and a subsequent premium; point 5 the highest-quarterly step-up basis and the
 annual-ratchet GMDB; point 6 the VIX-squared fee reset and the CMT-linked roll-up;
 point 7 a never-withdraw cell on the included proportional return-of-premium death
@@ -169,8 +177,8 @@ benefit with no withdrawal charge, which is what exercises the GWB Adjustment Da
 the five-yearly discretionary fee increase; point 8 a never-withdraw cell on the Roll-up
 GMDB, whose Benefit Base compounds cleanly to the age-81 cutoff with no withdrawal
 adjustment to muddy it and whose rider fees on the two bases eventually exhaust the
-account at policy month 555; and point 9 the same proportional return-of-premium death
-benefit as point 7 but **withdrawing** from age 70, which is what makes that form's
+account in its 555th policy month, ``t = 554``; and point 9 the same proportional
+return-of-premium death benefit as point 7 but **withdrawing** from age 70, which is what makes that form's
 ``G <- G x (1 - W/AV_pre)`` reduction bite. A test asserts every point projects.
 
 **Verification.** ``tests/test_variable_annuity_us.py`` asserts every row and column of

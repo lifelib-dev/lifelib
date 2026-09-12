@@ -42,14 +42,20 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 time rather than stored inside the model. The model folder itself holds no data, so
 the model and its inputs must travel together.
 
-**Projection basis.** Monthly steps. Policy month ``t`` runs 1, 2, ..., ``proj_len()``,
-where ``t = 1`` is the **issue month** of a new-business model point and
-``proj_len() = 12 * (maturity_age - age_at_entry()) - duration_mth_init()``, so the
-projection ends as the insured attains 121, the notes' [unverified] maturity inference
-(spec F5). For an in-force model point ``duration_mth_init()`` is the number of
-completed policy months already elapsed at ``t = 1``. State variables the notes define
-at their own ``t = 0`` -- ``FA(0) = 0``, ``S(0) = 0``, ``L(0) = 0``, ``l(0) = 1`` --
-are the ``t == 0`` branch of the corresponding recursion.
+**Projection basis.** Monthly steps. Policy month ``t`` is **0-based** and runs
+``0, 1, ..., proj_len() - 1``, where ``t = 0`` is the **issue month** of a new-business
+model point, policy month ``t`` runs from monthiversary ``t`` to ``t + 1``, and
+``proj_len() = 12 * (maturity_age - age_at_entry()) - duration_mth_init()`` is the
+number of projected months, so the projection ends as the insured attains 121, the
+notes' [unverified] maturity inference (spec F5). For an in-force model point
+``duration_mth_init()`` is the number of completed policy months already elapsed at
+``t = 0``, and ``duration_mth(t) = duration_mth_init() + t`` is the notes' own month
+index counted from issue; ``policy_year(t) = duration_mth(t) // 12 + 1`` is the
+contractual 1-based label. State cells -- ``av_pp(t)``, ``fa_pp(t)``, ``lca_pp(t)``,
+``loan_bal_pp(t)``, ``seg_bal_pp(t, m)`` -- are closing balances of month ``t``; the
+opening values the notes define at their own ``t = 0`` -- ``FA(0) = 0``, ``S(0) = 0``,
+``L(0) = 0``, ``l(0) = 1`` -- are the ``"BEF_PREM"`` timing of ``t = 0`` and
+``pols_if(0)``.
 
 Within each month the notes' monthiversary order is followed exactly. At the beginning
 of the month (BOM): the anniversary premium and its load; the maturity of any segment
@@ -137,16 +143,16 @@ for an oversight:
   and because ``NAAR_t = max(0, DB_t x v_g - AV'_t)`` rises one for one as ``AV'_t``
   falls, the cost of insurance then compounds on itself and the account value runs
   away. Model point 5 is the only shipped point that gets there:
-  :func:`~.IUL_US_S.Projection.av_pp` first turns negative at policy month **605**
-  (policy year 51) and reaches roughly -1.3e10 at the horizon, so ``result_av()`` --
-  ``av_pp``, ``net_amt_at_risk``, ``coi_pp``, ``mth_deduction_pp`` -- **is not a
-  meaningful number for model point 5 from month 605 onward**. The cash flow columns of
+  :func:`~.IUL_US_S.Projection.av_pp` first turns negative at policy month **604**
+  (``t = 604``, policy year 51) and reaches roughly -1.3e10 at the horizon, so
+  ``result_av()`` -- ``av_pp``, ``net_amt_at_risk``, ``coi_pp``, ``mth_deduction_pp`` --
+  **is not a meaningful number for model point 5 from month 604 onward**. The cash flow columns of
   ``result_cf()`` stay finite and bounded: the death benefit is the Option A face amount
   -- reduced dollar for dollar by the withdrawals to $70,000 by the horizon, and never
   lifted by the corridor, which is multiplying a *negative* account value -- and both
   the death claim ``max(0, DB - L)`` and the surrender payment floor at zero. It is the
   account value roll-forward that is meaningless, not the cash flows.
-  ``test_point_5_account_value_runs_away_after_month_605`` pins the boundary so it
+  ``test_point_5_account_value_runs_away_after_month_604`` pins the boundary so it
   cannot move unnoticed.
 
 * The two $500 withdrawal limits. The product spec carries both -- "minimum withdrawal
@@ -179,15 +185,16 @@ growing net amount at risk live. Point 3 sets the indexed allocation to 0%, so t
 whole balance stays in the fixed account and no segment is ever created -- the control
 run against which the segment ladder is read. Point 4 pays **monthly** rather than
 annually, and is the only point that builds the notes' full twelve-concurrent-segment
-ladder: under the annual baseline nothing reaches the fixed account in months 2-12, so
-nothing is swept, the ladder degenerates to one segment a year, and the notes' first
-pitfall would otherwise go untested. Point 5 is underfunded at $6,000 a year and takes a
-$200 monthly withdrawal from policy year 2 and a $6,000 annual standard loan from policy
-year 21, which exercises the fixed-account-first-then-pro-rata sourcing, the loan
-collateral account, the no-lapse test and the overloan exposure -- and which, because no
-policy is terminated for insufficiency here, runs its *account value* away negative in
-late duration; the "Not implemented" note on the grace cascade above says from exactly
-when, and the README says it again. A model point on any other issue age, sex or class
+ladder: under the annual baseline nothing reaches the fixed account in the other eleven
+months of each policy year (``t = 1 ... 11`` of the first), so nothing is swept, the
+ladder degenerates to one segment a year, and the notes' first pitfall would otherwise
+go untested. Point 5 is underfunded at $6,000 a year and takes a $200 monthly withdrawal
+from policy year 2 and a $6,000 annual standard loan from policy year 21, which
+exercises the fixed-account-first-then-pro-rata sourcing, the loan collateral account,
+the no-lapse test and the overloan exposure -- and which, because no policy is
+terminated for insufficiency here, runs its *account value* away negative in late
+duration; the "Not implemented" note on the grace cascade above says from exactly when,
+and the README says it again. A model point on any other issue age, sex or class
 requires ``coi_rates.csv`` to be extended first; a test asserts every model point in the
 table actually projects.
 
@@ -199,7 +206,7 @@ account-value roll-forwards, the segment ladder invariants, and one test per ent
 the notes' "Known modeling pitfalls" list that can be asserted. The ladder invariants
 include the 0% floor stated as a **bound**: on every model point, no segment balance and
 no index credit may be negative. The two disclosed gaps above -- model point 5's account
-value past month 605, and the unenforced $500 withdrawal limits -- are pinned open by
+value from month 604, and the unenforced $500 withdrawal limits -- are pinned open by
 tests of their own, so neither can be closed or widened silently.
 
 Example:

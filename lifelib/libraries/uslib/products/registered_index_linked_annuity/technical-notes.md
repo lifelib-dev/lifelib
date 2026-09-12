@@ -41,10 +41,18 @@ interim-value engine is called at every projection step for every open option.
   free-withdrawal limits reset annually [S1] [S2], so a monthly grid captures every
   contractual boundary. A daily sub-grid is needed only for a path-dependent Performance
   Lock election module [S2].
-- **Timing convention.** Month index `t = 0, 1, 2, …` denotes **month ends**, `t = 0` being
-  the Issue Date. Within a month **[std]**: market state, then term-end crediting (if the
-  month end is a Term End Date), then interim values, then contract-holder transactions,
-  then decrements. Full ordering below.
+- **Timing convention.** Month index `t = 0, 1, 2, …, proj_len − 1`, **0-based**: month `t`
+  runs from time `t` to time `t + 1`, both counted in policy months from the Issue Date, so
+  month 0 opens on the Issue Date and month `t` **ends** at time `t + 1`. Every within-month
+  quantity — the market state, the interim value, the Account Value, the benefits — is
+  evaluated at that month end, and the in-force count `l(t)` is the one **entering** the
+  month at time `t`. Two readings of the contract year follow: `cy(t) = floor(t/12)` is the
+  complete contract years the whole of month `t` lies inside, and
+  `cy_end(t) = floor((t+1)/12)` those complete at its end, where the month's transactions
+  settle; the anniversary at time `12y` therefore closes month `12y − 1`. Within a month
+  **[std]**: market state, then term-end crediting (if the month end is a Term End Date),
+  then interim values, then contract-holder transactions, then decrements. Full ordering
+  below.
 - **Age basis.** **Age nearest birthday (ANB)** **[std]** — the 2012 IAM Period Table
   printed in Model #821 and VM-M is stated age nearest birthday [REG-R59], and VM-21
   prescribes percentages of the 2012 IAM Basic Table with Scale G2 for prudent-estimate
@@ -96,18 +104,19 @@ interim-value engine is called at every projection step for every open option.
 | Variable | Description | Updated |
 |---|---|---|
 | `IA_k(t)` | Investment Amount (AG 54 "Index Strategy Base") of option k | term-end crediting; proportional withdrawal reduction |
-| `V_k(t)` | Interim Value of option k at month end t | every month (option repricing) |
+| `V_k(t)` | Interim Value of option k at month t's month end | every month (option repricing) |
 | `beta_k` | Initial option budget per unit of notional for the current term | at each Term Start Date |
-| `I(t)` | Index level | every month (scenario input) |
-| `r(t)` | Market Value Rate (CMT at the term's maturity) | every month (scenario input) |
+| `I(t)` | Index level at month t's month end | every month (scenario input) |
+| `r(t)` | Market Value Rate (CMT at the term's maturity) at month t's month end | every month (scenario input) |
 | `FA(t)`, `HA(t)` | Fixed Account / Holding Account values | monthly accrual |
 | `AV(t)` | Account Value = sum of V_k(t) + FA(t) + HA(t) | monthly |
 | `ROP(t)` | Return-of-premium GMDB base | proportional reduction on withdrawal |
 | `FW_used(y)` | Free withdrawal amount consumed in contract year y | on withdrawal; resets annually |
 | `AV_anniv(y)` | Account Value at the prior Contract Anniversary (free-withdrawal base) | annually [S1] [S2] |
-| `cy(t)` | Complete contract years since issue = floor(t/12) | monthly |
+| `cy(t)` | Complete contract years at the start of month t = floor(t/12) | monthly |
+| `cy_end(t)` | Complete contract years at month t's month end = floor((t+1)/12) | monthly |
 | `tau_k(t)` | Years remaining in option k's term = (days remaining)/365 [S2] | monthly |
-| `l(t)` | In-force probability at end of month t; `l(0) = 1` | monthly decrements |
+| `l(t)` | In-force probability **entering** month t, i.e. at time t; `l(0) = 1` | monthly decrements |
 | `lock_flag_k`, `LV_k(t)` | Performance Lock state and locked value | on election |
 
 ---
@@ -232,7 +241,7 @@ performance from −30% to +30% in 5% steps [R6] — a usable regression grid.
 
 | Symbol | Meaning |
 |---|---|
-| `t` | month index (month ends), `t = 0` at issue; `cy(t) = floor(t/12)` = complete contract years |
+| `t` | month index, 0-based: month `t` runs from time `t` to time `t + 1` and is valued at its end; `cy(t) = floor(t/12)`, `cy_end(t) = floor((t+1)/12)` |
 | `k` | index-linked option (bucket) index |
 | `I(t)`, `I_s` | index level at t; index level at the current Term Start Date |
 | `R_k(t)` | index performance to date = `I(t)/I_s − 1`; `R_k` at term end is the crediting input |
@@ -250,7 +259,7 @@ performance from −30% to +30% in 5% steps [R6] — a usable regression grid.
 | `AV(t)` | Account Value = `sum_k V_k(t) + FA(t) + HA(t)` |
 | `G` | gross withdrawal removed from the contract; `FW` free withdrawal amount; `wc(cy)` charge rate |
 | `ROP(t)` | return-of-premium GMDB base |
-| `q_m(t)`, `w_m(t)` | monthly mortality and surrender rates; `l(t)` in-force probability |
+| `q_m(t)`, `w_m(t)` | monthly mortality and surrender rates; `l(t)` in-force probability entering month t |
 
 Black-Scholes, continuous parameters:
 
@@ -396,7 +405,8 @@ accrue each rate linearly and apply the term-end rules to the accrued rates —
 `AccruedCapRate = c x (days elapsed)/(days in term)`, likewise for the buffer and Step
 Rates, 365 days assumed per calendar year of a term [S1]. Worked: $50,000, a 10% buffer,
 10% Cap, 1-year term, index 500 → 600 at day 183 gives an accrued cap of 5%, a 5%
-Performance Rate and an interim value of $52,500 [S1]. Useful as a tractable first
+Performance Rate and an interim value of $52,500 [S1]. On a monthly grid the sixth month
+end of twelve is exactly half the term, so this is the end of month `t = 5`. Useful as a tractable first
 implementation target and as a regression contrast; it predates AG 54's July 1, 2024
 effective date [R2] and would not satisfy the Hypothetical Portfolio requirement without
 a material-consistency demonstration.
@@ -429,24 +439,29 @@ Exception: after a **Performance Lock**, the locked value is reduced **dollar-fo
 
 ### Withdrawal charge, free amount, and allocation
 
-    FW(t)        = 0                                            if cy(t) = 0
+    FW(t)        = 0                                            if cy_end(t) = 0
                  = 0.10 * AV_anniv(y) − FW_used(y)              otherwise            [S1] [S2]
     chargeable   = max( 0, G_total − FW(t) )
-    WC(t)        = wc( cy(t) ) * chargeable                                          [S1] [S2]
+    WC(t)        = wc( cy_end(t) ) * chargeable                                      [S1] [S2]
     net proceeds = G_total − WC(t)
+
+The charge and the free amount take the **month-end** reading `cy_end(t)`, not `cy(t)`:
+the transaction settles at time `t + 1`, and the schedule must step in the same month the
+contract's own anniversary does.
 
 The charge is deducted from the amount withdrawn and is **not grossed up** on this chassis
 [S1] [S2] (contrast [S4], where "any amount deducted to pay withdrawal charges is also
 subject to that same withdrawal charge percentage"). Verification against the prospectus
-example [S2]: $100,000 payment, $80,000 Account Value at the start of contract year 6,
-full withdrawal → `FW = $8,000`, chargeable `$72,000`, `wc(5) = 3%`, charge `$2,160`, cash
+example [S2]: $100,000 payment, $80,000 Account Value at the start of contract year 6 —
+time 60, the fifth anniversary, which is the end of month `t = 59` — full withdrawal →
+`FW = $8,000`, chargeable `$72,000`, `wc(cy_end(59)) = wc(5) = 3%`, charge `$2,160`, cash
 value `$77,840`. `G_total` is allocated across open options **pro rata to interim value**
 **[std]** (the prospectuses do not prescribe an allocation for an unspecified withdrawal).
 
 ### Contract-level values and benefits
 
     AV(t)   = sum_k V_k(t) + FA(t) + HA(t)
-    CSV(t)  = AV(t) − wc(cy(t)) * max(0, AV(t) − FW(t))                 (full surrender)  [S1] [S2]
+    CSV(t)  = AV(t) − wc(cy_end(t)) * max(0, AV(t) − FW(t))             (full surrender)  [S1] [S2]
     ROP(t+) = ROP(t−) * ( 1 − G_total / AV(t−) )                        (proportional)    [S1] [S2]
     DB(t)   = max( AV(t), ROP(t) )        for issue ages <= 80;  = AV(t) for 81+          [S2]
     Annuitization value = AV(t), with each open option contributing V_k(t)                [S1]
@@ -458,11 +473,13 @@ from the contract, i.e. including any withdrawal charge [S1].
 
 Fixed and Holding Accounts accrue monthly at the declared rate, floored at the 1%
 guaranteed minimum [S1] [S2]:
-`FA(t) = FA(t−1) * (1 + max(i_declared, 0.01))^(1/12)`.
+`FA(t) = FA(t−1) * (1 + max(i_declared, 0.01))^(1/12)`, the bucket opening **empty in
+month 0** — the purchase payment is allocated wholly to the index-linked option — so
+`FA`'s opening value is 0 in month 0 and `FA(t−1)` in every later month.
 
 ### Monthly processing order [std]
 
-At each month end `t`:
+In month `t`, at its end — time `t + 1`:
 
 1. **Market state.** Refresh `I(t)`, the CMT curve, `sigma`, `q` from the scenario.
 2. **Term-end crediting.** For each option whose Term End Date is `t`: compute
@@ -474,28 +491,30 @@ At each month end `t`:
    Account are both unavailable [S2]. Reset `I_s`, `r_0`, `T`, `tau`, recompute
    `beta = Pi(I_s, T)`.
 4. **Interim values.** For every open option, compute `F_k`, `D_k`, `TC_k`, `V_k`.
-5. **Accounts.** Accrue `FA`, `HA`. Set `AV(t)`. On a Contract Anniversary, snapshot
-   `AV_anniv` and reset `FW_used`.
+5. **Accounts.** Accrue `FA`, `HA`. Set `AV(t)`. When the month end **is** a Contract
+   Anniversary — months `t = 11, 23, 35, …` — snapshot `AV_anniv` and reset `FW_used`.
 6. **Contract-holder transactions.** Scheduled and dynamic partial withdrawals: allocate,
    compute the withdrawal charge, reduce `IA_k` **proportionally**, reduce `ROP`
    proportionally, recompute `V_k` and `AV(t)`.
 7. **Decrements (end of month).** Death at `q_m(t)`, then surrender at `w_m(t)` on
-   survivors **[std order]**; plus the discrete term-end surrender fraction if `t` is a
-   Term End Date. Update `l(t) = l(t−1) (1 − q_m(t)) (1 − w_m(t))`.
-8. **Maturity.** At the Maturity Date, force annuitization of `AV(t)` [S2].
+   survivors **[std order]**; plus the discrete term-end surrender fraction if the month
+   end is a Term End Date. Update `l(t+1) = l(t) (1 − q_m(t)) (1 − w_m(t))`, carrying the
+   count into the next month.
+8. **Maturity.** At the Maturity Date — the end of the last month, `t = proj_len − 1` —
+   force annuitization of `AV(t)` [S2].
 
 ### Cash flow outputs (per contract, month t, before in-force weighting)
 
 | Cash flow | Formula | Sign |
 |---|---|---|
-| Single premium | `single_premium` at t = 0 | + |
+| Single premium | `single_premium`, at the opening of month `t = 0` | + |
 | Death claims | `DB(t)` | − |
 | Full surrender | `CSV(t)` | − |
 | Partial withdrawal | `G_total − WC(t)` | − |
 | Withdrawal charge income | `WC(t)` (retained; not a separate cash flow if `CSV`/net proceeds are used) | + |
 | Annuitization outgo | `AV(t)` converted to a payout stream at the Maturity Date | − |
-| Acquisition expense | `0.06 x premium + 200` at t = 0 **[std]** | − |
-| Maintenance expense | `60/12 x 1.025^(y−1)` **[std]** | − |
+| Acquisition expense | `0.06 x premium + 200`, at the opening of month `t = 0` **[std]** | − |
+| Maintenance expense | `60/12 x 1.025^(y−1)`, `y = cy(t) + 1` **[std]** | − |
 | Option budget / hedge cost | **not a liability cash flow** — it is an asset-side flow; the liability model sees it only through the declared cap (see note) | n/a |
 
 Note on annuitization: this file specifies the **deferral phase only**. The payout stream
@@ -519,8 +538,11 @@ the Index Strategies" [S3]; two other carriers call the cap an "implicit ongoing
 index-linked value; the margin appears as the spread between the earned rate and the
 option budget implied by the declared cap.
 
-Aggregate expected cash flows weight each row: expenses by `l(t−1)`; death claims by
-`l(t−1) q_m(t)`; surrenders by `l(t−1) (1 − q_m(t)) w_m(t)` **[std timing]**.
+Aggregate expected cash flows weight each row by the count **entering** the month:
+expenses by `l(t)`; death claims by `l(t) q_m(t)`; surrenders by
+`l(t) (1 − q_m(t)) w_m(t)` **[std timing]**. Month 0 carries the single premium and the
+acquisition expense as well as its own maintenance expense and decrements: the Issue Date
+opens that month rather than standing as a row of its own.
 
 ---
 
@@ -530,7 +552,9 @@ All dynamic formulas below are **[std]** reference constructions; calibration so
 cited where they exist, and the public RILA-specific data are thin ([REG-R64] reports
 aggregate counts only; the detailed tables sit behind a paid data package).
 
-- **Base surrender [std].** Annual `w_base(y)` per the table above, converted monthly:
+- **Base surrender [std].** Annual `w_base(y)` per the table above, read at
+  `y = cy_end(t) + 1` so the charge-expiry shock lands in the same month the charge a
+  surrender bears goes to zero, and converted monthly:
   `w_m = 1 − (1 − w_annual)^(1/12)`.
 - **Charge-expiry shock [std].** Multiplier `M_sc(7) = 3.0`, unity elsewhere (table above) —
   contract year 7 being the first year with a
@@ -566,7 +590,8 @@ aggregate counts only; the detailed tables sit behind a paid data package).
   [S2], which mechanically raises the option budget and compresses the spread — the
   reason the guaranteed-minimum table is a genuine tail exposure, not decoration.
 - **Partial withdrawals [std].** Base rule: 0% in contract year 1 (the free amount is zero
-  [S1] [S2]); thereafter 2% of Account Value per year, taken at contract anniversaries and
+  [S1] [S2]); thereafter 2% of Account Value per year, taken at contract anniversaries —
+  the month ends closing months `t = 11, 23, 35, …` — and
   capped at the Free Withdrawal Amount so no withdrawal charge is incurred in the base
   run. RMD-driven withdrawals for qualified cells begin at the applicable age; RMD timing
   is a *behavioral* input, not merely a tax one [REG-R58] [REG-R64].
@@ -591,24 +616,34 @@ option budget is `beta = 10.0632%` = **$10,063.19** and the fixed leg opens at
 `$89,936.81`. The equivalent geometric accretion yield on the fixed leg is **1.7834%**,
 i.e. a **2.22%** spread against the 4.00% market rate — that spread is the [std] input to
 the NGE cap-solve rule above. The Market Value Rate is 4.00% at term start and **5.00%**
-at t = 3 (a 100 bp rise, to exercise the MVA factor).
+from the 3-year point on (a 100 bp rise, to exercise the MVA factor).
 
-| # | Point | t (yrs) | Index | R | Fixed proxy | ATM call | − OTM call | − OTM put | Deriv. proxy | Trading cost | Interim value | Investment Amount |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 0 | Term start (Strategy Value, not an IV [R6]) | 0 | 100 | 0.00% | 89,936.81 | 21,567.95 | −3,344.55 | −8,160.20 | 10,063.19 | 33.07 | — (base = 100,000.00) | 100,000.00 |
-| A1 | Scenario A, mid-term | 3 | 120 | +20.00% | 92,280.78 | 29,145.94 | −2,182.94 | −2,726.33 | 24,236.66 | 34.06 | **116,483.39** | 100,000.00 |
-| B1 | Scenario B, mid-term | 3 | 80 | −20.00% | 92,280.78 | 5,778.47 | −85.24 | −13,151.88 | −7,458.66 | 19.02 | **84,803.11** | 100,000.00 |
-| B2 | Scenario B, immediately after an $8,000 withdrawal | 3 | 80 | −20.00% | 83,575.37 | 5,233.35 | −77.20 | −11,911.19 | −6,755.04 | 17.22 | **76,803.11** | **90,566.38** |
-| A2 | Scenario A, term end — credit `min(40%, 100%) = +40%` | 6 | 140 | +40.00% | 100,000.00 | 40,000.00 | 0.00 | 0.00 | 40,000.00 | 0.00 | — (Strategy Value 140,000.00) | **140,000.00** |
-| B3 | Scenario B, term end — credit `min(0, −25% + 10%) = −15%` | 6 | 75 | −25.00% | 90,566.38 | 0.00 | 0.00 | −13,584.96 | −13,584.96 | 0.00 | — (Strategy Value 76,981.42) | **76,981.42** |
+The table's `yrs` column is contract time in **years** and `month t` the projection month
+whose **end** falls there: the 3-year point is time 36, which closes month `t = 35`, and
+the Term End Date six years in is time 72, closing month `t = 71`. Row 0 is the Term Start
+Date itself — the opening of month 0 — so it is an instant rather than a row of
+`result_iv()`; its figures are the term-start portfolio at `tau = T`.
+
+| # | Point | yrs | month t | Index | R | Fixed proxy | ATM call | − OTM call | − OTM put | Deriv. proxy | Trading cost | Interim value | Investment Amount |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 0 | Term start (Strategy Value, not an IV [R6]) | 0 | — | 100 | 0.00% | 89,936.81 | 21,567.95 | −3,344.55 | −8,160.20 | 10,063.19 | 33.07 | — (base = 100,000.00) | 100,000.00 |
+| A1 | Scenario A, mid-term | 3 | 35 | 120 | +20.00% | 92,280.78 | 29,145.94 | −2,182.94 | −2,726.33 | 24,236.66 | 34.06 | **116,483.39** | 100,000.00 |
+| B1 | Scenario B, mid-term | 3 | 35 | 80 | −20.00% | 92,280.78 | 5,778.47 | −85.24 | −13,151.88 | −7,458.66 | 19.02 | **84,803.11** | 100,000.00 |
+| B2 | Scenario B, immediately after an $8,000 withdrawal | 3 | 35 | 80 | −20.00% | 83,575.37 | 5,233.35 | −77.20 | −11,911.19 | −6,755.04 | 17.22 | **76,803.11** | **90,566.38** |
+| A2 | Scenario A, term end — credit `min(40%, 100%) = +40%` | 6 | 71 | 140 | +40.00% | 100,000.00 | 40,000.00 | 0.00 | 0.00 | 40,000.00 | 0.00 | — (Strategy Value 140,000.00) | **140,000.00** |
+| B3 | Scenario B, term end — credit `min(0, −25% + 10%) = −15%` | 6 | 71 | 75 | −25.00% | 90,566.38 | 0.00 | 0.00 | −13,584.96 | −13,584.96 | 0.00 | — (Strategy Value 76,981.42) | **76,981.42** |
 
 Trace and checks:
 
 - **Row 0.** `F = 100,000 (1 − 0.100632 x 6/6) x (1.04/1.04)^6 = 89,936.81`;
   `F + D = 100,000.00` exactly — AG 54's requirement that the Index Strategy Base equal the
-  Strategy Value at term start [R2]. The interim value is undefined here [R6].
-- **Rows A1/B1.** `tau = 3`, so `B = 0.100632 x 100,000 x 3/6 = 5,031.60` and the
-  unadjusted fixed leg is `94,968.40`. The MVA factor `(1.04/1.05)^3 = 0.971690` reduces it
+  Strategy Value at term start [R2]. The interim value is undefined here [R6]. This is the
+  instant `tau = T`, the opening of month 0, and it recurs at every renewal Term Start
+  Date; no projected month carries it, so the model reproduces it by pricing the
+  replicating portfolio at `tau = T` under the term-start market state.
+- **Rows A1/B1.** At the end of month 35, `tau = 3`, so
+  `B = 0.100632 x 100,000 x 3/6 = 5,031.60` and the unadjusted fixed leg is
+  `94,968.40`. The MVA factor `(1.04/1.05)^3 = 0.971690` reduces it
   to `92,280.78` — a **$2,687.62** cost of the 100 bp rate rise. Without the rate move the
   interim values would be `$119,171.01` (A) and `$87,490.73` (B).
 - **Row B1 is the case the prospectuses warn about**: the index is down 20%, well beyond
@@ -622,7 +657,8 @@ Trace and checks:
   of the interim value scales by the same 0.905664 factor, so the interim value falls by
   exactly the $8,000 withdrawn: `84,803.11 − 8,000 = 76,803.11`. The `ROP` GMDB base falls
   in the same proportion as the Account Value [S1] [S2].
-- **Rows A2/B3.** At `tau = 0` the replicating portfolio reproduces the crediting formula
+- **Rows A2/B3.** At the end of month 71, `tau = 0`, and the replicating portfolio
+  reproduces the crediting formula
   exactly: `+40%` capped at 100% gives `Pi = 0.40`; `−25%` with a 10% buffer gives
   `Pi = −0.15 = min(0, R + b)`. Scenario B's term-end Investment Amount is
   `90,566.38 x 0.85 = 76,981.42` — the withdrawal's proportional bite persists to term end.

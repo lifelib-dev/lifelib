@@ -34,9 +34,10 @@ model.Projection[1].result_cf()
 ```
 
 `Projection` takes a `point_id`; `Projection[1]` is the worked-example anchor cell.
-`result_cf()` returns a tidy `DataFrame` indexed by policy month `t` with one column per
+`result_cf()` returns a tidy `DataFrame` indexed by the 0-based policy month `t`
+(`0 … proj_len() - 1`) with one column per
 cash flow line; `result_pols()` returns the survival probabilities and payment factors
-behind it.
+behind it, its survival columns read at the **end** of each month.
 
 The model and its `Projection` Space both carry docstrings — `model.doc` describes the
 product and the projection basis, and `model.Projection.doc` holds the full mapping
@@ -44,30 +45,59 @@ between the technical notes' symbols and the cells names.
 
 ## Monthly, not annual
 
-`t` counts **policy months from the annuity date**, 1-based, running
-1 … `proj_len()`. The notes set the grid (`t = 1, 2, …` months from the annuity date) and
-the product forces it: instalments fall monthly on the anchor cell, the COLA steps at
-month 13, 25, …, and deaths are decremented at end of month, so a survivor reduction that
+`t` counts **policy months from the annuity date** and is **0-based**, running
+`0 … proj_len() - 1` — lifelib's own convention, the one every model in this library
+follows. The notes set the grid (months from the annuity date) and the product forces it:
+instalments fall monthly on the anchor cell, the COLA steps at
+month 12, 24, …, and deaths are decremented at end of month, so a survivor reduction that
 takes effect "from the instalment due at the end of the month of death" needs a monthly
 grid to be expressible at all. The annuity date is collapsed onto the issue date, so
 there is no deferral period; any nonzero deferral turns this product into the
-deferred-income-annuity chassis.
+deferred-income-annuity chassis. The contractual **policy year is the derived 1-based
+label `t // 12 + 1`** and is never used to index the frame.
 
-**Note the contrast with lifelib's `CashValue_SE`, whose months are 0-based.** Here
-`t = 0` is not a projected month: it is the base case of each recursion
-(`lives_if(0, life) = 1`, `cum_annuity_pp(0) = 0`), matching the notes' own 1-based index.
+**`pols_if(t)` is a closing measure here, deliberately.** It is the notes' own end-of-month
+obligation indicator `IF(t) = max(C(t), l_alive(t+1))`, scaled by `pols_if_init()`, and not
+the library's usual count in force at the *opening* of period `t`. So `pols_if(0)` is not
+`pols_if_init()` — on model point 8 it is 0.99999986 against 1.0 — because the month's
+mortality has already been taken out of it. `pols_if_init()` is the scaling constant the
+indicator multiplies, not the frame's first row. The alternative, an opening count, would
+carry the maintenance expense on a measure the notes do not use and would move every
+`expenses(t)` figure the notes' table pins.
 
-`proj_len()` runs to the notes' age stop rule on the **youngest** covered life — 696
-months on the anchor cell's 65/62 pair — or to the end of the effective certain period if
-that is later. Stopping on the primary's age alone would truncate the joint annuitant's
-tail; the notes say so explicitly, and a test pins it.
+**Two cells are indexed by a time point, not by a month, and their arguments do not move
+with the frame.** `lives_if(k, life)` is survival *at* time `k` and `cum_annuity_pp(k)`
+the instalments scheduled *before* time `k`, both with `k = 0` at the annuity date —
+`lives_if(0, life) = 1` and `cum_annuity_pp(0) = 0`, which is the notes' own `l(0) = 1`
+and `G(0) = 0`. Month `t` opens at `k = t` and closes at `k = t + 1`, so:
+
+| Reading | Expression |
+|---|---|
+| survival at the arrears payment point of month `t` | `lives_if(t + 1, life)` |
+| survival at the advance payment point of month `t` | `lives_if(t, life)` |
+| deaths *during* month `t` | `lives_if(t, life) - lives_if(t + 1, life)` |
+| refund balance for a death in month `t`, arrears | `cum_annuity_pp(t)` |
+| the same on advance, in a payment month | `cum_annuity_pp(t + 1)` |
+
+That is why the notes' `G(13) = 12 × 500.00 + 515.00` and their `l(14) = 0` for a death in
+the fourteenth month read unchanged in the model, while every *month*-indexed figure moves
+down by one: the worked example's rows are `t = 0, 11, 12, 13, 14, 23, 24`.
+
+`proj_len()` is the **number** of projected months — the exclusive end of the frame, so
+the last month is `proj_len() - 1`. It runs to the notes' age stop rule on the
+**youngest** covered life — 696 months on the anchor cell's 65/62 pair, `t = 0 … 695` —
+or to the end of the effective certain period if that is later. Stopping on the primary's
+age alone would truncate the joint annuitant's tail; the notes say so explicitly, and a
+test pins it. Counts of months are counts throughout: `certain_mths()`,
+`certain_mths_refund()` and `certain_mths_eff()` are numbers of months, so a 10-year
+certain period covers `t = 0 … 119` and `certain_floor(t) = 1{t < n_eff}`.
 
 That rule stops the projection *one month before* any life attains ω = 120: `age(t, life)`
-advances on policy anniversaries, so at `t = 696` the younger life is 119, and the `q = 1`
+advances on policy anniversaries, so at `t = 695` the younger life is 119, and the `q = 1`
 row of the mortality table is never reached inside the run. The notes' other stop test —
 `IF(t) < 1e-6` — is therefore **not** subsumed by it, contrary to what an earlier draft of
 this file and the model's own docstrings claimed: model point 8 ends at
-`pols_if(696) = 3.41e-06`, 3.4 times the threshold. The age rule is the one
+`pols_if(695) = 3.41e-06`, 3.4 times the threshold. The age rule is the one
 implemented, because it keeps `proj_len()` independent of the projection it bounds, and
 the truncated tail — one further month, after which the attained age is 120, `q = 1` and
 every flow is zero — is worth 3.41e-06 of a contract. A test pins the residual so the
@@ -131,6 +161,18 @@ no formula change. That is also how the notes' first sensitivity is run: scale
 | `improvement_scale.csv` | Generational improvement rates by age and sex | **[std]** illustrative G2-shaped scale — ***not*** Projection Scale G2 |
 | `surr_charge_table.csv` | Commutation surrender charge by contract year, 8% in year 2 to 0% from year 10 | sourced [S1] — the only published SPIA surrender-charge schedule found |
 
+**Time-like columns in the inputs.** `model_point_table.csv` carries two, `death_mth_1`
+and `death_mth_2`, and both are **points on the frame's month axis**: they shifted with
+the frame when the model moved to the 0-based index, so the notes' death "during the
+fourteenth month, `t = 13`" is `death_mth = 13` (and 3 → 2, 30 → 29). A blank still means
+the life never dies, but the
+sentinel `death_mth()` returns for it is now `-1`, because month 0 is a projectable month
+of death like any other. `certain_months` is a **count** of months and did not move;
+`annuity_year` is a calendar year and did not move. `surr_charge_table.csv` is keyed by
+`policy_year`, the contract's own 1-based label, so the file is unchanged and the reader
+maps into it through `policy_year(t) = t // 12 + 1`. `mort_table.csv` and
+`improvement_scale.csv` are keyed by `(age, sex)` — not a time axis at all.
+
 **On the mortality tables.** The technical notes prescribe the **2012 IAM Basic** table
 projected with **Projection Scale G2**, applied generationally, with a ×1.084 A/E factor
 from the 2020–2024 SOA/LIMRA payout study. The notes also forbid embedding it: "The model
@@ -171,29 +213,32 @@ The technical notes use compact actuarial symbols instead; the full mapping live
 
 | Notes | Cells | Why |
 |---|---|---|
-| `l(t)` survival vs `L(t)` payment factor | `lives_if` / `payment_factor_life` | The notes' two symbols differ only by case |
-| `G(t)` cumulative instalments vs `G2_x` | `cum_annuity_pp` / `improvement_rate` | Same letter, unrelated quantities |
+| `l(k)` survival vs `L(t)` payment factor | `lives_if` / `payment_factor_life` | The notes' two symbols differ only by case — and the first is indexed by time, the second by month |
+| `G(k)` cumulative instalments vs `G2_x` | `cum_annuity_pp` / `improvement_rate` | Same letter, unrelated quantities |
 | `θ` substandard vs `θ_cum` commutation | `rating_factor` / `commute_frac_cum` | Same letter, unrelated quantities |
 | `d_term(t)` | `lives_death_last` | Not a separate quantity — see below |
 | `CF(t)` | `liability_cf` / `annuity_payments` | The worked example's "CF" column is not the notes' `CF(t)` — see below |
 
 `d_term(t)` is defined in the notes as `d₁` on a single-life contract and `d_last` on a
-joint one. Because `lives_if_last(t)` returns `l₁` when the contract is single-life, the
+joint one. Because `lives_if_last(k)` returns `l₁` when the contract is single-life, the
 two collapse: `lives_death_last` *is* `d_term` in both cases, and no second cells is
 needed.
 
 ## The worked example is a scenario, not a table run — so the model ships both
 
 The notes' verification anchor is not a probability-weighted projection. It is a
-**scenario**: "the joint (secondary) annuitant dies during month 14; the primary survives
+**scenario**: "the joint (secondary) annuitant dies during month 14" — the fourteenth
+month, `t = 13` — "the primary survives
 throughout", evaluated at `l₁ = 1`, `l₂ = 0`. But the same notes say model points are
 "projected on an expected (probability-weighted) basis". Both readings are shipped, and
 which one applies is a model point column, `mort_basis`:
 
 - `mort_basis = "table"` runs the notes' generational recursion off `mort_table.csv` and
   `improvement_scale.csv`. Model points 7, 8, 9, 12 and 15.
-- `mort_basis = "scenario"` **[std]** replaces `lives_if(t, life)` with the deterministic
-  step function `1{t < death_mth(life)}`, a blank `death_mth` meaning the life survives
+- `mort_basis = "scenario"` **[std]** replaces `lives_if(k, life)` with the deterministic
+  step function `1{k ≤ death_mth(life)}` — alive at every time point up to the start of
+  the month of death, dead from its end — with a blank `death_mth` (returned as `-1`)
+  meaning the life survives
   the whole projection. Model points 1–6, 10, 11, 13 and 14 — the worked example's runs.
 
 The scenario switch is a **[std]** modelling device, not a product feature. It exists
@@ -207,13 +252,13 @@ look at for a realistic cash flow shape.
 
 The notes define `CF(t) = E[ANN(t)] + E[CR(t)] + E[COMM(t)] + E[EXP(t)]` and, separately,
 a maintenance expense of $60 p.a. paid monthly. But the worked-example table's "CF" column
-reads **500.00** at `t = 1`, not the **505.00** that definition gives once the $5.00
+reads **500.00** at `t = 0`, not the **505.00** that definition gives once the $5.00
 monthly expense is added. The column is the annuity instalment alone.
 
 This is not resolvable from the notes, so the model names both and the tests assert both.
 `annuity_payments(t)` is `E[ANN(t)]` and is what the worked-example rows are asserted
 against; `liability_cf(t)` is the notes' `CF(t)`, outgo positive, and is asserted at
-505.00. `net_cf(t) = −liability_cf(t)` keeps `Term_US_A`'s sign convention (income less
+505.00. `net_cf(t) = −liability_cf(t)` keeps `Term_US_S`'s sign convention (income less
 outgo) so the two models' cash flow statements read the same way, even though this product
 has no projected income at all. **Both are columns of `result_cf()`** — the notes' stream
 survives verbatim under the name the notes give it, and the library-wide income-positive
@@ -233,39 +278,40 @@ Two consequences fall out for free, with no extra flag:
 
 - Because the floor pays the **full, unreduced** instalment, a survivor reduction inside a
   certain period is automatically deferred to the end of that period — one carrier's
-  published rule [S5]. Model point 5 kills the joint annuitant in month 14 under a 10-year certain
-  period and pays the full instalment until `t = 120`, dropping to δ only at `t = 121`.
+  published rule [S5]. Model point 5 kills the joint annuitant in month `t = 13` under a
+  10-year certain period and pays the full instalment until `t = 119`, dropping to δ only
+  at `t = 120` — the certain period's 120 months being `t = 0 … 119`.
 - A commutation reduces certain-period instalments only, because `θ_cum` is multiplied by
-  `C(t)`: at `t = 121` the life-contingent tail is paid in full. Applying `θ_cum` to that
+  `C(t)`: at `t = 120` the life-contingent tail is paid in full. Applying `θ_cum` to that
   tail contradicts every retrieved contract, and model point 9 pins it.
 
 Model point 13 is the harder case: **both** annuitants die inside the certain period, so
 `L = 0` while `C = 1`. The full instalment continues, `pols_if` stays at 1 because a
 payment obligation is still open, and everything — annuity, expense, in-force — goes to
-zero together at `t = 121`.
+zero together at `t = 120`.
 
 ## `certain_only` — where the notes' expense formula outlives the contract
 
-The notes carry the maintenance expense on `IF(t) = max(C(t), l_alive(t))` and, in the
+The notes carry the maintenance expense on `IF(t) = max(C(t), l_alive(t+1))` and, in the
 same assumption table, describe it as "$60 per contract p.a., paid monthly **while any
 payment obligation remains**". On the four life-contingent forms the formula and the
 prose say the same thing. On `certain_only` they do not, because the notes also set
-`L(t) ≡ 0` there: the last instalment falls at `n_eff` and nothing whatever is owed
+`L(t) ≡ 0` there: the last instalment falls in month `n_eff - 1` and nothing whatever is owed
 afterwards, but `l_alive` is a *survival probability*, not a payment factor, and stays
 positive for the annuitant's whole remaining lifetime.
 
 Taken literally the formula keeps billing a contract that ended years earlier. On model
 point 15 — `certain_only`, 10-year certain, single male 65, table basis — that is
 **1,539.83 of expense spread over the 540 months after the last payment**, still charging
-5.63 in month 240 against a `pols_if` of 0.7046 on a contract whose final instalment was
-paid ten policy years before.
+5.63 in month `t = 239` against a `pols_if` of 0.7046 on a contract whose final instalment
+was paid ten policy years before.
 
 `pols_if` follows the prose: the life-contingent leg is dropped on `certain_only`, the one
 form that carries no life contingency at all, so `IF(t) = C(t)` there and
-`IF(t) = max(C(t), l_alive(t))` on every other form. Nothing on any other form or model
+`IF(t) = max(C(t), l_alive(t+1))` on every other form. Nothing on any other form or model
 point moves — no shipped point used `certain_only` before, which is exactly why the notes'
 internal inconsistency went unnoticed. Model point 15 exists to hold the case open, and a
-test asserts `pols_if(121) = 0` and zero expense from `t = 121` on.
+test asserts `pols_if(120) = 0` and zero expense from `t = 120` on.
 
 ## Two timing conventions, each worth one instalment
 
@@ -273,33 +319,37 @@ The notes flag both as pitfalls, and they are wired to the same model point swit
 `timing`:
 
 - **Survival measurement.** An arrears instalment falling at the end of month `t` requires
-  survival to the end of month `t`; an advance instalment falls at the *start* of month
-  `t`, which is the end of month `t − 1`, so survival is measured at `t − 1` — at every
-  frequency. Using end-of-period survival for advance payments understates the liability
+  survival to time `t + 1`; an advance instalment falls at the *start* of month `t`, which
+  is time `t`, so survival is measured a full month earlier — at every
+  frequency. `payment_surv_mth(t)` returns that **time point**, `t + 1` or `t`. Using
+  end-of-period survival for advance payments understates the liability
   by about one period's mortality per payment. Model points 6 (arrears) and 10 (advance)
-  are the same single life dying in month 14: the arrears run stops paying at `t = 14`,
-  the advance run at `t = 15`.
+  are the same single life dying in the fourteenth month, `t = 13`: the arrears run stops
+  paying at `t = 13`, the advance run at `t = 14`.
 
-  The notes write that advance point as `t − 12/m`, "one full payment period earlier".
+  The notes write that advance point as `t + 1 − 12/m`, "one full payment period earlier"
+  than the arrears point `t + 1`.
   That is measured from the **arrears** month of the same instalment, which falls one
   payment period *later* than the advance month; `is_payment_mth` indexes an advance
-  instalment by the month it actually falls in (`t = 1, 4, 7, …` at `m = 4`), so the two
+  instalment by the month it actually falls in (`t = 0, 3, 6, …` at `m = 4`), so the two
   readings coincide only at `m = 12` — the only frequency the notes spell out, and the
-  only one every other shipped model point uses. Taking `t − 12/m` literally at `m = 4`
-  reads survival three months too early and pays the quarterly instalment due at the
-  start of month 4 to a life the projection has already killed off in month 3. Model
-  point 14 is that contract: quarterly in advance, single male 65, dying in month 3. It
-  pays $1,500.00 in the first year, not $3,000.00, and a test asserts both the payment
-  months `1, 4, 7, 10, 13` and the survival months `t − 1` behind them.
-- **Refund balance.** The cash refund nets instalments *already paid*: `G(t−1)` on arrears,
-  but `G(t)` in an advance payment month, because an instalment paid at the start of the
+  only one every other shipped model point uses. Taking `t + 1 − 12/m` literally at
+  `m = 4` reads survival two months too early and pays the quarterly instalment due at the
+  start of month 3 to a life the projection has already killed off in month 2. Model
+  point 14 is that contract: quarterly in advance, single male 65, dying in month `t = 2`.
+  It pays $1,500.00 in the first year, not $3,000.00, and a test asserts both the payment
+  months `0, 3, 6, 9, 12` and the survival times behind them.
+- **Refund balance.** The cash refund nets instalments *already paid*: `G(t)` on arrears —
+  with `G` indexed by time, that is everything paid before month `t` opened — but `G(t+1)`
+  in an advance payment month, because an instalment paid at the start of the
   month of death has been paid. Model point 6 pays $93,485.00 and model point 11 pays
-  $92,970.00 — exactly one instalment apart, and using `G(t−1)` on advance would overstate
-  the liability by that instalment.
+  $92,970.00 — exactly one instalment apart, and using the arrears balance on advance
+  would overstate the liability by that instalment.
 
 ## `n_R` is derived, never hard-coded
 
-The installment-refund certain period is `n_R = min{t ∈ T : G(t) ≥ P}` — payments continue
+The installment-refund certain period is `n_R = min{t + 1 : t ∈ T, G(t+1) ≥ P}`, a **count**
+of months whose last certain month is `t = n_R − 1` — payments continue
 until cumulative payments equal the premium, which is the cited `premium ÷ annualized income`
 rule rounded up to a payment date [S5]. On the anchor it lands on the notes' 200 months,
 and the temptation is to write 200 down. `certain_mths_refund()` searches the schedule
@@ -321,7 +371,7 @@ is a published table); the A/E factor of 1.084 on the *projected* basis; the mon
 mortality conversion `q_m = 1 − (1 − q)^(1/12)`; joint-life independence in
 `l_last = l₁ + l₂ − l₁l₂`; the limiting age ω = 120 on the best-estimate side; the initial
 income level `B(1) = $6,000`; premium tax τ = 0; maintenance expense $60 p.a. inflating at
-2.5% and carried by `IF(t) = max(C, l_alive)`, with the `l_alive` leg dropped on
+2.5% and carried by `IF(t) = max(C(t), l_alive(t+1))`, with the `l_alive` leg dropped on
 `certain_only` so the expense ends with the contract (above); the
 anniversary-of-annuity-date COLA rule
 (the cited "one year after the first income payment" alternative [S5] is *not* implemented); the
@@ -347,9 +397,9 @@ no-compound-rounding rule.
 
 `tests/test_immediate_annuity_us.py` asserts every row and column of the worked-example
 table to the cent on both trigger columns, the income levels behind it, and each of the
-notes' five traces: the trigger split at `t = 14` with `L = 0.6667` against `L = 1`, the
+notes' five traces: the trigger split at `t = 13` with `L = 0.6667` against `L = 1`, the
 reversed death on which the two triggers coincide at 343.33, the COLA continuing after the
-reduction, the 10-year certain period deferring the reduction to `t = 121`, the
+reduction, the 10-year certain period deferring the reduction to `t = 120`, the
 $93,485.00 cash refund, and the 200-month derived refund period. It then works through the
 notes' "Known modeling pitfalls" list one test at a time — certain-period double counting,
 the A/E factor on the wrong base, period versus generational, survival-measurement timing
@@ -358,11 +408,12 @@ joint-life independence, commutation applied to the wrong slice, and exclusion-r
 modelled as a cash flow — plus the product invariants: no lapse decrement, no premium
 income, no discounting, the stop rule on the younger life and the residual `IF` it leaves,
 the `certain_only` expense stopping with the last payment, the in-force roll-forward,
-`result_cf()` shape, and that every model point projects.
+`result_cf()` shape — the frame is `t = 0 … proj_len() - 1`, asserted row by row — and
+that every model point projects.
 
 The roll-forward test is not the usual tautology. `check_lives_roll_fwd_resid` rebuilds
 each life's survival from the monthly rates rather than telescoping `lives_death` — which
-is *defined* as `l(t−1) − l(t)` and so closes for any `lives_if` whatever — and one test
+is *defined* as `l(t) − l(t+1)` and so closes for any `lives_if` whatever — and one test
 proves the difference by replacing `lives_if` with a misindexed recursion in a throwaway
 model instance and asserting the residual moves off zero and the no-argument
 `check_lives_roll_fwd()` goes `False` with it.

@@ -1,0 +1,12 @@
+point_id,policy_id,entry_age,sex,cover_type,trigger_grid,rente_total_mth,partial_ratio,capital_option,capital_amount,premium_mth,premium_mode,carence_accident_months,carence_illness_months,carence_neuro_months,franchise_months,reduction_qualifying_years,couple_discount,status,claim_duration_months,years_paid,pols_if_init
+1,DEP-000001,70,F,total_and_partial,avq5,1000.0,0.50,True,3500.0,75.00,monthly,0,12,36,3,8,False,autonomous,0,0,1.0
+2,DEP-000002,65,M,total_only,avq6,1500.0,0.50,True,3000.0,60.00,monthly,0,12,36,3,8,False,autonomous,0,0,1.0
+3,DEP-000003,60,F,total_and_partial,aggir,800.0,0.50,False,0.0,50.00,monthly,0,12,36,3,8,False,autonomous,0,0,1.0
+4,DEP-000004,75,M,total_and_partial,avq5,2000.0,0.50,True,3500.0,160.00,quarterly,0,12,36,3,5,False,autonomous,0,0,1.0
+5,DEP-000005,55,F,total_and_partial,avq5,1000.0,0.50,True,3500.0,42.00,monthly,0,12,36,3,8,True,autonomous,0,0,1.0
+6,DEP-000006,70,F,total_and_partial,avq5,1000.0,0.50,True,3500.0,75.00,monthly,0,0,0,3,8,False,autonomous,0,0,1.0
+7,DEP-000007,70,F,total_and_partial,avq5,1000.0,0.50,True,3500.0,75.00,monthly,0,12,36,0,8,False,autonomous,0,0,1.0
+8,DEP-000008,70,F,total_and_partial,avq5,1000.0,0.50,True,3500.0,75.00,annual,0,12,36,3,8,False,autonomous,0,0,1.0
+9,DEP-000009,72,F,total_and_partial,avq5,1000.0,0.50,True,3500.0,75.00,monthly,0,12,36,3,8,False,partial,18,0,1.0
+10,DEP-000010,78,M,total_and_partial,avq5,900.0,0.50,True,3000.0,90.00,monthly,0,12,36,3,8,False,total,6,0,1.0
+11,DEP-000011,80,F,total_and_partial,avq5,1000.0,0.50,True,3500.0,75.00,monthly,0,12,36,3,8,False,reduced,0,12,1.0

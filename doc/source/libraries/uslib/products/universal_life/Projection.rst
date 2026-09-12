@@ -122,6 +122,8 @@ Cells Descriptions
 
 .. autofunction:: av_pp
 
+.. autofunction:: loan_bal_pp_bom
+
 .. autofunction:: loan_bal_pp
 
 .. autofunction:: av_at

@@ -1,7 +1,7 @@
 The **Data** Space
 ==================
 
-.. automodule:: uklib.products.with_profits.WP_UK_A.Data
+.. automodule:: uklib.products.with_profits.WP_UK_S.Data
 
 Cells Descriptions
 ------------------

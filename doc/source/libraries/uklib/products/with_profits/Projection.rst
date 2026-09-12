@@ -1,7 +1,7 @@
 The **Projection** Space
 ========================
 
-.. automodule:: uklib.products.with_profits.WP_UK_A.Projection
+.. automodule:: uklib.products.with_profits.WP_UK_S.Projection
 
 Cells Descriptions
 ------------------
@@ -50,13 +50,23 @@ Cells Descriptions
 
 .. autofunction:: proj_start
 
-.. autofunction:: fund_exhaust_year
+.. autofunction:: fund_exhaust_mth
 
 .. autofunction:: proj_len
 
 .. autofunction:: is_forced_encashment
 
+.. autofunction:: duration
+
+.. autofunction:: duration_mth
+
 .. autofunction:: age
+
+.. autofunction:: policy_year
+
+.. autofunction:: is_declaration_month
+
+.. autofunction:: declaration_month
 
 .. autofunction:: is_guarantee_date
 
@@ -68,11 +78,17 @@ Cells Descriptions
 
 .. autofunction:: guar_charge_rate
 
+.. autofunction:: guar_charge_rate_mth
+
+.. autofunction:: amc_rate_mth
+
 .. autofunction:: guar_charge_pp
 
 .. autofunction:: guar_charge_cum_pp
 
 .. autofunction:: misc_surplus_pp
+
+.. autofunction:: fund_return_mth
 
 .. autofunction:: asset_share_at
 
@@ -84,7 +100,11 @@ Cells Descriptions
 
 .. autofunction:: guar_benefit_pp
 
+.. autofunction:: guar_benefit_open
+
 .. autofunction:: policy_value_pp
+
+.. autofunction:: policy_value_open
 
 .. autofunction:: bonus_supportable
 
@@ -96,13 +116,21 @@ Cells Descriptions
 
 .. autofunction:: mort_rate
 
+.. autofunction:: mort_rate_mth
+
 .. autofunction:: death_guar_pp
 
 .. autofunction:: mort_charge_pp
 
+.. autofunction:: smooth_cap_dn_mth
+
+.. autofunction:: smooth_cap_up_mth
+
 .. autofunction:: smoothed_payout_capped
 
 .. autofunction:: smoothed_payout
+
+.. autofunction:: smoothed_payout_open
 
 .. autofunction:: final_bonus_pp
 
@@ -118,11 +146,13 @@ Cells Descriptions
 
 .. autofunction:: mvr_deterrent
 
-.. autofunction:: guarantee_spike
+.. autofunction:: guarantee_exercise
 
 .. autofunction:: guarantee_imminent
 
 .. autofunction:: surr_rate
+
+.. autofunction:: surr_rate_mth
 
 .. autofunction:: pols_if
 
@@ -167,6 +197,8 @@ Cells Descriptions
 .. autofunction:: check_fund_nonneg
 
 .. autofunction:: check_payout_corridor
+
+.. autofunction:: check_declaration_is_annual
 
 .. autofunction:: result_cf
 

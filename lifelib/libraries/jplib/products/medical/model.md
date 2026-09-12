@@ -30,8 +30,9 @@ python products/medical/run.py        # anchor cell, point_id = 1
 python products/medical/run.py 4      # another model point
 ```
 
-`run.py` prints the model point, the first thirteen months of the cash flow statement, the
-benefit-day and rider ledgers, the first five policy-year totals, and the seven `check_*`
+`run.py` prints the model point, the first thirteen months of the cash flow statement
+(`t = 0 … 12`), the benefit-day and rider ledgers over the same months, the first five
+policy-year totals (grouped as `policy_year = t // 12 + 1`), and the seven `check_*`
 identities. Its output is ASCII-only so it prints on a Windows console under any code
 page: amounts are written "JPY" and the product is romanized.
 
@@ -58,11 +59,24 @@ are projected; `Projection` is parameterized by `point_id`, so every `Projection
 separate ItemSpace with its own cells cache and readers placed there would re-read every
 file for every policy.
 
-`Projection` carries 100 cells and 33 References. `t` is the **policy month**,
-`t = 0 … proj_len() − 1`, and month `t` runs from `t` to `t + 1` months after the 契約日.
+`Projection` carries 100 cells and 33 References. `t` is the **policy month** and it is
+**0-based**, the library-wide convention: `t = 0` is the first policy month, month `t`
+runs from `t` to `t + 1` months after the 契約日, and the frame is
+`t = 0 … proj_len() − 1`. `proj_len()` is therefore the **number** of projected months —
+the exclusive end of the frame, not the last index — so `result_cf()`, `result_pols()`
+and `result_days()` are each built over `range(proj_len())` and hold `proj_len()` rows:
+924 on the anchor cell, `t = 0 … 923`. `pols_if(0) = pols_if_init() = 1` and
+`age(0) = issue_age()`.
+
+The **policy year** is the contractual 1-based label derived from `t`, never an index
+into the frame: `policy_year(t) = t // 12 + 1`, so months `t = 0 … 11` are policy year 1
+and `age(t)` steps at `t = 12, 24, …`. It exists because `lapse_table.csv` is keyed by
+policy year and because the notes speak in policy years while the model steps in months.
+
 Premium and maintenance expense fall at the start of the month, benefits and the claim
 expense at the end, then mortality, then lapse, then the benefit-driven termination.
-Acquisition expense and initial commission fall at `t = 0`.
+Acquisition expense and initial commission fall at `t = 0`; renewal commission starts at
+`t = 12`, the first month of policy year 2.
 
 The horizon is set by the mortality basis, not by a contract term: `proj_len()` is
 `12 × (omega_age() − x + 1)`, 924 months on the anchor cell, and `omega_age()` is read off
@@ -162,6 +176,18 @@ parent's CSVs and it reads cleanly and then fails on first evaluation.
 Every row of every assumption table carries a `provenance` column tagging it `[std] …` or
 naming the source it came from. Files are UTF-8 without a BOM; headers and every cells
 name are ASCII `lower_snake_case`.
+
+**No input file is keyed by the model's `t`,** so the move to the 0-based time index left
+every CSV byte-for-byte unchanged. Column by column:
+
+| File | Column | What it is | Decision |
+|---|---|---|---|
+| `lapse_table.csv` | `policy_year`, 1–21 | The contractual **1-based** policy-year label, the basis the [std] curve is stated on | Values left alone. `lapse_rate(t)` maps through `policy_year(t) = t // 12 + 1` and clamps to the last row, so months `t = 0 … 11` read policy year 1 |
+| `mort_table.csv` | `age` | An attained age, not a duration | Left alone; reached through `age(t) = x + t // 12` |
+| `incidence_table.csv` | `age_start`, `age_end` | The edges of a five-year **age** band | Left alone; reached through `inc_band(t)` on `age(t)` |
+| `los_table.csv` | `band_start`, `band_end` | The edges of a broad **age** band | Left alone; reached through `los_band(t)` on `age(t)` |
+| `los_table.csv` | `stay_days` | A length of stay in **days** — a severity, not a point on the projection's time axis | Left alone |
+| `model_point_table.csv` | `issue_age`, `prem_period`, `issue_date` | An age, a category (`whole_life` / `to_65`) and a calendar date | Left alone. There is no in-force column at all — no `duration_init`, no elapsed count, no column naming a month of the frame — because every model point is new business and opens the frame at `t = 0`. `issue_date` is carried for the reader and is read by no formula |
 
 **The mortality file is a proxy on purpose.** 第三分野標準生命表2018 is public, free and
 machine-readable — the sharp contrast with [uklib](../../../uklib/index.md), which had
@@ -306,7 +332,10 @@ is not published [REG-R2].
 `tests/test_model_conventions_jp.py` applies the house style: the layout, the
 `Data`/`Projection` split, read-once inputs, the docstrings, the naming register, the
 `result_cf()` column conventions, that every model point projects without NaN, and the
-read → write → re-read round trip.
+read → write → re-read round trip. It also applies the library-wide **frame rule** to
+every one of the nine model points: the index of `result_cf()` is contiguous, starts at
+`t ≥ 0`, ends at `proj_len() − 1`, and `len(result_cf()) == proj_len()`. This model opens
+every point at `t = 0`, because every model point is new business.
 
 Seven `check_*` cells assert the identities this product implies. Each takes no argument
 and returns a `bool` over all `t`, with the signed per-month residual at
@@ -352,6 +381,10 @@ worked example to the precision the notes display.
   premium waiver off and elected, the 三大疾病無制限 特則 off and elected, the 入院一時金
   rider off and attached, the age-basis offset at 0 and 0.5, and `surg_after_limit` in both
   of its contradictory readings.
+- **The published frame**: `result_cf()` is indexed by the 0-based policy month, named
+  `t`, running `0 … proj_len() − 1` — 924 rows on the anchor cell — with the notes' month-0
+  strain on the first row. Every golden key and every literal `t` in the module is on that
+  index.
 - **The structural product facts**: the horizon set by the mortality table rather than by a
   contract term, the 定期 flag's expiry with no maturity value, the short-pay point as the
   single route to a surrender value, the sex crossover in incidence between ages 30 and 40,

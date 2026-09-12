@@ -11,13 +11,16 @@ projecting model point 1::
     >>> Projection[1].result_cf()          # the active-lives anchor cell
     >>> Projection.point_id = 2            # the claims-in-payment worked example
 
-``t`` counts **policy months**, 1-based: ``t = 1`` is the first projected month and
-``t = proj_len() = 12 (expiry_age - entry_age)`` the last. The notes index the state
-probabilities ``l_H(t)`` and ``l_S(t, z)`` at the **end** of month ``t`` with
-``l_H(0) = 1``; the library indexes at the **start** of the month, so
-``pols_active(t)`` is the notes' ``l_H(t-1)`` and ``pols_sick_dur(t, z)`` its
-``l_S(t-1, z)``. That is deliberate: every cash flow on a ``result_cf()`` row is then
-weighted by a state count on the same row.
+``t`` counts **policy months**, 0-based: ``t = 0`` is the first projected month and
+``t = proj_len() - 1``, with ``proj_len() = 12 (expiry_age - entry_age)``, the last, so
+the frame is ``range(proj_len())``. Month ``t`` runs from time ``t`` to time ``t + 1``;
+premiums fall at its start and transitions and the benefit at its end. The policy year
+is the contractual 1-based label ``policy_year(t) = t // 12 + 1``. The notes index the
+state probabilities ``l_H(t)`` and ``l_S(t, z)`` at the **start** of month ``t`` with
+``l_H(0) = 1`` on an at-issue cell, and so does the library: ``pols_active(t)`` is the
+notes' ``l_H(t)`` and ``pols_sick_dur(t, z)`` its ``l_S(t, z)``, so every cash flow on
+a ``result_cf()`` row is weighted by a state count on the same row. ``z``, the claim
+duration in months, is a separate 1-based cohort index and is not a time index.
 
 .. rubric:: Input data
 
@@ -58,12 +61,12 @@ The technical notes use compact actuarial symbols instead. The mapping is:
 Notes symbol               Cells                           Meaning
 =========================  ==============================  ==========================
 entry_age                  age_at_entry()                  Entry age (ANB)
-a                          age(t)                          Attained age (ANB) in month t
-y = ceil(t/12)             policy_year(t)                  Policy year containing month t
-(none)                     duration(t)                     Completed policy years, y - 1
-(none)                     duration_mth(t)                 Months elapsed at end of month t
+a = entry_age + t // 12    age(t)                          Attained age (ANB) in month t
+y = t // 12 + 1            policy_year(t)                  Policy year containing month t
+(none)                     duration(t)                     Completed policy years, t // 12
+(none)                     duration_mth(t)                 Months elapsed at start of month t
 expiry_age                 expiry_age()                    Age all cover ceases
-T = 12(expiry - entry)     proj_len()                      Last projected month
+T = 12(expiry - entry)     proj_len()                      Number of months; t = 0..T-1
 d                          deferred_weeks()                Deferred period in weeks
 occ_class                  occ_class()                     CMI occupation class OC1-OC4
 status                     status()                        active or in_claim cell
@@ -92,10 +95,10 @@ q_S_a(z)                   mort_rate_sick(z)               Annual in-claim morta
 q_S_m(z)                   mort_rate_sick_mth(z)           Monthly in-claim mortality
 s_S(z)                     claim_surv_step(z)              Monthly in-claim survival
 (the three vectors)        claim_rate_vectors()            rho_m, q_S_m and s_S as lists
-l_H(t-1)                   pols_active(t)                  In state H at start of month t
-l_S(t-1, z)                pols_sick_dur(t, z)             In claim at duration z
-l_S(t-1)                   pols_sick(t)                    Total in claim payment
-(the whole vector)         sick_cohorts(t)                 l_S(t-1, .) as a list
+l_H(t)                     pols_active(t)                  In state H at start of month t
+l_S(t, z)                  pols_sick_dur(t, z)             In claim at duration z
+l_S(t)                     pols_sick(t)                    Total in claim payment
+(the whole vector)         sick_cohorts(t)                 l_S(t, .) as a list
 (none)                     pols_if(t)                      H + S: policies in force
 (none)                     pols_if_at(t, timing)           BEF_DECR / AFT_DECR
 n(t)                       pols_inception(t)               New claim inceptions
@@ -114,7 +117,7 @@ EXP(t)                     expenses(t)                     Maintenance + claim m
 e_m(y), ec_m(y)            expense_maint, expense_claim    Expense levels p.a.
 (none)                     inflation_factor(t)             Expense inflation factor
 CF(t)                      net_cf(t)                       Net cash flow, income positive
-v(t)                       disc_factor(t)                  Worked-example discount factor
+v(t)                       disc_factor(t)                  Discount factor to end of month t
 (none)                     pv_benefits()                   PV of benefit outgo
 a_dis(a0, z0)              annuity_dis()                   Disabled-life annuity factor
 =========================  ==============================  ==========================
@@ -136,7 +139,8 @@ surrender value** at any time.
 
 ``z`` is the claim duration in months and ``t`` the policy month. They are different
 clocks and the model never mixes them: rates out of state S take ``z``, rates out of
-state H take ``t``.
+state H take ``t``. ``z`` is 1-based by construction - cohort 1 is a claim that has just
+started paying - and the 0-based time index ``t`` does not change that.
 
 .. rubric:: Three states, and why the model needs all of them
 
@@ -289,9 +293,10 @@ def age_at_entry():
 
     On an ``in_claim`` cell this is the **attained age at the valuation date**, and the
     policy-year clock restarts there **[std]**: the notes give no anniversary offset for
-    an in-force claim, so escalation steps at ``t = 13, 25, ...`` from the valuation
-    date rather than from the contractual anniversary.  The worked example is level
-    cover, where the distinction does not arise.
+    an in-force claim, so ``t = 0`` is the valuation month and escalation steps at
+    ``t = 12, 24, ...`` from the valuation date rather than from the contractual
+    anniversary.  The worked example is level cover, where the distinction does not
+    arise.
     """
     return int(model_point()["entry_age"])
 
@@ -327,7 +332,11 @@ def deferred_weeks():
 
 
 def benefit_mth():
-    """B(1): the chosen monthly benefit at issue **[std]**, £2,000 on the base cell."""
+    """B(1): the chosen monthly benefit in policy year 1 **[std]**, £2,000 on the base cell.
+
+    ``B(y)`` is indexed by the contractual policy year ``y = policy_year(t)``, which is
+    1-based; this is its value at ``t = 0``.
+    """
     return float(model_point()["benefit_mth"])
 
 
@@ -350,11 +359,12 @@ def escalation():
 
 
 def premium_mth():
-    """P(1): the monthly premium at issue **[std]**, a placeholder.
+    """P(1): the monthly premium in policy year 1 **[std]**, a placeholder.
 
     UK income protection premium rates are not public, so any reference premium is
     constructed.  It is guaranteed level apart from the escalation uplift
-    [S1][S3][S5][S7].
+    [S1][S3][S5][S7].  Its value at ``t = 0``; ``P(y)`` is indexed by the 1-based
+    contractual policy year.
     """
     return float(model_point()["premium_mth"])
 
@@ -411,8 +421,9 @@ def recovery_basis():
 def claim_duration_months():
     """z0: the claim duration already elapsed on an ``in_claim`` cell; 0 at inception.
 
-    The seeded population enters cohort ``z0 + 1``, since cohort 1 is a claim that has
-    just started paying.
+    An elapsed count on the claim-duration clock, not a point on the time axis.  The
+    seeded population enters cohort ``z0 + 1`` at ``t = 0``, since cohort 1 is a claim
+    that has just started paying.
     """
     return int(model_point()["claim_duration_months"])
 
@@ -423,9 +434,11 @@ def pols_if_init():
 
 
 def proj_len():
-    """Projection length in months: ``12 (expiry_age - entry_age)``.
+    """The number of projected months, ``12 (expiry_age - entry_age)``.
 
-    All cover and any claim in payment terminate at the policy end date with no value
+    The frame is ``t = 0, 1, ..., proj_len() - 1``: ``proj_len()`` is the exclusive end
+    of the projection, and the last projected month is ``proj_len() - 1``.  All cover
+    and any claim in payment terminate at the policy end date with no value
     [S1][S3][S5][S7][S10], so there is nothing after it.  This is what truncates the
     disabled-life annuity, and an untruncated one materially overstates the liability
     for claims incepting near expiry.
@@ -434,21 +447,25 @@ def proj_len():
 
 
 def duration(t):
-    """Completed policy years at the start of month t: ``(t - 1) // 12``."""
-    return (t - 1) // 12
+    """Completed policy years at the start of month t: ``t // 12``; 0 in the first year."""
+    return t // 12
 
 
 def duration_mth(t):
-    """Months elapsed from the start of the projection at the end of month t; equal to t.
+    """Months elapsed from the start of the projection at the start of month t; equal to t.
 
-    ``t`` is 1-based, so the identity is trivial - the cells exists so the monthly
+    ``t`` is 0-based, so the identity is trivial - the cells exists so the monthly
     models in this library share one vocabulary.
     """
     return t
 
 
 def policy_year(t):
-    """y = ceil(t/12): the policy year containing month t; 1 for t = 1..12."""
+    """y = t // 12 + 1: the contractual policy year containing month t; 1 for t = 0..11.
+
+    A 1-based label derived from the 0-based ``t``, used where a contractual schedule
+    is keyed by policy year: the lapse table and the escalation exponent.
+    """
     return duration(t) + 1
 
 
@@ -460,9 +477,11 @@ def age(t):
 def max_dur():
     """The longest claim duration the cohort vector has to carry.
 
-    ``proj_len() + z0 + 1``: a claim seeded at duration ``z0 + 1`` reaches
-    ``z0 + proj_len()`` by the last month, and a claim incepting in month 1 reaches
-    ``proj_len()``.  Cohorts beyond this are structurally zero.
+    ``proj_len() + z0 + 1``: a claim seeded at duration ``z0 + 1`` at ``t = 0`` reaches
+    ``z0 + proj_len()`` in the last month, ``t = proj_len() - 1``, and a claim incepting
+    at the end of month 0 reaches ``proj_len() - 1`` there; the final ``+ 1`` is one
+    cohort of headroom.  Cohorts beyond this are structurally zero.  A length on the
+    claim-duration clock ``z``, which is 1-based and separate from ``t``.
     """
     return proj_len() + claim_duration_months() + 1
 
@@ -470,8 +489,9 @@ def max_dur():
 def claim_dur_year(z):
     """The claim duration year containing claim month z: ``(z - 1) // 12 + 1``.
 
-    Duration years beyond the termination table take its last row, which is the shipped
-    table's "5+" row.
+    ``z`` is the 1-based claim-duration cohort index, not the time index ``t``, so the
+    ``z - 1`` here is not a first-period idiom.  Duration years beyond the termination
+    table take its last row, which is the shipped table's "5+" row.
     """
     return (z - 1) // 12 + 1
 
@@ -660,7 +680,8 @@ def amount_payable_pp(t):
 def esc_lapse_factor(t):
     """M_esc(y): the premium-shock lapse multiplier **[std]**; 1 in the base run.
 
-    ``1 + 2 max(0, 1.5 j - 0.05)`` once the escalation uplift has started, so a 3% RPI
+    ``1 + 2 max(0, 1.5 j - 0.05)`` once the escalation uplift has started - from policy
+    year 2, i.e. ``t >= 12`` - and 1 in policy year 1, so a 3% RPI
     snapshot gives 4.5% premium growth and no shock, while the 10% cap would give 15%
     growth and a multiplier of 1.2.  Sampled insurers let policyholders decline
     escalation increases, with the option lapsing after two or three consecutive
@@ -678,7 +699,8 @@ def lapse_rate_base(t):
 
     10 / 8 / 6 / 6 / 6 / 4 percent by policy year.  No public UK income protection lapse
     study was retrieved, so the table has no anchor at all and is a pure placeholder.
-    Policy years beyond the table take its last row.
+    The table is keyed by the contractual 1-based ``policy_year``, reached through
+    :func:`policy_year`; policy years beyond the table take its last row.
     """
     tbl = data.lapse_table()                                         # noqa: F821
     y = policy_year(t)
@@ -700,29 +722,30 @@ def lapse_rate_mth(t):
 
 
 def sick_cohorts(t):
-    """l_S(t-1, .): the in-claim population by claim duration, as a list.
+    """l_S(t, .): the in-claim population by claim duration, as a list.
 
     Element ``z - 1`` is the population in claim payment at the start of month t with
-    claim duration ``z`` months, for ``z = 1 ... max_dur()``.  The model's only
-    list-valued cells, and the reason is cost: a two-argument recursion would be
+    claim duration ``z`` months, for ``z = 1 ... max_dur()`` (``z`` is 1-based; the
+    ``z - 1`` is list position, not a time offset).  The model's only list-valued
+    cells, and the reason is cost: a two-argument recursion would be
     ``proj_len() x max_dur()`` separate cells - 130,000 on the anchor cell - where this
     is ``proj_len()`` cells with a loop inside.  :func:`pols_sick_dur` reads an element
     out of it, so the notes' two-dimensional object is still addressable by name.
 
-    At ``t = 1`` the vector is the seeded state: all zeros on an ``active`` cell, and
+    At ``t = 0`` the vector is the seeded state: all zeros on an ``active`` cell, and
     ``pols_if_init()`` at cohort ``z0 + 1`` on an ``in_claim`` one.  Thereafter cohort 1
     is the previous month's inceptions and every other cohort is the previous cohort
     survived one month.  A new list is built on each step rather than the previous one
     mutated, so holding a returned list cannot corrupt the cache.
 
-    Past ``proj_len()`` the vector is all zeros: every claim in payment terminates at the
-    policy end date without value, so there is no run-off tail for the roll-forward to
-    reconcile against.
+    From ``t = proj_len()`` on the vector is all zeros: every claim in payment
+    terminates at the policy end date, the end of month ``proj_len() - 1``, without
+    value, so there is no run-off tail for the roll-forward to reconcile against.
     """
     n = max_dur()
-    if t > proj_len():
+    if t < 0 or t >= proj_len():
         return [0.0] * n
-    if t <= 1:
+    if t == 0:
         seed = pols_if_init() if status() == "in_claim" else 0.0
         z0 = claim_duration_months() + 1
         return [seed if z == z0 else 0.0 for z in range(1, n + 1)]
@@ -735,22 +758,25 @@ def sick_cohorts(t):
 
 
 def pols_sick_dur(t, z):
-    """l_S(t-1, z): the population in claim at the start of month t at duration z."""
+    """l_S(t, z): the population in claim at the start of month t at duration z.
+
+    ``z`` is the 1-based claim-duration cohort index; ``z - 1`` is its list position.
+    """
     v = sick_cohorts(t)
     return v[z - 1] if 1 <= z <= len(v) else 0.0
 
 
 def pols_sick(t):
-    """l_S(t-1): the total population in claim payment at the start of month t."""
+    """l_S(t): the total population in claim payment at the start of month t."""
     return sum(sick_cohorts(t))
 
 
 def pols_sick_surv(t):
     """The population still in claim at the **end** of month t, before new inceptions.
 
-    ``sum over z of l_S(t-1, z) s_S(z)``.  This is what the benefit is paid on: the
-    benefit is monthly in arrears, so a claim incepting at the end of month t is not paid
-    until the end of month ``t + 1``.
+    ``sum over z of l_S(t, z) s_S(z)``, which is ``l_S(t + 1) - n(t)``.  This is what
+    the benefit is paid on: the benefit is monthly in arrears, so a claim incepting at
+    the end of month t is not paid until the end of month ``t + 1``.
     """
     v = sick_cohorts(t)
     surv = claim_rate_vectors()[2]
@@ -760,7 +786,7 @@ def pols_sick_surv(t):
 def pols_recovery(t):
     """rec(t): recoveries out of state S at the end of month t.
 
-    ``sum over z of l_S(t-1, z) rho_m(z)``.  Where they go depends on
+    ``sum over z of l_S(t, z) rho_m(z)``.  Where they go depends on
     :func:`recovery_basis`.
     """
     v = sick_cohorts(t)
@@ -771,7 +797,7 @@ def pols_recovery(t):
 def pols_death_sick(t):
     """dth_S(t): deaths in claim at the end of month t.
 
-    ``sum over z of l_S(t-1, z)(1 - rho_m(z)) q_S_m(z)`` - recovery first, then death
+    ``sum over z of l_S(t, z)(1 - rho_m(z)) q_S_m(z)`` - recovery first, then death
     among the non-recovered.
     """
     v = sick_cohorts(t)
@@ -791,15 +817,16 @@ def pols_exit(t):
 
 
 def pols_active(t):
-    """l_H(t-1): the population in state H at the start of month t.
+    """l_H(t): the population in state H at the start of month t.
 
-    ``pols_if_init()`` at ``t = 1`` on an ``active`` cell and zero on an ``in_claim``
-    one, then the notes' state update: survivors of mortality, lapse and inception, plus
-    the month's recoveries where the recovery basis returns them.
+    ``pols_if_init()`` at ``t = 0`` on an ``active`` cell and zero on an ``in_claim``
+    one, then the notes' state update from the previous month: survivors of mortality,
+    lapse and inception, plus that month's recoveries where the recovery basis returns
+    them.  Zero from ``t = proj_len()`` on, once cover has ceased.
     """
-    if t < 1 or t > proj_len():
+    if t < 0 or t >= proj_len():
         return 0.0
-    if t == 1:
+    if t == 0:
         return pols_if_init() if status() == "active" else 0.0
     prev = pols_active(t - 1)
     stay = (prev * (1.0 - mort_rate_mth(t - 1)) * (1.0 - lapse_rate_mth(t - 1))
@@ -857,8 +884,8 @@ def pols_if_at(t, timing):
     ``"AFT_DECR"``
         the end of the month, once deaths, lapses, recoveries leaving the
         model and - in the last month - the expiry have been taken.  Equal
-        to ``pols_if(t + 1)`` everywhere but the last month, where it is
-        zero.
+        to ``pols_if(t + 1)`` everywhere but the last month,
+        ``t = proj_len() - 1``, where it is zero.
 
     The intermediate points of the other models have no single-population meaning here,
     because two states are moving at once; :func:`pols_active` and :func:`pols_sick`
@@ -867,7 +894,7 @@ def pols_if_at(t, timing):
     if timing == "BEF_DECR":
         return pols_if(t)
     if timing == "AFT_DECR":
-        if t < 1 or t >= proj_len():
+        if t < 0 or t >= proj_len() - 1:
             return 0.0
         return pols_if(t + 1)
     raise ValueError("invalid timing")
@@ -876,12 +903,12 @@ def pols_if_at(t, timing):
 def pols_maturity(t):
     """The population still in force when cover ceases at the policy end date.
 
-    Non-zero only in the last projected month, where all cover and any claim in payment
-    terminate without value [S1][S3][S5][S7][S10].  Not a decrement and not a benefit -
-    but without it the last month appears to lose lives with no cause, and
-    :func:`check_pols_roll_fwd` would not close.
+    Non-zero only in the last projected month, ``t = proj_len() - 1``, at whose end all
+    cover and any claim in payment terminate without value [S1][S3][S5][S7][S10].  Not
+    a decrement and not a benefit - but without it the last month appears to lose lives
+    with no cause, and :func:`check_pols_roll_fwd` would not close.
     """
-    if t != proj_len():
+    if t != proj_len() - 1:
         return 0.0
     stay = (pols_active(t) * (1.0 - mort_rate_mth(t))
             * (1.0 - lapse_rate_mth(t)) * (1.0 - inception_rate_mth(t)))
@@ -890,25 +917,25 @@ def pols_maturity(t):
 
 
 def pols_dead_cum(t):
-    """Cumulative deaths, from both states, before the start of month t."""
-    if t <= 1:
+    """Cumulative deaths, from both states, before the start of month t; 0 at t = 0."""
+    if t <= 0:
         return 0.0
     return pols_dead_cum(t - 1) + pols_death_active(t - 1) + pols_death_sick(t - 1)
 
 
 def pols_lapse_cum(t):
-    """Cumulative lapses out of state H before the start of month t."""
-    if t <= 1:
+    """Cumulative lapses out of state H before the start of month t; 0 at t = 0."""
+    if t <= 0:
         return 0.0
     return pols_lapse_cum(t - 1) + pols_lapse(t - 1)
 
 
 def pols_exit_cum(t):
-    """Cumulative recoveries that left the model before the start of month t.
+    """Cumulative recoveries that left the model before the start of month t; 0 at t = 0.
 
     Zero throughout on the ``return_to_h`` basis, where recoveries never leave.
     """
-    if t <= 1:
+    if t <= 0:
         return 0.0
     return pols_exit_cum(t - 1) + pols_exit(t - 1)
 
@@ -916,7 +943,8 @@ def pols_exit_cum(t):
 def inflation_factor(t):
     """The expense inflation factor in month t: ``(1 + pi)^(y - 1)`` **[std]**.
 
-    Steps on policy anniversaries, not monthly, which is how the notes write it.
+    Steps on policy anniversaries, not monthly, which is how the notes write it; ``y``
+    is the 1-based contractual policy year, so the exponent is ``t // 12``.
     """
     return (1.0 + inflation_rate) ** (policy_year(t) - 1)            # noqa: F821
 
@@ -986,7 +1014,10 @@ def net_cf(t):
 
 
 def disc_factor(t):
-    """v(t) = (1 + i)^(-t/12): the worked example's flat discount factor **[std]**.
+    """v(t) = (1 + i)^(-(t + 1)/12): the worked example's flat discount factor **[std]**.
+
+    The discount factor to the **end** of month t, time ``t + 1``, which is when the
+    benefit of month t is paid; ``disc_factor(0)`` is one month's discount.
 
     A **companion to** the cash flow projection, not part of it: no line of
     :func:`result_cf` is discounted, and every other model in this library projects
@@ -996,7 +1027,7 @@ def disc_factor(t):
     Solvency UK best estimate discounts these same cash flows on the PRA risk-free term
     structure instead of a flat 3%.
     """
-    return (1.0 + disc_rate) ** (-t / 12.0)                          # noqa: F821
+    return (1.0 + disc_rate) ** (-(t + 1) / 12.0)                    # noqa: F821
 
 
 def pv_benefits():
@@ -1007,20 +1038,22 @@ def pv_benefits():
     discounting appears in this model and nowhere else in the library.
     """
     return sum(claims(t, "BENEFIT") * disc_factor(t)
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def annuity_dis():
     """a_dis: the disabled-life annuity factor per £1 a month of amount payable.
 
-    ``pv_benefits() / AP(1)``, which on an ``in_claim`` cell run on the ``exit`` basis is
+    ``pv_benefits() / AP(y = 1)`` - i.e. ``amount_payable_pp(0)``, the amount payable in
+    policy year 1, which contains month ``t = 0`` - which on
+    an ``in_claim`` cell run on the ``exit`` basis is
     the notes' ``a_dis(a0, z0)`` exactly: the expected present value of the escalating
     benefit until recovery, death or expiry, truncated at the policy end date.  On an
     ``active`` cell the same expression is the inception-annuity decomposition of the
     active-lives projection - the value of all *future* claims per unit of benefit - and
     is a different object with the same units.
     """
-    return pv_benefits() / amount_payable_pp(1)
+    return pv_benefits() / amount_payable_pp(0)
 
 
 def check_pols_roll_fwd_resid(t):
@@ -1045,7 +1078,7 @@ def check_pols_roll_fwd():
     ``pols_if_init()``, since the residual accumulates rounding on that many policies.
     """
     return all(abs(check_pols_roll_fwd_resid(t)) <= 1e-10 * max(pols_if_init(), 1.0)
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_states_resid(t):
@@ -1067,7 +1100,7 @@ def check_states():
     :func:`check_states_resid` gives the signed residual of the month that failed.
     """
     return all(abs(check_states_resid(t)) <= 1e-10 * max(pols_if_init(), 1.0)
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_benefit_max():
@@ -1084,14 +1117,14 @@ def check_benefit_max():
 
 
 def result_cf():
-    """Result table of cashflows, indexed by policy month t.
+    """Result table of cashflows, indexed by policy month ``t = 0 .. proj_len() - 1``.
 
     ``pols_if`` is H plus S at the start of the month.  ``pols_active`` is published
     beside it because it, and not ``pols_if``, is the weight on premium income - the
     difference between the two columns is the population whose premiums are waived.
     Nothing here is discounted; see :func:`disc_factor`.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1109,8 +1142,8 @@ def result_cf():
 
 
 def result_states():
-    """Result table of state movements and rates, indexed by policy month t."""
-    ts = list(range(1, proj_len() + 1))
+    """Result table of state movements and rates, indexed by ``t = 0 .. proj_len() - 1``."""
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_active": [pols_active(t) for t in ts],

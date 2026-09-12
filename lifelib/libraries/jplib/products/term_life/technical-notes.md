@@ -36,21 +36,45 @@ specified here once and are not restated there.
 - **Discounting, MOCE, required capital and reserving are out of scope**, cited and not
   reproduced (see Valuation and reserve pointers). `jplib` computes no ratio and builds no
   policy reserve (*sekinin-junbikin*, 責任準備金).
-- **Projection frequency.** Annual — the model is `Term_JP_A`. Nothing in the composite has
-  intra-year contractual structure: the sum assured is level and the premium is level
-  within each policy term (*hoken kikan*, 保険期間). The one intra-year mechanic that
-  matters, the grace period (*yūyo kikan*, 猶予期間) of about one month [S1] [S8], sits
-  inside a decrement the annual grid represents as a rate. The
+- **Projection frequency.** **Monthly** — the model is `Term_JP_S`. The whole library runs
+  on one grid, and this product converted to it. The contract is still quoted in years —
+  the sum assured is level, the premium is level within each policy term (*hoken kikan*,
+  保険期間), and the lapse and mortality bases are annual — so the monthly step is finer
+  than the guarantees rather than finer than the product. What it buys is three things the
+  annual step could not do. The **payment mode** becomes a cash flow rather than a column:
+  月払, 半年払 and 年払 now differ, which matters because Japanese rate cards are quoted
+  monthly [S2]. The **更新 boundary** is one month rather than one year, so the renewal
+  decline stands alone instead of being averaged against twelve months of ordinary lapse.
+  And the grace period (*yūyo kikan*, 猶予期間) of about one month [S1] [S8] is for the first
+  time shorter than a step rather than longer — so the unpaid-premium exit at a renewal is
+  representable, even though the composite still folds it into one decline rate for want of
+  a take-up assumption. The
   [survivor income term technical notes (収入保障保険)](../income_guarantee/technical-notes.md)
-  run monthly because that benefit is a monthly income stream; this product does not
-  need to.
-- **Timing conventions [std].** Premiums at the start of each policy year (annualized, in
-  advance); maintenance expense at the start of the year; acquisition expense and initial
-  commission at issue; death and 高度障害 claims and their claim expense at the end of the
-  policy year in which they arise; ordinary lapse at the end of the year, after deaths;
-  the renewal (*kōshin*, 更新) decline at the end of a boundary year, after lapse.
+  were monthly from the start because that benefit is a monthly income stream.
+- **Time index.** `t` is **0-based** and its unit is the **policy month**: `t = 0` is the
+  first projected month, the frame runs `t = 0, 1, …, T − 1`, and `T = proj_len()` is the
+  **number** of projected months, not the last index. Period `t` runs from time `t` to time
+  `t + 1`. The **contractual policy year is the 1-based label `y(t) = 1 + ⌊t/12⌋`** and
+  `duration(t) = ⌊t/12⌋` is the count of completed policy years; a schedule quoted "by
+  policy year" — the lapse table below — is read at `y(t)`. Attained age is `x + ⌊t/12⌋`,
+  so it steps on the anniversary and not on the month.
+- **Timing conventions [std].** Premiums at the start of the month they fall due in, on the
+  contract's own payment mode — every month on 月払, every sixth on 半年払, every twelfth on
+  年払; maintenance expense at the start of each month, a twelfth of the annual amount;
+  acquisition expense and initial commission at issue; death and 高度障害 claims and their
+  claim expense at the end of the month in which they arise; ordinary lapse at the end of
+  the month, after deaths; the renewal (*kōshin*, 更新) decline at the end of a boundary
+  month, after lapse.
+- **Rate conversion [std].** Mortality and lapse are quoted per annum and applied per month
+  on the **effective** convention `r_m = 1 − (1 − r)^(1/12)`, so that twelve months compound
+  back to the annual rate exactly. A nominal `r / 12` would not, and the difference is
+  material where the rate is large: 9% a year is 0.782842% a month effective against 0.75%
+  nominal, a 4.4% difference in the month's exits. The **renewal decline is not converted**:
+  it is a one-off proportion of the survivors of the single month a 保険期間 ends in, not a
+  rate per unit time.
 - **Age basis [std].** Issue age (*keiyaku nenrei*, 契約年齢) is age last birthday
-  (*man-nenrei*, 満年齢) with fractions discarded [S1]; attained age in year `t` is `x + t − 1`.
+  (*man-nenrei*, 満年齢) with fractions discarded [S1]; attained age in month `t` is
+  `x + ⌊t/12⌋`, so `age(0) = x` and it holds for the twelve months of policy year 1.
   生保標準生命表2018（死亡保険用）is built for an age nearest birthday (*hoken-nenrei*, 保険年齢) basis
   [REG-R20], so reading it at 満年齢 reads it half a year early and
   **understates** mortality. The base run accepts and states that bias; an optional shift
@@ -76,12 +100,12 @@ specified here once and are not restated there.
   here — the 柱告示 were not retrieved [REG-R16] — so the model does not rule. It
   **projects to the ceiling in the base run [std]** and carries a `contract_boundary`
   switch truncating at the end of the current 保険期間. The two differ by more than a
-  rounding: on the anchor cell undiscounted net cash flow is +¥50,400.25 to the ceiling
-  against −¥15,878.74 over the first ten years. Reporting either without naming the
+  rounding: on the anchor cell undiscounted net cash flow is +¥47,254.64 to the ceiling
+  against −¥16,071.24 over the first ten years. Reporting either without naming the
   convention says nothing.
 - **Rounding.** Intermediates at full precision; displayed cash flows to two decimals of a
-  yen, in-force to six decimals **[std]**. Premium rates round to the whole yen per month
-  before annualization, as published rate cards do [S2] [S9] [S10].
+  yen, in-force to six decimals **[std]**. Premium rates round to the whole yen per month,
+  which is the granularity published rate cards are quoted at [S2] [S9] [S10].
 
 ---
 
@@ -121,15 +145,15 @@ annualization `P_a = 12 × P_m = 11,688`.
 
 | Variable | Description | Updated |
 |---|---|---|
-| `l(t)` | In-force probability at the **start** of year t; `l(1) = 1` | annual recursion |
-| `k(t)` | Term index: 1 in the original 保険期間, 2 after the first 更新, … | boundary years |
-| `P_a(t)` | Annualized premium in force in year t; constant within a term | boundary years |
-| `q(t)` | Best-estimate death-and-高度障害 rate (**one** decrement) | assumption lookup |
-| `w(t)` | Ordinary lapse rate (end of year, after deaths) | assumption lookup |
-| `d(t)` | Renewal-decline rate; non-zero **only** in a boundary year | boundary years |
-| `D(t)` | Expected claims in year t = `l(t) × q(t)` | annual |
-| `lap(t)` | Lapsed-but-reinstatable population (復活 module; 0 in base run) | annual |
-| `CF(t)` | Net cash flow of year t, insurer perspective (+ = inflow) | annual |
+| `l(t)` | In-force probability at the **start** of month t; `l(0) = 1` | monthly recursion |
+| `k(t)` | Term index: 1 in the original 保険期間, 2 after the first 更新, … | boundary months |
+| `P_m(t)`, `P_a(t)` | Monthly and annualized premium in force; constant within a term | boundary months |
+| `q(t)`, `q_m(t)` | Best-estimate death-and-高度障害 rate (**one** decrement), annual and per month | assumption lookup |
+| `w(t)`, `w_m(t)` | Ordinary lapse rate (end of month, after deaths), annual and per month | assumption lookup |
+| `d(t)` | Renewal-decline **proportion**; non-zero only in a boundary month, never converted | boundary months |
+| `D(t)` | Expected claims in month t = `l(t) × q_m(t)` | monthly |
+| `lap(t)` | Lapsed-but-reinstatable population, 36 monthly vintages (復活 module; 0 in base run) | monthly |
+| `CF(t)` | Net cash flow of month t, insurer perspective (+ = inflow) | monthly |
 
 Two of these a Japanese term model needs and a UK one does not: `k(t)`, because the premium
 is a function of the term index rather than of `t`, and `d(t)`, because leaving at a
@@ -229,7 +253,7 @@ attained age 20 to attained age 80, the range its model points can reach:
 | Best estimate | `q(t) = 0.80 × q_x^tab` | **[std]** (1) |
 | Age read | At 満年齢, unshifted; optional `sqrt(q_x · q_{x+1})` shift | **[std]** |
 | Improvement | None in the base run | **[std]** (2) |
-| Suicide-exclusion offset | None: years 1–3 claims are not reduced for excluded suicides | clause [S1]; offset **[std]** (3) |
+| Suicide-exclusion offset | None: policy years 1–3 (`t = 0 … 35`) claims are not reduced for excluded suicides | clause [S1]; offset **[std]** (3) |
 
 1. The 作成概要 states the margin in the publisher's words: a risk-theory adjustment sized
    to hold the exceedance probability near 2σ, **capped at 130% of the unadjusted rate**
@@ -251,15 +275,21 @@ attained age 20 to attained age 80, the range its model points can reach:
 [REG-R31]. It is a whole-market number across all shapes and durations, not a duration
 curve, so the reference table is **[std]** and is reconciled to it explicitly:
 
-| Policy year | 1 | 2 | 3 | 4 | 5+ |
+| Policy year `y(t)` | 1 | 2 | 3 | 4 | 5+ |
 |---|---|---|---|---|---|
+| Projection months `t` | 0–11 | 12–23 | 24–35 | 36–47 | 48+ |
 | Annual lapse `w(t)` **[std]** | 9% | 7% | 6% | 5.5% | 5% |
+| Monthly `w_m(t) = 1 − (1 − w)^(1/12)` | 0.782842% | 0.603288% | 0.514520% | 0.470048% | 0.426532% |
 
-The simple mean over the first ten years is 5.75% and the in-force-weighted mean 5.94%,
-both a little above 5.6% — the expected direction, since the industry figure is dominated
-by long-duration in-force sum assured while this is an early-duration protection curve. The
-level is anchored; the **shape** is a convention with no Japanese published evidence behind
-it. Lapse pays nothing: there is no 解約返戻金 [S1].
+`lapse_table.csv` is keyed by the **contractual, 1-based** policy year, so `lapse_rate(t)`
+reads it at `y(t) = 1 + ⌊t/12⌋` and carries the last row forward; the table itself stays
+annual — the rate is the observation — and `lapse_rate_mth(t)` derives the month's
+decrement from it. The simple mean over the first ten
+years is 5.75% and the in-force-weighted mean 5.94%, both a little above 5.6% — the
+expected direction, since the industry figure is dominated by long-duration in-force sum
+assured while this is an early-duration protection curve. The level is anchored; the
+**shape** is a convention with no Japanese published evidence behind it. Lapse pays
+nothing: there is no 解約返戻金 [S1].
 
 **Renewal decline.** At each 更新 boundary a proportion `d` of survivors leave rather than
 accept the repriced contract. This decrement has **no `uklib` analogue** and it is large:
@@ -280,19 +310,20 @@ the first is a decision.
 |---|---|---|
 | Acquisition expense `E0` | ¥15,000 per policy at issue | **[std]** |
 | Initial commission `c0` | 50% of the first-year annualized premium, at issue | **[std]** |
-| Renewal commission `c_r` | 5% of premiums from year 2 | **[std]** |
+| Renewal commission `c_r` | 5% of premiums from policy year 2, i.e. `t ≥ 12` | **[std]** |
 | Commission at 更新 | **None** in the base run | **[std]** (4) |
-| Maintenance expense `e(t)` | ¥4,000 p.a., inflating 1.0% p.a. | **[std]** |
+| Maintenance expense `e_m(t)` | ¥4,000 p.a. taken as ¥4,000/12 a month, inflating 1.0% **a year** | **[std]** |
 | Claim expense `ec` | ¥30,000 per death / 高度障害 claim | **[std]** |
 
 4. A 更新 is not new business — no new 保険証券 is issued and no 告知 taken [S1] [S4] — so
    the base run pays no acquisition commission at a renewal. That is a choice, not a fact:
    no document in the set discloses a commission scale at all, and a scale paying
-   first-year rates on each renewed term would change the sign of the cash flow in years
-   11, 21, 31 and 41. The model exposes it as a switch and the pitfall list tests it.
+   first-year rates on each renewed term would change the sign of the cash flow at
+   `t = 120, 240, 360` and `480`. The model exposes it as a switch and the pitfall list
+   tests it.
 
 The **¥248 monthly policy fee is a premium component, not an expense recovery** [S2]. It
-enters the model only through `P_a`; crediting it against `e(t)` counts it twice.
+enters the model only through `P_m`; crediting it against `e_m(t)` counts it twice.
 
 ---
 
@@ -302,28 +333,33 @@ enters the model only through `P_a`; crediting it against `e(t)` counts it twice
 
 | Symbol | Meaning | cells |
 |---|---|---|
-| `t` | policy year, `t = 1..N`; `N = w_r − x` for 年満了, `n` for 歳満了 | — |
-| `x` | 契約年齢 (満年齢); attained age in year t is `x + t − 1` | `age` |
-| `k` | term index; `k = 1 + floor((t − 1) / n)` for 年満了 | `term_index` |
+| `t` | projection **month**, 0-based: `t = 0..T−1`. `T = 12(w_r − x)` for 年満了, `12n` for 歳満了 | — |
+| `T` | the **number** of projected months, `proj_len()`; the last index is `T − 1` | `proj_len` |
+| `y(t)`, `duration(t)` | contractual policy year `1 + ⌊t/12⌋`, and completed years `⌊t/12⌋` | `policy_year`, `duration` |
+| `x` | 契約年齢 (満年齢); attained age in month t is `x + ⌊t/12⌋` | `age` |
+| `k` | term index, contractual and **1-based**; `k = 1 + ⌊duration(t) / n⌋` for 年満了 | `term_index` |
 | `SA` | sum assured, JPY, level | `sum_assured` |
 | `f` | flat monthly policy element, ¥248 | `policy_fee_m` |
 | `r(sex, x, m)` | marginal monthly rate per ¥5,000,000 of cover, entry age x, term m | `prem_rate_m` |
 | `P_m(k)`, `P_a(k)` | monthly and annualized premium in term k; `P_a = 12 × P_m` | `premium_mth_pp`, `prem_pp` |
-| `q(t)` | best-estimate death-and-高度障害 rate | `mort_rate` |
-| `w(t)` | ordinary lapse rate | `lapse_rate` |
-| `d(t)` | renewal-decline rate; 0 unless t is a boundary year | `decline_rate` |
-| `l(t)` | in-force probability at the start of year t; `l(1) = 1` | `pols_if` |
-| `D(t)` | expected claims in year t = `l(t) × q(t)` | `pols_death` |
-| `E0`, `e(t)` | acquisition expense; maintenance `4,000 × 1.01^(t−1)` per policy | `expense_acq`, `expenses` |
-| `c0`, `c_r` | initial commission `0.50 × P_a(1)`; renewal rate 0.05 | `commissions` |
+| `p` | months between premium payments: 1 on 月払, 6 on 半年払, 12 on 年払 | `prem_mode_months` |
+| `Pd(t)` | premium falling due in month t: `p × P_m` if `t mod p = 0`, else 0 | `prem_due_pp` |
+| `q(t)`, `q_m(t)` | best-estimate death-and-高度障害 rate, annual and `1 − (1 − q)^(1/12)` | `mort_rate`, `mort_rate_mth` |
+| `w(t)`, `w_m(t)` | ordinary lapse rate, annual and `1 − (1 − w)^(1/12)` | `lapse_rate`, `lapse_rate_mth` |
+| `d(t)` | renewal-decline proportion; 0 unless `(t + 1) mod 12n = 0`, i.e. unless month t is the last of a 保険期間 | `decline_rate` |
+| `l(t)` | in-force probability at the start of month t; `l(0) = 1` | `pols_if` |
+| `D(t)` | expected claims in month t = `l(t) × q_m(t)` | `pols_death` |
+| `E0`, `e_m(t)` | acquisition expense; maintenance `(4,000 / 12) × 1.01^(y(t) − 1)` per policy | `expense_acq`, `expenses` |
+| `c0`, `c_r` | initial commission `0.50 × P_a(k = 1)`, the first term's annualized premium (`prem_pp(0)`); renewal rate 0.05 from `t = 12` | `commissions` |
 | `ec` | claim expense per claim, ¥30,000 | `expense_claim` |
-| `CF(t)` | net cash flow of year t (+ inflow) | `net_cf` |
+| `CF(t)` | net cash flow of month t (+ inflow) | `net_cf` |
 
-Dimensional check: `q`, `w`, `d`, `l`, `D` are dimensionless probabilities; `SA`, `E0`,
-`e`, `ec`, `P_a` are JPY per policy per year; `f` and `P_m` are JPY **per month**, so every
-expression using them carries an explicit `× 12`; `r` is JPY per month per ¥5,000,000 of
-cover, so `r × SA / 5,000,000` is JPY per month. Every term of `CF(t)` is JPY per year per
-policy issued.
+Dimensional check: `q`, `w`, `l`, `D` are dimensionless probabilities, and so is `d` — but
+`q` and `w` are rates **per year** while `q_m`, `w_m` and `d` apply to a **month**. `SA`,
+`E0` and `ec` are JPY per policy; `P_a` is JPY per policy per year and is a pricing quantity
+rather than a cash flow; `f`, `P_m`, `Pd` and `e_m` are JPY per policy **per month**; `r` is
+JPY per month per ¥5,000,000 of cover, so `r × SA / 5,000,000` is JPY per month. Every term
+of `CF(t)` is JPY per **month** per policy issued.
 
 ### Premium chassis
 
@@ -332,7 +368,15 @@ The published rate structure decomposes exactly [S2]:
     P_m(k) = f + r(sex, x_k, m_k) * SA / 5,000,000
     x_k    = x + (k - 1) * n              (attained age at the k-th term's start)
     m_k    = min(n, w_r - x_k)            (truncation at the ceiling)
-    P_a(k) = 12 * P_m(k)
+    P_a(k) = 12 * P_m(k)                  (a pricing quantity, not a cash flow)
+    Pd(t)  = p * P_m(k(t))  if t mod p = 0, else 0      (what actually falls due)
+
+`P_m` is the rate card's own quantity and, on this grid, the cash flow as well: the annual
+step had to annualize it to get a row and this one does not. The **payment mode** decides
+how many months' worth fall in a given month — `p = 1` on 月払, 6 on 半年払, 12 on 年払, the
+first instalment of each at `t = 0` — and the mode changes the **timing** and not the annual
+amount, because mode discounts and 前納 discounts are insurer-set and unpublished
+[S1] [S7] [S9] [S14] **[std]**.
 
 At the anchor cell `r(M, 30, 10) = 363` and `P_m(1) = 248 + 2 × 363 = 974` [S2],
 reproducing the published figure to the yen; at the first renewal `r(M, 40, 10) = 787.5`
@@ -351,28 +395,38 @@ visible rather than trusted. It gives `P_m = ¥8,976` at age 60 and `¥23,881` a
 
 ### Decrement recursion and processing order
 
-For `t = 1..N`, in this order **[std]**:
+For `t = 0..T−1`, in this order **[std]**:
 
-1. **Start of year.** Premium income `P_a(k(t)) × l(t)`; maintenance `e(t) × l(t)`; renewal
-   commission `c_r × P_a(k(t)) × l(t)` for `t ≥ 2`. At `t = 1` additionally `E0` and `c0`
-   per policy issued (`l(1) = 1`).
-2. **Decrement lookup.** `q(t)` at attained age `x + t − 1`; `w(t)` from the lapse table;
-   `d(t) = d` if `t mod n = 0` and `t < N`, else 0.
-3. **End of year — claims.** `D(t) = l(t) × q(t)`; claim outgo `SA × D(t)`; claim expense
+1. **Start of month.** Premium income `Pd(t) × l(t)` — zero in the months the mode does not
+   make a payment fall in; maintenance `e_m(t) × l(t)`; renewal commission
+   `c_r × Pd(t) × l(t)` for `t ≥ 12`. At `t = 0` additionally `E0` and `c0` per policy
+   issued (`l(0) = 1`).
+2. **Decrement lookup.** `q(t)` at attained age `x + ⌊t/12⌋` and `q_m(t)` from it; `w(t)`
+   from the lapse table, read at policy year `y(t)`, and `w_m(t)` from it;
+   `d(t) = d` if `(t + 1) mod 12n = 0` and `t < T − 1`, else 0.
+3. **End of month — claims.** `D(t) = l(t) × q_m(t)`; claim outgo `SA × D(t)`; claim expense
    `ec × D(t)`. One decrement, one benefit: death and 高度障害 are not added.
-4. **End of year — ordinary lapse.** `l(t) × (1 − q(t)) × w(t)` leave, applied to survivors
-   of mortality. **Nothing is paid** — there is no 解約返戻金 [S1].
-5. **End of a boundary year — renewal decline.**
-   `l(t) × (1 − q(t)) × (1 − w(t)) × d(t)` leave, applied after lapse. Nothing is paid.
+4. **End of month — ordinary lapse.** `l(t) × (1 − q_m(t)) × w_m(t)` leave, applied to
+   survivors of mortality. **Nothing is paid** — there is no 解約返戻金 [S1].
+5. **End of a boundary month — renewal decline.**
+   `l(t) × (1 − q_m(t)) × (1 − w_m(t)) × d(t)` leave, applied after lapse. Nothing is paid.
+   Note the asymmetry: the first two factors are monthly conversions of annual rates and the
+   third is not converted at all, because it is one decision taken on one date.
 6. **Roll forward**, plus any 復活 reinstatements (zero in the base run).
 
-       l(t+1) = l(t) * (1 - q(t)) * (1 - w(t)) * (1 - d(t)) + lap(t) * rho
+       l(t+1) = l(t) * (1 - q_m(t)) * (1 - w_m(t)) * (1 - d(t)) + lap(t) * rho_m
 
-7. **Repricing at a boundary.** `k(t+1) = k(t) + 1` and `P_a` is recomputed at attained age
-   `x + t` over the term `m = min(n, w_r − (x + t))`. The projection horizon does **not**
-   change; the term shortens instead.
+7. **Repricing at a boundary.** `k(t+1) = k(t) + 1` and `P_m` is recomputed at the attained
+   age reached at the renewal, `x + duration(t) + 1`, over the term
+   `m = min(n, w_r − (x + duration(t) + 1))`. The projection horizon does **not** change;
+   the term shortens instead.
 
-At `t = N` the projection ends: no maturity payment, no run-off, no tail states [S1] [S8]
+Because the conversion in step 6 is the effective one, `l` at every anniversary is exactly
+what an annual-step projection of the same bases produces: `(1 − q_m)^12 = (1 − q)` and
+`(1 − w_m)^12 = (1 − w)`, and the decline falls in the month the policy year ends either
+way. That is the arithmetic check that the grid was changed and the basis was not.
+
+At `t = T − 1` the projection ends: no maturity payment, no run-off, no tail states [S1] [S8]
 [S10] [S14]. The identity the model must satisfy at every `t` is
 
     l(t) - l(t+1) = D(t) + lapses(t) + declines(t) - reinstatements(t)
@@ -384,22 +438,27 @@ check being right for each.
 
 ### Net cash flow
 
-    CF(t) = P_a(k(t)) * l(t)                          (premiums)
+    CF(t) = Pd(t) * l(t)                              (premiums)
           - SA * D(t)                                 (death and 高度障害 claims)
           - ec * D(t)                                 (claim expense)
-          - e(t) * l(t)                               (maintenance)
-          - c_r * P_a(k(t)) * l(t) * 1{t >= 2}        (renewal commission)
-          - (E0 + c0) * 1{t = 1}                      (acquisition)
+          - e_m(t) * l(t)                             (maintenance)
+          - c_r * Pd(t) * l(t) * 1{t >= 12}           (renewal commission)
+          - (E0 + c0) * 1{t = 0}                      (acquisition)
 
 `net_cf` is income-positive, per the library convention. Lapse and decline contribute no
 term: they act only through `l(t)`. A `claims_lapse` column exists and is identically zero
-— the zero is the product fact worth publishing, as it is in `Term_UK_A`.
+— the zero is the product fact worth publishing, as it is in `Term_UK_S`.
 
-Known bias of the annual-in-advance convention **[std]**: a full year's premium is
-collected at the start of each year with no allowance for premiums ceasing at mid-year
-exits, so premium income is slightly overstated; the offsetting understatement is the
-end-of-year claim timing. Do **not** apply both this convention and a separate half-year
-premium adjustment.
+**A [std] the annual grid needed and this one does not.** On an annual step a full year's
+premium was collected in advance from lives that might exit in month two, which overstated
+premium income, and the offsetting understatement was the end-of-year claim timing; the two
+were declared a matched pair and a further half-year adjustment was forbidden. Here a policy
+pays for the months it is in force and its claim falls in the month it arises, so neither
+approximation is made and neither offset is needed. What remains is a within-month
+convention only — premium at the start of the month, claims at the end of it — worth about a
+fortnight of interest on one month's cash flow, which this model does not discount in any
+case. The visible consequence is that undiscounted premium income on the anchor cell falls
+from ¥470,348.54 to ¥457,507.04.
 
 ### Optional modules (all off in the base run)
 
@@ -411,8 +470,11 @@ premium adjustment.
   with `i_ln` a **[std]** snapshot rate. A full acceleration extinguishes the contract
   retroactively to the claim date; a partial one reduces `SA` from that date and the
   reduced premium continues [S1] [S7] — two transitions, not one benefit with two amounts.
-  Barred within one year of a non-renewable expiry [S1] [S7] [S8]; on a 更新型 cell that bar
-  bites only in the ceiling term.
+  Barred within **one year** of a non-renewable expiry [S1] [S7] [S8], which on the monthly
+  grid is the last twelve months of the projection, `t ≥ T − 12`; on a 更新型 cell that bar
+  bites only in the ceiling term. The annual grid could only approximate the clause by
+  barring the whole final projected year, which was the same length by coincidence of the
+  grid rather than by reading the clause.
 - **保険料の払込の免除.** A waiver state on the accident-plus-180-days-plus-別表4 test [S1]
   [S8] [S12] [S14] with **[std]** incidence. 別表4 is a materially lower bar than 別表3 —
   loss of one eye, deafness in both ears, loss of one limb at wrist or ankle [S1] — so the
@@ -423,10 +485,12 @@ premium adjustment.
   as one balance with an indicator on it — a single indicator drops a whole cohort a year
   early or late:
 
-      lap(t)              = sum over s in [t - W, t - 1] of lapses(s) * (1 - rho)^(t - 1 - s)
+      lap(t)              = sum over s in [max(0, t - W), t - 1] of lapses(s) * (1 - rho)^(t - 1 - s)
       lapses(s)           = l(s) * (1 - q(s)) * w(s)
       reinstatements into l(t+1) = lap(t) * rho
-      window expiries(t)  = lapses(t - W) * (1 - rho)^W
+      window expiries(t)  = lapses(t - W) * (1 - rho)^W, and 0 for t < W
+
+  (the vintage index `s` is the same 0-based projection index as `t`, so `lap(0) = 0`)
 
   with `rho` **[std]**. One inflow and two outflows, and the ledger
   `lap(t) − lap(t+1) = reinstatements(t) + expiries(t) − lapses(t)` is what
@@ -500,100 +564,147 @@ behaviour is thinner than the UK's: one published lapse rate for the whole marke
 ## Worked example
 
 **Anchor cell (`point_id = 1`).** Male, 契約年齢 30 (満年齢), 年満了 10年 更新型, renewal
-ceiling attained age 80, 保険金額 ¥10,000,000, 月払保険料 **¥974** [S2], `P_a = ¥11,688`
-**[std annualization]**. Horizon `N = 80 − 30 = 50` years; boundary years `t = 10, 20, 30,
-40`. Base run: no rider, no waiver, no 復活, no selective lapsation, boundary = ceiling.
+ceiling attained age 80, 保険金額 ¥10,000,000, 月払保険料 **¥974** [S2], 月払 mode, so
+`P_a = ¥11,688` **[std annualization]**. Horizon `N = 80 − 30 = 50` years, which on the
+monthly grid is **600 rows**, `t = 0..599`; the boundary months — the last month of each
+保険期間 — are `t = 119, 239, 359, 479` (the last months of policy years 10, 20, 30 and 40).
+Base run: no rider, no waiver, no 復活, no selective lapsation, boundary = ceiling.
 
 **Every assumption value the cell uses.** The table rates below come from the canonical
 `jplib` proxy of 生保標準生命表2018（死亡保険用）男. Attained ages 30–35 and 40 are sourced
 anchors, **read from the published table** [REG-R18] [R4]; ages 36–39 are the **[std]**
 log-linear interpolation between the age-35 and age-40 anchors, rounded to 5 decimals. The
-best-estimate rate is `q(t) = 0.80 × q_x^tab` **[std]**:
+best-estimate annual rate is `q(t) = 0.80 × q_x^tab` **[std]**, and the decrement actually
+applied to a month is `q_m(t) = 1 − (1 − q(t))^(1/12)`:
 
 | attained age | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | `q_x^tab` | 0.00068 | 0.00069 | 0.00070 | 0.00072 | 0.00074 | 0.00077 | 0.00084 | 0.00091 | 0.00099 | 0.00108 | 0.00118 |
 | `q(t)` | 0.000544 | 0.000552 | 0.000560 | 0.000576 | 0.000592 | 0.000616 | 0.000672 | 0.000728 | 0.000792 | 0.000864 | 0.000944 |
+| `q_m(t)` | 0.00004534 | 0.00004601 | 0.00004668 | 0.00004801 | 0.00004934 | 0.00005134 | 0.00005601 | 0.00006068 | 0.00006601 | 0.00007203 | 0.00007870 |
 | anchor? | yes | yes | yes | yes | yes | yes | no | no | no | no | yes |
 
-Lapse `w(t)` = 9% / 7% / 6% / 5.5% / 5% from year 5 **[std]**; renewal decline `d` = 15% at
-boundary years **[std]**; `E0` = ¥15,000, `c0` = 0.50 × 11,688 = ¥5,844, `c_r` = 5% from
-year 2, `e(t)` = 4,000 × 1.01^(t−1), `ec` = ¥30,000, all **[std]**.
+Lapse `w(t)` = 9% / 7% / 6% / 5.5% / 5% from policy year 5 **[std]**, read by policy year
+`y(t) = 1 + ⌊t/12⌋` and applied as `w_m(t) = 1 − (1 − w(t))^(1/12)` — 0.00782842 a month in
+policy year 1. The renewal decline `d` = 15% at a boundary month **[std]** is **not**
+converted: it is a one-off proportion of the survivors of that single month, not a rate per
+unit time. `E0` = ¥15,000, `c0` = 0.50 × 11,688 = ¥5,844, `c_r` = 5% of premium income from
+`t = 12` (the first month of policy year 2), `e_m(t)` = (4,000 / 12) × 1.01^(y(t) − 1),
+`ec` = ¥30,000, all **[std]**.
 
-| t | age | `l(t)` | `P_a` | Premiums | Claims | Claim exp | Maint. + acq. | Commission | `CF(t)` |
-|---|---|---|---|---|---|---|---|---|---|
-| 1 | 30 | 1.000000 | 11,688 | 11,688.00 | 5,440.00 | 16.32 | 19,000.00 | 5,844.00 | −18,612.32 |
-| 2 | 31 | 0.909505 | 11,688 | 10,630.29 | 5,020.47 | 15.06 | 3,674.40 | 531.51 | +1,388.85 |
-| 3 | 32 | 0.845373 | 11,688 | 9,880.72 | 4,734.09 | 14.20 | 3,449.46 | 494.04 | +1,188.93 |
-| 10 | 39 | 0.578436 | 11,688 | 6,760.76 | 4,997.69 | 14.99 | 2,530.51 | 338.04 | −1,120.47 |
-| 11 | 40 | 0.466683 | 21,876 | 10,209.17 | 4,405.49 | 13.22 | 2,062.04 | 510.46 | +3,217.97 |
+The `t` column below is the model's own 0-based index and its unit is the **policy month** —
+the `result_cf()` row label — with the policy year `y(t)` beside it.
 
-**Trace, year 1.** `l(1) = 1`; premiums `= 11,688 × 1 = 11,688.00`.
-`q(1) = 0.80 × 0.00068 = 0.000544`, so `D(1) = 0.000544`. Claims
-`= 10,000,000 × 0.000544 = 5,440.00`; claim expense `= 30,000 × 0.000544 = 16.32`. Expenses
-`= E0 + e(1) = 15,000.00 + 4,000.00 = 19,000.00`; commission `= c0 = 0.50 × 11,688 =
-5,844.00`. `CF(1) = 11,688.00 − 5,440.00 − 16.32 − 19,000.00 − 5,844.00 = −18,612.32`.
-Roll forward: `l(2) = 1 × (1 − 0.000544) × (1 − 0.09) = 0.999456 × 0.91 = 0.909505`.
+| t | y(t) | age | `l(t)` | `P_m` | Premiums | Claims | Claim exp | Maint. + acq. | Commission | `CF(t)` |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 0 | 1 | 30 | 1.000000 | 974 | 974.00 | 453.45 | 1.36 | 15,333.33 | 5,844.00 | −20,658.14 |
+| 1 | 1 | 30 | 0.992127 | 974 | 966.33 | 449.88 | 1.35 | 330.71 | 0.00 | +184.40 |
+| 2 | 1 | 30 | 0.984315 | 974 | 958.72 | 446.33 | 1.34 | 328.11 | 0.00 | +182.94 |
+| 11 | 1 | 30 | 0.916723 | 974 | 892.89 | 415.68 | 1.25 | 305.57 | 0.00 | +170.38 |
+| 12 | 2 | 31 | 0.909505 | 974 | 885.86 | 418.48 | 1.26 | 306.20 | 44.29 | +115.63 |
+| 119 | 10 | 39 | 0.551431 | 974 | 537.09 | 397.19 | 1.19 | 201.03 | 26.85 | −89.17 |
+| 120 | 11 | 40 | 0.466683 | 1,823 | 850.76 | 367.28 | 1.10 | 171.84 | 42.54 | +268.00 |
 
-**Trace, year 2.** Premiums `= 11,688 × 0.90950496 = 10,630.29`.
-`q(2) = 0.80 × 0.00069 = 0.000552`; `D(2) = 0.90950496 × 0.000552 = 0.00050205`; claims
-`= 5,020.47`; claim expense `= 15.06`. Maintenance `= 4,000 × 1.01 × 0.90950496 =
-4,040 × 0.90950496 = 3,674.40`. Renewal commission `= 0.05 × 10,630.29 = 531.51`.
-`CF(2) = 10,630.29 − 5,020.47 − 15.06 − 3,674.40 − 531.51 = +1,388.85`. Roll forward:
-`l(3) = 0.90950496 × (1 − 0.000552) × (1 − 0.07) = 0.845373`.
+**Trace, `t = 0` — the first policy month.** `l(0) = 1`; premiums `= 974 × 1 = 974.00`, one
+month's premium and not a year's. `q(0) = 0.80 × 0.00068 = 0.000544`, so
+`q_m(0) = 1 − (1 − 0.000544)^(1/12) = 0.0000453446` and `D(0) = 0.0000453446`. Claims
+`= 10,000,000 × 0.0000453446 = 453.45`; claim expense `= 30,000 × 0.0000453446 = 1.36`.
+Expenses `= E0 + e_m(0) = 15,000.00 + 4,000/12 = 15,333.33`; commission
+`= c0 = 0.50 × 11,688 = 5,844.00`.
+`CF(0) = 974.00 − 453.45 − 1.36 − 15,333.33 − 5,844.00 = −20,658.14`. Roll forward:
+`w_m(0) = 1 − (1 − 0.09)^(1/12) = 0.00782842`, so
+`l(1) = 1 × (1 − 0.0000453446) × (1 − 0.00782842) = 0.992127`.
 
-**Trace, year 3.** Premiums `= 11,688 × 0.84537271 = 9,880.72`.
-`q(3) = 0.80 × 0.00070 = 0.000560`; `D(3) = 0.84537271 × 0.000560 = 0.00047341`; claims
-`= 4,734.09`; claim expense `= 14.20`. Maintenance
-`= 4,000 × 1.01^2 × 0.84537271 = 4,080.40 × 0.84537271 = 3,449.46`. Renewal commission
-`= 0.05 × 9,880.72 = 494.04`.
-`CF(3) = 9,880.72 − 4,734.09 − 14.20 − 3,449.46 − 494.04 = +1,188.93`.
+**Trace, `t = 1`.** Premiums `= 974 × 0.99212659 = 966.33`. The rates are unchanged —
+attained age and policy year both still step on the anniversary — so
+`D(1) = 0.99212659 × 0.0000453446 = 0.00004499`; claims `= 449.88`; claim expense `= 1.35`.
+Maintenance `= (4,000 / 12) × 1.01^0 × 0.99212659 = 330.71`. **No renewal commission**: the
+5% scale starts at `t = 12`, the first month of policy year 2, not at the second row of the
+frame. `CF(1) = 966.33 − 449.88 − 1.35 − 330.71 = +184.40`.
 
-**Trace, year 10 — the boundary year.** `l(10) = 0.57843599`; premiums
-`= 11,688 × 0.57843599 = 6,760.76` on the **old** premium, because the repricing takes
-effect at the start of year 11 and not before. `q(10) = 0.80 × 0.00108 = 0.000864`;
-`D(10) = 0.00049977`; claims `= 4,997.69`; claim expense `= 14.99`. Maintenance
-`= 4,000 × 1.01^9 × 0.57843599 = 2,530.51`; renewal commission `= 338.04`.
-`CF(10) = 6,760.76 − 4,997.69 − 14.99 − 2,530.51 − 338.04 = −1,120.47`. Roll forward, in
-the processing order and no other: after mortality
-`0.57843599 × (1 − 0.000864) = 0.57793622`; after ordinary lapse
-`× (1 − 0.05) = 0.54903941`; after the renewal decline `× (1 − 0.15) = 0.46668350`. So
-`l(11) = 0.466683`, and the three exits in year 10 are 0.00049977 deaths, 0.02889681
-lapses and **0.08235591 renewal declines** — the decline is 74% of all exits that year, and
-a model folding it into the lapse rate cannot see it.
+**Trace, `t = 12` — the first month of policy year 2.** Attained age 31, so
+`q(12) = 0.80 × 0.00069 = 0.000552` and `q_m(12) = 0.00004601`; lapse moves to 7%, so
+`w_m(12) = 0.00603288`. Premiums `= 974 × 0.90950496 = 885.86`; claims `= 418.48`;
+maintenance `= (4,000 / 12) × 1.01 × 0.90950496 = 306.20`; renewal commission
+`= 0.05 × 885.86 = 44.29`. `CF(12) = 885.86 − 418.48 − 1.26 − 306.20 − 44.29 = +115.63`.
 
-**Trace, year 11 — the repriced term.** Attained age at renewal is `30 + 10 = 40`, so
-`P_m(2) = 248 + 2 × 787.5 = 1,823` [S2] and `P_a(2) = 21,876`. Premiums
-`= 21,876 × 0.46668350 = 10,209.17` — **higher than year 10's despite 19% fewer policies**,
-because the premium multiplied by 1.87. `q(11) = 0.80 × 0.00118 = 0.000944`;
-`D(11) = 0.00044055`; claims `= 4,405.49`; claim expense `= 13.22`. Maintenance
-`= 4,000 × 1.01^10 × 0.46668350 = 2,062.04`; renewal commission
-`= 0.05 × 10,209.17 = 510.46`.
-`CF(11) = 10,209.17 − 4,405.49 − 13.22 − 2,062.04 − 510.46 = +3,217.97`.
+**Trace, `t = 119` — the boundary month.** `l(119) = 0.55143099`; premiums
+`= 974 × 0.55143099 = 537.09` on the **old** premium, because the repricing takes effect at
+`t = 120` and not before. `q(119) = 0.80 × 0.00108 = 0.000864`, `q_m = 0.00007203`;
+`D(119) = 0.00003972`; claims `= 397.19`; claim expense `= 1.19`. Maintenance
+`= (4,000 / 12) × 1.01^9 × 0.55143099 = 201.03`; renewal commission `= 26.85`.
+`CF(119) = 537.09 − 397.19 − 1.19 − 201.03 − 26.85 = −89.17`. Roll forward, in the
+processing order and no other: after mortality `0.55143099 × (1 − 0.00007203) = 0.55139127`;
+after ordinary lapse `× (1 − 0.00426532) = 0.54903941`; after the renewal decline
+`× (1 − 0.15) = 0.46668350`. So `l(120) = 0.466683`, and the three exits of that **month**
+are 0.00003972 deaths, 0.00235186 lapses and **0.08235591 renewal declines** — the decline is
+**97.2%** of the exits of the month it falls in. The annual grid could only say 74%, because
+it was comparing one renewal decision with twelve months of ordinary lapse.
 
-**The renewal ladder**, five numbers per renewal:
+**Trace, `t = 120` — the first month of the repriced term.** Attained age at renewal is
+`30 + 10 = 40`, so `P_m(2) = 248 + 2 × 787.5 = 1,823` [S2] and `P_a(2) = 21,876`. Premiums
+`= 1,823 × 0.46668350 = 850.76` — **higher than `t = 119`'s despite 15% fewer policies**,
+because the premium multiplied by 1.87. `q(120) = 0.80 × 0.00118 = 0.000944`,
+`q_m = 0.00007870`; `D(120) = 0.00003672`; claims `= 367.28`; claim expense `= 1.10`.
+Maintenance `= (4,000 / 12) × 1.01^10 × 0.46668350 = 171.84`; renewal commission
+`= 0.05 × 850.76 = 42.54`.
+`CF(120) = 850.76 − 367.28 − 1.10 − 171.84 − 42.54 = +268.00`.
+
+**The same statement by policy year.** `result_cf()` grouped on `⌊t/12⌋` gives the annual
+view, with `l` read at the anniversary. It is not the annual-grid model's statement and is
+not meant to be: the premium is now collected only from the months a policy is actually in
+force, so every premium row is lower.
+
+| y − 1 | `l(12(y−1))` | Premiums | Claims | Claim exp | Maint. + acq. | Commission | Net |
+|---|---|---|---|---|---|---|---|
+| 0 | 1.000000 | 11,194.92 | 5,211.80 | 15.64 | 18,831.25 | 5,844.00 | −18,707.77 |
+| 1 | 0.909505 | 10,282.20 | 4,857.30 | 14.57 | 3,554.08 | 514.11 | +1,342.14 |
+| 2 | 0.845373 | 9,603.52 | 4,602.46 | 13.81 | 3,352.69 | 480.18 | +1,154.39 |
+| 9 | 0.578436 | 6,601.80 | 4,882.11 | 14.65 | 2,471.01 | 330.09 | −1,096.06 |
+| 10 | 0.466683 | 9,968.77 | 4,303.62 | 12.91 | 2,013.48 | 498.44 | +3,140.32 |
+
+**The renewal ladder**, five numbers per renewal. `at t` is the boundary **month** — the
+last month of the expiring term — so the repriced premium is first charged at `t + 1`:
 
 | Renewal | at t | attained age | `P_m` | `P_a` | jump | `l(t+1)` |
 |---|---|---|---|---|---|---|
 | — (issue) | — | 30 | 974 [S2] | 11,688 | — | 1.000000 |
-| 1st | 10 | 40 | 1,823 [S2] | 21,876 | ×1.87 | 0.466683 |
-| 2nd | 20 | 50 | 3,933 [S2] | 47,196 | ×2.16 | 0.234147 |
-| 3rd | 30 | 60 | 8,976 **[std]** | 107,712 | ×2.28 | 0.115211 |
-| 4th | 40 | 70 | 23,881 **[std]** | 286,572 | ×2.66 | 0.054121 |
+| 1st | 119 | 40 | 1,823 [S2] | 21,876 | ×1.87 | 0.466683 |
+| 2nd | 239 | 50 | 3,933 [S2] | 47,196 | ×2.16 | 0.234147 |
+| 3rd | 359 | 60 | 8,976 **[std]** | 107,712 | ×2.28 | 0.115211 |
+| 4th | 479 | 70 | 23,881 **[std]** | 286,572 | ×2.66 | 0.054121 |
 
-Cover ends at attained age 80 with `l(51) = 0.026042` — 2.6% of the cohort still in force
+Every `l(t+1)` in that table is the number the annual grid published, to the six decimals it
+displayed, and so is `l(600) = 0.026042` at the ceiling. That is not a coincidence and it is
+the check that the conversion was done right: the monthly decrements are the **effective**
+equivalents of the annual ones, `(1 − q_m)^12 = (1 − q)` and `(1 − w_m)^12 = (1 − w)`
+exactly, and the renewal decline falls in the month the policy year ends either way. **Every
+difference between the two grids is a difference of cash flow timing and none is a
+difference of basis.**
+
+Cover ends at attained age 80 with `l(600) = 0.026042` — 2.6% of the cohort still in force
 after fifty years and four repricings, paying ¥286,572 a year for ¥10,000,000 of cover.
 That row is the economically important one and is not a modeling artefact: a renewable term
 at attained-age rates converges on term-cost pricing, and the reason carriers cap renewal
 at 80 is that beyond it the product stops being purchasable.
 
-**Totals over the fifty years, undiscounted:** premiums ¥470,348.54, claims ¥309,768.95,
-net cash flow **+¥50,400.25**. Over the first ten years alone — the
-`contract_boundary = current_term` answer — net cash flow is **−¥15,878.74**. The shape is
-the protection shape: a deep first-year strain (¥20,844 of acquisition cost against ¥11,688
-of premium), thin positive margins through the middle of each term, a negative year
-immediately before each renewal as the level premium falls behind the rising mortality
-cost, and a jump back into surplus the year after.
+**Totals over the 600 months, undiscounted:** premiums ¥457,507.04, claims ¥302,433.43,
+net cash flow **+¥47,254.64**. Over the first 120 months alone — the
+`contract_boundary = current_term` answer — net cash flow is **−¥16,071.24**. The shape is
+the protection shape seen a month at a time: one very deep month at issue (¥20,844 of
+acquisition cost against ¥974 of premium, where the annual grid had a whole year's ¥11,688
+sitting on the same row to meet it), thin positive months through the middle of each term,
+months turning negative as each 保険期間 runs out and the level premium falls behind the
+rising mortality cost, and a jump back into surplus in the first month of the repriced term.
+
+**Why the totals moved.** The annual grid collected ¥470,348.54 of premium and this one
+collects ¥457,507.04, 2.7% less, for one reason: it stops collecting from lives that have
+already left. On an annual step a policy that lapsed in the second month of a policy year
+had nonetheless paid that whole year's premium in advance, and the notes offset that
+overstatement against claims booked at the end of the year, declaring the two a matched pair
+and warning against correcting either alone. The monthly grid makes neither approximation,
+so it needs neither offset — and the ¥3,145.61 the net cash flow falls by is the residue of
+a **[std]** this version of the model no longer has to make.
 
 ---
 
@@ -650,8 +761,8 @@ In rough order of leverage:
    implies `1/1.3 = 0.769` — offset by improvement already inside the table [REG-R20]. A
    user with own experience should replace it before anything else in this file.
 2. **The renewal-decline rate.** `d = 15%` **[std]** is the largest structural lever and has
-   no `uklib` analogue. Undiscounted net cash flow over the fifty years runs **+¥92,123.94
-   at d = 0%, +¥50,400.25 at 15%, +¥22,587.91 at 30%** — a factor of four across a range no
+   no `uklib` analogue. Undiscounted net cash flow over the 600 months runs **+¥86,882.78
+   at d = 0%, +¥47,254.64 at 15%, +¥20,786.34 at 30%** — a factor of four across a range no
    document narrows.
 3. **The renewal rate scale beyond age 50.** Nothing is published above the age-50 cell
    [S2], and the anchor cell spends its last twenty years there. The [std] extension
@@ -663,9 +774,10 @@ In rough order of leverage:
 5. **Selective lapsation across renewals.** Renewal takes no 告知 [S1] [S4] [S8] [S12], so
    the anti-selection is structural and repeats four times on this cell. Base run
    `lambda = 0` understates late-duration claims by construction.
-6. **Early-duration lapse against front-loaded acquisition cost.** ¥20,844 of year-1 outgo
-   against ¥11,688 of year-1 premium makes the first three lapse rates decide how long the
-   strain takes to recover. No Japanese clawback evidence exists in the sources.
+6. **Early-duration lapse against front-loaded acquisition cost.** ¥20,844 of outgo at
+   `t = 0` against ¥11,688 of premium on the same `t = 0` row makes the first three lapse
+   rates decide how long the strain takes to recover. No Japanese clawback evidence exists
+   in the sources.
 7. **Expense inflation on small premiums, and the age basis.** ¥4,000 p.a. of maintenance
    against ¥11,688 of premium is a third of the first-term load, so the 1.0% **[std]**
    inflation rate is a poor one to leave unexamined; and the 満年齢 / 保険年齢 mismatch [S1]
@@ -704,17 +816,23 @@ Known modeling pitfalls:
   than automatically [REG-R14]. Grace → 失効 → 復活-or-not is the whole persistency
   machinery here.
 - **The ¥248 policy fee is premium, not expense.** It sits inside `P_m` [S2] and enters the
-  model only through `P_a`; crediting it against maintenance expense counts it twice, and
-  `P_a` must reconstruct as `12 × (248 + 2 × 363) = 11,688` on the anchor cell.
-- **Renewal decline is not lapse.** It applies only in boundary years, only after mortality
-  and ordinary lapse, and it dominates them: in year 10 of the anchor cell it is 0.08235591
-  of 0.11175249 total exits. Folding it into `w(t)` makes the boundary invisible and
-  mis-times most of the cohort's departure.
+  model only through `P_m` itself; crediting it against maintenance expense counts it twice,
+  and `P_m` must reconstruct as `248 + 2 × 363 = 974` on the anchor cell, `P_a` as
+  `12 × 974 = 11,688`.
+- **Renewal decline is not lapse, and it is not a rate.** It applies only in boundary
+  **months**, only after mortality and ordinary lapse, and it is never converted to a
+  monthly equivalent, because it is a decision taken on a date rather than a hazard running
+  through a period. It dominates the month it falls in: at `t = 119` on the anchor cell it
+  is 0.08235591 of 0.08474749 total exits, **97.2%**. Folding it into `w(t)` makes the
+  boundary invisible and mis-times most of the cohort's departure.
 - **A failed first renewal premium is an expiry, not a lapse.** Where the first premium of
   the renewed contract goes unpaid through grace, the renewal is treated as never having
   happened and the contract terminates at the **original** expiry rather than being 解除
-  [S1] [S7]. Those lives must not appear in force in year `t + 1` collecting the renewed
-  premium, and must not be counted as a mid-term lapse of a term that never began.
+  [S1] [S7]. Those lives must not appear in force at `t + 1` collecting the renewed
+  premium, and must not be counted as a mid-term lapse of a term that never began. The
+  monthly grid makes the two *separable* for the first time — grace is about a month long
+  [S1] [S8], which is now one step rather than a fraction of one — but separating them needs
+  a take-up assumption the sources do not give, so the composite still carries one rate.
 - **The living-needs cap is per insured, aggregated across contracts** — not per contract
   [S1] [S7] [S8] [S12]. Inside the composite's ¥1,000,000–¥30,000,000 envelope it is
   therefore *exactly reached* at the ceiling and never reduces a single-contract payment. A
@@ -723,8 +841,8 @@ Known modeling pitfalls:
 - **Read the table at the right age.** 契約年齢 is 満年齢 [S1] and 標準生命表2018 is built for
   保険年齢 [REG-R20]. The base run reads at 満年齢 and understates, so the shift module must
   move `q` up, not down.
-- **Naming the boundary is part of reporting the number.** The same cell gives +¥50,400.25
-  to the ceiling and −¥15,878.74 over the current term. Neither is an ESR current estimate
+- **Naming the boundary is part of reporting the number.** The same cell gives +¥47,254.64
+  to the ceiling and −¥16,071.24 over the current term. Neither is an ESR current estimate
   on its own, because the ESR standard-model treatment of a no-underwriting auto-renewal is
   [unverified] here [REG-R16].
 

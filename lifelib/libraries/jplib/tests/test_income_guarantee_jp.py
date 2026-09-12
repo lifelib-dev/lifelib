@@ -6,6 +6,12 @@ anchor cell M30 / 非喫煙者優良体 / 65歳満了 (``N = 420`` months) / 最
 months) / 年金月額 JPY 150,000 / JPY 2,565 a month.  They are hard-coded here rather than
 pickled so that a reviewer can compare them against the notes by eye.
 
+``t`` is the model's **0-based** policy month, library-wide: ``t = 0`` is the first
+policy month, the frame is ``range(proj_len())`` so ``len(result_cf()) == proj_len()``
+and the last index is ``proj_len() - 1``, and the contractual policy month is ``t + 1``.
+The notes' worked example is keyed on that index, so its seven rows are
+``t = 0, 1, 2, 12, 419, 420, 442``.
+
 Tolerances follow the precision the notes display: money to the yen's second decimal,
 in-force to six decimals, the claim and ledger populations to nine, and the decrement
 rates to twelve — the last because ``q_m`` at attained age 30 is about 3.17e-05, so six
@@ -30,7 +36,7 @@ right and be wrong:
 * the in-payment ledger is never decremented, by anything;
 * premiums stop on the annuity event and the benefit does not;
 * ``pols_if`` and ``annuities_if`` are disjoint and must never be summed;
-* the ledger peaks at exactly month ``N``;
+* the ledger peaks at exactly ``t = N - 1``, the last month of cover;
 * 高度障害 is one decrement with death, not a second one;
 * there is no 更新 on this chassis;
 * a lapse pays nothing, and the 低解約返戻金型 cliff has no analogue here;
@@ -55,7 +61,7 @@ INFORCE = 5e-7        # in-force displayed to 6 d.p.
 LEDGER = 5e-10        # claim and ledger populations displayed to 9 d.p.
 RATE = 5e-13          # decrement rates displayed to 12 d.p.
 
-# The notes' worked-example table, verbatim.
+# The notes' worked-example table, verbatim, keyed by the 0-based month index t.
 #
 # t: (l(t), premiums, D(t), R(t), annuity claims, claim + annuity expense,
 #     "Maint. + acq.", "Comm.", CF(t))
@@ -66,22 +72,22 @@ RATE = 5e-13          # decrement rates displayed to 12 d.p.
 # c_r are commissions; :func:`notes_columns` maps between them.  The notes' totals table
 # separates the two and the model reproduces both — see TOTALS below.
 WORKED_EXAMPLE = {
-    1:   (1.000000, 2565.00, 0.000031739, 0.000031739,    4.76, 0.96, 30723.33,   0.00, -28164.05),
-    2:   (0.992140, 2544.84, 0.000031489, 0.000063228,    9.48, 0.96,   330.71,   0.00,   2203.68),
-    3:   (0.984342, 2524.84, 0.000031242, 0.000094470,   14.17, 0.96,   328.11,   0.00,   2181.60),
-    13:  (0.909653, 2333.26, 0.000029296, 0.000394122,   59.12, 0.96,   306.25, 116.66,   1850.27),
-    420: (0.145023,  371.98, 0.000063023, 0.016779783, 2516.97, 5.25,    67.80,  18.60,  -2236.63),
-    421: (0.000000,    0.00, 0.000000000, 0.001463980,  219.60, 0.29,     0.00,   0.00,   -219.89),
-    443: (0.000000,    0.00, 0.000000000, 0.000063023,    9.45, 0.01,     0.00,   0.00,     -9.47),
+    0:   (1.000000, 2565.00, 0.000031739, 0.000031739,    4.76, 0.96, 30723.33,   0.00, -28164.05),
+    1:   (0.992140, 2544.84, 0.000031489, 0.000063228,    9.48, 0.96,   330.71,   0.00,   2203.68),
+    2:   (0.984342, 2524.84, 0.000031242, 0.000094470,   14.17, 0.96,   328.11,   0.00,   2181.60),
+    12:  (0.909653, 2333.26, 0.000029296, 0.000394122,   59.12, 0.96,   306.25, 116.66,   1850.27),
+    419: (0.145023,  371.98, 0.000063023, 0.016779783, 2516.97, 5.25,    67.80,  18.60,  -2236.63),
+    420: (0.000000,    0.00, 0.000000000, 0.001463980,  219.60, 0.29,     0.00,   0.00,   -219.89),
+    442: (0.000000,    0.00, 0.000000000, 0.000063023,    9.45, 0.01,     0.00,   0.00,     -9.47),
 }
 
-# The notes' decrement vector at the three months where something changes: month 1, month
-# 13 (attained age and lapse row both move) and month 420 (the last month of cover).
+# The notes' decrement vector at the three months where something changes: t = 0, t = 12
+# (attained age and lapse row both move) and t = 419 (the last month of cover).
 # t: (q(t), q_m(t), w(t), w_m(t))
 WORKED_EXAMPLE_RATES = {
-    1:   (0.000380800, 0.000031738873, 0.09, 0.007828420342),
-    13:  (0.000386400, 0.000032205704, 0.07, 0.006029308066),
-    420: (0.005202400, 0.000434570514, 0.05, 0.004265318778),
+    0:   (0.000380800, 0.000031738873, 0.09, 0.007828420342),
+    12:  (0.000386400, 0.000032205704, 0.07, 0.006029308066),
+    419: (0.005202400, 0.000434570514, 0.05, 0.004265318778),
 }
 
 # The male table rates the notes display.  Four are sourced anchors read from
@@ -127,7 +133,7 @@ def notes_columns(proj, t):
     model follows the notes' Notation table, where ``c0`` is commission.  One
     presentation, two column allocations, identical numbers.
     """
-    init = proj.comm_init_pp() * proj.pols_if(1) if t == 1 else 0.0
+    init = proj.comm_init_pp() * proj.pols_if(0) if t == 0 else 0.0
     return proj.expenses(t) + init, proj.commissions(t) - init
 
 
@@ -198,8 +204,8 @@ def test_worked_example_basis_is_the_std_adjustment_of_the_table(jp_income_ancho
     """
     a = jp_income_anchor
     assert a.class_factor() == pytest.approx(0.70, rel=1e-14)
-    assert a.mort_rate_base(1) == pytest.approx(0.00068, rel=1e-14)
-    assert a.mort_rate(1) == pytest.approx(0.80 * 0.70 * 0.00068, rel=1e-14)
+    assert a.mort_rate_base(0) == pytest.approx(0.00068, rel=1e-14)
+    assert a.mort_rate(0) == pytest.approx(0.80 * 0.70 * 0.00068, rel=1e-14)
 
 
 @pytest.mark.parametrize("age,rate", sorted(TABLE_RATES_M.items()))
@@ -219,31 +225,31 @@ def test_the_shipped_table_reproduces_the_rates_the_notes_display(age, rate):
 
 
 def test_worked_example_month_one_trace(jp_income_anchor):
-    """The notes' month-one trace, line by line.
+    """The notes' first-month trace, line by line, at ``t = 0``.
 
-    The claim opens a stream and pays no lump sum, so R(1) = D(1) and the whole benefit
-    of the month is one instalment of 150,000 x D(1).
+    The claim opens a stream and pays no lump sum, so R(0) = D(0) and the whole benefit
+    of the month is one instalment of 150,000 x D(0).
     """
     a = jp_income_anchor
     assert a.pols_if_init() == 1.0
-    assert a.pols_death(1) == pytest.approx(0.000031738873, abs=RATE)
-    assert a.annuities_open(1) == pytest.approx(a.pols_death(1), rel=1e-14)
-    assert a.annuities_if(1) == pytest.approx(a.pols_death(1), rel=1e-14)
-    assert a.claims(1, "ANNUITY") == pytest.approx(4.76083098, abs=1e-6)
-    assert a.annuity_expenses(1) == pytest.approx(0.00634777, abs=1e-6)
-    assert a.claim_expenses(1) == pytest.approx(0.95216620, abs=1e-6)
-    assert a.expenses(1) == pytest.approx(15000.0 + 4000.0 / 12.0, abs=1e-8)
+    assert a.pols_death(0) == pytest.approx(0.000031738873, abs=RATE)
+    assert a.annuities_open(0) == pytest.approx(a.pols_death(0), rel=1e-14)
+    assert a.annuities_if(0) == pytest.approx(a.pols_death(0), rel=1e-14)
+    assert a.claims(0, "ANNUITY") == pytest.approx(4.76083098, abs=1e-6)
+    assert a.annuity_expenses(0) == pytest.approx(0.00634777, abs=1e-6)
+    assert a.claim_expenses(0) == pytest.approx(0.95216620, abs=1e-6)
+    assert a.expenses(0) == pytest.approx(15000.0 + 4000.0 / 12.0, abs=1e-8)
     assert a.comm_init_pp() == pytest.approx(0.50 * 12 * 2565.0, abs=1e-9)
-    assert a.net_cf(1) == pytest.approx(-28164.05267828, abs=1e-6)
+    assert a.net_cf(0) == pytest.approx(-28164.05267828, abs=1e-6)
 
 
 def test_worked_example_inforce_update(jp_income_anchor):
-    """l(2) = l(1)(1 - q_m)(1 - w_m), the notes' update step, death before lapse."""
+    """l(1) = l(0)(1 - q_m)(1 - w_m), the notes' update step, death before lapse."""
     a = jp_income_anchor
-    assert a.pols_if(2) == pytest.approx(
+    assert a.pols_if(1) == pytest.approx(
         1.0 * (1 - 0.000031738873) * (1 - 0.007828420342), rel=1e-12)
-    assert a.pols_if(3) == pytest.approx(0.9843419567, abs=1e-10)
-    for t in (1, 200, 419):
+    assert a.pols_if(2) == pytest.approx(0.9843419567, abs=1e-10)
+    for t in (0, 199, 418):
         assert a.pols_if_at(t, "BEF_DECR") == a.pols_if(t)
         assert a.pols_if_at(t, "BEF_LAPSE") == pytest.approx(
             a.pols_if(t) * (1 - a.mort_rate_mth(t)), rel=1e-14)
@@ -252,21 +258,22 @@ def test_worked_example_inforce_update(jp_income_anchor):
 
 
 def test_worked_example_month_thirteen_changes_three_things_at_once(jp_income_anchor):
-    """Attained age, lapse row and expense inflation all step at month 13.
+    """Attained age, lapse row and expense inflation all step at ``t = 12``.
 
-    The notes call this out because an implementation can get any of the three wrong and
-    still produce a plausible row.  It is also the first month renewal commission is paid.
+    That is the thirteenth policy month and the first of policy year 2.  The notes call
+    it out because an implementation can get any of the three wrong and still produce a
+    plausible row.  It is also the first month renewal commission is paid.
     """
     a = jp_income_anchor
-    assert a.age(12) == 30 and a.age(13) == 31
-    assert a.policy_year(12) == 1 and a.policy_year(13) == 2
-    assert a.mort_rate_base(13) == pytest.approx(0.00069, rel=1e-14)
-    assert a.lapse_rate(12) == 0.09 and a.lapse_rate(13) == 0.07
-    assert a.inflation_factor(13) == pytest.approx(1.01, rel=1e-14)
-    assert a.expenses(13) == pytest.approx(
-        (4000.0 / 12.0) * 1.01 * a.pols_if(13), rel=1e-14)
-    assert a.commissions(12) == 0.0
-    assert a.commissions(13) == pytest.approx(0.05 * a.premiums(13), rel=1e-14)
+    assert a.age(11) == 30 and a.age(12) == 31
+    assert a.policy_year(11) == 1 and a.policy_year(12) == 2
+    assert a.mort_rate_base(12) == pytest.approx(0.00069, rel=1e-14)
+    assert a.lapse_rate(11) == 0.09 and a.lapse_rate(12) == 0.07
+    assert a.inflation_factor(12) == pytest.approx(1.01, rel=1e-14)
+    assert a.expenses(12) == pytest.approx(
+        (4000.0 / 12.0) * 1.01 * a.pols_if(12), rel=1e-14)
+    assert a.commissions(11) == 0.0
+    assert a.commissions(12) == pytest.approx(0.05 * a.premiums(12), rel=1e-14)
 
 
 def test_worked_example_totals(jp_income_anchor):
@@ -301,15 +308,15 @@ def test_worked_example_structural_quantities(jp_income_anchor):
     """
     a = jp_income_anchor
     n, horizon = a.term_m(), a.proj_len()
-    deaths = sum(a.pols_death(t) for t in range(1, n + 1))
-    instalments = sum(a.annuities_if(t) for t in range(1, horizon + 1))
+    deaths = sum(a.pols_death(t) for t in range(n))
+    instalments = sum(a.annuities_if(t) for t in range(horizon))
     assert deaths == pytest.approx(SUM_DEATHS, abs=LEDGER)
     assert instalments == pytest.approx(SUM_INSTALMENTS, abs=INFORCE)
     assert a.annuity_mth() * instalments / deaths == pytest.approx(
         BENEFIT_PER_CLAIM, abs=YEN)
-    assert sum(a.pols_lapse(t) for t in range(1, n + 1)) == pytest.approx(
+    assert sum(a.pols_lapse(t) for t in range(n)) == pytest.approx(
         LAPSES, abs=INFORCE)
-    assert a.pols_maturity(n) == pytest.approx(SURVIVORS, abs=INFORCE)
+    assert a.pols_maturity(n - 1) == pytest.approx(SURVIVORS, abs=INFORCE)
 
 
 def test_the_present_value_diagnostics_need_the_notes_own_split_timing(jp_income_anchor):
@@ -317,45 +324,46 @@ def test_the_present_value_diagnostics_need_the_notes_own_split_timing(jp_income
 
     Discounting is out of scope for the library, so nothing in the model computes these.
     They are asserted here because they reproduce to the yen only under the notes' own
-    **split timing** — the start-of-month leg (premiums, maintenance, renewal commission)
-    at ``(t - 1) / 12`` and the end-of-month leg (the instalments, the claim expense, the
-    annuity administration expense) at ``t / 12``, which is what the notes' timing section
-    specifies.  Applying one timing to ``net_cf(t)`` instead gives a different set of
-    numbers, and on this product, where the benefit runs for up to 35 years after a claim
-    that itself arises over 35 years, which convention produced a printed figure is not a
-    detail.
+    **split timing**.  On the 0-based index, period ``t`` runs from time ``t`` to time
+    ``t + 1``, so the start-of-month leg (premiums, maintenance, renewal commission)
+    falls at ``t / 12`` years and the end-of-month leg (the instalments, the claim
+    expense, the annuity administration expense) at ``(t + 1) / 12``, which is what the
+    notes' timing section specifies.  Applying one timing to ``net_cf(t)`` instead gives
+    a different set of numbers, and on this product, where the benefit runs for up to 35
+    years after a claim that itself arises over 35 years, which convention produced a
+    printed figure is not a detail.
     """
     a = jp_income_anchor
     horizon = a.proj_len()
     for rate, expected in PV_DIAGNOSTICS.items():
         pv = 0.0
-        for t in range(1, horizon + 1):
+        for t in range(horizon):
             start = a.premiums(t) - a.expenses(t) - a.commissions(t)
             end = -a.claims(t) - a.claim_expenses(t) - a.annuity_expenses(t)
-            pv += (start * (1.0 + rate) ** (-(t - 1) / 12.0)
-                   + end * (1.0 + rate) ** (-t / 12.0))
+            pv += (start * (1.0 + rate) ** (-t / 12.0)
+                   + end * (1.0 + rate) ** (-(t + 1) / 12.0))
         assert pv == pytest.approx(expected, abs=YEN), f"at {rate:.3%}"
     # At zero interest the convention cannot matter, and the diagnostic is the total.
     assert PV_DIAGNOSTICS[0.0] == pytest.approx(TOTALS["net_cf"], abs=YEN)
     # One timing applied to the whole of net_cf is a different number, by enough to see.
-    single = sum(a.net_cf(t) * 1.005 ** (-t / 12.0) for t in range(1, horizon + 1))
+    single = sum(a.net_cf(t) * 1.005 ** (-(t + 1) / 12.0) for t in range(horizon))
     assert single == pytest.approx(-73998.78, abs=YEN)
     assert abs(single - PV_DIAGNOSTICS[0.005]) > 100.0
 
 
 def test_new_business_strain_then_a_margin_that_turns(jp_income_anchor):
-    """The characteristic shape: a deep month-one strain, then margin, then loss.
+    """The characteristic shape: a deep first-month strain, then margin, then loss.
 
-    Month 1 carries E0 and the whole initial commission against one month's premium;
+    ``t = 0`` carries E0 and the whole initial commission against one month's premium;
     the middle of the projection runs positive while the level premium is ahead of the
     accumulating ledger; and the last month of cover is negative because the ledger has
     grown to its peak while the surviving population has decayed to 0.14.
     """
     a = jp_income_anchor
-    assert a.net_cf(1) < -28000.0
-    assert all(a.net_cf(t) > 0.0 for t in (2, 3, 13, 120))
-    assert a.net_cf(a.term_m()) < 0.0
-    assert all(a.net_cf(t) < 0.0 for t in range(a.term_m() + 1, a.proj_len() + 1))
+    assert a.net_cf(0) < -28000.0
+    assert all(a.net_cf(t) > 0.0 for t in (1, 2, 12, 119))
+    assert a.net_cf(a.term_m() - 1) < 0.0
+    assert all(a.net_cf(t) < 0.0 for t in range(a.term_m(), a.proj_len()))
 
 
 # ---------------------------------------------------------------------------
@@ -377,38 +385,40 @@ def test_pitfall_the_projection_horizon_is_not_the_policy_term(income_guarantee)
 
     a = income_guarantee.Projection[1]
     n, horizon = a.term_m(), a.proj_len()
-    tail = sum(a.claims(t, "ANNUITY") for t in range(n + 1, horizon + 1))
-    total = sum(a.claims(t, "ANNUITY") for t in range(1, horizon + 1))
+    tail = sum(a.claims(t, "ANNUITY") for t in range(n, horizon))
+    total = sum(a.claims(t, "ANNUITY") for t in range(horizon))
     assert tail == pytest.approx(TAIL_CLAIMS, abs=YEN)
     assert 100.0 * tail / total == pytest.approx(TAIL_SHARE_PCT, abs=5e-5)
 
 
 def test_pitfall_the_guarantee_is_a_term_extension_not_a_benefit_floor(
         jp_income_anchor):
-    """Both readings pay max(N - m + 1, G) instalments; only the timing distinguishes them.
+    """Both readings pay max(N - m, G) instalments; only the timing distinguishes them.
 
-    A floor implementation compresses the guaranteed instalments inside the term and
-    produces zero cash flow after month N.  So the total cannot be the test — months
-    421 to 443 have to be checked individually, and every one of them must carry an
-    instalment and its administration expense and nothing else.
+    ``m`` is the 0-based claim month, so a source's 1-based policy month ``k`` maps as
+    ``m = k - 1`` and its ``max(N - k + 1, G)`` reads ``max(N - m, G)`` here.
+    A floor implementation compresses the guaranteed instalments
+    inside the term and produces zero cash flow after ``t = N - 1``.  So the total cannot
+    be the test — months ``t = 420 ... 442`` have to be checked individually, and every
+    one of them must carry an instalment and its administration expense and nothing else.
     """
     a = jp_income_anchor
     n, g, horizon = a.term_m(), a.guar_m(), a.proj_len()
     assert a.check_pay_count() is True
-    for m in (1, 10, 181, 243, 361, 419, 420):
-        assert a.pay_count(m) == max(n - m + 1, g)
-        assert a.pay_end(m) == max(n, m + g - 1)
+    for m in (0, 9, 180, 242, 360, 418, 419):
+        assert a.pay_count(m) == max(n - m, g)
+        assert a.pay_end(m) == max(n - 1, m + g - 1)
         assert a.pay_count(m) == a.pay_end(m) - m + 1
-    # The notes' published instalment illustrations.
-    assert (a.pay_count(1), a.pay_count(181), a.pay_count(361)) == (420, 240, 60)
-    assert (a.pay_count(10), a.pay_count(243)) == (411, 178)
+    # The notes' published instalment illustrations, on the 0-based claim month.
+    assert (a.pay_count(0), a.pay_count(180), a.pay_count(360)) == (420, 240, 60)
+    assert (a.pay_count(9), a.pay_count(242)) == (411, 178)
     # The tail is not empty, and it is instalments only.
-    for t in range(n + 1, horizon + 1):
+    for t in range(n, horizon):
         assert a.claims(t, "ANNUITY") > 0.0
         assert a.annuity_expenses(t) > 0.0
         assert a.net_cf(t) == pytest.approx(
             -a.claims(t, "ANNUITY") - a.annuity_expenses(t), abs=1e-9)
-    assert a.pay_end(419) == 442        # twenty-two months past the expiry date
+    assert a.pay_end(418) == 441        # twenty-two months past the expiry date
 
 
 def test_pitfall_the_in_payment_ledger_is_never_decremented(jp_income_anchor):
@@ -423,21 +433,21 @@ def test_pitfall_the_in_payment_ledger_is_never_decremented(jp_income_anchor):
     horizon = a.proj_len()
     assert a.check_annuity_ledger() is True
     assert a.check_annuity_total() is True
-    for t in (1, 2, 13, 240, 420, 421, 443):
+    for t in (0, 1, 12, 239, 419, 420, 442):
         assert a.check_annuity_ledger_resid(t) == pytest.approx(0.0, abs=1e-12)
         assert a.check_annuity_total_resid(t) == pytest.approx(0.0, abs=1e-12)
 
     # The recursion moves only by claims opening and streams ending.
-    for t in range(2, horizon + 1):
+    for t in range(1, horizon):
         assert a.annuities_if(t) == pytest.approx(
             a.annuities_if(t - 1) - a.annuities_ended(t) + a.annuities_open(t),
             abs=1e-15)
     # ... and never falls while claims are still arising.
-    for t in range(2, a.term_m() + 1):
+    for t in range(1, a.term_m()):
         assert a.annuities_if(t) >= a.annuities_if(t - 1)
 
     decremented, outgo = 0.0, 0.0
-    for t in range(1, horizon + 1):
+    for t in range(horizon):
         decremented = (decremented
                        * (1.0 - a.mort_rate_mth(t)) * (1.0 - a.lapse_rate_mth(t))
                        - a.annuities_ended(t) + a.annuities_open(t))
@@ -457,64 +467,64 @@ def test_pitfall_premiums_stop_on_the_annuity_event_the_benefit_does_not(
     """
     a = jp_income_anchor
     n = a.term_m()
-    for t in (1, 2, 13, 240, 420):
+    for t in (0, 1, 12, 239, 419):
         assert a.premiums(t) == pytest.approx(
             a.prem_due_pp(t) * a.pols_payer(t), rel=1e-14)
-    assert a.pols_payer(1) == a.pols_if(1)          # no waiver on the anchor
+    assert a.pols_payer(0) == a.pols_if(0)          # no waiver on the anchor
     wrongly_collected = a.premium_mth_pp() * sum(
-        a.annuities_if(t) for t in range(1, n + 1))
+        a.annuities_if(t) for t in range(n))
     assert wrongly_collected == pytest.approx(7535.43, abs=YEN)
     assert wrongly_collected / TOTALS["premiums"] == pytest.approx(0.0163, abs=5e-5)
-    assert all(a.premiums(t) == 0.0 for t in range(n + 1, a.proj_len() + 1))
+    assert all(a.premiums(t) == 0.0 for t in range(n, a.proj_len()))
 
 
 def test_pitfall_pols_if_and_annuities_if_are_disjoint(income_guarantee):
     """l(t) is a probability of being in force; R(t) is a count of instalments due.
 
-    On the anchor cell R(420) = 0.016780 while l(420) = 0.145023, and adding them
+    On the anchor cell R(419) = 0.016780 while l(419) = 0.145023, and adding them
     produces a number with no meaning.  The model keeps them apart by name — the ledger
     is deliberately not spelled ``pols_*`` — and by which cash flow line each weights.
     """
     a = income_guarantee.Projection[1]
-    assert a.annuities_if(420) == pytest.approx(0.016779783, abs=LEDGER)
-    assert a.pols_if(420) == pytest.approx(0.145023, abs=INFORCE)
+    assert a.annuities_if(419) == pytest.approx(0.016779783, abs=LEDGER)
+    assert a.pols_if(419) == pytest.approx(0.145023, abs=INFORCE)
     names = set(income_guarantee.Projection.cells)
     assert "pols_annuity" not in names and "pols_annuities" not in names
     df = a.result_cf()
     # The two annuity lines are exactly the ledger; the other three are exactly pols_if.
-    for t in (13, 240, 420):
+    for t in (12, 239, 419):
         assert df.loc[t, "claims_annuity"] == pytest.approx(
             a.annuity_mth() * a.annuities_if(t), rel=1e-14)
         assert df.loc[t, "expenses"] == pytest.approx(
             (4000.0 / 12.0) * a.inflation_factor(t) * a.pols_if(t), rel=1e-14)
     # Past the term one is zero and the other is not, which is the cleanest statement
     # available that they are different quantities.
-    assert a.pols_if(421) == 0.0 and a.annuities_if(421) > 0.0
+    assert a.pols_if(420) == 0.0 and a.annuities_if(420) > 0.0
 
 
-def test_pitfall_the_ledger_peaks_at_exactly_month_n(jp_income_anchor):
-    """R(N) equals the sum of every claim the contract has ever made.
+def test_pitfall_the_ledger_peaks_in_the_last_month_of_cover(jp_income_anchor):
+    """R(N - 1) equals the sum of every claim the contract has ever made.
 
-    Every stream opened in months 1 ... N - G + 1 ends at month N whenever it opened,
-    because the expiry date is fixed at issue.  An implementation that ends streams one
-    month early gets this identity wrong by one month's claims and nothing else visibly
-    changes.
+    Every stream opened in months 0 ... N - G ends at t = N - 1, the last month of
+    cover, whenever it opened, because the expiry date is fixed at issue.  An
+    implementation that ends streams one month early gets this identity wrong by one
+    month's claims and nothing else visibly changes.
     """
     a = jp_income_anchor
     n, g, horizon = a.term_m(), a.guar_m(), a.proj_len()
-    deaths = sum(a.pols_death(t) for t in range(1, n + 1))
-    assert a.annuities_if(n) == pytest.approx(deaths, abs=1e-15)
-    assert a.annuities_if(n) == pytest.approx(SUM_DEATHS, abs=LEDGER)
-    assert a.annuities_if(n) == max(a.annuities_if(t) for t in range(1, horizon + 1))
-    # Only the last G - 1 months' claims survive into month N + 1.
-    assert a.annuities_ended(n + 1) == pytest.approx(
-        sum(a.annuities_open(s) for s in range(1, n - g + 2)), abs=1e-15)
-    assert a.annuities_if(n + 1) == pytest.approx(
-        sum(a.annuities_open(s) for s in range(n - g + 2, n + 1)), abs=1e-15)
+    deaths = sum(a.pols_death(t) for t in range(n))
+    assert a.annuities_if(n - 1) == pytest.approx(deaths, abs=1e-15)
+    assert a.annuities_if(n - 1) == pytest.approx(SUM_DEATHS, abs=LEDGER)
+    assert a.annuities_if(n - 1) == max(a.annuities_if(t) for t in range(horizon))
+    # Only the last G - 1 months' claims survive into t = N, the first month past expiry.
+    assert a.annuities_ended(n) == pytest.approx(
+        sum(a.annuities_open(s) for s in range(n - g + 1)), abs=1e-15)
+    assert a.annuities_if(n) == pytest.approx(
+        sum(a.annuities_open(s) for s in range(n - g + 1, n)), abs=1e-15)
     # ... and from there the ledger runs down one month's claims at a time.
-    for t in range(n + 2, horizon + 1):
+    for t in range(n + 1, horizon):
         assert a.annuities_ended(t) == pytest.approx(a.annuities_open(t - g), abs=1e-18)
-    assert a.annuities_if(horizon) == pytest.approx(a.pols_death(n), abs=1e-15)
+    assert a.annuities_if(horizon - 1) == pytest.approx(a.pols_death(n - 1), abs=1e-15)
 
 
 def test_pitfall_kodo_shogai_is_not_a_second_decrement(income_guarantee):
@@ -530,9 +540,9 @@ def test_pitfall_kodo_shogai_is_not_a_second_decrement(income_guarantee):
                    "ti_rate", "accel_rate", "morb_rate"):
         assert absent not in names
     a = income_guarantee.Projection[1]
-    assert a.pols_death(1) == pytest.approx(
-        a.pols_if(1) * a.mort_rate_mth(1), rel=1e-14)
-    assert a.annuities_open(1) == pytest.approx(a.pols_death(1), rel=1e-14)
+    assert a.pols_death(0) == pytest.approx(
+        a.pols_if(0) * a.mort_rate_mth(0), rel=1e-14)
+    assert a.annuities_open(0) == pytest.approx(a.pols_death(0), rel=1e-14)
     doc = income_guarantee.Projection.doc + income_guarantee.doc
     assert "高度障害" in doc
 
@@ -557,7 +567,7 @@ def test_pitfall_there_is_no_renewal_on_this_chassis(income_guarantee):
         assert proj.term_m() == 12 * (proj.expiry_age() - proj.issue_age())
         assert all(proj.prem_due_pp(t) in (0.0, proj.premium_mth_pp()
                                            * proj.prem_mode_months())
-                   for t in range(1, proj.term_m() + 1))
+                   for t in range(proj.term_m()))
 
 
 def test_pitfall_lapse_pays_nothing_and_there_is_no_surrender_value_cliff(
@@ -579,17 +589,16 @@ def test_pitfall_lapse_pays_nothing_and_there_is_no_surrender_value_cliff(
         df = proj.result_cf()
         assert (df["claims_lapse"] == 0.0).all()
         assert all(proj.claims(t, "LAPSE") == 0.0
-                   for t in range(1, proj.proj_len() + 1))
+                   for t in range(proj.proj_len()))
         # Premium ceases with cover, not before it: 保険料払込期間 equals 保険期間, so there is
         # no 払込満了 step for a suppressed surrender value to step up at.
         n, period = proj.term_m(), proj.prem_mode_months()
-        assert sum(proj.prem_due_pp(t) for t in range(n - period + 1, n + 1)) > 0.0
-        assert proj.prem_due_pp(n + 1) == 0.0
-        assert sum(1 for t in range(1, n + 1) if proj.prem_due_pp(t) > 0.0) == (
-            n // period)
+        assert sum(proj.prem_due_pp(t) for t in range(n - period, n)) > 0.0
+        assert proj.prem_due_pp(n) == 0.0
+        assert sum(1 for t in range(n) if proj.prem_due_pp(t) > 0.0) == n // period
     # Lapses do happen; they simply pay nothing.
     a = income_guarantee.Projection[1]
-    assert sum(a.pols_lapse(t) for t in range(1, a.term_m() + 1)) == pytest.approx(
+    assert sum(a.pols_lapse(t) for t in range(a.term_m())) == pytest.approx(
         LAPSES, abs=INFORCE)
 
 
@@ -607,8 +616,8 @@ def test_pitfall_there_is_no_automatic_premium_loan(income_guarantee):
         assert absent not in names
     a = income_guarantee.Projection[1]
     # A lapse leaves the projection outright; nothing carries it forward.
-    assert a.pols_if(2) == pytest.approx(a.pols_if_at(1, "AFT_DECR"), rel=1e-14)
-    assert a.pols_reinst(2) == 0.0        # 復活 is off, and it is not an APL either
+    assert a.pols_if(1) == pytest.approx(a.pols_if_at(0, "AFT_DECR"), rel=1e-14)
+    assert a.pols_reinst(1) == 0.0        # 復活 is off, and it is not an APL either
 
 
 def test_pitfall_a_full_commutation_settles_the_claim_and_opens_no_stream(
@@ -622,11 +631,11 @@ def test_pitfall_a_full_commutation_settles_the_claim_and_opens_no_stream(
     p4 = income_guarantee.Projection[4]
     assert p4.commutation() is True
     horizon = p4.proj_len()
-    assert all(p4.annuities_open(t) == 0.0 for t in range(1, horizon + 1))
-    assert all(p4.annuities_if(t) == 0.0 for t in range(1, horizon + 1))
-    assert all(p4.claims(t, "ANNUITY") == 0.0 for t in range(1, horizon + 1))
-    assert any(p4.claims(t, "COMMUTATION") > 0.0 for t in range(1, horizon + 1))
-    for t in (1, 100, 360):
+    assert all(p4.annuities_open(t) == 0.0 for t in range(horizon))
+    assert all(p4.annuities_if(t) == 0.0 for t in range(horizon))
+    assert all(p4.claims(t, "ANNUITY") == 0.0 for t in range(horizon))
+    assert any(p4.claims(t, "COMMUTATION") > 0.0 for t in range(horizon))
+    for t in (0, 99, 359):
         assert p4.pols_commute(t) == pytest.approx(p4.pols_death(t), rel=1e-14)
         assert p4.claims(t, "COMMUTATION") == pytest.approx(
             p4.commute_pp(t) * p4.pols_death(t), rel=1e-14)
@@ -638,25 +647,25 @@ def test_pitfall_a_full_commutation_settles_the_claim_and_opens_no_stream(
 
 
 def test_pitfall_the_living_needs_cap_binds_early_not_late(income_guarantee):
-    """The payout is the present value of an income stream, so the cap bites from month 1.
+    """The payout is the present value of an income stream, so the cap bites from t = 0.
 
     That is the opposite pattern to a level sum assured, where a JPY 30,000,000 cap
     either always binds or never does.  On the anchor cell parameters the full 年金現価 at
-    issue is JPY 56,352,381.90 and the cap stops binding only in month 209, once the
+    issue is JPY 56,352,381.90 and the cap stops binding only at ``t = 208``, once the
     unpaid stream has run down below it.
     """
     a = income_guarantee.Projection[1]
     n = a.term_m()
-    assert a.commute_pp(1) == pytest.approx(56352381.90, abs=YEN)
-    assert a.ln_benefit_pp(1) == pytest.approx(30000000.0, abs=1e-6)
+    assert a.commute_pp(0) == pytest.approx(56352381.90, abs=YEN)
+    assert a.ln_benefit_pp(0) == pytest.approx(30000000.0, abs=1e-6)
     assert all(a.ln_benefit_pp(t) == pytest.approx(30000000.0, abs=1e-6)
-               for t in (1, 100, 208))
-    assert a.ln_benefit_pp(209) < 30000000.0
-    assert a.ln_benefit_pp(209) == pytest.approx(29926898.32, abs=YEN)
-    assert a.ln_benefit_pp(300) < a.ln_benefit_pp(209)
-    # Barred in the final year before expiry.
-    assert a.ln_benefit_pp(n - 12) > 0.0
-    assert all(a.ln_benefit_pp(t) == 0.0 for t in range(n - 11, n + 1))
+               for t in (0, 99, 207))
+    assert a.ln_benefit_pp(208) < 30000000.0
+    assert a.ln_benefit_pp(208) == pytest.approx(29926898.32, abs=YEN)
+    assert a.ln_benefit_pp(299) < a.ln_benefit_pp(208)
+    # Barred in the final year before expiry, t = N - 12 ... N - 1.
+    assert a.ln_benefit_pp(n - 13) > 0.0
+    assert all(a.ln_benefit_pp(t) == 0.0 for t in range(n - 12, n))
 
 
 def test_pitfall_the_table_is_read_at_the_attained_age_on_the_death_basis(
@@ -670,14 +679,14 @@ def test_pitfall_the_table_is_read_at_the_attained_age_on_the_death_basis(
     """
     a = income_guarantee.Projection[1]
     assert a.issue_age() == 30
-    assert all(a.age(t) == 30 for t in range(1, 13))
-    assert a.age(13) == 31 and a.age(25) == 32
+    assert all(a.age(t) == 30 for t in range(12))
+    assert a.age(12) == 31 and a.age(24) == 32
     assert all(a.mort_rate_base(t) == pytest.approx(0.00068, rel=1e-14)
-               for t in range(1, 13))
-    assert a.mort_rate_base(13) == pytest.approx(0.00069, rel=1e-14)
+               for t in range(12))
+    assert a.mort_rate_base(12) == pytest.approx(0.00069, rel=1e-14)
     # No 保険年齢 shift is applied in the base run: the rate is the table rate scaled by
     # the two [std] factors and nothing else.
-    assert a.mort_rate(1) == pytest.approx(0.80 * 0.70 * 0.00068, rel=1e-14)
+    assert a.mort_rate(0) == pytest.approx(0.80 * 0.70 * 0.00068, rel=1e-14)
     names = (set(income_guarantee.Projection.cells)
              | set(income_guarantee.Projection.refs))
     for absent in ("mort_rate_annuitant", "annuitant_mort_rate", "recipient_mort_rate",
@@ -726,13 +735,13 @@ def test_the_inforce_rollforward_closes_on_every_model_point(income_guarantee):
     for point_id in income_guarantee.Data.model_point_table().index:
         proj = income_guarantee.Projection[point_id]
         n = proj.term_m()
-        for t in range(1, n + 1):
+        for t in range(n):
             out = proj.pols_death(t) + proj.pols_lapse(t) + proj.pols_maturity(t)
             got = proj.pols_if(t) + proj.pols_reinst(t + 1) - proj.pols_if(t + 1)
             assert got == pytest.approx(out, abs=1e-12), f"point {point_id}, t={t}"
             assert proj.check_pols_roll_fwd_resid(t) == pytest.approx(0.0, abs=1e-12)
-        assert all(proj.pols_maturity(t) == 0.0 for t in range(1, n))
-        assert proj.pols_maturity(n) > 0.0
+        assert all(proj.pols_maturity(t) == 0.0 for t in range(n - 1))
+        assert proj.pols_maturity(n - 1) > 0.0
 
 
 def test_maturity_is_an_expiry_and_pays_nothing(income_guarantee):
@@ -744,11 +753,11 @@ def test_maturity_is_an_expiry_and_pays_nothing(income_guarantee):
     a = income_guarantee.Projection[1]
     n = a.term_m()
     assert "claims_maturity" not in a.result_cf().columns
-    assert a.claims(n) == pytest.approx(a.claims(n, "ANNUITY"), rel=1e-14)
-    assert a.pols_maturity(n) == pytest.approx(
-        a.pols_if_at(n, "BEF_LAPSE") * (1 - a.lapse_rate_mth(n)), rel=1e-14)
-    assert a.pols_if_at(n, "AFT_DECR") == 0.0
-    assert a.pols_if(n + 1) == 0.0
+    assert a.claims(n - 1) == pytest.approx(a.claims(n - 1, "ANNUITY"), rel=1e-14)
+    assert a.pols_maturity(n - 1) == pytest.approx(
+        a.pols_if_at(n - 1, "BEF_LAPSE") * (1 - a.lapse_rate_mth(n - 1)), rel=1e-14)
+    assert a.pols_if_at(n - 1, "AFT_DECR") == 0.0
+    assert a.pols_if(n) == 0.0
 
 
 def test_nothing_is_charged_to_the_in_force_population_after_expiry(income_guarantee):
@@ -761,7 +770,7 @@ def test_nothing_is_charged_to_the_in_force_population_after_expiry(income_guara
     for point_id in income_guarantee.Data.model_point_table().index:
         proj = income_guarantee.Projection[point_id]
         assert proj.check_expired_cover() is True
-        for t in range(proj.term_m() + 1, proj.proj_len() + 1):
+        for t in range(proj.term_m(), proj.proj_len()):
             assert proj.check_expired_cover_resid(t) == pytest.approx(0.0, abs=1e-12)
             assert proj.pols_if(t) == 0.0
             assert proj.premiums(t) == 0.0
@@ -774,7 +783,7 @@ def test_nothing_is_charged_to_the_in_force_population_after_expiry(income_guara
     # On the anchor cell the tail is genuinely non-empty: 23 months of instalments and
     # of the administration expense that goes with them, after everything else is zero.
     a = income_guarantee.Projection[1]
-    for t in range(a.term_m() + 1, a.proj_len() + 1):
+    for t in range(a.term_m(), a.proj_len()):
         assert a.claims(t, "ANNUITY") > 0.0
         assert a.annuity_expenses(t) > 0.0
 
@@ -788,7 +797,7 @@ def test_the_rate_class_factors_normalize_to_the_all_lives_table(income_guarante
     """
     a = income_guarantee.Projection[1]
     assert a.check_class_factor_norm() is True
-    assert a.check_class_factor_norm_resid(1) == pytest.approx(0.0, abs=1e-12)
+    assert a.check_class_factor_norm_resid(0) == pytest.approx(0.0, abs=1e-12)
     table = income_guarantee.Data.rate_class_table()
     assert sorted(table.index) == ["nonsmoker_preferred", "nonsmoker_standard",
                                    "smoker_preferred", "smoker_standard"]
@@ -812,8 +821,8 @@ def test_commutation_is_off_in_the_base_run_and_on_at_point_4(income_guarantee):
     a, p4 = income_guarantee.Projection[1], income_guarantee.Projection[4]
     horizon = a.proj_len()
     assert a.commutation() is False
-    assert all(a.pols_commute(t) == 0.0 for t in range(1, horizon + 1))
-    assert all(a.claims(t, "COMMUTATION") == 0.0 for t in range(1, horizon + 1))
+    assert all(a.pols_commute(t) == 0.0 for t in range(horizon))
+    assert all(a.claims(t, "COMMUTATION") == 0.0 for t in range(horizon))
     assert (a.result_cf()["claims_commutation"] == 0.0).all()
 
     v = (1 + 0.0065) ** (-1 / 12)
@@ -824,21 +833,21 @@ def test_commutation_is_off_in_the_base_run_and_on_at_point_4(income_guarantee):
     assert a.annuity_certain_factor(0) == 0.0
     assert a.annuity_certain_factor(-5) == 0.0
     assert a.annuity_certain_factor(300) / 300 == pytest.approx(0.922965, abs=5e-7)
-    assert a.commute_pp(1) / (150000.0 * 420) == pytest.approx(0.894482, abs=5e-7)
+    assert a.commute_pp(0) / (150000.0 * 420) == pytest.approx(0.894482, abs=5e-7)
 
     assert p4.commutation() is True
-    total = sum(p4.claims(t) for t in range(1, p4.proj_len() + 1))
+    total = sum(p4.claims(t) for t in range(p4.proj_len()))
     assert total > 0.0
     # Commuting at 0.65% is worth less than paying the instalments out undiscounted.
     uncommuted = sum(p4.annuity_mth() * p4.pols_death(s) * p4.pay_count(s)
-                     for s in range(1, p4.term_m() + 1))
+                     for s in range(p4.term_m()))
     assert total < uncommuted
 
     # The notes quote the module's effect on the anchor cell's own parameters: claim
     # outgo of JPY 414,176.30 against the JPY 443,313.69 instalment total, 93.43%.  The
     # decrements are untouched by the settlement route, so the counterfactual is built
     # from the anchor's claim vector directly.
-    commuted = sum(a.commute_pp(s) * a.pols_death(s) for s in range(1, a.term_m() + 1))
+    commuted = sum(a.commute_pp(s) * a.pols_death(s) for s in range(a.term_m()))
     assert commuted == pytest.approx(414176.30, abs=YEN)
     assert commuted / TOTALS["claims_annuity"] == pytest.approx(0.9343, abs=5e-5)
 
@@ -852,25 +861,25 @@ def test_living_needs_is_off_in_the_base_run_and_on_at_point_5(income_guarantee)
     """
     a, p5 = income_guarantee.Projection[1], income_guarantee.Projection[5]
     assert a.living_needs() is False
-    assert all(a.pols_living_needs(t) == 0.0 for t in range(1, a.proj_len() + 1))
+    assert all(a.pols_living_needs(t) == 0.0 for t in range(a.proj_len()))
     assert (a.result_cf()["claims_living_needs"] == 0.0).all()
 
     assert p5.living_needs() is True
     take_up = income_guarantee.Projection.ln_take_up
-    for t in (1, 100, 200):
+    for t in (0, 99, 199):
         assert p5.pols_living_needs(t) == pytest.approx(
             take_up * p5.pols_death(t), rel=1e-14)
         # Carved out, not added: the three settlement routes partition the claims.
         assert (p5.annuities_open(t) + p5.pols_commute(t) + p5.pols_living_needs(t)
                 == pytest.approx(p5.pols_death(t), rel=1e-14))
-    assert any(p5.claims(t, "LIVING_NEEDS") > 0.0 for t in range(1, p5.proj_len() + 1))
+    assert any(p5.claims(t, "LIVING_NEEDS") > 0.0 for t in range(p5.proj_len()))
     # An accelerated claim is one payment, so it carries one administration charge
     # alongside the instalments still running on the ledger.
-    for t in (1, 100, 200):
+    for t in (0, 99, 199):
         assert p5.annuity_expenses(t) == pytest.approx(
             200.0 * (p5.annuities_if(t) + p5.pols_living_needs(t)), rel=1e-14)
     # This stream is small enough that the JPY 30,000,000 cap does not bind.
-    assert p5.ln_benefit_pp(1) < 30000000.0
+    assert p5.ln_benefit_pp(0) < 30000000.0
     assert p5.check_annuity_ledger() is True
 
 
@@ -883,21 +892,21 @@ def test_waiver_of_premium_is_off_in_the_base_run_and_on_at_point_7(income_guara
     """
     a, p7 = income_guarantee.Projection[1], income_guarantee.Projection[7]
     assert a.wop() is False
-    assert all(a.wop_waived_frac(t) == 0.0 for t in range(1, a.proj_len() + 1))
-    assert all(a.pols_payer(t) == a.pols_if(t) for t in (1, 13, 240, 420))
+    assert all(a.wop_waived_frac(t) == 0.0 for t in range(a.proj_len()))
+    assert all(a.pols_payer(t) == a.pols_if(t) for t in (0, 12, 239, 419))
 
     assert p7.wop() is True
-    assert p7.wop_waived_frac(1) == 0.0
-    assert p7.wop_waived_frac(3) > p7.wop_waived_frac(2) > 0.0
-    assert p7.pols_payer(5) < p7.pols_if(5)
-    assert p7.premiums(5) == pytest.approx(
-        p7.prem_due_pp(5) * p7.pols_payer(5), rel=1e-14)
+    assert p7.wop_waived_frac(0) == 0.0
+    assert p7.wop_waived_frac(2) > p7.wop_waived_frac(1) > 0.0
+    assert p7.pols_payer(4) < p7.pols_if(4)
+    assert p7.premiums(4) == pytest.approx(
+        p7.prem_due_pp(4) * p7.pols_payer(4), rel=1e-14)
     inc = 1 - (1 - income_guarantee.Projection.wop_inc_rate) ** (1 / 12)
     rec = 1 - (1 - income_guarantee.Projection.wop_rec_rate) ** (1 / 12)
     equilibrium = inc / (inc + rec)
-    assert 0.0 < p7.wop_waived_frac(p7.term_m()) < equilibrium
+    assert 0.0 < p7.wop_waived_frac(p7.term_m() - 1) < equilibrium
     # The incidence is not the mortality rate wearing another name.
-    assert p7.wop_waived_frac(2) != pytest.approx(p7.mort_rate_mth(1), rel=1e-3)
+    assert p7.wop_waived_frac(1) != pytest.approx(p7.mort_rate_mth(0), rel=1e-3)
 
 
 def test_reinstatement_is_off_in_the_base_run_and_on_at_point_8(income_guarantee):
@@ -909,22 +918,22 @@ def test_reinstatement_is_off_in_the_base_run_and_on_at_point_8(income_guarantee
     """
     a, p8 = income_guarantee.Projection[1], income_guarantee.Projection[8]
     assert a.reinstatement() is False
-    assert all(a.pols_reinst(t) == 0.0 for t in range(1, a.proj_len() + 1))
+    assert all(a.pols_reinst(t) == 0.0 for t in range(a.proj_len()))
 
     assert p8.reinstatement() is True
     lag = income_guarantee.Projection.reinst_lag_m
     rate = income_guarantee.Projection.reinst_rate
-    assert all(p8.pols_reinst(t) == 0.0 for t in range(1, lag + 1))
-    assert p8.pols_reinst(lag + 1) == pytest.approx(rate * p8.pols_lapse(1), rel=1e-14)
-    assert p8.pols_reinst(lag + 1) > 0.0
+    assert all(p8.pols_reinst(t) == 0.0 for t in range(lag))
+    assert p8.pols_reinst(lag) == pytest.approx(rate * p8.pols_lapse(0), rel=1e-14)
+    assert p8.pols_reinst(lag) > 0.0
     assert lag <= income_guarantee.Projection.reinst_window_m
     # The arrears with interest arrive as premium income, not as a negative claim.
     assert p8.prem_arrears_pp() > lag * p8.premium_mth_pp()
-    assert p8.premiums(lag + 1) == pytest.approx(
-        p8.prem_due_pp(lag + 1) * p8.pols_payer(lag + 1)
-        + p8.prem_arrears_pp() * p8.pols_reinst(lag + 1), rel=1e-14)
+    assert p8.premiums(lag) == pytest.approx(
+        p8.prem_due_pp(lag) * p8.pols_payer(lag)
+        + p8.prem_arrears_pp() * p8.pols_reinst(lag), rel=1e-14)
     # Reinstatement adds lives back, so the in-force is above the no-復活 roll-forward.
-    assert p8.pols_if(lag + 1) > p8.pols_if_at(lag, "AFT_DECR")
+    assert p8.pols_if(lag) > p8.pols_if_at(lag - 1, "AFT_DECR")
     assert p8.check_pols_roll_fwd() is True
 
 
@@ -941,21 +950,21 @@ def test_selective_lapsation_is_off_in_the_base_run_and_works_when_switched_on(
     try:
         base = model.Projection[1]
         assert model.Projection.sel_lapse_lambda == 0.0
-        assert all(base.sel_lapse_factor(t) == 1.0 for t in (1, 120, 420))
+        assert all(base.sel_lapse_factor(t) == 1.0 for t in (0, 119, 419))
         base_outgo = sum(base.claims(t, "ANNUITY")
-                         for t in range(1, base.proj_len() + 1))
+                         for t in range(base.proj_len()))
         assert base_outgo == pytest.approx(TOTALS["claims_annuity"], abs=YEN)
 
         model.Projection.sel_lapse_lambda = 0.25
         model.Projection.clear_all()
         proj = model.Projection[1]
-        assert proj.sel_lapse_factor(1) == 1.0          # nothing has lapsed yet
-        assert proj.sel_lapse_factor(120) == pytest.approx(
-            1.0 + 0.25 * (1.0 - proj.pols_if(120) / 1.0), rel=1e-12)
-        assert proj.sel_lapse_factor(420) > proj.sel_lapse_factor(120) > 1.0
-        assert proj.mort_rate(120) > 0.000604800
+        assert proj.sel_lapse_factor(0) == 1.0          # nothing has lapsed yet
+        assert proj.sel_lapse_factor(119) == pytest.approx(
+            1.0 + 0.25 * (1.0 - proj.pols_if(119) / 1.0), rel=1e-12)
+        assert proj.sel_lapse_factor(419) > proj.sel_lapse_factor(119) > 1.0
+        assert proj.mort_rate(119) > 0.000604800
         assert sum(proj.claims(t, "ANNUITY")
-                   for t in range(1, proj.proj_len() + 1)) > base_outgo
+                   for t in range(proj.proj_len())) > base_outgo
         assert proj.check_pols_roll_fwd() is True
         assert proj.check_annuity_ledger() is True
     finally:
@@ -993,23 +1002,23 @@ def test_the_benefit_is_an_annuity_certain(income_guarantee):
     a = income_guarantee.Projection[1]
     n, g = a.term_m(), a.guar_m()
     # A stream's instalment count depends on the claim month alone.
-    assert a.pay_count(1) == n
-    assert a.pay_count(n) == g
-    assert a.pay_count(n - g + 1) == g
-    for m in (1, 50, n - g + 1):
-        assert a.pay_end(m) == n
-    for m in (n - g + 2, n):
-        assert a.pay_end(m) == m + g - 1 > n
+    assert a.pay_count(0) == n
+    assert a.pay_count(n - 1) == g
+    assert a.pay_count(n - g) == g
+    for m in (0, 49, n - g):
+        assert a.pay_end(m) == n - 1
+    for m in (n - g + 1, n - 1):
+        assert a.pay_end(m) == m + g - 1 > n - 1
     # Total instalments reconcile to sum D(s) x n_pay(s) with no survivorship anywhere.
-    built = sum(a.annuities_open(s) * a.pay_count(s) for s in range(1, n + 1))
-    assert sum(a.annuities_if(t) for t in range(1, a.proj_len() + 1)) == pytest.approx(
+    built = sum(a.annuities_open(s) * a.pay_count(s) for s in range(n))
+    assert sum(a.annuities_if(t) for t in range(a.proj_len())) == pytest.approx(
         built, abs=1e-12)
 
 
 def test_the_guarantee_equals_the_whole_term_at_point_8(income_guarantee):
     """The edge cell G = N: every claim pays exactly G instalments, whenever it arises.
 
-    A 5-year term with a 5-year guarantee, so ``max(N - m + 1, G)`` collapses to G for
+    A 5-year term with a 5-year guarantee, so ``max(N - m, G)`` collapses to G for
     every m and the projection is twice the term less one month.  An off-by-one in the
     guarantee arithmetic that hides inside a 420-month term is unmissable here.
     """
@@ -1017,14 +1026,15 @@ def test_the_guarantee_equals_the_whole_term_at_point_8(income_guarantee):
     n, g = p8.term_m(), p8.guar_m()
     assert n == g == 60
     assert p8.proj_len() == 119
-    for m in range(1, n + 1):
+    for m in range(n):
         assert p8.pay_count(m) == g
         assert p8.pay_end(m) == m + g - 1
     assert p8.check_pay_count() is True
     assert p8.check_annuity_ledger() is True
     assert p8.check_annuity_total() is True
-    # The ledger still peaks at month N, where only the first claim's stream has ended.
-    assert p8.annuities_if(n) == max(p8.annuities_if(t) for t in range(1, 120))
+    # The ledger still peaks in the last month of cover, t = N - 1, where only the first
+    # claim's stream has ended.
+    assert p8.annuities_if(n - 1) == max(p8.annuities_if(t) for t in range(119))
 
 
 def test_premium_mode_is_a_timing_feature_not_an_inert_flag(income_guarantee):
@@ -1041,16 +1051,16 @@ def test_premium_mode_is_a_timing_feature_not_an_inert_flag(income_guarantee):
         "monthly", "annual", "semiannual")
     assert (monthly.prem_mode_months(), annual.prem_mode_months(),
             semi.prem_mode_months()) == (1, 12, 6)
-    assert all(monthly.prem_due_pp(t) == monthly.premium_mth_pp() for t in range(1, 13))
-    assert annual.prem_due_pp(1) == pytest.approx(12 * annual.premium_mth_pp(), rel=1e-14)
-    assert all(annual.prem_due_pp(t) == 0.0 for t in range(2, 13))
-    assert annual.prem_due_pp(13) == pytest.approx(12 * annual.premium_mth_pp(), rel=1e-14)
-    assert semi.prem_due_pp(1) == pytest.approx(6 * semi.premium_mth_pp(), rel=1e-14)
-    assert all(semi.prem_due_pp(t) == 0.0 for t in range(2, 7))
-    assert semi.prem_due_pp(7) == pytest.approx(6 * semi.premium_mth_pp(), rel=1e-14)
+    assert all(monthly.prem_due_pp(t) == monthly.premium_mth_pp() for t in range(12))
+    assert annual.prem_due_pp(0) == pytest.approx(12 * annual.premium_mth_pp(), rel=1e-14)
+    assert all(annual.prem_due_pp(t) == 0.0 for t in range(1, 12))
+    assert annual.prem_due_pp(12) == pytest.approx(12 * annual.premium_mth_pp(), rel=1e-14)
+    assert semi.prem_due_pp(0) == pytest.approx(6 * semi.premium_mth_pp(), rel=1e-14)
+    assert all(semi.prem_due_pp(t) == 0.0 for t in range(1, 6))
+    assert semi.prem_due_pp(6) == pytest.approx(6 * semi.premium_mth_pp(), rel=1e-14)
     # No frequency discount: a year of premium costs the same at every frequency.
     for proj in (monthly, annual, semi):
-        year_one = sum(proj.prem_due_pp(t) for t in range(1, 13))
+        year_one = sum(proj.prem_due_pp(t) for t in range(12))
         assert year_one == pytest.approx(12 * proj.premium_mth_pp(), rel=1e-14)
 
 
@@ -1074,10 +1084,10 @@ def test_lapse_relieves_the_liability_on_this_basis(tmp_path):
         model.Data.clear_all()
         model.Projection.clear_all()
         proj = model.Projection[1]
-        assert proj.lapse_rate(1) == 0.0
-        assert all(proj.pols_lapse(t) == 0.0 for t in range(1, proj.term_m() + 1))
+        assert proj.lapse_rate(0) == 0.0
+        assert all(proj.pols_lapse(t) == 0.0 for t in range(proj.term_m()))
         assert proj.result_cf()["net_cf"].sum() == pytest.approx(-269617.32, abs=YEN)
-        assert proj.pols_maturity(proj.term_m()) > SURVIVORS
+        assert proj.pols_maturity(proj.term_m() - 1) > SURVIVORS
         assert proj.check_pols_roll_fwd() is True
     finally:
         model.close()
@@ -1098,14 +1108,14 @@ def test_the_mortality_basis_is_the_largest_lever_in_the_file(tmp_path):
         model.Projection.clear_all()
         proj = model.Projection[1]
         assert sum(proj.claims(t, "ANNUITY")
-                   for t in range(1, proj.proj_len() + 1)) == pytest.approx(
+                   for t in range(proj.proj_len())) == pytest.approx(
                        552708.11, abs=YEN)
         # class_factor 0.90 in place of 0.70, applied through the same product.
         model.Projection.mort_be_factor = 0.8 * 0.90 / 0.70
         model.Projection.clear_all()
         proj = model.Projection[1]
         assert sum(proj.claims(t, "ANNUITY")
-                   for t in range(1, proj.proj_len() + 1)) == pytest.approx(
+                   for t in range(proj.proj_len())) == pytest.approx(
                        568289.70, abs=YEN)
     finally:
         model.close()
@@ -1120,9 +1130,9 @@ def test_the_model_point_envelope_is_enforced_by_name(income_guarantee):
     """
     a = income_guarantee.Projection[1]
     with pytest.raises(FormulaError):
-        a.pols_if_at(1, "BEF_NOTHING")
+        a.pols_if_at(0, "BEF_NOTHING")
     with pytest.raises(FormulaError):
-        a.claims(1, "SURRENDER")
+        a.claims(0, "SURRENDER")
     table = income_guarantee.Data.model_point_table()
     assert (table["issue_age"].between(20, 70)).all()
     assert (table["expiry_age"].between(45, 90)).all()
@@ -1158,7 +1168,10 @@ def test_result_cf_shape_and_decomposition(jp_income_anchor):
         "claim_expenses", "annuity_expenses", "expenses", "commissions", "net_cf",
     ]
     assert df.index.name == "t"
-    assert list(df.index) == list(range(1, 444))
+    assert list(df.index) == list(range(443))
+    assert df.index[0] == 0
+    assert df.index[-1] == jp_income_anchor.proj_len() - 1
+    assert len(df) == jp_income_anchor.proj_len()
     assert "claims" not in df.columns
     assert "claims_death" not in df.columns
     assert jp_income_anchor.check_net_cf() is True
@@ -1167,7 +1180,7 @@ def test_result_cf_shape_and_decomposition(jp_income_anchor):
                 "expenses", "commissions"]].sum(axis=1)
     assert (df["premiums"] - outgo - df["net_cf"]).abs().max() == pytest.approx(
         0.0, abs=1e-9)
-    assert df.loc[1, "net_cf"] == pytest.approx(WORKED_EXAMPLE[1][8], abs=YEN)
+    assert df.loc[0, "net_cf"] == pytest.approx(WORKED_EXAMPLE[0][8], abs=YEN)
 
 
 def test_net_cf_carries_the_notes_own_income_positive_sign(income_guarantee):
@@ -1178,11 +1191,11 @@ def test_net_cf_carries_the_notes_own_income_positive_sign(income_guarantee):
     """
     assert "liability_cf" not in income_guarantee.Projection.cells
     a = income_guarantee.Projection[1]
-    assert a.net_cf(2) > 0.0
-    assert a.net_cf(1) < 0.0
-    assert a.net_cf(1) == pytest.approx(
-        a.premiums(1) - a.claims(1) - a.claim_expenses(1) - a.annuity_expenses(1)
-        - a.expenses(1) - a.commissions(1), abs=1e-9)
+    assert a.net_cf(1) > 0.0
+    assert a.net_cf(0) < 0.0
+    assert a.net_cf(0) == pytest.approx(
+        a.premiums(0) - a.claims(0) - a.claim_expenses(0) - a.annuity_expenses(0)
+        - a.expenses(0) - a.commissions(0), abs=1e-9)
 
 
 def test_the_inputs_live_beside_the_model_and_mark_their_provenance():

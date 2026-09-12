@@ -11,13 +11,15 @@ projecting model point 1::
     >>> Projection[1].result_cf()          # the worked example's anchor cell
     >>> Projection.point_id = 2            # or switch the default
 
-``t`` counts **policy months**, 1-based: ``t = 1`` is the first projected month and
-``t = proj_len() = 12 x term`` the last. The notes index the in-force probability
-``l(t)`` at the **end** of month ``t`` with ``l(0) = 1``; the library indexes
-:func:`pols_if` at the **start** of the month, so ``pols_if(t)`` is the notes' ``l(t-1)``
-and the notes' ``l(t)`` is :func:`pols_if_at` ``(t, "AFT_DECR")``. That is deliberate:
-``pols_if(t)`` is then the weight on the same ``result_cf()`` row's cash flows, which is
-the convention every model in this library shares.
+``t`` counts **policy months** and is 0-based, as everywhere in lifelib: ``t = 0`` is
+the issue month, the first projected month, and ``t = proj_len() - 1`` the last, with
+``proj_len() = 12 x term`` the number of projected months. Month ``t`` runs from time
+``t`` to time ``t + 1``; the policy year containing it is ``t // 12 + 1``. The notes
+index the in-force probability ``l(t)`` at the **start** of month ``t`` with
+``l(0) = 1``, which is exactly the library's :func:`pols_if`: ``pols_if(t)`` is the
+notes' ``l(t)`` and the end-of-month state ``l(t + 1)`` is :func:`pols_if_at`
+``(t, "AFT_DECR")``. ``pols_if(t)`` is thus the weight on the same ``result_cf()``
+row's cash flows, which is the convention every model in this library shares.
 
 .. rubric:: Input data
 
@@ -59,11 +61,11 @@ Notes symbol         Cells                            Meaning
 contract_type        contract_type()                  accelerated or standalone
 issue_age            age_at_entry(life)               Issue age (ANB), life 1 or 2
 a                    age(t, life)                     Attained age (ANB) in month t
-y = ceil(t/12)       policy_year(t)                   Policy year containing month t
+y = t//12 + 1        policy_year(t)                   Policy year containing month t
 (none)               duration(t)                      Completed policy years, y - 1
-(none)               duration_mth(t)                  Months elapsed at end of month t
+(none)               duration_mth(t)                  Months elapsed at start of month t
 n                    policy_term()                    Term in years
-12n                  proj_len()                       Last projected month
+12n                  proj_len()                       Months projected, t = 0..12n-1
 SA                   sum_assured()                    Sum assured at outset
 SA(t)                benefit_pp(t, "MAIN")            Sum assured in month t, indexed
 B_AP                 benefit_pp(t, "AP")              Additional-payment benefit
@@ -96,8 +98,8 @@ w_m(t)               lapse_rate_mth(t)                Monthly lapse rate
 rho_review           review_prem_shock                Premium change at a review
 (none)               reviews_passed(t)                Reviews already applied
 (none)               review_shock_active(t)           In the post-review window
-l(t-1)               pols_if(t)                       In force at the start of month t
-l(t)                 pols_if_at(t, "AFT_DECR")        In force at the end of month t
+l(t)                 pols_if(t)                       In force at the start of month t
+l(t+1)               pols_if_at(t, "AFT_DECR")        In force at the end of month t
 (none)               pols_if_at(t, timing)            BEF_DECR / BEF_LAPSE / AFT_DECR
 (none)               pols_claim(t)                    Main-benefit claims in month t
 (none)               pols_lapse(t)                    Lapses at the end of month t
@@ -246,9 +248,9 @@ returns zero so that the absence of a surrender value is stated rather than infe
 The notes' ``Net CF`` is income positive, which is the library-wide sign of
 :func:`net_cf`, so there is no outgo-positive ``liability_cf`` companion here. One
 caveat for a reader checking the worked example by eye: the notes' **Net CF column
-excludes the initial expense** — at month 1 it shows 31.88, with the £200 initial
+excludes the initial expense** — at ``t = 0`` it shows 31.88, with the £200 initial
 expense noted separately as taking the month to -168.12. :func:`net_cf` is the total,
-so ``net_cf(1)`` is -168.12 and the notes' column is ``net_cf(1) + 200``.
+so ``net_cf(0)`` is -168.12 and the notes' column is ``net_cf(0) + 200``.
 """
 
 from modelx.serialize.jsonvalues import *
@@ -355,7 +357,7 @@ def cover_basis():
     """The cover shape.  Level only: decreasing and FIB shapes are out of scope here.
 
     Both exist on the term assurance chassis this product sits on and are implemented
-    in ``Term_UK_A``; these notes scope them out **[std scope]**.
+    in ``Term_UK_S``; these notes scope them out **[std scope]**.
     """
     v = model_point()["cover_basis"]
     if v != "level":
@@ -411,30 +413,31 @@ def pols_if_init():
 
 
 def proj_len():
-    """Projection length in months: ``12 x term``.
+    """The number of projected months, ``12 x term``; the frame is ``t = 0 .. proj_len() - 1``.
 
-    The policy expires at the end of the term with no maturity and no surrender value
-    [S1][S4][S5], so there is nothing after it.
+    The exclusive end of the frame, counted from ``t = 0``.  The policy expires at the
+    end of the last month with no maturity and no surrender value [S1][S4][S5], so
+    there is nothing after it.
     """
     return 12 * policy_term()
 
 
 def duration(t):
-    """Completed policy years at the start of month t: ``(t - 1) // 12``."""
-    return (t - 1) // 12
+    """Completed policy years at the start of month t: ``t // 12``; 0 during the first year."""
+    return t // 12
 
 
 def duration_mth(t):
-    """Months elapsed from issue at the end of month t; equal to t.
+    """Months elapsed from issue at the start of month t; equal to t.
 
-    ``t`` is 1-based, so the identity is trivial - the cells exists so the monthly
-    models in this library share one vocabulary.
+    ``t`` is 0-based and counts from issue, so the identity is trivial - the cells
+    exists so the monthly models in this library share one vocabulary.
     """
     return t
 
 
 def policy_year(t):
-    """y = ceil(t/12): the policy year containing month t; 1 for t = 1..12."""
+    """y = t // 12 + 1: the 1-based policy year containing month t; 1 for t = 0..11."""
     return duration(t) + 1
 
 
@@ -633,13 +636,14 @@ def child_rate_mth():
 def reviews_passed(t):
     """The number of premium reviews already applied at month t.
 
-    Reviews fall every ``review_period_mths`` from the fifth anniversary [S3][S4], so
-    the first bites in month 61.  Always zero on guaranteed-premium business, where the
+    Reviews fall every ``review_period_mths`` from the fifth anniversary [S3][S4], which
+    is the start of month ``t = 60``, so the first bites there - the month that opens
+    the sixth policy year.  Always zero on guaranteed-premium business, where the
     premium cannot be changed at all.
     """
     if premium_guarantee() != "reviewable":
         return 0
-    return (t - 1) // review_period_mths                             # noqa: F821
+    return t // review_period_mths                                   # noqa: F821
 
 
 def review_shock_active(t):
@@ -652,7 +656,7 @@ def review_shock_active(t):
         return False
     if review_prem_shock <= review_lapse_threshold:                  # noqa: F821
         return False
-    return (t - 1) % review_period_mths < 12                         # noqa: F821
+    return t % review_period_mths < 12                               # noqa: F821
 
 
 def idx_increase():
@@ -748,13 +752,14 @@ def lapse_rate_mth(t):
 def pols_if(t):
     """The number of policies in force at the **start** of policy month t.
 
-    The notes' ``l(t-1)``, and the weight on every cash flow of the same
-    ``result_cf()`` row.  ``pols_if_init()`` in month 1, then the notes' recursion
-    ``l(t) = l(t-1)(1 - q_m)(1 - w_m)``.  Zero once the term has run out.
+    The notes' ``l(t)``, and the weight on every cash flow of the same
+    ``result_cf()`` row.  ``pols_if_init()`` at ``t = 0``, the issue month, then the
+    notes' recursion ``l(t + 1) = l(t)(1 - q_m(t))(1 - w_m(t))``: the start of month
+    ``t`` is the end of month ``t - 1``.  Zero outside the frame ``0 .. proj_len() - 1``.
     """
-    if t < 1 or t > proj_len():
+    if t < 0 or t >= proj_len():
         return 0.0
-    if t == 1:
+    if t == 0:
         return pols_if_init()
     return pols_if_at(t - 1, "AFT_DECR")
 
@@ -772,8 +777,8 @@ def pols_if_at(t, timing):
         population lapses are taken from.
 
     ``"AFT_DECR"``
-        the notes' ``l(t)``, the end-of-month state, and zero from the last
-        month on because the cover expires there.
+        the notes' ``l(t + 1)``, the end-of-month state, and zero from the
+        last month ``t = proj_len() - 1`` on because the cover expires there.
 
     The additional-payment and children's-cover claims appear at none of these points.
     They are non-terminating: only the main benefit ends the policy.
@@ -783,7 +788,7 @@ def pols_if_at(t, timing):
     if timing == "BEF_LAPSE":
         return pols_if(t) * (1.0 - claim_rate_mth(t))
     if timing == "AFT_DECR":
-        if t < 1 or t >= proj_len():
+        if t < 0 or t >= proj_len() - 1:
             return 0.0
         return pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate_mth(t))
     raise ValueError("invalid timing")
@@ -810,12 +815,13 @@ def pols_lapse(t):
 
 
 def pols_maturity(t):
-    """Policies whose cover expires at the end of the term; zero in every other month.
+    """Policies whose cover expires at the end of the term, month ``t = proj_len() - 1``.
 
-    Not a decrement and not a benefit - the contract runs out, with no maturity value -
-    but needed for the in-force roll-forward to close; see :func:`check_pols_roll_fwd`.
+    Zero in every other month.  Not a decrement and not a benefit - the contract runs
+    out, with no maturity value - but needed for the in-force roll-forward to close;
+    see :func:`check_pols_roll_fwd`.
     """
-    if t != proj_len():
+    if t != proj_len() - 1:
         return 0.0
     return pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate_mth(t))
 
@@ -906,12 +912,13 @@ def inflation_factor(t):
 def expenses(t):
     """E0 and E_m(y): the initial and maintenance expense in month t **[std]**.
 
-    £200 per policy at issue, then £30 per policy per year - a twelfth of it each month
-    - inflating at 3%, both at the beginning of the month.  There is **no commission
-    line** on this product: the notes fold acquisition cost into the initial expense
-    rather than carrying commission separately as the term assurance chassis does.
+    £200 per policy at issue (``t = 0``), then £30 per policy per year - a twelfth of it
+    each month - inflating at 3%, both at the beginning of the month.  There is **no
+    commission line** on this product: the notes fold acquisition cost into the initial
+    expense rather than carrying commission separately as the term assurance chassis
+    does.
     """
-    acq = expense_acq * pols_if(t) if t == 1 else 0.0                # noqa: F821
+    acq = expense_acq * pols_if(t) if t == 0 else 0.0                # noqa: F821
     return acq + expense_maint / 12.0 * inflation_factor(t) * pols_if(t)  # noqa: F821
 
 
@@ -923,9 +930,9 @@ def net_cf(t):
     outgo-positive ``liability_cf`` companion.
 
     One caveat for a reader checking the worked example by eye: the notes' *Net CF*
-    column **excludes the initial expense**, showing 31.88 at month 1 and noting the
+    column **excludes the initial expense**, showing 31.88 at ``t = 0`` and noting the
     £200 separately as taking the month to -168.12.  This cells is the total, so
-    ``net_cf(1)`` is -168.12 and the notes' column is ``net_cf(1) + 200``.
+    ``net_cf(0)`` is -168.12 and the notes' column is ``net_cf(0) + 200``.
     """
     return premiums(t) - claims(t) - claim_expenses(t) - expenses(t)
 
@@ -952,7 +959,7 @@ def check_pols_roll_fwd():
     ``pols_if_init()``, since the residual accumulates rounding on that many policies.
     """
     return all(abs(check_pols_roll_fwd_resid(t)) <= 1e-10 * max(pols_if_init(), 1.0)
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_claim_split_resid(t):
@@ -982,11 +989,11 @@ def check_claim_split():
     how a user states how much of the artefact they will accept.
     """
     return all(abs(check_claim_split_resid(t)) <= claim_split_tol    # noqa: F821
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def result_cf():
-    """Result table of cashflows, indexed by policy month t.
+    """Result table of cashflows, indexed by policy month ``t = 0 .. proj_len() - 1``.
 
     ``pols_if`` is the start-of-month count, which is the weight applied to every cash
     flow on the same row.  ``net_cf`` carries the notes' own income-positive sign and
@@ -994,7 +1001,7 @@ def result_cf():
     ``claims_lapse`` is a column of zeros by product design - there is no surrender
     value - and is published rather than dropped.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1012,8 +1019,8 @@ def result_cf():
 
 
 def result_pols():
-    """Result table of policy counts and decrement rates, indexed by policy month t."""
-    ts = list(range(1, proj_len() + 1))
+    """Result table of policy counts and decrement rates, indexed by policy month ``t = 0 .. proj_len() - 1``."""
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],

@@ -14,8 +14,8 @@ from uk_registry import LIB, ANNUAL, MONTHLY, MODELS, model_path  # noqa: F401
 
 @pytest.fixture(scope="module")
 def term_assurance():
-    """The Term_UK_A model, closed after the module finishes."""
-    model = mx.read_model(model_path("Term_UK_A"))
+    """The Term_UK_S model, closed after the module finishes."""
+    model = mx.read_model(model_path("Term_UK_S"))
     yield model
     model.close()
 
@@ -84,8 +84,8 @@ def uk_bond_anchor(unit_linked_bond):
 
 @pytest.fixture(scope="module")
 def with_profits():
-    """The WP_UK_A model, closed after the module finishes."""
-    model = mx.read_model(model_path("WP_UK_A"))
+    """The WP_UK_S model, closed after the module finishes."""
+    model = mx.read_model(model_path("WP_UK_S"))
     yield model
     model.close()
 

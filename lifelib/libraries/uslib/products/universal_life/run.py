@@ -20,16 +20,16 @@ print("model point {}: {} - {}{} {} face {:,.0f} option {} {}".format(
 print("planned premium {:,.2f}/yr, load {:.0%}   credited {:.2%} (guaranteed {:.2%})   "
       "current COI {:.0%} of guaranteed max".format(
           proj.premium_pp_ann(), proj.load_prem_rate(),
-          proj.crediting_rate_ann(1), proj.guar_rate_ann, proj.coi_curr_factor))
+          proj.crediting_rate_ann(0), proj.guar_rate_ann, proj.coi_curr_factor))
 print("i_m = {:.7f}   NAAR factor = {:.7f}   surrender charge runs off by policy year {}"
-      "   projection = {} policy months to attained age {}".format(
-          proj.inv_return_mth(1), proj.naar_factor(), proj.lapse_shock_year(),
-          proj.proj_len(), proj.age(proj.proj_len())))
+      "   projection = {} policy months (t = 0 .. {}) to attained age {}".format(
+          proj.inv_return_mth(0), proj.naar_factor(), proj.lapse_shock_year(),
+          proj.proj_len(), proj.proj_len() - 1, proj.age(proj.proj_len() - 1)))
 print()
-print("Account value roll-forward (per policy) - first 12 policy months")
+print("Account value roll-forward (per policy) - first 12 policy months, t = 0 .. 11")
 print(proj.result_av().head(12).round(2).to_string())
 print()
-print("Liability cash flows - first 12 policy months")
+print("Liability cash flows - first 12 policy months, t = 0 .. 11")
 print(proj.result_cf().head(12).round(2).to_string())
 
 model.close()

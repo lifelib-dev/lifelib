@@ -4,11 +4,22 @@ The golden values are the worked example in
 products/pension_annuity/technical-notes.md ("Worked example"), which is a
 **scenario**: GBP 100,000 buying GBP 5,400 a year for a male 65 with a female 62
 dependant at 50%, quarterly in arrears, fixed 3% escalation, value protection at 50% on
-the annuitant's death, no guarantee period -- and the annuitant dies in month 17 while
+the annuitant's death, no guarantee period -- and the annuitant dies in month 16 while
 the dependant survives throughout.  Model point 1 is that cell.  They are hard-coded
 here rather than pickled so that a reviewer can compare them against the notes by eye.
 
 Tolerances follow the precision the notes display: money to the penny.
+
+Two indices run through these assertions and they are not the same index.  ``t`` is the
+**month**, 0-based: ``t = 0`` is the first projected month, month ``t`` runs from time
+``t`` to time ``t + 1``, and the frame is ``range(proj_len())``.  ``k`` is a **time
+point**, ``k = 0`` at the start date, and it is what the state cells take --
+``lives_if(k, life)``, ``cum_annuity_pp(k, kind)``, ``vp_balance(k)``.  So the annuitant
+who dies in month 16 is alive at time 16 and dead at time 17, and the closing state of
+month ``t`` is read at ``k = t + 1``.  Where a test loops over time points its loop
+variable is spelled ``k``.  ``rpi_index(a)`` and ``rpi_peak(a)`` take a third index, an
+**anniversary count** with one step per policy year, so ``rpi_index(1)`` is one *year*
+in; that argument is spelled ``a``.
 
 Beyond the worked example this module asserts the product facts the notes call out as
 modelling pitfalls, because each is a way an implementation can look right and be wrong:
@@ -43,20 +54,22 @@ PENNY = 0.005         # money displayed to 2 d.p.
 
 MODEL_DIR = LIB / MODELS["PA_UK_S"][0]
 
-# t: (annuitant CF, dependant CF, VP lump sum, G(t))
+# t: (annuitant CF, dependant CF, VP lump sum, G(t+1))
 # The notes' table, with "--" read as zero.  G is the cumulative *scheduled* instalments
-# of every stream, which is cum_annuity_pp(t, "ALL").
+# of every stream at the **close** of month t, which is cum_annuity_pp(t + 1, "ALL"):
+# quarterly arrears instalments fall at the end of months 2, 5, 8, ... on the 0-based
+# frame, so month t's instalment is in the schedule from time t + 1 on.
 WORKED_EXAMPLE = {
-    3:  (1350.00,   0.00,       0.00, 1350.00),
-    6:  (1350.00,   0.00,       0.00, 2700.00),
-    9:  (1350.00,   0.00,       0.00, 4050.00),
-    12: (1350.00,   0.00,       0.00, 5400.00),
-    13: (0.00,      0.00,       0.00, 5400.00),   # anniversary: A <- 5,562.00
-    15: (1390.50,   0.00,       0.00, 6790.50),
-    17: (0.00,      0.00,  43209.50, 6790.50),    # annuitant dies
-    18: (0.00,    695.25,       0.00, 7485.75),   # dependant stream starts
-    21: (0.00,    695.25,       0.00, 8181.00),
-    24: (0.00,    695.25,       0.00, 8876.25),
+    2:  (1350.00,   0.00,       0.00, 1350.00),
+    5:  (1350.00,   0.00,       0.00, 2700.00),
+    8:  (1350.00,   0.00,       0.00, 4050.00),
+    11: (1350.00,   0.00,       0.00, 5400.00),
+    12: (0.00,      0.00,       0.00, 5400.00),   # anniversary: A <- 5,562.00
+    14: (1390.50,   0.00,       0.00, 6790.50),
+    16: (0.00,      0.00,  43209.50, 6790.50),    # annuitant dies
+    17: (0.00,    695.25,       0.00, 7485.75),   # dependant stream starts
+    20: (0.00,    695.25,       0.00, 8181.00),
+    23: (0.00,    695.25,       0.00, 8876.25),
 }
 
 
@@ -73,76 +86,83 @@ def test_worked_example_row(uk_pa_scenario, t):
     assert p.annuity_pp(t) * p.dependant_factor(t) == pytest.approx(
         dependant, abs=PENNY)
     assert p.claims(t, "VP") == pytest.approx(vp, abs=PENNY)
-    assert p.cum_annuity_pp(t, "ALL") == pytest.approx(cum, abs=PENNY)
+    assert p.cum_annuity_pp(t + 1, "ALL") == pytest.approx(cum, abs=PENNY)
     assert p.annuity_payments(t) == pytest.approx(annuitant + dependant, abs=PENNY)
 
 
 def test_the_instalment_schedule(uk_pa_scenario):
-    """A(1)/m = 1,350.00 in year 1; A(2) = 5,400 x 1.03 = 5,562, so 1,390.50 from t = 13."""
+    """A(1)/m = 1,350.00 in year 1; A(2) = 5,400 x 1.03 = 5,562, so 1,390.50 from t = 12."""
     p = uk_pa_scenario
     assert p.annual_income(1) == 5400.0
     assert p.annual_income(2) == pytest.approx(5562.00, abs=PENNY)
-    assert p.annuity_pp(3) == pytest.approx(1350.00, abs=PENNY)
-    assert p.annuity_pp(15) == pytest.approx(1390.50, abs=PENNY)
-    # Payment months only: quarterly arrears falls at 3, 6, 9, ...
-    assert [t for t in range(1, 13) if p.is_payment_mth(t)] == [3, 6, 9, 12]
-    assert p.annuity_pp(13) == 0.0
+    assert p.annuity_pp(2) == pytest.approx(1350.00, abs=PENNY)
+    assert p.annuity_pp(14) == pytest.approx(1390.50, abs=PENNY)
+    # Payment months only: quarterly arrears falls at the end of months 2, 5, 8, ...
+    assert [t for t in range(12) if p.is_payment_mth(t)] == [2, 5, 8, 11]
+    assert p.annuity_pp(12) == 0.0
 
 
 def test_escalation_reaches_the_anniversary_not_the_payment_date(uk_pa_scenario):
-    """The year-2 rate must not touch the t = 12 arrears instalment, accrued in year 1.
+    """The year-2 rate must not touch the t = 11 arrears instalment, accrued in year 1.
 
-    A listed pitfall: escalation applies on the anniversary, and the month-12 payment is
+    A listed pitfall: escalation applies on the anniversary, and the month-11 payment is
     the fourth instalment of year 1.
     """
     p = uk_pa_scenario
-    assert p.policy_year(12) == 1 and p.policy_year(13) == 2
-    assert p.annuity_pp(12) == pytest.approx(1350.00, abs=PENNY)
-    assert p.annuity_pp(15) == pytest.approx(1390.50, abs=PENNY)
+    assert p.policy_year(11) == 1 and p.policy_year(12) == 2
+    assert p.annuity_pp(11) == pytest.approx(1350.00, abs=PENNY)
+    assert p.annuity_pp(14) == pytest.approx(1390.50, abs=PENNY)
 
 
 def test_the_value_protection_lump_sum(uk_pa_scenario):
-    """max(0, 0.50 x 100,000 - G(16)) = 50,000 - 6,790.50 = 43,209.50."""
+    """max(0, 0.50 x 100,000 - G(16)) = 50,000 - 6,790.50 = 43,209.50.
+
+    Time 16 is the start of the death month, so G(16) is the schedule the notes call
+    "instalments already paid": the state index does not move with the frame.
+    """
     p = uk_pa_scenario
     assert p.vp_pct() == 0.50 and p.vp_basis() == "first_death"
     assert p.cum_annuity_pp(16, "ANNUITANT") == pytest.approx(6790.50, abs=PENNY)
     assert p.vp_balance(16) == pytest.approx(43209.50, abs=PENNY)
-    assert p.lives_death(17, 1) == 1.0            # the scenario death
-    assert p.claims(17, "VP") == pytest.approx(43209.50, abs=PENNY)
+    assert p.lives_death(16, 1) == 1.0            # the scenario death, in month 16
+    assert p.claims(16, "VP") == pytest.approx(43209.50, abs=PENNY)
     # And it is paid once.
-    assert sum(p.claims(t, "VP") for t in range(1, p.proj_len() + 1)) == pytest.approx(
+    assert sum(p.claims(t, "VP") for t in range(p.proj_len())) == pytest.approx(
         43209.50, abs=PENNY)
 
 
 def test_the_dependant_stream_starts_at_the_next_payment_date(uk_pa_scenario):
-    """Death in month 17, first dependant instalment at month 18: delta x A(2)/m."""
+    """Death in month 16, first dependant instalment at month 17: delta x A(2)/m."""
     p = uk_pa_scenario
+    # Time points: alive at the start of the death month, dead at the end of it.
     assert p.lives_if(16, 1) == 1.0 and p.lives_if(17, 1) == 0.0
     assert p.lives_if(24, 2) == 1.0               # the dependant survives throughout
-    assert p.dependant_factor(15) == 0.0          # annuitant still alive
-    assert p.dependant_factor(18) == pytest.approx(0.50, rel=1e-12)
-    assert p.annuity_pp(18) * p.dependant_factor(18) == pytest.approx(695.25, abs=PENNY)
+    assert p.dependant_factor(14) == 0.0          # annuitant still alive
+    assert p.dependant_factor(17) == pytest.approx(0.50, rel=1e-12)
+    assert p.annuity_pp(17) * p.dependant_factor(17) == pytest.approx(695.25, abs=PENNY)
     assert 0.50 * 5562.00 / 4 == pytest.approx(695.25, abs=PENNY)
 
 
 def test_no_annuitant_payment_in_the_death_month_or_after(uk_pa_scenario):
     """Arrears without proportion: nothing is paid for the final partial period."""
     p = uk_pa_scenario
-    assert p.claims(17, "PROP") == 0.0
-    assert p.annuity_pp(18) * p.payment_factor(18) == 0.0
-    assert all(p.payment_factor(t) == 0.0 for t in (18, 21, 24, 100))
+    assert p.claims(16, "PROP") == 0.0
+    assert p.annuity_pp(17) * p.payment_factor(17) == 0.0
+    assert all(p.payment_factor(t) == 0.0 for t in (17, 20, 23, 99))
 
 
 def test_the_cumulative_schedule_takes_two_forms(uk_pa_scenario):
     """G is the annuitant's as-if-alive schedule for VP and every stream for the table.
 
-    The notes use one symbol for both; they diverge from month 18, where the dependant's
-    instalment enters the printed column but not the first-death VP balance.
+    The notes use one symbol for both; they diverge from time 18, the close of the
+    month-17 payment, where the dependant's instalment enters the printed column but not
+    the first-death VP balance.  Both are time-point cells, so their index is unmoved by
+    the 0-based frame.
     """
     p = uk_pa_scenario
-    for t in (3, 12, 16):
-        assert p.cum_annuity_pp(t, "ANNUITANT") == pytest.approx(
-            p.cum_annuity_pp(t, "ALL"), abs=PENNY)
+    for k in (3, 12, 16):
+        assert p.cum_annuity_pp(k, "ANNUITANT") == pytest.approx(
+            p.cum_annuity_pp(k, "ALL"), abs=PENNY)
     assert p.cum_annuity_pp(18, "ALL") == pytest.approx(7485.75, abs=PENNY)
     # The as-if-alive schedule keeps accruing the annuitant's instalment regardless.
     assert p.cum_annuity_pp(18, "ANNUITANT") == pytest.approx(
@@ -162,22 +182,23 @@ def test_the_guarantee_is_a_floor_not_a_second_stream(pension_annuity):
     assert p.check_payment_factor() is True
     # While both are 1 the max is 1 and the sum would be 2: an additive floor pays the
     # guarantee twice over, which is the whole reason for the max.
-    assert p.certain_floor(12) == 1.0 and p.payment_factor_life(12) == 1.0
-    assert p.payment_factor(12) == 1.0
-    assert p.certain_floor(12) + p.payment_factor_life(12) == 2.0
+    assert p.certain_floor(11) == 1.0 and p.payment_factor_life(11) == 1.0
+    assert p.payment_factor(11) == 1.0
+    assert p.certain_floor(11) + p.payment_factor_life(11) == 2.0
     # Inside the guarantee the full instalment is payable though the annuitant is dead.
-    assert p.lives_if(17, 1) == 0.0
-    assert p.certain_floor(60) == 1.0 and p.payment_factor_life(60) == 0.0
-    assert p.payment_factor(60) == 1.0
-    # And nothing after it, because the annuitant is dead.
-    assert p.certain_floor(120) == 1.0 and p.certain_floor(121) == 0.0
-    assert p.payment_factor(123) == 0.0
+    assert p.lives_if(17, 1) == 0.0               # a time point: dead from time 17
+    assert p.certain_floor(59) == 1.0 and p.payment_factor_life(59) == 0.0
+    assert p.payment_factor(59) == 1.0
+    # And nothing after it, because the annuitant is dead.  The 120-month guarantee
+    # covers months 0 .. 119.
+    assert p.certain_floor(119) == 1.0 and p.certain_floor(120) == 0.0
+    assert p.payment_factor(122) == 0.0
 
 
 def test_the_guarantee_escalates_as_if_alive(pension_annuity):
     """Instalments continue to beneficiaries at the escalating rate through the period."""
     p = pension_annuity.Projection[3]
-    for y, t in ((2, 15), (5, 51), (10, 111)):
+    for y, t in ((2, 14), (5, 50), (10, 110)):
         assert p.policy_year(t) == y
         assert p.annuity_pp(t) == pytest.approx(5400.0 * 1.03 ** (y - 1) / 4, abs=PENNY)
         assert p.annuity_payments(t) >= p.annuity_pp(t)
@@ -194,8 +215,8 @@ def test_guarantee_and_value_protection_never_coexist(pension_annuity):
 def test_a_contract_without_a_guarantee_has_no_floor(uk_pa_scenario):
     p = uk_pa_scenario
     assert p.guarantee_mths() == 0
-    assert all(p.certain_floor(t) == 0.0 for t in (1, 12, 120))
-    assert p.payment_factor(12) == p.payment_factor_life(12)
+    assert all(p.certain_floor(t) == 0.0 for t in (0, 11, 119))
+    assert p.payment_factor(11) == p.payment_factor_life(11)
 
 
 # ---------------------------------------------------------------------------
@@ -203,30 +224,30 @@ def test_a_contract_without_a_guarantee_has_no_floor(uk_pa_scenario):
 
 
 def test_without_overlap_the_dependant_waits_for_the_guarantee_to_end(pension_annuity):
-    """Gated on t > n even though the annuitant died in month 17.
+    """Gated on t >= n even though the annuitant died in month 16.
 
     Applying delta from the death date silently converts every without-overlap policy
     into the more expensive with-overlap form - the notes' second-listed pitfall.
     """
     p = pension_annuity.Projection[3]
     assert p.overlap() is False
-    assert p.overlap_gate(18) == 0.0
-    assert p.overlap_gate(120) == 0.0
-    assert p.overlap_gate(121) == 1.0
-    assert p.dependant_factor(18) == 0.0
-    assert p.dependant_factor(123) == pytest.approx(0.50, rel=1e-12)
+    assert p.overlap_gate(17) == 0.0
+    assert p.overlap_gate(119) == 0.0             # the last guarantee month
+    assert p.overlap_gate(120) == 1.0
+    assert p.dependant_factor(17) == 0.0
+    assert p.dependant_factor(122) == pytest.approx(0.50, rel=1e-12)
 
 
 def test_with_overlap_both_streams_run_during_the_guarantee(pension_annuity):
     """Model point 4 is point 3 with the switch flipped, and costs materially more."""
     p3, p4 = pension_annuity.Projection[3], pension_annuity.Projection[4]
     assert p4.overlap() is True
-    assert p4.overlap_gate(18) == 1.0
-    assert p4.dependant_factor(18) == pytest.approx(0.50, rel=1e-12)
+    assert p4.overlap_gate(17) == 1.0
+    assert p4.dependant_factor(17) == pytest.approx(0.50, rel=1e-12)
     assert p4.result_cf()["liability_cf"].sum() > p3.result_cf()["liability_cf"].sum()
-    # The whole difference is the dependant's stream inside the guarantee.
+    # The whole difference is the dependant's stream inside the guarantee, months 0..119.
     diff = sum(p4.annuity_payments(t) - p3.annuity_payments(t)
-               for t in range(1, 121))
+               for t in range(120))
     total = (p4.result_cf()["liability_cf"].sum()
              - p3.result_cf()["liability_cf"].sum())
     assert diff == pytest.approx(total, rel=1e-9)
@@ -236,7 +257,7 @@ def test_a_single_life_contract_has_no_dependant_stream(pension_annuity):
     p = pension_annuity.Projection[5]
     assert p.is_joint() is False
     assert p.dependant_pct() == 0.0
-    assert all(p.dependant_factor(t) == 0.0 for t in (1, 60, 300))
+    assert all(p.dependant_factor(t) == 0.0 for t in (0, 59, 299))
     assert p.lives_if(60, 2) == 0.0
     with pytest.raises(FormulaError):
         p.age_at_entry(2)
@@ -339,21 +360,22 @@ def test_the_fixed_escalation_cap(pension_annuity):
 
 
 def test_arrears_measures_survival_at_the_end_of_the_payment_month(uk_pa_scenario):
+    """The payment point of month t is time t + 1, the end of the month."""
     p = uk_pa_scenario
     assert p.payment_timing() == "arrears"
-    assert all(p.payment_surv_mth(t) == t for t in (3, 6, 15))
+    assert all(p.payment_surv_mth(t) == t + 1 for t in (2, 5, 14))
 
 
 def test_advance_measures_survival_at_the_start_of_the_payment_month(pension_annuity):
     """Using end-of-period survival for advance payments understates the liability."""
     p = pension_annuity.Projection[5]
     assert p.payment_timing() == "advance"
-    assert p.payment_surv_mth(1) == 0
-    assert all(p.payment_surv_mth(t) == t - 1 for t in (1, 2, 60))
-    assert p.payment_factor(1) == 1.0             # the first instalment is certain
-    assert p.payment_factor(60) == pytest.approx(p.lives_if(59, 1), rel=1e-14)
-    # Advance payment months are 1, 2, 3, ... at m = 12.
-    assert all(p.is_payment_mth(t) for t in (1, 2, 3, 60))
+    assert p.payment_surv_mth(0) == 0             # the start date itself
+    assert all(p.payment_surv_mth(t) == t for t in (0, 1, 59))
+    assert p.payment_factor(0) == 1.0             # the first instalment is certain
+    assert p.payment_factor(59) == pytest.approx(p.lives_if(59, 1), rel=1e-14)
+    # Advance payment months are 0, 1, 2, ... at m = 12.
+    assert all(p.is_payment_mth(t) for t in (0, 1, 2, 59))
 
 
 def test_the_advance_value_protection_netting_rule(pension_annuity):
@@ -363,26 +385,37 @@ def test_the_advance_value_protection_netting_rule(pension_annuity):
     """
     model = mx.read_model(MODEL_DIR, name="PA_UK_S_advvp")
     try:
-        # Point 5 is single-life monthly in advance; give it value protection.
-        model.Data.model_point_table()            # warm the reader
+        # Point 5 is single-life monthly in advance; it ships without value protection,
+        # so give it some in the in-memory table before anything is evaluated.
+        tbl = model.Data.model_point_table()      # warm the reader, then edit its frame
+        tbl.loc[5, "vp_pct"] = 0.50
         proj = model.Projection[5]
         assert proj.payment_timing() == "advance"
+        assert proj.vp_pct() == 0.50              # the edit reached the projection
+        # The balance is a time-point cells and every month is a payment month at
+        # m = 12, so it strictly decreases: G(30) carries one instalment more than G(29).
+        assert proj.is_payment_mth(29) is True
+        assert proj.vp_balance(30) < proj.vp_balance(29)
         # The rule is expressed in claims(t, "VP"): in an advance payment month the
-        # balance is read at t, not t - 1.  Every month is a payment month at m = 12,
-        # so the balance used is always the post-payment one.
-        assert proj.is_payment_mth(30) is True
-        assert proj.vp_balance(30) <= proj.vp_balance(29)
+        # balance is read at time t + 1, after that month's payment, not at time t.
+        # Reading it at t would overstate the lump sum by one instalment.
+        density = proj.pols_if_init() * proj.lives_death(29, 1)
+        assert density > 0.0
+        assert proj.claims(29, "VP") == pytest.approx(
+            density * proj.vp_balance(30), rel=1e-14)
+        assert proj.claims(29, "VP") != pytest.approx(
+            density * proj.vp_balance(29), rel=1e-14)
     finally:
         model.close()
 
 
 def test_the_proportionate_final_payment(pension_annuity):
-    """(h + 0.5)/(12/m) x inst(next) = (1 + 0.5)/3 x 1,390.50 = 695.25 on a month-17 death."""
+    """(h + 0.5)/(12/m) x inst(next) = (1 + 0.5)/3 x 1,390.50 = 695.25 on a month-16 death."""
     p = pension_annuity.Projection[9]
     assert p.proportion() is True
-    assert p.mths_since_payment(17) == 1           # one complete month since t = 15
-    assert p.next_payment_mth(17) == 18
-    assert p.claims(17, "PROP") == pytest.approx(695.25, abs=PENNY)
+    assert p.mths_since_payment(16) == 1           # one complete month since t = 14
+    assert p.next_payment_mth(16) == 17
+    assert p.claims(16, "PROP") == pytest.approx(695.25, abs=PENNY)
     # And it is the only difference from the worked-example point.
     p1 = pension_annuity.Projection[1]
     total = (p.result_cf()["liability_cf"].sum()
@@ -399,7 +432,7 @@ def test_proportion_is_an_arrears_only_option(pension_annuity):
 def test_without_proportion_nothing_is_paid_for_the_final_period(uk_pa_scenario):
     p = uk_pa_scenario
     assert p.proportion() is False
-    assert all(p.claims(t, "PROP") == 0.0 for t in (17, 18, 50))
+    assert all(p.claims(t, "PROP") == 0.0 for t in (16, 17, 49))
 
 
 # ---------------------------------------------------------------------------
@@ -418,12 +451,12 @@ def test_the_last_survivor_basis_nets_both_streams(pension_annuity):
     """Model point 10 is the worked cell with VP on the last survivor.
 
     The trigger is the last death rather than the annuitant's, and the balance nets the
-    dependant's instalments too - so nothing is paid on the month-17 death at all.
+    dependant's instalments too - so nothing is paid on the month-16 death at all.
     """
     p, p1 = pension_annuity.Projection[10], pension_annuity.Projection[1]
     assert p.vp_basis() == "last_survivor"
-    assert p.claims(17, "VP") == 0.0              # the dependant is still alive
-    assert p.lives_death_last(17) == 0.0
+    assert p.claims(16, "VP") == 0.0              # the dependant is still alive
+    assert p.lives_death_last(16) == 0.0
     # Up to the annuitant's death the two bases net the same instalments.
     assert p.vp_balance(16) == pytest.approx(p1.vp_balance(16), abs=PENNY)
     # After it they diverge.  The first-death basis keeps netting the annuitant's
@@ -433,7 +466,7 @@ def test_the_last_survivor_basis_nets_both_streams(pension_annuity):
     assert p.vp_balance(24) > p1.vp_balance(24)
     # In this scenario the dependant outlives the projection, so nothing is ever paid,
     # and the whole difference in liability is the lump sum the first-death basis pays.
-    assert sum(p.claims(t, "VP") for t in range(1, p.proj_len() + 1)) == 0.0
+    assert sum(p.claims(t, "VP") for t in range(p.proj_len())) == 0.0
     gap = (p1.result_cf()["liability_cf"].sum()
            - p.result_cf()["liability_cf"].sum())
     assert gap == pytest.approx(43209.50, abs=PENNY)
@@ -442,8 +475,8 @@ def test_the_last_survivor_basis_nets_both_streams(pension_annuity):
 def test_value_protection_is_zero_when_not_elected(pension_annuity):
     p = pension_annuity.Projection[3]
     assert p.vp_pct() == 0.0
-    assert all(p.vp_balance(t) == 0.0 for t in (1, 50, 200))
-    assert all(p.claims(t, "VP") == 0.0 for t in (1, 50, 200))
+    assert all(p.vp_balance(k) == 0.0 for k in (1, 50, 200))
+    assert all(p.claims(t, "VP") == 0.0 for t in (0, 49, 199))
 
 
 # ---------------------------------------------------------------------------
@@ -456,25 +489,25 @@ def test_the_mortality_construction(pension_annuity):
     assert p.mort_basis() == "table"
     table = pension_annuity.Data.mort_table()
     raw = float(table.loc[("M", 65), "mort_rate"])
-    assert p.mort_rate_base(1, 1) == pytest.approx(raw * 0.80, rel=1e-12)
+    assert p.mort_rate_base(0, 1) == pytest.approx(raw * 0.80, rel=1e-12)
     # Year 1 is calendar 2026 against a 2023 base table, so three years of improvement.
-    assert p.improve_factor(1, 1) == pytest.approx(0.9875 ** 3, rel=1e-12)
-    assert p.mort_rate(1, 1) == pytest.approx(
+    assert p.improve_factor(0, 1) == pytest.approx(0.9875 ** 3, rel=1e-12)
+    assert p.mort_rate(0, 1) == pytest.approx(
         raw * 0.80 * 0.9875 ** 3, rel=1e-12)
-    assert p.mort_rate_mth(1, 1) == pytest.approx(
-        1 - (1 - p.mort_rate(1, 1)) ** (1 / 12), rel=1e-14)
+    assert p.mort_rate_mth(0, 1) == pytest.approx(
+        1 - (1 - p.mort_rate(0, 1)) ** (1 / 12), rel=1e-14)
 
 
 def test_the_improvement_scale_tapers(pension_annuity):
     """1.25% p.a. to age 90, linear taper to zero at 110, zero above."""
     p = pension_annuity.Projection[2]
-    assert p.improve_rate(1, 1) == 0.0125                    # age 65
-    t90 = 12 * (90 - 65) + 1
+    assert p.improve_rate(0, 1) == 0.0125                    # age 65
+    t90 = 12 * (90 - 65)
     assert p.age(t90, 1) == 90 and p.improve_rate(t90, 1) == 0.0125
-    t100 = 12 * (100 - 65) + 1
+    t100 = 12 * (100 - 65)
     assert p.age(t100, 1) == 100
     assert p.improve_rate(t100, 1) == pytest.approx(0.0125 * 0.5, rel=1e-12)
-    t110 = 12 * (110 - 65) + 1
+    t110 = 12 * (110 - 65)
     assert p.improve_rate(t110, 1) == 0.0
 
 
@@ -483,8 +516,8 @@ def test_the_rating_multiplier_reprices_longevity(pension_annuity):
     standard, enhanced = pension_annuity.Projection[5], pension_annuity.Projection[8]
     assert standard.rating_factor(1) == 1.0
     assert enhanced.rating_factor(1) == 1.35
-    assert enhanced.mort_rate(1, 1) == pytest.approx(
-        1.35 * standard.mort_rate(1, 1), rel=1e-12)
+    assert enhanced.mort_rate(0, 1) == pytest.approx(
+        1.35 * standard.mort_rate(0, 1), rel=1e-12)
     assert enhanced.lives_if(120, 1) < standard.lives_if(120, 1)
     # Higher income on the same premium, and a shorter expected stream.
     assert enhanced.annual_income_init() > standard.annual_income_init()
@@ -498,27 +531,35 @@ def test_the_survival_recursion_closes(pension_annuity):
 
 
 def test_the_scenario_basis_is_a_step_function(uk_pa_scenario):
-    """1{t < death_mth}: the annuitant dies in month 17, the dependant never."""
+    """1{k <= death_mth}: the annuitant dies in month 16, the dependant never.
+
+    ``death_mth`` is the 0-based month of death, so the life is alive at time 16 - the
+    start of that month - and dead from time 17.  A blank cell reads as -1, because
+    month 0 is projectable on the 0-based frame and cannot double as "never".
+    """
     p = uk_pa_scenario
     assert p.mort_basis() == "scenario"
-    assert p.death_mth(1) == 17 and p.death_mth(2) == 0
-    assert [p.lives_if(t, 1) for t in (15, 16, 17, 18)] == [1.0, 1.0, 0.0, 0.0]
-    assert all(p.lives_if(t, 2) == 1.0 for t in (1, 100, 600))
-    assert p.lives_death(17, 1) == 1.0
-    assert sum(p.lives_death(t, 1) for t in range(1, p.proj_len() + 1)) == 1.0
+    assert p.death_mth(1) == 16 and p.death_mth(2) == -1
+    assert [p.lives_if(k, 1) for k in (15, 16, 17, 18)] == [1.0, 1.0, 0.0, 0.0]
+    assert all(p.lives_if(k, 2) == 1.0 for k in (1, 100, 600))
+    assert p.lives_death(16, 1) == 1.0
+    assert sum(p.lives_death(t, 1) for t in range(p.proj_len())) == 1.0
 
 
 def test_joint_life_independence(pension_annuity):
     """l_last = l_a + l_d - l_a l_d, which ignores broken-heart dependence [std]."""
     p = pension_annuity.Projection[2]
-    for t in (1, 120, 300):
-        la, ld = p.lives_if(t, 1), p.lives_if(t, 2)
-        assert p.lives_if_last(t) == pytest.approx(la + ld - la * ld, rel=1e-14)
-        assert p.lives_if_last(t) >= max(la, ld)
+    for k in (1, 120, 300):
+        la, ld = p.lives_if(k, 1), p.lives_if(k, 2)
+        assert p.lives_if_last(k) == pytest.approx(la + ld - la * ld, rel=1e-14)
+        assert p.lives_if_last(k) >= max(la, ld)
 
 
 def test_the_projection_stops_on_the_youngest_life(pension_annuity):
-    """Stopping on the annuitant alone would truncate a younger dependant's tail."""
+    """Stopping on the annuitant alone would truncate a younger dependant's tail.
+
+    ``proj_len()`` is the *number* of months projected, the exclusive end of the frame.
+    """
     joint = pension_annuity.Projection[2]
     assert joint.horizon_mths() == 12 * (115 - 62)      # the dependant is younger
     assert joint.proj_len() == 636
@@ -546,17 +587,17 @@ def test_there_is_no_lapse_machinery_anywhere(pension_annuity):
 
 
 def test_there_is_no_premium_income(uk_pa_scenario):
-    """The purchase price is a pricing input at t = 0, not a projected cash flow."""
+    """The purchase price is paid at outset, before t = 0, not a projected cash flow."""
     p = uk_pa_scenario
     assert "premiums" not in p.result_cf().columns
     assert p.purchase_price() == 100000.0
-    assert all(p.net_cf(t) <= 0.0 for t in (1, 3, 17, 100))
+    assert all(p.net_cf(t) <= 0.0 for t in (0, 2, 16, 99))
 
 
 def test_invalid_enum_values_raise(uk_pa_scenario):
     """The enum accessors validate rather than propagating a typo into a lookup."""
     with pytest.raises(FormulaError):
-        uk_pa_scenario.claims(1, "REFUND")
+        uk_pa_scenario.claims(0, "REFUND")
     with pytest.raises(FormulaError):
         uk_pa_scenario.cum_annuity_pp(1, "BOTH")
     with pytest.raises(FormulaError):
@@ -568,8 +609,10 @@ def test_invalid_enum_values_raise(uk_pa_scenario):
 
 
 def test_result_cf_shape(uk_pa_scenario):
+    """The 0-based frame: t = 0 .. proj_len() - 1, 636 months on the worked point."""
     df = uk_pa_scenario.result_cf()
-    assert list(df.index) == list(range(1, 637))
+    assert list(df.index) == list(range(636))
+    assert df.index[-1] == uk_pa_scenario.proj_len() - 1
     assert list(df.columns) == [
         "pols_if", "annuity_payments", "claims_vp", "claims_prop", "expenses",
         "liability_cf", "net_cf",
@@ -589,12 +632,12 @@ def test_both_signs_of_the_net_flow_are_published(uk_pa_scenario):
 def test_pols_if_is_the_obligation_indicator_not_a_policy_count(uk_pa_scenario):
     """IF(t): guarantee certain, annuitant alive, or dependant stream in payment."""
     p = uk_pa_scenario
-    assert p.pols_if(1) == 1.0                    # annuitant alive
-    assert p.pols_if(18) == 1.0                   # dependant stream in payment
-    assert p.expenses(18) == pytest.approx(
-        30.0 / 12 * 1.03 ** (p.policy_year(18) - 1) * p.pols_if(18), rel=1e-12)
+    assert p.pols_if(0) == 1.0                    # annuitant alive
+    assert p.pols_if(17) == 1.0                   # dependant stream in payment
+    assert p.expenses(17) == pytest.approx(
+        30.0 / 12 * 1.03 ** (p.policy_year(17) - 1) * p.pols_if(17), rel=1e-12)
     # It is capped at 1: the two legs cannot add to more than one obligation.
-    assert all(p.pols_if(t) <= 1.0 for t in range(1, 200))
+    assert all(p.pols_if(t) <= 1.0 for t in range(200))
 
 
 def test_model_docstring_describes_the_current_structure(pension_annuity):

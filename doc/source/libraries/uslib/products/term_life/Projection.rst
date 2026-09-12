@@ -1,7 +1,7 @@
 The **Projection** Space
 ========================
 
-.. automodule:: uslib.products.term_life.Term_US_A.Projection
+.. automodule:: uslib.products.term_life.Term_US_S.Projection
 
 Cells Descriptions
 ------------------
@@ -20,13 +20,29 @@ Cells Descriptions
 
 .. autofunction:: pols_if_init
 
+.. autofunction:: premium_mode
+
 .. autofunction:: band
 
 .. autofunction:: policy_term
 
 .. autofunction:: proj_len
 
+.. autofunction:: duration_mth
+
+.. autofunction:: duration
+
+.. autofunction:: policy_year
+
 .. autofunction:: age
+
+.. autofunction:: modal_factor
+
+.. autofunction:: prem_cycle
+
+.. autofunction:: prem_due
+
+.. autofunction:: premium_pp_ann
 
 .. autofunction:: premium_pp
 
@@ -44,13 +60,19 @@ Cells Descriptions
 
 .. autofunction:: mort_rate
 
+.. autofunction:: mort_rate_mth
+
 .. autofunction:: shock_lapse_rate
 
 .. autofunction:: lapse_rate
 
+.. autofunction:: lapse_rate_mth
+
 .. autofunction:: conv_elig
 
 .. autofunction:: conv_rate
+
+.. autofunction:: conv_rate_mth
 
 .. autofunction:: phase
 
@@ -85,3 +107,5 @@ Cells Descriptions
 .. autofunction:: net_cf
 
 .. autofunction:: result_cf
+
+.. autofunction:: result_cf_annual

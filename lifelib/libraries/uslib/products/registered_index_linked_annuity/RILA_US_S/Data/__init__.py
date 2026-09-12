@@ -43,16 +43,28 @@ withdrawal_file            withdrawal_table()              withdrawal_table.csv
 consumes market data — an index level, a Constant Maturity Treasury yield at the term's
 maturity, an implied volatility and a dividend yield — so the market state is an input
 class of its own alongside the contractual, declared and behavioural classes, not a
-valuation overlay. It is indexed by ``(scenario_id, t)`` and read as a step function of
-``t``: each row states the market state that holds from that month until the next row of
-the same scenario, so the notes' Scenario A is three rows.
+valuation overlay. It is indexed by ``(scenario_id, month_end)`` and read as a step
+function of the month end: each row states the market state that holds from that month
+end until the next row of the same scenario, so the notes' Scenario A is three rows.
 
-``withdrawal_table`` is indexed by ``(wd_schedule_id, t)`` and a month with no row takes
-no scheduled withdrawal; ``surr_charge_table`` is indexed by complete contract years
-``cy = 0 .. 6``; ``guar_min_rate_table`` by ``term_years``, the contractual floors on the
-declared Cap, Step and Edge rates at 1, 3 and 6 years [S1][S2]; and ``lapse_table`` by
-contract year, read as a step function so the notes' three-row reference shape stays
-three rows.
+``month_end`` is a **time** in policy months from the Issue Date, ``0`` at issue, not the
+projection's month index. The two differ by one, because month ``t`` of the projection
+runs from time ``t`` to time ``t + 1``: ``Projection.market_state`` reads the file at the
+month end ``t + 1`` for the state month ``t`` is valued at, and at
+``term_start_month(t)`` for the state locked on a Term Start Date — a month *start*. The
+name records the commoner of those two uses and not the key's meaning: the key is a general
+time, and the row every scenario opens with, ``month_end = 0``, is the Issue Date, an
+instant no month ends at. Keying the file on the
+month end keeps the scenario anchors on the contract's own dates - the 6-year term ends at
+month end 72, and the worked example's rate move lands at month end 36, the 3-year point.
+
+``withdrawal_table`` is indexed by ``(wd_schedule_id, month_end)`` on that same clock and
+a month end with no row takes no scheduled withdrawal; ``surr_charge_table`` is indexed by
+complete contract years ``cy = 0 .. 6``, an elapsed count that is 0-based already;
+``guar_min_rate_table`` by ``term_years``, the contractual floors on the declared Cap,
+Step and Edge rates at 1, 3 and 6 years [S1][S2]; and ``lapse_table`` by ``contract_year``
+- the 1-based contractual label, read through ``Projection.policy_year`` - as a step
+function, so the notes' three-row reference shape stays three rows.
 
 To swap in the prescribed mortality basis — the 2012 IAM **Basic** table (VM-M §2.C) with
 generational Projection Scale G2 [REG-R59], which may not be redistributed here — replace
@@ -100,14 +112,15 @@ def mort_table():
 def market_scenario():
     """The exogenous market-data scenarios, read from *market_scenario.csv*.
 
-    Indexed by ``(scenario_id, t)`` and read as a step function of ``t``: each row states
-    the index level, the Market Value Rate, the risk-free rate, the dividend yield and
-    the implied volatility that hold from that month until the next row of the same
-    scenario.
+    Indexed by ``(scenario_id, month_end)`` and read as a step function of the month end:
+    each row states the index level, the Market Value Rate, the risk-free rate, the
+    dividend yield and the implied volatility that hold from that month end until the next
+    row of the same scenario. ``month_end`` is a time in policy months from the Issue Date
+    (``0`` at issue), one more than the index of the projection month it closes.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / market_scenario_file,                          # noqa: F821
-        index_col=["scenario_id", "t"])
+        index_col=["scenario_id", "month_end"])
 
 
 def surr_charge_table():
@@ -136,11 +149,13 @@ def lapse_table():
 def withdrawal_table():
     """Scheduled gross withdrawals, read from *withdrawal_table.csv*.
 
-    Indexed by ``(wd_schedule_id, t)``; a month with no row takes no withdrawal.
+    Indexed by ``(wd_schedule_id, month_end)`` - the month end the withdrawal is taken
+    at, on the same clock as *market_scenario.csv*; a month end with no row takes no
+    withdrawal.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / withdrawal_file,                               # noqa: F821
-        index_col=["wd_schedule_id", "t"])
+        index_col=["wd_schedule_id", "month_end"])
 
 
 # ---------------------------------------------------------------------------

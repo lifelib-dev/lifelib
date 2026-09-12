@@ -75,50 +75,67 @@ rate arguments are **annual effective** and are converted to continuous compound
 the pricer, so the 4.00% and 2.00% market inputs enter as `ln 1.04 = 3.9221%` and
 `ln 1.02 = 1.9803%` exactly as the notes state.
 
-## Monthly, and `t` is a month **end**
+## Monthly, `t` is 0-based, and the month is valued at its **end**
 
-`t` counts policy months and denotes month ends, with `t = 0` the Issue Date. The
-contractual interim value is a *daily* quantity; the model evaluates it at each month end
-**[std]**, which resolves every contractual boundary because terms are whole years, the
-withdrawal-charge schedule runs by complete contract years and the free-withdrawal limit
-resets annually. A daily sub-grid is needed only for a path-dependent Performance Lock
-election module, which is not implemented.
+`t` counts policy months and is **0-based**: `t = 0` is the first policy month, month `t`
+runs from time `t` to time `t + 1` in policy months from the Issue Date, and the frame is
+`t = 0 … proj_len() − 1`, so `len(result_cf()) == proj_len()`. The contractual interim
+value is a *daily* quantity; the model evaluates it at each month **end** **[std]** —
+time `t + 1` for row `t` — which resolves every contractual boundary because terms are
+whole years, the withdrawal-charge schedule runs by complete contract years and the
+free-withdrawal limit resets annually. A daily sub-grid is needed only for a
+path-dependent Performance Lock election module, which is not implemented.
 
-**`duration(t) = t // 12`, not `ceil(t/12) - 1`.** That is the notes' own `cy(t) =
-floor(t/12)`, and it differs by one step from `MYGA_US_S`. The reason is the
-timing convention: the MYGA chassis takes elective transactions at the *beginning* of the
-month, so month 12 belongs to the contract year that is opening; here `t` is a month
-*end*, so month 12 **is** the first anniversary and one complete contract year has
-elapsed. The withdrawal charge steps and the free-withdrawal allowance resets on the
-anniversary itself. The two conventions agree in every month except the anniversaries.
+The consequence to hold on to is that a **time point and a month index differ by one**.
+The first anniversary is time 12, which is the *end* of month 11; the 6-year Term End Date
+is time 72, the end of month 71; the Maturity Date is the end of month `proj_len() − 1`.
+Anything settled at an instant therefore lands on the row of the month that instant
+closes.
 
-### A month-end index needs both readings, and the model carries both
+### A month-end valuation needs both readings of the contract year, and the model carries both
 
-`duration(t)` is read **at** the instant `t`, and that is right for anything settled
-there: the withdrawal charge a transaction bears (`surr_charge_rate`), the
-free-withdrawal base snapshotted at the anniversary (`free_wd_base`), and — because it
+`duration(t) = t // 12` is lifelib's 0-based duration: the complete contract years elapsed
+at the **start** of month `t`, hence the contract year the whole month lies inside. It is
+`0` through the whole of contract year 1, months 0 to 11. That is the right reading for a
+rate applied **across** the month — the monthly mortality rate
+`q_m(t) = 1 - (1 - q_x)^(1/12)` is an exposure rate for the whole of month `t`, and the
+maintenance expense is incurred over it — so `age(t) = age_at_entry() + duration(t)` and
+`inflation_factor(t) = 1.025^duration(t)`.
+
+`duration_eom(t) = (t + 1) // 12` is the complete contract years at the month **end**, the
+notes' `cy` at the instant the month's transactions settle. That is the right reading for
+anything settled there: the withdrawal charge a transaction bears (`surr_charge_rate`),
+the free-withdrawal base snapshotted at the anniversary (`free_wd_base`), and — because it
 must move in the same month as the charge it responds to — the charge-expiry lapse shock
-(`lapse_rate_sc_mult`, keyed on `policy_year(t) = duration(t) + 1`).
+(`lapse_rate_sc_mult`, keyed on `policy_year(t) = duration_eom(t) + 1`).
 
-It is the wrong reading for a rate applied **across** month `t`. The monthly mortality
-rate `q_m(t) = 1 - (1 - q_x)^(1/12)` is an exposure rate for the whole interval
-`(t-1, t]`, and the maintenance expense is incurred over the same interval; both belong to
-the contract year that interval lies inside, which is `ceil(t/12)`. So `age(t)` and
-`inflation_factor(t)` are keyed on a second cells, **`duration_bom(t) = ceil(t/12) - 1`**
-— the complete contract years at the *start* of month `t`, and the same reading
-`MYGA_US_S` uses for its own `duration(t)`.
+**`policy_year(t)` takes the month-end reading deliberately**, so it is `duration_eom(t) +
+1` rather than `duration(t) + 1`: it is the contract year a transaction settling at the
+month end falls in, which is what the surrender table is keyed on. `policy_year(11) = 2`
+while `duration(11) = 0` — a surrender at the first anniversary is already on the year-2
+side of the schedule, while the mortality and expense rates charged over month 11 are
+still contract year 1's.
 
-The difference is one month and it appears only in anniversary months, but it is not
-cosmetic: on `duration(t)` the attained age would step at month 12, leaving eleven months
-of contract year 1 at `q_x` and charging the twelfth at `q_(x+1)` (0.005495 against
-0.006065 on the anchor cell), and the expense inflation step would land a month early
-against the notes' `60/12 x 1.025^(y-1)`. At the Maturity Date the consequence is visible
-in the other direction: `age(proj_len())` is 89, the age *during* the last month, and the
-owner attains 90 at its end — which is the Maturity Date the contract's own rule names.
+The difference is one month and it appears only in the month that closes on an
+anniversary, but it is not cosmetic: on `duration_eom` the attained age would step at
+month 11, leaving eleven months of contract year 1 at `q_x` and charging the twelfth at
+`q_(x+1)` (0.005495 against 0.006065 on the anchor cell), and the expense inflation step
+would land a month early against the notes' `60/12 x 1.025^(y-1)`. At the Maturity Date
+the consequence is visible in the other direction: `age(proj_len() − 1)` is 89, the age
+*during* the last month, and the owner attains 90 at its end — which is the Maturity Date
+the contract's own rule names.
 
-`proj_len()` is contractual rather than chosen: the Maturity Date is the later of the
-anniversary after the oldest owner's 90th birthday and ten years from issue [S2], so
-`policy_term() = max(90 − age_at_entry(), 10)` years — 360 months on the anchor cell.
+`MYGA_US_S` needs only one reading, because its beginning-of-month transaction convention
+makes the two coincide: that chassis takes elective transactions at the *beginning* of the
+month, so its anniversary month belongs to the year that is opening; here the month end
+*is* the anniversary, so the year that has just closed is the one a transaction sees. Each
+convention is right for its own timing basis, and the two products' `policy_year`s differ
+in exactly that one month a year.
+
+`proj_len()` is contractual rather than chosen, and is the **number** of months projected:
+the Maturity Date is the later of the anniversary after the oldest owner's 90th birthday
+and ten years from issue [S2], so `policy_term() = max(90 − age_at_entry(), 10)` years —
+360 months on the anchor cell, `t = 0 … 359`.
 
 ## Inputs are external files
 
@@ -180,11 +197,27 @@ same-schema file and the projection follows, with no formula change.
 |---|---|---|
 | `model_point_table.csv` | Fifteen contracts. **Points 1 and 2 are the worked example's anchor cell** — M60 / $100,000 / one 6-year Cap option / 10% buffer / 100% cap — on Scenario A and Scenario B, point 2 carrying the illustrative $8,000 withdrawal. Point 3 runs the notes' base *behavioural* withdrawal rule. Points 4–14 carry Step, Edge and Floor crediting, interim value families (b) and (c), the pre-AG 54 engine, the updated-time-to-expiry amortization, a 110% participation rate on a 20% buffer, an uncapped option at issue age 81, the NGE cap-solve, and a charged excess withdrawal. **Point 15 is the notes' second labelled verification**, the [S2] withdrawal-charge example — see below | contract terms sourced [S1] [S2] [S4] [S5]; declared rates and every behavioural switch **[std]** |
 | `mort_table.csv` | Annual mortality by attained age 40–120 and sex, with a `provenance` column | **[std]** illustrative annuitant curve. **Not a published table.** The prescribed basis is 2012 IAM **Basic** with generational Projection Scale G2 [REG-R59], which may not be redistributed here — swap it in by repointing `Data.mort_table_file` |
-| `market_scenario.csv` | Four deterministic scenarios keyed by `(scenario_id, t)`, read as step functions: `up` (index 100 → 120 at month 36 → 140 at month 72, the Market Value Rate rising 100 bp at the term midpoint), `down` (100 → 80 → 75, same rate rise), `legacy` (500 → 600 at month 6, the pre-AG 54 source example) and `charge_ex` (100 → 71.66666667 at month 60, the level that lands the Account Value on exactly $80,000 for the [S2] withdrawal-charge example). The index path is therefore piecewise constant between the notes' own anchor months, and flat after the last of them | worked example [std]; the flat 4.00% / 2.00% / 20.00% market state is **[std]** |
+| `market_scenario.csv` | Four deterministic scenarios keyed by `(scenario_id, month_end)`, read as step functions: `up` (index 100 → 120 at month end 36 → 140 at month end 72, the Market Value Rate rising 100 bp at the term midpoint), `down` (100 → 80 → 75, same rate rise), `legacy` (500 → 600 at month end 6, the pre-AG 54 source example) and `charge_ex` (100 → 71.66666667 at month end 60, the level that lands the Account Value on exactly $80,000 for the [S2] withdrawal-charge example). `month_end` is a **time** in policy months from the Issue Date, one more than the index of the month it closes. The index path is therefore piecewise constant between the notes' own anchor dates, and flat after the last of them | worked example [std]; the flat 4.00% / 2.00% / 20.00% market state is **[std]** |
 | `surr_charge_table.csv` | The withdrawal charge by **complete** contract year: 7, 7, 6, 5, 4, 3, 0 per cent | sourced [S1] [S2] |
 | `guar_min_rate_table.csv` | Guaranteed minimum Cap / Step / Edge rates by term: 2% / 6% / 8% Cap at 1 / 3 / 6 years, 2% Step and Edge | sourced [S1] [S2] |
 | `lapse_table.csv` | The un-shocked annual surrender rate by contract year. The charge-expiry shock is **not** in this file: its size is the `lapse_shock_mult` Reference and the year it lands in is derived from `surr_charge_table.csv` by `lapse_shock_year()`, so the shock cannot drift away from the charge whose expiry causes it | **[std]** reference shape; the RILA-specific tables in [REG-R64] sit behind a paid data package |
-| `withdrawal_table.csv` | Three scheduled programmes keyed by `(wd_schedule_id, t)`: none, the worked example's $8,000 at month 36, and a charged $20,000 at month 24 | worked example [S2]; the variant **[std]** |
+| `withdrawal_table.csv` | Three scheduled programmes keyed by `(wd_schedule_id, month_end)`, the same clock: none, the worked example's $8,000 at month end 36 (taken in month 35), and a charged $20,000 at month end 24 (month 23) | worked example [S2]; the variant **[std]** |
+
+### Every time-like column in the inputs, and what it means
+
+Four of the seven files carry a column that could be read as a time index. Each was
+decided by meaning, not by name:
+
+| File | Column | Decision | Why |
+|---|---|---|---|
+| `market_scenario.csv` | `month_end` | A **time point**, values unchanged, column renamed from `t` | Each row is the market state holding from a date, and one of those dates is a Term Start Date that the option pricer reads directly. Times are what the contract names — the 6-year term ends at month end 72, the worked example's rate move lands at month end 36 — so shifting the values would break the tie to the contract. It is *not* the frame's `t`: month `t` is valued at month end `t + 1`, and the reader adds the one. The name records the commoner of the two uses rather than the key's meaning — `term_start_month(t)` reads it at a month *start*, and row `0` is the Issue Date, an instant no month ends at |
+| `withdrawal_table.csv` | `month_end` | Same, values unchanged, column renamed from `t` | The same clock, so that the worked example's $8,000 and the scenario's index move sit at the same number, 36. `wd_scheduled_pp(t)` reads key `t + 1` |
+| `surr_charge_table.csv` | `contract_year` | Unchanged | Its values are 0–6: **complete** contract years, an elapsed count that is 0-based already. Read at `duration_eom(t)` |
+| `lapse_table.csv` | `contract_year` | Unchanged | Its values are 1, 7, 8: the 1-based contractual label. Read through `policy_year(t)`, which maps the month to it |
+
+`model_point_table.csv` carries no time-like column at all — every point is new business
+issued at the opening of month 0 — and `mort_table.csv` (age × sex) and
+`guar_min_rate_table.csv` (`term_years`) carry none either.
 
 Every model point projects to completion, and a test asserts it. Between them they exercise
 **all four crediting types, all four interim-value families, both amortization conventions,
@@ -207,10 +240,10 @@ model once spelled its own way:
 - **`pols_if(t)` is the count at the *start* of month `t`**, and is the weight applied to
   that same row's cash flows — so `premiums(t) / premium_pp()`,
   `withdrawals(t) / wd_payment_pp(t)` and `expenses(t)` over the per-contract maintenance
-  charge all return the `pols_if` column of `result_cf()`. `pols_if(1) = pols_if_init()`,
-  exactly as in `Term_US_A`. The notes' own **end**-of-month `l(t)` is not lost: it is
-  `pols_if_at(t, "AFT_DECR")`, the last point of the decrement chain, and it is what
-  `result_pols()` prints as `pols_if_aft_decr`.
+  charge all return the `pols_if` column of `result_cf()`. `pols_if(0) = pols_if_init()`,
+  exactly as in `Term_US_S`. The count at the month **end**, the notes' `l(t+1)`, is not
+  lost: it is `pols_if_at(t, "AFT_DECR")`, the last point of the decrement chain, and it
+  is what `result_pols()` prints as `pols_if_aft_decr`.
 - **`lapse_rate(t)` is annual and `lapse_rate_mth(t)` is monthly**, matching the
   `mort_rate` / `mort_rate_mth` pair. The decrement chain reads the monthly one; the
   notes' `w_annual(y,t)` is `lapse_rate` and their `w_m(t)` is `lapse_rate_mth`.
@@ -240,8 +273,9 @@ One shared name takes a different argument from the chassis, deliberately.
 `MYGA_US_S` keys `free_wd_base(y)` and `free_wd_allow(y)` on the contract
 **year**; here they take the policy **month**, because the free-withdrawal base is
 snapshotted from the Account Value at the most recent anniversary *before* that month's
-transaction — `av_pp_at(12 * duration(t), "BEF_WD")` — and keying on `t` keeps one index
-type through the whole file. The concept and the name are the same; only the argument
+transaction — `av_pp_at(12 * duration_eom(t) − 1, "BEF_WD")`, the anniversary at time
+`12 cy` closing month `12 cy − 1` — and keying on `t` keeps one index type through the
+whole file. The concept and the name are the same; only the argument
 differs, and the `Projection` docstring's symbol table shows it.
 
 ## What this model does not inherit from the chassis
@@ -274,7 +308,7 @@ bookkeeping — keep the chassis's names.
 The single most load-bearing convention in the file. At a Term End Date two options exist
 in the same month: the one that is closing and the one that is opening. `term_elapsed_mth`,
 `tau`, `index_at_term_start`, `mvr_at_term_start` and every option leg refer to the
-**expiring** one, so `tau(72) = 0` rather than `6`.
+**expiring** one, so `tau(71) = 0` rather than `6`: the Term End Date is time 72, which closes month 71.
 
 That is what makes the notes' verification identity fall out of the algebra instead of
 having to be imposed. At `tau = 0` the Black-Scholes functions return intrinsic value, the
@@ -301,10 +335,11 @@ The notes give a base behavioural withdrawal rule — "0% in contract year 1; th
 of Account Value per year, taken at contract anniversaries and capped at the Free
 Withdrawal Amount" — and a worked example whose Investment Amount is **exactly $100,000**
 at the term midpoint, with the illustrative $8,000 as the only withdrawal. Both cannot
-hold: 2% taken at months 12 and 24 would leave less than $100,000 of notional at month 36,
-and the whole worked example is built on that figure.
+hold: 2% taken at the first two anniversaries — the ends of months 11 and 23 — would
+leave less than $100,000 of notional at the term midpoint, and the whole worked example is
+built on that figure.
 
-Rather than pick one, the model ships both, the way `Term_US_A` ships its `M(1)`
+Rather than pick one, the model ships both, the way `Term_US_S` ships its `M(1)`
 divergence. `wd_rate_ann` is a **model point column**, not a Reference: points 1 and 2 set
 it to 0 and reproduce the worked example to the cent; point 3 is otherwise identical to
 point 1 and runs the behavioural rule at 2%. A test pins the gap open in both directions.
@@ -316,18 +351,19 @@ mechanics and the 2% rule is a **[std]** behavioural assumption.
 The notes carry a second explicitly labelled verification beside the interim-value table:
 *"$100,000 payment, $80,000 Account Value at the start of contract year 6, full withdrawal
 → `FW = $8,000`, chargeable `$72,000`, `wc(5) = 3%`, charge `$2,160`, cash value
-`$77,840`."* It is not reproducible on the anchor cell, whose Account Value at month 60 is
-whatever Black-Scholes makes it, and re-deriving `AV − wc × (AV − FW)` from the model's own
+`$77,840`."* It is not reproducible on the anchor cell, whose Account Value at the fifth
+anniversary is whatever Black-Scholes makes it, and re-deriving `AV − wc × (AV − FW)` from the model's own
 cells asserts nothing: that composition *is* `surr_value_pp`.
 
 So **model point 15 exists to put an Account Value of exactly $80,000 on the table at
-month 60**. It runs the pre-AG 54 engine — the only interim-value family whose value is a
-closed-form function of the index level — on a scenario whose index sits at
-`71.66666667` from month 60, the level at which the accrued crediting rate is exactly
+time 60**, the fifth anniversary — which is the end of month `t = 59`. It runs the
+pre-AG 54 engine — the only interim-value family whose value is a closed-form function of
+the index level — on a scenario whose index sits at `71.66666667` from month end 60, the
+level at which the accrued crediting rate is exactly
 `min(0, −28.3333% + 10% × 5/6) = −20%`. Everything else then falls out of the contract:
-the free amount is 10% of the anniversary Account Value, so `$8,000`; `wc(cy(60)) =
-wc(5) = 3%`; the charge is `$2,160` and the cash surrender value `$77,840`, to a rounding
-error of three millionths of a dollar. The crediting engine is a device here and nothing
+the free amount is 10% of the anniversary Account Value, so `$8,000`;
+`wc(duration_eom(59)) = wc(5) = 3%`; the charge is `$2,160` and the cash surrender value
+`$77,840`, to a rounding error of three millionths of a dollar. The crediting engine is a device here and nothing
 more — the example is about the charge, which is engine-independent.
 
 ## The notes print the MVA factor as 0.971690
@@ -337,15 +373,25 @@ it. The notes state the interest-rate adjustment as `(1.04/1.05)^3 = 0.971690`. 
 value is **0.9716998**, and every dollar figure in the table requires it: `94,968.40 ×
 0.9716998 = 92,280.78`, while `94,968.40 × 0.971690 = 92,279.85`, nearly a dollar adrift.
 The model computes the factor and reproduces the dollars; the test asserts
-`mva_factor(36) == (1.04/1.05)**3` and pins 0.9716998 with a comment saying why.
+`mva_factor(35) == (1.04/1.05)**3` and pins 0.9716998 with a comment saying why.
 
-## `result_cf()` starts at `t = 0`, not `t = 1`
+## The Issue Date is not a row: it opens month 0
 
-The notes' cash flow ledger indexes the single premium and the acquisition expense at
-`t = 0`, and `inv_amt_pp(0)`, `rop_pp(0)` and `pols_if(0)` are the initial branches of the
-recursions. So `result_cf()` runs `t = 0 … proj_len()` and `net_cf(0) = +93,800` on the
-anchor cell. This matches `MYGA_US_S` and differs from `Term_US_A`, which
-starts at 1 because its premium falls at the beginning of policy year 1.
+The notes' cash flow ledger puts the single premium and the acquisition expense at the
+Issue Date, which is an **instant**, not a projected month: nothing accrues there, no
+decrement is taken and no maintenance expense is incurred. So it is not given a row of
+its own. The Issue Date opens month 0, and month 0's row carries those two flows
+alongside its own maintenance expense, market movement and decrements. The opening state
+lives in the timing cells that need it — `inv_amt_basis_pp(0)` is the purchase payment,
+`rop_pp` and `inv_income_pp` open on it, and `pols_if(0) = pols_if_init()`.
+
+`result_cf()` therefore runs `t = 0 … proj_len() − 1`, exactly `proj_len()` rows, and on
+the anchor cell `net_cf(0) = +93,592.53`: the $100,000 premium, less `expenses(0)` of
+$6,205.00 — the $6,200 acquisition charge plus month 0's own $5.00 of maintenance expense
+— less the $45.95 of death benefits and $156.52 of surrender benefits that month's
+decrements trigger. The Issue Date figures are still recoverable one line at a time —
+`premiums(0)` is the premium and the acquisition part of `expenses(0)` is
+`0.06 × premium + 200` — but they no longer occupy a row by themselves.
 
 ## There is no `commissions` cells
 
@@ -353,7 +399,8 @@ The notes' cash flow ledger has one acquisition line — `0.06 × premium + 200`
 and no separate commission. Distribution cost sits inside that 6%, which is a plausible
 RILA commission level, but the notes call it an acquisition expense and this model does not
 invent a line item the specification does not carry. `expenses(t)` holds both the
-acquisition charge at `t = 0` and the inflating $60-a-year maintenance expense.
+acquisition charge, which falls at the opening of month 0, and the inflating $60-a-year
+maintenance expense, which month 0 carries like any other month.
 `premium_taxes(t)` **is** present, because the notes do quantify premium tax — at 0%
 [S2] — and the parameter is exposed rather than removed.
 
@@ -369,9 +416,10 @@ pols_if(t) − pols_if(t+1) = pols_death(t) + pols_lapse(t) + pols_maturity(t)
 ```
 
 closes for every `t`, including the last — `pols_if(t)` opens month `t` and `pols_if(t+1)`
-opens the next, which at the Maturity Date is zero. Without it the block would appear to lose
+opens the next, which past the Maturity Date is zero. The last month is
+`t = proj_len() − 1` and the Maturity Date is its end. Without it the block would appear to lose
 lives with no cause. The name follows `BasicTerm_S.pols_maturity` and the construction
-follows `Term_US_A`. The payout stream bought at that date is **not** derived here: it is
+follows `Term_US_S`. The payout stream bought at that date is **not** derived here: it is
 the immediate-annuity chassis, restricted to the two forms this contract offers, and with
 no refund forms at all [S2].
 
@@ -462,7 +510,7 @@ table: it carries the valuation margin built in at construction [REG-R60].
 ## Tests
 
 `tests/test_registered_index_linked_annuity_us.py` asserts every cell of the notes'
-six-row, thirteen-column worked example table, on both scenarios and on both sides of the
+six-row, fourteen-column worked example table, on both scenarios and on both sides of the
 $8,000 withdrawal; the trace beneath it (`beta = 10.0632%`, the $10,063.19 budget, the
 $89,936.81 opening fixed leg, the 1.7834% accretion yield and 2.22% implied spread, the
 $5,031.60 midterm amortization, the $2,687.62 cost of the rate rise, the $119,171.01 and
@@ -472,9 +520,9 @@ exactly; and the term-end identity `V = IA(1 + g)` for Cap, Step, Edge, Floor,
 participation-rate and uncapped designs alike.
 
 The notes' **second** labelled verification, the [S2] withdrawal-charge example, is
-asserted on model point 15 end to end: `$80,000` Account Value at month 60, `$8,000` free,
-`$72,000` chargeable, `wc(5) = 3%`, a `$2,160` charge and a `$77,840` cash surrender
-value, every figure read out of the model's own cells.
+asserted on model point 15 end to end: `$80,000` Account Value at the fifth anniversary —
+the end of month 59 — `$8,000` free, `$72,000` chargeable, `wc(5) = 3%`, a `$2,160` charge
+and a `$77,840` cash surrender value, every figure read out of the model's own cells.
 
 Beyond the goldens there is one test per entry in the notes' "Known modeling pitfalls"
 list — price return versus total return, the cap applying to the whole-term return,
@@ -487,7 +535,7 @@ its non-gross-up, the Transfer Period, the roll split, and the fact that every m
 projects.
 
 Two tests pin the start-of-period in-force convention rather than the arithmetic:
-`pols_if(1) == pols_if_init()` with `pols_if_at(t, "AFT_DECR") == pols_if(t+1)`, and the
+`pols_if(0) == pols_if_init()` with `pols_if_at(t, "AFT_DECR") == pols_if(t+1)`, and the
 reconciliation the convention buys — `premiums(t) / premium_pp()`,
 `withdrawals(t) / wd_payment_pp(t)` and `expenses(t)` over the per-contract maintenance
 charge all returning the `pols_if` column of the row they sit on.
@@ -495,7 +543,7 @@ charge all returning the `pols_if` column of the row they sit on.
 Three tests guard the documentation rather than the arithmetic, because on this product
 the documentation is half the deliverable: that the two readings of the contract year land
 where they should (twelve months at each attained age, the expense step after the
-anniversary, the charge schedule still on `duration(t)`); that every timing literal the
+anniversary, the charge schedule on `duration_eom(t)`); that every timing literal the
 `Projection` docstring prints is one the cells actually accepts, and that its symbol table
 names only cells that exist and covers every notes symbol the model implements; and that
 the two invented family (b) parameters are marked **[std]** in the cells docstring, the

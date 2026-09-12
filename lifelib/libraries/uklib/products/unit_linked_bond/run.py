@@ -22,15 +22,19 @@ print("AMC {:.2%}  further costs {:.2%}  tax provision {:.0%}  uplift {:.3f}  "
           proj.amc_rate(), proj.further_costs_rate(), proj.tax_provision_rate(),
           proj.db_uplift(), model.Projection.fund_return))
 print("withdrawals = {} ({:,.2f}/month)   adviser charge {:.2%}   GMDB rider = {}".format(
-    proj.wd_pattern(), proj.wd_pp(1), proj.oac_rate(), proj.gmdb_flag()))
-print("projection ends at month {} ({}), fund exhausted at month {}".format(
-    proj.proj_len(), "limiting age" if proj.proj_len() == proj.horizon_mths()
-    else "fund exhausted", proj.fund_exhaust_mth()))
+    proj.wd_pattern(), proj.wd_pp(0), proj.oac_rate(), proj.gmdb_flag()))
+exhausted = proj.fund_exhaust_mth() <= proj.horizon_mths()
+print("projection: {} months, t = 0 .. {} ({}); fund {}".format(
+    proj.proj_len(), proj.proj_len() - 1,
+    "fund exhausted" if proj.proj_len() < proj.horizon_mths() else "limiting age",
+    "drawn to nothing at time {} (end of month t = {})".format(
+        proj.fund_exhaust_mth(), proj.fund_exhaust_mth() - 1)
+    if exhausted else "never exhausted"))
 print()
-print("Unit fund (per policy):")
+print("Unit fund (per policy), first three months t = 0, 1, 2:")
 print(proj.result_uf().head(3).round(2).to_string())
 print()
-print("Cash flows:")
+print("Cash flows, first three months t = 0, 1, 2:")
 print(proj.result_cf().head(3).round(2).to_string())
 
 model.close()

@@ -11,8 +11,14 @@ projecting model point 1::
     >>> Projection[1].result_cf()          # the worked example's anchor cell
     >>> Projection.point_id = 3            # or switch the default
 
-``t`` counts **policy months**, 0-based: ``t = 0`` is the month beginning at the 契約日 and
-``t = proj_len() - 1`` the last month of cover. Cover is whole of life, so
+``t`` counts **policy months**, 0-based — the library-wide time index: ``t = 0`` is the
+first projected month, the one beginning at the 契約日, and ``t = proj_len() - 1`` is the
+last month of cover. ``proj_len()`` is the **number of months projected**, the exclusive
+end of the frame, so the frame is ``range(proj_len())`` and :func:`result_cf` and
+:func:`result_pols` each publish ``proj_len()`` rows indexed ``0 .. proj_len() - 1``.
+``pols_if(0) == pols_if_init()``, ``age(0) == issue_age()``, and the contractual policy
+year is the derived 1-based label ``policy_year(t) = t // 12 + 1``, never the index
+itself. Cover is whole of life, so
 ``proj_len() = 12 x (omega_age() - issue_age() + 1)`` — 924 months on the anchor cell.
 There is no maturity benefit, no 満期保険金 and **no benefit-driven termination**: paying the
 diagnosis lump sum neither ends nor exhausts the contract, and with no day limits the
@@ -60,12 +66,12 @@ mapping is:
 Notes symbol               Cells                               Meaning
 =========================  ==================================  ========================
 (model point row)          model_point()                       The selected model point
-t                          (the cells argument)                Policy month, 0-based
+t                          (the cells argument)                Policy month, 0-based; 0 .. proj_len() - 1
 x                          issue_age()                         契約年齢 (満年齢) at issue
 age(t)                     age(t)                              Attained age x + t//12
-y(t)                       policy_year(t)                      Policy year, 1-based
+y(t)                       policy_year(t)                      Policy year label, t//12 + 1
 (terminal age)             omega_age()                         116 male / 118 female
-(horizon)                  proj_len()                          Months projected
+(horizon)                  proj_len()                          Months projected (row count)
 W                          wait_months()                       Waiting period in months
 cover(t)                   cover(t)                            1 from t >= W, else 0
 A                          base_amount()                       基本給付金額
@@ -98,7 +104,7 @@ lam                        sel_lapse_lambda                    Anti-selective lo
 r                          relapse_rate_mth(t)                 Monthly relapse hazard
 sc(t)                      surv_canc(t)                        Diagnosed survival factor
 (void rule)                void_prob()                         In-window voidness
-(initial exposure)         pols_if_init()                         In force at t = 0
+(initial exposure)         pols_if_init()                      In force at t = 0
 pols_healthy(t)            pols_healthy(t)                     Never diagnosed
 pols_locked(t)             pols_locked(t)                      Diagnosed, cycle running
 pols_open(t)               pols_open(t)                        Diagnosed, cycle expired
@@ -110,7 +116,7 @@ diag_rep(t)                diag_rep(t)                          Repeat triggers
 trig(t)                    trig(t)                             All payment triggers
 unlock(t)                  unlock(t)                           Cycle expiries arriving
 insitu_ev(t)               insitu_ev(t)                        上皮内新生物 diagnoses
-Z(t)                       insitu_avail(t)                     Once-only tier unused
+Z(t)                       insitu_avail(t)                     Once-only tier unused at the start of month t
 (consumed)                 insitu_used(t)                      Once-only tier consumed
 (decrement)                pols_death(t)                       Deaths, both states
 (decrement)                pols_lapse(t)                       Lapses, both states
@@ -118,13 +124,13 @@ h                          hosp_rate_mth(t)                    Monthly admission
 L                          hosp_stay_days(t)                   Mean stay in days
 s_h, s_z                   surg_per_hosp, surg_per_insitu      Surgeries per event
 p_tr                       treat_prob                          Qualifying-month chance
-M(t)                       treat_months(t)                     Treatment-month ledger
+M(t)                       treat_months(t)                     Treatment-month ledger at the start of month t
 (capped draw)              paid_months(t)                      Months paid in month t
 o                          outp_days                           Outpatient days per year
 f_a                        adv_freq_mth()                      Monthly 先進医療 frequency
 S_a                        adv_sev                             Mean 技術料
 LV                         adv_cap                             先進医療 lifetime cap
-V(t)                       adv_paid(t)                         先進医療 ledger
+V(t)                       adv_paid(t)                         先進医療 ledger at the start of month t
 pay(t)                     adv_pay(t)                          先進医療 draw in month t
 P x pols_healthy           premiums(t)                         Premium income
 (claim lines)              claims(t, kind)                     Benefit outgo by kind
@@ -580,22 +586,37 @@ def omega_age():
 
 
 def proj_len():
-    """The projection length in policy months: ``12 x (omega_age - x + 1)``.
+    """The **number of policy months projected**: ``12 x (omega_age - x + 1)``.
 
-    924 months on the anchor cell.  Cover is whole of life with no maturity benefit and no
-    benefit-driven termination, so the horizon is the mortality table's and nothing
-    shortens it — including the 定期 chassis flag, whose renewal is automatic.
+    A count, not a last index: it is the exclusive end of the frame, so the projection runs
+    over ``range(proj_len())`` — ``t = 0`` to ``t = proj_len() - 1`` — and ``result_cf()``
+    has exactly ``proj_len()`` rows.  924 months on the anchor cell, the last of them
+    ``t = 923`` at the terminal age 116.
+
+    Cover is whole of life with no maturity benefit and no benefit-driven termination, so
+    the horizon is the mortality table's and nothing shortens it — including the 定期 chassis
+    flag, whose renewal is automatic.  The ``+ 1`` in the formula is the terminal age's own
+    twelve months, not a slack row.
     """
     return 12 * (omega_age() - issue_age() + 1)
 
 
 def age(t):
-    """age(t): the attained 満年齢 in policy month t, ``x + t // 12``."""
+    """age(t): the attained 満年齢 in policy month t, ``x + t // 12``.
+
+    ``t`` is 0-based, so ``age(0) = issue_age()`` — the first projected month is spent at
+    the 契約年齢 — and the age steps at ``t = 12, 24, …``, each 年単位の契約応当日.
+    """
     return issue_age() + t // 12
 
 
 def policy_year(t):
-    """y(t): the policy year containing month t, ``t // 12 + 1``."""
+    """y(t): the **contractual, 1-based** policy year containing month t, ``t // 12 + 1``.
+
+    A label, never an index: ``t`` itself is 0-based, and months ``t = 0 .. 11`` are policy
+    year 1.  It exists because ``lapse_table.csv`` is keyed by the contractual policy year,
+    which starts at 1, and this is the cells that bridges the two.
+    """
     return t // 12 + 1
 
 
@@ -904,10 +925,12 @@ def pols_if_init():
 def pols_healthy(t):
     """In force at the start of month t and **never diagnosed with an 悪性新生物**.
 
-    ``(pols_healthy(t) - diag_first(t)) (1 - q(t)) (1 - w(t))``.  A life diagnosed in month
-    t leaves this state before the decrement and takes the **diagnosed** mortality in its
-    month of diagnosis **[std]**.  An in-situ diagnosis does *not* move the life out: it is
-    a second benefit tier, not a state change.
+    ``pols_healthy(t+1) = (pols_healthy(t) - diag_first(t)) (1 - q(t)) (1 - w(t))``, from
+    the base case ``pols_healthy(0) = pols_if_init()`` — ``t = 0`` is the first projected
+    month, not an instant before it.  A life diagnosed in month t leaves this state before
+    the decrement and takes the **diagnosed** mortality in its month of diagnosis
+    **[std]**.  An in-situ diagnosis does *not* move the life out: it is a second benefit
+    tier, not a state change.
 
     This is the population the premium rides on, and the population lapse applies to.
     """
@@ -950,8 +973,10 @@ def unlock(t):
 def pols_locked(t):
     """In force, diagnosed, and **within C months of the last payment trigger**.
 
-    ``(pols_locked(t) + trig(t)) sc(t) - unlock(t+1)``.  A life that has just been paid
-    cannot be paid again for C months; this is where it waits.
+    ``pols_locked(t+1) = (pols_locked(t) + trig(t)) sc(t) - unlock(t+1)``, from
+    ``pols_locked(0) = 0``: the diagnosed states start empty at the first projected month.
+    A life that has just been paid cannot be paid again for C months; this is where it
+    waits.
     """
     if t <= 0:
         return 0.0
@@ -961,7 +986,8 @@ def pols_locked(t):
 def pols_open(t):
     """In force, diagnosed, cycle expired, **eligible for a repeat payment**.
 
-    ``(pols_open(t) - diag_rep(t)) sc(t) + unlock(t+1)``.  Eligible, not in payment: a
+    ``pols_open(t+1) = (pols_open(t) - diag_rep(t)) sc(t) + unlock(t+1)``, from
+    ``pols_open(0) = 0``.  Eligible, not in payment: a
     fresh 再発 / 転移 / 新生 is what converts eligibility into a payment, at the relapse hazard,
     without limit and with no termination on payment.
     """
@@ -1061,6 +1087,10 @@ def insitu_avail(t):
     ``Z(t+1) = Z(t) (1 - iz(t) cover(t))``, from ``Z(0) = 1``.  A separate ledger rather
     than a flag on the diagnosis benefit, because the tier has its own cap, does not start
     the two-year cycle and does not trigger the waiver.
+
+    A **time-point** value, not a closing balance: ``Z(t)`` is the probability **at time
+    `t`** — the opening value of month ``t``, which :func:`insitu_ev` draws against, with
+    ``t = 0`` at the 契約日; the month's closing value is ``Z(t+1)``.
     """
     if t <= 0:
         return 1.0 if t == 0 else 0.0
@@ -1174,8 +1204,12 @@ def treat_months(t):
 
     ``M(t+1) = (M(t) + paid_months(t)) pols_cancer(t) / (pols_cancer(t) + diag_first(t))``
     — a cohort average diluted by new entrants, and only by first diagnoses, because a
-    repeat trigger is an already-diagnosed life whose ledger continues.  Zero while
-    ``pols_cancer`` is zero.
+    repeat trigger is an already-diagnosed life whose ledger continues.  ``M(0) = 0``, and
+    zero thereafter while ``pols_cancer`` is zero.
+
+    A **time-point** value, not a closing balance: ``M(t)`` is the ledger **at time `t`**
+    — the opening value of month ``t``, which :func:`paid_months` draws against; the
+    month's closing value is ``M(t+1)``.
 
     The direction of the approximation is stated rather than discovered:
     ``E[min(sum, K)] != min(E[sum], K)``, so a deterministic average **understates** the
@@ -1221,7 +1255,12 @@ def adv_paid(t):
 
     Diluted by new entrants on the same cohort-average basis as :func:`treat_months`, and
     accumulating the 技術料 only — the 10% cash top-up is a benefit, not a draw against the
-    cap.  ``V(12) = ¥2,401.31`` at the anchor cell.
+    cap.  ``V(0) = 0``; ``V(12) = ¥2,401.31`` at the anchor cell — the value at the end of
+    policy year 1, months ``t = 0 .. 11``.
+
+    A **time-point** value, not a closing balance: ``V(t)`` is the ledger **at time `t`**
+    — the opening value of month ``t``, which :func:`adv_pay` draws against; the month's
+    closing value is ``V(t+1)``.
     """
     if t <= 0:
         return 0.0
@@ -1425,8 +1464,9 @@ def expenses(t):
 def commissions(t):
     """Commission outgo in month t **[std]**.
 
-    1.5 times the annualized premium at ``t = 0`` — ¥54,000 on the anchor cell — then 3.0%
-    of premium income from policy year 2.  No Japanese commission scale is public either.
+    1.5 times the annualized premium at ``t = 0``, the first projected month — ¥54,000 on
+    the anchor cell — then 3.0% of premium income from policy year 2, which on a 0-based
+    monthly index is ``t >= 12``.  No Japanese commission scale is public either.
     With the acquisition expense this is ¥74,000 of cost at outset against a ¥3,000 monthly
     premium: the product's cost is almost entirely in front of it.
     """
@@ -1463,6 +1503,10 @@ def check_pols_roll_fwd_resid(t):
     benefit-driven termination to add: the contract does not end and cannot exhaust, so a
     life leaves only by dying or lapsing.  A first diagnosis cancels out of this identity
     because it moves a life between states rather than out of the book.
+
+    At the last row of the frame, ``t = proj_len() - 1``, the residual reads
+    ``pols_if(proj_len())`` — one step past the published frame.  The state recursions are
+    defined there and the identity closes; nothing is indexed below ``t = 0``.
     """
     return pols_if(t) - pols_if(t + 1) - pols_death(t) - pols_lapse(t)
 
@@ -1616,6 +1660,10 @@ def check_net_cf():
 def result_cf():
     """Result table of cash flows, indexed by policy month t.
 
+    The frame is the 0-based projection frame: ``proj_len()`` rows indexed
+    ``t = 0, 1, ..., proj_len() - 1`` — 924 rows on the anchor cell, the first of them the
+    month beginning at the 契約日 and the last the terminal age's final month.
+
     ``pols_if`` is the start-of-month count and the weight on the maintenance expense of
     the same row — but *not* on ``premiums``, which is carried by ``pols_healthy``, nor on
     the seven benefit lines, five of which are carried by ``pols_cancer``.  Publishing the
@@ -1665,7 +1713,11 @@ def result_cf():
 
 
 def result_pols():
-    """Result table of policy counts, decrement rates and ledgers, indexed by month t."""
+    """Result table of policy counts, decrement rates and ledgers, indexed by month t.
+
+    The same 0-based frame as :func:`result_cf`: ``proj_len()`` rows indexed
+    ``t = 0, 1, ..., proj_len() - 1``.
+    """
     ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {

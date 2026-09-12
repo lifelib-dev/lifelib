@@ -3,8 +3,12 @@
 The golden values are the worked example in
 products/whole_of_life/technical-notes.md ("Worked example"), which projects the
 over-50s anchor cell: entry age 70 last birthday, non-smoker, GBP 30.00 a month for a
-GBP 5,000 cash sum, premiums ceasing at month 240.  They are hard-coded here rather than
-pickled so that a reviewer can compare them against the notes by eye.
+GBP 5,000 cash sum, premiums ceasing after 240 months.  They are hard-coded here rather
+than pickled so that a reviewer can compare them against the notes by eye.
+
+``t`` is the 0-based policy month: ``t = 0`` is the issue month, the frame is
+``0 .. proj_len() - 1``, and the goldens are keyed by that ``t`` exactly as the notes'
+table prints them.  The policy year is ``t // 12 + 1``.
 
 Tolerances follow the precision the notes display: money to the penny, in-force to five
 decimals.  The notes' table **omits expenses** "for clarity", so it is asserted against
@@ -13,7 +17,7 @@ decimals.  The notes' table **omits expenses** "for clarity", so it is asserted 
 Beyond the worked example this module asserts the product facts the notes call out as
 modelling pitfalls, because each is a way an implementation can look right and be wrong:
 
-* the month-12/13 moratorium boundary is a step, not a curve;
+* the moratorium boundary between t = 11 and t = 12 is a step, not a curve;
 * the year-one refund base is cumulative premiums paid, not the cash sum;
 * the accidental multiplier applies past the moratorium only;
 * lapse must stop when premiums cease;
@@ -44,26 +48,27 @@ INFORCE = 5e-6        # in-force displayed to 5 d.p.
 
 MODEL_DIR = LIB / MODELS["WOL_UK_S"][0]
 
-# t: (policy year, CumPrem, DB non-accidental, DB accidental, l(t-1),
-#     E[premium], E[death outgo])
+# t (0-based policy month): (policy year, CumPrem, DB non-accidental, DB accidental,
+#     l(t) = pols_if(t), E[premium], E[death outgo])
 WORKED_EXAMPLE = {
-    1:   (1,  30.00,   30.00, 5000.0, 1.00000, 30.00,  0.36),
-    6:   (1, 180.00,  180.00, 5000.0, 0.95613, 28.68,  0.63),
-    12:  (1, 360.00,  360.00, 5000.0, 0.90601, 27.18,  0.91),
-    13:  (2, 390.00, 5000.00, 5000.0, 0.89792, 26.94, 10.00),
-    24:  (2, 720.00, 5000.00, 5000.0, 0.82785, 24.84,  9.22),
-    60:  (5, 1800.00, 5000.00, 5000.0, 0.66359, 19.91,  9.88),
-    120: (10, 3600.00, 5000.00, 5000.0, 0.42564, 12.77, 10.31),
-    166: (14, 4980.00, 5000.00, 5000.0, 0.27420,  8.23,  9.85),
-    167: (14, 5010.00, 5000.00, 5000.0, 0.27131,  8.14,  9.74),
-    240: (20, 7200.00, 5000.00, 5000.0, 0.09992,  3.00,  6.57),
-    241: (21, 7200.00, 5000.00, 5000.0, 0.09828,  0.00,  7.16),
+    0:   (1,  30.00,   30.00, 5000.0, 1.00000, 30.00,  0.36),
+    5:   (1, 180.00,  180.00, 5000.0, 0.95613, 28.68,  0.63),
+    11:  (1, 360.00,  360.00, 5000.0, 0.90601, 27.18,  0.91),
+    12:  (2, 390.00, 5000.00, 5000.0, 0.89792, 26.94, 10.00),
+    23:  (2, 720.00, 5000.00, 5000.0, 0.82785, 24.84,  9.22),
+    59:  (5, 1800.00, 5000.00, 5000.0, 0.66359, 19.91,  9.88),
+    119: (10, 3600.00, 5000.00, 5000.0, 0.42564, 12.77, 10.31),
+    165: (14, 4980.00, 5000.00, 5000.0, 0.27420,  8.23,  9.85),
+    166: (14, 5010.00, 5000.00, 5000.0, 0.27131,  8.14,  9.74),
+    239: (20, 7200.00, 5000.00, 5000.0, 0.09992,  3.00,  6.57),
+    240: (21, 7200.00, 5000.00, 5000.0, 0.09828,  0.00,  7.16),
 }
 
-# The notes' derived month-1 factors.
-Q_M_1 = 0.0020223         # 1 - (1 - 0.024)^(1/12)
-W_M_1 = 0.0069244         # 1 - (1 - 0.08)^(1/12)
-Q_M_13 = 0.0022271        # q(2) = 0.0264
+# The notes' derived factors for the first month (t = 0, policy year 1) and for the
+# month the moratorium ends (t = 12, policy year 2).
+Q_M_0 = 0.0020223         # 1 - (1 - 0.024)^(1/12)
+W_M_0 = 0.0069244         # 1 - (1 - 0.08)^(1/12)
+Q_M_12 = 0.0022271        # q(2) = 0.0264
 
 
 # ---------------------------------------------------------------------------
@@ -84,15 +89,16 @@ def test_worked_example_row(uk_o50_anchor, t):
     assert p.claims(t, "DEATH") == pytest.approx(death, abs=PENNY)
 
 
-def test_worked_example_month_one_trace(uk_o50_anchor):
-    """E[death] = 1.0 x 0.0020223 x (0.97 x 30 + 0.03 x 5,000) = 0.0020223 x 179.10."""
+def test_worked_example_first_month_trace(uk_o50_anchor):
+    """t = 0: E[death] = 1.0 x 0.0020223 x (0.97 x 30 + 0.03 x 5,000) = 0.0020223 x 179.10."""
     p = uk_o50_anchor
-    assert p.mort_rate(1) == pytest.approx(0.024, rel=1e-12)
-    assert p.mort_rate_mth(1) == pytest.approx(Q_M_1, abs=5e-8)
-    assert p.lapse_rate(1) == 0.08
-    assert p.lapse_rate_mth(1) == pytest.approx(W_M_1, abs=5e-8)
-    assert p.benefit_pp(1, "DEATH") == pytest.approx(179.10, abs=PENNY)
-    assert p.claims(1, "DEATH") == pytest.approx(Q_M_1 * 179.10, abs=PENNY)
+    assert p.pols_if(0) == p.pols_if_init() == 1.0
+    assert p.mort_rate(0) == pytest.approx(0.024, rel=1e-12)
+    assert p.mort_rate_mth(0) == pytest.approx(Q_M_0, abs=5e-8)
+    assert p.lapse_rate(0) == 0.08
+    assert p.lapse_rate_mth(0) == pytest.approx(W_M_0, abs=5e-8)
+    assert p.benefit_pp(0, "DEATH") == pytest.approx(179.10, abs=PENNY)
+    assert p.claims(0, "DEATH") == pytest.approx(Q_M_0 * 179.10, abs=PENNY)
 
 
 def test_the_year_one_outgo_is_dominated_by_the_accidental_tail(uk_o50_anchor):
@@ -103,19 +109,19 @@ def test_the_year_one_outgo_is_dominated_by_the_accidental_tail(uk_o50_anchor):
     """
     p = uk_o50_anchor
     accidental_part = 0.03 * 5000.0
-    assert accidental_part / p.benefit_pp(1, "DEATH") > 0.83
-    assert p.benefit_pp(1, "DEATH") == pytest.approx(
+    assert accidental_part / p.benefit_pp(0, "DEATH") > 0.83
+    assert p.benefit_pp(0, "DEATH") == pytest.approx(
         0.97 * 30.0 + 0.03 * 5000.0, abs=PENNY)
 
 
-def test_worked_example_month_thirteen_trace(uk_o50_anchor):
-    """The moratorium ends: E[death] = 0.89792 x 0.0022271 x 5,000 = 10.00."""
+def test_worked_example_moratorium_end_trace(uk_o50_anchor):
+    """t = 12, the moratorium ends: E[death] = 0.89792 x 0.0022271 x 5,000 = 10.00."""
     p = uk_o50_anchor
-    assert p.mort_rate(13) == pytest.approx(0.0264, rel=1e-12)     # q(2) = 0.024 x 1.10
-    assert p.mort_rate_mth(13) == pytest.approx(Q_M_13, abs=5e-8)
-    assert p.benefit_pp(13, "DEATH") == pytest.approx(5000.0, abs=PENNY)
-    assert p.claims(13, "DEATH") == pytest.approx(
-        p.pols_if(13) * Q_M_13 * 5000.0, abs=PENNY)
+    assert p.mort_rate(12) == pytest.approx(0.0264, rel=1e-12)     # q(2) = 0.024 x 1.10
+    assert p.mort_rate_mth(12) == pytest.approx(Q_M_12, abs=5e-8)
+    assert p.benefit_pp(12, "DEATH") == pytest.approx(5000.0, abs=PENNY)
+    assert p.claims(12, "DEATH") == pytest.approx(
+        p.pols_if(12) * Q_M_12 * 5000.0, abs=PENNY)
 
 
 def test_the_walk_through_basis_is_the_shipped_population_table(uk_o50_anchor):
@@ -129,7 +135,8 @@ def test_the_walk_through_basis_is_the_shipped_population_table(uk_o50_anchor):
     assert p.mort_basis() == "population"
     assert p.mort_loading() == 1.20
     for y in (1, 2, 5, 10, 20):
-        t = 12 * (y - 1) + 1
+        t = 12 * (y - 1)                      # the first month of policy year y
+        assert p.policy_year(t) == y
         assert p.mort_rate(t) == pytest.approx(0.024 * 1.10 ** (y - 1), rel=1e-9)
 
 
@@ -138,36 +145,38 @@ def test_the_walk_through_basis_is_the_shipped_population_table(uk_o50_anchor):
 
 
 def test_the_moratorium_boundary_is_a_step(uk_o50_anchor):
-    """An elevenfold jump in expected death outgo between months 12 and 13.
+    """An elevenfold jump in expected death outgo between t = 11 and t = 12.
 
     The signature discontinuity of this product, and the notes' first-listed pitfall:
-    an annual grid must split policy year 1 rather than smoothing across it.
+    an annual grid must split policy year 1 rather than smoothing across it.  The
+    moratorium is the twelve months t = 0 .. 11.
     """
     p = uk_o50_anchor
-    assert p.in_moratorium(12) is True
-    assert p.in_moratorium(13) is False
-    assert p.claims(13, "DEATH") / p.claims(12, "DEATH") > 10.0
+    assert p.in_moratorium(11) is True
+    assert p.in_moratorium(12) is False
+    assert p.claims(12, "DEATH") / p.claims(11, "DEATH") > 10.0
     # The step is in the benefit, not in the mortality or the in-force.
-    assert p.benefit_pp(12, "DEATH") < 600.0
-    assert p.benefit_pp(13, "DEATH") == 5000.0
-    assert p.pols_if(13) < p.pols_if(12)          # in-force moves smoothly across it
+    assert p.benefit_pp(11, "DEATH") < 600.0
+    assert p.benefit_pp(12, "DEATH") == 5000.0
+    assert p.pols_if(12) < p.pols_if(11)          # in-force moves smoothly across it
 
 
 def test_the_refund_base_is_cumulative_premiums_paid(uk_o50_anchor):
     """Not the cash sum, and not an annualized premium - the notes' second pitfall."""
     p = uk_o50_anchor
-    for t in range(1, 13):
-        assert p.benefit_pp(t, "NON_ACC") == pytest.approx(30.0 * t, abs=PENNY)
+    for t in range(12):
+        # t + 1 premiums have been paid by the end of month t.
+        assert p.benefit_pp(t, "NON_ACC") == pytest.approx(30.0 * (t + 1), abs=PENNY)
         assert p.benefit_pp(t, "NON_ACC") < p.sum_assured()
-    assert p.benefit_pp(1, "NON_ACC") == 30.0     # one month's premium, not nothing
-    assert p.benefit_pp(12, "NON_ACC") == 360.0
-    assert p.benefit_pp(13, "NON_ACC") == 5000.0
+    assert p.benefit_pp(0, "NON_ACC") == 30.0     # one month's premium, not nothing
+    assert p.benefit_pp(11, "NON_ACC") == 360.0
+    assert p.benefit_pp(12, "NON_ACC") == 5000.0
 
 
 def test_accidental_death_pays_the_full_cash_sum_from_day_one(uk_o50_anchor):
     """No moratorium on the accidental benefit."""
     p = uk_o50_anchor
-    assert all(p.benefit_pp(t, "ACC") == 5000.0 for t in (1, 6, 12, 13, 240))
+    assert all(p.benefit_pp(t, "ACC") == 5000.0 for t in (0, 5, 11, 12, 239))
 
 
 def test_the_accidental_multiplier_applies_past_the_moratorium_only(whole_of_life):
@@ -178,13 +187,13 @@ def test_the_accidental_multiplier_applies_past_the_moratorium_only(whole_of_lif
     """
     p1, p2 = whole_of_life.Projection[1], whole_of_life.Projection[2]
     assert p2.adb_multiplier() == 2.0
-    for t in range(1, 13):
+    for t in range(12):
         assert p2.benefit_pp(t, "ACC") == 5000.0            # unchanged in the moratorium
         assert p2.claims(t, "DEATH") == pytest.approx(p1.claims(t, "DEATH"), rel=1e-12)
-    assert p2.benefit_pp(13, "ACC") == 10000.0
-    assert p2.claims(13, "DEATH") > p1.claims(13, "DEATH")
+    assert p2.benefit_pp(12, "ACC") == 10000.0
+    assert p2.claims(12, "DEATH") > p1.claims(12, "DEATH")
     # And it moves only the accidental share, so the blended benefit rises by 3% of SA.
-    assert p2.benefit_pp(13, "DEATH") == pytest.approx(
+    assert p2.benefit_pp(12, "DEATH") == pytest.approx(
         5000.0 + 0.03 * 5000.0, abs=PENNY)
 
 
@@ -193,14 +202,16 @@ def test_the_underwritten_cell_has_no_moratorium_but_a_suicide_carve_out(whole_o
     p = whole_of_life.Projection[5]
     assert p.cell() == "UW"
     assert p.moratorium_mths() == 0
-    assert all(p.in_moratorium(t) is False for t in (1, 6, 12))
-    # Inside the first twelve months, 1% of deaths refund premiums instead of paying SA.
-    assert p.benefit_pp(1, "DEATH") == pytest.approx(
+    assert all(p.in_moratorium(t) is False for t in (0, 5, 11))
+    # Inside the first twelve months (t = 0 .. 11), 1% of deaths refund premiums instead
+    # of paying SA.
+    assert p.benefit_pp(0, "DEATH") == pytest.approx(
         0.99 * 150000.0 + 0.01 * 101.25, abs=PENNY)
-    assert p.benefit_pp(13, "DEATH") == 150000.0
-    assert p.benefit_pp(1, "NON_ACC") == 150000.0       # the non-accidental benefit is SA
+    assert p.benefit_pp(11, "DEATH") < 150000.0
+    assert p.benefit_pp(12, "DEATH") == 150000.0
+    assert p.benefit_pp(0, "NON_ACC") == 150000.0       # the non-accidental benefit is SA
     # The carve-out is small: a fraction of a percent of the benefit.
-    assert p.benefit_pp(1, "DEATH") / 150000.0 > 0.98
+    assert p.benefit_pp(0, "DEATH") / 150000.0 > 0.98
 
 
 # ---------------------------------------------------------------------------
@@ -213,32 +224,35 @@ def test_lapse_pays_nothing_on_either_cell(whole_of_life):
         proj = whole_of_life.Projection[point_id]
         assert (proj.result_cf()["claims_lapse"] == 0.0).all()
     p = whole_of_life.Projection[1]
-    assert p.pols_lapse(6) > 0.0                  # lapses happen
-    assert p.claims(6, "LAPSE") == 0.0            # and pay nothing
+    assert p.pols_lapse(5) > 0.0                  # lapses happen
+    assert p.claims(5, "LAPSE") == 0.0            # and pay nothing
 
 
 def test_lapse_stops_when_premiums_cease(uk_o50_anchor):
-    """Nothing left to stop paying - applying a decrement there destroys liability."""
+    """Nothing left to stop paying - applying a decrement there destroys liability.
+
+    240 premiums are paid in t = 0 .. 239; t = 240 is the first premium-free month.
+    """
     p = uk_o50_anchor
     assert p.cessation_mths() == 240
-    assert p.lapse_rate(240) == 0.04
-    assert p.lapse_rate(241) == 0.0
-    assert p.lapse_rate_mth(241) == 0.0
-    assert p.pols_lapse(241) == 0.0
-    assert all(p.lapse_rate(t) == 0.0 for t in (241, 300, 500))
+    assert p.lapse_rate(239) == 0.04
+    assert p.lapse_rate(240) == 0.0
+    assert p.lapse_rate_mth(240) == 0.0
+    assert p.pols_lapse(240) == 0.0
+    assert all(p.lapse_rate(t) == 0.0 for t in (240, 299, 499))
 
 
 def test_the_post_cessation_period_is_pure_outgo(uk_o50_anchor):
-    """Premium income stops at 241 but death outgo continues - and rises."""
+    """Premium income stops at t = 240 but death outgo continues - and rises."""
     p = uk_o50_anchor
-    assert p.premium_pp(240) == 30.0
-    assert p.premium_pp(241) == 0.0
-    assert p.premiums(241) == 0.0
-    assert p.claims(241, "DEATH") > p.claims(240, "DEATH")
-    assert p.net_cf(241) < 0.0
+    assert p.premium_pp(239) == 30.0
+    assert p.premium_pp(240) == 0.0
+    assert p.premiums(240) == 0.0
+    assert p.claims(240, "DEATH") > p.claims(239, "DEATH")
+    assert p.net_cf(240) < 0.0
     # And the in-force runs off on mortality alone from there.
-    assert p.pols_if(242) == pytest.approx(
-        p.pols_if(241) * (1 - p.mort_rate_mth(241)), rel=1e-14)
+    assert p.pols_if(241) == pytest.approx(
+        p.pols_if(240) * (1 - p.mort_rate_mth(240)), rel=1e-14)
 
 
 def test_the_liability_falls_as_lapses_rise(whole_of_life):
@@ -268,9 +282,9 @@ def test_the_liability_falls_as_lapses_rise(whole_of_life):
 def test_the_crossover_stress_is_off_in_the_base_run(uk_o50_anchor):
     """beta = 0, so the table rate applies on both sides of the tipping point."""
     p = uk_o50_anchor
+    assert p.lapse_rate(165) == p.lapse_rate_base(165)
     assert p.lapse_rate(166) == p.lapse_rate_base(166)
-    assert p.lapse_rate(167) == p.lapse_rate_base(167)
-    assert p.lapse_rate(167) == 0.04
+    assert p.lapse_rate(166) == 0.04
 
 
 # ---------------------------------------------------------------------------
@@ -278,30 +292,35 @@ def test_the_crossover_stress_is_off_in_the_base_run(uk_o50_anchor):
 
 
 def test_the_crossover_month(uk_o50_anchor):
-    """floor(5000/30) + 1 = 167 months: thirteen years and eleven months."""
+    """t = floor(5000/30) = 166, the month of the 167th premium: 13 years 11 months."""
     p = uk_o50_anchor
-    assert p.crossover_mth() == 167
-    assert 167 // 12 == 13 and 167 % 12 == 11
-    assert p.prem_cum_pp(166) == pytest.approx(4980.0, abs=PENNY)
-    assert p.prem_cum_pp(166) < p.cover_pp(166)
-    assert p.prem_cum_pp(167) == pytest.approx(5010.0, abs=PENNY)
-    assert p.prem_cum_pp(167) > p.cover_pp(167)
+    assert p.crossover_mth() == 166
+    premiums_paid = p.crossover_mth() + 1
+    assert premiums_paid == 167
+    assert premiums_paid // 12 == 13 and premiums_paid % 12 == 11
+    assert p.prem_cum_pp(165) == pytest.approx(4980.0, abs=PENNY)
+    assert p.prem_cum_pp(165) < p.cover_pp(165)
+    assert p.prem_cum_pp(166) == pytest.approx(5010.0, abs=PENNY)
+    assert p.prem_cum_pp(166) > p.cover_pp(166)
 
 
 def test_total_premiums_are_capped_at_cessation(uk_o50_anchor):
     """P x T_cess = 7,200 against a 5,000 cash sum, so a crossover exists."""
     p = uk_o50_anchor
-    assert p.prem_cum_pp(240) == pytest.approx(7200.0, abs=PENNY)
-    assert p.prem_cum_pp(241) == pytest.approx(7200.0, abs=PENNY)   # no more premiums
-    assert p.prem_cum_pp(600) == pytest.approx(7200.0, abs=PENNY)
+    assert p.prem_cum_pp(239) == pytest.approx(7200.0, abs=PENNY)
+    assert p.prem_cum_pp(240) == pytest.approx(7200.0, abs=PENNY)   # no more premiums
+    assert p.prem_cum_pp(599) == pytest.approx(7200.0, abs=PENNY)
     assert 7200.0 > p.sum_assured()
 
 
 def test_no_crossover_where_the_cash_sum_exceeds_total_premiums(whole_of_life):
-    """The underwritten anchor never crosses over: cover is 150,000 on 101.25 a month."""
+    """The underwritten anchor never crosses over: cover is 150,000 on 101.25 a month.
+
+    The sentinel is -1, because t = 0 is a real month.
+    """
     p = whole_of_life.Projection[5]
-    assert p.crossover_mth() == 0
-    assert p.prem_cum_pp(p.proj_len()) < p.sum_assured()
+    assert p.crossover_mth() == -1
+    assert p.prem_cum_pp(p.proj_len() - 1) < p.sum_assured()
 
 
 # ---------------------------------------------------------------------------
@@ -309,43 +328,46 @@ def test_no_crossover_where_the_cash_sum_exceeds_total_premiums(whole_of_life):
 
 
 def test_pu_variant_converts_lapses_to_paid_up_after_the_halfway_point(whole_of_life):
-    """N_paid >= N_expected/2 - month 120 on the anchor - and PU = SA x N_paid/N_expected."""
+    """N_paid >= N_expected/2 from t = 119 (the 120th payment) - and PU = SA x N_paid/N_expected."""
     p = whole_of_life.Projection[3]
     assert p.pu_variant() is True
     assert p.payments_expected() == 240
-    assert p.pu_eligible(119) is False
-    assert p.pu_eligible(120) is True
-    assert p.pols_convert(119) == 0.0
-    assert p.pols_convert(120) > 0.0
-    assert p.benefit_pp(120, "PAID_UP") == pytest.approx(2500.0, abs=PENNY)
-    assert p.benefit_pp(240, "PAID_UP") == pytest.approx(5000.0, abs=PENNY)
+    assert p.payments_made(118) == 119
+    assert p.payments_made(119) == 120
+    assert p.pu_eligible(118) is False
+    assert p.pu_eligible(119) is True
+    assert p.pols_convert(118) == 0.0
+    assert p.pols_convert(119) > 0.0
+    assert p.benefit_pp(119, "PAID_UP") == pytest.approx(2500.0, abs=PENNY)
+    assert p.benefit_pp(239, "PAID_UP") == pytest.approx(5000.0, abs=PENNY)
     # Before the halfway point a lapse is still a total loss.
-    assert p.pols_lapse(119) > 0.0
-    assert p.pols_lapse(120) == 0.0
+    assert p.pols_lapse(118) > 0.0
+    assert p.pols_lapse(119) == 0.0
 
 
 def test_paid_up_policies_neither_lapse_nor_pay_premium(whole_of_life):
     """They roll forward on mortality alone, taking conversions in."""
     p = whole_of_life.Projection[3]
-    for t in (150, 200, 300):
+    assert p.pols_pu(0) == 0.0                    # every policy starts on full cover
+    for t in (149, 199, 299):
         assert p.pols_pu(t + 1) == pytest.approx(
             p.pols_pu(t) * (1 - p.mort_rate_mth(t)) + p.pols_convert(t), rel=1e-12)
-    assert p.pols_pu(300) > 0.0
+    assert p.pols_pu(299) > 0.0
     # Premium income is carried on the full-cover strand only.
-    assert p.premiums(150) == pytest.approx(p.premium_pp(150) * p.pols_if(150), rel=1e-14)
+    assert p.premiums(149) == pytest.approx(p.premium_pp(149) * p.pols_if(149), rel=1e-14)
 
 
 def test_the_paid_up_strand_carries_its_own_benefit_total(whole_of_life):
     """pu_benefit is the aggregate cover, which is why no cohort dimension is needed."""
     p = whole_of_life.Projection[3]
-    for t in (150, 250):
+    for t in (149, 249):
         assert p.pu_benefit(t + 1) == pytest.approx(
             p.pu_benefit(t) * (1 - p.mort_rate_mth(t))
             + p.pols_convert(t) * p.benefit_pp(t, "PAID_UP"), rel=1e-12)
         assert p.claims(t, "DEATH_PU") == pytest.approx(
             p.pu_benefit(t) * p.mort_rate_mth(t), rel=1e-14)
     # The average paid-up payout sits between half and all of the cash sum.
-    avg = p.pu_benefit(300) / p.pols_pu(300)
+    avg = p.pu_benefit(299) / p.pols_pu(299)
     assert 2500.0 <= avg <= 5000.0
 
 
@@ -369,7 +391,7 @@ def test_the_other_cells_have_no_paid_up_strand(whole_of_life):
         proj = whole_of_life.Projection[point_id]
         assert proj.pu_variant() is False
         assert (proj.result_cf()["pols_pu"] == 0.0).all()
-        assert proj.pols_all(50) == proj.pols_if(50)
+        assert proj.pols_all(49) == proj.pols_if(49)
 
 
 # ---------------------------------------------------------------------------
@@ -403,17 +425,17 @@ def test_the_population_basis_is_heavier_than_the_assured_one(whole_of_life):
 def test_the_mortality_improvement_dial_is_off_and_lightens_the_tail(whole_of_life):
     """Zero in the base run; improvements lengthen exactly the pure-outgo part."""
     p = whole_of_life.Projection[1]
-    assert all(p.mort_improve_factor(t) == 1.0 for t in (1, 120, 500))
+    assert all(p.mort_improve_factor(t) == 1.0 for t in (0, 119, 499))
 
     model = mx.read_model(MODEL_DIR, name="WOL_UK_S_improve")
     try:
         model.Projection.mort_improvement = 0.01
         model.Projection.clear_all()
         proj = model.Projection[1]
-        assert proj.mort_improve_factor(1) == 1.0
-        assert proj.mort_improve_factor(13) == pytest.approx(0.99, rel=1e-12)
-        assert proj.mort_rate(241) < p.mort_rate(241)
-        assert proj.pols_if(500) > p.pols_if(500)      # more survivors in the tail
+        assert all(proj.mort_improve_factor(t) == 1.0 for t in (0, 11))   # policy year 1
+        assert proj.mort_improve_factor(12) == pytest.approx(0.99, rel=1e-12)
+        assert proj.mort_rate(240) < p.mort_rate(240)
+        assert proj.pols_if(499) > p.pols_if(499)      # more survivors in the tail
     finally:
         model.close()
 
@@ -421,9 +443,10 @@ def test_the_mortality_improvement_dial_is_off_and_lightens_the_tail(whole_of_li
 def test_mortality_is_capped_at_one(whole_of_life):
     """The tables reach 1 before the limiting age, which is what exhausts the population."""
     p = whole_of_life.Projection[1]
-    assert p.mort_rate(p.proj_len()) == 1.0
-    assert p.mort_rate_mth(p.proj_len()) == 1.0
-    assert all(p.mort_rate(t) <= 1.0 for t in range(1, p.proj_len() + 1, 12))
+    last = p.proj_len() - 1                       # the last projected month
+    assert p.mort_rate(last) == 1.0
+    assert p.mort_rate_mth(last) == 1.0
+    assert all(p.mort_rate(t) <= 1.0 for t in range(0, p.proj_len(), 12))
 
 
 # ---------------------------------------------------------------------------
@@ -436,10 +459,11 @@ def test_the_underwritten_increasing_variant_raises_cover_5_and_premium_10(whole
     assert p.escalation() == "fixed_5pct"
     assert p.esc_cover_step() == 0.05
     assert p.esc_prem_step() == 0.10
-    for y, t in ((1, 1), (2, 13), (5, 49)):
+    for y, t in ((1, 0), (2, 12), (5, 48)):      # t = 12 (y - 1): first month of year y
+        assert p.policy_year(t) == y
         assert p.cover_pp(t) == pytest.approx(150000.0 * 1.05 ** (y - 1), rel=1e-12)
         assert p.premium_pp(t) == pytest.approx(101.25 * 1.10 ** (y - 1), rel=1e-12)
-    assert p.cover_pp(12) == p.cover_pp(1)       # steps on anniversaries only
+    assert p.cover_pp(11) == p.cover_pp(0)       # steps on anniversaries only
 
 
 def test_the_rpi_variant_keeps_indexing_the_cash_sum_after_premiums_cease(whole_of_life):
@@ -448,13 +472,13 @@ def test_the_rpi_variant_keeps_indexing_the_cash_sum_after_premiums_cease(whole_
     assert p.escalation() == "rpi"
     assert p.esc_cover_step() == pytest.approx(0.03, rel=1e-12)
     assert p.esc_prem_step() == pytest.approx(0.045, rel=1e-12)
-    for y, t in ((1, 1), (2, 13), (10, 109)):
+    for y, t in ((1, 0), (2, 12), (10, 108)):
         assert p.cover_pp(t) == pytest.approx(5000.0 * 1.03 ** (y - 1), rel=1e-12)
         assert p.premium_pp(t) == pytest.approx(30.0 * 1.045 ** (y - 1), rel=1e-12)
     # Premiums stop at cessation; the cash sum keeps indexing past it.
-    assert p.premium_pp(241) == 0.0
-    assert p.cover_pp(241) > p.cover_pp(240)
-    assert p.cover_pp(360) > p.cover_pp(241)
+    assert p.premium_pp(240) == 0.0
+    assert p.cover_pp(240) > p.cover_pp(239)
+    assert p.cover_pp(359) > p.cover_pp(240)
 
 
 def test_the_rpi_caps(whole_of_life):
@@ -479,7 +503,7 @@ def test_a_level_cell_does_not_escalate(uk_o50_anchor):
     p = uk_o50_anchor
     assert p.escalation() == "level"
     assert p.esc_cover_step() == 0.0 and p.esc_prem_step() == 0.0
-    assert all(p.cover_pp(t) == 5000.0 for t in (1, 13, 240, 600))
+    assert all(p.cover_pp(t) == 5000.0 for t in (0, 12, 239, 599))
 
 
 # ---------------------------------------------------------------------------
@@ -492,11 +516,11 @@ def test_the_rollforward_closes(whole_of_life):
         proj = whole_of_life.Projection[point_id]
         assert proj.check_pols_roll_fwd() is True, point_id
     p = whole_of_life.Projection[3]               # the strand-splitting one
-    for t in (50, 150, 300):
+    for t in (49, 149, 299):
         out = p.pols_death(t) + p.pols_death_pu(t) + p.pols_lapse(t)
         assert p.pols_all(t) - p.pols_all(t + 1) == pytest.approx(out, abs=1e-12)
-    assert p.pols_convert(150) > 0.0              # conversions move between strands
-    assert p.pols_lapse(150) == 0.0
+    assert p.pols_convert(149) > 0.0              # conversions move between strands
+    assert p.pols_lapse(149) == 0.0
 
 
 def test_the_truncation_residual_is_negligible(whole_of_life):
@@ -508,17 +532,19 @@ def test_the_truncation_residual_is_negligible(whole_of_life):
     for point_id in whole_of_life.Data.model_point_table().index:
         proj = whole_of_life.Projection[point_id]
         assert proj.check_truncation() is True, point_id
-        assert proj.pols_maturity(proj.proj_len()) < 1e-9
+        assert proj.pols_maturity(proj.proj_len() - 1) < 1e-9
     p = whole_of_life.Projection[1]
-    assert all(p.pols_maturity(t) == 0.0 for t in (1, 240, 599))
+    assert all(p.pols_maturity(t) == 0.0 for t in (0, 239, 598))
 
 
 def test_the_projection_runs_to_the_limiting_age(uk_o50_anchor):
+    """proj_len() counts the months; the frame is t = 0 .. proj_len() - 1."""
     p = uk_o50_anchor
     assert p.proj_len() == 600 == 12 * (120 - 70)
-    assert p.age(1) == 70
-    assert p.age(600) == 119
-    assert p.pols_if(601) == 0.0
+    assert p.age(0) == 70
+    assert p.age(11) == 70 and p.age(12) == 71   # ALB steps at the anniversary
+    assert p.age(599) == 119                     # the last month of age 119
+    assert p.pols_if(600) == 0.0                 # outside the frame
 
 
 # ---------------------------------------------------------------------------
@@ -528,7 +554,7 @@ def test_the_projection_runs_to_the_limiting_age(uk_o50_anchor):
 def test_none_of_the_us_whole_life_machinery_exists(whole_of_life):
     """No cash value, no dividends, no paid-up additions, no loans - a product fact.
 
-    WholeLife_US_A is built around all four; these two UK cells are pure decrement
+    WholeLife_US_S is built around all four; these two UK cells are pure decrement
     protection models, and importing that chassis would invent a benefit that does not
     exist.
     """
@@ -552,11 +578,11 @@ def test_terminal_illness_is_not_a_second_decrement(whole_of_life):
 def test_invalid_enum_values_raise(uk_o50_anchor):
     """The enum accessors validate rather than propagating a typo into a lookup."""
     with pytest.raises(FormulaError):
-        uk_o50_anchor.pols_if_at(1, "BEF_NOTHING")
+        uk_o50_anchor.pols_if_at(0, "BEF_NOTHING")
     with pytest.raises(FormulaError):
-        uk_o50_anchor.claims(1, "SURRENDER")
+        uk_o50_anchor.claims(0, "SURRENDER")
     with pytest.raises(FormulaError):
-        uk_o50_anchor.benefit_pp(1, "MATURITY")
+        uk_o50_anchor.benefit_pp(0, "MATURITY")
 
 
 # ---------------------------------------------------------------------------
@@ -564,8 +590,15 @@ def test_invalid_enum_values_raise(uk_o50_anchor):
 
 
 def test_result_cf_shape(uk_o50_anchor):
-    df = uk_o50_anchor.result_cf()
-    assert list(df.index) == list(range(1, 601))
+    """One row per policy month, t = 0 .. proj_len() - 1: 600 rows on the anchor."""
+    p = uk_o50_anchor
+    df = p.result_cf()
+    assert list(df.index) == list(range(600)) == list(range(p.proj_len()))
+    assert df.index.name == "t"
+    assert df.index[0] == 0 and df.index[-1] == p.proj_len() - 1
+    assert len(df) == p.proj_len()
+    assert df["pols_if"].iloc[0] == p.pols_if_init()
+    assert list(p.result_pols().index) == list(df.index)
     assert list(df.columns) == [
         "pols_if", "pols_pu", "premiums", "claims_death", "claims_death_pu",
         "claims_lapse", "expenses", "commissions", "net_cf",
@@ -584,11 +617,11 @@ def test_result_cf_rows_sum_to_net_cf(uk_o50_anchor):
 def test_the_notes_table_omits_expenses(uk_o50_anchor):
     """So net_cf equals no column of it - the goldens are premiums and death outgo."""
     p = uk_o50_anchor
-    assert p.expenses(1) > 0.0
-    assert p.commissions(1) > 0.0
-    assert p.net_cf(1) != pytest.approx(30.00 - 0.36, abs=0.5)
-    assert p.net_cf(1) == pytest.approx(
-        p.premiums(1) - p.claims(1) - p.expenses(1) - p.commissions(1), rel=1e-14)
+    assert p.expenses(0) > 0.0
+    assert p.commissions(0) > 0.0
+    assert p.net_cf(0) != pytest.approx(30.00 - 0.36, abs=0.5)
+    assert p.net_cf(0) == pytest.approx(
+        p.premiums(0) - p.claims(0) - p.expenses(0) - p.commissions(0), rel=1e-14)
 
 
 def test_expenses_differ_by_cell(whole_of_life):
@@ -596,16 +629,18 @@ def test_expenses_differ_by_cell(whole_of_life):
     o50, uw = whole_of_life.Projection[1], whole_of_life.Projection[5]
     assert (o50.expense_acq_pp(), o50.expense_maint_pp()) == (150.0, 30.0)
     assert (uw.expense_acq_pp(), uw.expense_maint_pp()) == (300.0, 50.0)
-    assert o50.expenses(1) == pytest.approx(150.0 + 30.0 / 12, abs=PENNY)
-    assert o50.expenses(13) == pytest.approx(
-        30.0 / 12 * 1.03 * o50.pols_all(13), rel=1e-12)
+    assert o50.expenses(0) == pytest.approx(150.0 + 30.0 / 12, abs=PENNY)   # acquisition at issue
+    assert o50.expenses(1) == pytest.approx(30.0 / 12 * o50.pols_all(1), rel=1e-12)
+    assert o50.expenses(12) == pytest.approx(
+        30.0 / 12 * 1.03 * o50.pols_all(12), rel=1e-12)          # inflates at the anniversary
 
 
 def test_commission_is_first_year_only(uk_o50_anchor):
+    """Policy year 1 is t = 0 .. 11."""
     p = uk_o50_anchor
-    assert p.commissions(1) == pytest.approx(0.25 * p.premiums(1), rel=1e-12)
-    assert p.commissions(12) > 0.0
-    assert p.commissions(13) == 0.0
+    assert p.commissions(0) == pytest.approx(0.25 * p.premiums(0), rel=1e-12)
+    assert p.commissions(11) > 0.0
+    assert p.commissions(12) == 0.0
 
 
 def test_model_docstring_describes_the_current_structure(whole_of_life):
@@ -616,7 +651,7 @@ def test_model_docstring_describes_the_current_structure(whole_of_life):
     assert "external" in doc                     # inputs are not stored in the model
     assert "once per model" in doc               # why Data exists
     assert "moratorium" in doc
-    assert "WholeLife_US_A" in doc               # the contrast it is drawn against
+    assert "WholeLife_US_S" in doc               # the contrast it is drawn against
 
 
 def test_space_docstrings_carry_their_reference_material(whole_of_life):
@@ -681,12 +716,12 @@ def test_an_input_can_be_swapped_without_touching_formulas():
         alt_name = "mort_table_light.csv"
         lighter.to_csv(model.Data.input_dir() / alt_name)
         try:
-            base = model.Projection[1].claims(13, "DEATH")
+            base = model.Projection[1].claims(12, "DEATH")
             model.Data.mort_table_file = alt_name
             model.Data.clear_all()
             model.Projection.clear_all()
-            assert model.Projection[1].mort_rate(1) == pytest.approx(0.012, rel=1e-12)
-            assert model.Projection[1].claims(13, "DEATH") < base
+            assert model.Projection[1].mort_rate(0) == pytest.approx(0.012, rel=1e-12)
+            assert model.Projection[1].claims(12, "DEATH") < base
         finally:
             (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
     finally:

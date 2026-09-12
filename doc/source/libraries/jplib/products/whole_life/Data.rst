@@ -1,7 +1,7 @@
 The **Data** Space
 ==================
 
-.. automodule:: jplib.products.whole_life.WholeLife_JP_A.Data
+.. automodule:: jplib.products.whole_life.WholeLife_JP_S.Data
 
 Cells Descriptions
 ------------------

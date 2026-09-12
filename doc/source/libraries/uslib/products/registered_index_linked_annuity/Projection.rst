@@ -56,9 +56,9 @@ Cells Descriptions
 
 .. autofunction:: duration
 
-.. autofunction:: policy_year
+.. autofunction:: duration_eom
 
-.. autofunction:: duration_bom
+.. autofunction:: policy_year
 
 .. autofunction:: age
 

@@ -11,9 +11,21 @@ projecting model point 1::
     >>> Projection[1].result_cf()          # the worked-example scenario
     >>> Projection.point_id = 2            # the same contract, probability-weighted
 
-``t`` counts **months from the annuity start date**, 1-based: ``t = 1`` is the first
-projected month and ``t = 0`` is the month-zero state used as the base case of every
-recursion (``lives_if(0, life) = 1``, ``cum_annuity_pp(0, kind) = 0``).
+``t`` counts **months from the annuity start date**, 0-based: ``t = 0`` is the first
+projected month and the frame is ``t = 0, 1, ..., proj_len() - 1``. Month ``t`` runs from
+time ``t`` to time ``t + 1``, so a flow of month ``t`` reads a state variable at ``t`` for
+its opening value and at ``t + 1`` for its closing one, and the policy year containing
+month ``t`` is ``t // 12 + 1``.
+
+The **state** cells are indexed by a **time point** ``k``, ``k = 0`` at the start date:
+:func:`lives_if`, :func:`lives_if_last`, :func:`cum_annuity_pp` and :func:`vp_balance`.
+That index does not move with the frame — the annuitant who dies in month 16 is alive at
+time 16 and dead at time 17 — and every recursion's base case sits at ``k = 0``
+(``lives_if(0, life) = 1``, ``cum_annuity_pp(0, kind) = 0``). :func:`rpi_index` and
+:func:`rpi_peak` are indexed on a different scale again — an **anniversary count**, one
+step per policy year, 0 at outset, so ``rpi_index(1)`` is the reference level one *year*
+in — and it too is unmoved by the frame. Everything else — rates, factors, payment
+months, cash flows — is indexed by the month it belongs to.
 
 .. rubric:: Input data
 
@@ -50,10 +62,12 @@ compact actuarial symbols instead. The mapping is:
 =========================  ==============================  ==========================
 Notes symbol               Cells                           Meaning
 =========================  ==============================  ==========================
-t                          (the cells argument)            Month from the start date
-y = ceil(t/12)             policy_year(t)                  Policy year containing month t
+t                          (the cells argument)            Month from the start date, 0-based
+k                          (the cells argument)            Time point, k = 0 at the start date
+a                          (the cells argument)            Anniversary count, a = 0 at outset
+y = t//12 + 1              policy_year(t)                  Policy year containing month t
 (none)                     duration(t)                     Completed policy years, y - 1
-(none)                     duration_mth(t)                 Months elapsed at end of month t
+(none)                     duration_mth(t)                 Months elapsed at the start of month t
 P                          purchase_price()                Purchase price
 x_a, x_d                   age_at_entry(life)              Entry ages (ALB), life 1 or 2
 (none)                     age(t, life)                    Attained age (ALB)
@@ -66,27 +80,27 @@ A(1)                       annual_income_init()            Starting annualized i
 A(y)                       annual_income(y)                Annualized income in year y
 g                          escalation_rate()               Fixed escalation rate
 escalation_type            escalation_type()               level / fixed / rpi_catchup / lpi5
-I(k)                       rpi_index(k)                    RPI reference level at anniv. k
-peak                       rpi_peak(k)                     Running peak of the index
+I(a)                       rpi_index(a)                    RPI reference level at anniversary a
+peak(a)                    rpi_peak(a)                     Running peak of I through anniversary a
 m                          payment_freq()                  Payments per year
 timing                     payment_timing()                arrears or advance
 T                          is_payment_mth(t)               Month t is a payment date
-(payment point)            payment_surv_mth(t)             Month survival is measured at
+s(t)                       payment_surv_mth(t)             Time point survival is measured at
 inst(t)                    annuity_pp(t)                   Scheduled instalment
 n                          guarantee_mths()                Guarantee period in months
-C(t) = 1{t <= n}           certain_floor(t)                Annuity-certain floor indicator
-l_a(t), l_d(t)             lives_if(t, life)               Survival probability
-d_a(t), d_d(t)             lives_death(t, life)            Death density
-d_last(t)                  lives_death_last(t)             Last-death density
-(none)                     lives_if_last(t)                At least one covered life alive
+C(t) = 1{t < n}            certain_floor(t)                Annuity-certain floor indicator
+l_a(k), l_d(k)             lives_if(k, life)               Survival probability to time k
+d_a(t), d_d(t)             lives_death(t, life)            Death density of month t
+d_last(t)                  lives_death_last(t)             Last-death density of month t
+(none)                     lives_if_last(k)                At least one covered life alive
 max(C, l_a)                payment_factor(t)               Annuitant payment factor
 (none)                     payment_factor_life(t)          l_a alone, before the floor
 w(t)                       overlap_gate(t)                 Dependant-stream availability
 delta(1-l_a)l_d w          dependant_factor(t)             Dependant payment factor
-G(t)                       cum_annuity_pp(t, kind)         Cumulative scheduled instalments
+G(k)                       cum_annuity_pp(k, kind)         Scheduled instalments to time k
 v                          vp_pct()                        Value-protection percentage
 vp_basis                   vp_basis()                      first_death or last_survivor
-VPbal(t)                   vp_balance(t)                   Value-protection balance
+VPbal(k)                   vp_balance(k)                   Value-protection balance at k
 h(t)                       mths_since_payment(t)           Complete months since last payment
 proportion                 proportion()                    Proportionate final payment
 (none)                     next_payment_mth(t)             The next scheduled payment month
@@ -100,10 +114,10 @@ q_m                        mort_rate_mth(t, life)          Monthly rate 1-(1-q)^
 (none)                     death_mth(life)                 Scenario month of death **[std]**
 omega                      omega_age                       Limiting age, 115
 (stopping rule)            horizon_mths()                  Months to the age stop rule
-(none)                     proj_len()                      Last projected month
+(none)                     proj_len()                      Projected months, the frame's end
 (none)                     calendar_year(t)                Calendar year containing month t
 IF(t)                      pols_if(t)                      Any payment obligation open
-(none)                     pols_if_init()                  Contracts in force at t = 0
+(none)                     pols_if_init()                  Contracts in force at the start
 E[ANN(t)]                  annuity_payments(t)             Expected annuity outgo
 E[VP(t)]                   claims(t, "VP")                 Value-protection lump sum
 E[PROP(t)]                 claims(t, "PROP")               Proportionate final payment
@@ -141,8 +155,8 @@ name is kept because it is what the rest of the library calls the expense weight
 .. rubric:: Two mortality bases: table and scenario
 
 The notes' worked example is not a probability-weighted run. It is a **scenario**: "the
-annuitant dies in month 17; the dependant survives throughout", evaluated at
-``l_a = 0`` from month 17 and ``l_d = 1`` throughout. The rest of the notes projects on
+annuitant dies in month 16; the dependant survives throughout", evaluated at
+``l_a = 0`` from time 17 and ``l_d = 1`` throughout. The rest of the notes projects on
 an expected basis. Both readings are shipped, and which one applies is a model point
 column — the same device :mod:`.SPIA_US_S` uses for the same reason:
 
@@ -152,7 +166,8 @@ column — the same device :mod:`.SPIA_US_S` uses for the same reason:
     configuration on this basis and is the run to read for a realistic cash flow shape.
 
 ``mort_basis = "scenario"`` **[std]**
-    ``lives_if(t, life)`` is the deterministic step function ``1{t < death_mth(life)}``,
+    ``lives_if(k, life)`` is the deterministic step function ``1{k <= death_mth(life)}``
+    — the life is alive up to the start of its death month and dead from the end of it —
     with a blank ``death_mth`` meaning the life survives the whole projection. Model
     points 1, 3, 4, 9 and 10, which reproduce the worked example and its variants
     exactly.
@@ -180,7 +195,7 @@ starts only at the **end of the guarantee period**, not at the annuitant's death
 Applying the dependant's percentage from the death date silently converts every
 without-overlap policy into the more expensive with-overlap form, which is the notes'
 second-listed pitfall. Model points 3 and 4 are the same contract on either side of that
-switch, and their cash flows differ from month 18 to month 120.
+switch, and their cash flows differ from month 17 to month 119.
 
 .. rubric:: Escalation, and the one path-dependent option
 
@@ -200,18 +215,18 @@ cap are all **inflation options**, and a deterministic path values them at intri
 only. A market-consistent value needs stochastic inflation.
 
 Escalation applies on the **anniversary**, not on payment dates: the year-2 rate does
-not reach the ``t = 12`` arrears instalment, which accrued in year 1.
+not reach the ``t = 11`` arrears instalment, which accrued in year 1.
 
 .. rubric:: Value protection, and where the balance is measured
 
-``VP(t) = d(t) x max(0, v P - G(t-1))``, the death benefit measured against instalments
+``VP(t) = d(t) x max(0, v P - G(t))``, the death benefit measured against instalments
 **already paid**. Two timing rules matter and both are the notes' pitfalls:
 
-- on **arrears** timing the balance is ``G(t-1)``, because the instalment due at the end
-  of the death month is never paid;
+- on **arrears** timing the balance is ``G(t)``, the balance at the *start* of the death
+  month, because the instalment due at the end of it is never paid;
 - on **advance** timing an instalment paid at the *start* of the death month **has**
-  been paid, so in an advance payment month the balance is ``G(t)`` — netting it, or the
-  lump sum is overstated by one instalment.
+  been paid, so in an advance payment month the balance is ``G(t + 1)`` — netting it, or
+  the lump sum is overstated by one instalment.
 
 On the ``first_death`` basis the death that triggers it is the annuitant's and the
 balance nets the annuitant's schedule alone. On ``last_survivor`` it is the last death,
@@ -241,7 +256,8 @@ The notes define ``CF(t)`` as total gross liability **outgo**, which is
 convention, so a ``result_cf()["net_cf"]`` column can be summed or compared across every
 model in the library. Both are published as columns rather than one being made to stand
 for the other. There is no premium income in the projection at all: the purchase price
-is a pricing input at ``t = 0``, not a projected cash flow.
+is a pricing input paid at outset, before the first projected month, not a projected
+cash flow.
 """
 
 from modelx.serialize.jsonvalues import *
@@ -265,9 +281,9 @@ def model_point():
 def purchase_price():
     """P: the amount applied to the annuity after any lump sum and adviser charges.
 
-    A pricing input at t = 0, not a projected cash flow: the projection carries no
-    premium income.  It enters the projection only through value protection, where the
-    guarantee is measured against it.
+    A pricing input paid at outset, before the first projected month, not a projected
+    cash flow: the projection carries no premium income.  It enters the projection only
+    through value protection, where the guarantee is measured against it.
     """
     return float(model_point()["purchase_price"])
 
@@ -429,7 +445,8 @@ def mort_basis():
     """Whether the run is probability-weighted (*table*) or deterministic (*scenario*).
 
     *table* runs the generational recursion off the shipped table and improvement scale;
-    *scenario* **[std]** replaces it with the step function ``1{t < death_mth(life)}`` so
+    *scenario* **[std]** replaces it with the step function ``1{k <= death_mth(life)}``,
+    the life alive up to the start of its death month and dead from the end of it, so
     the notes' worked example - which is a scenario, not an expectation - reproduces
     exactly.  See the Space docstring.
     """
@@ -440,15 +457,16 @@ def mort_basis():
 
 
 def death_mth(life):
-    """The scenario month of death of ``life``; 0 if the life survives throughout.
+    """The scenario month of death of ``life``; -1 if the life survives throughout.
 
     Read only when ``mort_basis() == "scenario"``.  A blank cell in the model point
-    table means the life never dies in the scenario and is returned as 0, since ``t`` is
-    1-based and a death in month 0 is not a projectable event.  A death "in month 17" is
-    decremented at the end of month 17, so ``lives_if(t, life)`` is 0 from ``t = 17``.
+    table means the life never dies in the scenario and is returned as -1: month 0 is a
+    projectable month on the 0-based frame, so it cannot double as the sentinel.  A
+    death "in month 16" is decremented at the end of month 16, so ``lives_if(k, life)``
+    is 1 up to ``k = 16`` and 0 from ``k = 17``.
     """
     v = model_point()["death_mth_1" if life == 1 else "death_mth_2"]
-    return 0 if pd.isna(v) else int(v)                               # noqa: F821
+    return -1 if pd.isna(v) else int(v)                              # noqa: F821
 
 
 def start_year():
@@ -466,21 +484,21 @@ def pols_if_init():
 
 
 def duration(t):
-    """Completed policy years at the start of month t: ``(t - 1) // 12``."""
-    return (t - 1) // 12
+    """Completed policy years at the start of month t: ``duration_mth(t) // 12``."""
+    return duration_mth(t) // 12
 
 
 def duration_mth(t):
-    """Months elapsed from the start date at the end of month t; equal to t.
+    """Months elapsed from the start date at the start of month t; equal to t.
 
-    ``t`` is 1-based, so the identity is trivial - the cells exists so the monthly
+    ``t`` is 0-based, so the identity is trivial - the cells exists so the monthly
     models in this library share one vocabulary.
     """
     return t
 
 
 def policy_year(t):
-    """y = ceil(t/12): the policy year containing month t; 1 for t = 1..12."""
+    """y = t // 12 + 1: the policy year containing month t; 1 for t = 0..11."""
     return duration(t) + 1
 
 
@@ -495,13 +513,13 @@ def calendar_year(t):
 
 
 def horizon_mths():
-    """The last month at which some covered life has not yet passed the limiting age.
+    """The number of months over which some covered life is below the limiting age.
 
-    ``12 x (omega_age - min x_i)``: the notes stop once ``t/12 + x_i > omega`` for every
-    covered life, and stopping on the annuitant's age alone would truncate a younger
-    dependant's tail.  The notes' other stop test, ``IF(t) < 1e-6``, is not implemented,
-    because a stopping rule that depends on the projection it bounds is harder to reason
-    about than one that does not.
+    ``12 x (omega_age - min x_i)``: the notes stop once ``t // 12 + x_i >= omega`` for
+    every covered life, and stopping on the annuitant's age alone would truncate a
+    younger dependant's tail.  The notes' other stop test, ``IF(t) < 1e-6``, is not
+    implemented, because a stopping rule that depends on the projection it bounds is
+    harder to reason about than one that does not.
     """
     ages = [age_at_entry(1)]
     if is_joint():
@@ -510,64 +528,72 @@ def horizon_mths():
 
 
 def proj_len():
-    """Projection length in months: the mortality horizon, or the guarantee if longer."""
+    """Number of months projected: the mortality horizon, or the guarantee if longer.
+
+    The **exclusive end** of the frame, which runs ``t = 0 ... proj_len() - 1``.
+    """
     return max(horizon_mths(), guarantee_mths())
 
 
 def is_payment_mth(t):
-    """Whether month t is a payment date.
+    """Whether an instalment falls in month t.
 
-    Arrears: ``t = 3, 6, 9, ...`` at m = 4.  Advance: the k-th instalment falls one full
-    payment period earlier, at the start of month ``12(k-1)/m + 1``, so t = 1, 4, 7, ...
-    At m = 12 every month is a payment month on either convention.
+    Arrears: the instalment falls at the *end* of the month, so ``t = 2, 5, 8, ...`` at
+    m = 4.  Advance: the j-th instalment (j = 1, 2, ...) falls one full payment period
+    earlier, at the start of month ``12(j-1)/m``, so t = 0, 3, 6, ...  At m = 12 every
+    month is a payment month on either convention.
     """
-    if t < 1:
+    if t < 0:
         return False
     step = 12 // payment_freq()
     if payment_timing() == "arrears":
-        return t % step == 0
-    return (t - 1) % step == 0
+        return (t + 1) % step == 0
+    return t % step == 0
 
 
 def payment_surv_mth(t):
-    """The month at which survival is measured for the instalment falling in month t.
+    """s(t): the time point at which survival is measured for month t's instalment.
 
-    Arrears: the end of month t.  Advance: the end of month ``t - 1``, because an
-    advance instalment falls at the *start* of month t; 0 for the first instalment,
-    where ``lives_if`` is 1.  Using end-of-period survival for advance payments
-    understates the liability by about one period's mortality per payment.
+    Arrears: the end of month t, which is time ``t + 1``.  Advance: the start of month
+    t, which is time ``t``, because an advance instalment falls at the *start* of the
+    month; 0 for the first instalment, where ``lives_if`` is 1.  Using end-of-period
+    survival for advance payments understates the liability by about one period's
+    mortality per payment.
     """
-    return t if payment_timing() == "arrears" else t - 1
+    return t + 1 if payment_timing() == "arrears" else t
 
 
-def rpi_index(k):
-    """I(k): the RPI reference level at anniversary k **[std]**; I(0) = 1.
+def rpi_index(a):
+    """I(a): the RPI reference level at anniversary a **[std]**; I(0) = 1.
 
-    A deterministic ``(1 + rpi_rate)^k`` path.  A deterministic path cannot value the
-    zero floor, the catch-up ratchet or the LPI cap - all of them inflation options -
-    and values them at intrinsic only; a market-consistent value needs stochastic
-    inflation.
+    ``a`` is an **anniversary count** - one step per policy year, 0 at outset - not the
+    month-scale time point ``k`` the state cells take: ``rpi_index(1)`` is the level one
+    *year* in.  A deterministic ``(1 + rpi_rate)^a`` path.  A deterministic path cannot
+    value the zero floor, the catch-up ratchet or the LPI cap - all of them inflation
+    options - and values them at intrinsic only; a market-consistent value needs
+    stochastic inflation.
     """
-    return (1.0 + rpi_rate) ** k                                     # noqa: F821
+    return (1.0 + rpi_rate) ** a                                     # noqa: F821
 
 
-def rpi_peak(k):
-    """The running maximum of the RPI reference index through anniversary k.
+def rpi_peak(a):
+    """The running maximum of the RPI reference index through anniversary a.
 
-    The catch-up ratchet's state, and it is **path-dependent**: it must persist across
-    anniversaries.  Resetting it each year turns the catch-up into a plain zero floor
-    and overstates indexed income after a deflation-recovery path.
+    Indexed by the same **anniversary count** as :func:`rpi_index`.  The catch-up
+    ratchet's state, and it is **path-dependent**: it must persist across anniversaries.
+    Resetting it each year turns the catch-up into a plain zero floor and overstates
+    indexed income after a deflation-recovery path.
     """
-    if k <= 0:
+    if a <= 0:
         return rpi_index(0)
-    return max(rpi_peak(k - 1), rpi_index(k))
+    return max(rpi_peak(a - 1), rpi_index(a))
 
 
 def annual_income(y):
     """A(y): the annualized income in policy year y, on the annuitant's scale.
 
     Escalation applies at the start of the month containing the policy anniversary, so
-    the first increase reaches ``t = 13`` and not the ``t = 12`` arrears instalment,
+    the first increase reaches ``t = 12`` and not the ``t = 11`` arrears instalment,
     which accrued in year 1.  By basis::
 
         level:        A(y) = A(1)
@@ -605,28 +631,34 @@ def annuity_pp(t):
 
 
 def next_payment_mth(t):
-    """The next scheduled payment month at or after month t; used by the proportion rule."""
-    step = 12 // payment_freq()
+    """The next scheduled payment month at or after month t; -1 if there is none.
+
+    Used by the proportion rule.  The sentinel is -1 rather than 0 because month 0 is a
+    projectable month on the 0-based frame.  The scan stops at the end of the frame:
+    ``proj_len()`` is the number of projected months, so the last month it can return is
+    ``proj_len() - 1``, and a month past the frame has no next payment to price.
+    """
     s = t
-    while s <= proj_len() + step:
+    while s < proj_len():
         if is_payment_mth(s):
             return s
         s += 1
-    return 0
+    return -1
 
 
 def mths_since_payment(t):
-    """h(t): complete months elapsed since the last payment date, measured at t - 1.
+    """h(t): complete months elapsed since the last payment date, measured at time t.
 
-    The accrual base of the proportionate final payment.  On the worked configuration a
-    death in month 17 with quarterly arrears payments at months 3, 6, ... gives h = 1:
-    one complete month since the month-15 instalment.
+    Time t is the start of month t, so a death in month t accrues from the last payment
+    date to there.  The accrual base of the proportionate final payment: on the worked
+    configuration a death in month 16 with quarterly arrears payments at months 2, 5,
+    ... gives h = 1, one complete month since the month-14 instalment.
     """
     step = 12 // payment_freq()
-    if t <= 1:
+    if t <= 0:
         return 0
-    last = ((t - 1) // step) * step
-    return max(0, (t - 1) - last)
+    last = (t // step) * step
+    return max(0, t - last)
 
 
 def mort_rate_base(t, life):
@@ -697,59 +729,71 @@ def mort_rate_mth(t, life):
     return 1.0 - (1.0 - mort_rate(t, life)) ** (1.0 / 12.0)
 
 
-def lives_if(t, life):
-    """l(t): the probability that ``life`` is alive at the end of month t.
+def lives_if(k, life):
+    """l(k): the probability that ``life`` is alive at time k, k = 0 at the start date.
 
-    ``l(0) = 1``.  On the *table* basis ``l(t) = l(t-1)(1 - q_m(t))``, deaths being
-    decremented at end of month.  On the *scenario* basis **[std]** the survival path is
-    the step function ``1{t < death_mth(life)}``, with ``death_mth = 0`` meaning the life
-    survives the whole projection - which is what the notes' worked example specifies.
-    Returns 0 for life = 2 on a single-life contract.
+    A **time-point** cells: ``l(0) = 1``, and ``l(k)`` is the opening survival of month
+    k and the closing survival of month ``k - 1``.  On the *table* basis
+    ``l(k) = l(k-1)(1 - q_m(k-1))``, the rate of month ``k - 1`` carrying survival
+    across it, deaths being decremented at end of month.  On the *scenario* basis
+    **[std]** the survival path is the step function ``1{k <= death_mth(life)}``, with
+    ``death_mth = -1`` meaning the life survives the whole projection - which is what
+    the notes' worked example specifies.  Returns 0 for life = 2 on a single-life
+    contract.
     """
     if life == 2 and not is_joint():
         return 0.0
-    if t <= 0:
+    if k <= 0:
         return 1.0
     if mort_basis() == "scenario":
         d = death_mth(life)
-        return 0.0 if (d > 0 and t >= d) else 1.0
-    return lives_if(t - 1, life) * (1.0 - mort_rate_mth(t, life))
+        return 0.0 if (d >= 0 and k > d) else 1.0
+    return lives_if(k - 1, life) * (1.0 - mort_rate_mth(k - 1, life))
 
 
 def lives_death(t, life):
-    """d(t) = l(t-1) - l(t): the death density of ``life`` in month t."""
-    return lives_if(t - 1, life) - lives_if(t, life)
+    """d(t) = l(t) - l(t+1): the death density of ``life`` in month t.
+
+    Month t runs from time t to time ``t + 1``, so the density is the fall in survival
+    across it.
+    """
+    return lives_if(t, life) - lives_if(t + 1, life)
 
 
-def lives_if_last(t):
-    """The probability that at least one covered life is alive at the end of month t.
+def lives_if_last(k):
+    """The probability that at least one covered life is alive at time k.
 
     ``l_a + l_d - l_a l_d`` under **joint-life independence [std]**, which ignores
     broken-heart dependence and common lifestyle factors and so modestly overstates the
-    expected dependant stream.  On a single-life contract this is ``l_a``.
+    expected dependant stream.  On a single-life contract this is ``l_a``.  A
+    time-point cells, like :func:`lives_if`.
     """
-    la = lives_if(t, 1)
+    la = lives_if(k, 1)
     if not is_joint():
         return la
-    ld = lives_if(t, 2)
+    ld = lives_if(k, 2)
     return la + ld - la * ld
 
 
 def lives_death_last(t):
     """d_last(t): the last-death density in month t, the last-survivor VP trigger."""
-    return lives_if_last(t - 1) - lives_if_last(t)
+    return lives_if_last(t) - lives_if_last(t + 1)
 
 
 def certain_floor(t):
-    """C(t) = 1{t <= n}: the annuity-certain floor indicator of the guarantee period."""
-    return 1.0 if t <= guarantee_mths() else 0.0
+    """C(t) = 1{t < n}: the annuity-certain floor indicator of the guarantee period.
+
+    The guarantee of n months covers months ``t = 0 ... n - 1``.
+    """
+    return 1.0 if t < guarantee_mths() else 0.0
 
 
 def payment_factor_life(t):
     """l_a measured at the payment point: the annuitant's survival factor alone.
 
-    Survival is measured at :func:`payment_surv_mth`, not at t - the end of the payment
-    month on arrears and the start of it on advance.
+    Survival is measured at :func:`payment_surv_mth`, the payment point - the end of the
+    payment month (time ``t + 1``) on arrears and the start of it (time ``t``) on
+    advance.
     """
     return lives_if(payment_surv_mth(t), 1)
 
@@ -767,7 +811,7 @@ def payment_factor(t):
 
 
 def overlap_gate(t):
-    """w(t): whether the dependant's stream is available in month t.
+    """w(t) = 1{overlap or t >= n}: whether the dependant's stream is available in month t.
 
     1 with overlap, or once the guarantee period has run; 0 inside the guarantee without
     overlap.  **Not** a decrement of any kind - there is no lapse on this product -
@@ -775,7 +819,7 @@ def overlap_gate(t):
     death date on a without-overlap contract silently converts it into the more
     expensive with-overlap form.
     """
-    if overlap() or t > guarantee_mths():
+    if overlap() or t >= guarantee_mths():
         return 1.0
     return 0.0
 
@@ -794,8 +838,12 @@ def dependant_factor(t):
             * overlap_gate(t))
 
 
-def cum_annuity_pp(t, kind):
-    """G(t): cumulative scheduled instalments per contract through month t.
+def cum_annuity_pp(k, kind):
+    """G(k): cumulative scheduled instalments per contract up to time k.
+
+    A **time-point** cells: ``G(0) = 0`` at the start date and ``G(k)`` sums the
+    instalments of months ``0 ... k - 1``, so month t's instalment enters at
+    ``G(t + 1)`` whether it falls at the month's start or at its end.
 
     ``"ANNUITANT"``
         the **deterministic as-if-alive** annuitant schedule.  This is what
@@ -809,27 +857,27 @@ def cum_annuity_pp(t, kind):
         is an *expected* cumulative payment rather than a path-specific one;
         in a scenario run the two coincide.
     """
-    if t <= 0:
+    if k <= 0:
         return 0.0
     if kind == "ANNUITANT":
-        return cum_annuity_pp(t - 1, kind) + annuity_pp(t)
+        return cum_annuity_pp(k - 1, kind) + annuity_pp(k - 1)
     if kind == "ALL":
-        paid = annuity_pp(t) * (payment_factor(t) + dependant_factor(t))
-        return cum_annuity_pp(t - 1, kind) + paid
+        paid = annuity_pp(k - 1) * (payment_factor(k - 1) + dependant_factor(k - 1))
+        return cum_annuity_pp(k - 1, kind) + paid
     raise ValueError("invalid kind")
 
 
-def vp_balance(t):
-    """VPbal(t) = max(0, v P - G(t)): the value-protection balance after month t.
+def vp_balance(k):
+    """VPbal(k) = max(0, v P - G(k)): the value-protection balance at time k.
 
     Nets the schedule the elected basis applies to: the annuitant's alone on
-    ``first_death``, both streams on ``last_survivor``.  Zero when value protection is
-    not elected.
+    ``first_death``, both streams on ``last_survivor``.  A **time-point** cells, like
+    the ``G`` it is built on.  Zero when value protection is not elected.
     """
     if vp_pct() <= 0.0:
         return 0.0
     kind = "ANNUITANT" if vp_basis() == "first_death" else "ALL"
-    return max(0.0, vp_pct() * purchase_price() - cum_annuity_pp(t, kind))
+    return max(0.0, vp_pct() * purchase_price() - cum_annuity_pp(k, kind))
 
 
 def annuity_payments(t):
@@ -848,12 +896,12 @@ def claims(t, kind=None):
     ``"VP"``
         the value-protection lump sum, ``d(t) x VPbal``.  The trigger is the
         annuitant's death on the ``first_death`` basis and the last death on
-        ``last_survivor``.  The balance is measured at ``t - 1`` on arrears
-        timing, because the instalment due at the end of the death month is
-        never paid; in an **advance** payment month it is measured at ``t``,
-        because an instalment paid at the start of the death month has been paid
-        and netting it is what keeps the lump sum from being overstated by one
-        instalment.
+        ``last_survivor``.  The balance is measured at time ``t`` - the start of
+        the death month - on arrears timing, because the instalment due at the
+        end of that month is never paid; in an **advance** payment month it is
+        measured at time ``t + 1``, because an instalment paid at the start of
+        the death month has been paid and netting it is what keeps the lump sum
+        from being overstated by one instalment.
 
     ``"PROP"``
         the proportionate final payment on an arrears contract that elects it:
@@ -869,14 +917,14 @@ def claims(t, kind=None):
             return 0.0
         density = (lives_death(t, 1) if vp_basis() == "first_death"
                    else lives_death_last(t))
-        measured_at = (t if (payment_timing() == "advance" and is_payment_mth(t))
-                       else t - 1)
+        measured_at = (t + 1 if (payment_timing() == "advance" and is_payment_mth(t))
+                       else t)
         return pols_if_init() * density * vp_balance(measured_at)
     if kind == "PROP":
         if not proportion():
             return 0.0
         nxt = next_payment_mth(t)
-        if nxt == 0:
+        if nxt < 0:
             return 0.0
         accrual = (mths_since_payment(t) + 0.5) / (12.0 / payment_freq())
         return pols_if_init() * lives_death(t, 1) * accrual * annuity_pp(nxt)
@@ -886,15 +934,16 @@ def claims(t, kind=None):
 def pols_if(t):
     """IF(t): the probability that any payment obligation remains in month t.
 
-    ``min(1, max(C(t), l_a(t)) + 1{delta>0}(1 - l_a(t)) l_d(t))`` **[std]** - guarantee
-    certain, annuitant alive, or dependant stream in payment.  This is the weight the
-    maintenance expense is carried on, which is why it keeps the library's name for the
-    expense weight even though it is not a policy count.
+    ``min(1, max(C(t), l_a(t+1)) + 1{delta>0}(1 - l_a(t+1)) l_d(t+1))`` **[std]** -
+    guarantee certain, annuitant alive, or dependant stream in payment, survival taken
+    at the *end* of month t (time ``t + 1``).  This is the weight the maintenance
+    expense is carried on, which is why it keeps the library's name for the expense
+    weight even though it is not a policy count.
     """
-    la = lives_if(t, 1)
+    la = lives_if(t + 1, 1)
     obligation = max(certain_floor(t), la)
     if dependant_pct() > 0.0:
-        obligation += (1.0 - la) * lives_if(t, 2)
+        obligation += (1.0 - la) * lives_if(t + 1, 2)
     return pols_if_init() * min(1.0, obligation)
 
 
@@ -920,9 +969,9 @@ def liability_cf(t):
     """CF(t): total gross liability outgo in month t, the notes' cash flow definition.
 
     ``E[ANN] + E[PROP] + E[VP] + E[EXP]``.  **Outgo positive**, the notes' own sign.
-    There is no premium income in the projection - the purchase price at t = 0 is a
-    pricing input - and no surrender outgo, because the contract has no surrender value
-    at any time.
+    There is no premium income in the projection - the purchase price is a pricing input
+    paid at outset, before the first projected month - and no surrender outgo, because
+    the contract has no surrender value at any time.
     """
     return annuity_payments(t) + claims(t) + expenses(t)
 
@@ -939,15 +988,16 @@ def net_cf(t):
     return -liability_cf(t)
 
 
-def check_lives_roll_fwd_resid(t):
+def check_lives_roll_fwd_resid(k):
     """Residual between :func:`lives_if` and an independently rebuilt survival path.
 
-    Deliberately **not** the telescoping identity ``l(t-1) - d(t) - l(t)``:
+    Deliberately **not** the telescoping identity ``l(k) - d(k) - l(k+1)``:
     :func:`lives_death` is *defined* as that difference, so the identity is identically
     zero whatever :func:`lives_if` returns and constrains nothing.  Each life's survival
-    is rebuilt here from the assumptions instead, with no reference to the recursion - on
-    the *table* basis as the running product ``prod (1 - q_m(s))``, which a misindexed or
-    mis-based recursion breaks - and the residual is the sum of the per-life differences.
+    to time k is rebuilt here from the assumptions instead, with no reference to the
+    recursion - on the *table* basis as the running product ``prod (1 - q_m(s))`` over
+    the months ``s = 0 ... k - 1``, which a misindexed or mis-based recursion breaks -
+    and the residual is the sum of the per-life differences.
     """
     res = 0.0
     scenario = mort_basis() == "scenario"
@@ -956,24 +1006,26 @@ def check_lives_roll_fwd_resid(t):
             continue
         if scenario:
             d = death_mth(i)
-            built = 0.0 if (d > 0 and t >= d) else 1.0
+            built = 0.0 if (d >= 0 and k > d) else 1.0
         else:
             built = 1.0
-            for s in range(1, t + 1):
+            for s in range(k):
                 built *= 1.0 - mort_rate_mth(s, i)
-        res += built - lives_if(t, i)
+        res += built - lives_if(k, i)
     return res
 
 
 def check_lives_roll_fwd():
-    """Whether the survival recursion closes at **every** projected month.
+    """Whether the survival recursion closes at **every** projected time point.
 
     Takes no argument and returns a ``bool``, the library-wide shape of a ``check_*``
-    cells, so one test can call the same check across every model.  The signed residual
-    of a failing month stays available as :func:`check_lives_roll_fwd_resid`.
+    cells, so one test can call the same check across every model.  :func:`lives_if` is
+    a time-point cells, so the sweep runs over ``k = 0 ... proj_len()``: the opening of
+    every projected month and the close of the last one.  The signed residual of a
+    failing time point stays available as :func:`check_lives_roll_fwd_resid`.
     """
-    return all(abs(check_lives_roll_fwd_resid(t)) < 1e-10
-               for t in range(1, proj_len() + 1))
+    return all(abs(check_lives_roll_fwd_resid(k)) < 1e-10
+               for k in range(proj_len() + 1))
 
 
 def check_payment_factor_resid(t):
@@ -989,7 +1041,7 @@ def check_payment_factor_resid(t):
 def check_payment_factor():
     """Whether the guarantee stays a floor rather than a second stream, at every month."""
     return all(abs(check_payment_factor_resid(t)) < 1e-10
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_guarantee_xor():
@@ -1016,14 +1068,14 @@ def check_vp_bound():
 
 
 def result_cf():
-    """Result table of cashflows, indexed by month t.
+    """Result table of cashflows, indexed by month t over ``range(proj_len())``.
 
     ``pols_if`` is the probability any payment obligation remains, which is the expense
     weight rather than a policy count.  Both signs of the net flow are published:
     ``net_cf`` is income-positive, the library-wide convention, and ``liability_cf`` is
     the technical notes' outgo-positive ``CF(t)``.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1039,18 +1091,23 @@ def result_cf():
 
 
 def result_pols():
-    """Result table of survival probabilities and payment factors, indexed by month t."""
-    ts = list(range(1, proj_len() + 1))
+    """Result table of survival probabilities and payment factors, indexed by month t.
+
+    The state columns are read at the **end** of month t, i.e. at time ``t + 1``:
+    ``lives_if_1``, ``lives_if_2``, ``cum_annuity_all`` and ``vp_balance`` are the
+    closing values of the month whose flows the same row of :func:`result_cf` carries.
+    """
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
-            "lives_if_1": [lives_if(t, 1) for t in ts],
-            "lives_if_2": [lives_if(t, 2) for t in ts],
+            "lives_if_1": [lives_if(t + 1, 1) for t in ts],
+            "lives_if_2": [lives_if(t + 1, 2) for t in ts],
             "certain_floor": [certain_floor(t) for t in ts],
             "payment_factor": [payment_factor(t) for t in ts],
             "dependant_factor": [dependant_factor(t) for t in ts],
             "annuity_pp": [annuity_pp(t) for t in ts],
-            "cum_annuity_all": [cum_annuity_pp(t, "ALL") for t in ts],
-            "vp_balance": [vp_balance(t) for t in ts],
+            "cum_annuity_all": [cum_annuity_pp(t + 1, "ALL") for t in ts],
+            "vp_balance": [vp_balance(t + 1) for t in ts],
             "pols_if": [pols_if(t) for t in ts],
         },
         index=pd.Index(ts, name="t"),                                # noqa: F821

@@ -1,7 +1,7 @@
 The **Data** Space
 ==================
 
-.. automodule:: uklib.products.term_assurance.Term_UK_A.Data
+.. automodule:: uklib.products.term_assurance.Term_UK_S.Data
 
 Cells Descriptions
 ------------------

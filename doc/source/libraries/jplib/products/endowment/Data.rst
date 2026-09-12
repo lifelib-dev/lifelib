@@ -1,7 +1,7 @@
 The **Data** Space
 ==================
 
-.. automodule:: jplib.products.endowment.Endowment_JP_A.Data
+.. automodule:: jplib.products.endowment.Endowment_JP_S.Data
 
 Cells Descriptions
 ------------------

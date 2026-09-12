@@ -42,21 +42,24 @@ time rather than stored inside the model. The model folder itself holds no data,
 the model and its inputs must travel together.
 
 **Projection basis.** Monthly steps. ``t`` counts **policy months from the annuity
-date**, ``t = 1, 2, ..., proj_len()``, matching the technical notes' own index; the
-annuity date is collapsed onto the issue date, so there is no deferral period. Note
-the contrast with lifelib's ``CashValue_SE``, whose months are 0-based: here the
-month-zero state (``lives_if(0, life) = 1``, ``cum_annuity_pp(0) = 0``) is the ``t <= 0``
-branch of each recursion, and every projected month is ``t >= 1``.
-``proj_len()`` runs to the notes' age stop rule on the **youngest** covered life, or
-to the end of the effective certain period if that is later — stopping on the primary's
-age alone would truncate a younger joint annuitant's tail. The age rule ends the
-projection one month *before* any life attains the limiting age ω = 120 (696 months on
-the anchor cell's 65/62 pair, where the younger life is then 119), so the notes' other
-stop test, ``IF(t) < 1e-6``, is not subsumed: model point 8 finishes at
-``pols_if(696) = 3.41e-06``. A test pins the figure.
+date** and is **0-based**, as everywhere in lifelib: ``t = 0`` is the first projected
+month, the frame is ``t = 0, 1, ..., proj_len() - 1``, month ``t`` runs from time ``t``
+to time ``t + 1``, and the contractual policy year is the derived 1-based label
+``t // 12 + 1``. The annuity date is collapsed onto the issue date, so there is no
+deferral period. Two cells are indexed by a **time point** instead: ``lives_if(k, life)``
+is survival *at* time ``k`` and ``cum_annuity_pp(k)`` the instalments scheduled *before*
+time ``k``, with ``lives_if(0, life) = 1`` and ``cum_annuity_pp(0) = 0`` at the annuity
+date — the notes' own ``l(0) = 1`` and ``G(0) = 0``.
+``proj_len()`` is the **number** of projected months: it runs to the notes' age stop
+rule on the **youngest** covered life, or to the end of the effective certain period if
+that is later — stopping on the primary's age alone would truncate a younger joint
+annuitant's tail. The age rule ends the projection one month *before* any life attains
+the limiting age ω = 120 (696 months on the anchor cell's 65/62 pair, where the younger
+life is then 119), so the notes' other stop test, ``IF(t) < 1e-6``, is not subsumed:
+model point 8 finishes at ``pols_if(695) = 3.41e-06``. A test pins the figure.
 
 The monthly processing order follows the notes: the COLA increase applies at the start
-of month ``12(y-1)+1`` for ``y >= 2``; mortality is decremented at **end of month**;
+of month ``12(y-1)`` for ``y >= 2``; mortality is decremented at **end of month**;
 the instalment falls at the end of the month on arrears timing (the default) and at the
 start on advance timing, with survival measured at the payment point in both cases; the
 cash-refund lump sum, any commutation and the maintenance expense accrue in the same
@@ -97,20 +100,21 @@ Points 1 and 2 are the two columns of the worked-example table; points 3–6, 10
 are its traces and the pitfall cases; points 7, 8, 9 and 12 project on the shipped
 mortality tables, point 8 being the anchor cell on that basis. Two points exist to hold
 open a case the notes leave under-specified and would otherwise go untested: point 14 is
-**quarterly in advance**, the frequency at which the notes' ``t - 12/m`` survival point
-and their own advance payment schedule disagree, and point 15 is the **certain_only**
-form, where the notes' expense formula ``IF(t) = max(C, l_alive)`` outlives the contract
-that their own prose ends at ``n_eff``. Both divergences are resolved in
+**quarterly in advance**, the frequency at which the notes' ``t + 1 - 12/m`` survival
+point and their own advance payment schedule disagree, and point 15 is the
+**certain_only** form, where the notes' expense formula ``IF(t) = max(C, l_alive(t+1))``
+outlives the contract that their own prose ends in month ``n_eff - 1``. Both divergences
+are resolved in
 :mod:`~.SPIA_US_S.Projection`'s docstring and pinned by tests. A test asserts
 every model point projects.
 
 **Verification.** ``tests/test_immediate_annuity_us.py`` asserts every row and column of
-the notes' worked-example table — both trigger columns at ``t`` = 1, 12, 13, 14, 15, 24
-and 25, to the cent — plus each of the five traces below it: the reversed death on which
+the notes' worked-example table — both trigger columns at ``t`` = 0, 11, 12, 13, 14, 23
+and 24, to the cent — plus each of the five traces below it: the reversed death on which
 the two triggers coincide, the COLA continuing after the survivor reduction, the 10-year
-certain period deferring the reduction to ``t = 121``, the cash-refund lump sum of
-$93,485.00 on a death in month 14, and the derived installment-refund period of 200
-months.
+certain period deferring the reduction to ``t = 120``, the cash-refund lump sum of
+$93,485.00 on a death in the fourteenth month (``t = 13``), and the derived
+installment-refund period of 200 months.
 
 Example:
 

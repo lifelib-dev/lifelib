@@ -46,14 +46,30 @@ the full mapping between the technical notes' symbols and the cells names.
 
 ## Monthly, not annual
 
-Policy month `t` runs 1 … `proj_len()`. `t = 1` is the **issue month** of a
-new-business model point; for an in-force point it is the first projected month,
-sitting `duration_mth_init()` completed months after issue. This is the grid the
-technical notes specify, and it is not a stylistic choice: universal life is defined by
-a monthiversary deduction and a monthly interest credit, and the order of those two
-inside the month changes the answer. Compare `Term_US_A`, where `t` counts **years**,
-because every decrement in that product is on an annual cycle and there is no account
-value requiring monthiversary processing.
+Policy month `t` is 0-based and runs `0 … proj_len() − 1`, `proj_len()` rows. `t = 0`
+is the **issue month** of a new-business model point; for an in-force point it is the
+first projected month, sitting `duration_mth_init()` completed months after issue, so
+`duration_mth(t) = duration_mth_init() + t` and the policy year is the 1-based
+contractual label `policy_year(t) = duration(t) + 1` — derived from `t`, never indexed
+by. This is the grid the technical notes specify, and it is not a stylistic choice:
+universal life is defined by a monthiversary deduction and a monthly interest credit,
+and the order of those two inside the month changes the answer. It is also the grid every
+model in this library runs on — `Term_US_S` and `WholeLife_US_S`, whose contractual
+drivers *are* annual, keep the annual quantities on the anniversary and derive the policy
+year from `t` rather than indexing by it.
+
+`av_pp(t)`, `loan_bal_pp(t)` and `cum_prem_pp(t)` are **closing balances** of month `t`,
+as in `CashValue_SE`: the values at the end of the month. Their opening values — the
+notes' `AV(t−1)`, `L(t−1)`, `CumPrem(t−1)` — are
+`av_pp_at(t, "BEF_PREM")`, `loan_bal_pp_bom(t)` and `cum_prem_pp(t − 1)`, which at
+`t = 0` are the model point's `av_pp_init()`, `loan_bal_init()` and zero. So the
+worked example's `AV(0)` is the closing balance of the issue month, $101.80, and the
+opening balance of the issue month is read through the `"BEF_PREM"` timing; nothing is
+indexed at `t = −1`, and `av_pp` itself has no base case. `sum_assured_at(t)` is not a
+closing balance: it is the face amount in force **during** month `t`, after that month's
+BOM withdrawal reduction — the face that `db_pp(t)`, `net_amt_at_risk(t)` and `units(t)`
+are measured on. `pols_if(t)` is the count in force at the start of month `t`,
+`pols_if(0) = pols_if_init()`.
 
 The processing order inside month `t` is the notes' own:
 
@@ -141,7 +157,7 @@ follows, with no formula change.
 | `coi_rates.csv` | Guaranteed maximum monthly COI per $1,000 NAAR, policy years 1–87, with a `provenance` column marking each row. **Covers the specimen anchor cell M / StdNT / issue age 35 only** — a model point on any other cell needs this table extended first, and a test enforces that every model point is projectable | printed anchor years sourced [S3]; intermediate years log-linearly interpolated **[std]** |
 | `corridor_factors.csv` | GPT corridor factors by attained age, 250% to age 40 grading to 101% above 93 | specimen table [S3] [R2] |
 | `mort_table.csv` | Best-estimate annual mortality by age 18–120, `q(120) = 1.0` | **illustrative [std]**, a Gompertz–Makeham curve — *not* a published table. The notes recommend 2015 VBT; that family is licensed and may not be reproduced here |
-| `class_factor_table.csv` | Rate-class factors for the spec's six classes | **[std]**, matching `Term_US_A` where the classes overlap |
+| `class_factor_table.csv` | Rate-class factors for the spec's six classes | **[std]**, matching `Term_US_S` where the classes overlap |
 | `lapse_table.csv` | Base annual lapse 6% / 5% / 4% / 3% by policy year | **[std]**; shape informed qualitatively by [R7] [REG-R20], whose tables are behind a paid package |
 | `prem_persistency.csv` | Paid/planned factors, 100% falling 2pp a year to a 70% floor | **[std]**; shape from [R7] |
 | `surr_charge_table.csv` | The surrender charge schedule as `(initial per $1,000, runoff years)` | 9-year runoff and monthly amortization sourced [S1] [S2] [S3]; the $9.00 level **[std]** |
@@ -150,6 +166,21 @@ The surrender charge is stored as two parameters rather than a 108-row rate vect
 that the run-off length is a *number the model can read*: `lapse_shock_year()` derives
 the surrender-charge-expiry lapse shock from it instead of hard-coding "year 10", and a
 different schedule moves the shock with it.
+
+### No CSV is keyed by `t`
+
+None of the eight files carries the model's time index, so none moved when the frame
+became 0-based. The time-like columns and how each is read:
+
+| File | Column | Decision |
+|---|---|---|
+| `coi_rates.csv` | `policy_year` (1–87) | A contractual 1-based label, unchanged; `coi_rate_guar(t)` reads it at `policy_year(t) = duration(t) + 1`, clamped to the last row |
+| `lapse_table.csv` | `policy_year` (1–11) | Same: unchanged, read at `policy_year(t)`, clamped |
+| `prem_persistency.csv` | `policy_year` (1–16) | Same: unchanged, read at `policy_year(t)`, clamped |
+| `model_point_table.csv` | `duration_mth` (0, 0, 120) | An elapsed count, already 0-based — the completed months at `t = 0`; unchanged |
+| `corridor_factors.csv`, `mort_table.csv` | `age` | Attained-age keys, reached through `age(t)`; not time columns |
+
+`class_factor_table.csv` and `surr_charge_table.csv` have no time-like column at all.
 
 ## Naming
 
@@ -167,11 +198,11 @@ optional NGE revision rule would need). Eight cases needed care:
 
 | Notes | Cells | Why |
 |---|---|---|
-| `risk_class` | `rate_class` | The name comes from `Term_US_A`/`BasicTerm_S`, which this library follows ahead of the notes where the two collide; it also avoids reading as Python's `class`. The six classes themselves are the product spec's, unchanged |
-| `l(t)` | `pols_if(t)` | The notes' `l(t)` is in force at the **end** of month `t`; `BasicTerm_S`'s `pols_if(t)` is in force at the **start**. So `pols_if(t) = l(t−1)`, and the notes' own "weight premiums by `l(t−1)`" becomes "weight by `pols_if(t)`" |
+| `risk_class` | `rate_class` | The name comes from `Term_US_S`/`BasicTerm_S`, which this library follows ahead of the notes where the two collide; it also avoids reading as Python's `class`. The six classes themselves are the product spec's, unchanged |
+| `l(t)` | `pols_if(t)` | The notes' `l(t)` is the probability in force at the **start** of month `t`, before its decrements, with `l(0) = 1`; `BasicTerm_S`'s `pols_if(t)` is the same start-of-month count. So `pols_if(t) = l(t)`, `pols_if(0) = pols_if_init()`, and the notes' "weight premiums by `l(t)`" is "weight by `pols_if(t)`". Do not read `l(t)` as an end-of-month survivor count |
 | `MD(t)` | `mth_deduction_pp` / `maint_fee_pp` | `CashValue_SE` calls the non-COI part of an account-value deduction `maint_fee`; that name is kept, and `mth_deduction_pp` is the notes' `MD(t)` in full |
 | *(none)* | `maint_fee` vs `expenses` | See below — they are opposite signs and easy to confuse |
-| `t` in `SC(t)` | `duration_mth(t) + 1` | See below — the notes' `t` counts the current month |
+| `(d(t) + 1)/12` in `SC(t)` | `duration_mth(t) + 1` | See below — the surrender-charge run-off counts the current month |
 | `q_coi` | `coi_rate` | Per $1,000 of **NAAR per month**, not per unit of account value as in `CashValue_SE`. It is divided by 1,000 in `coi_pp` |
 | `AV'(t)` | `av_pp_at(t, "BEF_FEE")` **and** `av_pp_db_basis(t)` | The notes write one symbol and use it for two things: the balance the deduction comes out of (signed) and the balance the death benefit is measured on (floored at zero). See the section on the death benefit floor above |
 | "Withdrawal outgo" | `withdrawals(t)` | The notes list it beside death claims and surrender outgo, but a withdrawal is a payment the owner *elects*, not a claim on a contingency. It is its own cells and its own `result_cf()` column, and `"WITHDRAWAL"` is not a `kind` of `claims` — see below |
@@ -228,7 +259,7 @@ and the notes list both among the modelling pitfalls:
 
 `test_pitfall_naar_uses_guaranteed_rate_and_pre_deduction_av` asserts the formula and
 then asserts that each of the two wrong readings moves the answer by more than a dollar
-in month 1, so neither can creep back in unnoticed.
+in the issue month, so neither can creep back in unnoticed.
 
 Measuring the account value before the deduction is also what removes the Option B
 circularity the notes warn about: under Option B the death benefit depends on the
@@ -236,15 +267,16 @@ account value and the net amount at risk depends on the death benefit, but with 
 ordering neither depends on the deduction, so nothing is simultaneous. Model point 2
 exercises it.
 
-## The notes' `t` and `duration_mth(t)` differ by one
+## The surrender-charge run-off counts the current month
 
-The surrender charge amortizes as `SC(t) = max(0, (9.00 − t/12) × U)`, and the notes'
-`t` there **counts the current month**: in the issue month it is 1, giving $8.916667 per
-$1,000, not $9.00. `duration_mth(t)` in this model is *completed* months, following
-`CashValue_SE`, so it is 0 in the issue month. `surr_charge_rate` therefore uses
-`duration_mth(t) + 1`, and says so in its docstring. Reading the notes' `t` as
-`duration_mth(t)` shifts the entire nine-year run-off by a month; the test pins the
-first month, the twelfth, the last non-zero month and the first zero month.
+The surrender charge amortizes as `SC(t) = max(0, (9.00 − (d(t) + 1)/12) × U)`, and the
+month count there **includes the current month**: in the issue month `t = 0` it is 1,
+giving $8.916667 per $1,000, not $9.00. `duration_mth(t)` in this model is *completed*
+months, following `CashValue_SE`, so it is 0 in the issue month. `surr_charge_rate`
+therefore uses `duration_mth(t) + 1`, and says so in its docstring. Using
+`duration_mth(t)` alone shifts the entire nine-year run-off by a month; the test pins
+the issue month (`t = 0`), the last month of policy year 1 (`t = 11`, $8.00), the last
+non-zero month (`t = 106`) and the first zero month (`t = 107`).
 
 ## `surr_charge_pp` is the schedule; `surr_charge` is what is collected
 
@@ -287,9 +319,9 @@ does:
 
 | Model point | Months projected | Months in shortfall | First trigger |
 |---|---|---|---|
-| 1 — anchor, Option A | 1,032 | 0 | — |
-| 2 — Option B | 1,032 | **356** | month 677, policy year 57, attained age 91 |
-| 3 — in force, Option A | 912 | 0 | — |
+| 1 — anchor, Option A | 1,032 (`t = 0 … 1,031`) | 0 | — |
+| 2 — Option B | 1,032 (`t = 0 … 1,031`) | **356** | `t = 676`, policy year 57, attained age 91 |
+| 3 — in force, Option A | 912 (`t = 0 … 911`) | 0 | — |
 
 The anchor cell's $150 a month comfortably covers a $39.54 deduction and the account
 value grows from there, and point 3 opens with $15,000 already in the fund. Point 2 is
@@ -310,9 +342,9 @@ the assertion cannot drift apart again.
 A negative account value has one consequence that must not be allowed through. The notes
 set the Option B death benefit to `F + AV'(t)` (processing order, step 4) and measure the
 net amount at risk against the same `AV'(t)` (step 5), both on the premise that `AV'` is
-a real account balance. For point 2 past month 677 it is not one, and taken literally
+a real account balance. For point 2 past `t = 676` it is not one, and taken literally
 that formula gives a death benefit *below* the face amount, then a negative one:
-`db_pp(747)` was −$1,643.45 and `db_pp(800)` was −$131,817.63 — death claims paid **by**
+`db_pp(746)` was −$1,643.45 and `db_pp(799)` was −$131,817.63 — death claims paid **by**
 the beneficiary. Before this was fixed, 263 rows of `result_cf()` carried negative
 `claims_death`, which netted $2,944.78 off the death claims and inflated `net_cf` by the
 same amount.
@@ -364,7 +396,9 @@ annuity models of this library, where it is not zero.
 What ends the projection instead is mortality. `omega_age` is 120, the last age of
 `mort_table.csv`, where the annual rate is 1.0, and
 `proj_len() = 12 × (omega_age − age_at_entry() + 1) − duration_mth_init()` — 1,032
-policy months for the anchor cell. The charge-cessation rule at age 121 is implemented
+policy months for the anchor cell, `t = 0 … 1,031`, the last of them the last month at
+attained age 120. `proj_len()` is the number of months projected and the exclusive end
+of the frame, not a row of it. The charge-cessation rule at age 121 is implemented
 anyway (`premium_pp`, `coi_pp` and `maint_fee_pp` all return zero from there) so that a
 longer mortality table does not silently keep charging.
 
@@ -423,8 +457,10 @@ modeling pitfalls" list**, the account value and in-force roll-forwards, the mar
 identity, the surrender-charge month index, the year-10 lapse shock, the per-unit
 step-down after year 10, the loan roll-forward, the in-force model point's duration
 offset, the cash-surrender floor, that withdrawals are wired but off, the result table
-shapes, that unknown `timing` and `kind` strings raise, and that every model point in
-the table projects.
+shapes and frame (`t = 0 … proj_len() − 1`, `proj_len()` rows, the worked example in
+rows 0–2), that unknown `timing` and `kind` strings raise, and that every model point in
+the table projects. Every month literal in the test module is a 0-based `t`; policy
+year `y` starts at `t = 12 × (y − 1)`.
 
 Three tests pin the library-wide cash flow conventions: `test_a_withdrawal_is_not_a_claim`
 (on the withdrawing model point, where the amounts are non-zero, so a double count would
@@ -438,7 +474,7 @@ Four more tests exist because a review found the model wrong:
 | Test | What it pins |
 |---|---|
 | `test_death_benefit_never_falls_below_the_face_amount` | `db_pp(t) >= sum_assured_at(t)`, `claim_pp(t, "DEATH") >= 0` and `claims(t, "DEATH") >= 0` for **every** month of **every** model point. Point 2 used to produce a death benefit below the face amount in 355 of its 1,032 months, and negative death claims in 263 rows of `result_cf()` |
-| `test_shortfall_trigger_is_live_on_point_2_and_inert_on_1_and_3` | The shortfall table above, over the whole projection: 0 months for points 1 and 3, 356 contiguous months for point 2 starting at month 677. The old test looked at point 1 only, and only at its first 120 months, while this README claimed the trigger was inert everywhere |
+| `test_shortfall_trigger_is_live_on_point_2_and_inert_on_1_and_3` | The shortfall table above, over the whole projection: 0 months for points 1 and 3, 356 contiguous months for point 2 starting at `t = 676`. The old test looked at point 1 only, and only at its first 120 months, while this README claimed the trigger was inert everywhere |
 | `test_free_withdrawal_allowance_is_annual_not_monthly` | A 10%-of-account-value monthly withdrawal exhausts the policy year's allowance in its first month, cuts the face in every month after that, and gets a fresh allowance at the anniversary. The allowance used to be granted afresh every month, so the face never moved |
 | `test_mec_flag_latches_once_the_seven_pay_test_fails` | `is_mec` stays `True` from the month the 7-pay test fails to the end of the projection. It used to revert to `False` in policy year 8, when the in-year test stops applying — the moment the failure becomes permanent under 7702A |
 

@@ -16,7 +16,7 @@ What the house style is, and why, is written up in ``products/term_life/model.md
 * every Space and every cells carries a docstring, and the ``Projection`` docstring
   carries the mapping from the technical notes' actuarial symbols to the cells names.
 
-``Term_US_A`` also asserts several of these for itself, in more specific form (it names
+``Term_US_S`` also asserts several of these for itself, in more specific form (it names
 its five input files and its own docstring phrases). That overlap is deliberate: the
 checks here are the general contract, the ones there are that model's particulars.
 
@@ -137,7 +137,7 @@ def test_the_model_name_matches_its_folder(name, model):
     """The registry name, the folder on disk and the model's own ``_name`` agree.
 
     The name is the product's market short name, a country tag and a grid tag —
-    ``MYGA_US_S``, ``Term_US_A`` — rather than anything derivable from the folder slug,
+    ``MYGA_US_S``, ``Term_US_S`` — rather than anything derivable from the folder slug,
     because ``registered-index-linked-annuity`` spelled out is unusable and the industry
     already calls it a RILA. So the pairing lives in :data:`conftest.MODELS` and is
     asserted here instead of being recomputed.
@@ -329,7 +329,7 @@ RETIRED_NAMES = {
     "lapse_rate_ann": "lapse_rate (annual), with lapse_rate_mth for the monthly rate",
     "free_wd_used_pp": "wd_free_pp, the fixed-deferred-annuity chassis name",
     "free_wd_taken_pp": "wd_free_pp",
-    "prem_net_pp": "prem_to_av_pp (prem_net_pp collided with WholeLife_US_A.premium_net_pp)",
+    "prem_net_pp": "prem_to_av_pp (prem_net_pp collided with WholeLife_US_S.premium_net_pp)",
     "mort_a_e_factor": "mort_ae_factor",
     "ae_factor": "mort_ae_factor",
     "omega": "omega_age",
@@ -359,8 +359,8 @@ def test_lapse_rate_is_the_annual_rate(name, model):
         pytest.skip(f"{name} has no monthly lapse rate")
     assert "lapse_rate" in cells, "lapse_rate_mth exists without an annual lapse_rate"
     proj = model.Projection[list(model.Data.model_point_table().index)[0]]
-    for t in (1, 13, 25):
-        if t <= proj.proj_len():
+    for t in (0, 12, 24):
+        if t < proj.proj_len():
             ann, mth = proj.lapse_rate(t), proj.lapse_rate_mth(t)
             if ann > 0:
                 assert mth < ann, f"t={t}: monthly {mth} not below annual {ann}"
@@ -407,13 +407,18 @@ def test_net_cf_is_income_positive(model):
 #
 # Twelve product modules each ran their own ``test_every_model_point_projects`` over their
 # own instance of the same model. Most of what they asserted is said generically below —
-# the frame is non-empty, indexed by ``t``, free of NaN, and every ``check_*`` closes — and
-# a second sweep to re-assert it cost a full cold projection of every model point. These
-# seven are the residue: a payout annuity's outgo sign, a GLWB's phase vocabulary, the row
-# count each product's grid implies. They are keyed by model name and called with the
+# the frame is non-empty, indexed by ``t``, runs contiguously from its first row to
+# ``proj_len() - 1``, is free of NaN, and every ``check_*`` closes — and a second sweep to
+# re-assert it cost a full cold projection of every model point. These four are the
+# residue: a payout annuity's outgo sign, a GLWB's phase vocabulary, a DIA's income actually
+# starting, a VA's two per-``t`` residuals. They are keyed by model name and called with the
 # ItemSpace and the frame the sweep has already computed, so the product fact survives
-# without a second sweep to carry it. There is no generic form available: ``proj_len()``
-# does not mean the same thing across products, let alone across libraries.
+# without a second sweep to carry it.
+#
+# The row count used to sit here too, one helper per product, because ``proj_len()`` once
+# meant different things in different models. It no longer does: the time index ``t`` is
+# 0-based and ``proj_len()`` is the number of periods from ``t = 0``, the exclusive end of
+# the frame, in every model — so the row count is asserted generically in the sweep.
 
 
 def _dia_pays_an_income(proj, df):
@@ -426,7 +431,7 @@ def _dia_pays_an_income(proj, df):
 
 
 def _fia_phase_is_one_of_four(proj, df):
-    """FIA_US_S: every projected period sits in one of the four GLWB phases."""
+    """FIA_US_S: every projected month sits in one of the four GLWB phases."""
     assert proj.result_glwb()["phase"].isin(
         ["ACCUM", "INCOME", "DEPLETED", "TERMINATED"]).all()
 
@@ -440,25 +445,16 @@ def _spia_liability_is_outgo(proj, df):
     assert df["liability_cf"].min() >= 0.0
 
 
-def _rows_span_the_grid(proj, df):
-    """The frame runs t = 0 to proj_len() inclusive."""
-    assert len(df) == proj.proj_len() + 1
-
-
-def _rows_span_from_proj_start(proj, df):
-    """WholeLife_US_A opens at proj_start() rather than at t = 0."""
-    assert len(df) == proj.proj_len() - proj.proj_start() + 1
-
-
-def _va_grid_and_residuals(proj, df):
-    """VA_US_S: the grid, and both roll-forward residuals at four sampled months.
+def _va_residuals(proj, df):
+    """VA_US_S: both roll-forward residuals at four sampled months.
 
     The ``_resid`` cells are deliberately outside the generic ``check_*`` discovery below —
     they take a ``t`` and return a float rather than a bool — so nothing else calls them.
+    The months are the first period, two anniversaries and the last month of a 25-year
+    frame, each guarded so a shorter model point samples what it has.
     """
-    assert len(df) == proj.proj_len() + 1
-    for t in (1, 61, 121, 300):
-        if t <= proj.proj_len():
+    for t in (0, 60, 120, 299):
+        if t < proj.proj_len():
             assert proj.check_pols_roll_fwd_resid(t) == pytest.approx(0.0, abs=1e-12)
             assert proj.check_av_roll_fwd_resid(t) == pytest.approx(0.0, abs=1e-6)
 
@@ -466,11 +462,8 @@ def _va_grid_and_residuals(proj, df):
 EXTRA_POINT_ASSERTIONS = {
     "DIA_US_S": _dia_pays_an_income,
     "FIA_US_S": _fia_phase_is_one_of_four,
-    "MYGA_US_S": _rows_span_the_grid,
-    "RILA_US_S": _rows_span_the_grid,
     "SPIA_US_S": _spia_liability_is_outgo,
-    "VA_US_S": _va_grid_and_residuals,
-    "WholeLife_US_A": _rows_span_from_proj_start,
+    "VA_US_S": _va_residuals,
 }
 
 
@@ -506,6 +499,20 @@ def test_every_model_point_projects(name, model):
 
     Running the checks on every point rather than on the first found the one place in the
     library where a check does not close: :data:`CHECK_EXEMPTIONS` records it and why.
+
+    The frame itself is asserted here for every point, because it is the same in every
+    model. The time index ``t`` is 0-based: ``t = 0`` is the first period of a policy
+    projected from issue (the issue year on an annual grid, the issue month on a monthly
+    one), period ``t`` runs from time ``t`` to time ``t + 1``, and the attained age is
+    ``age_at_entry + t`` on an annual grid (``age_at_entry + duration(t)``,
+    ``duration(t) = t // 12``, on a monthly one). ``proj_len()`` is the number of
+    periods from ``t = 0``, i.e. the exclusive end of the frame: ``result_cf()`` covers
+    ``t = t_first, ..., proj_len() - 1``, where ``t_first`` is 0 for a point projected
+    from issue and the elapsed periods for an in-force point (``WholeLife_US_S``'s
+    ``proj_start()``). This is lifelib's own convention (``basiclife/BasicTerm_S``,
+    ``savings/CashValue_SE``: ``for t in range(proj_len())``). A contractual policy year
+    is the 1-based label ``t + 1`` (``duration(t) + 1`` on a monthly grid) and is
+    derived, never indexed by.
     """
     checks = [c for c in model.Projection.cells
               if c.startswith("check_") and not c.endswith("_resid")]
@@ -517,6 +524,14 @@ def test_every_model_point_projects(name, model):
         df = proj.result_cf()
         assert len(df) > 0, f"{model.name}: model point {point_id} projects nothing"
         assert df.index.name == "t", f"{model.name}: result_cf is not indexed by t"
+        t_first = df.index[0]
+        assert t_first >= 0, f"{model.name}: point {point_id} opens at t = {t_first} < 0"
+        assert list(df.index) == list(range(t_first, proj.proj_len())), (
+            f"{model.name}: point {point_id} does not run contiguously from "
+            f"t = {t_first} to proj_len() - 1 = {proj.proj_len() - 1}")
+        assert df.index[-1] == proj.proj_len() - 1, (
+            f"{model.name}: point {point_id} ends at t = {df.index[-1]}, "
+            f"not proj_len() - 1 = {proj.proj_len() - 1}")
         assert df.notna().all().all(), f"{model.name}: NaN in point {point_id} cash flows"
         assert math.isfinite(df["net_cf"].sum()), (
             f"{model.name}: point {point_id} has an infinite net_cf")

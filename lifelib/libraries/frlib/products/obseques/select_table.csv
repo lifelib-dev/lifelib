@@ -1,0 +1,5 @@
+policy_year,select_factor,provenance
+1,1.6,"[std] guaranteed-acceptance select uplift, no public calibration"
+2,1.3,"[std] guaranteed-acceptance select uplift, no public calibration"
+3,1.15,"[std] guaranteed-acceptance select uplift, no public calibration"
+4,1.0,[std] ultimate; applies to policy year 4 onwards

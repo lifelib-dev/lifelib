@@ -1,4 +1,4 @@
-"""Golden and structural tests for Annuity_JP_A.
+"""Golden and structural tests for Annuity_JP_S.
 
 The golden values are the worked example in
 ``products/individual_annuity/technical-notes.md`` ("Worked example"), which projects the
@@ -10,6 +10,28 @@ than pickled so that a reviewer can compare them against the notes by eye.
 
 Tolerances follow the precision the notes display: money to the yen-cent, in-force and
 survivorship to eight decimals, the fund to six.
+
+**Three clocks.**  The projection index ``t`` is 0-based and counts **policy months**:
+``t = 0`` is the first policy month, month ``t`` runs from time ``t`` to time ``t + 1``,
+``age(t) = x + t // 12`` and ``pols_if(0) = 1``.  ``proj_len()`` is the *number* of
+projected months and the exclusive end of the frame, so ``result_cf()`` covers
+``t = 0 ... proj_len() - 1`` in ``proj_len()`` rows — **540** on the anchor cell, forty-five
+policy years of twelve.  The 年金支払開始日 is the month ``annuitisation_t()`` = 420.
+
+Beside it runs the **anniversary index ``s``, in years**: ``av_pp``, ``db_pp``, ``cv_pp``,
+``surr_charge_pp``, ``loan_pp``, ``apl_bal`` and ``div_acc_pp`` are time-point values at
+anniversary ``s``, and **every literal for them in this module is unchanged from the annual
+model** — the conversion moved the projection index and left the contractual construction
+alone.  A value read between anniversaries uses a third index, the **elapsed month ``u``**,
+through ``av_at_m``, ``db_at_m``, ``surr_charge_at_m`` and ``cv_at_m``; the claims of month
+``t`` are struck on their ``t + 1`` reading.  ``db_at_m`` is not an interpolation but the
+contract's own 月払保険料 x 経過月数 clause, which the annual grid could only sample at
+anniversaries.
+
+That the conversion preserved the annual model is asserted rather than assumed: mortality
+and 解約・失効 convert on the effective convention ``r_m = 1 - (1 - r)^(1/12)``, so twelve
+months compound back to the annual rate exactly, ``pols_if(12 j)`` reproduces the annual
+model's ``pols_if(j)``, and every ``*_at_m(12 s)`` returns its anniversary cells exactly.
 
 This product is the library's **payout chassis**, and it is really two contracts joined at
 one date, so the module carries far more than a cash-flow comparison.  Every product fact
@@ -52,7 +74,7 @@ from modelx.core.errors import FormulaError
 
 from jp_registry import model_path
 
-MODEL_DIR = model_path("Annuity_JP_A")
+MODEL_DIR = model_path("Annuity_JP_S")
 
 YEN = 0.005           # money displayed to 2 d.p.
 FUND = 5e-7           # the 保険料積立金, displayed to 6 d.p.
@@ -124,24 +146,29 @@ ANNUITY_RATIO = 1.181667                      # 年金受取率 = k B / Pm
 SPECIMEN_ANNUITY_AMOUNT = 638_300.0
 SPECIMEN_FUND = 6_260_000.0
 
-# "Deferral phase, first four years", per policy issued, income-positive.
-# ``expenses`` is acquisition plus maintenance only; the claim expense is its own column,
-# as it is in result_cf().
+# "Deferral phase, the first thirteen months", per policy issued, income-positive.
+# ``expenses`` is acquisition plus a twelfth of the annual maintenance charge; the claim
+# expense is its own column, as it is in result_cf().  The 年払 premium and the renewal
+# commission that follows it are non-zero in one month out of twelve.
 # t: (pols_if, lives_if, premiums, claims_death, claims_lapse, expenses, claim_expenses,
 #     commissions, net_cf)
 DEFERRAL_ROWS = {
-    0: (1.00000000, 1.00000000, 180_000.00, 104.04,   478.29, 34_000.00, 2.89,
-        72_000.00, 73_414.78),
-    1: (0.93945668, 0.99942200, 169_102.20, 198.36,  9_278.56,  3_795.40, 2.75,
-        3_382.04, 152_445.08),
-    2: (0.89196040, 0.99883584, 160_552.87, 286.59, 15_605.61,  3_639.56, 2.65,
-        3_211.06, 137_807.41),
-    3: (0.85131535, 0.99824153, 153_236.76, 375.12, 19_811.26,  3_508.44, 2.61,
-        3_064.74, 126_474.60),
+    0:  (1.00000000, 1.00000000, 180_000.00, 0.72,  0.00, 30_333.33, 0.24,
+         72_000.00, 77_665.70),
+    1:  (0.99480906, 0.99995182,       0.00, 1.44,  0.00,    331.60, 0.24,
+         0.00,          -333.28),
+    2:  (0.98964506, 0.99990364,       0.00, 2.15,  0.00,    329.88, 0.24,
+         0.00,          -332.27),
+    11: (0.94435879, 0.99947015,       0.00, 8.19, 38.74,    314.79, 0.23,
+         0.00,          -361.94),
+    12: (0.93945668, 0.99942200, 169_102.20, 8.96, 95.29,    316.28, 0.23,
+         3_382.04,   165_299.40),
 }
 
-# "Fund, benefit and surrender value at the same durations, plus the crossover".
-# t: (av_pp, surr_charge_pp, db_pp, cv_pp)
+# "Fund, benefit and surrender value: the anniversaries".  Keyed by the ANNIVERSARY s, in
+# years, and every literal here is unchanged from the annual model — the 保険料積立金 is a
+# net-level-premium recursion defined at the 年単位の契約応当日 and it stayed there.
+# s: (av_pp, surr_charge_pp, db_pp, cv_pp)
 FUND_ROWS = {
     0:  (0.000000,        180_000.0,        0.0,       0.000000),
     1:  (169_976.183805,  162_000.0,  180_000.0,   7_976.183805),
@@ -153,23 +180,48 @@ FUND_ROWS = {
     35: (6_261_482.075674,      0.0, 5_400_000.0,         0.000000),
 }
 
-# "The annuitisation transition and the payout phase".
+# "... and the months that changed the answer": the same four read at an ELAPSED MONTH u.
+# db_at_m is the contract's own 月払保険料 x 経過月数 — 15,000 yen a month on this cell — and
+# not an interpolation of the annual schedule.
+# u: (av_at_m, surr_charge_at_m, db_at_m, cv_at_m)
+FUND_AT_M_ROWS = {
+    1:   (14_164.681984,     178_500.0,    15_000.0,          0.000000),
+    6:   (84_988.091902,     171_000.0,    90_000.0,          0.000000),
+    11:  (155_811.501821,    163_500.0,   165_000.0,          0.000000),
+    12:  (169_976.183805,    162_000.0,   180_000.0,      7_976.183805),
+    148: (2_219_406.294313,        0.0, 2_220_000.0, 2_219_406.294313),
+    149: (2_235_368.664682,        0.0, 2_235_000.0, 2_235_000.000000),
+    156: (2_347_105.257270,        0.0, 2_340_000.0, 2_340_000.000000),
+    408: (6_191_563.274447,        0.0, 5_400_000.0, 5_400_000.000000),
+}
+CROSSOVER_MONTH = 149        # the elapsed month at which V first exceeds DB
+
+# "The annuitisation transition and the payout phase", by MONTH.  The last premium falls
+# at t = 348 and the first instalment at t = 420; the eleven months after each instalment
+# carry maintenance expense and nothing else.
 # t: (pols_if, lives_if, premiums, claims_annuity, claims_death, claims_lapse, expenses,
 #     claim_expenses, net_cf)
 PAYOUT_ROWS = {
-    29: (0.34079080, 0.94857451, 61_342.34,       0.00, 9_354.09, 54_927.49, 1_819.15,
-         8.66, -5_993.89),
-    30: (0.32888680, 0.94375291,      0.00,       0.00, 9_857.63, 17_661.31, 1_773.16,
-         9.13, -29_301.22),
-    34: (0.30795821, 0.91994710,      0.00,       0.00, 13_131.68,     0.00, 1_727.74,
-         12.16, -14_871.58),
-    35: (0.30552641, 0.91268274,      0.00, 194_956.41,      0.00,      0.00,   865.62,
-         0.00, -195_822.02),
-    36: (0.30552641, 0.90303627,      0.00, 194_956.41,      0.00,      0.00,   874.28,
-         0.00, -195_830.68),
-    44: (0.30552641, 0.79624594,      0.00, 194_956.41,      0.00,      0.00,   946.71,
-         0.00, -195_903.12),
+    347: (0.34178987, 0.94894365,      0.00,       0.00, 694.03, 4_521.13, 150.53,
+          0.66,   -5_366.36),
+    348: (0.34079080, 0.94857451, 61_342.34,       0.00, 757.46, 4_520.71, 151.60,
+          0.72,   54_685.01),
+    359: (0.32986272, 0.94415377,      0.00,       0.00, 756.28, 4_513.66, 146.73,
+          0.70,   -5_417.37),
+    419: (0.30572833, 0.91328591,      0.00,       0.00, 1_090.33,   0.00, 142.94,
+          1.01,   -1_234.28),
+    420: (0.30552641, 0.91268274,      0.00, 194_956.41,     0.00,   0.00,  72.13,
+          0.00, -195_028.54),
+    421: (0.30552641, 0.91187495,      0.00,       0.00,     0.00,   0.00,  72.13,
+          0.00,      -72.13),
+    431: (0.30552641, 0.90383623,      0.00,       0.00,     0.00,   0.00,  72.13,
+          0.00,      -72.13),
+    432: (0.30552641, 0.90303627,      0.00, 194_956.41,     0.00,   0.00,  72.86,
+          0.00, -195_029.26),
+    539: (0.30552641, 0.77995430,      0.00,       0.00,     0.00,   0.00,  78.89,
+          0.00,      -78.89),
 }
+RENEWAL_COMMISSION_348 = 1_226.85     # the last renewal commission, at t = 348
 
 # The notes' trace, year by year.  Base table rates first, then the best-estimate rates
 # the two factors produce from them, then the decrements.
@@ -177,15 +229,21 @@ Q_BASE_0 = 0.00068          # 死亡保険用 table at age 30 - a sourced anchor
 Q_BASE_1 = 0.00069          # ... at age 31 - also a sourced anchor
 Q_BASE_34 = 0.00929         # ... at age 64, log-linear between the anchors at 60 and 65
 Q_BASE_35 = 0.00960851      # 年金開始後用 table at age 65, the first payout year
-Q_0 = 0.000578              # 0.85 x Q_BASE_0
+Q_0 = 0.000578              # 0.85 x Q_BASE_0, per ANNUM
 Q_1 = 0.0005865
 Q_34 = 0.0078965
 Q_35 = 0.0105693625         # 1.10 x Q_BASE_35 - the factor points the other way
-DEATHS_0 = 0.000578
-DEATHS_1 = 0.0005509913
-DEATHS_34 = 0.0024317920
-LAPSES_0 = 0.05996532
-LAPSES_1 = 0.0469452844
+# ... and the same four converted to the month, 1 - (1 - q)^(1/12), which is what the
+# in-force recursion actually applies.
+QM_0 = 0.0000481794
+QM_1 = 0.0000488881
+QM_34 = 0.0006604354
+QM_35 = 0.0008850760
+WM_0 = 0.0051430128         # 1 - (1 - 0.06)^(1/12)
+DEATHS_0 = 0.0000481794     # D(0) = l(0) q_m(0)
+DEATHS_1 = 0.0000479293
+DEATHS_419 = 0.0002019138
+LAPSES_0 = 0.0051427650
 
 # "Key sensitivities", items 4 and 7, and the totals at the foot of the worked example.
 FUND_AT_29 = 5_699_454.498584          # av_pp(29)
@@ -194,11 +252,12 @@ FUND_KEPT_AT_29 = 479_454.498584       # av_pp(29) - cv_pp(29)
 FUND_WITHOUT_DEFERRAL_GAP = 5_929_599.05   # F if d were 0 instead of 5
 DEFERRAL_GAP_UPLIFT = 0.0560
 FUND_EXCESS_AT_34 = 791_563.274447     # av_pp(34) - db_pp(34)
-UNDISCOUNTED_TOTAL = -516_539.46
-DISCOUNTED_AT_1PCT = 41_625.62
-FIRST_NEGATIVE_YEAR = 27
+UNDISCOUNTED_TOTAL = -461_523.46
+DISCOUNTED_AT_1PCT = 96_786.79      # sum CF(t) / 1.01 ** (t / 12), the monthly frame
+FIRST_NEGATIVE_YEAR = 28            # 0-based: the twelve-month block of policy year 29
 
-# "Known modeling pitfalls": the lapse curve's two weightings, both over t = 0 .. n - 1.
+# "Known modeling pitfalls": the lapse curve's two weightings, both read at the
+# anniversaries of the deferral phase, s = 0 .. n_y - 1.
 LAPSE_MEAN_COUNT = 0.034160
 LAPSE_MEAN_FUND = 0.024754
 LAPSE_PUBLISHED = 0.034               # market-wide FY2024, measured on 契約高 [R15]
@@ -243,7 +302,8 @@ def test_worked_example_annuitisation_quantities(jp_annuity_anchor):
     the notes, so every one of them is asserted rather than inferred from the last.
     """
     a = jp_annuity_anchor
-    assert a.annuitisation_t() == 35
+    assert a.annuitisation_y() == 35
+    assert a.annuitisation_t() == 420          # the MONTH the 年金支払開始日 falls in
     assert a.annuity_fund_pp() == pytest.approx(FUND_AT_ANNUITISATION, abs=FUND)
     assert a.annuity_fund_pp() / CUMULATIVE_PREMIUMS == pytest.approx(
         LUMP_SUM_RATIO, abs=5e-7)
@@ -292,7 +352,12 @@ def test_the_loading_calibration_reproduces_the_published_specimen(jp_annuity_an
 
 @pytest.mark.parametrize("t", sorted(DEFERRAL_ROWS))
 def test_worked_example_deferral_row(jp_annuity_anchor, t):
-    """Every cell of the notes' first four deferral years, to the displayed precision."""
+    """Every cell of the notes' first thirteen deferral months, to the displayed precision.
+
+    ``t`` = 11 and ``t`` = 12 are the pair worth reading together: the twelfth month of a
+    年払 contract collects nothing and the thirteenth collects a whole premium, which is the
+    sawtooth the annual grid could not draw.
+    """
     pols, lives, prem, death, lapse, exp, claim_exp, comm, net = DEFERRAL_ROWS[t]
     a = jp_annuity_anchor
     assert a.pols_if(t) == pytest.approx(pols, abs=INFORCE)
@@ -307,29 +372,97 @@ def test_worked_example_deferral_row(jp_annuity_anchor, t):
     assert a.net_cf(t) == pytest.approx(net, abs=YEN)
 
 
-@pytest.mark.parametrize("t", sorted(FUND_ROWS))
-def test_worked_example_fund_row(jp_annuity_anchor, t):
-    """The 保険料積立金, the 解約控除, the 死亡給付金 and the 解約返戻金 at the notes' durations.
+@pytest.mark.parametrize("s", sorted(FUND_ROWS))
+def test_worked_example_fund_row(jp_annuity_anchor, s):
+    """The 保険料積立金, the 解約控除, the 死亡給付金 and the 解約返戻金 at the notes' anniversaries.
 
     Four quantities that are routinely collapsed into one "policy value" and are not one:
     the fund accumulates past the death benefit, the surrender charge runs off over ten
     years, the death benefit is a function of premiums paid, and the surrender value is
     the fund net of the charge and capped at the death benefit.
+
+    Indexed by the anniversary ``s``, in **years**, not by the projection's month: these
+    are the contractual construction, and every literal here is what the annual model
+    produced.
     """
-    av, sc, db, cv = FUND_ROWS[t]
+    av, sc, db, cv = FUND_ROWS[s]
     a = jp_annuity_anchor
-    assert a.av_pp(t) == pytest.approx(av, abs=FUND)
-    assert a.surr_charge_pp(t) == pytest.approx(sc, abs=YEN)
-    assert a.db_pp(t) == pytest.approx(db, abs=YEN)
-    assert a.cv_pp(t) == pytest.approx(cv, abs=FUND)
+    assert a.av_pp(s) == pytest.approx(av, abs=FUND)
+    assert a.surr_charge_pp(s) == pytest.approx(sc, abs=YEN)
+    assert a.db_pp(s) == pytest.approx(db, abs=YEN)
+    assert a.cv_pp(s) == pytest.approx(cv, abs=FUND)
+
+
+@pytest.mark.parametrize("u", sorted(FUND_AT_M_ROWS))
+def test_worked_example_fund_row_at_an_elapsed_month(jp_annuity_anchor, u):
+    """The same four read at an elapsed month, which is what a benefit between
+    anniversaries is actually paid on.
+
+    ``db_at_m`` is the contract's own 月払保険料 x 経過月数 [S2] [S4] — JPY 15,000 for every
+    elapsed month on this cell — and not an interpolation of the annual schedule, which is
+    all the annual grid could carry.  ``av_at_m`` is a declared linear interpolation
+    **[std]**, because the 算出方法書 that would give the real within-year rule is unpublished
+    [REG-R2].
+    """
+    av, sc, db, cv = FUND_AT_M_ROWS[u]
+    a = jp_annuity_anchor
+    assert a.av_at_m(u) == pytest.approx(av, abs=FUND)
+    assert a.surr_charge_at_m(u) == pytest.approx(sc, abs=YEN)
+    assert a.db_at_m(u) == pytest.approx(db, abs=YEN)
+    assert a.cv_at_m(u) == pytest.approx(cv, abs=FUND)
+    assert a.db_at_m(u) == pytest.approx(15_000.0 * min(u, 360), abs=YEN)
+
+
+def test_the_elapsed_month_readings_agree_with_the_anniversaries(jp_annuity_anchor):
+    """Every ``*_at_m(12 s)`` returns its anniversary cells exactly.
+
+    That is what makes the monthly grid agree with the annual one wherever both are
+    defined, and it is why the 年金原資, the 基本年金額 and the published calibration did not
+    move when the projection index became a month.
+    """
+    a = jp_annuity_anchor
+    for s in range(a.annuitisation_y() + 1):
+        assert a.av_at_m(12 * s) == pytest.approx(a.av_pp(s), abs=1e-9)
+        assert a.db_at_m(12 * s) == pytest.approx(a.db_pp(s), abs=1e-9)
+        assert a.surr_charge_at_m(12 * s) == pytest.approx(a.surr_charge_pp(s), abs=1e-9)
+        assert a.cv_at_m(12 * s) == pytest.approx(a.cv_pp(s), abs=1e-9)
+
+
+def test_the_conversion_preserves_anniversary_survivorship(individual_annuity):
+    """(1 - r_m)^12 = 1 - r, so twelve months compound back to the annual rate exactly.
+
+    This is the hook the whole conversion hangs on: mortality and 解約・失効 are quoted per
+    annum in the input tables and applied per month on the effective convention, so the
+    in-force ladder at the anniversaries is the one the annual model produced and every
+    anniversary reading of the contractual construction is unchanged.
+    """
+    for point_id in individual_annuity.Data.model_point_table().index:
+        a = individual_annuity.Projection[point_id]
+        for t in range(0, a.proj_len(), 12):
+            assert (1.0 - a.mort_rate_mth(t)) ** 12 == pytest.approx(
+                1.0 - a.mort_rate(t), rel=1e-13)
+            if a.lapse_rate(t) > 0.0:
+                assert (1.0 - a.lapse_rate_mth(t)) ** 12 == pytest.approx(
+                    1.0 - a.lapse_rate(t), rel=1e-13)
+
+    # Twelve months of the deferral recursion reproduce one year of the annual one.
+    a = individual_annuity.Projection[1]
+    l = 1.0
+    for s in range(a.annuitisation_y()):
+        assert a.pols_if(12 * s) == pytest.approx(l, abs=5e-9)
+        l = l * (1.0 - a.mort_rate(12 * s)) * (1.0 - a.lapse_rate(12 * s))
+    assert a.pols_if(a.annuitisation_t()) == pytest.approx(l, abs=5e-9)
 
 
 @pytest.mark.parametrize("t", sorted(PAYOUT_ROWS))
 def test_worked_example_payout_row(jp_annuity_anchor, t):
-    """The transition year, the last deferral year and the payout rows.
+    """The last premium month, the last deferral month and the payout rows.
 
-    The five-year 据置期間 shows here as three years of no premium and a 1% lapse rate before
-    the annuity starts, which is the part of the shape a single-term model cannot express.
+    The five-year 据置期間 shows here as sixty months of no premium and a 1% annual lapse
+    rate before the annuity starts, which is the part of the shape a single-term model
+    cannot express; and the payout phase shows as one large month followed by eleven
+    carrying maintenance expense and nothing else, which is the part the annual grid could
+    not draw.
     """
     pols, lives, prem, annuity, death, lapse, exp, claim_exp, net = PAYOUT_ROWS[t]
     a = jp_annuity_anchor
@@ -344,51 +477,84 @@ def test_worked_example_payout_row(jp_annuity_anchor, t):
     assert a.net_cf(t) == pytest.approx(net, abs=YEN)
 
 
-def test_worked_example_year_zero_trace(jp_annuity_anchor):
-    """The notes' year-zero trace, line by line.
+def test_worked_example_first_month_trace(jp_annuity_anchor):
+    """The notes' first-month trace, line by line.
 
-    q(0) = 0.85 x 0.00068; D(0) = l(0) q(0); DB(1) = rho P min(1, m) = 180,000;
-    W(0) = l(0)(1 - q(0)) w(0), death before lapse; V(1) from the fund recursion;
-    CV(1) = V(1) - SC(1) under the death-benefit cap; expenses = E0 + e(0), with the claim
-    expense ec D(0) beside it in its own cells; commission = c0 P.
+    q(0) = 0.85 x 0.00068 is the **annual** rate and q_m(0) the decrement actually
+    applied; D(0) = l(0) q_m(0); DB(1) = rho (P/12) min(1, 12m) = 15,000 — one 月払保険料
+    for one 経過月, the contract's own clause; W(0) = l(0)(1 - q_m(0)) w_m(0), death before
+    lapse; expenses = E0 + e(0) with e(0) a twelfth of the annual charge; commission
+    = c0 P, the whole 年払 premium falling in this one month.
+
+    **The surrender benefit is nil**, and that is the product rather than a rounding: the
+    interpolated fund is JPY 14,164.68 against a 解約控除 of JPY 178,500, so ``cv_at_m(1)``
+    floors at zero.  The annual grid could report only CV(1) = JPY 7,976.18 at the first
+    anniversary and say nothing about the eleven months before it.
     """
     a = jp_annuity_anchor
     assert a.mort_rate_base(0) == pytest.approx(Q_BASE_0, abs=RATE)
     assert a.mort_rate(0) == pytest.approx(Q_0, abs=RATE)
+    assert a.mort_rate_mth(0) == pytest.approx(QM_0, abs=RATE)
     assert a.lapse_rate(0) == 0.06
+    assert a.lapse_rate_mth(0) == pytest.approx(WM_0, abs=RATE)
     assert a.premiums(0) == pytest.approx(180_000.00, abs=YEN)
     assert a.pols_death(0) == pytest.approx(DEATHS_0, abs=INFORCE)
-    assert a.db_pp(1) == 180_000.0
-    assert a.claims(0, "DEATH") == pytest.approx(180_000.0 * DEATHS_0, abs=YEN)
+    assert a.db_at_m(1) == 15_000.0
+    assert a.claims(0, "DEATH") == pytest.approx(15_000.0 * DEATHS_0, abs=YEN)
     assert a.claim_expenses(0) == pytest.approx(5_000 * DEATHS_0, abs=YEN)
     assert a.pols_lapse(0) == pytest.approx(LAPSES_0, abs=INFORCE)
-    assert a.av_pp(1) == pytest.approx(169_976.183805, abs=FUND)
-    assert a.surr_charge_pp(1) == 162_000.0
-    assert a.cv_pp(1) == pytest.approx(7_976.183805, abs=FUND)
-    assert a.claims(0, "LAPSE") == pytest.approx(478.29, abs=YEN)
-    assert a.expenses(0) == pytest.approx(30_000 + 4_000, abs=YEN)
+    assert a.av_at_m(1) == pytest.approx(14_164.681984, abs=FUND)
+    assert a.surr_charge_at_m(1) == pytest.approx(178_500.0, abs=YEN)
+    assert a.cv_at_m(1) == 0.0
+    assert a.claims(0, "LAPSE") == 0.0
+    assert a.cv_pp(1) == pytest.approx(7_976.183805, abs=FUND)   # at the anniversary
+    assert min(u for u in range(1, 13) if a.cv_at_m(u) > 0.0) == 12
+    assert a.expenses(0) == pytest.approx(30_000 + 4_000 / 12, abs=YEN)
     assert a.commissions(0) == pytest.approx(0.40 * 180_000, abs=YEN)
-    assert a.net_cf(0) == pytest.approx(
-        180_000.00 - 104.04 - 478.29 - 34_000.00 - 2.89 - 72_000.00, abs=YEN)
-    assert a.pols_if(1) == pytest.approx(1.0 * (1 - Q_0) * (1 - 0.06), abs=INFORCE)
-    assert a.lives_if(1) == pytest.approx(1.0 * (1 - Q_0), abs=INFORCE)
+    assert a.net_cf(0) == pytest.approx(77_665.70, abs=YEN)
+    assert a.pols_if(1) == pytest.approx(1.0 * (1 - QM_0) * (1 - WM_0), abs=INFORCE)
+    assert a.lives_if(1) == pytest.approx(1.0 * (1 - QM_0), abs=INFORCE)
 
 
-def test_worked_example_year_one_trace(jp_annuity_anchor):
-    """The notes' year-one trace, including the second step of the fund recursion.
+def test_worked_example_second_month_trace(jp_annuity_anchor):
+    """The notes' second-month trace: no premium, no commission, twice the death benefit.
 
-    V(2) = [(V(1) + NP(1)) (1 + i_d) - q'(31) DB(2)] / (1 - q'(31)), where q' is the
-    予定死亡率 at 100% of the table and **not** the best-estimate rate that decrements the
-    in-force.
+    The second month of a 年払 contract collects nothing, and the rates do not move because
+    neither the attained age nor the policy year has changed.  What does move is the death
+    benefit, which is JPY 30,000 — two months' premium — against JPY 15,000 a month
+    earlier: the monthly clause showing through where the annual grid had one figure for
+    the whole policy year.
     """
     a = jp_annuity_anchor
-    assert a.mort_rate_base(1) == pytest.approx(Q_BASE_1, abs=RATE)
-    assert a.mort_rate(1) == pytest.approx(Q_1, abs=RATE)
-    assert a.lapse_rate(1) == 0.05
-    assert a.premiums(1) == pytest.approx(169_102.20, abs=YEN)
+    assert a.premiums(1) == 0.0
+    assert a.commissions(1) == 0.0
+    assert a.mort_rate(1) == pytest.approx(Q_0, abs=RATE)      # same policy year
+    assert a.mort_rate_mth(1) == pytest.approx(QM_0, abs=RATE)
     assert a.pols_death(1) == pytest.approx(DEATHS_1, abs=INFORCE)
-    assert a.db_pp(2) == 360_000.0
-    assert a.pols_lapse(1) == pytest.approx(LAPSES_1, abs=INFORCE)
+    assert a.db_at_m(2) == 30_000.0
+    assert a.claims(1, "DEATH") == pytest.approx(30_000.0 * DEATHS_1, abs=YEN)
+    assert a.claims(1, "LAPSE") == 0.0
+    assert a.expenses(1) == pytest.approx(4_000 / 12 * a.pols_if(1), abs=YEN)
+    assert a.net_cf(1) == pytest.approx(-333.28, abs=YEN)
+
+
+def test_worked_example_second_premium_trace(jp_annuity_anchor):
+    """t = 12: the second premium, the age step and the fund's second annual step.
+
+    V(2) = [(V(1) + NP(1)) (1 + i_d) - q'(31) DB(2)] / (1 - q'(31)) on the **anniversary**
+    clock, where q' is the 予定死亡率 at 100% of the table and not the best-estimate rate that
+    decrements the in-force.  The fund recursion is annual and stays annual: rolling it
+    monthly would be checking ``av_at_m``'s interpolation rather than the construction.
+    """
+    a = jp_annuity_anchor
+    assert a.premiums(11) == 0.0 and a.commissions(11) == 0.0
+    assert a.premiums(12) == pytest.approx(169_102.20, abs=YEN)
+    assert a.commissions(12) == pytest.approx(0.02 * a.premiums(12), abs=YEN)
+    assert a.age(12) == 31
+    assert a.mort_rate_base(12) == pytest.approx(Q_BASE_1, abs=RATE)
+    assert a.mort_rate(12) == pytest.approx(Q_1, abs=RATE)
+    assert a.mort_rate_mth(12) == pytest.approx(QM_1, abs=RATE)
+    assert a.lapse_rate(12) == 0.05
     assert a.prem_to_av_pp(1) == pytest.approx(180_000 * (1 - 0.065), abs=YEN)
     q_pricing = a.mort_rate_pricing(1)
     assert q_pricing == pytest.approx(Q_BASE_1, abs=RATE)
@@ -396,108 +562,159 @@ def test_worked_example_year_one_trace(jp_annuity_anchor):
         ((a.av_pp(1) + a.prem_to_av_pp(1)) * 1.01 - q_pricing * 360_000)
         / (1 - q_pricing), abs=1e-9)
     assert a.cv_pp(2) == pytest.approx(197_646.281577, abs=FUND)
-    assert a.claims(1, "LAPSE") == pytest.approx(9_278.56, abs=YEN)
-    assert a.expenses(1) == pytest.approx(4_000 * 1.01 * a.pols_if(1), abs=YEN)
-    assert a.claim_expenses(1) == pytest.approx(5_000 * DEATHS_1, abs=YEN)
-    assert a.commissions(1) == pytest.approx(0.02 * a.premiums(1), abs=YEN)
-    assert a.net_cf(1) == pytest.approx(152_445.08, abs=YEN)
-    assert a.pols_if(2) == pytest.approx(
-        a.pols_if(1) * (1 - Q_1) * (1 - 0.05), abs=INFORCE)
+    assert a.claims(11, "LAPSE") == pytest.approx(38.74, abs=YEN)   # the first one
+    assert a.claims(12, "LAPSE") == pytest.approx(95.29, abs=YEN)
+    assert a.expenses(12) == pytest.approx(4_000 / 12 * 1.01 * a.pols_if(12), abs=YEN)
+    assert a.net_cf(12) == pytest.approx(165_299.40, abs=YEN)
+    assert a.net_cf(11) < 0.0          # the sawtooth is the contract
 
 
 def test_worked_example_crossover_trace(jp_annuity_anchor):
-    """The crossover at t = 13, where the 解約返戻金 cap starts to bind.
+    """The crossover at the elapsed month 149, where the 解約返戻金 cap starts to bind.
 
-    At t = 12 the fund is under the 死亡給付金 and the surrender value is the fund; one year
-    later the fund passes it and the surrender value is the death benefit exactly.  From
-    there to t = 34 the two are literally the same number, which is what
+    At u = 148 the fund is under the 死亡給付金 and the surrender value is the fund; one
+    **month** later the fund passes it and the surrender value is the death benefit
+    exactly.  The annual grid saw the same event at the anniversary 13 and could locate it
+    no more precisely than "during policy year 13"; here it is the fifth month of that
+    year, because DB steps by one 月払保険料 a month while V runs between two anniversaries.
+    From here to the 年金支払開始日 the two are literally the same number, which is what
     「一定期間経過後は死亡給付金と同額になります」 asserts [S4].
     """
     a = jp_annuity_anchor
+    assert a.av_at_m(CROSSOVER_MONTH - 1) < a.db_at_m(CROSSOVER_MONTH - 1)
+    assert a.cv_at_m(CROSSOVER_MONTH - 1) == pytest.approx(
+        a.av_at_m(CROSSOVER_MONTH - 1), abs=1e-9)
+    assert a.av_at_m(CROSSOVER_MONTH) > a.db_at_m(CROSSOVER_MONTH)
+    assert a.cv_at_m(CROSSOVER_MONTH) == 2_235_000.0
+    assert CROSSOVER_MONTH // 12 == 12 and CROSSOVER_MONTH % 12 == 5
+    for u in range(CROSSOVER_MONTH, a.annuitisation_t()):
+        assert a.cv_at_m(u) == pytest.approx(a.db_at_m(u), abs=1e-9)
+        assert a.av_at_m(u) > a.db_at_m(u)
+    assert a.cv_at_m(a.annuitisation_t()) == 0.0   # surrender ends at the 年金支払開始日
+    # and at the anniversaries, which is all the annual grid could read
     assert a.av_pp(12) < a.db_pp(12)
-    assert a.cv_pp(12) == pytest.approx(a.av_pp(12), abs=1e-9)
     assert a.av_pp(13) > a.db_pp(13)
     assert a.cv_pp(13) == 2_340_000.0
-    for t in range(13, 35):
-        assert a.cv_pp(t) == pytest.approx(a.db_pp(t), abs=1e-9)
-        assert a.av_pp(t) > a.db_pp(t)
 
 
-def test_worked_example_last_deferral_year_trace(jp_annuity_anchor):
-    """Year 34: no premium, no lapse, and the last step of the fund recursion.
+def test_worked_example_last_deferral_month_trace(jp_annuity_anchor):
+    """t = 419: no premium, no lapse, and the last step of the fund recursion.
 
-    The year ends on the 年金支払開始日, so the lapse rate is zero and the only decrement is
-    mortality; and V(35) out of that step is F itself.
+    The policy year ends on the 年金支払開始日, so the lapse rate is zero for the whole of it
+    and the only decrement is mortality; and V(35) out of the annual step is F itself.
     """
     a = jp_annuity_anchor
-    assert a.premiums(34) == 0.0
-    assert a.lapse_rate(34) == 0.0
-    assert a.pols_lapse(34) == 0.0
-    assert a.mort_rate_base(34) == pytest.approx(Q_BASE_34, abs=RATE)
-    assert a.mort_rate(34) == pytest.approx(Q_34, abs=RATE)
-    assert a.pols_death(34) == pytest.approx(DEATHS_34, abs=INFORCE)
-    assert a.claims(34, "DEATH") == pytest.approx(5_400_000 * DEATHS_34, abs=YEN)
-    assert a.claim_expenses(34) == pytest.approx(5_000 * DEATHS_34, abs=YEN)
-    assert a.expenses(34) == pytest.approx(
-        4_000 * 1.01 ** 34 * a.pols_if(34), abs=YEN)
-    assert a.net_cf(34) == pytest.approx(-14_871.58, abs=YEN)
-    assert a.pols_if(35) == pytest.approx(a.pols_if(34) * (1 - Q_34), abs=INFORCE)
+    assert a.premiums(419) == 0.0
+    assert a.premiums(348) > 0.0                  # the last one, seventy-one months back
+    assert a.lapse_rate(419) == 0.0
+    assert a.pols_lapse(419) == 0.0
+    assert all(a.lapse_rate(t) == 0.0 for t in range(408, 420))
+    assert a.mort_rate_base(419) == pytest.approx(Q_BASE_34, abs=RATE)
+    assert a.mort_rate(419) == pytest.approx(Q_34, abs=RATE)
+    assert a.mort_rate_mth(419) == pytest.approx(QM_34, abs=RATE)
+    assert a.pols_death(419) == pytest.approx(DEATHS_419, abs=INFORCE)
+    assert a.db_at_m(420) == 5_400_000.0
+    assert a.claims(419, "DEATH") == pytest.approx(5_400_000 * DEATHS_419, abs=YEN)
+    assert a.claim_expenses(419) == pytest.approx(5_000 * DEATHS_419, abs=YEN)
+    assert a.expenses(419) == pytest.approx(
+        4_000 / 12 * 1.01 ** 34 * a.pols_if(419), abs=YEN)
+    assert a.net_cf(419) == pytest.approx(-1_234.28, abs=YEN)
+    assert a.pols_if(420) == pytest.approx(a.pols_if(419) * (1 - QM_34), abs=INFORCE)
     assert a.av_pp(35) == pytest.approx(FUND_AT_ANNUITISATION, abs=FUND)
 
 
-def test_worked_example_first_annuity_year_trace(jp_annuity_anchor):
-    """Year 35: the first 年金支払日, paid in advance to every open contract.
+def test_worked_example_first_annuity_month_trace(jp_annuity_anchor):
+    """t = 420: the first 年金支払日, paid in advance to every open contract.
 
-    q(35) is on the **payout** table at the **1.10** factor, and it moves no cash flow at
-    all: the instalment is paid to ``pols_if``, which does not decrement.
+    q(420) is on the **payout** table at the **1.10** factor, and it moves no cash flow at
+    all: the instalment is paid to ``pols_if``, which does not decrement.  The maintenance
+    charge halves, because the contract is in payment.  And the eleven months after it
+    carry maintenance expense and nothing else, which is the shape the annual grid could
+    not draw.
     """
     a = jp_annuity_anchor
-    assert a.mort_table_name(35) == "annuity_payout_2007"
-    assert a.mort_rate_base(35) == pytest.approx(Q_BASE_35, abs=RATE)
-    assert a.mort_rate(35) == pytest.approx(Q_35, abs=RATE)
-    assert a.annuity_pp(35) == ANNUITY_AMOUNT
-    assert a.claims(35, "ANNUITY") == pytest.approx(
-        ANNUITY_AMOUNT * a.pols_if(35), abs=YEN)
-    assert a.claims(35, "DEATH") == 0.0
-    assert a.claims(35, "LAPSE") == 0.0
-    assert a.premiums(35) == 0.0
-    assert a.expenses(35) == pytest.approx(2_000 * 1.01 ** 35 * a.pols_if(35), abs=YEN)
-    assert a.net_cf(35) == pytest.approx(-195_822.02, abs=YEN)
-    assert a.pols_if(36) == a.pols_if(35)
-    assert a.lives_if(36) == pytest.approx(a.lives_if(35) * (1 - Q_35), abs=INFORCE)
+    assert a.mort_table_name(420) == "annuity_payout_2007"
+    assert a.mort_rate_base(420) == pytest.approx(Q_BASE_35, abs=RATE)
+    assert a.mort_rate(420) == pytest.approx(Q_35, abs=RATE)
+    assert a.mort_rate_mth(420) == pytest.approx(QM_35, abs=RATE)
+    assert a.annuity_pp(420) == ANNUITY_AMOUNT
+    assert a.claims(420, "ANNUITY") == pytest.approx(
+        ANNUITY_AMOUNT * a.pols_if(420), abs=YEN)
+    assert a.claims(420, "DEATH") == 0.0
+    assert a.claims(420, "LAPSE") == 0.0
+    assert a.premiums(420) == 0.0
+    assert a.expenses(420) == pytest.approx(
+        2_000 / 12 * 1.01 ** 35 * a.pols_if(420), abs=YEN)
+    assert a.net_cf(420) == pytest.approx(-195_028.54, abs=YEN)
+    assert a.pols_if(421) == a.pols_if(420)
+    assert a.lives_if(421) == pytest.approx(a.lives_if(420) * (1 - QM_35), abs=INFORCE)
+    # eleven months of maintenance expense and nothing else, then the next instalment
+    for t in range(421, 432):
+        assert a.annuity_pp(t) == 0.0
+        assert a.claims(t) == 0.0
+        assert a.net_cf(t) == pytest.approx(-a.expenses(t), abs=YEN)
+    assert a.annuity_pp(432) == ANNUITY_AMOUNT
 
 
 def test_worked_example_totals_and_shape(jp_annuity_anchor):
     """The shape the notes describe, asserted rather than restated.
 
-    A large **positive** year-zero flow — Japanese annuity acquisition cost is small
-    against a JPY 180,000 premium, the mirror image of UK term assurance — then declining
-    positive margin as surrender outgo grows against a shrinking premium base, the sign
-    turning at t = 27, then a decade of pure outgo.
+    A large **positive** first month — Japanese annuity acquisition cost is small against a
+    JPY 180,000 premium, the mirror image of UK term assurance — then thirty policy years
+    of one large positive month against eleven small negative ones, the twelve-month block
+    turning negative in policy year 29, and then a decade of one very large negative month
+    a year against eleven small ones.
+
+    The sawtooth is asserted directly, because it is the shape the monthly grid exists to
+    show and a model that smeared the 年払 premium across the year would fail here and
+    nowhere else.
     """
     a = jp_annuity_anchor
     df = a.result_cf()
     assert df["net_cf"].sum() == pytest.approx(UNDISCOUNTED_TOTAL, abs=YEN)
-    discounted = sum(a.net_cf(t) / 1.01 ** t for t in range(a.proj_len()))
+    discounted = sum(a.net_cf(t) / 1.01 ** (t / 12.0) for t in range(a.proj_len()))
     assert discounted == pytest.approx(DISCOUNTED_AT_1PCT, abs=YEN)
     assert a.net_cf(0) > 70_000.0
-    assert all(a.net_cf(t) > 0.0 for t in range(0, FIRST_NEGATIVE_YEAR))
-    assert a.net_cf(FIRST_NEGATIVE_YEAR) < 0.0
-    assert all(a.net_cf(t) < -190_000.0 for t in range(35, 45))
+    # the deferral sawtooth: the premium month is positive, the other eleven are not
+    for y in range(1, 28):
+        assert a.net_cf(12 * y) > 0.0, y
+        assert a.net_cf(12 * y + 6) < 0.0, y
+    # the twelve-month blocks, which is the annual grid's row
+    blocks = [sum(a.net_cf(t) for t in range(12 * y, 12 * y + 12))
+              for y in range(a.proj_years())]
+    assert all(b > 0.0 for b in blocks[:FIRST_NEGATIVE_YEAR])
+    assert blocks[FIRST_NEGATIVE_YEAR] < 0.0
+    # the payout sawtooth: one instalment month a year, eleven months of expense
+    n = a.annuitisation_t()
+    for j in range(a.payout_term_y()):
+        assert a.net_cf(n + 12 * j) < -190_000.0
+        assert all(-200.0 < a.net_cf(t) < 0.0 for t in range(n + 12 * j + 1,
+                                                            n + 12 * j + 12))
 
 
 def test_worked_example_lapse_curve(jp_annuity_anchor):
     """The [std] duration curve, segment by segment, including its two zeros.
 
-    6.0 / 5.0 / 4.5 / 4.0 percent over the first ten policy years, 3.0% for the rest of
-    the 保険料払込期間, 1.0% through the 据置期間 where no premium is due, and zero from
-    t = n - 1.
+    6.0 / 5.0 / 4.5 / 4.0 percent **per annum** over the first ten policy years — the CSV's
+    ``from_year`` keys being a 0-based count of completed policy years, which the model
+    reads as ``duration(t) = t // 12`` — 3.0% for the rest of the 保険料払込期間, 1.0% through
+    the 据置期間 where no premium is due, and zero from the last deferral policy year.
+
+    The rate is annual and holds for the twelve months of its policy year; the monthly
+    decrement the recursion applies is ``lapse_rate_mth``.
     """
     a = jp_annuity_anchor
     expected = {0: 0.060, 1: 0.050, 2: 0.045, 3: 0.040, 9: 0.040,
                 10: 0.030, 29: 0.030, 30: 0.010, 33: 0.010, 34: 0.000, 40: 0.000}
-    for t, rate in expected.items():
-        assert a.lapse_rate(t) == pytest.approx(rate, abs=1e-12), f"t={t}"
+    for year, rate in expected.items():
+        for month in range(12):
+            t = 12 * year + month
+            assert a.lapse_rate(t) == pytest.approx(rate, abs=1e-12), f"t={t}"
+            if rate > 0.0:
+                assert (1.0 - a.lapse_rate_mth(t)) ** 12 == pytest.approx(
+                    1.0 - rate, rel=1e-13)
+            else:
+                assert a.lapse_rate_mth(t) == 0.0
     assert a.lapse_dyn_factor(0) == 1.0          # rate_new = i_d in the base run
 
 
@@ -559,24 +776,30 @@ def test_pitfall_kakutei_nenkin_instalments_are_certain_not_life_contingent(
     """
     a = jp_annuity_anchor
     n, k = a.annuitisation_t(), a.payout_term_y()
-    for t in range(n, n + k):
+    for t in range(n, a.proj_len()):
         assert a.pols_if(t) == a.pols_if(n), f"pols_if moved at t={t}"
         assert a.pols_death(t) == 0.0
         assert a.claims(t, "DEATH") == 0.0
-        assert a.claims(t, "ANNUITY") == pytest.approx(
+    # one instalment a policy year, of the same amount, and nothing in the eleven between
+    for j in range(k):
+        assert a.claims(n + 12 * j, "ANNUITY") == pytest.approx(
             a.claims(n, "ANNUITY"), abs=1e-9)
+        assert all(a.claims(t, "ANNUITY") == 0.0
+                   for t in range(n + 12 * j + 1, n + 12 * j + 12))
     assert a.lives_if(n) == pytest.approx(0.91268274, abs=INFORCE)
-    assert a.lives_if(n + k) == pytest.approx(0.77848987, abs=INFORCE)
-    assert 1 - a.lives_if(n + k) / a.lives_if(n) == pytest.approx(0.1470, abs=5e-5)
-    # Survivorship still rolls forward on the payout table, it just weights nothing.
-    for t in range(n, n + k):
+    assert a.lives_if(a.proj_len()) == pytest.approx(0.77848987, abs=INFORCE)
+    assert 1 - a.lives_if(a.proj_len()) / a.lives_if(n) == pytest.approx(
+        0.1470, abs=5e-5)
+    # Survivorship still rolls forward on the payout table, month by month, weighting
+    # nothing: a hundred and twenty steps, not ten.
+    for t in range(n, a.proj_len()):
         assert a.lives_if(t + 1) == pytest.approx(
-            a.lives_if(t) * (1 - a.mort_rate(t)), rel=1e-14)
+            a.lives_if(t) * (1 - a.mort_rate_mth(t)), rel=1e-14)
 
 
 def test_pitfall_the_surrender_value_is_capped_but_the_fund_is_not(
         individual_annuity, jp_annuity_anchor):
-    """cv_pp(t) <= db_pp(t) at every deferral duration, while av_pp(t) runs past it.
+    """CV(u) <= DB(u) at every deferral month, while the fund runs past it.
 
     The ceiling is sourced — 「解約返還金は…死亡給付金の額を限度とします」 [S2] [S4] — and it applies to the
     surrender value alone.  Clipping ``av_pp`` instead would pass the same check and
@@ -585,8 +808,13 @@ def test_pitfall_the_surrender_value_is_capped_but_the_fund_is_not(
     """
     a = jp_annuity_anchor
     assert a.check_cv_cap() is True
-    for t in range(0, a.annuitisation_t()):
-        assert a.cv_pp(t) <= a.db_pp(t) + 1e-9, f"t={t}"
+    # asserted at every deferral MONTH, which is stronger than the anniversary form: the
+    # two sides move on different clocks between anniversaries, DB by one 月払保険料 a month
+    # and CV by interpolation.
+    for u in range(0, a.annuitisation_t() + 1):
+        assert a.cv_at_m(u) <= a.db_at_m(u) + 1e-9, f"u={u}"
+    for s in range(0, a.annuitisation_y()):
+        assert a.cv_pp(s) <= a.db_pp(s) + 1e-9, f"s={s}"
     assert a.av_pp(34) - a.db_pp(34) == pytest.approx(FUND_EXCESS_AT_34, abs=FUND)
     assert a.annuity_fund_pp() > CUMULATIVE_PREMIUMS
     # A model that had clipped the fund would annuitise cumulative premiums instead, and
@@ -601,25 +829,32 @@ def test_pitfall_the_surrender_value_is_capped_but_the_fund_is_not(
 
 def test_pitfall_the_lapse_decrement_stops_before_the_annuity_start_date(
         individual_annuity):
-    """No lapse from t = n - 1, on any model point, and no surrender value from t = n.
+    """No lapse through the last deferral policy year, and no surrender value from t = n.
 
-    That year ends on the 年金支払開始日, where surrender is no longer available [S2] [S4].  A
-    lapse applied there removes contracts at t = n, where ``cv_pp`` is zero: in-force
-    disappears against no payment and the annuity outgo is understated.
+    That policy year ends on the 年金支払開始日, where surrender is no longer available [S2]
+    [S4].  A lapse applied inside it would remove contracts at t = n, where the surrender
+    value is zero: in-force disappears against no payment and the annuity outgo is
+    understated.  The carve-out is the whole twelve months, not one of them, because the
+    rate is an annual one that the segment switches off.
     """
     for point_id in individual_annuity.Data.model_point_table().index:
         p = individual_annuity.Projection[point_id]
         n = p.annuitisation_t()
-        assert p.lapse_rate_base(n - 1) == 0.0
-        for t in range(n - 1, p.proj_len()):
+        assert p.lapse_rate_base(n - 12) == 0.0
+        for t in range(n - 12, p.proj_len()):
             assert p.lapse_rate(t) == 0.0, f"point {point_id}, t={t}"
+            assert p.lapse_rate_mth(t) == 0.0
             assert p.pols_lapse(t) == 0.0
             assert p.claims(t, "LAPSE") == 0.0
-        for t in range(n, p.proj_len()):
-            assert p.cv_pp(t) == 0.0
-        # The only decrement in the last deferral year is mortality.
+        assert p.lapse_rate(n - 13) > 0.0          # and only that policy year
+        for s in range(p.annuitisation_y(), p.proj_years() + 1):
+            assert p.cv_pp(s) == 0.0
+        for u in range(n, p.proj_len() + 1):
+            assert p.cv_at_m(u) == 0.0
+        # The only decrement in the last deferral policy year is mortality.
         assert p.pols_if(n) == pytest.approx(
-            p.pols_if(n - 1) * (1 - p.mort_rate(n - 1)), rel=1e-14)
+            p.pols_if(n - 12) * math.prod(
+                1 - p.mort_rate_mth(t) for t in range(n - 12, n)), rel=1e-12)
 
 
 def test_pitfall_premium_end_and_annuity_start_are_different_dates(
@@ -634,19 +869,21 @@ def test_pitfall_premium_end_and_annuity_start_are_different_dates(
     a = jp_annuity_anchor
     assert a.premium_term_y() == 30
     assert a.defer_gap_y() == 5
-    assert a.annuitisation_t() == 35 == a.premium_term_y() + a.defer_gap_y()
-    assert a.annuity_start_age() == 65 == a.issue_age() + a.annuitisation_t()
-    for t in range(30, 35):
+    assert a.annuitisation_y() == 35 == a.premium_term_y() + a.defer_gap_y()
+    assert a.annuitisation_t() == 420 == 12 * a.annuitisation_y()
+    assert a.annuity_start_age() == 65 == a.issue_age() + a.annuitisation_y()
+    for t in range(360, 420):                          # the sixty 据置期間 months
         assert a.premiums(t) == 0.0
-        assert a.prem_to_av_pp(t) == 0.0
         assert a.lapse_rate(t) in (0.01, 0.0)          # the 据置期間 rate, then zero
-        assert a.av_pp(t + 1) > a.av_pp(t)             # the fund still accumulates
+    for s in range(30, 35):
+        assert a.prem_to_av_pp(s) == 0.0
+        assert a.av_pp(s + 1) > a.av_pp(s)             # the fund still accumulates
 
-    model = variant_model(tmp_path, "Annuity_JP_A_no_gap", 1,
+    model = variant_model(tmp_path, "Annuity_JP_S_no_gap", 1,
                           defer_gap_y=0, annuity_start_age=60)
     try:
         flat = model.Projection[1]
-        assert flat.annuitisation_t() == 30
+        assert flat.annuitisation_t() == 360
         assert flat.annuity_fund_pp() == pytest.approx(
             FUND_WITHOUT_DEFERRAL_GAP, abs=YEN)
         assert (a.annuity_fund_pp() / flat.annuity_fund_pp() - 1
@@ -677,22 +914,30 @@ def test_pitfall_two_yotei_riritsu_not_one(jp_annuity_anchor):
 
 
 def test_pitfall_the_death_benefit_stops_growing_at_premium_end(individual_annuity):
-    """db_pp(t) = rho P min(t, m): flat from 払込満了, on every model point.
+    """DB(u) = rho (P/12) min(u, 12m): the clause as written, flat from 払込満了.
 
     The contractual base is 月払保険料 x 経過月数 [S2] [S4], which 所令211①ロ requires to increase
     with cumulative premiums [R10] — and no further premium is paid after 払込満了.  A model
     that keeps accruing it to n overstates deferral-phase claims by d years' worth of
-    premium.
+    premium; a model that rounds it to whole policy years, as the annual grid had to,
+    misstates every individual death claim by up to eleven months of premium.
     """
     for point_id in individual_annuity.Data.model_point_table().index:
         p = individual_annuity.Projection[point_id]
-        m, n = p.premium_term_y(), p.annuitisation_t()
-        for t in range(0, n + 1):
-            assert p.db_pp(t) == pytest.approx(
-                p.db_ratio() * p.premium_pp() * min(t, m), abs=1e-9), f"{point_id}/{t}"
-        assert p.db_pp(m) == p.db_pp(n)
-        if n > m:
+        m, n_y = p.premium_term_y(), p.annuitisation_y()
+        for s_ in range(0, n_y + 1):
+            assert p.db_pp(s_) == pytest.approx(
+                p.db_ratio() * p.premium_pp() * min(s_, m), abs=1e-9), f"{point_id}/{s_}"
+        assert p.db_pp(m) == p.db_pp(n_y)
+        if n_y > m:
             assert p.db_pp(m - 1) < p.db_pp(m)
+        # the monthly clause, and its agreement with the annual schedule
+        for u in range(0, 12 * n_y + 1):
+            assert p.db_at_m(u) == pytest.approx(
+                p.db_ratio() * p.premium_pp() / 12 * min(u, 12 * m), abs=1e-9)
+        for s_ in range(0, n_y + 1):
+            assert p.db_at_m(12 * s_) == pytest.approx(p.db_pp(s_), abs=1e-9)
+        assert p.db_at_m(12 * m) == p.db_at_m(12 * n_y)
 
 
 def test_pitfall_the_commutation_factors_are_not_the_models_payout_basis(
@@ -731,10 +976,13 @@ def test_pitfall_the_published_lapse_rate_is_measured_on_contract_amount(
     """The 3.4% for FY2024 has 契約高 in its denominator, not policy count [R15] [REG-R31].
 
     On the anchor cell the shipped curve averages 3.4160% weighted by ``pols_if`` and
-    2.4754% weighted by ``av_pp``, both over t = 0 .. n - 1 — a difference of about a
-    quarter, because lapse is front-loaded and the fund is back-loaded.  The two weightings
-    are not interchangeable, and a calibration that does not say which one it used
-    mis-states the deferral decrement.
+    2.4754% weighted by ``av_pp``, both read at the **anniversaries** of the deferral phase
+    — a difference of about a quarter, because lapse is front-loaded and the fund is
+    back-loaded.  They are annual means of an annual rate curve, which is what the one
+    public figure they are calibrated against is; reading them at every month would average
+    a monthly decrement against an annual benchmark.  The two weightings are not
+    interchangeable, and a calibration that does not say which one it used mis-states the
+    deferral decrement.
     """
     a = jp_annuity_anchor
     count = a.lapse_rate_mean("count")
@@ -743,11 +991,11 @@ def test_pitfall_the_published_lapse_rate_is_measured_on_contract_amount(
     assert fund == pytest.approx(LAPSE_MEAN_FUND, abs=5e-7)
     assert abs(count - LAPSE_PUBLISHED) < 0.0005      # calibrated against the published
     assert 1 - fund / count == pytest.approx(0.275, abs=0.02)
-    # Both are means over the deferral phase only, rebuilt here independently.
-    ts = range(0, a.annuitisation_t())
-    for weighting, weights in (("count", [a.pols_if(t) for t in ts]),
-                               ("fund", [a.av_pp(t) for t in ts])):
-        num = sum(w * a.lapse_rate(t) for w, t in zip(weights, ts))
+    # Both are means over the deferral anniversaries only, rebuilt here independently.
+    ys = range(0, a.annuitisation_y())
+    for weighting, weights in (("count", [a.pols_if(12 * y) for y in ys]),
+                               ("fund", [a.av_pp(y) for y in ys])):
+        num = sum(w * a.lapse_rate(12 * y) for w, y in zip(weights, ys))
         assert a.lapse_rate_mean(weighting) == pytest.approx(
             num / sum(weights), rel=1e-14)
 
@@ -764,31 +1012,33 @@ def test_pitfall_dividends_are_zero_in_the_base_run_not_absent(
     """
     a = jp_annuity_anchor
     assert a.div_rate() == 0.0
-    assert all(a.div_credit_pp(t) == 0.0 for t in range(0, a.proj_len()))
-    assert all(a.div_acc_pp(t) == 0.0 for t in range(0, a.proj_len()))
+    assert all(a.div_credit_pp(s) == 0.0 for s in range(0, a.proj_years()))
+    assert all(a.div_acc_pp(s) == 0.0 for s in range(0, a.proj_years()))
 
     p = individual_annuity.Projection[8]
-    n = p.annuitisation_t()
+    n_y = p.annuitisation_y()
     assert p.div_rate() == 0.002
     assert p.div_credit_pp(1) == pytest.approx(0.002 * p.av_pp(1), rel=1e-14)
-    assert p.div_acc_pp(n) > 0.0
-    for t in range(1, n):
-        assert p.div_acc_pp(t + 1) == pytest.approx(
-            (p.div_acc_pp(t) + p.div_credit_pp(t)) * 1.006, rel=1e-13)
+    assert p.div_acc_pp(n_y) > 0.0
+    # The declaration and the accumulation are both ANNUAL: the composite is a
+    # 5年ごと利差配当 design and the declared rate, not the frequency, is what moves it.
+    for s_ in range(1, n_y):
+        assert p.div_acc_pp(s_ + 1) == pytest.approx(
+            (p.div_acc_pp(s_) + p.div_credit_pp(s_)) * 1.006, rel=1e-13)
     # Nothing is paid out: the cash flow ledger closes without a dividend term.
     assert p.check_net_cf() is True
     assert "claims_dividend" not in p.result_cf().columns
     # ... and the accumulated dividend lands in B as a single premium.
     gross = p.annuity_fund_pp() * (1 - p.annuitisation_charge())
     assert p.annuity_amount_pp() == pytest.approx(
-        int((gross + p.div_acc_pp(n)) / p.annuity_due_factor() / 100) * 100, abs=1e-9)
+        int((gross + p.div_acc_pp(n_y)) / p.annuity_due_factor() / 100) * 100, abs=1e-9)
     without = int(gross / p.annuity_due_factor() / 100) * 100
     assert without < p.annuity_amount_pp()
 
-    model = variant_model(tmp_path, "Annuity_JP_A_no_div", 8, div_rate=0.0)
+    model = variant_model(tmp_path, "Annuity_JP_S_no_div", 8, div_rate=0.0)
     try:
         off = model.Projection[8]
-        assert off.div_acc_pp(n) == 0.0
+        assert off.div_acc_pp(n_y) == 0.0
         assert off.annuity_amount_pp() == pytest.approx(without, abs=1e-9)
         assert off.annuity_amount_pp() < p.annuity_amount_pp()
         # The dividend does not touch the fund itself, only the annuity it buys.
@@ -800,31 +1050,40 @@ def test_pitfall_dividends_are_zero_in_the_base_run_not_absent(
 def test_pitfall_apl_is_an_election_not_a_no_lapse_rule(individual_annuity):
     """自動振替貸付 suppresses lapse only while the 解約返戻金 can carry the balance [S4].
 
-    On model point 7 the facility engages at t = 2, is fed one premium a year compounding
-    at the contractual cap of 8% p.a., carries the contract for six years, and then fails:
-    at t = 8 principal and interest have outgrown the surrender value and the **whole**
-    in-force lapses.  Wiring it on by default would remove lapse from the model for the
-    wrong reason [REG-R14], and one carrier's product has no such facility at all [S2].
+    On model point 7 the facility engages at the premium anniversary 2, is fed one premium
+    a year compounding at the contractual cap of 8% p.a., carries the contract for six
+    policy years, and then fails: at the anniversary 8 principal and interest have outgrown
+    the surrender value and the **whole** in-force lapses.  Wiring it on by default would
+    remove lapse from the model for the wrong reason [REG-R14], and one carrier's product
+    has no such facility at all [S2].
+
+    The module is **annual on the monthly grid**, and deliberately so: the thing it carries
+    is one annual premium, lent on one date and compounding once a year.  The test that
+    fires it is read at the anniversary opening each month's policy year.
     """
     p = individual_annuity.Projection[7]
     assert p.apl_on() is True
     assert p.apl_engaged(0) is False and p.apl_engaged(1) is False   # cv < one premium
-    assert all(p.apl_engaged(t) for t in range(2, 8))
-    assert p.apl_bal(2) == 0.0                       # the first premium is lent at t = 2
+    assert all(p.apl_engaged(s_) for s_ in range(2, 8))
+    assert p.apl_bal(2) == 0.0               # the first premium is lent at anniversary 2
     assert p.apl_bal(3) == pytest.approx(180_000 * 1.08, abs=YEN)
-    for t in range(3, 8):
-        assert p.apl_bal(t + 1) == pytest.approx(
-            (p.apl_bal(t) + 180_000) * 1.08, abs=1e-6)
-    # While the facility runs the premium is lent, not received, and lapse is suppressed.
-    for t in range(2, 8):
+    for s_ in range(3, 8):
+        assert p.apl_bal(s_ + 1) == pytest.approx(
+            (p.apl_bal(s_) + 180_000) * 1.08, abs=1e-6)
+    # While the facility runs the premium is lent, not received, and lapse is suppressed
+    # in every month of those policy years.
+    for t in range(24, 96):
         assert p.premiums(t) == 0.0
         assert p.lapse_rate(t) == 0.0
+        assert p.lapse_rate_mth(t) == 0.0
         assert p.lapse_rate_base(t) > 0.0            # the table rate is not zero
-    # ... and the moment the balance outgrows the surrender value, everything lapses.
+    # ... and the moment the balance outgrows the surrender value, everything lapses:
+    # the whole in-force goes in the first month of that policy year.
     assert p.apl_bal(8) > p.cv_pp(8)
-    assert p.lapse_rate(8) == 1.0
-    assert p.pols_if(8) > 0.0
-    assert p.pols_if(9) == 0.0
+    assert p.lapse_rate(96) == 1.0
+    assert p.lapse_rate_mth(96) == 1.0
+    assert p.pols_if(96) > 0.0
+    assert p.pols_if(97) == 0.0
     assert p.annuity_fund_pp() == 0.0
     assert p.check_pols_roll_fwd() is True
 
@@ -843,10 +1102,11 @@ def test_pitfall_the_annuity_amount_is_struck_once_from_the_issue_basis(
     """
     a = jp_annuity_anchor
     n, k = a.annuitisation_t(), a.payout_term_y()
-    for t in range(n, n + k):
-        assert a.annuity_pp(t) == ANNUITY_AMOUNT
+    for j in range(k):
+        assert a.annuity_pp(n + 12 * j) == ANNUITY_AMOUNT
+        assert all(a.annuity_pp(t) == 0.0
+                   for t in range(n + 12 * j + 1, n + 12 * j + 12))
     assert a.annuity_pp(n - 1) == 0.0
-    assert a.annuity_pp(n + k) == 0.0
     assert a.check_annuity_total() is True
 
     life = individual_annuity.Projection[9]
@@ -908,12 +1168,12 @@ def test_the_inforce_rollforward_closes_term_by_term(individual_annuity):
 def test_death_is_decremented_before_lapse(jp_annuity_anchor):
     """The notes' processing order: lapses are taken from the survivors of mortality."""
     a = jp_annuity_anchor
-    for t in (0, 1, 5, 20, 33):
+    for t in (0, 1, 5, 60, 240, 399):
         assert a.pols_if_at(t, "BEF_DECR") == a.pols_if(t)
         assert a.pols_if_at(t, "BEF_LAPSE") == pytest.approx(
-            a.pols_if(t) * (1 - a.mort_rate(t)), rel=1e-14)
+            a.pols_if(t) * (1 - a.mort_rate_mth(t)), rel=1e-14)
         assert a.pols_lapse(t) == pytest.approx(
-            a.pols_if_at(t, "BEF_LAPSE") * a.lapse_rate(t), rel=1e-14)
+            a.pols_if_at(t, "BEF_LAPSE") * a.lapse_rate_mth(t), rel=1e-14)
         assert a.pols_if_at(t, "AFT_DECR") == pytest.approx(a.pols_if(t + 1), rel=1e-14)
 
 
@@ -928,32 +1188,36 @@ def test_the_survivorship_rollforward_is_carried_separately(individual_annuity):
         assert p.lives_if(0) == 1.0
         for t in range(0, p.proj_len()):
             assert p.lives_if(t + 1) == pytest.approx(
-                p.lives_if(t) * (1 - p.mort_rate(t)), rel=1e-13)
+                p.lives_if(t) * (1 - p.mort_rate_mth(t)), rel=1e-13)
             assert p.check_lives_roll_fwd_resid(t) == pytest.approx(0.0, abs=1e-12)
 
 
 def test_the_fund_recursion_matches_an_independent_rebuild(individual_annuity):
-    """(V(t) + NP(t))(1 + i_d) = q' DB(t+1) + (1 - q') V(t+1) over the deferral phase.
+    """(V(s) + NP(s))(1 + i_d) = q' DB(s+1) + (1 - q') V(s+1) over the deferral phase.
 
     Rebuilt here from the model's own inputs rather than read back from it, because the
     two ways this recursion is usually built wrongly — putting lapse into it, or using the
     best-estimate rate in place of the 予定死亡率 — both produce a fund that still looks
     plausible.  The survivorship release is the division by (1 - q').
+
+    **This one is annual on a monthly model, and deliberately.**  The 保険料積立金 is a
+    contractual accumulation defined at the 年単位の契約応当日; rolling it monthly would be
+    checking ``av_at_m``'s interpolation convention rather than the construction under it.
     """
     for point_id in individual_annuity.Data.model_point_table().index:
         p = individual_annuity.Projection[point_id]
         i_d = p.int_rate_defer()
         value = 0.0
-        for t in range(0, p.annuitisation_t()):
-            assert p.av_pp(t) == pytest.approx(value, abs=1e-6), f"{point_id}/{t}"
-            q = p.mort_rate_pricing(t)
-            value = ((value + p.prem_to_av_pp(t)) * (1 + i_d)
-                     - q * p.db_pp(t + 1)) / (1 - q)
-        assert p.av_pp(p.annuitisation_t()) == pytest.approx(value, abs=1e-6)
+        for s_ in range(0, p.annuitisation_y()):
+            assert p.av_pp(s_) == pytest.approx(value, abs=1e-6), f"{point_id}/{s_}"
+            q = p.mort_rate_pricing(s_)
+            value = ((value + p.prem_to_av_pp(s_)) * (1 + i_d)
+                     - q * p.db_pp(s_ + 1)) / (1 - q)
+        assert p.av_pp(p.annuitisation_y()) == pytest.approx(value, abs=1e-6)
         assert p.check_fund() is True
         # The fund is dead after annuitisation: there is nothing left to roll forward.
-        for t in range(p.annuitisation_t() + 1, p.proj_len()):
-            assert p.av_pp(t) == 0.0
+        for s_ in range(p.annuitisation_y() + 1, p.proj_years() + 1):
+            assert p.av_pp(s_) == 0.0
 
 
 def test_the_published_columns_add_up_to_net_cf(individual_annuity):
@@ -986,8 +1250,12 @@ def test_the_guaranteed_instalments_sum_to_the_promised_total(individual_annuity
         n = p.annuitisation_t()
         guaranteed = (p.payout_term_y() if p.payout_form() == "certain"
                       else p.guar_term_y())
-        total = sum(p.annuity_pp(t) for t in range(n, n + guaranteed))
+        # one instalment a policy year, in the anniversary months, and nothing between
+        total = sum(p.annuity_pp(t) for t in range(n, n + 12 * guaranteed))
         assert total == pytest.approx(guaranteed * p.annuity_amount_pp(), abs=1e-9)
+        if p.annuity_amount_pp() > 0.0:          # point 7 lapses before annuitisation
+            assert [t for t in range(n, n + 12 * guaranteed)
+                    if p.annuity_pp(t) > 0.0] == [n + 12 * j for j in range(guaranteed)]
         assert p.check_annuity_total() is True
 
 
@@ -1038,20 +1306,29 @@ def test_the_life_annuity_election_off_and_on(individual_annuity, jp_annuity_anc
     With the module on the instalments are unconditional for g years and life-contingent
     after, the horizon runs to the payout table's terminal age instead of n + k, and the
     in-force runs off on the best-estimate payout basis once the guarantee expires.
+
+    ``proj_len()`` is a **count** of projected years there too: ``omega - x + 1`` rows,
+    whose last one, ``t = proj_len() - 1 = omega - x``, is the year the annuitant attains
+    the terminal age.  The ``+ 1`` is the count, not an off-by-one in the index.
     """
     a = jp_annuity_anchor
     assert a.payout_form() == "certain"
-    assert a.proj_len() == a.annuitisation_t() + a.payout_term_y()
+    assert a.proj_len() == 12 * (a.annuitisation_y() + a.payout_term_y())
 
     p = individual_annuity.Projection[9]
     n, g = p.annuitisation_t(), p.guar_term_y()
     assert p.payout_form() == "life_guar"
-    assert p.proj_len() == p.omega_age("annuity_payout_2007") - p.issue_age() + 1 == 93
-    for t in range(n, n + g):
+    assert p.proj_years() == p.omega_age("annuity_payout_2007") - p.issue_age() + 1 == 93
+    # the frame stops at the FIRST MONTH of the terminal-age year, where q is 1
+    assert p.proj_len() == 12 * (p.omega_age("annuity_payout_2007") - p.issue_age()) + 1
+    assert len(p.result_cf()) == p.proj_len()
+    assert p.age(p.proj_len() - 1) == p.omega_age("annuity_payout_2007")
+    for t in range(n, n + 12 * g):
         assert p.pols_if(t) == p.pols_if(n)          # unconditional over the guarantee
-        assert p.annuity_pp(t) == LIFE_ANNUITY_AMOUNT
-    assert p.pols_if(n + g) < p.pols_if(n)           # life-contingent thereafter
-    assert p.pols_maturity(n + g - 1) == 0.0           # ... and no fixed end
+    for j in range(g):
+        assert p.annuity_pp(n + 12 * j) == LIFE_ANNUITY_AMOUNT
+    assert p.pols_if(n + 12 * g) < p.pols_if(n)      # life-contingent thereafter
+    assert p.pols_maturity(n + 12 * g - 1) == 0.0      # ... and no fixed end
     assert all(p.pols_maturity(t) == 0.0 for t in range(0, p.proj_len()))
     assert p.annuity_pp(p.proj_len() - 1) == LIFE_ANNUITY_AMOUNT
     assert p.check_pols_roll_fwd() is True
@@ -1108,8 +1385,8 @@ def test_the_apl_module_off_and_on(individual_annuity, jp_annuity_anchor):
     """
     a = jp_annuity_anchor
     assert a.apl_on() is False
-    assert all(a.apl_bal(t) == 0.0 for t in range(0, a.proj_len()))
-    assert all(a.apl_engaged(t) is False for t in range(0, a.proj_len()))
+    assert all(a.apl_bal(s_) == 0.0 for s_ in range(0, a.proj_years()))
+    assert all(a.apl_engaged(s_) is False for s_ in range(0, a.proj_years()))
     assert a.db_pp_net(10) == a.db_pp(10)
     assert a.cv_pp_net(10) == a.cv_pp(10)
 
@@ -1126,32 +1403,44 @@ def test_the_apl_module_off_and_on(individual_annuity, jp_annuity_anchor):
 def test_the_policy_loan_module_off_and_on(individual_annuity, jp_annuity_anchor):
     """契約者貸付 off at the anchor cell and on at model point 8.
 
-    A loan of half the 解約返戻金 drawn at policy year 20 **[std]**, compounding at 2.40%
-    p.a. [S11] [S8] and capped at the 解約返戻金 [S4] [REG-R14].  Only the drawdown is a cash
-    flow; the balance is recovered by deduction from the 死亡給付金, the 解約返戻金 and the
+    A loan of half the 解約返戻金 drawn at the **anniversary** 20 **[std]** — ``loan_draw_year``
+    in ``pricing_table.csv`` is an anniversary in years, so the drawdown is the start of the
+    twenty-first policy year, the month ``t`` = 240, and ``loan_pp(19)`` is still zero —
+    compounding at 2.40% p.a. [S11] [S8] and capped at the 解約返戻金 [S4] [REG-R14].  The
+    balance is an **annual** quantity because the rate is a 年利 capitalised at the
+    契約応当日, so it genuinely does not move between anniversaries.  Only the drawdown is a
+    cash flow; the balance is recovered by deduction from the 死亡給付金, the 解約返戻金 and the
     年金原資, so it never touches the fund itself.
     """
     a = jp_annuity_anchor
     assert a.loan_on() is False
-    assert all(a.loan_pp(t) == 0.0 for t in range(0, a.proj_len()))
+    assert all(a.loan_pp(s_) == 0.0 for s_ in range(0, a.proj_years()))
     assert (a.result_cf()["policy_loans"] == 0.0).all()
 
     p = individual_annuity.Projection[8]
-    n = p.annuitisation_t()
+    n_y = p.annuitisation_y()
     assert p.loan_on() is True
     assert p.loan_pp(19) == 0.0
     assert p.loan_pp(20) == pytest.approx(0.50 * p.cv_pp(20), rel=1e-14)
     assert p.loan_pp(21) == pytest.approx(p.loan_pp(20) * 1.024, rel=1e-14)
-    assert p.policy_loans(20) == pytest.approx(p.loan_pp(20) * p.pols_if(20), abs=1e-9)
-    assert all(p.policy_loans(t) == 0.0 for t in range(0, p.proj_len()) if t != 20)
-    for t in range(20, n):
-        assert p.loan_pp(t) <= p.cv_pp(t) + 1e-9    # capped at the surrender value
-        assert p.db_pp_net(t) == pytest.approx(p.db_pp(t) - p.loan_pp(t), abs=1e-9)
-        assert p.cv_pp_net(t) == pytest.approx(p.cv_pp(t) - p.loan_pp(t), abs=1e-9)
+    assert p.policy_loans(240) == pytest.approx(
+        p.loan_pp(20) * p.pols_if(240), abs=1e-9)
+    assert all(p.policy_loans(t) == 0.0 for t in range(0, p.proj_len()) if t != 240)
+    for s_ in range(20, n_y):
+        assert p.loan_pp(s_) <= p.cv_pp(s_) + 1e-9  # capped at the surrender value
+        assert p.db_pp_net(s_) == pytest.approx(p.db_pp(s_) - p.loan_pp(s_), abs=1e-9)
+        assert p.cv_pp_net(s_) == pytest.approx(p.cv_pp(s_) - p.loan_pp(s_), abs=1e-9)
+    # The balance genuinely does not move between anniversaries, so a benefit in month t
+    # is settled against the balance outstanding at duration(t).
+    for t in range(240, 251):                    # u = 241 .. 251, all inside year 21
+        assert p.db_net_at_m(t + 1) == pytest.approx(
+            p.db_at_m(t + 1) - p.loan_pp(20), abs=1e-9)
+    assert p.db_net_at_m(252) == pytest.approx(   # and the balance steps at the next one
+        p.db_at_m(252) - p.loan_pp(21), abs=1e-9)
     # The fund is untouched; the 年金原資 is what carries the deduction.
     assert p.annuity_fund_pp() == pytest.approx(
-        p.av_pp(n) - p.loan_pp(n), abs=1e-9)
-    assert p.annuity_fund_pp() < p.av_pp(n)
+        p.av_pp(n_y) - p.loan_pp(n_y), abs=1e-9)
+    assert p.annuity_fund_pp() < p.av_pp(n_y)
 
 
 def test_the_dynamic_lapse_module_off_and_on(
@@ -1173,9 +1462,11 @@ def test_the_dynamic_lapse_module_off_and_on(
     assert p.lapse_dyn_factor(0) == pytest.approx(1.10, rel=1e-14)
     assert p.lapse_rate(0) == pytest.approx(0.066, rel=1e-14)
     assert p.lapse_rate(0) > a.lapse_rate(0)
-    assert p.lapse_rate(34) == 0.0                   # the zero still binds at n - 1
+    # the zero still binds through the last deferral policy year, multiplier or not
+    assert all(p.lapse_rate(t) == 0.0
+               for t in range(p.annuitisation_t() - 12, p.proj_len()))
 
-    model = variant_model(tmp_path, "Annuity_JP_A_dyn_cap", 1, rate_new=0.20)
+    model = variant_model(tmp_path, "Annuity_JP_S_dyn_cap", 1, rate_new=0.20)
     try:
         capped = model.Projection[1]
         assert capped.lapse_dyn_factor(0) == 2.0     # 1 + 20 x 0.19, capped
@@ -1192,28 +1483,38 @@ def test_the_dynamic_lapse_module_off_and_on(
 def test_no_tail_states_on_the_certain_form(jp_annuity_anchor):
     """The 確定年金 pays exactly k instalments and the contract ends [S2] [S4].
 
-    No maturity value, no continuation, no residual state: ``proj_len`` is n + k exactly,
-    the last instalment falls at n + k - 1, and the whole surviving in-force expires there.
+    No maturity value, no continuation, no residual state: ``proj_len`` is 12(n_y + k)
+    exactly, the last instalment falls at n + 12(k - 1) = 528, and the whole surviving
+    in-force expires at the end of the policy year that instalment opens.  Those eleven
+    trailing months carry maintenance expense and nothing else — the right answer, and one
+    an annual grid could not give.
     """
     a = jp_annuity_anchor
     n, k = a.annuitisation_t(), a.payout_term_y()
-    assert a.proj_len() == n + k == 45
-    assert len(a.result_cf()) == 45
-    assert a.pols_if(n + k - 1) > 0.0
-    assert a.pols_if(n + k) == 0.0
-    assert a.pols_maturity(n + k - 1) == pytest.approx(a.pols_if(n + k - 1), rel=1e-14)
-    assert all(a.pols_maturity(t) == 0.0 for t in range(0, n + k - 1))
-    assert a.claims(n + k - 1) == pytest.approx(a.claims(n + k - 1, "ANNUITY"), abs=1e-9)
+    last_row = a.proj_len() - 1
+    assert a.proj_len() == 12 * (a.annuitisation_y() + k) == 540
+    assert len(a.result_cf()) == 540
+    assert a.annuity_pp(n + 12 * (k - 1)) > 0.0      # the last instalment, at t = 528
+    assert all(a.annuity_pp(t) == 0.0 for t in range(n + 12 * (k - 1) + 1, a.proj_len()))
+    assert a.pols_if(last_row) > 0.0
+    assert a.pols_if(a.proj_len()) == 0.0
+    assert a.pols_maturity(last_row) == pytest.approx(a.pols_if(last_row), rel=1e-14)
+    assert all(a.pols_maturity(t) == 0.0 for t in range(0, last_row))
+    assert a.claims(last_row) == 0.0                 # expiry pays nothing
+    assert a.net_cf(last_row) == pytest.approx(-a.expenses(last_row), abs=1e-9)
 
 
 def test_late_duration_surrender_is_profitable_to_the_insurer(jp_annuity_anchor):
     """Key sensitivity 4: past the crossover a surrender returns less than the fund.
 
-    From t = 13 the 解約返戻金 *is* the 死亡給付金, which is cumulative premiums paid and stops
-    growing at 払込満了 [S2] [S4].  A surrender at t = 29 therefore pays JPY 5,220,000 —
-    twenty-nine premiums, the benefit not reaching its JPY 5,400,000 ceiling until t = 30 —
-    against an ``av_pp(29)`` of JPY 5,699,454.498584, so the insurer keeps
-    JPY 479,454.50 of fund.  The sign is the reverse of a savings product's, which is why a
+    From the elapsed month 149 the 解約返戻金 *is* the 死亡給付金, which is 月払保険料 x 経過月数 and
+    stops growing at 払込満了 [S2] [S4].  A surrender at the anniversary 29 therefore pays
+    JPY 5,220,000 — twenty-nine premiums, the benefit not reaching its JPY 5,400,000
+    ceiling until the anniversary 30 — against an ``av_pp(29)`` of JPY 5,699,454.498584, so
+    the insurer keeps JPY 479,454.50 of fund.  The monthly grid sharpens this rather than
+    changing it: the ceiling now steps by one 月払保険料 a month, so a surrender in the
+    seventh month of policy year 29 is valued on JPY 5,310,000 rather than on a
+    year-rounded figure.  The sign is the reverse of a savings product's, which is why a
     prudent reserving basis loads late-duration lapse **down**, not up.
     """
     a = jp_annuity_anchor
@@ -1222,9 +1523,10 @@ def test_late_duration_surrender_is_profitable_to_the_insurer(jp_annuity_anchor)
     assert a.cv_pp(29) == a.db_pp(29) == 29 * 180_000.0
     assert a.db_pp(29) < a.db_pp(30) == CUMULATIVE_PREMIUMS
     assert a.av_pp(29) - a.cv_pp(29) == pytest.approx(FUND_KEPT_AT_29, abs=YEN)
-    # ... and it holds at every duration from the crossover to the 年金支払開始日.
-    for t in range(13, a.annuitisation_t()):
-        assert a.av_pp(t) > a.cv_pp(t), f"t={t}"
+    assert a.cv_at_m(12 * 29 + 6) == pytest.approx(5_310_000.0, abs=YEN)
+    # ... and it holds at every month from the crossover to the 年金支払開始日.
+    for u in range(CROSSOVER_MONTH, a.annuitisation_t()):
+        assert a.av_at_m(u) > a.cv_at_m(u), f"u={u}"
 
 
 def test_there_is_no_maturity_benefit(individual_annuity, jp_annuity_anchor):
@@ -1244,13 +1546,15 @@ def test_there_is_no_maturity_benefit(individual_annuity, jp_annuity_anchor):
         assert absent not in names, f"{absent} is not part of this product"
     assert "claims_maturity" not in jp_annuity_anchor.result_cf().columns
     with pytest.raises(FormulaError):
-        jp_annuity_anchor.claims(35, "MATURITY")
-    # The money attaching to the scheduled-end year is the ordinary instalment.
-    n, k = jp_annuity_anchor.annuitisation_t(), jp_annuity_anchor.payout_term_y()
-    last = n + k - 1
-    assert jp_annuity_anchor.pols_maturity(last) > 0.0
-    assert jp_annuity_anchor.claims(last) == pytest.approx(
-        jp_annuity_anchor.claims(last, "ANNUITY"), abs=YEN)
+        jp_annuity_anchor.claims(420, "MATURITY")
+    # The scheduled end is the last row of the frame, and nothing at all is paid there.
+    a = jp_annuity_anchor
+    last = a.proj_len() - 1
+    assert a.pols_maturity(last) > 0.0
+    assert a.claims(last) == 0.0
+    n, k = a.annuitisation_t(), a.payout_term_y()
+    assert a.claims(n + 12 * (k - 1)) == pytest.approx(
+        a.claims(n + 12 * (k - 1), "ANNUITY"), abs=YEN)
 
 
 def test_premium_income_stops_at_payment_end_and_never_returns(individual_annuity):
@@ -1262,14 +1566,18 @@ def test_premium_income_stops_at_payment_end_and_never_returns(individual_annuit
     for point_id in individual_annuity.Data.model_point_table().index:
         p = individual_annuity.Projection[point_id]
         m = p.premium_term_y()
-        for t in range(0, m):
+        # the premium falls in one month of twelve, and in none of the other eleven
+        for s_ in range(0, m):
             if not p.apl_on():
-                assert p.premiums(t) == pytest.approx(
-                    p.premium_pp() * p.pols_if(t), abs=1e-9)
-        for t in range(m, p.proj_len()):
+                assert p.premiums(12 * s_) == pytest.approx(
+                    p.premium_pp() * p.pols_if(12 * s_), abs=1e-9)
+            assert all(p.premiums(t) == 0.0
+                       for t in range(12 * s_ + 1, 12 * s_ + 12))
+        for t in range(12 * m, p.proj_len()):
             assert p.premiums(t) == 0.0, f"point {point_id}, t={t}"
-            assert p.prem_to_av_pp(t) == 0.0
             assert p.commissions(t) == 0.0
+        for s_ in range(m, p.proj_years()):
+            assert p.prem_to_av_pp(s_) == 0.0
 
 
 def test_the_zero_deferral_gap_is_a_valid_model_point(individual_annuity):
@@ -1280,11 +1588,12 @@ def test_the_zero_deferral_gap_is_a_valid_model_point(individual_annuity):
     """
     p = individual_annuity.Projection[3]
     assert p.defer_gap_y() == 0
-    assert p.annuitisation_t() == p.premium_term_y() == 15
+    assert p.annuitisation_y() == p.premium_term_y() == 15
+    assert p.annuitisation_t() == 180
     assert p.annuity_start_age() == 60
-    assert p.premiums(14) > 0.0                  # the last premium year ...
-    assert p.lapse_rate(14) == 0.0               # ... is also the year lapse stops
-    assert p.claims(15, "ANNUITY") > 0.0
+    assert p.premiums(168) > 0.0                 # the last premium month ...
+    assert p.lapse_rate(168) == 0.0              # ... is inside the year lapse stops
+    assert p.claims(180, "ANNUITY") > 0.0
     assert p.check_pols_roll_fwd() is True and p.check_fund() is True
 
 
@@ -1299,6 +1608,7 @@ def test_the_tontine_ratio_is_a_model_point_column_not_a_code_branch(
     assert p.db_ratio() == 0.70
     assert p.tax_rider() is False
     m = p.premium_term_y()
+    assert p.db_at_m(12 * m) == pytest.approx(p.db_pp(m), abs=1e-9)
     assert p.db_pp(m) == pytest.approx(0.70 * p.premium_pp() * m, abs=1e-9)
     assert p.cv_pp(m) <= p.db_pp(m) + 1e-9
     assert p.annuity_fund_pp() > p.premium_pp() * m      # the fund is not capped
@@ -1343,7 +1653,7 @@ def test_the_model_rejects_an_inconsistent_annuity_start_age(tmp_path):
     Two spellings of one date is how a projection silently annuitises on the wrong year,
     so the derived quantity is checked against the model point rather than trusted.
     """
-    model = variant_model(tmp_path, "Annuity_JP_A_bad_start", 1, annuity_start_age=64)
+    model = variant_model(tmp_path, "Annuity_JP_S_bad_start", 1, annuity_start_age=64)
     try:
         with pytest.raises(FormulaError):
             model.Projection[1].result_cf()
@@ -1360,7 +1670,7 @@ def test_the_tax_rider_conditions_are_validated(individual_annuity, tmp_path):
     """
     assert individual_annuity.Projection[1].tax_rider() is True
 
-    model = variant_model(tmp_path, "Annuity_JP_A_bad_rider", 1, payout_term_y=5)
+    model = variant_model(tmp_path, "Annuity_JP_S_bad_rider", 1, payout_term_y=5)
     try:
         with pytest.raises(FormulaError):
             model.Projection[1].tax_rider()
@@ -1381,14 +1691,14 @@ def test_invalid_arguments_are_rejected_by_name(individual_annuity, jp_annuity_a
     with pytest.raises(FormulaError):
         a.lapse_rate_mean("amount")
 
-    model = variant_model(tmp_path, "Annuity_JP_A_bad_sex", 1, sex="X")
+    model = variant_model(tmp_path, "Annuity_JP_S_bad_sex", 1, sex="X")
     try:
         with pytest.raises(FormulaError):
             model.Projection[1].result_cf()
     finally:
         model.close()
 
-    model = variant_model(tmp_path, "Annuity_JP_A_bad_form", 1, payout_form="unit")
+    model = variant_model(tmp_path, "Annuity_JP_S_bad_form", 1, payout_form="unit")
     try:
         with pytest.raises(FormulaError):
             model.Projection[1].result_cf()
@@ -1401,40 +1711,63 @@ def test_invalid_arguments_are_rejected_by_name(individual_annuity, jp_annuity_a
 
 
 def test_result_cf_shape(jp_annuity_anchor):
-    """The published statement's columns and their order, which readers depend on.
+    """The published statement's frame, columns and their order, which readers depend on.
+
+    The frame is the library-wide 0-based one: indexed by ``t``, opening at ``t = 0`` — the
+    year of issue — and running contiguously to ``proj_len() - 1``, so it has exactly
+    ``proj_len()`` rows.
 
     ``claims_commutation`` and ``policy_loans`` are columns of zeros in the base run and are
     published rather than dropped, because a zero states that a module is off where a
     missing column would only hide it.
     """
-    df = jp_annuity_anchor.result_cf()
+    a = jp_annuity_anchor
+    df = a.result_cf()
     assert df.index.name == "t"
-    assert list(df.index) == list(range(0, 45))
+    assert df.index[0] == 0
+    assert df.index[-1] == a.proj_len() - 1
+    assert len(df) == a.proj_len()
+    assert list(df.index) == list(range(a.proj_len()))
+    assert list(df.index) == list(range(0, 540))
     assert list(df.columns) == [
         "pols_if", "premiums", "claims_annuity", "claims_death", "claims_lapse",
         "claims_commutation", "expenses", "claim_expenses", "commissions", "policy_loans",
         "net_cf",
     ]
-    assert df.loc[0, "net_cf"] == pytest.approx(73_414.78, abs=YEN)
-    assert df.loc[35, "claims_annuity"] == pytest.approx(194_956.41, abs=YEN)
+    assert df.loc[0, "net_cf"] == pytest.approx(77_665.70, abs=YEN)
+    assert df.loc[420, "claims_annuity"] == pytest.approx(194_956.41, abs=YEN)
+    # one premium month in twelve, one instalment month in twelve
+    assert (df["premiums"] > 0).sum() == 30
+    assert (df["claims_annuity"] > 0).sum() == 10
 
 
 def test_result_pols_reads_the_crossover(jp_annuity_anchor):
     """The companion table puts the two in-force measures and the three values together.
 
-    Reading ``av_pp``, ``db_pp`` and ``cv_pp`` in one frame is the quickest way to see the
-    crossover, where the fund passes the death benefit and the surrender value stops
-    rising.
+    Reading the fund, the death benefit and the surrender value in one frame is the
+    quickest way to see the crossover, where the fund passes the death benefit and the
+    surrender value stops rising — and on this grid that happens at a **month**.
+
+    The three value columns are named for the cells that produce them, ``av_at_m`` /
+    ``db_at_m`` / ``cv_at_m``, because they are monthly readings: publishing them as
+    ``av_pp`` / ``db_pp`` / ``cv_pp`` would name them after the anniversary quantities they
+    equal on one row in twelve.
     """
     df = jp_annuity_anchor.result_pols()
     assert df.index.name == "t"
+    assert list(df.index) == list(range(jp_annuity_anchor.proj_len()))
     assert list(df.columns) == [
         "pols_if", "lives_if", "pols_death", "pols_lapse", "pols_commute",
-        "pols_maturity", "mort_rate", "lapse_rate", "av_pp", "db_pp", "cv_pp",
+        "pols_maturity", "mort_rate", "mort_rate_mth", "lapse_rate", "lapse_rate_mth",
+        "av_at_m", "db_at_m", "cv_at_m",
     ]
-    assert df.loc[12, "cv_pp"] < df.loc[13, "cv_pp"]
-    assert (df.loc[13:34, "cv_pp"] == 2_340_000.0).sum() == 1
-    assert (df.loc[13:34, "av_pp"] > df.loc[13:34, "db_pp"]).all()
+    assert df.loc[CROSSOVER_MONTH - 1, "av_at_m"] < df.loc[CROSSOVER_MONTH - 1, "db_at_m"]
+    assert df.loc[CROSSOVER_MONTH, "av_at_m"] > df.loc[CROSSOVER_MONTH, "db_at_m"]
+    assert df.loc[CROSSOVER_MONTH, "cv_at_m"] == 2_235_000.0
+    assert (df.loc[CROSSOVER_MONTH:419, "av_at_m"]
+            > df.loc[CROSSOVER_MONTH:419, "db_at_m"]).all()
+    assert (df.loc[CROSSOVER_MONTH:419, "cv_at_m"]
+            == df.loc[CROSSOVER_MONTH:419, "db_at_m"]).all()
 
 
 def test_net_cf_carries_the_notes_own_sign(individual_annuity, jp_annuity_anchor):
@@ -1445,8 +1778,8 @@ def test_net_cf_carries_the_notes_own_sign(individual_annuity, jp_annuity_anchor
     about which sign the notes chose, not an omission.
     """
     assert "liability_cf" not in individual_annuity.Projection.cells
-    assert jp_annuity_anchor.net_cf(0) > 0.0          # premium year
-    assert jp_annuity_anchor.net_cf(35) < 0.0         # annuity year
+    assert jp_annuity_anchor.net_cf(0) > 0.0          # premium month
+    assert jp_annuity_anchor.net_cf(420) < 0.0        # annuity month
 
 
 def test_inputs_live_beside_the_model():
@@ -1602,7 +1935,7 @@ def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
     doubled["mort_rate"] = doubled["mort_rate"] * 2
     doubled.to_csv(tmp_path / "mort_doubled.csv")
 
-    model = mx.read_model(tmp_path / MODEL_DIR.name, name="Annuity_JP_A_swap")
+    model = mx.read_model(tmp_path / MODEL_DIR.name, name="Annuity_JP_S_swap")
     try:
         base = model.Projection[1].mort_rate(0)
         model.Data.mort_table_file = "mort_doubled.csv"
@@ -1621,7 +1954,7 @@ def test_round_trip_reproduces_the_worked_example(tmp_path):
     new parent directory before re-reading.  Without that the re-read model loads and then
     fails on first evaluation, which is exactly the trade-off this layout makes.
     """
-    model = mx.read_model(MODEL_DIR, name="Annuity_JP_A_rt_src")
+    model = mx.read_model(MODEL_DIR, name="Annuity_JP_S_rt_src")
     try:
         dest = tmp_path / MODEL_DIR.name
         mx.write_model(model, str(dest), backup=False)
@@ -1631,7 +1964,7 @@ def test_round_trip_reproduces_the_worked_example(tmp_path):
     for csv in MODEL_DIR.parent.glob("*.csv"):
         shutil.copy(csv, tmp_path / csv.name)
 
-    reread = mx.read_model(dest, name="Annuity_JP_A_rt")
+    reread = mx.read_model(dest, name="Annuity_JP_S_rt")
     try:
         anchor = reread.Projection[1]
         assert anchor.annuity_fund_pp() == pytest.approx(

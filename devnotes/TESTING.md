@@ -151,14 +151,14 @@ The project uses GitHub Actions for CI/CD:
 lifelib/
 ├── tests/                      # Main test directory
 │   ├── libraries/             # Tests for library models
-│   ├── export/                # nomx export tests for uslib, uklib and jplib
+│   ├── export/                # nomx export tests for uslib, uklib, jplib and frlib
 │   ├── commands/              # Tests for CLI commands
 │   ├── data/                  # Test data generators
 │   └── filecomp/              # File comparison utilities
 ├── libraries/
 │   ├── ifrs17a/
 │   │   └── tests/             # Library-specific tests
-│   └── uslib/ uklib/ jplib/
+│   └── uslib/ uklib/ jplib/ frlib/
 │       └── tests/             # In-library suites, which travel with lifelib.create()
 └── projects/
     └── smithwilson/

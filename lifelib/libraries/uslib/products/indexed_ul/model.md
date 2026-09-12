@@ -34,9 +34,9 @@ model.Projection[1].result_cf()
 ```
 
 `Projection` takes a `point_id`; `Projection[1]` is the baseline cell.
-`result_cf()` returns a tidy `DataFrame` indexed by policy month `t` with one column per
-cash flow line; `result_av()` is the account value roll-forward, `result_seg()` the
-indexed segment ladder, and `result_pols()` the decrements.
+`result_cf()` returns a tidy `DataFrame` indexed by policy month `t` (0-based) with one
+column per cash flow line; `result_av()` is the account value roll-forward,
+`result_seg()` the indexed segment ladder, and `result_pols()` the decrements.
 
 The model and its `Projection` Space both carry docstrings — `model.doc` describes the
 product and the projection basis, and `model.Projection.doc` holds the full mapping
@@ -44,12 +44,36 @@ between the technical notes' symbols and the cells names.
 
 ## Monthly, not annual
 
-Policy month `t` runs 1 … `proj_len()` = `12 × (121 − age_at_entry())`, so a policy
-issued at 45 projects 912 months, ending as the insured attains 121. The notes fix the
-grid: everything happens on the monthiversary, because that is where segments are
-created and mature. `t = 1` is the issue month of a new-business point; the notes' own
-month index (which starts at 0) is `duration_mth(t)`, and every `mod 12` test — the
-anniversary premium, the segment maturity — is written against it.
+Policy month `t` is **0-based** and runs `0 … proj_len() − 1`, with
+`proj_len()` = `12 × (121 − age_at_entry()) − duration_mth_init()` the number of
+projected months: a policy issued at 45 projects 912 months, `t = 0 … 911`, and
+`len(result_cf()) == proj_len()`. `t = 0` is the issue month of a new-business point,
+policy month `t` runs from monthiversary `t` to `t + 1`, and the run ends as the insured
+attains 121. The notes fix the grid: everything happens on the monthiversary, because
+that is where segments are created and mature. The notes' own month index, counted
+from issue, is `duration_mth(t) = duration_mth_init() + t` — the same as `t` for a
+new-business point, offset by the elapsed months for an in-force one — and every
+`mod 12` test (the anniversary premium, the segment maturity) is written against it.
+`policy_year(t) = duration_mth(t) // 12 + 1` is the contractual 1-based label that the
+policy-year-keyed inputs are looked up with, and `age(t) = age_at_entry() + duration(t)`
+is the issue age throughout `t = 0 … 11`.
+
+State cells are closing balances: `av_pp(t)`, `fa_pp(t)`, `lca_pp(t)`, `loan_bal_pp(t)`
+and `seg_bal_pp(t, m)` are the values at the **end** of month `t` (the notes' `X_{t+1}`),
+and the opening value of a month is the `"BEF_PREM"` timing — the model point's opening
+balance when `t = 0`, the previous month's closing balance otherwise. Nothing is indexed
+at `t = −1`.
+
+### Time-keyed inputs
+
+None of the seven CSVs is keyed by the frame's `t`. `coi_rates.csv` and
+`lapse_table.csv` are keyed by `policy_year`, the contractual 1-based label (values
+start at 1), and are read through `policy_year(t)`; they were not changed by the move to
+the 0-based frame. In `model_point_table.csv`, `duration_mth` is an elapsed count
+(0 for all five shipped points) and is already 0-based; `wd_first_year` (2) and
+`loan_first_year` (21) are policy-year labels compared against `policy_year(t)`.
+`corridor_factors.csv` and `mort_table.csv` are keyed by attained age, reached through
+`age(t)`; `surr_charge_table.csv` holds a run-off length in years. No CSV value moved.
 
 Age 121 is an **[unverified]** inference (spec F5): no retrieved document states maturity
 mechanics, and the spec reads charges ceasing at 120 with coverage continuing. The
@@ -140,7 +164,7 @@ The model points and what each is for:
 | 2 | Option B | corridor and a net amount at risk that does not run off |
 | 3 | indexed allocation 0% | the control run: no segment ever created, everything at the fixed rate |
 | 4 | monthly premium mode | the full twelve-concurrent-segment ladder |
-| 5 | $6,000/yr, $200/mo withdrawal from year 2, $6,000/yr loan from year 21 | fixed-account-first-then-pro-rata sourcing, the loan collateral account, the no-lapse test, and the overloan exposure. The $200 is deliberately below the sourced $500 withdrawal minimum, and the account value is not meaningful after month 605 — both explained below |
+| 5 | $6,000/yr, $200/mo withdrawal from year 2, $6,000/yr loan from year 21 | fixed-account-first-then-pro-rata sourcing, the loan collateral account, the no-lapse test, and the overloan exposure. The $200 is deliberately below the sourced $500 withdrawal minimum, and the account value is not meaningful from month 604 — both explained below |
 
 A model point on any other issue age, sex or class needs `coi_rates.csv` extended first;
 a test asserts every model point in the table actually projects.
@@ -165,7 +189,7 @@ Seven cases needed care:
 
 | Notes | Cells | Why |
 |---|---|---|
-| `t` (0-based) | `duration_mth(t)` | the model's `t` is 1-based; the notes' index is the completed-months count |
+| `t` (from issue) | `duration_mth(t)` | both are 0-based and coincide for a new-business point; the model's `t` counts from the projection start, the notes' from issue, so an in-force point reads the notes' index as `duration_mth_init() + t` |
 | `CSV_t` | `ncsv_pp` | the notes' cash surrender value already nets the loan; the chassis splits `csv_pp` (`AV − SC`) from `ncsv_pp` (`CSV − L`) |
 | `W_t` "gross of $25 fee" | `wd_pp` / `wd_fee_pp` | the fee is **inside** `W_t` here, not on top of it — see below |
 | `W_t − fee` (the payment) | `withdrawals(t)` | a withdrawal is a payment on the owner's election, not a claim — see below |
@@ -222,15 +246,16 @@ twelve deductions are taken — only eleven of them are inside the credit base.
 
 ## The ladder is degenerate under the annual-premium baseline
 
-The notes' baseline pays **annually**, at BOM of policy month 1 of each policy year, and
-sweeps **100%** of the fixed account. Nothing therefore arrives in the fixed account in
-months 2–12, nothing is swept, and the "up to 12 concurrent segments" of [S3] [S4] collapses
-to one segment a year. That is a correct consequence of the baseline, not a modelling
-shortcut — but it would leave the ladder machinery, and the notes' first pitfall about it,
+The notes' baseline pays **annually**, at BOM of the first month of each policy year
+(`t ≡ 0 mod 12`), and sweeps **100%** of the fixed account. Nothing therefore arrives in
+the fixed account in the other eleven months of the year (`t = 1 … 11` of the first),
+nothing is swept, and the "up to 12 concurrent segments" of [S3] [S4] collapses to one
+segment a year. That is a correct consequence of the baseline, not a modelling shortcut
+— but it would leave the ladder machinery, and the notes' first pitfall about it,
 untested.
 
 Model point 4 pays monthly instead. A segment is created every month, twelve are live from
-month 12 onward, each carries its own index start level `I(m)`, and twelve separate credits
+month 11 onward, each carries its own index start level `I(m)`, and twelve separate credits
 are paid each year. Model point 3 is the other end: 0% indexed allocation, so no segment is
 ever created and the balance compounds at the fixed-account rate. Read points 1, 3 and 4
 together and the ladder's contribution is visible rather than assumed.
@@ -281,9 +306,9 @@ segments born in the previous eleven months, valued at the end of month `t − 1
 `seg_bal_active_pp(t)` — and the obvious implementation caps each of them at that pool.
 
 That is wrong, and it was wrong here until this pass. Capping both against the *pre-draw*
-pool lets the two together take more than the segments hold. On model point 5 at month 384
+pool lets the two together take more than the segments hold. On model point 5 at month 383
 the pool was $265.29, the step-3 draw took $200.00, and the step-6 deduction was then
-allowed $177.38 — $377.38 out of $265.29. The segment born at month 373 went to −$112.09,
+allowed $177.38 — $377.38 out of $265.29. The segment born at month 372 went to −$112.09,
 and twelve months later it paid an index credit of `0.0640 × (−112.0873) = −$7.17`: a
 *negative* index credit, on an account whose floor is contractually 0%
 (`cr_k = max(f, min(c, p × r))`, floor 0% [S2] [R1]).
@@ -314,7 +339,7 @@ and neither a balance nor a credit is ever negative), and `check_margin()` (`net
 reconciles to the expense and mortality margins). The first three hold for all five model
 points.
 
-`check_margin()` holds for points 1–4 and **fails for point 5 from policy month 384
+`check_margin()` holds for points 1–4 and **fails for point 5 from policy month 383
 (policy year 32)**, which is where its $6,000-a-year loan overtakes the cash value:
 `ncsv_pp` floors at zero, the identity opens up by the unrecoverable debt, and
 `is_shortfall(t)` starts firing. That is the exposure the notes name as key sensitivity 6 —
@@ -323,7 +348,7 @@ points.
 spec and deliberately not modeled. The test suite asserts the identity for points 1–4 and
 asserts the overloan for point 5, so the gap is pinned open rather than papered over.
 
-### And then the account value itself runs away — point 5's `result_av()` is meaningless after month 605
+### And then the account value itself runs away — point 5's `result_av()` is meaningless from month 604
 
 The margin identity is not the only thing that gives way, and the earlier draft of this
 README stopped one step too soon. **No policy is terminated for insufficiency in this
@@ -340,14 +365,14 @@ NAAR_t = max(0, DB_t × v_g − AV'_t)
 rises one-for-one as `AV'_t` falls, and `COI_t = coi_t × NAAR_t / 1000` is charged against
 `AV'_t` again next month. On model point 5:
 
-| Policy month | Policy year | What breaks |
+| Policy month `t` | Policy year | What breaks |
 |---|---|---|
-| 384 | 32 | loan overtakes cash value; `ncsv_pp` floors at 0; `check_margin()` opens up |
-| 605 | 51 | `av_pp(605) = −241.18` — the account value turns negative |
-| 912 | 76 (horizon) | `av_pp ≈ −1.3 × 10^10`, `coi_pp ≈ 6.7 × 10^8` |
+| 383 | 32 | loan overtakes cash value; `ncsv_pp` floors at 0; `check_margin()` opens up |
+| 604 | 51 | `av_pp(604) = −241.18` — the account value turns negative |
+| 911 | 76 (the last projected month, `proj_len() − 1`) | `av_pp ≈ −1.3 × 10^10`, `coi_pp ≈ 6.7 × 10^8` |
 
 So `result_av()` for model point 5 — `av_pp`, `net_amt_at_risk`, `coi_pp`,
-`mth_deduction_pp` — **is not a meaningful number from month 605 onward.** Points 1–4 never
+`mth_deduction_pp` — **is not a meaningful number from month 604 onward.** Points 1–4 never
 get near it: point 1's account value never falls below $8,102.
 
 `result_cf()` is a different matter and stays finite and bounded throughout. The death
@@ -363,7 +388,7 @@ would stop the compounding, but it is a rule the notes do not give, and it would
 `check_av_components()` and `check_av_roll_fwd()` — the two identities that make the
 segment bookkeeping checkable. Implementing the cascade properly needs the in-grace
 treatment the notes withhold. So the behaviour is disclosed instead, here and in the model
-docstring, and `test_point_5_account_value_runs_away_after_month_605` pins the boundary
+docstring, and `test_point_5_account_value_runs_away_after_month_604` pins the boundary
 month, the sign either side of it, and the finiteness of `result_cf()`, so the number
 cannot drift without a test failing.
 
@@ -420,13 +445,15 @@ attained age 121, which is itself **[unverified]**.
 
 `tests/test_indexed_ul_us.py` asserts every row and column of the worked example in both
 index scenarios plus both variant credit bases; the anchor account value roll-forward to
-the cent and the month-1 trace at full precision; one test per entry in the notes' "Known
-modeling pitfalls" list; the four roll-forward self-checks across all five model points;
-the in-force roll-forward; the no-lapse suppression, the surrender-charge-expiry spike and
+the cent (keyed by the 0-based `t`: rows `0, 1, 11, 12, 13`) and the issue-month
+(`t = 0`) trace at full precision; one test per entry in the notes' "Known modeling
+pitfalls" list; the four roll-forward self-checks across all five model points; the
+in-force roll-forward; the no-lapse suppression, the surrender-charge-expiry spike and
 the neutral dynamic multiplier; the loan collateral mechanics and the overloan exposure;
-the guaranteed-basis divergence; that the model carries no present values or discount
-curve; that the chassis name set is present; and a read → write → re-read round trip
-carrying the inputs along.
+the guaranteed-basis divergence; that every result table is indexed `t = 0 … proj_len() − 1`
+with `proj_len()` rows; that the model carries no present values or discount curve; that
+the chassis name set is present; and a read → write → re-read round trip carrying the
+inputs along.
 
 Three of them exist because of the sections above, and each fails against the behaviour it
 replaced or the claim it corrects:
@@ -434,7 +461,7 @@ replaced or the claim it corrects:
 | Test | What it pins |
 |---|---|
 | `test_the_two_draws_on_the_segment_pool_cannot_together_overdraw_it` | the step-3 draw plus the step-6 deduction never exceed `seg_bal_active_pp(t)`; no segment balance and no index credit is negative on any model point — the 0% floor as a bound |
-| `test_point_5_account_value_runs_away_after_month_605` | the disclosed boundary: `av_pp > 0` through month 604, negative from 605, enormous at the horizon, while `result_cf()` stays finite and bounded |
+| `test_point_5_account_value_runs_away_after_month_604` | the disclosed boundary: `av_pp > 0` through month 603, negative from 604, enormous at the horizon, while `result_cf()` stays finite and bounded |
 | `test_the_two_five_hundred_dollar_withdrawal_limits_are_not_enforced` | model point 5's $200 withdrawal is below the sourced $500 minimum, and `ncsv_pp` floors at zero rather than $500 — the gap named in **Not implemented** |
 
 ```bash

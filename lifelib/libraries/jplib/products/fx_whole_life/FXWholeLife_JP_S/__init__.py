@@ -50,8 +50,13 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 time rather than stored inside the model. The model folder itself holds no data, so
 the model and its inputs must travel together.
 
-**Projection basis.** Monthly steps. ``t`` counts completed policy months from 契約日,
-``t = 0 ... proj_len() - 1``, and ``t = 0`` is the month beginning at issue. Stepping
+**Projection basis.** Monthly steps on a **0-based** time index. ``t`` counts completed
+policy months from 契約日, ``t = 0 ... proj_len() - 1``, and ``t = 0`` is the month
+beginning at issue: month ``t`` runs from time ``t`` to time ``t + 1``, ``age(0)`` is the
+契約年齢 and ``pols_if(0)`` is the opening in-force count. ``proj_len()`` is the number of
+projected months, so ``result_cf()`` has ``proj_len()`` rows indexed ``0`` to
+``proj_len() - 1``; the contractual policy year is the derived 1-based label
+``policy_year(t) = t // 12 + 1``. Stepping
 is on the 月単位の契約応当日, not the calendar month end: the 約款 credits the 積立利率 from
 the monthly policy anniversary while the 重要事項説明書 says the rate is *declared* on the
 1st, and crediting on calendar month ends would be wrong by the anniversary offset for

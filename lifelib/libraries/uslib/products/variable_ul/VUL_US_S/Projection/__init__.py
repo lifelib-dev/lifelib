@@ -46,11 +46,22 @@ surr_charge_file        data.surr_charge_table()          surr_charge_table.csv
 
 .. rubric:: Projection basis
 
-``t`` counts **policy months**, 1-based: ``t = 1`` is the issue month of a new-business
-model point, and for an in-force point it is the first projected month, sitting
-``duration_mth_init()`` completed months after issue. State variables the notes define
-at ``t = 0`` -- ``SA_i(0)``, ``FA(0)``, ``LA(0)``, ``D(0)``, ``F(0)``, ``l(0) = 1`` --
-are the ``t == 0`` branch of the corresponding recursion.
+``t`` counts **projected policy months, 0-based**: ``t = 0`` is the first projected
+month -- the issue month of a new-business model point, and for an in-force point the
+month sitting ``duration_mth_init()`` completed months after issue -- and the frame is
+``t = 0, 1, ..., proj_len() - 1`` (``for t in range(proj_len())``, as in lifelib's
+``savings.CashValue_SE``). Month ``t`` runs from monthiversary ``t`` to monthiversary
+``t + 1``; ``duration_mth(t) = duration_mth_init() + t`` carries the elapsed time and
+``policy_year(t) = duration_mth(t) // 12 + 1`` is the contractual, 1-based label.
+
+Every state variable is a **closing balance**: ``sa_pp(t, i)``, ``fa_pp(t)``,
+``la_pp(t)``, ``loan_bal_pp(t)``, ``av_pp(t)``, ``sum_assured_at(t)`` are values at the
+**end** of month ``t``. The opening value is the ``"BEF_PREM"`` timing of the matching
+``*_at`` cells -- ``sa_pp_at(t, i, "BEF_PREM")``, ``fa_pp_at(t, "BEF_PREM")``,
+``la_pp_at(t, "BEF_PREM")``, ``loan_bal_pp_at(t, "BEF_PREM")``, ``av_pp_at(t,
+"BEF_PREM")`` -- which is the model point's opening balance (the notes' ``SA_i(0)``,
+``FA(0)``, ``LA(0)``, ``D(0)``, ``F(0)``) when ``t == 0`` and the previous month's
+closing balance otherwise. ``pols_if(0) = pols_if_init()`` is the notes' ``l_0``.
 
 Within each month the notes' monthiversary order is followed exactly:
 
@@ -110,13 +121,13 @@ path. The technical notes use compact actuarial symbols instead. The mapping is:
 =========================  ==============================  ==========================
 Notes symbol               Cells                           Meaning
 =========================  ==============================  ==========================
-t                          (the ``t`` argument)            Policy month, 1-based
-(policy year)              policy_year(t)                  Policy year, 1-based
-(t - 1 in months)          duration_mth(t)                 Completed policy months
+t                          (the ``t`` argument)            Projected month, 0-based
+(policy year)              policy_year(t)                  Policy year, 1-based label
+(months since issue)       duration_mth(t)                 Completed policy months
 (completed years)          duration(t)                     Completed policy years
 (issue age)                age_at_entry                    Issue age (ANB)
 x_t                        age(t)                          Attained age (ANB)
-(none)                     proj_len                        Last projected month
+(none)                     proj_len                        Number of projected months
 F_0                        sum_assured                     Initial face amount
 F_t                        sum_assured_at(t)               Face after reductions
 (F_0 / 1000)               units                           Initial face in $1,000s
@@ -141,13 +152,17 @@ gamma                      load_prem_rate                  Premium load rate
 W(t)                       wd_pp(t)                        Partial withdrawal
 (withdrawal fee)           wd_fee_pp(t)                    $25 withdrawal fee
 (face cut)                 face_reduction_pp(t)            Option A face reduction
-SA_{i,t}                   sa_pp(t, i)                     Subaccount value, EOM
+SA_{i,t+1}                 sa_pp(t, i)                     Subaccount value, EOM
+SA_{i,t}                   sa_pp_at(t, i, "BEF_PREM")      Subaccount, start of month
 SA'_{i,t}                  sa_pp_at(t, i, "BEF_INV")       Subaccount post-deduction
-FA_t                       fa_pp(t)                        Fixed-option value, EOM
-LA_t                       la_pp(t)                        Loan-account collateral
-D_t                        loan_bal_pp(t)                  Outstanding policy debt
-AV_t                       av_pp(t)                        Total account value, EOM
-AV_t (BOM)                 av_pp_at(t, "BEF_PREM")         Account value, start of month
+FA_{t+1}                   fa_pp(t)                        Fixed-option value, EOM
+FA_t                       fa_pp_at(t, "BEF_PREM")         Fixed option, start of month
+LA_{t+1}                   la_pp(t)                        Loan-account collateral, EOM
+LA_t                       la_pp_at(t, "BEF_PREM")         Collateral, start of month
+D_{t+1}                    loan_bal_pp(t)                  Outstanding policy debt, EOM
+D_t                        loan_bal_pp_at(t, "BEF_PREM")   Policy debt, start of month
+AV_{t+1}                   av_pp(t)                        Total account value, EOM
+AV_t                       av_pp_at(t, "BEF_PREM")         Account value, start of month
 (post-premium AV)          av_pp_at(t, "BEF_FEE")          The notes' step-5 balance
 (unloaned AV)              unloaned_av_pp_at(t, timing)    Deduction allocation base
 (aggregate AV)             av_at(t, timing)                Account value in force
@@ -216,19 +231,21 @@ Eight names needed care.
 ``l_t`` in the notes is the in-force probability at the **start** of month ``t`` and
 ``l_{t+1} = l_t (1 - q^d_t)(1 - q^w_t)`` is its roll-forward; ``pols_if(t)`` follows
 ``BasicTerm_S`` and is the number in force at the start of month ``t``, so the two
-coincide and ``pols_if(1) = l_0 = pols_if_init()``. Every BOM cash flow is weighted by
+coincide and ``pols_if(0) = l_0 = pols_if_init()``. Every BOM cash flow is weighted by
 ``pols_if(t)``.
 
 The notes' ``AV_{t+1}`` is an **end-of-month** balance, not the next month's opening
 event: ``av_pp(t)`` is the notes' ``AV_{t+1}`` and ``av_pp_at(t, "BEF_PREM")`` is the
-notes' ``AV_t``. The same shift applies to ``D_{t+1}``, which is ``loan_bal_pp(t)``.
-This is why the notes write the death claim as ``DB_t^EOM - D_{t+1}``: both are
-end-of-month quantities of month ``t``.
+notes' ``AV_t``. The same shift applies to ``D_{t+1}``, which is ``loan_bal_pp(t)``,
+and to ``LA_{t+1}``, which is ``la_pp(t)``. This is why the notes write the death claim
+as ``DB_t^EOM - D_{t+1}``: both are end-of-month quantities of month ``t``.
 
 The notes use ``m`` for the M&E rate and also index the pricing path by policy month.
 ``me_rate_ann`` names the rate; the pricing-path cells take an argument ``m`` counting
-policy months **from issue**, which is ``duration_mth(t) + 1`` at projection month
-``t`` -- not ``t`` itself, which restarts at 1 for an in-force model point.
+policy months **from issue**, 0-based like ``t``, which is ``duration_mth(t)`` at
+projection month ``t`` -- not ``t`` itself, which restarts at 0 for an in-force model
+point. ``av_pricing_pp(m)`` is the pricing path's closing balance of month ``m`` and
+``av_pricing_pp_at(m, "BEF_PREM")`` its opening balance, zero at ``m = 0``.
 
 The notes call ``AV_t - SC_t - D_t`` the cash surrender value ``CSV_t``. The chassis
 name for that quantity, net of policy debt, is ``ncsv_pp``; ``csv_pp`` is the
@@ -418,8 +435,10 @@ def pols_if_init():
 def duration_mth_init():
     """Completed policy months already elapsed when the projection starts.
 
-    0 for a new-business model point, so that ``t = 1`` is the issue month; positive
-    for an in-force cell.  This is the notes' ``duration_inforce``.
+    0 for a new-business model point, so that ``t = 0`` is the issue month; positive
+    for an in-force cell.  This is the notes' ``duration_inforce``, an elapsed count
+    and therefore already 0-based: 24 means that months 0-23 since issue are over and
+    ``t = 0`` is the twenty-fifth month of the contract, ``duration_mth(0) = 24``.
     """
     return int(model_point()["duration_mth"])
 
@@ -448,27 +467,37 @@ def scenario_id():
 
 
 def duration_mth(t):
-    """Completed policy months at the beginning of policy month t.
+    """Completed policy months at the beginning of projected month t.
 
-    ``duration_mth_init() + t - 1``, so it is 0 in the issue month of a new-business
-    model point.  The pricing-path cells index policy months from issue as
-    ``duration_mth(t) + 1``; see :func:`funding_ratio`.
+    ``duration_mth_init() + t``, so it is 0 in the issue month of a new-business model
+    point and it is the policy month **from issue**, 0-based, of projected month
+    ``t``.  The pricing-path cells index policy months from issue on the same clock,
+    so ``m = duration_mth(t)``; see :func:`funding_ratio`.
     """
-    return duration_mth_init() + t - 1
+    return duration_mth_init() + t
 
 
 def duration(t):
-    """Completed policy years at the beginning of policy month t."""
+    """Completed policy years at the beginning of projected month t, ``duration_mth(t) // 12``.
+
+    0 throughout the first policy year, as ``duration`` is in lifelib.
+    """
     return duration_mth(t) // 12
 
 
 def policy_year(t):
-    """The policy year containing policy month t, 1-based."""
+    """The policy year containing projected month t: ``duration(t) + 1``.
+
+    A contractual, 1-based label -- policy year 1 is the twelve months from issue --
+    used only to look up schedules the contract states by policy year: the surrender
+    charge, the loan tier, the COI scale, the lapse and persistency tables.  It is
+    never the frame index.
+    """
     return duration(t) + 1
 
 
 def age(t):
-    """x_t: the attained age (ANB) in policy month t, ``age_at_entry() + duration(t)``.
+    """x_t: the attained age (ANB) in projected month t, ``age_at_entry() + duration(t)``.
 
     Age advances on the policy anniversary, not on the birthday, which is the ANB
     convention the whole model is built on **[std]**.
@@ -477,11 +506,13 @@ def age(t):
 
 
 def proj_len():
-    """Projection length in policy months.
+    """The number of projected months: the frame is ``t = 0, ..., proj_len() - 1``.
 
-    ``12 * (omega_age - age_at_entry() + 1) - duration_mth_init()``: the projection
-    runs through the policy year in which the insured attains ``omega_age`` (121), the
-    last age of *mort_table.csv*, where the annual rate is 1.0.  The contract has no
+    ``12 * (omega_age - age_at_entry() + 1) - duration_mth_init()``, the exclusive end
+    of ``range(proj_len())`` -- the last projected month is ``proj_len() - 1`` and
+    ``len(result_cf()) == proj_len()``.  The projection runs through the policy year
+    in which the insured attains ``omega_age`` (121), the last age of
+    *mort_table.csv*, where the annual rate is 1.0.  The contract has no
     maturity date [S1][S2][S4], so the projection is truncated by mortality **[std]**,
     not by the policy.  Ending at 121 rather than 120 is deliberate: it is the age at
     which premiums and monthly deductions cease while the asset charges continue, and
@@ -505,10 +536,12 @@ def units():
 def gross_return_mth(t, i):
     """r_{i,t}: the **gross** monthly return of subaccount i, a scenario input.
 
-    Read from *scenario_table.csv* for this model point's :func:`scenario_id`.  Months
-    beyond the end of a scenario take its last row, so a two-row scenario is a level
-    path with one distinguished opening month -- which is exactly the shipped ``WE``
-    scenario, whose month 1 is the worked example's (+1.00% equity, -0.50% bond).
+    Read from *scenario_table.csv* for this model point's :func:`scenario_id`, whose
+    ``t`` column is the **projected** month, 0-based, exactly as here -- the scenario
+    restarts with the projection, not with the contract.  Months beyond the end of a
+    scenario take its last row, so a two-row scenario is a level path with one
+    distinguished opening month -- which is exactly the shipped ``WE`` scenario, whose
+    ``t = 0`` is the worked example's month (+1.00% equity, -0.50% bond).
 
     Gross means before the fund expense ratio and before the M&E charge; both are
     applied in :func:`inv_return_mth`.  A stochastic set is more rows in this table,
@@ -602,13 +635,16 @@ def pricing_return_mth():
 
 
 def age_pricing(m):
-    """The attained age (ANB) in policy month m of the pricing path, counted from issue."""
-    return age_at_entry() + (m - 1) // 12
+    """The attained age (ANB) in policy month m of the pricing path, ``age_at_entry() + m // 12``.
+
+    ``m`` counts policy months from issue, 0-based: ``m = 0`` is the issue month.
+    """
+    return age_at_entry() + m // 12
 
 
 def policy_year_pricing(m):
-    """The policy year containing policy month m of the pricing path, 1-based."""
-    return (m - 1) // 12 + 1
+    """The policy year containing policy month m of the pricing path, ``m // 12 + 1``."""
+    return m // 12 + 1
 
 
 def prem_pricing_pp(m):
@@ -616,12 +652,13 @@ def prem_pricing_pp(m):
 
     The pricing path is funded at ``rho = 1`` by construction -- it is the benchmark
     the realized funding level is measured against -- so premium persistency does not
-    enter it.  Zero from attained age 121.
+    enter it.  A single premium falls in the issue month ``m = 0``.  Zero from attained
+    age 121.
     """
     if age_pricing(m) >= charges_cease_age:                          # noqa: F821
         return 0.0
     if premium_type() == "SINGLE":
-        return premium_pp_ann() if m == 1 else 0.0
+        return premium_pp_ann() if m == 0 else 0.0
     elif premium_type() == "LEVEL":
         return premium_pp_ann() / 12
     else:
@@ -631,13 +668,15 @@ def prem_pricing_pp(m):
 def sa_pricing_pp_at(m, i, timing):
     """Pricing-path subaccount value at an intra-month point of policy month m.
 
-    ``"BEF_PREM"`` the closing balance of month ``m - 1``; ``"BEF_FEE"`` after the net
-    premium; ``"BEF_INV"`` after this subaccount's pro-rata share of the monthly
-    deduction.  There are no withdrawals and no loans on the pricing path, so the
-    ``"BEF_WD"`` point of :func:`sa_pp_at` has no counterpart.
+    ``"BEF_PREM"`` the closing balance of month ``m - 1``, or zero in the issue month
+    ``m = 0`` -- the path starts at issue with no account value, whatever the model
+    point's own opening balances are; ``"BEF_FEE"`` after the net premium;
+    ``"BEF_INV"`` after this subaccount's pro-rata share of the monthly deduction.
+    There are no withdrawals and no loans on the pricing path, so the ``"BEF_WD"``
+    point of :func:`sa_pp_at` has no counterpart.
     """
     if timing == "BEF_PREM":
-        return sa_pricing_pp(m - 1, i)
+        return 0.0 if m == 0 else sa_pricing_pp(m - 1, i)
     elif timing == "BEF_FEE":
         return (sa_pricing_pp_at(m, i, "BEF_PREM")
                 + alloc(i) * (1 - load_prem_rate()) * prem_pricing_pp(m))
@@ -653,12 +692,11 @@ def sa_pricing_pp_at(m, i, timing):
 def sa_pricing_pp(m, i):
     """SA*_i: the pricing-path value of subaccount i at the end of policy month m.
 
-    ``SA*_i(0) = 0``: the path starts at issue with no account value, whatever the
-    model point's own opening balances are.  Growth uses the level pricing return
-    rather than the projection's scenario, with the same fund expense and M&E factors.
+    The post-deduction balance times the unit-value factor; the opening balance, zero
+    at ``m = 0``, is ``sa_pricing_pp_at(m, i, "BEF_PREM")``.  Growth uses the level
+    pricing return rather than the projection's scenario, with the same fund expense
+    and M&E factors.
     """
-    if m == 0:
-        return 0.0
     return (sa_pricing_pp_at(m, i, "BEF_INV")
             * (1 + pricing_return_mth())
             * (1 - fund_expense_ann(i) / 12)
@@ -666,9 +704,12 @@ def sa_pricing_pp(m, i):
 
 
 def fa_pricing_pp_at(m, timing):
-    """Pricing-path fixed-option value at an intra-month point of policy month m."""
+    """Pricing-path fixed-option value at an intra-month point of policy month m.
+
+    ``"BEF_PREM"`` is the closing balance of month ``m - 1``, zero at ``m = 0``.
+    """
     if timing == "BEF_PREM":
-        return fa_pricing_pp(m - 1)
+        return 0.0 if m == 0 else fa_pricing_pp(m - 1)
     elif timing == "BEF_FEE":
         return (fa_pricing_pp_at(m, "BEF_PREM")
                 + alloc_fixed() * (1 - load_prem_rate()) * prem_pricing_pp(m))
@@ -683,8 +724,6 @@ def fa_pricing_pp_at(m, timing):
 
 def fa_pricing_pp(m):
     """FA*: the pricing-path fixed-option value at the end of policy month m."""
-    if m == 0:
-        return 0.0
     return fa_pricing_pp_at(m, "BEF_INV") * (1 + fixed_return_mth(m))
 
 
@@ -695,15 +734,15 @@ def av_pricing_pp_at(m, timing):
 
 
 def av_pricing_pp(m):
-    """AV*_m: the account value the notes' pricing path reaches by policy month m.
+    """AV*: the pricing path's account value at the **end** of policy month m.
 
     "The account value projected at issue under the pricing path (level 6% gross
     subaccount return, current charges, planned premiums)" **[std]**.  It is the
     denominator of :func:`funding_ratio`, and it is a genuine second recursion: no
-    decrements, no loans, no withdrawals, ``rho = 1``, starting from zero at issue.
+    decrements, no loans, no withdrawals, ``rho = 1``, starting from zero at issue --
+    ``av_pricing_pp_at(0, "BEF_PREM") == 0``.  ``m`` counts policy months from issue,
+    0-based, so this is the notes' ``AV*_{m+1}``.
     """
-    if m == 0:
-        return 0.0
     return (sum(sa_pricing_pp(m, i) for i in subaccount_ids()) + fa_pricing_pp(m))
 
 
@@ -711,7 +750,7 @@ def db_pricing_pp(m):
     """The pricing-path death benefit in policy month m, after the corridor test.
 
     Uses :func:`corridor_factor_at` at the pricing path's own attained age rather than
-    :func:`corridor_factor`, whose month-1 pin belongs to the projection and not to
+    :func:`corridor_factor`, whose first-month pin belongs to the projection and not to
     this benchmark.
     """
     av = av_pricing_pp_at(m, "BEF_FEE")
@@ -734,8 +773,8 @@ def mth_deduction_pricing_pp(m):
 
     ``e_pol + e_face x U + c x NAAR*/1000``, zero from attained age 121.  The current
     COI scale comes from :func:`coi_rate_at`, the rule, never from a model point's
-    month-1 pin: the pricing path is a seventy-year benchmark and a single disclosed
-    rate is not a scale.
+    first-month pin: the pricing path is a seventy-year benchmark and a single
+    disclosed rate is not a scale.
     """
     if age_pricing(m) >= charges_cease_age:                          # noqa: F821
         return 0.0
@@ -746,17 +785,19 @@ def mth_deduction_pricing_pp(m):
 def funding_ratio(t):
     """phi_t: the funding ratio ``AV_t / AV*_t`` **[std]**.
 
-    Both sides are measured at the **start** of policy month t, before the premium, so
-    the dynamic multipliers that consume it cannot depend on the premium they help
-    determine.  ``phi_t < 1`` is a performance or funding shortfall.
+    Both sides are measured at the **start** of projected month t, before the premium,
+    so the dynamic multipliers that consume it cannot depend on the premium they help
+    determine: ``av_pp_at(t, "BEF_PREM")`` against the pricing path's opening balance
+    of the same policy month from issue, ``av_pricing_pp_at(duration_mth(t),
+    "BEF_PREM")``.  ``phi_t < 1`` is a performance or funding shortfall.
 
     Returns 1.0 -- no dynamic effect -- when the behavior module is off, and also when
-    the pricing path has not accumulated anything yet, which is the issue month of a
-    new-business point.
+    the pricing path has not accumulated anything yet, which is the issue month
+    ``t = 0`` of a new-business point.
     """
     if not dyn_behavior_on:                                          # noqa: F821
         return 1.0
-    star = av_pricing_pp(duration_mth(t))
+    star = av_pricing_pp_at(duration_mth(t), "BEF_PREM")
     if star <= 0:
         return 1.0
     return av_pp_at(t, "BEF_PREM") / star
@@ -787,7 +828,7 @@ def prem_persistency(t):
     deterministic run therefore pays the planned premium in full, which is what the
     notes' worked example does ("planned premium $500/month paid"); switching
     ``dyn_behavior_on`` on brings in both the base persistency scale and the funding
-    adjustment.  ``Term_US_A`` switches conversion off for the same reason.
+    adjustment.  ``Term_US_S`` switches conversion off for the same reason.
     """
     if not dyn_behavior_on:                                          # noqa: F821
         return 1.0
@@ -835,7 +876,7 @@ def prem_to_av(t):
 
 
 def premiums(t):
-    """prem_gross: premium income at BOM of policy month t, weighted by the in force.
+    """prem_gross: premium income at BOM of projected month t, weighted by the in force.
 
     The **full** premium, not the load: the net premium is a pass-through into the
     accounts and shows up again as an account release when a claim is paid.
@@ -903,18 +944,21 @@ def face_reduction_pp(t):
     av = av_pp_at(t, "BEF_WD")
     if av <= 0:
         return 0.0
-    return sum_assured_at(t - 1) * wd_pp(t) / av
+    face = sum_assured() if t == 0 else sum_assured_at(t - 1)
+    return face * wd_pp(t) / av
 
 
 def sum_assured_at(t):
-    """F_t: the face amount after any withdrawal-driven reductions.
+    """F_t: the face amount in force from the monthiversary of month t, after any reduction.
 
-    ``F_0 = sum_assured()``; face increases, elective decreases and option changes are
-    not modeled, so the only movement is the Option A withdrawal reduction.
+    The face the death benefit of month ``t`` is measured on, at BOM and at EOM
+    alike, since the only movement is the Option A withdrawal reduction taken at the
+    monthiversary.  The opening face is ``F_0 = sum_assured()`` when ``t == 0`` and
+    ``sum_assured_at(t - 1)`` otherwise; face increases, elective decreases and option
+    changes are not modeled.
     """
-    if t == 0:
-        return sum_assured()
-    return max(0.0, sum_assured_at(t - 1) - face_reduction_pp(t))
+    face = sum_assured() if t == 0 else sum_assured_at(t - 1)
+    return max(0.0, face - face_reduction_pp(t))
 
 
 def unloaned_av_pp_at(t, timing):
@@ -922,7 +966,7 @@ def unloaned_av_pp_at(t, timing):
 
     This is the base the withdrawal and the monthly deduction are allocated over
     **[std]** -- the loan account is collateral for the debt and is not drawn on.
-    ``timing`` takes the :func:`av_pp_at` values other than ``"BEF_PREM"``.
+    ``timing`` takes the :func:`sa_pp_at` values.
     """
     return (sum(sa_pp_at(t, i, timing) for i in subaccount_ids())
             + fa_pp_at(t, timing))
@@ -955,7 +999,7 @@ def corridor_factor_at(a):
 
 
 def corridor_factor(t):
-    """kappa_t: the corridor factor in policy month t, at the **attained** age.
+    """kappa_t: the corridor factor in projected month t, at the **attained** age.
 
     Only the Guideline Premium Test is modeled; CVAT is a documented variation, so any
     other ``qual_test`` raises rather than being treated as GPT.
@@ -966,18 +1010,19 @@ def corridor_factor(t):
     2.03 -- but quotes ``kappa(45) = 215%``, the **issue**-age factor.  The pin
     reproduces the worked example's corridor product exactly.
 
-    The pin is deliberately confined to ``t == 1``, the one month the worked example
-    describes.  It is a *lookup* that the notes performed at the wrong age, not a
-    parameter of the contract; holding an issue-age corridor factor across the
-    seventy-seven years this projection runs would misstate every later month and is no
-    reading of the notes at all.  Model point 2 is the same cell with the pin blank, so
-    the rule applies from the first month too, and a test holds the gap open in both
-    directions.
+    The pin is deliberately confined to ``t == 0``, the first projected month and the
+    one month the worked example describes (the ``_m1`` in the column name is "the
+    first month", which is ``t = 0``).  It is a *lookup* that the notes performed at
+    the wrong age, not a parameter of the contract; holding an issue-age corridor
+    factor across the seventy-seven years this projection runs would misstate every
+    later month and is no reading of the notes at all.  Model point 2 is the same cell
+    with the pin blank, so the rule applies from the first month too, and a test holds
+    the gap open in both directions.
     """
     if qual_test() != "GPT":
         raise ValueError("invalid qual_test")
     o = model_point()["corridor_override_m1"]
-    if t == 1 and not pd.isna(o):                                    # noqa: F821
+    if t == 0 and not pd.isna(o):                                    # noqa: F821
         return float(o)
     return corridor_factor_at(age(t))
 
@@ -1057,7 +1102,7 @@ def coi_rate_guar_at(y):
 
 
 def coi_rate_guar(t):
-    """The guaranteed maximum monthly COI rate in policy month t."""
+    """The guaranteed maximum monthly COI rate in projected month t."""
     return coi_rate_guar_at(policy_year(t))
 
 
@@ -1080,7 +1125,7 @@ def coi_rate_at(y):
 
 
 def coi_rate(t):
-    """c_t: the current monthly COI rate in policy month t.
+    """c_t: the current monthly COI rate in projected month t.
 
     A model point may pin the rate **in the projection's first month** through the
     ``coi_rate_override_m1`` column.  Model point 1 does, at 0.04: that is the year-1
@@ -1090,14 +1135,15 @@ def coi_rate(t):
     year-1 current/guaranteed ratios are much lower (select effect)" -- so the
     placeholder is conservative early and the select-to-ultimate shape matters.
 
-    As with :func:`corridor_factor`, the pin is confined to ``t == 1``: a single
-    disclosed point is not a scale, and holding $0.04 flat for seventy-seven years
-    would leave a policy paying almost nothing for its insurance at age 100.  Model
-    point 2 is the same cell with the pin blank and takes the placeholder from the
-    first month, and a test holds the gap open in both directions.
+    As with :func:`corridor_factor`, the pin is confined to ``t == 0``, the first
+    projected month: a single disclosed point is not a scale, and holding $0.04 flat
+    for seventy-seven years would leave a policy paying almost nothing for its
+    insurance at age 100.  Model point 2 is the same cell with the pin blank and takes
+    the placeholder from the first month, and a test holds the gap open in both
+    directions.
     """
     o = model_point()["coi_rate_override_m1"]
-    if t == 1 and not pd.isna(o):                                    # noqa: F821
+    if t == 0 and not pd.isna(o):                                    # noqa: F821
         return min(float(o), coi_rate_guar(t), coi_rate_cap)         # noqa: F821
     return coi_rate_at(policy_year(t))
 
@@ -1199,13 +1245,15 @@ def mth_deduction_fa_pp(t):
 
 
 def sa_pp_at(t, i, timing):
-    """Subaccount i's value per policy at an intra-month point of policy month t.
+    """Subaccount i's value per policy at an intra-month point of projected month t.
 
     The events change the balance in this order, and ``timing`` names the point just
     before each of them:
 
     ``"BEF_PREM"``
-        Before the premium: the closing balance of the previous month.
+        Before the premium: the closing balance of the previous month, or the model
+        point's opening balance ``sa_pp_init(i)`` -- the notes' ``SA_i(0)`` -- when
+        ``t == 0``, the first projected month.
 
     ``"BEF_WD"``
         After this subaccount's share ``alpha_i`` of the net premium.
@@ -1228,7 +1276,7 @@ def sa_pp_at(t, i, timing):
     The end-of-month balance is :func:`sa_pp`.
     """
     if timing == "BEF_PREM":
-        return sa_pp(t - 1, i)
+        return sa_pp_init(i) if t == 0 else sa_pp(t - 1, i)
     elif timing == "BEF_WD":
         return sa_pp_at(t, i, "BEF_PREM") + alloc(i) * prem_to_av_pp(t)
     elif timing == "BEF_FEE":
@@ -1243,27 +1291,27 @@ def sa_pp_at(t, i, timing):
 
 
 def sa_pp(t, i):
-    """SA_{i,t}: subaccount i's value per policy at the end of policy month t.
+    """SA_{i,t+1} in the notes: subaccount i's value per policy at the **end** of month t.
 
-    ``SA_i(0) = sa_pp_init(i)``; thereafter the post-deduction balance times the
-    unit-value factor ``(1 + r)(1 - e_i/12)(1 - m/12)``, which is
-    ``1 + inv_return_mth(t, i)``.  Separate-account assets: the policyholder bears the
-    investment experience and the insurer's general account does not.
+    The post-deduction balance times the unit-value factor ``(1 + r)(1 - e_i/12)(1 -
+    m/12)``, which is ``1 + inv_return_mth(t, i)``; the opening balance ``SA_i(0) =
+    sa_pp_init(i)`` is ``sa_pp_at(0, i, "BEF_PREM")``, not a row of this cells.
+    Separate-account assets: the policyholder bears the investment experience and the
+    insurer's general account does not.
     """
-    if t == 0:
-        return sa_pp_init(i)
     return sa_pp_at(t, i, "BEF_ME") * (1 - me_rate_ann / 12)         # noqa: F821
 
 
 def fa_pp_at(t, timing):
-    """The fixed-option value per policy at an intra-month point of policy month t.
+    """The fixed-option value per policy at an intra-month point of projected month t.
 
     ``timing`` takes the same values as :func:`sa_pp_at` except ``"BEF_ME"``: the
     fixed option is a general-account balance and bears neither fund expenses nor the
-    M&E charge.
+    M&E charge.  ``"BEF_PREM"`` is the closing balance of the previous month, or the
+    opening balance ``fa_pp_init()`` -- the notes' ``FA(0)`` -- when ``t == 0``.
     """
     if timing == "BEF_PREM":
-        return fa_pp(t - 1)
+        return fa_pp_init() if t == 0 else fa_pp(t - 1)
     elif timing == "BEF_WD":
         return fa_pp_at(t, "BEF_PREM") + alloc_fixed() * prem_to_av_pp(t)
     elif timing == "BEF_FEE":
@@ -1275,87 +1323,113 @@ def fa_pp_at(t, timing):
 
 
 def fa_pp(t):
-    """FA_t: the fixed-option value per policy at the end of policy month t.
+    """FA_{t+1} in the notes: the fixed-option value per policy at the **end** of month t.
 
-    ``FA(0) = fa_pp_init()``; thereafter ``FA'(t) x (1 + i_fix)^(1/12)`` at the
-    declared rate, floored at the contractual 1.0% [S1].  A general-account liability,
-    unlike the subaccounts.
+    ``FA'(t) x (1 + i_fix)^(1/12)`` at the declared rate, floored at the contractual
+    1.0% [S1]; the opening balance ``FA(0) = fa_pp_init()`` is ``fa_pp_at(0,
+    "BEF_PREM")``.  A general-account liability, unlike the subaccounts.
     """
-    if t == 0:
-        return fa_pp_init()
     return fa_pp_at(t, "BEF_INV") * (1 + fixed_return_mth(t))
 
 
-def la_pp(t):
-    """LA_t: the loan-account collateral per policy at the end of policy month t [S3].
+def la_pp_at(t, timing):
+    """The loan-account collateral per policy at an intra-month point of month t.
 
-    ``LA(0) = loan_bal_init()`` **[std]** -- a loan moves value out of the investment
-    options into a general-account loan account, so collateral and debt coincide at the
-    outset.  Thereafter it earns the credited loan rate ``i_C``, **not** fund returns,
-    which is why it is held apart from the subaccounts and excluded from the pro-rata
-    deduction base.  It is part of the account value; the debt is not.
+    The loan account does not move intra-month -- new loans and repayments are not
+    modeled, and it accrues only at end of month -- so every :func:`sa_pp_at`
+    ``timing`` returns the **opening** balance: the closing balance of the previous
+    month, ``la_pp(t - 1)``, or ``loan_bal_init()`` when ``t == 0``, the notes'
+    ``LA(0)`` **[std]** -- a loan moves value out of the investment options into a
+    general-account loan account, so collateral and debt coincide at the outset.
+    """
+    if timing in ("BEF_PREM", "BEF_WD", "BEF_FEE", "BEF_INV", "BEF_ME"):
+        return loan_bal_init() if t == 0 else la_pp(t - 1)
+    else:
+        raise ValueError("invalid timing")
+
+
+def la_pp(t):
+    """LA_{t+1} in the notes: the loan-account collateral per policy at the **end** of month t [S3].
+
+    The opening collateral ``la_pp_at(t, "BEF_PREM")`` grown one month at the credited
+    loan rate ``i_C``, **not** fund returns, which is why it is held apart from the
+    subaccounts and excluded from the pro-rata deduction base.  It is part of the
+    account value; the debt is not.
 
     New loans and repayments are not modeled -- the notes give no utilization pattern
     -- so this only rolls the model point's opening collateral forward.
     """
-    if t == 0:
-        return loan_bal_init()
-    return la_pp(t - 1) * (1 + loan_cr_rate_mth(t))
+    return la_pp_at(t, "BEF_PREM") * (1 + loan_cr_rate_mth(t))
+
+
+def loan_bal_pp_at(t, timing):
+    """The outstanding policy debt per policy at an intra-month point of month t.
+
+    Debt accrues only at end of month, so every :func:`sa_pp_at` ``timing`` returns
+    the **opening** debt: the closing balance of the previous month, ``loan_bal_pp(t -
+    1)``, or ``loan_bal_init()`` when ``t == 0``, the notes' ``D(0)``.
+    """
+    if timing in ("BEF_PREM", "BEF_WD", "BEF_FEE", "BEF_INV", "BEF_ME"):
+        return loan_bal_init() if t == 0 else loan_bal_pp(t - 1)
+    else:
+        raise ValueError("invalid timing")
 
 
 def loan_bal_pp(t):
-    """D_t: the outstanding policy debt per policy at the end of policy month t.
+    """D_{t+1} in the notes: the outstanding policy debt per policy at the **end** of month t.
 
-    ``D(0) = loan_bal_init()``; thereafter ``D(t-1) x (1 + i_L)^(1/12)``, the charged
-    rate, monthly **[std]** where the contract charges interest annually in arrears and
-    capitalizes it if unpaid [S1].  Debt reduces both the death benefit and the
-    surrender value; it grows faster than the collateral in :func:`la_pp`, and the
+    The opening debt ``loan_bal_pp_at(t, "BEF_PREM")`` times ``(1 + i_L)^(1/12)``, the
+    charged rate, monthly **[std]** where the contract charges interest annually in
+    arrears and capitalizes it if unpaid [S1].  Debt reduces both the death benefit and
+    the surrender value; it grows faster than the collateral in :func:`la_pp`, and the
     difference is the insurer's :func:`loan_spread`.
 
     Note the notes' indexing: their ``D_{t+1}`` is this end-of-month balance of month
     ``t``, which is why the death claim is ``DB_t^EOM - D_{t+1}``.
     """
-    if t == 0:
-        return loan_bal_init()
-    return loan_bal_pp(t - 1) * (1 + loan_rate_mth(t))
+    return loan_bal_pp_at(t, "BEF_PREM") * (1 + loan_rate_mth(t))
 
 
 def loan_spread(t):
     """loan_spread: the insurer's margin on policy debt, for the policies in force.
 
-    ``l_t x D(t-1) x [(1 + i_L)^(1/12) - (1 + i_C)^(1/12)]`` -- one month of the
-    charged rate less one month of the credited rate on the opening debt.  1.0% a year
-    in policy years 1-9 and 0.05% from the 10th [S1].
+    ``l_t x D_t x [(1 + i_L)^(1/12) - (1 + i_C)^(1/12)]`` -- one month of the charged
+    rate less one month of the credited rate on the opening debt
+    ``loan_bal_pp_at(t, "BEF_PREM")``.  1.0% a year in policy years 1-9 and 0.05% from
+    the 10th [S1].
     """
-    return (loan_bal_pp(t - 1)
+    return (loan_bal_pp_at(t, "BEF_PREM")
             * (loan_rate_mth(t) - loan_cr_rate_mth(t)) * pols_if(t))
 
 
 def av_pp_at(t, timing):
-    """AV per policy at an intra-month point of policy month t.
+    """AV per policy at an intra-month point of month t.
 
-    ``sum(SA_i) + FA + LA``.  The loan account does not move intra-month -- it accrues
-    only at end of month -- so it enters at its opening balance whatever the
-    ``timing``, which takes the :func:`sa_pp_at` values.  An unknown ``timing`` raises
-    from :func:`sa_pp_at`.
+    ``sum(SA_i) + FA + LA``.  ``"BEF_PREM"`` is the notes' ``AV_t``, the balance at
+    the start of the month: the closing balance ``av_pp(t - 1)`` of the previous
+    month, or ``av_pp_init()`` when ``t == 0``.  The loan account does not move
+    intra-month -- it accrues only at end of month -- so it enters at its opening
+    balance :func:`la_pp_at` whatever the ``timing``, which takes the
+    :func:`sa_pp_at` values.  An unknown ``timing`` raises from :func:`sa_pp_at`.
     """
     if timing == "BEF_PREM":
-        return av_pp(t - 1)
-    return unloaned_av_pp_at(t, timing) + la_pp(t - 1)
+        return av_pp_init() if t == 0 else av_pp(t - 1)
+    return unloaned_av_pp_at(t, timing) + la_pp_at(t, timing)
 
 
 def av_pp(t):
-    """AV_t: the total account value per policy at the end of policy month t.
+    """AV_{t+1} in the notes: the total account value per policy at the **end** of month t.
 
-    ``sum(SA_i) + FA + LA`` [S1][S2][S3][S4].  ``AV(0) = av_pp_init()`` by
-    construction, since each component starts at its own opening balance.
+    ``sum(SA_i) + FA + LA`` [S1][S2][S3][S4].  The opening value ``AV(0) =
+    av_pp_init()`` is ``av_pp_at(0, "BEF_PREM")``, and each component starts at its
+    own opening balance.
     """
     return (sum(sa_pp(t, i) for i in subaccount_ids())
             + fa_pp(t) + la_pp(t))
 
 
 def av_at(t, timing):
-    """Account value in force at an intra-month point of policy month t.
+    """Account value in force at an intra-month point of projected month t.
 
     :func:`av_pp_at` times the number of policies in force, which is constant through
     the month because decrements are end-of-month events.  ``timing`` takes the same
@@ -1368,7 +1442,7 @@ def av_at(t, timing):
 
 
 def av_change(t):
-    """Change in the account value in force over policy month t.
+    """Change in the account value in force over projected month t.
 
     ``av_at(t + 1, "BEF_PREM") - av_at(t, "BEF_PREM")``, following ``CashValue_SE``.
     """
@@ -1398,7 +1472,7 @@ def me_charge(t):
 
 
 def inv_income_pp(t):
-    """The total investment credit to the accounts per policy over policy month t.
+    """The total investment credit to the accounts per policy over projected month t.
 
     The subaccount growth **net** of fund expenses and the M&E charge, plus the
     fixed-option interest, plus the loan-account interest.  Because it is net, the
@@ -1408,7 +1482,7 @@ def inv_income_pp(t):
     return (sum(sa_pp(t, i) - sa_pp_at(t, i, "BEF_INV")
                 for i in subaccount_ids())
             + fa_pp(t) - fa_pp_at(t, "BEF_INV")
-            + la_pp(t) - la_pp(t - 1))
+            + la_pp(t) - la_pp_at(t, "BEF_PREM"))
 
 
 def inv_income(t):
@@ -1471,7 +1545,7 @@ def surr_charge_rate(t):
 
 
 def surr_charge_pp(t):
-    """SC_t: the surrender charge scheduled per policy in policy month t.
+    """SC_t: the surrender charge scheduled per policy in projected month t.
 
     Quoted on the **initial** face amount [S1][S2].  This is the schedule; the amount
     actually collected is :func:`surr_charge`, which is capped by the account value.
@@ -1480,23 +1554,24 @@ def surr_charge_pp(t):
 
 
 def csv_pp(t):
-    """``AV_t - SC_t``: the cash value before policy debt, floored at zero **[std]**.
+    """``AV_{t+1} - SC_t``: the end-of-month cash value before debt, floored at zero **[std]**.
 
     The chassis name for this intermediate.  The floor is a standardization -- a
     negative cash value would be a payment *from* the policyholder -- and it binds in
     the early policy years, where the scheduled surrender charge exceeds the account
     value, so the charge actually collected is the whole account value.  The notes'
-    own ``CSV_t`` is net of debt: that is :func:`ncsv_pp`.
+    own ``CSV_t^EOM`` is net of debt: that is :func:`ncsv_pp`.
     """
     return max(0.0, av_pp(t) - surr_charge_pp(t))
 
 
 def ncsv_pp(t):
-    """CSV_t: the cash surrender value, ``AV_t - SC_t - D_t``, floored at zero [S1].
+    """CSV_t^EOM: the cash surrender value at the end of month t, floored at zero [S1].
 
-    What a surrendering policyholder is paid, and the notes' surrender outgo.  Note
-    the notes' indexing: their ``AV_{t+1} - SC_t - D_{t+1}`` is this end-of-month
-    quantity of month ``t``.
+    ``AV_{t+1} - SC_t - D_{t+1}`` in the notes' subscripts -- the end-of-month
+    balances of month ``t``, which is why the surrender charge, a within-month
+    schedule, keeps the plain ``t``.  What a surrendering policyholder is paid, and
+    the notes' surrender outgo.
     """
     return max(0.0, csv_pp(t) - loan_bal_pp(t))
 
@@ -1504,7 +1579,7 @@ def ncsv_pp(t):
 def surr_charge(t):
     """sc_income: surrender charges collected from the policies lapsing in month t.
 
-    ``(AV_t - csv_pp(t)) x pols_lapse(t)``, so it is capped by the account value where
+    ``(AV_{t+1} - csv_pp(t)) x pols_lapse(t)``, so it is capped by the account value where
     the :func:`csv_pp` floor binds.  Insurer income, and part of
     :func:`margin_expense`.
     """
@@ -1512,10 +1587,12 @@ def surr_charge(t):
 
 
 def is_default(t):
-    """The notes' default test: ``AV_t - SC_t - D_t <= 0`` at the end of month t [S1].
+    """The notes' default test, on end-of-month balances: ``AV_{t+1} - SC_t - D_{t+1} <= 0`` [S1].
 
-    The contractual trigger for grace, and the same test as the excess-debt default
-    (debt at or above fund less surrender charge) [S1].  It is a **diagnostic only**:
+    The notes' ``CSV_t^EOM`` -- :func:`ncsv_pp` before its zero floor -- at or below
+    zero: the contractual trigger for grace, and the same test as the excess-debt
+    default (debt at or above fund less surrender charge) [S1].  It is a
+    **diagnostic only**:
     the notes lapse a defaulted policy "at the next monthiversary if not cured" without
     defining the cure test, the in-grace deduction accrual or the death benefit during
     grace, so the grace cascade is not implemented and no policy is terminated for
@@ -1543,29 +1620,32 @@ def is_shortfall(t):
 
 
 def first_default_month():
-    """The first policy month in which :func:`is_default` is true, or 0 if never.
+    """The first projected month ``t`` in which :func:`is_default` is true, or -1 if never.
 
-    On a front-loaded model point this is usually month 1; see :func:`is_default`.
+    On a front-loaded new-business model point this is the issue month, ``t = 0``;
+    see :func:`is_default`.  -1 lies outside the frame, so "never" cannot be mistaken
+    for a month.
     """
-    for t in range(1, proj_len() + 1):
+    for t in range(proj_len()):
         if is_default(t):
             return t
-    return 0
+    return -1
 
 
 def first_shortfall_month():
-    """The first policy month in which :func:`is_shortfall` is true, or 0 if never.
+    """The first projected month ``t`` in which :func:`is_shortfall` is true, or -1 if never.
 
     The month past which the projection is arithmetic rather than a description of a
     live contract: the notes' default rule would have terminated the policy at the
     following monthiversary, and that cascade is not implemented.  A level-premium cell
     whose cost of insurance eventually outruns its premium reaches this point at some
-    late duration; run it to see where.
+    late duration; run it to see where.  -1 lies outside the frame, so "never" cannot
+    be mistaken for a month.
     """
-    for t in range(1, proj_len() + 1):
+    for t in range(proj_len()):
         if is_shortfall(t):
             return t
-    return 0
+    return -1
 
 
 def class_factor():
@@ -1574,7 +1654,7 @@ def class_factor():
 
 
 def mort_rate(t):
-    """q^d,annual: the annual best-estimate mortality rate in policy month t.
+    """q^d,annual: the annual best-estimate mortality rate in projected month t.
 
     Base table times :func:`class_factor` times the A/E factor, 100% in the base run
     **[std]** with no mortality improvement.  The shipped table is a small illustrative
@@ -1613,18 +1693,19 @@ def lapse_rate_base(t):
 
 
 def lapse_shock_month():
-    """The policy month of the surrender-charge cliff, counted from issue.
+    """The policy month of the surrender-charge cliff, counted from issue, 0-based.
 
-    ``12 x runoff_years + 1``: the first month in which the surrender charge is zero,
-    which for the shipped fourteen-year schedule is policy month 169.  Derived from
-    *surr_charge_table.csv* rather than hard-coded, so a different schedule moves the
-    cliff with it.  Zero when the model point carries no surrender charge, which no
-    policy month can equal.
+    ``12 x runoff_years``: the first month in which the surrender charge is zero -- the
+    first month of policy year ``runoff_years + 1`` -- which for the shipped
+    fourteen-year schedule is policy month 168 from issue, i.e. ``duration_mth(t) ==
+    168``.  Derived from *surr_charge_table.csv* rather than hard-coded, so a different
+    schedule moves the cliff with it.  -1 when the model point carries no surrender
+    charge, which no policy month can equal.
     """
     if not has_surr_charge():
-        return 0
+        return -1
     yrs = int(data.surr_charge_table().loc[surr_charge_id(), "runoff_years"])  # noqa: F821
-    return 12 * yrs + 1
+    return 12 * yrs
 
 
 def lapse_rate_sc_mult(t):
@@ -1637,7 +1718,7 @@ def lapse_rate_sc_mult(t):
     """
     if not has_surr_charge():
         return 1.0
-    if duration_mth(t) + 1 == lapse_shock_month():
+    if duration_mth(t) == lapse_shock_month():
         return lapse_shock_mult                                      # noqa: F821
     return 1.0
 
@@ -1676,14 +1757,14 @@ def lapse_rate_mth(t):
 
 
 def pols_if(t):
-    """l_t: the number of policies in force at the beginning of policy month t.
+    """l_t: the number of policies in force at the beginning of projected month t.
 
     Decrements are end-of-month events, so the number in force is constant through the
-    month and every BOM cash flow is weighted by it.  ``pols_if(1) = l_0 =
-    pols_if_init()`` and ``l_{t+1} = l_t (1 - q^d_t)(1 - q^w_t)``, which is the
-    subtraction below.
+    month and every BOM cash flow is weighted by it.  ``pols_if(0) = l_0 =
+    pols_if_init()`` in the first projected month, and ``l_{t+1} = l_t (1 - q^d_t)(1 -
+    q^w_t)``, which is the subtraction below.
     """
-    if t == 1:
+    if t == 0:
         return pols_if_init()
     return pols_if(t - 1) - pols_death(t - 1) - pols_lapse(t - 1)
 
@@ -1703,12 +1784,12 @@ def pols_if_at(t, timing):
 
 
 def pols_death(t):
-    """Number of deaths at the end of policy month t, ``l_t x q^d_t``."""
+    """Number of deaths at the end of projected month t, ``l_t x q^d_t``."""
     return pols_if(t) * mort_rate_mth(t)
 
 
 def pols_lapse(t):
-    """Number of surrenders at the end of policy month t.
+    """Number of surrenders at the end of projected month t.
 
     ``l_t x (1 - q^d_t) x q^w_t``: death is applied before lapse **[std order]**,
     matching the notes' ``l_{t+1} = l_t (1 - q^d_t)(1 - q^w_t)``.
@@ -1786,7 +1867,7 @@ def claims_over_av(t):
 
 
 def claims(t, kind=None):
-    """Claim outgo in policy month t, optionally by ``kind`` -- the **gross view**.
+    """Claim outgo in projected month t, optionally by ``kind`` -- the **gross view**.
 
     ``kind`` is ``"DEATH"`` or ``"LAPSE"``, or ``None`` for the total.  Death claims
     are weighted by :func:`pols_death` and surrenders by :func:`pols_lapse`, both
@@ -1815,7 +1896,7 @@ def claims(t, kind=None):
 
 
 def claims_net(t):
-    """claim_net: the net general-account cost of the deaths in policy month t.
+    """claim_net: the net general-account cost of the deaths in projected month t.
 
     ``l_t x q^d_t x NAAR_t^EOM`` -- the death benefit less the account value seized to
     fund it.  A **derived report**, not a cash flow: it belongs to the net-of-account
@@ -1825,7 +1906,7 @@ def claims_net(t):
 
 
 def withdrawals(t):
-    """Partial withdrawal payments in policy month t, for the policies in force.
+    """Partial withdrawal payments in projected month t, for the policies in force.
 
     ``claim_pp(t, "WITHDRAWAL") x l_t`` -- the withdrawal is taken at the monthiversary
     by policies still in force, so it is weighted by :func:`pols_if` and not by a
@@ -1872,7 +1953,7 @@ def inflation_factor(t):
 
 
 def expenses(t):
-    """The insurer's own maintenance expenses in policy month t **[std]**.
+    """The insurer's own maintenance expenses in projected month t **[std]**.
 
     ``expense_maint / 12`` per policy in force, $75 a year, plus ``expense_acq`` in the
     issue month.  The notes specify no acquisition expense for this product -- the
@@ -1924,7 +2005,7 @@ def margin_mortality(t):
 
 
 def net_cf(t):
-    """NetCF(t): net liability cash flow in policy month t, **undiscounted**.
+    """NetCF(t): net liability cash flow in projected month t, **undiscounted**.
 
     ``premiums - claims (death and surrender) - withdrawals - expenses - premium
     taxes``: the **gross (policyholder) view**, which the notes make the reference
@@ -1943,7 +2024,7 @@ def net_cf(t):
 
 
 def net_cf_ga(t):
-    """The net-of-account (general-account strain) view of policy month t.
+    """The net-of-account (general-account strain) view of projected month t.
 
     ``load_income + md_income + me_income + loan_spread + sc_income - claim_net
     - expense``, the notes' reconciliation identity.  A **derived report** from the
@@ -1976,7 +2057,7 @@ def check_av_roll_fwd():
     after the credit.
     """
     res = []
-    for t in range(1, proj_len() + 1):
+    for t in range(proj_len()):
         av = (av_at(t, "BEF_PREM")
               + prem_to_av(t)
               - withdrawals(t)
@@ -2008,7 +2089,7 @@ def check_margin():
     account value, but they carry no debt, so it holds for every shipped model point.
     """
     res = []
-    for t in range(1, proj_len() + 1):
+    for t in range(proj_len()):
         rhs = (margin_expense(t) + margin_mortality(t)
                + av_change(t) - inv_income(t)
                + loan_bal_pp(t) * pols_lapse(t))
@@ -2037,7 +2118,7 @@ def check_net_view():
     Same floor caveat as :func:`check_margin`.
     """
     res = []
-    for t in range(1, proj_len() + 1):
+    for t in range(proj_len()):
         rhs = (net_cf_ga(t)
                + av_change(t) - inv_income(t) + wd_fees(t)
                - me_charge(t) - loan_spread(t)
@@ -2048,14 +2129,15 @@ def check_net_view():
 
 
 def result_cf():
-    """Result table of the gross-view cash flows, indexed by policy month ``t``.
+    """Result table of the gross-view cash flows, indexed by projected month ``t``.
 
-    The surrender column is ``claims_lapse``, matching the ``"LAPSE"`` kind that
+    One row per month ``t = 0, ..., proj_len() - 1``, so ``len(result_cf()) ==
+    proj_len()``.  The surrender column is ``claims_lapse``, matching the ``"LAPSE"`` kind that
     produces it, and partial withdrawals sit in their own ``withdrawals`` column rather
     than among the claims.  The cash flow columns net to ``net_cf`` under the library's
     income-positive sign; ``pols_if`` is a policy count, not a cash flow.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -2072,8 +2154,8 @@ def result_cf():
 
 
 def result_pols():
-    """Result table of policy decrements, indexed by policy month ``t``."""
-    ts = list(range(1, proj_len() + 1))
+    """Result table of policy decrements, indexed by projected month ``t = 0, ..., proj_len() - 1``."""
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -2098,7 +2180,7 @@ def result_av():
     surrender charge, the cash surrender value and the end-of-month death benefit and
     net amount at risk.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     ids = subaccount_ids()
     out = {}
     for i in ids:
@@ -2130,7 +2212,7 @@ def result_net():
     The notes' derived report: the margins the insurer collects, the net mortality
     cost, and the memo columns for reconciliation.  Column names are the notes' own.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "prem_gross": [premiums(t) for t in ts],

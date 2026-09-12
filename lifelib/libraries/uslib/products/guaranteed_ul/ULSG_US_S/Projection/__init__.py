@@ -44,14 +44,23 @@ rop_file                data.rop_table()                  rop_table.csv
 
 .. rubric:: Projection basis
 
-``t`` counts **policy months**, 1-based from the start of the projection: ``t = 1`` is
+``t`` counts **policy months** from the start of the projection, 0-based: ``t = 0`` is
 the issue month of a new-business model point and the first projected month of an
 in-force cell, which sits ``duration_mth_init()`` completed policy months after issue.
-The technical notes index the same months by their absolute policy month number,
-starting at ``duration_months + 1``, so the worked example's months 301-305 are
-``t = 1`` to ``t = 5`` here, with ``duration_mth(t) = 300 + t - 1``. State variables
-the notes define at ``t = 0`` -- ``AV_0``, ``SG_0``, ``L_0``, ``CumPrem_0``,
-``l_0 = 1``, ``g_0 = 0`` -- are the ``t == 0`` branch of the corresponding recursion.
+Policy month ``t`` runs from monthiversary ``t`` to monthiversary ``t + 1``; the frame
+is ``t = 0 .. proj_len() - 1`` (``range(proj_len())``), and ``proj_len()`` is the
+number of projected months. The completed policy months at the beginning of month
+``t`` are ``duration_mth(t) = duration_mth_init() + t``, so the worked example's policy
+months 301-305 -- the anchor cell's first five projected months, at
+``duration_mth_init() = 300`` -- are ``t = 0`` to ``t = 4`` here. The opening balances
+the notes give per model point -- ``av_init``, ``sg_init``, ``loan_init``,
+``cumprem_init`` -- are the **opening timing of ``t = 0``**: ``av_pp_at(0, "BEF_PREM")
+= av_pp_init()``, ``sg_pp_at(0, "BEF_PREM") = sg_pp_init()``, ``loan_bal_pp_at(0,
+"BEF_INT") = loan_bal_init()`` and ``cum_prem_pp(0) = cum_prem_init() + premium_pp(0)``;
+the closing-balance cells ``av_pp(t)``, ``sg_pp(t)``, ``loan_bal_pp(t)`` and
+``cum_prem_pp(t)`` are values at the **end** of month ``t`` for every ``t`` of the
+frame. ``pols_if(0) = l_0 = pols_if_init()`` and the grace counter starts at zero
+with no seed row.
 
 Within each month the notes' twelve-step monthiversary order is followed exactly:
 
@@ -101,16 +110,16 @@ mapping is:
 =========================  ==============================  ==========================
 Notes symbol               Cells                           Meaning
 =========================  ==============================  ==========================
-t                          (the ``t`` argument)            Policy month, 1-based
+t                          (the ``t`` argument)            Policy month, 0-based
 duration_months            duration_mth_init               Elapsed months at start
-(t - 1 in months)          duration_mth(t)                 Completed policy months
-y                          policy_year(t)                  Policy year
+duration_months + t        duration_mth(t)                 Completed policy months
+y                          policy_year(t)                  Policy year, 1-based
 (y - 1)                    duration(t)                     Completed policy years
 issue_age                  age_at_entry                    Issue age (ANB)
 x_t                        age(t)                          Attained age (ANB)
 sex                        sex                             Sex, M or F
 risk_class                 rate_class                      Underwriting class [S4]
-(none)                     proj_len                        Last projected month
+proj_len                   proj_len                        Number of projected months
 face_amount, F             sum_assured                     Initial face amount
 (none)                     sum_assured_at(t)               Face amount in month t
 (units)                    units(t)                        Face in $1,000 units
@@ -126,7 +135,7 @@ pi^g                       load_prem_rate_sg               Shadow premium load, 
 (1-pi) P_t                 prem_to_av_pp(t)                Net premium to the AV
 (1-pi^g) P_t               prem_to_sg_pp(t)                Net premium to the shadow
 CumPrem_t                  cum_prem_pp(t)                  Cumulative premiums
-CumPrem_0                  cum_prem_init                   Opening cumulative premium
+cumprem_init               cum_prem_init                   Opening cumulative premium
 W_t                        wd_pp(t)                        Withdrawal
 (25 fee)                   wd_fee_pp(t)                    Withdrawal fee
 e_pol                      expense_pol_mth                 Per-policy charge
@@ -151,7 +160,7 @@ COI_t^g                    sg_coi_pp(t)                    Shadow cost of insura
 (shadow MD)                sg_deduction_pp(t)              Shadow monthly deduction
 D_t                        mth_deduction_forgone_pp(t)     Deduction forgone
 (deduction taken)          mth_deduction_taken_pp(t)       Deduction actually taken
-AV_{t-1}                   av_pp_at(t, "BEF_PREM")         Opening account value
+AV_{t-1}                   av_pp_at(t, "BEF_PREM")         Opening AV; av_init at t = 0
 (after premium)            av_pp_at(t, "BEF_WD")           Before the withdrawal
 (after withdrawal)         av_pp_at(t, "BEF_FEE")          Before the expense charges
 AV_t'                      av_pp_at(t, "BEF_COI")          After the expense charges
@@ -160,6 +169,7 @@ AV_t                       av_pp(t)                        Account value, EOM
 av_init                    av_pp_init                      Opening account value
 (aggregate AV)             av_at(t, timing)                Account value in force
 (none)                     av_change(t)                    Change in account value
+SG_{t-1}                   sg_pp_at(t, "BEF_PREM")         Opening SG; sg_init at t = 0
 SG_t'                      sg_pp_at(t, "BEF_COI")          Shadow after the charges
 SG_t''                     sg_pp_at(t, "BEF_INV")          Shadow after COI, no floor
 SG_t                       sg_pp(t)                        Shadow value, EOM
@@ -173,7 +183,8 @@ j_g                        guar_rate_mth()                 Monthly guaranteed ra
 j^g                        sg_rate_mth()                   Monthly shadow rate
 (interest)                 inv_income_pp(t)                Interest credited to the AV
 (shadow interest)          sg_inv_income_pp(t)             Interest credited to SG
-L_t                        loan_bal_pp(t)                  Loan balance
+L_{t-1}                    loan_bal_pp_at(t, "BEF_INT")    Opening loan; loan_init at t = 0
+L_t                        loan_bal_pp(t)                  Loan balance, EOM
 loan_init                  loan_bal_init                   Opening loan balance
 SC_t                       surr_charge_pp(t)               Surrender charge scheduled
 (SC per $1,000)            surr_charge_rate(t)             Surrender charge rate
@@ -200,7 +211,7 @@ Psi_t                      lapse_rate_dyn_mult(t)          Funding-status factor
 (annual w)                 lapse_rate(t)                   Total annual lapse rate
 w_t                        lapse_rate_mth(t)               Monthly lapse rate
 l_t                        pols_if(t)                      In force at BOM of month t
-(l_0)                      pols_if_init                    In force at the outset
+(l_0)                      pols_if_init                    In force at the outset, t = 0
 (deaths)                   pols_death(t)                   Deaths in month t
 (surrenders)               pols_lapse(t)                   Surrenders in month t
 (ROP exercises)            pols_rop(t)                     Refund exercises
@@ -221,7 +232,7 @@ P*                         no_lapse_premium()              Solved no-lapse premi
 
 Nine names needed care.
 
-The notes' ``risk_class`` is this model's ``rate_class`` -- the name ``Term_US_A`` and
+The notes' ``risk_class`` is this model's ``rate_class`` -- the name ``Term_US_S`` and
 :mod:`.UL_US_S` both use for the underwriting class, and the one the model point
 table column carries, so the notes' word appears nowhere in the model. It is the only
 model point attribute renamed on cross-model grounds rather than for a reason internal
@@ -230,9 +241,9 @@ to this product.
 ``l_t`` in these notes is the in-force probability at the **beginning** of month ``t``
 -- the notes weight every cash flow of month ``t`` by ``l_t`` and roll forward with
 ``l_{t+1} = l_t (1 - q^d)(1 - w)(1 - w^ROP)`` -- so it maps straight onto
-``pols_if(t)`` with no offset. Note the contrast with the universal life chassis, whose
-notes define ``l(t)`` at the **end** of month ``t``, making ``pols_if(t) = l(t-1)``
-there.
+``pols_if(t)`` with no offset -- the same mapping the universal life chassis now
+carries, whose notes also define ``l(t)`` at the **beginning** of month ``t``
+(``pols_if(t) = l(t)`` there too).
 
 The account value measured for the net amount at risk is ``AV'(t)``, which in these
 notes is the balance **after the expense charges and before the cost of insurance** --
@@ -364,13 +375,18 @@ def load_prem_rate():
 
 
 def av_pp_init():
-    """AV_0: the base account value per policy at the outset, 0 at issue."""
+    """av_init: the base account value per policy at the outset, 0 at issue.
+
+    The opening balance of the first projected month, ``av_pp_at(0, "BEF_PREM")``;
+    ``av_pp(0)`` is the balance at the **end** of ``t = 0``.
+    """
     return float(model_point()["av_pp_init"])
 
 
 def sg_pp_init():
-    """SG_0: the shadow account value per policy at the outset, 0 at issue.
+    """sg_init: the shadow account value per policy at the outset, 0 at issue.
 
+    The opening balance of the first projected month, ``sg_pp_at(0, "BEF_PREM")``.
     Not floored anywhere in the projection: a negative shadow balance measures the
     catch-up shortfall, and flooring it destroys :func:`catch_up_prem_pp`.
     """
@@ -378,31 +394,40 @@ def sg_pp_init():
 
 
 def loan_bal_init():
-    """L_0: the policy loan balance per policy at the outset, 0 in every shipped point."""
+    """loan_init: the policy loan balance per policy at the outset, 0 in every shipped point.
+
+    The opening balance of the first projected month, ``loan_bal_pp_at(0, "BEF_INT")``.
+    """
     return float(model_point()["loan_bal_init"])
 
 
 def cum_prem_init():
-    """CumPrem_0: cumulative premiums already paid at the outset.
+    """cumprem_init: cumulative premiums already paid at the outset.
 
     The notes make this a model point attribute because it drives the return-of-premium
     refund [S1] and the 7-pay test [R5].  For the anchor cell it is the 25 annual
-    premiums of $10,800 implied by the in-force snapshot **[std]**.
+    premiums of $10,800 implied by the in-force snapshot **[std]**.  It is the balance
+    *before* the premium of ``t = 0``: ``cum_prem_pp(0) = cum_prem_init() +
+    premium_pp(0)``.
     """
     return float(model_point()["cum_prem_init"])
 
 
 def pols_if_init():
-    """l_0: the in-force probability at the outset, 1 for a single-policy point."""
+    """l_0: the in-force probability at the outset, 1 for a single-policy point.
+
+    This is ``pols_if(0)``, the count at the beginning of the first projected month.
+    """
     return float(model_point()["pols_if_init"])
 
 
 def duration_mth_init():
     """Completed policy months already elapsed when the projection starts.
 
-    0 for a new-business model point, so that ``t = 1`` is the issue month; 300 for
-    the notes' worked-example cell, whose months 301-305 are ``t = 1`` to ``t = 5``.
-    This is the notes' ``duration_months``.
+    0 for a new-business model point, so that ``t = 0`` is the issue month; 300 for
+    the notes' worked-example cell, whose policy months 301-305 are ``t = 0`` to
+    ``t = 4``.  This is the notes' ``duration_months``, and it is already a 0-based
+    elapsed count: it does not move with the frame.
     """
     return int(model_point()["duration_mth"])
 
@@ -450,12 +475,12 @@ def coi_rate_dp():
 def duration_mth(t):
     """Completed policy months at the beginning of policy month t.
 
-    ``duration_mth_init() + t - 1``, so it is 0 in the issue month of a new-business
-    model point and 300 in the first month of the notes' worked example.  Note the
-    contrast with the notes' own month index, which counts the current month as well;
-    see :func:`surr_charge_rate`.
+    ``duration_mth_init() + t``, so it is 0 in the issue month of a new-business model
+    point (``t = 0``) and 300 in the first month of the notes' worked example.  Note
+    the contrast with the contractual policy month *number*, which counts the current
+    month as well and is ``duration_mth(t) + 1``; see :func:`surr_charge_rate`.
     """
-    return duration_mth_init() + t - 1
+    return duration_mth_init() + t
 
 
 def duration(t):
@@ -480,13 +505,15 @@ def age(t):
 
 
 def proj_len():
-    """Projection length in policy months.
+    """The number of projected policy months: the frame is ``t = 0 .. proj_len() - 1``.
 
     ``12 * (charges_cease_age - age_at_entry()) - duration_mth_init()``, the notes'
     maximum projection length: the projection runs to attained age 121, where premiums
-    and all charges cease.  Coverage continues past that point under the contract
+    and all charges cease, so the last projected month ``proj_len() - 1`` is the last
+    month of attained age 120.  Coverage continues past that point under the contract
     [S7], but the illustrative mortality table reaches 1.0 at attained age 120, so
-    nothing survives the horizon.
+    nothing survives the horizon.  ``proj_len()`` is the exclusive end of the frame,
+    ``range(proj_len())``, and the row count of every result table.
     """
     return 12 * (charges_cease_age - age_at_entry()) - duration_mth_init()  # noqa: F821
 
@@ -693,16 +720,15 @@ def premiums(t):
 
 
 def cum_prem_pp(t):
-    """CumPrem_t: cumulative premiums paid per policy.
+    """CumPrem_t: cumulative premiums paid per policy, after the premium of month t.
 
-    ``CumPrem_0 = cum_prem_init()``; thereafter ``CumPrem_{t-1} + P_t``, exactly as the
-    notes write it.  Withdrawals do **not** reduce it here -- that is the
-    cumulative-premium-test variation's ``CumPrem^net``, not this one -- and it drives
-    the return-of-premium refund [S1].
+    ``CumPrem_{t-1} + P_t``, exactly as the notes write it, with ``CumPrem_{t-1}`` the
+    model point's ``cum_prem_init()`` when ``t = 0``.  Withdrawals do **not** reduce it
+    here -- that is the cumulative-premium-test variation's ``CumPrem^net``, not this
+    one -- and it drives the return-of-premium refund [S1].
     """
-    if t == 0:
-        return cum_prem_init()
-    return cum_prem_pp(t - 1) + premium_pp(t)
+    prev = cum_prem_init() if t == 0 else cum_prem_pp(t - 1)
+    return prev + premium_pp(t)
 
 
 def wd_pp(t):
@@ -1008,7 +1034,9 @@ def av_pp_at(t, timing):
     just before each of them:
 
     ``"BEF_PREM"``
-        Before the premium: the closing balance of the previous month, ``AV_{t-1}``.
+        Before the premium: the closing balance of the previous month, ``AV_{t-1}``,
+        or the model point's opening balance :func:`av_pp_init` when ``t = 0`` is the
+        first month of the frame.
 
     ``"BEF_WD"``
         After the net premium, before the withdrawal.
@@ -1046,7 +1074,7 @@ def av_pp_at(t, timing):
     The end-of-month balance ``AV_t`` is :func:`av_pp`.
     """
     if timing == "BEF_PREM":
-        return av_pp(t - 1)
+        return av_pp_init() if t == 0 else av_pp(t - 1)
     elif timing == "BEF_WD":
         return av_pp_at(t, "BEF_PREM") + prem_to_av_pp(t)
     elif timing == "BEF_FEE":
@@ -1067,10 +1095,11 @@ def inv_income_pp(t):
 
         (AV''_t - L_{t-1}) x j_c + L_{t-1} x loan_cr_rate_mth()
 
+    where ``L_{t-1}`` is the opening loan balance ``loan_bal_pp_at(t, "BEF_INT")``.
     With the account value exhausted the credit is zero, which is why the worked
-    example shows no interest from month 304.
+    example shows no interest from policy month 304 (``t = 3`` on the anchor).
     """
-    loaned = loan_bal_pp(t - 1)
+    loaned = loan_bal_pp_at(t, "BEF_INT")
     unloaned = av_pp_at(t, "BEF_INV") - loaned
     return unloaned * inv_return_mth(t) + loaned * loan_cr_rate_mth()
 
@@ -1078,17 +1107,17 @@ def inv_income_pp(t):
 def av_pp(t):
     """AV_t: the base account value per policy at the end of policy month t.
 
-    ``AV_0 = av_pp_init()``; thereafter the floored post-deduction balance plus one
-    month's interest.  An exhausted account never goes negative and the shortfall is
-    recorded as :func:`mth_deduction_forgone_pp` instead.
+    The floored post-deduction balance plus one month's interest, for every ``t`` of
+    the frame including ``t = 0``; the opening balance :func:`av_pp_init` enters
+    through ``av_pp_at(0, "BEF_PREM")``, not through a seed row here.  An exhausted
+    account never goes negative and the shortfall is recorded as
+    :func:`mth_deduction_forgone_pp` instead.
 
     Floored at zero *throughout* -- in grace and after a lapse as well as under a live
     guarantee.  The notes floor it "only while the guarantee is active"; applying the
     floor unconditionally is a **[std]** deviation that moves no cash flow but does
     leave this cells running after the policy has gone.  :func:`av_pp_at` sets out why.
     """
-    if t == 0:
-        return av_pp_init()
     return av_pp_at(t, "BEF_INV") + inv_income_pp(t)
 
 
@@ -1122,19 +1151,39 @@ def av_change(t):
     return av_at(t + 1, "BEF_PREM") - av_at(t, "BEF_PREM")
 
 
+def loan_bal_pp_at(t, timing):
+    """Policy loan balance per policy at an intra-month point of policy month t.
+
+    ``"BEF_INT"``
+        Before the month's loan interest accrual: the opening balance ``L_{t-1}``,
+        which is the closing balance of the previous month, or the model point's
+        :func:`loan_bal_init` when ``t = 0`` is the first month of the frame.  With no
+        new loans or repayments modelled the balance is constant from BOM until the
+        EOM accrual, so this is the loan outstanding throughout month ``t`` -- the
+        loaned part of the account value in :func:`inv_income_pp` and the debt netted
+        in the step-6 test :func:`is_guar_supported`.
+
+    The end-of-month balance ``L_t`` is :func:`loan_bal_pp`.
+    """
+    if timing == "BEF_INT":
+        return loan_bal_init() if t == 0 else loan_bal_pp(t - 1)
+    else:
+        raise ValueError("invalid timing")
+
+
 def loan_bal_pp(t):
     """L_t: the policy loan balance per policy at the end of policy month t.
 
-    ``L_0 = loan_bal_init()``; thereafter ``L_{t-1} x (1 + r_L)^(1/12)`` at the
-    guaranteed 5.0% charged in arrears [S4], accrued monthly **[std]**.  New loans and
-    repayments are not modelled -- the notes give no utilisation pattern -- so this
-    only rolls the model point's opening balance forward.  Indebtedness is deducted
-    from the guarantee in-force test (:func:`sg_net_pp`), from death proceeds and from
-    the surrender value; the shadow account itself is not reduced by it [S4][S2].
+    ``L_{t-1} x (1 + r_L)^(1/12)`` at the guaranteed 5.0% charged in arrears [S4],
+    accrued monthly **[std]**, with ``L_{t-1}`` the opening balance
+    ``loan_bal_pp_at(t, "BEF_INT")`` -- :func:`loan_bal_init` at ``t = 0``.  New loans
+    and repayments are not modelled -- the notes give no utilisation pattern -- so
+    this only rolls the model point's opening balance forward.  Indebtedness is
+    deducted from the guarantee in-force test (:func:`sg_net_pp`), from death proceeds
+    and from the surrender value; the shadow account itself is not reduced by it
+    [S4][S2].
     """
-    if t == 0:
-        return loan_bal_init()
-    return loan_bal_pp(t - 1) * (1 + loan_rate_mth())
+    return loan_bal_pp_at(t, "BEF_INT") * (1 + loan_rate_mth())
 
 
 def sg_pp_at(t, timing):
@@ -1143,7 +1192,9 @@ def sg_pp_at(t, timing):
     The same timings as :func:`av_pp_at`, on the shadow parameter set:
 
     ``"BEF_PREM"``
-        The closing shadow balance of the previous month, ``SG_{t-1}``.
+        The closing shadow balance of the previous month, ``SG_{t-1}``, or the model
+        point's opening balance :func:`sg_pp_init` when ``t = 0`` is the first month
+        of the frame.
 
     ``"BEF_WD"``
         After the shadow net premium ``(1 - pi^g) P_t``, before the withdrawal.
@@ -1163,7 +1214,7 @@ def sg_pp_at(t, timing):
         misprices restoration.
     """
     if timing == "BEF_PREM":
-        return sg_pp(t - 1)
+        return sg_pp_init() if t == 0 else sg_pp(t - 1)
     elif timing == "BEF_WD":
         return sg_pp_at(t, "BEF_PREM") + prem_to_sg_pp(t)
     elif timing == "BEF_FEE":
@@ -1188,11 +1239,11 @@ def sg_inv_income_pp(t):
 def sg_pp(t):
     """SG_t: the shadow account value per policy at the end of policy month t.
 
-    ``SG_0 = sg_pp_init()``; thereafter ``SG''_t x (1 + j^g)``.  Notional throughout:
-    it exists only to run the in-force test and is never payable [S2][S3].
+    ``SG''_t x (1 + j^g)`` for every ``t`` of the frame including ``t = 0``; the
+    opening balance :func:`sg_pp_init` enters through ``sg_pp_at(0, "BEF_PREM")``.
+    Notional throughout: it exists only to run the in-force test and is never payable
+    [S2][S3].
     """
-    if t == 0:
-        return sg_pp_init()
     return sg_pp_at(t, "BEF_INV") + sg_inv_income_pp(t)
 
 
@@ -1226,9 +1277,10 @@ def is_guar_supported(t):
     :func:`is_guar_active`, and it is evaluated **after** the full monthly deduction
     attempt: testing before the deduction lets a policy lapse a month early or late and
     shifts claim timing at exactly the durations where the net amount at risk is the
-    whole death benefit.
+    whole death benefit.  ``L_{t-1}`` is the opening loan balance
+    ``loan_bal_pp_at(t, "BEF_INT")``.
     """
-    return sg_pp_at(t, "BEF_INV") - loan_bal_pp(t - 1) > 0
+    return sg_pp_at(t, "BEF_INV") - loan_bal_pp_at(t, "BEF_INT") > 0
 
 
 def catch_up_prem_pp(t):
@@ -1330,15 +1382,15 @@ def grace_mth(t):
 
     The counter advances only when the deduction attempt failed **and** the guarantee
     is not supporting the policy; a failed deduction under an active guarantee is
-    forgone and never opens a grace.  ``g_0 = 0``.
+    forgone and never opens a grace.  The count carried into the first month of the
+    frame is zero -- no shipped model point starts in grace -- so ``g_{t-1}`` is read
+    as 0 when ``t = 0``.
     """
-    if t < 1:
-        return 0
     if is_lapsed(t):
         return 0
     if not is_shortfall(t) or is_guar_supported(t):
         return 0
-    return grace_mth(t - 1) + 1
+    return (grace_mth(t - 1) if t > 0 else 0) + 1
 
 
 def is_lapsed(t):
@@ -1348,9 +1400,10 @@ def is_lapsed(t):
     **[std]**; when it expires without the required payment the policy lapses at BOM
     with no value -- the cash surrender value is zero in grace by construction.  Lapse
     for insufficiency requires all three of the notes' conditions: the deduction
-    attempt failed, ``SG - L <= 0``, and the grace expired uncured.
+    attempt failed, ``SG - L <= 0``, and the grace expired uncured.  Never at
+    ``t = 0``: the policy is in force at the start of the frame by definition.
     """
-    if t <= 1:
+    if t <= 0:
         return False
     return is_lapsed(t - 1) or grace_mth(t - 1) >= grace_months      # noqa: F821
 
@@ -1441,17 +1494,17 @@ def mort_improve_rate(t):
 def mort_improve_factor(t):
     """The cumulative mortality improvement factor at policy month t **[std]**.
 
-    1.0 in the first projected year, then one further year of improvement on each
-    anniversary of the projection start, for at most ``mort_improve_max_years`` = 20
-    years as the notes prescribe.  Improvement is applied on projection anniversaries
-    **[std]**; for every shipped model point those coincide with policy
-    anniversaries.
+    1.0 in the first projected year (``t = 0 .. 11``), then one further year of
+    improvement on each anniversary of the projection start (``t = 12, 24, ...``), for
+    at most ``mort_improve_max_years`` = 20 years as the notes prescribe.  Improvement
+    is applied on projection anniversaries **[std]**; for every shipped model point
+    those coincide with policy anniversaries.
     """
-    k = (t - 1) // 12
+    k = t // 12
     if k <= 0:
         return 1.0
     if k > mort_improve_max_years:                                   # noqa: F821
-        return mort_improve_factor(12 * mort_improve_max_years + 1)  # noqa: F821
+        return mort_improve_factor(12 * mort_improve_max_years)      # noqa: F821
     return mort_improve_factor(t - 12) * (1 - mort_improve_rate(t - 12))
 
 
@@ -1571,11 +1624,12 @@ def pols_if(t):
     """l_t: the number of policies in force at the beginning of policy month t.
 
     Decrements are end-of-month events, so the number in force is constant through the
-    month and every BOM cash flow is weighted by it.  ``pols_if(1) = l_0 =
-    pols_if_init()``.  A policy whose grace has expired is out at BOM with no value,
-    which is why :func:`is_lapsed` is tested first.
+    month and every BOM cash flow is weighted by it.  ``pols_if(0) = l_0 =
+    pols_if_init()``; thereafter the previous month's count less its four decrements.
+    A policy whose grace has expired is out at BOM with no value, which is why
+    :func:`is_lapsed` is tested first.
     """
-    if t == 1:
+    if t == 0:
         return pols_if_init()
     if is_lapsed(t):
         return 0.0
@@ -1894,12 +1948,13 @@ def sg_pp_solve(t, prem):
     the corridor does not bind for this thin-account design.
 
     It shares :func:`sg_coi_rate` and :func:`units` with the projection, so the COI
-    lookups are cached across bisection iterates.
+    lookups are cached across bisection iterates.  Like :func:`sg_pp` it is the
+    end-of-month balance for every ``t`` of the frame, opening from
+    :func:`sg_pp_init` at ``t = 0``.
     """
-    if t == 0:
-        return sg_pp_init()
     p = prem / premium_freq() if is_premium_mth(t) else 0.0
-    sgp = (sg_pp_solve(t - 1, prem) + (1 - load_prem_rate_sg) * p    # noqa: F821
+    prev = sg_pp_init() if t == 0 else sg_pp_solve(t - 1, prem)
+    sgp = (prev + (1 - load_prem_rate_sg) * p                        # noqa: F821
            - sg_maint_fee_pp(t))
     naar = max(0.0, sum_assured_at(t) / sg_naar_factor() - max(sgp, 0.0))
     return (sgp - sg_coi_rate(t) / 1000 * naar) * (1 + sg_rate_mth())
@@ -1909,11 +1964,11 @@ def guar_min_sg(prem):
     """g(P): the smallest value of ``SG_t(P) - L_t`` over the guarantee period.
 
     Monotone non-decreasing in P on the notes' search domain, which is what makes
-    bisection safe.  Evaluated in increasing ``t`` so the shadow recursion never
-    recurses deeply.
+    bisection safe.  Evaluated over ``t = 0 .. solve_len() - 1`` in increasing ``t``
+    so the shadow recursion never recurses deeply.
     """
     return min(sg_pp_solve(t, prem) - loan_bal_pp(t)
-               for t in range(1, solve_len() + 1))
+               for t in range(solve_len()))
 
 
 def no_lapse_premium():
@@ -1970,7 +2025,7 @@ def check_av_roll_fwd():
     scheduled.
     """
     res = []
-    for t in range(1, proj_len() + 1):
+    for t in range(proj_len()):
         av = (av_at(t, "BEF_PREM")
               + prem_to_av(t)
               - withdrawals(t)
@@ -1991,17 +2046,18 @@ def check_sg_roll_fwd():
 
     Returns ``True`` when, for every projected month::
 
-        sg_pp(t) == sg_pp(t - 1) + prem_to_sg_pp(t) - wd_pp(t)
+        sg_pp(t) == sg_pp_at(t, "BEF_PREM") + prem_to_sg_pp(t) - wd_pp(t)
                     - sg_deduction_pp(t) + sg_inv_income_pp(t)
 
+    where the opening balance is ``sg_pp(t - 1)``, or ``sg_pp_init()`` at ``t = 0``.
     The shadow account is notional and carries no decrements, so this is a per-policy
     identity with no in-force weighting.  It is the check that the shadow account is
     never floored: if a zero floor crept in, this would fail the moment the balance
     went negative.
     """
     res = []
-    for t in range(1, proj_len() + 1):
-        sg = (sg_pp(t - 1) + prem_to_sg_pp(t) - wd_pp(t)
+    for t in range(proj_len()):
+        sg = (sg_pp_at(t, "BEF_PREM") + prem_to_sg_pp(t) - wd_pp(t)
               - sg_deduction_pp(t) + sg_inv_income_pp(t))
         res.append(math.isclose(sg_pp(t), sg, rel_tol=1e-9, abs_tol=1e-9))  # noqa: F821
     return all(res)
@@ -2024,7 +2080,7 @@ def check_margin():
     the case for every shipped model point.
     """
     res = []
-    for t in range(1, proj_len() + 1):
+    for t in range(proj_len()):
         rhs = (margin_expense(t) + margin_mortality(t) + margin_rop(t)
                + av_change(t) - inv_income(t)
                + loan_bal_pp(t) * pols_lapse(t))
@@ -2036,14 +2092,15 @@ def check_margin():
 def result_cf():
     """Result table of cashflows, a DataFrame indexed by policy month ``t``.
 
-    ``pols_if`` is the in-force weight applied to that same row's cash flows -- the
-    number in force at the **start** of the month -- and the remaining columns are
+    One row per projected month, ``t = 0 .. proj_len() - 1``.  ``pols_if`` is the
+    in-force weight applied to that same row's cash flows -- the number in force at
+    the **start** of the month -- and the remaining columns are
     income-positive under ``net_cf``: ``premiums - claims_death - claims_lapse
     - claims_rop - withdrawals - expenses - premium_taxes``.  The surrender column is
     ``claims_lapse``, matching the ``"LAPSE"`` kind that produces it, and withdrawals
     are their own column rather than a claim.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -2062,7 +2119,7 @@ def result_cf():
 
 def result_pols():
     """Result table of policy decrements, a DataFrame indexed by policy month ``t``."""
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -2086,7 +2143,7 @@ def result_av():
     the interest credited to each, the two closing balances -- followed by the forgone
     deduction, which the notes write inline in the deductions cell, and the status.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "premium_pp": [premium_pp(t) for t in ts],
@@ -2113,7 +2170,7 @@ def result_guar():
     the shadow account net of debt, whether the guarantee is active, the catch-up
     premium that would restore it and the grace counter.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "net_amt_at_risk": [net_amt_at_risk(t) for t in ts],

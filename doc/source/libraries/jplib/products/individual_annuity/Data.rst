@@ -1,7 +1,7 @@
 The **Data** Space
 ==================
 
-.. automodule:: jplib.products.individual_annuity.Annuity_JP_A.Data
+.. automodule:: jplib.products.individual_annuity.Annuity_JP_S.Data
 
 Cells Descriptions
 ------------------

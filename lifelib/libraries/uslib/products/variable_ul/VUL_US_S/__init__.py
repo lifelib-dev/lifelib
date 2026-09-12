@@ -73,17 +73,24 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 time rather than stored inside the model. The model folder itself holds no data, so
 the model and its inputs must travel together.
 
-**Projection basis.** Monthly steps on policy monthiversaries. Policy month ``t`` runs
-1, 2, ..., ``proj_len()``, where ``t = 1`` is the **issue month** of a new-business
-model point and ``proj_len() = 12 * (omega_age - age_at_entry() + 1) -
-duration_mth_init()``, so the projection ends with the policy year in which the insured
-attains ``omega_age`` (121), the last age of the mortality table, where the annual rate
-is 1.0. For an in-force model point ``duration_mth_init()`` is the number of completed
-policy months already elapsed at ``t = 1``. The contract has no maturity date
-[S1][S2][S4]; ``pols_maturity(t)`` is therefore identically zero and the projection is
-truncated by mortality, not by the contract. The notes' state variables at ``t = 0`` --
-``SA_i(0)``, ``FA(0)``, ``LA(0)``, ``D(0)``, ``F(0)``, ``l(0) = 1`` -- are the ``t == 0``
-branch of the corresponding recursion.
+**Projection basis.** Monthly steps on policy monthiversaries. Projected month ``t``
+is **0-based** and runs ``0, 1, ..., proj_len() - 1`` -- ``for t in range(proj_len())``,
+as in lifelib's ``savings.CashValue_SE`` -- where ``t = 0`` is the **issue month** of a
+new-business model point and ``proj_len() = 12 * (omega_age - age_at_entry() + 1) -
+duration_mth_init()`` is the number of projected months, so the projection ends with
+the policy year in which the insured attains ``omega_age`` (121), the last age of the
+mortality table, where the annual rate is 1.0. For an in-force model point
+``duration_mth_init()`` is the number of completed policy months already elapsed at
+``t = 0``, so ``duration_mth(t) = duration_mth_init() + t`` is the policy month from
+issue and ``policy_year(t) = duration_mth(t) // 12 + 1`` the contractual, 1-based
+policy year. This is the same clock the technical notes use (``t = 0`` at issue or at
+the projection start). The contract has no maturity date [S1][S2][S4];
+``pols_maturity(t)`` is therefore identically zero and the projection is truncated by
+mortality, not by the contract. The notes' state variables at ``t = 0`` -- ``SA_i(0)``,
+``FA(0)``, ``LA(0)``, ``D(0)``, ``F(0)``, ``l(0) = 1`` -- are the **opening** values of
+month 0: the ``"BEF_PREM"`` timing of ``sa_pp_at``, ``fa_pp_at``, ``la_pp_at``,
+``loan_bal_pp_at`` and ``av_pp_at`` at ``t = 0``, and ``pols_if(0)``; every ``*_pp(t)``
+state cells is the closing balance of month ``t``, the notes' ``X_{t+1}``.
 
 Within each month the notes' monthiversary order is followed exactly. At the beginning
 of the month (BOM): advance the policy year and its age-dependent parameters; premium
@@ -179,7 +186,7 @@ The **dynamic behavior module** -- the funding ratio, dynamic lapse and premium
 persistency -- *is* implemented in full, including the notes' at-issue pricing path
 ``AV*``, but is switched **off** by the Reference ``dyn_behavior_on = False`` so that
 the base deterministic run pays the planned premium in full and reproduces the worked
-example, exactly as ``Term_US_A`` switches conversion off for the same reason.
+example, exactly as ``Term_US_S`` switches conversion off for the same reason.
 
 **Model points.** ``model_point_table.csv`` carries four points, all on the anchor
 configuration M45 / StdNT / $500,000, because the notes disclose a COI anchor for that
@@ -212,12 +219,13 @@ as ``kappa(45) = 215%`` and the current COI rate as the disclosed year-1 anchor 
 The model implements the rule -- both are attained-age lookups, per the notes' own state
 variable table -- and pins the worked example's two values on model point 1 through the
 ``corridor_override_m1`` and ``coi_rate_override_m1`` columns. Both pins are confined to
-``t == 1``, the single month the worked example describes: they are lookups the notes
+``t == 0``, the first projected month and the single month the worked example
+describes (the ``_m1`` in the column names means "the first month"): they are lookups the notes
 performed at the wrong age, not contract parameters, and carrying an issue-age corridor
 factor or one disclosed COI rate across seventy-seven years would misstate every later
 month. Model point 2 is the same cell with both blank, so it takes the rule from the
 first month, and a test pins the gap open in both directions. This is the pattern
-``Term_US_A`` uses for its ``M(1)`` divergence; neither reading is "correct", and
+``Term_US_S`` uses for its ``M(1)`` divergence; neither reading is "correct", and
 neither may be closed silently.
 
 Example:

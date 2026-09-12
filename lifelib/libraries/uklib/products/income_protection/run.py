@@ -21,10 +21,12 @@ print("status = {} (claim duration {} months)   recoveries {}   escalation = {}"
     proj.status(), proj.claim_duration_months(), proj.recovery_basis(),
     proj.escalation()))
 print("premium = {:,.2f}/month   max benefit = {:,.2f}/month   "
-      "inception(1) = {:.6f} p.a.   a_dis = {:.4f}".format(
-          proj.premium_mth(), proj.benefit_max_pp(), proj.inception_rate(1),
+      "inception(t=0) = {:.6f} p.a.   a_dis = {:.4f}".format(
+          proj.premium_mth(), proj.benefit_max_pp(), proj.inception_rate(0),
           proj.annuity_dis()))
 print()
+print("result_cf(), policy month t = 0 .. {} (the first policy year shown):".format(
+    proj.proj_len() - 1))
 print(proj.result_cf().head(12).round(2).to_string())
 
 model.close()

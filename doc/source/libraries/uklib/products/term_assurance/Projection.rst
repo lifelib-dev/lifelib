@@ -1,7 +1,7 @@
 The **Projection** Space
 ========================
 
-.. automodule:: uklib.products.term_assurance.Term_UK_A.Projection
+.. automodule:: uklib.products.term_assurance.Term_UK_S.Projection
 
 Cells Descriptions
 ------------------
@@ -50,6 +50,10 @@ Cells Descriptions
 
 .. autofunction:: duration
 
+.. autofunction:: duration_mth
+
+.. autofunction:: policy_year
+
 .. autofunction:: age
 
 .. autofunction:: select_factor
@@ -60,6 +64,8 @@ Cells Descriptions
 
 .. autofunction:: mort_rate
 
+.. autofunction:: mort_rate_mth
+
 .. autofunction:: lapse_cum
 
 .. autofunction:: sel_lapse_factor
@@ -69,6 +75,8 @@ Cells Descriptions
 .. autofunction:: rebroke_factor
 
 .. autofunction:: lapse_rate
+
+.. autofunction:: lapse_rate_mth
 
 .. autofunction:: pols_if
 
@@ -81,6 +89,10 @@ Cells Descriptions
 .. autofunction:: pols_maturity
 
 .. autofunction:: wop_waived_frac
+
+.. autofunction:: wop_inc_rate_mth
+
+.. autofunction:: wop_rec_rate_mth
 
 .. autofunction:: pols_payer
 

@@ -26,6 +26,11 @@ those in `product-spec.md`. The model mirrors the term assurance reference model
 - **Projection frequency.** Monthly grid over the policy term (12 x term months)
   **[std]**. The contract itself has no accumulation account; monthly is chosen for
   parity with the other reference models in this library.
+- **Time index.** The policy month `t` is 0-based: `t = 0` is the issue month, the
+  first period of the projection, and the frame is `t = 0 … 12n − 1` (n = term in
+  years). Month `t` runs from time `t` to time `t + 1`; the policy year containing it
+  is `y = ⌊t/12⌋ + 1`, a 1-based contractual label. The in-force probability `l(t)`
+  is the value at time `t`, the start of month `t`, so `l(0) = 1`.
 - **Timing conventions [std].** Premiums and maintenance expenses at the beginning of
   the policy month (BOM); claims and decrements at the end of the policy month (EOM).
   Annual decrement rates are converted to monthly via
@@ -65,7 +70,7 @@ those in `product-spec.md`. The model mirrors the term assurance reference model
 | `premium_mode` | enum {monthly, annual} | monthly **[std]** |
 | `children_cover` | bool (automatic on the composite [S1]) | true |
 | `indexation` | bool (increasing-cover option; base: false) | false **[std]** |
-| `issue_date` | date | month 1 |
+| `issue_date` | date | month `t = 0` |
 
 ---
 
@@ -73,8 +78,8 @@ those in `product-spec.md`. The model mirrors the term assurance reference model
 
 | Variable | Description | Updated |
 |---|---|---|
-| `l(t)` | In-force probability at end of month t; l(0) = 1 | monthly decrements |
-| `t` / `y` / `a` | Policy month; policy year = ceil(t/12); attained age = issue_age + y − 1 (ANB) | monthly |
+| `l(t)` | In-force probability at the start of month t (time t); l(0) = 1 | monthly decrements |
+| `t` / `y` / `a` | Policy month, t = 0..12n − 1; policy year y = ⌊t/12⌋ + 1; attained age = issue_age + y − 1 = issue_age + ⌊t/12⌋ (ANB) | monthly |
 | `P(t)` | Premium rate in force (constant under guaranteed premiums; reset at reviews in the reviewable module) | at reviews only |
 | `SA(t)` | Sum assured (constant at SA for level cover; indexation module updates annually) | on events |
 | `grace_flag(t)` | In-grace indicator (60-day grace [S1] [S4]) — deterministic base model does not enter grace | monthly |
@@ -161,7 +166,7 @@ the user's experience — UK CI lapse studies are proprietary):
 
 | Symbol | Meaning |
 |---|---|
-| t | policy month, t = 1..12n (n = term_years); y = ceil(t/12); a = attained age (ANB) |
+| t | policy month, 0-based: t = 0..12n − 1 (n = term_years), t = 0 the issue month; y = ⌊t/12⌋ + 1 the policy year containing month t; a = attained age (ANB) = issue_age + y − 1 |
 | `SA` | sum assured (100,000 at the anchor cell) |
 | `P` | monthly premium (55.00 **[std]** at the anchor cell) |
 | `i_ci(a)` | annual CI diagnosis rate (first diagnosis of a listed condition, incl. TPD) |
@@ -173,7 +178,7 @@ the user's experience — UK CI lapse studies are proprietary):
 | `λ_m` | monthly children's claim frequency ≈ `λ_ch / 12` = 0.0000333 **[std]** |
 | `B_AP`, `B_ch` | 25,000 and 25,000 (anchor cell; see contractual inputs) |
 | `E0`, `E_m(y)`, `E_cl` | initial expense 200; maintenance `30/12 x 1.03^(y−1)` per month; claim expense 250 **[std]** |
-| `l(t)` | in-force probability at end of month t; l(0) = 1 |
+| `l(t)` | in-force probability at the start of month t (time t); l(0) = 1, and l(t+1) is the end-of-month state |
 | `δ` | standalone survival-period slippage (0.03 **[std]**) |
 | `τ` | CI trend rate (0 in base **[std]**) |
 
@@ -221,24 +226,25 @@ the research file] and is excluded **[std]**.
 
 ### Monthly processing order [std]
 
-At BOM of month t:
+At BOM of month t (time t):
 
-1. Premium income: `P x l(t−1)` (survivors at the start of the month pay).
-2. Maintenance expense: `E_m(y) x l(t−1)`. (Initial expense `E0` at t = 1 only,
+1. Premium income: `P x l(t)` (survivors at the start of the month pay).
+2. Maintenance expense: `E_m(y) x l(t)`. (Initial expense `E0` at t = 0 only,
    weight 1.)
 
-At EOM of month t:
+At EOM of month t (time t + 1):
 
-3. Main claim decrement: expected claim outgo `SA x q_m(t) x l(t−1)` (accelerated;
-   standalone uses `q_pay_m`), plus claim expense `E_cl x q_m(t) x l(t−1)`.
+3. Main claim decrement: expected claim outgo `SA x q_m(t) x l(t)` (accelerated;
+   standalone uses `q_pay_m`), plus claim expense `E_cl x q_m(t) x l(t)`.
 4. Additional-payment claims (non-terminating — do NOT decrement `l`):
-   `B_AP x a_m(t) x l(t−1)`.
+   `B_AP x a_m(t) x l(t)`.
 5. Children's-cover claims (non-terminating — do NOT decrement `l`):
-   `B_ch x λ_m x l(t−1)`.
+   `B_ch x λ_m x l(t)`.
 6. Lapse applied to non-claiming survivors; update in-force:
-   `l(t) = l(t−1) x (1 − q_m(t)) x (1 − w_m(t))` **[std order: claim before lapse]**.
-7. At t = 12n (term end): policy expires; no maturity or surrender value
-   [S1] [S4] [S5].
+   `l(t+1) = l(t) x (1 − q_m(t)) x (1 − w_m(t))` **[std order: claim before lapse]**,
+   with `l(0) = 1`.
+7. At the end of month t = 12n − 1 (term end, time 12n): policy expires; no maturity
+   or surrender value [S1] [S4] [S5].
 
 The frequency-loading treatment of steps 4–5 deliberately ignores the contractual
 claim-count caps (1 per additional-payment condition [S11]; 2 children's claims [S1])
@@ -250,13 +256,13 @@ state variables (`n_AP_used`, `n_child_used`).
 
 | Cash flow | Formula | Sign | Timing |
 |---|---|---|---|
-| Premium income | `P x l(t−1)` | + | BOM |
-| Initial expense | `E0` at t = 1 | − | BOM |
-| Maintenance expense | `E_m(y) x l(t−1)` | − | BOM |
-| Main claims | `SA x q_m(t) x l(t−1)` (standalone: `q_pay_m`) | − | EOM |
-| Claim expenses | `E_cl x q_m(t) x l(t−1)` | − | EOM |
-| Additional-payment claims | `B_AP x a_m(t) x l(t−1)` | − | EOM |
-| Children's-cover claims | `B_ch x λ_m x l(t−1)` | − | EOM |
+| Premium income | `P x l(t)` | + | BOM |
+| Initial expense | `E0` at t = 0 | − | BOM |
+| Maintenance expense | `E_m(y) x l(t)` | − | BOM |
+| Main claims | `SA x q_m(t) x l(t)` (standalone: `q_pay_m`) | − | EOM |
+| Claim expenses | `E_cl x q_m(t) x l(t)` | − | EOM |
+| Additional-payment claims | `B_AP x a_m(t) x l(t)` | − | EOM |
+| Children's-cover claims | `B_ch x λ_m x l(t)` | − | EOM |
 | Surrender outgo | 0 (no surrender value [S1] [S4] [S5]) | — | — |
 
 Grace (60 days [S1] [S4]) is not separately modeled in the deterministic base: lapse
@@ -267,13 +273,14 @@ resolution **[std]**.
 ### Reviewable-premium module (variant)
 
 For `premium_guarantee = reviewable`: `P(t)` is constant between reviews; at each
-5-yearly review from the 5th anniversary [S3] [S4], `P ← P x (1 + ρ_review)` where
-`ρ_review` is a scenario input (snapshot 0 **[std]**). Contractual constraints: one
-carrier's form — no limits, changes under 2% or 50p ignored, policyholder may instead
-reduce cover [S4] [S5]; another's intermediary form — ±5% tolerance per review,
-individual health not a factor [S3]. A review-driven lapse response belongs in behavior
-modeling (below). Premium rates for in-force reviewable business are insurer-discretionary
-current elements — class (b) snapshots, not guarantees.
+5-yearly review from the 5th anniversary [S3] [S4] — the start of month t = 60, then
+t = 120, 180, … — `P ← P x (1 + ρ_review)` where `ρ_review` is a scenario input
+(snapshot 0 **[std]**). Contractual constraints: one carrier's form — no limits, changes
+under 2% or 50p ignored, policyholder may instead reduce cover [S4] [S5]; another's
+intermediary form — ±5% tolerance per review, individual health not a factor [S3]. A
+review-driven lapse response belongs in behavior modeling (below). Premium rates for
+in-force reviewable business are insurer-discretionary current elements — class (b)
+snapshots, not guarantees.
 
 ---
 
@@ -291,9 +298,9 @@ for calibration.
   library is deliberately absent **[std]**.
 - **Premium-review shock (reviewable module only) [std].**
   `w_shock = min(0.30, w(y) + 2.0 x max(0, ρ_review − 0.05))` applied in the 12 months
-  following a review that raises premiums by more than 5%. Rationale: one carrier's
-  unlimited review changes [S4] make review-driven shocks the dominant behavioral risk
-  on reviewable business; slope and cap are placeholders.
+  from a review that raises premiums by more than 5% (t = 60..71 after the first).
+  Rationale: one carrier's unlimited review changes [S4] make review-driven shocks the
+  dominant behavioral risk on reviewable business; slope and cap are placeholders.
 - **Selective lapsation [std].** Optional morbidity-anti-selection overlay: after a
   lapse-shock event, remaining lives carry `i_ci x (1 + η)` with `η = 0.10`.
   Rationale: healthier lives lapse first when premiums rise; magnitude is a
@@ -315,23 +322,26 @@ guaranteed premium P = £55.00/month **[std]**. Age-40 assumptions: `i_ci` = 0.0
 `q_m = 1 − (1 − 0.00231)^(1/12) = 0.00019270`. Year-1 lapse 10% →
 `w_m = 1 − 0.90^(1/12) = 0.0087416`. `a_m = 0.15 x 0.0015 / 12 = 0.00001875`;
 `λ_m = 0.0004 / 12 = 0.0000333`. `B_AP = B_ch = 25,000`. Maintenance
-`E_m = 30/12 = 2.50` (year 1); claim expense 250; initial expense £200 at t = 1 (not
+`E_m = 30/12 = 2.50` (year 1); claim expense 250; initial expense £200 at t = 0 (not
 shown in the table). Survivor factor per month:
-`s = (1 − q_m)(1 − w_m) = 0.9998073 x 0.9912584 = 0.9910674`.
+`s = (1 − q_m)(1 − w_m) = 0.9998073 x 0.9912584 = 0.9910674`, so `l(t) = s^t` while
+the year-1 rates hold. Rows are the first three policy months, `t = 0, 1, 2`, of
+policy year 1; `l(t)` is the start-of-month in-force that weights the row and
+`l(t+1)` the end-of-month state.
 
-| Month t | l(t−1) | Premium `P·l` | Main claim `SA·q_m·l` | Claim exp `250·q_m·l` | Add-pay `B_AP·a_m·l` | Child `B_ch·λ_m·l` | Maint `E_m·l` | Net CF | l(t) |
+| Month t | l(t) | Premium `P·l` | Main claim `SA·q_m·l` | Claim exp `250·q_m·l` | Add-pay `B_AP·a_m·l` | Child `B_ch·λ_m·l` | Maint `E_m·l` | Net CF | l(t+1) |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | 1.000000 | 55.00 | 19.27 | 0.05 | 0.47 | 0.83 | 2.50 | 31.88 | 0.991067 |
-| 2 | 0.991067 | 54.51 | 19.10 | 0.05 | 0.46 | 0.83 | 2.48 | 31.59 | 0.982215 |
-| 3 | 0.982215 | 54.02 | 18.93 | 0.05 | 0.46 | 0.82 | 2.46 | 31.31 | 0.973441 |
+| 0 | 1.000000 | 55.00 | 19.27 | 0.05 | 0.47 | 0.83 | 2.50 | 31.88 | 0.991067 |
+| 1 | 0.991067 | 54.51 | 19.10 | 0.05 | 0.46 | 0.83 | 2.48 | 31.59 | 0.982215 |
+| 2 | 0.982215 | 54.02 | 18.93 | 0.05 | 0.46 | 0.82 | 2.46 | 31.31 | 0.973441 |
 
-Trace, month 1: premium 55.00 x 1; expected main claim 100,000 x 0.00019270 = 19.27;
-claim expense 250 x 0.00019270 = 0.05; additional payment 25,000 x 0.00001875 = 0.47;
-children's 25,000 x 0.0000333 = 0.83; maintenance 2.50. Net = 55.00 − 23.12 = 31.88
-(31.88 − 200 initial expense = −168.12 in total month-1 cash flow).
-l(1) = 1 x (1 − 0.00019270) x (1 − 0.0087416) = 0.991067. Note the additional-payment
-and children's rows do not enter l(t): they are non-terminating loadings
-[S1] [S3] [S4] [S8] [S11].
+Trace, month t = 0: premium 55.00 x 1; expected main claim 100,000 x 0.00019270 =
+19.27; claim expense 250 x 0.00019270 = 0.05; additional payment 25,000 x 0.00001875
+= 0.47; children's 25,000 x 0.0000333 = 0.83; maintenance 2.50. Net = 55.00 − 23.12 =
+31.88 (31.88 − 200 initial expense = −168.12 in total cash flow for t = 0).
+l(1) = l(0) x (1 − 0.00019270) x (1 − 0.0087416) = 0.991067. Note the
+additional-payment and children's rows do not enter l(t): they are non-terminating
+loadings [S1] [S3] [S4] [S8] [S11].
 
 ---
 

@@ -13,10 +13,15 @@ projecting model point 1::
 
 ``t`` counts **policy months**, 0-based: ``t = 0`` is the first policy month and
 ``t = proj_len() - 1`` the last. Month ``t`` is the interval from ``t`` to ``t + 1``
-months after the 契約日. On the 終身 chassis the horizon is the terminal age of the
-mortality table — 116 male, 118 female — and there is no maturity benefit at it; on the
-定期 model point flag the horizon is the last ten-year renewal that completes before
-age 80.
+months after the 契約日. ``proj_len()`` is the **number** of projected months — the
+exclusive end of the frame — so every ``result_*`` table is built over
+``range(proj_len())`` and has ``proj_len()`` rows. The policy year is the contractual
+**1-based** label derived from ``t`` and never an index into the frame:
+``policy_year(t) = t // 12 + 1``, so ``t = 0 ... 11`` is policy year 1 and the
+``policy_year``-keyed lapse table is read through it. On the 終身 chassis the horizon is
+the terminal age of the mortality table — 116 male, 118 female — and there is no maturity
+benefit at it; on the 定期 model point flag the horizon is the last ten-year renewal that
+completes before age 80.
 
 .. rubric:: Input data
 
@@ -61,7 +66,7 @@ Notes symbol               Cells                           Meaning
 chassis                    chassis()                       shushin (終身) or teiki (定期)
 x                          issue_age()                     契約年齢, 満年齢 at 契約日
 age(t)                     age(t)                          Attained 満年齢 in month t
-y(t)                       policy_year(t)                  floor(t/12) + 1
+y(t)                       policy_year(t)                  floor(t/12) + 1, 1-based label
 (none)                     sex()                           M or F
 D                          daily_amount()                  入院給付金日額, JPY per day
 L1                         limit_per_hosp()                Per-hospitalization day limit
@@ -72,7 +77,7 @@ P                          premium_mth_pp()                Monthly office premiu
 (none)                     prem_end_month()                First month with no premium
 (terminal age)             omega_age()                     Terminal age of the table
 (final expiry)             expiry_age()                    定期 flag's final expiry age
-proj_len                   proj_len()                      Number of projected months
+proj_len                   proj_len()                      Number of months; frame end + 1
 (table)                    mort_rate_at_age(x)             第三分野 proxy rate at age x
 (table)                    mort_rate_base(t)               第三分野 proxy rate at age(t)
 mort_be_factor             mort_be_factor                  1.25 [std] best-estimate scale
@@ -98,8 +103,8 @@ d_ben                      d_ben(t)                        Benefit days, floor i
 room_dis, room_acc         room_dis(t), room_acc(t)        Days left on each limb
 d_pay_dis, d_pay_acc       d_pay_dis(t), d_pay_acc(t)      Paid days after the 通算 cap
 d_ben_dis, d_ben_acc       d_ben_dis(t), d_ben_acc(t)      Benefit days after the cap
-A_dis(t)                   agg_days_dis(t)                 疾病 通算 ledger, days
-A_acc(t)                   agg_days_acc(t)                 災害 通算 ledger, days
+A_dis(t)                   agg_days_dis(t)                 疾病 通算 ledger, days, at the start of t
+A_acc(t)                   agg_days_acc(t)                 災害 通算 ledger, days, at the start of t
 s_dis, s_acc               s_dis, s_acc                    Limb split of incidence [std]
 term(t)                    term_rate(t)                    Benefit-driven termination
 s_ih                       surg_ih_per_hosp                In-hospital surgeries per stay
@@ -110,8 +115,8 @@ f_adv                      adv_freq_mth()                  Monthly 先進医療 
 S_adv                      adv_sev                         Mean 技術料 per 療養
 pay(t)                     adv_pay_pp(t)                   Reimbursement before top-up
 adv_claim(t)               adv_claim_pp(t)                 先進医療 claim per policy
-V(t), LV                   adv_paid(t), adv_cap            先進医療 ledger and its cap
-(rider)                    lump_count(t)                   入院一時金 通算 count ledger
+V(t), LV                   adv_paid(t), adv_cap            先進医療 ledger, at the start of t, and its cap
+(rider)                    lump_count(t)                   入院一時金 通算 count ledger, at the start of t
 waived(t)                  waived(t)                       Fraction on 保険料払込免除
 waiver_inc                 waiver_inc_mth(t)               Waiver incidence, 0 in base
 l(t)                       pols_if(t)                      In force at the start of t
@@ -258,7 +263,7 @@ There is **no death benefit**: the main contract pays nothing on death, so morta
 pure liability-releasing decrement and no ``claims_death`` exists. There is **no
 自動振替貸付 and no 契約者貸付**: with no surrender value there is nothing to lend
 against, so nothing carries a policy through a missed premium and no lapse-suppression
-term belongs in the recursion — importing the ``WholeLife_JP_A`` machinery here would
+term belongs in the recursion — importing the ``WholeLife_JP_S`` machinery here would
 suppress lapses that really happen. And there is **no surrender value at all** under
 終身払, at any duration, so ``claims(t, "LAPSE")`` is identically zero on the anchor cell
 and the zero is published rather than dropped. :func:`cv_pp` exists only because the
@@ -506,7 +511,11 @@ def expiry_age():
 
 
 def proj_len():
-    """The number of projected policy months.
+    """The number of projected policy months, the **exclusive end** of the frame.
+
+    ``t`` is 0-based, so the projection covers ``t = 0, 1, ..., proj_len() - 1``, every
+    ``result_*`` table is built over ``range(proj_len())`` and holds ``proj_len()`` rows,
+    and ``proj_len()`` itself is one past the last projected month.
 
     終身: ``12 x (omega_age() - x + 1)`` — 924 months on the anchor cell, the whole of
     life to the terminal age of the mortality basis, with no maturity benefit and no
@@ -525,12 +534,22 @@ def proj_len():
 
 
 def age(t):
-    """The attained 満年齢 in policy month t: ``x + floor(t / 12)`` [S4][S10]."""
+    """The attained 満年齢 in policy month t: ``x + floor(t / 12)`` [S4][S10].
+
+    ``t`` is 0-based, so ``age(0) = issue_age()`` — the 満年齢 at the 契約日 — and the
+    age steps at every twelfth month, ``t = 12, 24, ...``.
+    """
     return issue_age() + t // 12
 
 
 def policy_year(t):
-    """y(t): the policy year containing month t, ``floor(t / 12) + 1``."""
+    """y(t): the policy year containing month t, ``floor(t / 12) + 1``.
+
+    The **contractual 1-based label**, derived from the 0-based ``t`` and never an index
+    into the frame: months ``t = 0 ... 11`` are policy year 1.  It exists because
+    ``lapse_table.csv`` is keyed by policy year and runs from ``policy_year = 1``, and
+    because the notes speak in policy years while the model steps in months.
+    """
     return t // 12 + 1
 
 
@@ -629,6 +648,10 @@ def lapse_rate(t):
     surrender value and rising morbidity exposure, a long-duration policyholder has no
     cash incentive to lapse and a growing reason not to.  Policy years beyond the table
     take its last row.
+
+    ``lapse_table.csv`` is keyed by the contractual **1-based** ``policy_year``, not by
+    the model's 0-based ``t``: month ``t`` reads row :func:`policy_year` ``(t) =
+    t // 12 + 1``, so the first twelve months, ``t = 0 ... 11``, all read policy year 1.
     """
     tbl = data.lapse_table()                                         # noqa: F821
     y = min(policy_year(t), int(tbl.index.max()))
@@ -925,7 +948,7 @@ def d_ben_acc(t):
 
 
 def agg_days_dis(t):
-    """A_dis(t): the 疾病 limb's 通算 ledger in days, **per surviving policy**.
+    """A_dis(t): the 疾病 limb's 通算 ledger in days at the start of month t, **per surviving policy**.
 
     ``A_dis(t+1) = A_dis(t) + i(t) s_dis d_pay_dis(t)``, unweighted by ``pols_if``.
     Weighting it by the in-force probability would measure the block's consumption rather
@@ -943,7 +966,7 @@ def agg_days_dis(t):
 
 
 def agg_days_acc(t):
-    """A_acc(t): the 災害 limb's 通算 ledger in days, **per surviving policy**.
+    """A_acc(t): the 災害 limb's 通算 ledger in days at the start of month t, **per surviving policy**.
 
     A separate ledger, because the 通算 limit is applied separately to the two limbs
     [S4][S1].  One combined ledger terminates the contract roughly twice as early.  The
@@ -1019,7 +1042,8 @@ def adv_claim_pp(t):
 
 
 def adv_paid(t):
-    """V(t): the 先進医療 ledger in JPY, **per surviving policy**, against ``LV``.
+    """V(t): the 先進医療 ledger in JPY at the start of month t, **per surviving policy**,
+    against ``LV``.
 
     ``V(t+1) = V(t) + f_adv pay(t)``.  Only the reimbursed 技術料 counts against the
     lifetime cap; the cash top-up does not.  Never approached on the expectation — about
@@ -1046,7 +1070,8 @@ def lump_claims_pp(t):
 
 
 def lump_count(t):
-    """The 入院一時金 通算 count ledger, **per surviving policy**, against 50 payments.
+    """The 入院一時金 通算 count ledger at the start of month t, **per surviving policy**,
+    against 50 payments.
 
     Carried on the same basis as the day ledgers and for the same reason: a count
     weighted by the in-force probability would defer the 通算50回 limit indefinitely.
@@ -1206,13 +1231,19 @@ def premiums(t):
 
 
 def cv_pp(t):
-    """The 解約返戻金 per policy at the end of month t; **zero under 終身払** [S1][S6][S9].
+    """The 解約返戻金 per policy at the **start** of month t; **zero under 終身払** [S1][S6][S9].
 
     Every carrier examined writes no surrender value during the premium-paying period,
     and under 終身払 that is every duration.  Where a 短期払 is chosen a small value
     appears afterwards, standardized across two carriers at **10 x 入院給付金日額**
     [S1][S6] — the single route by which this chassis ever acquires one, and the reason
     :func:`claims` carries a ``"LAPSE"`` kind at all.
+
+    A start-of-month state, like every other state cells here: it turns on at
+    ``t = prem_end_month()``, the month of the 契約応当日 at age 65, which is the instant
+    the 払込期間 completes — premiums fall at the start of months ``0 … prem_end_month()
+    - 1``, so the last one is paid a month earlier.  ``claims(t, "LAPSE")`` pays month
+    ``t``'s end-of-month lapses at that start-of-month value.
     """
     if prem_period_type() == "to_65" and t >= prem_end_month():
         return cv_mult_short_pay * daily_amount()                    # noqa: F821
@@ -1377,6 +1408,10 @@ def check_pols_roll_fwd_resid(t):
     assurance's: cover can cease because the 通算 limits are exhausted, and the 定期 flag
     reaches its scheduled end at the final renewal.  Without them the roll-forward would
     appear to lose lives with no cause.
+
+    In the last projected month, ``t = proj_len() - 1``, ``pols_if(t + 1)`` is zero by
+    the guard on :func:`pols_if` — the frame ends there — so the residual closes against
+    the decrements that carry the survivors out.
     """
     return (pols_if(t) - pols_if(t + 1)
             - pols_death(t) - pols_lapse(t) - pols_term(t) - pols_maturity(t))
@@ -1519,7 +1554,10 @@ def check_net_cf():
 # --- Result tables ----------------------------------------------------------
 
 def result_cf():
-    """Result table of cash flows, indexed by policy month t.
+    """Result table of cash flows, indexed by the 0-based policy month t.
+
+    The index runs ``t = 0, 1, ..., proj_len() - 1``, so the table has ``proj_len()``
+    rows and row ``t = 0`` is the first policy month.
 
     ``pols_if`` is the start-of-month in-force probability, which is the weight applied
     to every cash flow on the same row.  ``net_cf`` carries the notes' own
@@ -1550,7 +1588,10 @@ def result_cf():
 
 
 def result_pols():
-    """Result table of in-force movements and decrement rates, indexed by policy month t."""
+    """In-force movements and decrement rates, indexed by the 0-based policy month t.
+
+    Same frame as :func:`result_cf`: ``t = 0, 1, ..., proj_len() - 1``.
+    """
     ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
@@ -1570,7 +1611,10 @@ def result_pols():
 
 
 def result_days():
-    """Result table of the benefit-day and rider ledgers, indexed by policy month t.
+    """The benefit-day and rider ledgers, indexed by the 0-based policy month t.
+
+    Same frame as :func:`result_cf`: ``t = 0, 1, ..., proj_len() - 1``.  Each ledger is
+    read at the **start** of month ``t``, so every one of them is zero on the first row.
 
     The ledgers are **per surviving policy** and carry no ``pols_if`` weighting, so this
     table reads as one policyholder's consumption of the 通算 limits and not as the

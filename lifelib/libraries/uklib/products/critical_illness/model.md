@@ -33,25 +33,31 @@ model.Projection[1].result_cf()
 `result_cf()` returns a tidy `DataFrame` indexed by policy month `t` with one column per
 cash flow line.
 
-## Monthly, on an annual chassis
+## Monthly, like its chassis
 
-This product sits on the [term assurance](../term_assurance/model.md) chassis, which is
-an **annual** model — but these notes specify a **monthly** grid, so `CI_UK_S` carries
-the `_S` tag and `Term_UK_A` the `_A`. Nothing in the contract needs monthiversary
-processing; the notes choose monthly for parity with the rest of the library, and it is
-what makes the 14-day survival period and the 5-yearly premium reviews expressible.
+This product sits on the [term assurance](../term_assurance/model.md) chassis, and these
+notes specify a **monthly** grid, so `CI_UK_S` and `Term_UK_S` both carry the `_S` tag.
+Nothing in the contract needs monthiversary processing; the notes choose monthly for
+parity with the rest of the library, and it is what makes the 14-day survival period and
+the 5-yearly premium reviews expressible.
 
-Policy month `t` runs 1 … `proj_len()` = `12 × term`. The notes index the in-force
-probability `l(t)` at the **end** of month `t` with `l(0) = 1`; the library indexes
-`pols_if(t)` at the **start**, so:
+Policy month `t` is 0-based, as everywhere in lifelib: `t = 0` is the issue month, the
+frame is `t = 0 … proj_len() − 1`, and `proj_len() = 12 × term` is the number of
+projected months — 300 rows on the anchor cell, indexed `0 … 299`. Month `t` runs from
+time `t` to time `t + 1`; `policy_year(t) = t // 12 + 1` is the 1-based contractual
+label and `duration(t) = t // 12` the completed years, so attained age is
+`age_at_entry + t // 12`. The notes index the in-force probability `l(t)` at the
+**start** of month `t` with `l(0) = 1`, which is exactly what the library's `pols_if`
+means:
 
 ```
-pols_if(t)                 == the notes' l(t−1)
-pols_if_at(t, "AFT_DECR")  == the notes' l(t)
+pols_if(t)                 == the notes' l(t)
+pols_if_at(t, "AFT_DECR")  == the notes' l(t+1)
 ```
 
-That is deliberate — `pols_if(t)` is then the weight on the same `result_cf()` row's
-cash flows, which is what every model in this library means by the name.
+So `pols_if(t)` is the weight on the same `result_cf()` row's cash flows, which is what
+every model in this library means by the name; `pols_if(0) == pols_if_init()`, and the
+initial expense falls at `t = 0`.
 
 ## The combined decrement — why `q_d` and `i_ci` cannot be added
 
@@ -164,6 +170,15 @@ is read once per model rather than once per model point; a test counts the reads
 | `ci_rate_table.csv` | Annual `i_ci` and `q_d` at the **pivot ages 40, 45, 50, 55, 60, 65** by sex and smoker status, with a `provenance` column | the male non-smoker pivots are the notes' **[std]** proxy table verbatim; the other three sex/smoker cells are those pivots times flat factors (i_ci ×1.75 smoker, ×0.95 female; q_d ×2.00 smoker, ×0.70 female) — all **[std]**, and *not* CMI or ONS values |
 | `lapse_table.csv` | Annual lapse by policy year, 10 / 8 / 6 / 6 / 6 / 4 % | **[std]** protection-book shape; UK CI lapse studies are proprietary |
 
+None of the three files is keyed by the model's time index `t`, so none changed when
+the frame moved to the 0-based convention. `lapse_table.csv` is keyed by
+`policy_year`, a contractual 1-based label (`1 … 6`, the last row applying from year 6
+onward); `lapse_rate_base(t)` maps into it through `policy_year(t) = t // 12 + 1`,
+capped at the table's last row. `ci_rate_table.csv` is keyed by attained `age`, reached
+through `age(t) = age_at_entry + t // 12`. `model_point_table.csv` has no time-axis
+column at all — `policy_term` is a length in years, not a point on the frame — and
+every shipped point is new business projected from `t = 0`.
+
 ### The rate basis is interpolated, not tabulated
 
 `ci_rate_table.csv` holds **six pivot ages**, because that is the form the notes give the
@@ -190,10 +205,11 @@ file, and the `provenance` column marks which cells came from the notes.
 ## The reviewable variant
 
 `premium_guarantee = reviewable` turns on a 5-yearly review from the fifth anniversary
-[S3] [S4] — so the first bites in month 61. Premiums are constant between reviews and
-multiplied by `1 + ρ_review` at each one; the snapshot is `ρ_review = 0`, so model point
-3 runs identically to point 1 until the Reference moves. Two behavioural responses hang
-off the same switch, both **[std]**:
+[S3] [S4] — the start of month `t = 60`, so the first bites there, in the month that
+opens the sixth policy year (`reviews_passed(t) = t // 60`). Premiums are constant
+between reviews and multiplied by `1 + ρ_review` at each one; the snapshot is
+`ρ_review = 0`, so model point 3 runs identically to point 1 until the Reference moves.
+Two behavioural responses hang off the same switch, both **[std]**:
 
 | Response | Formula | Why |
 |---|---|---|
@@ -223,9 +239,9 @@ so the absence of a surrender value is stated rather than inferred.
 is no outgo-positive `liability_cf` companion here.
 
 One caveat for a reader checking the worked example by eye: **the notes' Net CF column
-excludes the initial expense.** At month 1 it shows 31.88, with the £200 noted separately
-as taking the month to −168.12. `net_cf(1)` is the total, −168.12; the notes' column is
-`net_cf(1) + 200`. Both readings are asserted in the tests.
+excludes the initial expense.** At `t = 0` it shows 31.88, with the £200 noted separately
+as taking the month to −168.12. `net_cf(0)` is the total, −168.12; the notes' column is
+`net_cf(0) + 200`. Both readings are asserted in the tests.
 
 ## Naming
 
@@ -259,7 +275,7 @@ exclusion of the £4,000 child funeral benefit; claim-before-lapse as the proces
 order; and treating the joint first-event decrement as `1 − (1−q₁)(1−q₂)`.
 
 Two scope limits are worth stating separately. Decreasing and family-income shapes exist
-on the term chassis and are implemented in `Term_UK_A`, but these notes scope them out,
+on the term chassis and are implemented in `Term_UK_S`, but these notes scope them out,
 so `cover_basis` accepts `level` only. And a **standalone joint first-event** policy
 raises rather than projecting: the notes write the standalone decrement split for one
 life, and there is no published basis for splitting a joint first-event decrement into
@@ -267,12 +283,14 @@ paying and non-paying parts, so inventing one would be worse than refusing.
 
 ## Tests
 
-`tests/test_critical_illness_uk.py` asserts the notes' three-month worked example to the
-penny and the in-force column to six decimals, the combined-decrement arithmetic and
-both overlap pitfalls, the standalone split and its bounded artefact, that the
-non-terminating benefits neither deplete `SA` nor decrement the in-force, the pivot
-interpolation against hand-computed values, the reviewable variant in both positions,
-indexation, the joint decrement, and that a lapse pays nothing.
+`tests/test_critical_illness_uk.py` asserts the notes' three-month worked example
+(`t = 0, 1, 2`) to the penny and the in-force column to six decimals, the frame
+(`result_cf()` indexed `0 … proj_len() − 1`, expiry in the last month), the
+combined-decrement arithmetic and both overlap pitfalls, the standalone split and its
+bounded artefact, that the non-terminating benefits neither deplete `SA` nor decrement
+the in-force, the pivot interpolation against hand-computed values, the reviewable
+variant in both positions, indexation, the joint decrement, and that a lapse pays
+nothing.
 
 ```bash
 python -m pytest tests -q

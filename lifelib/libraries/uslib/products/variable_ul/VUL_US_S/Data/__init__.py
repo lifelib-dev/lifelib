@@ -46,8 +46,10 @@ Two of these carry the assumptions the technical notes rank first among this pro
 sensitivities, and both are standardizations.
 
 ``scenario_table.csv`` is the **separate-account return scenario**: monthly *gross*
-subaccount returns keyed by ``scenario_id``, ``subaccount_id`` and policy month ``t``,
-with the last month of a scenario repeating for the rest of the projection. Fund
+subaccount returns keyed by ``scenario_id``, ``subaccount_id`` and the **projected**
+month ``t`` -- 0-based, ``t = 0`` the first projected month, the same index as
+``Projection``'s ``t``, so a scenario restarts with the projection rather than with the
+contract -- with the last month of a scenario repeating for the rest of the projection. Fund
 expenses and the M&E charge are applied on top of these in
 :func:`~.VUL_US_S.Projection.inv_return_mth`, so the table holds gross returns only.
 A stochastic set is a data change -- more ``scenario_id`` values -- not a formula
@@ -109,7 +111,8 @@ def subaccount_table():
 def scenario_table():
     """Monthly gross subaccount returns, read from *scenario_table.csv*.
 
-    Keyed by ``scenario_id``, ``subaccount_id`` and policy month ``t``.  Returns are
+    Keyed by ``scenario_id``, ``subaccount_id`` and the projected month ``t`` (0-based,
+    ``t = 0`` the first projected month; months past the last row repeat it).  Returns are
     **gross**: fund expenses and the M&E charge are applied on top of them in the
     projection, so a table row is the fund's own return before any charge.  The index
     is sorted on read so partial slices of the three-level key are lexsorted.

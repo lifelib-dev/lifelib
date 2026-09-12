@@ -39,8 +39,9 @@ model.Projection[1].result_cf()
 ```
 
 `Projection` takes a `point_id`; `Projection[1]` is the worked-example anchor cell.
-`result_cf()` returns a tidy `DataFrame` indexed by projection month `t` with one column
-per cash flow line; `result_av()` returns the subaccount and contract value table — the
+`result_cf()` returns a tidy `DataFrame` indexed by projection month `t`, **0-based**:
+the frame is `t = 0 … proj_len() − 1`, so `len(result_cf()) == proj_len()` and every
+result table has the same `proj_len()` rows. One column per cash flow line; `result_av()` returns the subaccount and contract value table — the
 worked example's own columns — `result_bases()` the guarantee bases, the death benefit
 and the two moneyness ratios, and `result_pols()` the in-force movements.
 
@@ -50,15 +51,34 @@ notes' symbols and the cells names, and `model.Data.doc` the input arrangement.
 
 ## Monthly, not annual — because there are three clocks
 
-`t` counts **projection months**, and the *policy* month is
-`duration_mth(t) = duration_mth_init() + t`. For an at-issue cell the two coincide; for
-an in-force cell they do not, and **every calendar test is written on `duration_mth`,
-never on `t`**. `policy_year(t) = ceil(duration_mth(t)/12)`, so Contract Anniversaries
-fall at the end of policy months 12, 24, … and Contract Quarterly Anniversaries at the
-end of policy months 3, 6, 9, …
+`t` counts **projection months** and is **0-based**: `t = 0` is the first projected
+month and the frame runs to `proj_len() − 1`. The single premium falls at the beginning
+of row 0 — there is no separate issue-instant row — and the state carried into the
+projection, the `*_init()` family, is the opening balance of the first projected month:
+every recursion reads `S_init()` at `t = 0` and `S(t − 1)` after it, never a negative
+index.
 
-**Note the contrast with `Term_US_A`, where `t` counts years.** Monthly is forced here
-by the notes' own last pitfall, *discretization drift*: the base contract charge accrues
+The *policy* month is `duration_mth(t) = duration_mth_init() + t`, the policy months
+already **elapsed** at the start of month `t`. For an at-issue cell the two clocks
+coincide; for an in-force cell they do not, and **every calendar test is written on
+`duration_mth`, never on `t`**. `policy_year(t) = duration_mth(t)//12 + 1` is the 1-based
+contract year, so contract year 1 is `duration_mth = 0 … 11`; Contract Anniversaries fall
+at the **end** of the months with 11, 23, 35, … elapsed policy months, and Contract
+Quarterly Anniversaries at the end of those with 2, 5, 8, … . On the anchor cell that is
+`t = 11, 23, 35, …` and `t = 2, 5, 8, …`; the 12th policy month is `t = 11`.
+
+**The CSV time keys follow the same clock.** The `t` column of `return_scenario.csv`,
+`rate_scenario.csv` and `transaction_table.csv` is the **elapsed policy month**, 0-based,
+looked up as `duration_mth(t)`: the first policy month is `t = 0`, and the second premium
+of the `excess` programme, in the contract's 73rd policy month, is keyed `t = 72`.
+`completed_years` in `cdsc_table.csv` is an elapsed count read as `duration(t)` and was
+0-based already; `age_from` in `gawa_pct_table.csv` and `age` in `mort_table.csv` are
+ages. In `model_point_table.csv`, `duration_mth_init` is an **elapsed count** — 26 on
+model point 2, meaning the cell opens in its 27th policy month — and `bonus_end_init` is
+a 1-based contract-year label; neither moves with the frame.
+
+**Monthly is the library-wide grid, but here it is forced** by the notes' own last
+pitfall, *discretization drift*: the base contract charge accrues
 **daily** on separate-account value and is applied at one-twelfth of the annual rate at
 each month end **[std]**; the two rider charges are assessed **quarterly** on benefit
 bases; and the GMDB roll-up and the GLWB bonus are credited **annually** at the Contract
@@ -164,7 +184,8 @@ Three of the shared names carry a convention worth stating outright, because on 
 product the alternative reading is tempting:
 
 * **`pols_if(t)` is the count in force at the *start* of month `t`** — the notes'
-  `l(t−1)` — and is the weight carried by every cash flow on that same row. That is what
+  `l(t−1)` — so `pols_if(0)` is `pols_if_init()`, and it is the weight carried by every
+  cash flow on that same row. That is what
   makes the in-force column of `result_cf()` reconcile with the cash flows printed beside
   it: `premiums(t) / premium_pp(t)` is exactly `pols_if(t)`. The notes' own end-of-month
   `l(t)` has not gone anywhere — it is `pols_if_at(t, "AFT_DECR")`, and `result_pols()`
@@ -183,8 +204,8 @@ The technical notes use compact actuarial symbols; the full mapping lives in the
 | Notes | Cells | Why |
 |---|---|---|
 | `E(t)` — the **guarantee** excess | `wd_excess_pp` | In `MYGA_US_S` the same name means the **charge** base. Here those are two different quantities and both exist; the charge base is `wd_chargeable_pp`. This is the easiest mistake to make in this library |
-| `E(t)` in `Term_US_A` | `expenses` | Expenses there, a withdrawal split here |
-| `c(t)` — the CDSC | `wd_charge_pp` | `c(t)` is the Model #805 contract charge on the chassis and conversions in `Term_US_A` |
+| `E(t)` in `Term_US_S` | `expenses` | Expenses there, a withdrawal split here |
+| `c(t)` — the CDSC | `wd_charge_pp` | `c(t)` is the Model #805 contract charge on the chassis and conversions in `Term_US_S` |
 | `M` — moneyness | `moneyness_glwb` / `moneyness_gmdb` | `M(t)` is the market value adjustment on the chassis. A VA separate account has no MVA at all, so the collision is only in the reader's memory |
 | `g` — the GAWA% | `gawa_pct_at_age` | `g` is the monthly nonforfeiture factor on the chassis |
 | `b` — the bonus percentage | `bonus_pct` | `b` is the MVA distribution yield on the chassis |
@@ -209,8 +230,9 @@ cell that takes an excess withdrawal.
 
 ## The worked example is a *carried state*, so it is reproduced twice
 
-The notes' worked example is a **single month** — policy month 27, the ninth Contract
-Quarterly Anniversary — computed from a state the notes simply state: subaccounts at
+The notes' worked example is a **single month** — the 27th policy month, at whose end
+the ninth Contract Quarterly Anniversary falls; `t = 26` on the at-issue cell and `t = 0`
+on the in-force one — computed from a state the notes simply state: subaccounts at
 66,000 / 44,000, `GWB` = `BB` = 112,500, `RB` = 112,360, `NP` = `RP` = 100,000, no
 withdrawals to date. The notes narrate how that state arises (a 6,000 bonus at
 anniversary 1 against a contract value of 104,000 that is too low to step up; a second
@@ -221,8 +243,10 @@ contract values along the way are marked **[std illustrative]**.
 A carried state can be honoured in two ways, and the model ships both:
 
 * **Model point 1 projects from issue.** `return_scenario.csv` carries a `base` path
-  reverse-engineered so that `AV(12) = 104,000.00`, `AV(24) = 112,500.00` and
-  `AV(26) = 110,000.00` split exactly 66,000 / 44,000 all fall out of the projection.
+  reverse-engineered so that the contract value at anniversary 1 is `104,000.00`
+  (`av_pp(11)`), at anniversary 2 `112,500.00` (`av_pp(23)`), and at the end of the 26th
+  policy month `110,000.00` split exactly 66,000 / 44,000 (`av_pp(25)`) — all falling out
+  of the projection.
   The gross returns are therefore ugly numbers (0.6912% and 0.6660% a month over the
   first year, and so on) and are marked **[std] illustrative** with that reason in the
   `provenance` column. What this buys is that the worked-example month is verified
@@ -230,7 +254,8 @@ A carried state can be honoured in two ways, and the model ships both:
   step-up, the Bonus Period restart, two roll-up credits and eight quarterly fee
   assessments.
 * **Model point 2 enters the state directly**, as an in-force cell with
-  `duration_mth_init = 26`. The notes' own model point attribute table provides for this
+  `duration_mth_init = 26` — 26 elapsed policy months, so its `t = 0` *is* the
+  worked-example month. The notes' own model point attribute table provides for this
   (`av_initial`, `gwb_initial`, `bb_initial`, `rb_initial` are listed as "currency
   (in-force cells)"), and it reproduces the month without depending on the
   reverse-engineered path at all.
@@ -360,8 +385,9 @@ return of premium — and then the two readings cannot both hold. `NP` is the sa
 sum without the withdrawal adjustment, so it dominates the adjusted base at every `t`
 after the first withdrawal, and the form table's emphasized proportional rule can never
 change a single number. That is not a small effect: on model point 9 the guarantee would
-sit at 100,000.00 for ever where the form's own recursion gives 22,540.94 at policy month
-240 — a 77,459.06 per-contract overstatement of the floor under `DB`.
+sit at 100,000.00 for ever where the form's own recursion gives 22,540.94 in the 240th
+policy month, `t = 239` — a 77,459.06 per-contract overstatement of the floor under
+`DB`.
 
 The model takes the **elected form as governing**: `gmdb_guarantee_pp(t)` is
 `max(NP, RB)` on the `rollup` and `HQAV` elections and `RB` alone on `basic`. The choice
@@ -386,22 +412,23 @@ the mortality basis then becomes the whole story. Truncating the projection earl
 throw away the part of the liability that the notes say matters most.
 
 The model therefore runs to attained age **120 [std]** — `proj_len() = 12 × (120 −
-age_at_entry()) − duration_mth_init()`, 720 months on the anchor cell — the terminal age
-of the mortality table, where `q = 1`. `pols_maturity(t)` carries the survivors out at
-that month and is zero everywhere else, so that
+age_at_entry()) − duration_mth_init()`, the **number of months projected**, 720 on the
+anchor cell, so the frame is `t = 0 … 719` — the terminal age of the mortality table,
+where `q = 1`. The horizon month is `t = proj_len() − 1`; `pols_maturity(t)` carries the
+survivors out there and is zero everywhere else, so that
 
 ```
 pols_if(t) − pols_if(t+1) = pols_death(t) + pols_lapse(t) + pols_maturity(t)
 ```
 
 closes for every `t`. The identity is written on the start-of-month counts `pols_if`
-carries: `pols_if(proj_len() + 1)` is zero, every survivor of the horizon month having
+carries: `pols_if(proj_len())` is zero, every survivor of the horizon month having
 left as `pols_maturity`. This is bookkeeping determined by the horizon, not an added
 assumption; the name and the construction follow `BasicTerm_S.pols_maturity`,
-`Term_US_A` and `MYGA_US_S`.
+`Term_US_S` and `MYGA_US_S`.
 
-Worth knowing: **the base run depletes.** On the anchor cell the account reaches zero at
-policy month 229, attained age 79 — 5.75% of a benefit base that keeps ratcheting, plus
+Worth knowing: **the base run depletes.** On the anchor cell the account reaches zero in
+its 229th policy month, `t = 228`, attained age 79 — 5.75% of a benefit base that keeps ratcheting, plus
 1.30% on account value and 2.15% on the two bases, against an illustrative 4.4% blended
 gross return. From there the ledger is nothing but insurer-funded GLWB payments, and the
 rider fees stop exactly when the guarantee starts paying. That is the product, not a bug,
@@ -435,8 +462,8 @@ same list.
   does not restart its own charge clock. The notes key the band on completed years since
   receipt of *the premium being withdrawn* [S2], which coincides with the contract
   duration only while the contract is single premium — model point 4 is not: it pays a
-  second $25,000 at policy month 73 and is read at that contract's 6-year 2.0% band
-  rather than the new tranche's 8.5%. Splitting the pool needs a withdrawal-ordering rule
+  second $25,000 in its 73rd policy month, `t = 72`, and is read at that contract's
+  6-year 2.0% band rather than the new tranche's 8.5%. Splitting the pool needs a withdrawal-ordering rule
   across tranches that no retrieved source states. A test pins the divergence.
 - **The highest-quarterly step-up adjustment.** `highest_quarterly_CV` takes the highest
   of the four most recent quarterly contract values, *without* the source's adjustment of
@@ -495,7 +522,9 @@ CDSC and free-withdrawal memo, and the GAWA memo — **on both the at-issue and 
 in-force reading**, and asserts the two agree to the cent. It also asserts the carried
 state the notes narrate at anniversaries 1 and 2, the exact compound roll-up, both
 roll-forwards and the charge-split identity at every month, and one test per entry in the
-notes' "Known modeling pitfalls" list: gross versus net death claim, the fee stopping at
+notes' "Known modeling pitfalls" list — the roll-forwards now run over the whole frame,
+`range(proj_len())`, the first projected month included: gross versus net death claim,
+the fee stopping at
 `AV = 0`, withdrawals measured gross of charges, excess-withdrawal ordering, any
 withdrawal killing the year's bonus, the Bonus Period restarting on a step-up, the GMDB
 adjustment landing at Contract Year end, age-based rather than duration-based growth
@@ -511,9 +540,9 @@ everything that bears no charge.
 
 Three more pin the decisions this README argues out rather than the notes'
 worked example: that the `basic` election's proportional reduction actually bites and is
-not floored by `NP` (model point 9); that the never-withdraw roll-up cell depletes at
-policy month 555 on rider fees alone, which fixes the GAWA% by depletion rather than by a
-withdrawal; and that the CDSC band is keyed on the contract duration rather than on the
+not floored by `NP` (model point 9); that the never-withdraw roll-up cell depletes in its
+555th policy month, `t = 554`, on rider fees alone, which fixes the GAWA% by depletion
+rather than by a withdrawal; and that the CDSC band is keyed on the contract duration rather than on the
 vintage of the premium being withdrawn, which is a divergence from the notes and is named
 as one.
 
