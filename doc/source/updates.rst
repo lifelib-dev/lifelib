@@ -14,6 +14,16 @@ Updates
     Follow <a href="https://www.linkedin.com/company/lifelib" target="_blank">lifelib on LinkedIn</a>
     for more frequent updates.</p>
 
+* *13 September 2026:*
+  lifelib :ref:`v0.17.0<relnotes_v0.17.0>` is released.
+  :mod:`~frlib`, a new library of nine reference liability cash flow
+  projection models for French individual life, savings and retirement
+  products, including assurance vie on both of its supports and the
+  creditor insurance sold with a mortgage, is added. The library is in
+  its draft stage. The :mod:`~uslib`, :mod:`~uklib` and :mod:`~jplib`
+  models move onto the same 0-based monthly grid, and the eight models
+  that stepped annually are renamed from ``_A`` to ``_S``.
+
 * *29 August 2026:*
   lifelib :ref:`v0.16.0<relnotes_v0.16.0>` is released.
   :mod:`~jplib`, a new library of nine reference liability cash flow
@@ -36,6 +46,8 @@ Updates
 * *9 Aug 2026:*
   New download available on the :doc:`download` page.
 
+.. Latest Updates End
+
 * *28 June 2026:*
   lifelib :ref:`v0.13.0<relnotes_v0.13.0>` is released.
   :mod:`~annuallife.TradLife_A_EX1`, a new nested-projection example that
@@ -56,8 +68,6 @@ Updates
   :mod:`~basiclife.BasicTerm_SC`, a new model optimized
   for generating a compiled model using `Cython <https://cython.org/>`_ with
   `modelx-cython <https://github.com/fumitoh/modelx-cython>`_ is introduced.
-
-.. Latest Updates End
 
 * *15 July 2024:*
   lifelib :ref:`v0.10.1<relnotes_v0.10.0>` is released.
