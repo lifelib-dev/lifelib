@@ -13,6 +13,81 @@ If you're using Anaconda, use the ``conda`` command instead::
     >>> conda update lifelib
 
 
+.. _relnotes_v0.17.1:
+
+lifelib v0.17.1 (21 September 2026)
+====================================
+
+New Library
+----------------
+
+This release adds a new library, :mod:`~krlib`.
+:mod:`~krlib` packages ten reference liability cash flow projection
+models for the individual life, health and annuity products sold in
+Korea, and, for each model, the product specification and technical
+notes it was built from. See the :mod:`~krlib` page for more details.
+The library is in its draft stage.
+
+The three protection models are ``WholeLife_KR_S`` (jongsin boheom,
+whole life), ``Term_KR_S`` (jeonggi boheom, term) and ``CI_KR_S``
+(critical illness). The four third-sector models are ``Medical_KR_S``
+(silson uiryo boheom, fourth-generation indemnity medical),
+``Cancer_KR_S`` (am boheom), ``LTC_KR_S`` (ganbyeong boheom, long-term
+care) and ``Child_KR_S`` (eorini boheom, child cover). The three
+savings and annuity models are ``Pension_KR_S`` (yeongeum jeochuk
+boheom, the tax-qualified deferred contract), ``VA_KR_S`` (byeonaek
+yeongeum boheom, variable annuity) and ``Immediate_KR_S`` (jeuksi
+yeongeum, the single-premium immediate annuity). All ten run on the
+same 0-based monthly projection step as the other reference libraries
+and project one model point at a time.
+
+What separates the coverage from :mod:`~uslib`'s, :mod:`~uklib`'s,
+:mod:`~jplib`'s and :mod:`~frlib`'s is that the regulator wrote more of
+the product than the carrier did, while the quantitative basis is the
+least public of any market covered so far. Je-sam boheom, third
+insurance, is not a market label but a statutory licence category that
+either a life insurer or a non-life insurer may hold, and four of the
+ten products sit in it. Silson uiryo boheom is the sharpest case: it is
+held on 35.96 million individual contracts against a population near 51
+million, its benefit definition is the supervisor's own standard policy
+wording, and it is the only indemnity contract anywhere in lifelib.
+Every other product, in every library, pays a stated sum; this one
+reimburses an incurred cost inside an annual limit. Eorini boheom, a
+bundled child health policy commonly written before birth, has no
+counterpart in any sibling library either.
+
+Against that, the industry experience table the models would want,
+the gyeongheom saengmyeongpyo, is not published at all, so every
+mortality and morbidity input in the library is a documented
+construction that reports its own basis and its gap against the public
+life table. Korea also uses two age conventions, boheom nai, the
+contractual insurance age, and man nai, age last birthday, and the
+library uses both because its sources do. Which one a model is on is
+recorded in the library's test registry and asserted against the
+model's own docstring, because a man nai model point read against a
+boheom nai rate table understates the rate by roughly half a year of
+ageing. Group business, retirement pensions and the non-life carrier's
+form of each third-sector product are out of scope.
+
+Changes
+------------
+
+* The repository now carries a ``.gitattributes`` that checks every
+  text file out with LF line endings on all platforms. The reference
+  libraries keep their model inputs as external CSV files that the
+  in-library test suites read as bytes, and on Windows the default
+  ``core.autocrlf`` setting rewrote those files on checkout, so a test
+  that asserts an input carries no byte order mark and no CRLF failed
+  on Windows alone against files that are LF in the repository.
+
+* The test suite that exports every model with ``Model.export`` and
+  checks the exported package against the model it came from now
+  covers :mod:`~krlib`'s ten models as well, bringing it to 47 models.
+  ``Pension_KR_S`` joins ``EC_FR_S`` in the set whose whole-table sweep
+  is skipped on Windows up to Python 3.10, where an exported package
+  inherits modelx's raised recursion limit but not the thread stack it
+  evaluates on.
+
 .. _relnotes_v0.17.0:
 
 lifelib v0.17.0 (13 September 2026)

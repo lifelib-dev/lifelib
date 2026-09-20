@@ -14,6 +14,14 @@ Updates
     Follow <a href="https://www.linkedin.com/company/lifelib" target="_blank">lifelib on LinkedIn</a>
     for more frequent updates.</p>
 
+* *21 September 2026:*
+  lifelib :ref:`v0.17.1<relnotes_v0.17.1>` is released.
+  :mod:`~krlib`, a new library of ten reference liability cash flow
+  projection models for Korean individual life, health and annuity
+  products, including the indemnity medical cover held on 36 million
+  contracts and the three other third-sector products written under the
+  same statutory licence, is added. The library is in its draft stage.
+
 * *13 September 2026:*
   lifelib :ref:`v0.17.0<relnotes_v0.17.0>` is released.
   :mod:`~frlib`, a new library of nine reference liability cash flow
@@ -43,10 +51,10 @@ Updates
   projection models for U.S. individual life and annuity products, is
   added. The library is in its draft stage.
 
+.. Latest Updates End
+
 * *9 Aug 2026:*
   New download available on the :doc:`download` page.
-
-.. Latest Updates End
 
 * *28 June 2026:*
   lifelib :ref:`v0.13.0<relnotes_v0.13.0>` is released.
