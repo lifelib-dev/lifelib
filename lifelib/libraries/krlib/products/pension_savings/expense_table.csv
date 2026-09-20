@@ -1,0 +1,8 @@
+item,value,provenance
+expense_acq,200000,[std] acquisition cash expense per policy at t = 0; the contractual 계약체결비용 of [S1] is a loading inside the fund and is a different quantity
+expense_maint_defer,30000,[std] maintenance cash expense per policy a year before annuitisation
+expense_maint_payout,20000,[std] maintenance cash expense per policy a year once the annuity is in payment
+expense_claim,30000,[std] claim handling expense per death claim; none on surrender
+inflation_rate,0.02,[std] flat expense inflation
+comm_init_rate,0.00,[S1] 모집수수료율 0.00% in every year - a direct-channel product that pays no acquisition commission
+comm_renewal_rate,0.00,[S1] 모집수수료율 0.00% in every year

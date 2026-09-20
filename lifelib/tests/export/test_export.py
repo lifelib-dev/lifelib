@@ -1,4 +1,4 @@
-"""Every registered model in uslib, uklib, jplib and frlib exports to a working nomx package.
+"""Every registered model in uslib, uklib, jplib, frlib and krlib exports to a working nomx package.
 
 ``Model.export`` writes a model out as a pure-Python package that does not import modelx.
 For these libraries that is a supported way to run the models, so the export is part of
@@ -154,7 +154,26 @@ def test_the_first_model_point_matches_the_modelx_model(exported):
 # the limit is the default 1000, and five of the registered models already exceed it --
 # ``DIA_US_S``, ``IUL_US_S``, ``VA_US_S`` and ``FXWholeLife_JP_S`` have shipped that way
 # since v0.14.0 and v0.16.0. Tracked at lifelib-dev/lifelib-products#35.
-_OVERFLOWS_A_SMALL_STACK = frozenset({"EC_FR_S"})
+#
+# ``Pension_KR_S`` is the second entry, added with krlib. Its 연금저축보험 accumulation
+# chains through the declared-rate and minimum-guarantee steps month by month and peaks at
+# 2,552 frames, measured two ways -- bisecting the lowest ``sys.setrecursionlimit`` the
+# export survives, and profiling the frame chain directly. Calibrated on the same basis,
+# ``EC_FR_S`` reproduces at 3,314 and ``FXWholeLife_JP_S`` at 1,836, so Pension sits between
+# the deepest export known to pass on Windows / 3.10 and the one known to crash, nearer the
+# crash. Two more krlib models land in that same unmeasured band and are recorded here
+# rather than skipped -- ``CI_KR_S`` at 2,321 and ``WholeLife_KR_S`` at 2,082. The line has
+# to fall somewhere, and Pension is both the deepest of the three and the only one past the
+# figure the paragraph above already names. If a Windows cell on 3.9 or 3.10 dies without a
+# test report, these two are the next candidates, in that order.
+#
+# Those figures were taken on Windows / 3.13, where the pair quoted above does not
+# reproduce -- ``IUL_US_S`` profiles at 52 frames and ``VA_US_S`` at 613, because their
+# ``result_`` statements walk t upward and each step finds the previous one already cached,
+# while Pension's recurse from the top. So the "roughly 2,400" line rests on a measurement
+# that cannot be re-taken here, and it is the 1,836 / 3,314 bracket that this entry is
+# argued from. A 3.10 interpreter on Windows would settle it.
+_OVERFLOWS_A_SMALL_STACK = frozenset({"EC_FR_S", "Pension_KR_S"})
 
 _SMALL_STACK = sys.platform == "win32" and sys.version_info < (3, 11)
 

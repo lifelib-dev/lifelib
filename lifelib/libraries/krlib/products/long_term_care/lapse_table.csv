@@ -1,0 +1,5 @@
+param,value,provenance
+lapse_year1,0.08,"[std] first-policy-year lapse rate. No Korean durational persistency series was retrieved for a bojangseong contract, so the level is a standardization; only the shape below is regulated [REG-R27]"
+lapse_completion,0.001,[REG-R27] the practical convergence point of the log-linear (rogeu-seonhyeong) principle model for a mu-johaeji form: 0.1% at napip-wallyo
+lapse_ultimate,0.008,"[REG-R27] the post-napip-wallyo ultimate lapse rate, 0.8%, from overseas statistics"
+lapse_level_std,0.04,"[std] the pyojunhyeong comparison vector: a level annual rate at every duration, carried so the two assumptions can be compared, which is the comparison [REG-R27] requires an insurer to disclose"

@@ -1,0 +1,11 @@
+point_id,policy_id,shape,sex,age_at_entry,prem_pp,annuity_term,retention_basis,crediting_basis,lapse_rate,pols_if_init
+1,IA-000001,life,M,60,100000000,10,as_designed,decl_2017,0.0,1.0
+2,IA-000002,life,F,60,100000000,10,as_designed,decl_2017,0.0,1.0
+3,IA-000003,life,M,60,100000000,20,as_designed,decl_2017,0.0,1.0
+4,IA-000004,life,M,45,10000000,10,as_designed,decl_2017,0.0,1.0
+5,IA-000005,life,F,80,1500000000,10,as_designed,decl_2017,0.0,1.0
+6,IA-000006,inheritance,M,60,100000000,10,as_designed,decl_2017,0.02,1.0
+7,IA-000007,inheritance,M,60,100000000,10,as_ordered,decl_2017,0.02,1.0
+8,IA-000008,inheritance,F,70,100000000,20,as_designed,min_guar,0.02,1.0
+9,IA-000009,certain,M,60,100000000,10,as_designed,decl_2017,0.02,1.0
+10,IA-000010,certain,F,55,5000000000,30,as_designed,decl_2017,0.0,1.0

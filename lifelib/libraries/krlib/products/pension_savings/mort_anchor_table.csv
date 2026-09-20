@@ -1,0 +1,35 @@
+table,sex,item,value,provenance
+annuitant_issue,M,law_a,5.55830000e-04,"[std] Makeham constant term, fitted as described in mort_table.csv"
+annuitant_issue,M,law_b,2.32810000e-06,"[std] Makeham scale term, fitted as described in mort_table.csv"
+annuitant_issue,M,law_c,1.10895600,"[std] Makeham ageing gradient, 10.9% a year; the published 60-80 gradient is 11.1% [S7]"
+annuitant_issue,M,age_setback,0,[std] the male table is the fitted law itself
+annuitant_issue,M,omega_age,120,[std] terminal age; no Korean industry table publishes one [REG-R33]
+annuitant_issue,F,law_a,5.55830000e-04,"[std] the female table is the male law set back, so it shares the law parameters"
+annuitant_issue,F,law_b,2.32810000e-06,"[std] the female table is the male law set back, so it shares the law parameters"
+annuitant_issue,F,law_c,1.10895600,"[std] the female table is the male law set back, so it shares the law parameters"
+annuitant_issue,F,age_setback,4,"[std] four-year setback, the whole-year setback closest to the published 65세 기대여명 gap of 3.4 years [REG-R33]; it does not reproduce it - the fitted gap is 3.66 years"
+annuitant_issue,F,omega_age,120,[std] terminal age; no Korean industry table publishes one [REG-R33]
+annuitant_revised,M,law_a,5.55830000e-04,"[std] the revised vintage is the issue vintage scaled, so it shares the law parameters"
+annuitant_revised,M,law_b,2.32810000e-06,"[std] the revised vintage is the issue vintage scaled, so it shares the law parameters"
+annuitant_revised,M,law_c,1.10895600,"[std] the revised vintage is the issue vintage scaled, so it shares the law parameters"
+annuitant_revised,M,age_setback,0,[std] the male table is the fitted law itself
+annuitant_revised,M,omega_age,120,[std] terminal age; no Korean industry table publishes one [REG-R33]
+annuitant_revised,F,law_a,5.55830000e-04,"[std] the revised vintage is the issue vintage scaled, so it shares the law parameters"
+annuitant_revised,F,law_b,2.32810000e-06,"[std] the revised vintage is the issue vintage scaled, so it shares the law parameters"
+annuitant_revised,F,law_c,1.10895600,"[std] the revised vintage is the issue vintage scaled, so it shares the law parameters"
+annuitant_revised,F,age_setback,4,"[std] four-year setback, the whole-year setback closest to the published 65세 기대여명 gap of 3.4 years [REG-R33]; it does not reproduce it - the fitted gap is 3.66 years"
+annuitant_revised,F,omega_age,120,[std] terminal age; no Korean industry table publishes one [REG-R33]
+annuitant_issue,M,improve_factor,1.0,[std] the 가입시점 vintage is unscaled by definition
+annuitant_issue,F,improve_factor,1.0,[std] the 가입시점 vintage is unscaled by definition
+annuitant_revised,M,improve_factor,0.85,[std] one-step lightening of the order the 제9회 -> 제10회 revision produced [R18] [R19]
+annuitant_revised,F,improve_factor,0.85,[std] one-step lightening of the order the 제9회 -> 제10회 revision produced [R18] [R19]
+annuitant_issue,M,pub_q_40,0.00077,"[S7] 개인연금사망률 남자 40세, 기준 40세 가입; a published anchor, not a fitted value"
+annuitant_issue,M,pub_q_50,0.00094,"[S1] 연금사망률 남자 연금지급개시나이 50세, 가입연령 40세 기준"
+annuitant_issue,M,pub_q_60,0.00164,[S7] 개인연금사망률 남자 60세; [S1] gives 0.00150 at the same age
+annuitant_issue,M,pub_q_70,0.00291,[S1] 연금사망률 남자 연금지급개시나이 70세
+annuitant_issue,M,pub_q_80,0.01346,[S7] 개인연금사망률 남자 80세
+annuitant_issue,F,pub_q_40,0.00048,"[S7] 개인연금사망률 여자 40세, 기준 40세 가입"
+annuitant_issue,F,pub_q_50,0.00044,[S1] 연금사망률 여자 연금지급개시나이 50세
+annuitant_issue,F,pub_q_60,0.00056,[S7] 개인연금사망률 여자 60세; [S1] gives 0.00052 at the same age
+annuitant_issue,F,pub_q_70,0.00097,[S1] 연금사망률 여자 연금지급개시나이 70세
+annuitant_issue,F,pub_q_80,0.00622,[S7] 개인연금사망률 여자 80세

@@ -1,0 +1,10 @@
+point_id,policy_id,sex,issue_age,sum_assured,prem_term,premium_annual,pols_if_init,accel_rate,cv_floor_ratio,first_year_scope,resid_floor_mult,lapse_basis,waiver_rate,pol_loan_util,pol_loan_year,mort_adj,ci_adj,mort_ci_factor
+1,CI-KR-0001,M,40,100000000,20,3680880,1,0.8,0.5,breast,1.05,log_linear,0.0003,0.0,0,1.0,1.0,3.0
+2,CI-KR-0002,F,40,100000000,20,3144600,1,0.8,0.5,breast,1.05,log_linear,0.0003,0.0,0,1.0,1.0,3.0
+3,CI-KR-0003,M,40,100000000,20,3758730,1,0.5,1.0,breast,1.05,table,0.0003,0.0,0,1.0,1.0,3.0
+4,CI-KR-0004,F,35,50000000,20,1308800,1,0.8,0.0,all,1.05,log_linear,0.0003,0.0,0,1.0,1.0,3.0
+5,CI-KR-0005,M,15,10000000,30,149260,1,0.8,0.5,breast,1.05,log_linear,0.0003,0.0,0,1.0,1.0,3.0
+6,CI-KR-0006,F,60,200000000,10,18526930,1,0.8,1.0,breast,1.05,table,0.0003,0.0,0,1.0,1.0,3.0
+7,CI-KR-0007,M,45,150000000,20,6340880,1,0.8,0.5,breast,1.05,log_linear,0.0003,0.5,12,1.0,1.0,3.0
+8,CI-KR-0008,M,50,100000000,20,4600390,1,0.5,0.5,breast,1.05,table,0.0003,0.0,0,1.0,1.0,3.0
+9,CI-KR-0009,F,30,100000000,20,2464100,1,0.8,0.5,breast,1.1,log_linear,0.0005,0.0,0,0.85,0.75,2.0

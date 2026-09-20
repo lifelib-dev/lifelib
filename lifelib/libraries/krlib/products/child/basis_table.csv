@@ -1,0 +1,14 @@
+param,value,provenance
+disab_severity,0.12,[std] mean 장해지급률 on a 3~100% 일반상해후유장해 event. The benefit is 보험가입금액 x 장해지급률 on a continuous percentage scale [R12] [S1] [S2] and the modal childhood accident impairment is small; the severity distribution is not published anywhere. A model treating the cover as a lump sum at S overstates the liability by about eight times
+disease_disab_severity,0.15,[std] mean 장해지급률 on a 3~100% 질병후유장해 event; above the accident figure because a disease impairment that settles at all tends to settle higher. Not published
+surgery_rate_cancer,0.85,[std] probability that a 암 diagnosis produces a qualifying 암수술 within the contract's definition; the 수술비 limb of the comparison basis pays per operation [R12]
+surgery_rate_cerebral,0.5,[std] probability that a 뇌출혈 diagnosis produces a qualifying 뇌출혈수술 [R12]
+surgery_rate_cardiac,0.7,[std] probability that an 급성심근경색증 diagnosis produces a qualifying 급성심근경색증수술 [R12]
+liability_severity,600000.0,"[std] mean amount paid on a 가족일상생활배상책임 claim, well inside the 1억원 per-occurrence limit and net of the 200,000원 / 500,000원 대물 deductibles [S5]; no Korean severity distribution for the cover was retrieved"
+hosp_cap_factor,0.92,"[std] the proportion of expected 입원 days that survives the 1~180일 per-stay cap of the comparison basis [R12] [S2]. No retrieved Korean child wording states a re-admission grouping rule, so no 180-day one-hospitalization memory is modelled"
+waiver_disab_share,0.08,[std] the share of 3~100% 후유장해 events reaching the 50% 이상 threshold that fires the 납입면제 [S2]
+payer_disab_ratio,0.25,"[std] the 계약자's 50% 이상 장해 incidence as a ratio to mortality at the same age, the 생명보험 waiver firing on either [S10 제22조]; no Korean disability incidence table is public"
+leak_share,0.4,"[std] the 누수사고 대물 share of the 가족일상생활배상책임 loss cost, being the limb whose 보장개시일 is 90 days after the 계약일 and resets at every renewal [S5] [S3]"
+void_rate_ann,0.012,"[std] the annualised rate at which a 태아 contract is voided by 유산 or 사산 before birth, on which the whole premium is returned [S8 제56조] [S9]. **No Korean source retrieved gives a foetal-loss rate**; the sources fix the mechanic, not the level. Applies only over t < birth_month"
+broad_def_factor,4.0,[std] the ratio of 뇌혈관질환 / 허혈성심장질환 incidence on the broad KCD ranges most current products sell to 뇌출혈 / 급성심근경색증 on the narrow definitions the comparison basis prices [S11] [S2] [R12]
+net_prem_ratio,0.75,"[std] 순보험료 as a share of 영업보험료, used only to form the 연납순보험료 term of the 표준해약공제액 of 감독규정 [별표 14] [REG-R20]. No Korean 예정사업비율 is published: the 산출방법서 that holds it is an undisclosed 기초서류 [REG-R2]"

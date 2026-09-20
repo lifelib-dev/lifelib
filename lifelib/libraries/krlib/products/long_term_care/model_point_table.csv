@@ -1,0 +1,10 @@
+point_id,policy_id,issue_age,sex,term_age,prem_period_years,benefit_grade,lump_amount,annuity_on,annuity_high,annuity_low,annuity_max_mths,annuity_guar_mths,dementia_rider,dementia_amount,wait_mths,red_mths,cv_form,lapse_form,uw_loading,premium,prem_mode
+1,LTC-000001,40,M,90,20,g2,10000000.0,True,500000.0,300000.0,120,12,False,10000000.0,3,12,mijigeup,mujihae,1.0,5600.0,monthly
+2,LTC-000002,40,F,90,20,g2,10000000.0,True,500000.0,300000.0,120,12,False,10000000.0,3,12,mijigeup,mujihae,1.0,8400.0,monthly
+3,LTC-000003,60,M,90,10,g2,10000000.0,True,500000.0,300000.0,120,12,False,10000000.0,3,12,mijigeup,mujihae,1.0,15600.0,monthly
+4,LTC-000004,55,F,95,20,g5,10000000.0,False,500000.0,300000.0,120,12,False,10000000.0,3,12,mijigeup,mujihae,1.0,16200.0,monthly
+5,LTC-000005,30,M,100,30,g6,5000000.0,True,500000.0,300000.0,120,12,True,10000000.0,3,12,mijigeup,mujihae,1.0,29400.0,monthly
+6,LTC-000006,65,F,90,10,g1,20000000.0,True,500000.0,300000.0,120,12,False,10000000.0,3,12,half_during,mujihae,1.0,16400.0,monthly
+7,LTC-000007,70,M,90,10,g2,5000000.0,True,500000.0,300000.0,60,12,False,10000000.0,3,12,pyojun,pyojun,1.0,12400.0,monthly
+8,LTC-000008,50,F,90,20,g3,10000000.0,True,500000.0,300000.0,120,12,True,10000000.0,3,12,mijigeup,mujihae,1.4,49000.0,monthly
+9,LTC-000009,45,M,90,20,g4,10000000.0,True,500000.0,300000.0,120,12,False,10000000.0,6,24,mijigeup,mujihae,1.0,36600.0,monthly

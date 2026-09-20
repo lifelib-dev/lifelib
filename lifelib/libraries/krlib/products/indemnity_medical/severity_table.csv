@@ -1,0 +1,34 @@
+stream,point,cost,prob,provenance
+ge_in,1,250000,0.4000,[std] [R9] geubyeo boninbudamgeum per admission; the shape carries the 20 per cent inpatient co-payment of the public fee schedule and the 2024 jinryobi silt'aejosa split
+ge_in,2,700000,0.3200,[std] [R9] geubyeo boninbudamgeum per admission; the shape carries the 20 per cent inpatient co-payment of the public fee schedule and the 2024 jinryobi silt'aejosa split
+ge_in,3,1800000,0.2000,[std] [R9] geubyeo boninbudamgeum per admission; the shape carries the 20 per cent inpatient co-payment of the public fee schedule and the 2024 jinryobi silt'aejosa split
+ge_in,4,5000000,0.0700,[std] [R9] geubyeo boninbudamgeum per admission; the shape carries the 20 per cent inpatient co-payment of the public fee schedule and the 2024 jinryobi silt'aejosa split
+ge_in,5,15000000,0.0100,[std] [R9] geubyeo boninbudamgeum per admission; the shape carries the 20 per cent inpatient co-payment of the public fee schedule and the 2024 jinryobi silt'aejosa split
+ge_out,1,8000,0.3000,[std] [R11] geubyeo boninbudamgeum per outpatient visit; the 30-60 per cent outpatient co-payment scale by provider class
+ge_out,2,18000,0.3000,[std] [R11] geubyeo boninbudamgeum per outpatient visit; the 30-60 per cent outpatient co-payment scale by provider class
+ge_out,3,40000,0.2500,[std] [R11] geubyeo boninbudamgeum per outpatient visit; the 30-60 per cent outpatient co-payment scale by provider class
+ge_out,4,90000,0.1200,[std] [R11] geubyeo boninbudamgeum per outpatient visit; the 30-60 per cent outpatient co-payment scale by provider class
+ge_out,5,250000,0.0300,[std] [R11] geubyeo boninbudamgeum per outpatient visit; the 30-60 per cent outpatient co-payment scale by provider class
+np_in,1,400000,0.4000,[std] [R7] bigeubyeo cost per admission excluding the room differential; scaled to the 57.1 per cent bigeubyeo share of claims
+np_in,2,1200000,0.3300,[std] [R7] bigeubyeo cost per admission excluding the room differential; scaled to the 57.1 per cent bigeubyeo share of claims
+np_in,3,3000000,0.2000,[std] [R7] bigeubyeo cost per admission excluding the room differential; scaled to the 57.1 per cent bigeubyeo share of claims
+np_in,4,8000000,0.0700,[std] [R7] bigeubyeo cost per admission excluding the room differential; scaled to the 57.1 per cent bigeubyeo share of claims
+np_room,1,0,0.5500,[std] [S1] sanggeup byeongsillyo chaaek per admission; the mass at zero is the majority of admissions taking a covered room
+np_room,2,300000,0.3000,[std] [S1] sanggeup byeongsillyo chaaek per admission; the mass at zero is the majority of admissions taking a covered room
+np_room,3,1200000,0.1500,[std] [S1] sanggeup byeongsillyo chaaek per admission; the mass at zero is the majority of admissions taking a covered room
+np_out,1,45000,0.3500,"[std] [R2] bigeubyeo cost per outpatient visit; the tail reflects the 5,000 to 600,000 won range the price survey found for dosu chiryo"
+np_out,2,90000,0.3000,"[std] [R2] bigeubyeo cost per outpatient visit; the tail reflects the 5,000 to 600,000 won range the price survey found for dosu chiryo"
+np_out,3,180000,0.2200,"[std] [R2] bigeubyeo cost per outpatient visit; the tail reflects the 5,000 to 600,000 won range the price survey found for dosu chiryo"
+np_out,4,400000,0.1000,"[std] [R2] bigeubyeo cost per outpatient visit; the tail reflects the 5,000 to 600,000 won range the price survey found for dosu chiryo"
+np_out,5,900000,0.0300,"[std] [R2] bigeubyeo cost per outpatient visit; the tail reflects the 5,000 to 600,000 won range the price survey found for dosu chiryo"
+physio,1,80000,0.3500,"[std] [R2] [R7] per-act cost of dosu chiryo, chewoe chunggyeokpa and jeungsik chiryo, the 15.8 per cent geungolgyeokgye claim block"
+physio,2,120000,0.3500,"[std] [R2] [R7] per-act cost of dosu chiryo, chewoe chunggyeokpa and jeungsik chiryo, the 15.8 per cent geungolgyeokgye claim block"
+physio,3,180000,0.2200,"[std] [R2] [R7] per-act cost of dosu chiryo, chewoe chunggyeokpa and jeungsik chiryo, the 15.8 per cent geungolgyeokgye claim block"
+physio,4,400000,0.0800,"[std] [R2] [R7] per-act cost of dosu chiryo, chewoe chunggyeokpa and jeungsik chiryo, the 15.8 per cent geungolgyeokgye claim block"
+inject,1,60000,0.4000,"[std] [R8] per-act cost of a bigeubyeo injection, the 18.5 per cent jusaje claim block of 2024"
+inject,2,120000,0.3000,"[std] [R8] per-act cost of a bigeubyeo injection, the 18.5 per cent jusaje claim block of 2024"
+inject,3,250000,0.2000,"[std] [R8] per-act cost of a bigeubyeo injection, the 18.5 per cent jusaje claim block of 2024"
+inject,4,700000,0.1000,"[std] [R8] per-act cost of a bigeubyeo injection, the 18.5 per cent jusaje claim block of 2024"
+mri,1,450000,0.4500,[std] [R7] per-act cost of a bigeubyeo MRI or MRA
+mri,2,700000,0.3500,[std] [R7] per-act cost of a bigeubyeo MRI or MRA
+mri,3,1100000,0.2000,[std] [R7] per-act cost of a bigeubyeo MRI or MRA

@@ -1,0 +1,5 @@
+scenario,from_year,decl_rate,provenance
+base,0,0.0215,"[S2] 공시이율 2.15% at 2025-12, the rate the anchor illustration and every derived annuity factor are struck on; observed market range 2.1%-3.0% [S1] [S12]"
+floor,0,0.0000,"[std] the 최저보증이율 scenario: the declared rate is driven below the ladder at every duration, so the fund is credited at the guarantee - the second column of the published illustration [S2]"
+hybrid,0,0.0350,[S11] the one retrieved hybrid design: 연복리 3.5% 확정이율 for the first five contract years
+hybrid,5,0.0215,[S11] the ordinary declared rate from the sixth contract year; level at the composite's 2.15% [S2]
