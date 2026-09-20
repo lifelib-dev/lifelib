@@ -1,0 +1,11 @@
+point_id,sex,issue_age,premium,np_share,np_rider,three_np,annual_limit,visit_cap,oop_decile,clinic_share,nhi_covered,trend_mult,util_mult,reld_on,noclaim_on,suspend_rate,label
+1,M,40,11982,0.60,1,1,50000000,200000,6,0.63,1,1.0,1.0,1,1,0.00,anchor 40M all covers full limit
+2,F,40,11982,0.60,1,1,50000000,200000,6,0.63,1,1.0,1.0,1,1,0.00,female at the anchor age
+3,M,0,8500,0.60,1,1,50000000,200000,4,0.70,1,1.0,1.0,1,1,0.00,issue age 0 lower envelope
+4,F,65,33000,0.60,1,1,50000000,200000,3,0.60,1,1.0,1.0,1,1,0.00,issue age 65 upper envelope
+5,M,40,4793,0.00,0,0,50000000,200000,6,0.63,1,1.0,1.0,0,0,0.00,geubyeo main contract only
+6,F,30,9500,0.50,1,0,50000000,200000,5,0.65,1,1.0,1.0,1,1,0.00,three named classes not held
+7,M,50,17000,0.60,1,1,10000000,100000,8,0.60,1,1.0,1.0,1,1,0.00,lower boheom gaipgeumaek rung
+8,F,45,14000,0.60,1,1,50000000,200000,1,0.63,1,1.0,10.0,1,1,0.00,top-decile use lowest sanghanaek
+9,M,55,20500,0.60,1,1,50000000,200000,7,0.63,1,1.0,1.0,0,0,0.03,relativity off suspension on
+10,M,35,10300,0.60,1,1,50000000,200000,2,0.63,0,4.5,1.0,1,1,0.00,outside NHI cost-trend stress

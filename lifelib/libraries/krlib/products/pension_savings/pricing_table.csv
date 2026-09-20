@@ -1,0 +1,25 @@
+item,value,provenance
+prem_freq,12,[S1] [S2] [S6] [S7] every retrieved contract is 월납; the annual grid collapses the twelve instalments and adjusts the interest
+annuity_freq,12,"[S1] [S2] [S5] [S6] [S7] 매월 / 매3개월 / 매6개월, with the deferred instalments credited at the 공시이율"
+prem_int_rate,0.0250,"[S1] [S5] [S7] 보장부분 적용이율 / 예정이율 연복리 2.50%, expressly not a guarantee"
+avg_decl_rate,0.0250,"[REG-R48] [S14] [S2] 평균공시이율 2026, 감독규정 제1-2조제13호 [REG-R9]"
+acq_charge_rate,0.0150,[S1] 계약체결비용 1.50% of the monthly 기본보험료
+acq_charge_years,7,[S1] 계약체결비용 period; the 해약공제기간 cap is also 7 years [REG-R19 제7-66조제1항제2호]
+maint_charge_rate,0.0300,[S1] 계약관리비용 3.00% of the monthly 기본보험료 during the premium term
+maint_charge_rate_paid_up,0.0067,"[S1] 계약관리비용 (납입후) 0.67% a month, taken from the fund [S5]"
+addl_charge_rate,0.0200,"[S1] the 연금저축추가납입특약 premium bears 계약관리비용 only, not 계약체결비용 [S8]"
+addl_prem_cap_ratio,2.00,[S2] [S5] [S8] 추가납입 capped at 200% of the year's basic premiums
+annuity_charge_rate,0.0050,"[S1] [S7] 연금수령기간 중의 관리비용, 연금연액의 0.5%; it reconciles the published annuity factors exactly [S2]"
+min_fund_ratio,1.001,[S2] [S4] [S7] 연금개시시 계약자적립액 최저보증 100.1% of premiums paid; 100% would fail 감독규정 제7-60조제2호 [REG-R16]
+mort_be_factor,1.15,"[std] the published 연금사망률 is a loaded pricing basis; the two carriers' own rates differ by 9% at age 60 [S1] [S7], and 1.15 is a uniform uplift a little above that spread"
+surr_chg_years,5,[S7] the only retrieved 해지공제액 runs off to zero over five policy years
+surr_chg_cap_rate,0.03,"[REG-R20 주5] 표준해약공제액 coefficient, 무배당 연금저축보험 3% of the 연납순보험료"
+surr_chg_cap_rate_par,0.04,"[REG-R20 주5] the participating 연금저축보험 coefficient, 4%"
+surr_chg_cap_term_cap,12,[REG-R20 주2] 저축성보험 해약공제계수 is the premium term capped at 12 years
+surr_chg_cap_level_years,10,[REG-R20 주3] the loading is levelled over the payment term capped at 10 years
+loan_rate,0.0400,"[std] [unverified] no retrieved document gives a 보험계약대출이율 for a 연금저축보험 [S1] [S2] [S4] [S5]; set at the 평균공시이율 plus 1.5%, above the 평균공시이율 + 1% reinstatement ceiling of [REG-R25 제27조]"
+loan_draw_frac,0.50,[std] fraction of the 해약환급금 drawn where the 보험계약대출 module is on
+loan_draw_year,15,[std] policy year at which the modelled loan is drawn
+holiday_start_year,8,[std] policy year the modelled 납입유예 starts; [S5] [S7] make it available after three years
+holiday_max_years,3,[S8] up to three spells of one year during the premium term
+div_int_rate,0.0215,[S2] a declared 계약자배당 accumulates at the 공시이율 and is applied as an 증액연금 at annuitisation

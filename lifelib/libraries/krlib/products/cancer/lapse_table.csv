@@ -1,0 +1,4 @@
+segment,lapse_rate,provenance
+first_year,0.046,"[std] [REG-R27] the starting point of the 로그-선형 최적해지율 the FSS's November 2024 ruling makes the 원칙모형 for 무.저해지 business. NO public Korean lapse or persistency figure for 암보험 exists [R3], so the level is carried from the disclosed 적용해지율 range of a Korean 무해지 protection contract (upper endpoint 4.6% at one carrier, 8.4% at another) rather than measured on this product"
+at_completion,0.001,"[REG-R27] the convergence point prescribed by the 제4차 보험개혁회의 계리가정 가이드라인: among models converging to zero lapse at 완납, the 로그-선형 모형 is the 원칙모형 and it converges to 0.1%. Reached at 납입완료, so on a 전기납 model point it is reached at the end of the 보험기간"
+post_payment,0.008,"[REG-R27] the 완납 후 최종해지율, 0.8%, prescribed by the same guideline. On this product a 무해지 contract that has paid up has a surrender value for the first time, which is exactly why the post-완납 rate steps back up"

@@ -1,0 +1,5 @@
+runoff_fraction,av_ratio,provenance
+0.000000,0.974,"[S2, derived] gyeyakja-jeongnipaek at napip-wallyo as a ratio to cumulative office premiums: the published hwangeumnyul of 48.7% at 20 years on the haeyak-hwangeupgeum mijigeup-hyeong, doubled because that form pays 50% of the notional gibonhyeong value after napip-wallyo, the haeyak-gongje having expired by then [REG-R19]"
+0.333333,1.088,"[S2, derived] the same quantity at 30 years (hwangeumnyul 54.4% doubled); one third of the way from napip-wallyo to the 90se maturity on the anchor cell"
+0.666667,1.010,"[S2, derived] the same quantity at 40 years (hwangeumnyul 50.5% doubled); two thirds of the way from napip-wallyo to maturity on the anchor cell"
+1.000000,0.000,"[S2] hwangeumnyul 0.0% at 50 years - the 90se maturity of a pure protection contract, which has no mangi-hwangeupgeum [S3]"

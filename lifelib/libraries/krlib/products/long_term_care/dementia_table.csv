@@ -1,0 +1,11 @@
+param,value,provenance
+dem_ceil,0.8298,[std] fitted ceiling of the dementia-prevalence logistic; the least-squares three-parameter fit to the five sourced band prevalences below [R7]
+dem_beta,0.08706045,[std] fitted slope (per year of age) of the dementia-prevalence logistic [R7]
+dem_x_mid,100.12641335,[std] fitted midpoint age of the dementia-prevalence logistic [R7]
+dem_factor_m,0.9568,"[R7, derived] 8.85% male against 9.25% all-sex dementia prevalence at 65 and over. Flat in age: [R7] reports the male rate above the female at 65-79 and below it at 80 and over, and a flat ratio does not reproduce that crossover [std]"
+dem_factor_f,1.0346,"[R7, derived] 9.57% female against 9.25% all-sex dementia prevalence at 65 and over; flat in age, with the same caveat as the male factor [std]"
+dem_obs_67,0.0499,"[R7] 2023 chimae yeokhak josa dementia prevalence, 65-69 band, read at representative age 67. Carried for provenance; the model reads the fitted parameters above"
+dem_obs_72,0.0503,"[R7] 2023 chimae yeokhak josa dementia prevalence, 70-74 band, read at representative age 72. Carried for provenance; the model reads the fitted parameters above"
+dem_obs_77,0.1070,"[R7] 2023 chimae yeokhak josa dementia prevalence, 75-79 band, read at representative age 77. Carried for provenance; the model reads the fitted parameters above"
+dem_obs_82,0.1557,"[R7] 2023 chimae yeokhak josa dementia prevalence, 80-84 band, read at representative age 82. Carried for provenance; the model reads the fitted parameters above"
+dem_obs_88,0.2118,"[R7] 2023 chimae yeokhak josa dementia prevalence, 85 and over band, read at representative age 88.5. Carried for provenance; the model reads the fitted parameters above"

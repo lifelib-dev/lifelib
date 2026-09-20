@@ -1,0 +1,17 @@
+# Line endings. Every text file is stored LF in the repository and checked out LF on
+# every platform, overriding Git for Windows' default `core.autocrlf=true`.
+#
+# This is not a style preference. The library inputs are read as bytes by the in-library
+# suites -- krlib's `test_the_csvs_are_utf8_without_a_bom` asserts the CSVs carry no BOM
+# and no CRLF, because a BOM lands in the first column name and the encoding is
+# load-bearing where the provenance columns are Korean. Without the rule below, a Windows
+# checkout rewrites every input CSV to CRLF and that test fails on Windows alone, against
+# files that are LF in the repository.
+#
+# `text=auto` leaves the 250 binary files -- the workbooks, pickles and images -- alone,
+# because Git detects them rather than taking the rule on trust. lifelib-products carries
+# the same pair of rules, for the same test.
+* text=auto eol=lf
+
+# `cmd.exe` is the one consumer that wants CRLF.
+*.bat text eol=crlf

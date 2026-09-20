@@ -1,0 +1,11 @@
+point_id,policy_id,sex,age_at_entry,basic_prem_pp,pay_term,annuity_age,gmab,fund_set,scenario_id,crediting_basis,addl_prem_ratio,wd_ratio,wd_start_year,pols_if_init
+1,VA-000001,M,40,300000,10,60,1,bond50_eq50,base,decl_2026,0.0,0.0,0,1.0
+2,VA-000002,F,40,300000,10,60,1,bond50_eq50,base,decl_2026,0.0,0.0,0,1.0
+3,VA-000003,M,40,300000,10,60,0,bond50_eq50,base,decl_2026,0.0,0.0,0,1.0
+4,VA-000004,M,40,300000,10,60,1,bond50_eq50,low,decl_2026,0.0,0.0,0,1.0
+5,VA-000005,M,40,300000,10,60,1,bond50_eq50,high,decl_2026,0.0,0.0,0,1.0
+6,VA-000006,M,55,500000,5,65,1,bond80_eq20,base,decl_2026,0.0,0.0,0,1.0
+7,VA-000007,F,48,200000,5,60,1,bond70_eq30,base,decl_2026,0.0,0.0,0,1.0
+8,VA-000008,M,35,300000,10,60,1,bond50_eq50,base,decl_2026,1.0,0.0,0,1.0
+9,VA-000009,F,45,400000,10,62,1,bond50_eq50,base,decl_2026,0.0,0.1,11,1.0
+10,VA-000010,F,70,1000000,5,80,1,bond80_eq20,base,min_guar,0.0,0.0,0,1.0

@@ -1,0 +1,16 @@
+item,value,provenance
+credit_rate_low_income,0.165,[R1 제59조의3제1항] [R8] [R10] statutory 15% grossed up for the 10% 지방소득세; the grossing-up is [unverified] arithmetic because the 지방세법 was not retrieved [REG-R56]
+credit_rate_high_income,0.132,[R1 제59조의3제1항] [R8] [R10] statutory 12% grossed up for the 10% 지방소득세; [unverified] arithmetic on a verified base [REG-R56]
+credit_income_threshold,45000000,"[R1 제59조의3제1항] [R8] 종합소득금액 45,000,000 (총급여 55,000,000 for employment income only)"
+credit_cap,6000000,"[R1] [R8] [R10] [REG-R56] the 세액공제 ceiling on 연금저축 contributions; 9,000,000 counting 퇴직연금계좌"
+contribution_ceiling,18000000,[R6 제40조의2제2항제1호] [R11] [REG-R56] [S1] the annual contribution ceiling across every 연금계좌 the saver holds
+other_income_tax_rate,0.165,"[S1] [S2] [S3 제21조②] [S4] [S5] [S7] [S8] [S11] [S16] 기타소득세 on a 연금외수령, statutory 15% [R5] grossed up; the surrender illustration of [S5] is 83.5% of the surrender value at every duration"
+pension_tax_rate_under70,0.055,[R5 제129조제1항제5호의2] [R9] [R11] 연금소득자 70세 미만
+pension_tax_rate_70to79,0.044,[R5 제129조제1항제5호의2] [R9] [R11] 70세 이상 80세 미만
+pension_tax_rate_80plus,0.033,[R5 제129조제1항제5호의2] [R9] [R11] 80세 이상
+pension_tax_rate_life,0.033,"[R5] [R9] [R21] 종신계약, 100분의 3 from 2026-01-01 by 법률 제21221호; 종신계약 is defined by 시행령 제187조의2, whose text was not retrieved [R7], so whether a guarantee period preserves the status is [unverified]"
+aggregation_threshold,15000000,"[R3 제14조제3항제9호다목] [R4] [R9] private pension income at or below 15,000,000 a year is 분리과세연금소득"
+min_annuity_age,55,[R6 제40조의2제3항제1호] [S3] the 만나이 test for 연금수령; the contract's other ages are 보험나이 [S6 제20조]
+min_account_years,5,[R6 제40조의2제3항제2호] [S3] five years since the account was opened
+limit_denominator_base,11,"[R6 제40조의2제4항] [S3] 연금수령한도 = 평가액 / (11 - 연금수령연차) x 120/100, disapplied from 연금수령연차 11"
+limit_uplift,1.20,[R6 제40조의2제4항] [S3] the 120/100 factor in the 연금수령한도

@@ -1,0 +1,4 @@
+segment,lapse_rate,provenance
+in_payment_start,0.046,"[S12] disclosed 적용해지율: 「납입기간 이내에 대하여 경과기간별로 연 0.1%~4.6%」 at the anchor carrier, on a 10년납 basis. The upper endpoint of the in-payment range, applied here at policy year 1. 한화생명 discloses 0.1%~8.4% on the same basis [S1], so the observed upper endpoint varies by a factor of 1.8 while the lower one does not vary at all"
+in_payment_end,0.001,"[S12] [REG-R27] the convergence point. Disclosed as the lower endpoint of both carriers' 적용해지율 ranges [S12] [S1], and prescribed: the 2024 IFRS17 계리가정 가이드라인 makes a 로그-선형 model converging to 0.1% the 원칙모형 for 무·저해지 business [REG-R27]. Reached at 납입완료"
+post_payment,0.008,"[S1] [REG-R27] the post-완납 ultimate: 한화생명 discloses 「납입기간 이후에 대하여 경과기간별로 연 0.8%」 [S1] and the 계리가정 가이드라인 sets the 완납 후 최종해지율 at 0.8% [REG-R27]. On a 전기납 contract this row is never reached, the payment period ending with the term"

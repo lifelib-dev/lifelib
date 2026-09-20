@@ -1,0 +1,4 @@
+from_year,min_guar_rate,provenance
+0,0.0125,"[S1] [S2] [S13] 최저보증이율 1.25% 연복리 to 5 years; the modal current ladder, observed range 1.0%-2.0% in the first band"
+5,0.0100,[S1] [S2] [S13] 1.00% over 5 years to 10 years
+10,0.0050,[S1] [S2] [S13] 0.50% over 10 years; observed long-duration range 0.3%-1.5% [S8] [S5]. 감독규정 제7-60조제10호 makes a floor compulsory on a 금리연동형보험 [REG-R16]

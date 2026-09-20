@@ -1,0 +1,3 @@
+lapse_basis,first_year_rate,completion_rate,ultimate_rate,provenance
+loglinear,0.1,0.001,0.008,"[REG-R27] the FSS 원칙모형 for a 무·저해지 contract, from the 2024-11 계리가정 decision: a log-linear decay converging on 0.1% at 납입완료 and an ultimate rate of 0.8% after it [R3]; the 10% start is the top of the 연 1%~10% 적용해지율 envelope disclosed in the 상품요약서 [S2] and inside the 연 0%~13.4% one at a second carrier [S8] - the shape between the two ends is [std], no Korean lapse curve by duration being public"
+flat,0.04,0.04,0.04,[std] the level comparison basis the same guidance obliges an insurer to disclose against the 원칙모형 [REG-R27]; 4% sits inside both disclosed 적용해지율 envelopes [S2] [S8] and is level because the 표준형 comparison twin is priced with no lapse assumption at all [S1]

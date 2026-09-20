@@ -1,0 +1,8 @@
+policy_year,lapse_rate,provenance
+1,0.09,"[std] 표준형 duration curve, first year. Bounded by the 적용해지율 envelopes Korean 상품요약서 publish for protection products - 0%-13.4% in the paying period at one carrier, 1%-10% at another (the chassis's finding) - and not fitted to any experience: no CI lapse data of any kind was retrieved [R1]"
+2,0.07,"[std] 표준형 duration curve, second year, on the same envelope"
+3,0.055,"[std] 표준형 duration curve, third year, on the same envelope"
+4,0.045,"[std] 표준형 duration curve, fourth year, on the same envelope"
+5,0.038,"[std] 표준형 duration curve, fifth year, on the same envelope"
+6,0.032,"[std] 표준형 duration curve, sixth year, on the same envelope"
+7,0.028,"[std] level tail read for policy year 7 and every later year; above the 0.8% post-완납 ultimate the IFRS17 계리가정 가이드라인 sets for the 무·저해지 원칙모형, which is why the two bases are carried side by side [REG-R27]"

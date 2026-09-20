@@ -1,0 +1,17 @@
+sex,param,value,provenance
+M,prev_ceil,0.7480,[std] fitted ceiling of the certification-prevalence logistic for men; the least-squares three-parameter fit to the five sourced injeongryul below [R4] - nothing above age 88.5 is sourced and this is the parameter the tail is most sensitive to
+M,prev_beta,0.14692252,"[std] fitted slope (per year of age) of the logistic through the five sourced injeongryul for men [R4 pyo 2-9, pyo 1-2, derived]"
+M,prev_x_mid,91.61515338,"[std] fitted midpoint age of the logistic through the five sourced injeongryul for men [R4 pyo 2-9, pyo 1-2, derived]"
+M,prev_obs_67,0.0198127,"[R4 pyo 2-9 and pyo 1-2, derived] injeongryul (gye - deunggeup-oe) over population, 65-69 band, men, 2024; read at age 67. Carried for provenance; the model reads the three fitted parameters above"
+M,prev_obs_72,0.0395307,"[R4 pyo 2-9 and pyo 1-2, derived] injeongryul (gye - deunggeup-oe) over population, 70-74 band, men, 2024; read at age 72. Carried for provenance; the model reads the three fitted parameters above"
+M,prev_obs_77,0.0744866,"[R4 pyo 2-9 and pyo 1-2, derived] injeongryul (gye - deunggeup-oe) over population, 75-79 band, men, 2024; read at age 77. Carried for provenance; the model reads the three fitted parameters above"
+M,prev_obs_82,0.1544464,"[R4 pyo 2-9 and pyo 1-2, derived] injeongryul (gye - deunggeup-oe) over population, 80-84 band, men, 2024; read at age 82. Carried for provenance; the model reads the three fitted parameters above"
+M,prev_obs_88,0.2863365,"[R4 pyo 2-9 and pyo 1-2, derived] injeongryul (gye - deunggeup-oe) over population, 85 and over band, men, 2024; read at age 88.5, the population-weighted mean age of the band. Carried for provenance; the model reads the three fitted parameters above"
+F,prev_ceil,0.6310,[std] fitted ceiling of the certification-prevalence logistic for women; the least-squares three-parameter fit to the five sourced injeongryul below [R4] - nothing above age 88.5 is sourced and this is the parameter the tail is most sensitive to
+F,prev_beta,0.22384681,"[std] fitted slope (per year of age) of the logistic through the five sourced injeongryul for women [R4 pyo 2-9, pyo 1-2, derived]"
+F,prev_x_mid,83.31342651,"[std] fitted midpoint age of the logistic through the five sourced injeongryul for women [R4 pyo 2-9, pyo 1-2, derived]"
+F,prev_obs_67,0.0163280,"[R4 pyo 2-9 and pyo 1-2, derived] injeongryul (gye - deunggeup-oe) over population, 65-69 band, women, 2024; read at age 67. Carried for provenance; the model reads the three fitted parameters above"
+F,prev_obs_72,0.0444906,"[R4 pyo 2-9 and pyo 1-2, derived] injeongryul (gye - deunggeup-oe) over population, 70-74 band, women, 2024; read at age 72. Carried for provenance; the model reads the three fitted parameters above"
+F,prev_obs_77,0.1175905,"[R4 pyo 2-9 and pyo 1-2, derived] injeongryul (gye - deunggeup-oe) over population, 75-79 band, women, 2024; read at age 77. Carried for provenance; the model reads the three fitted parameters above"
+F,prev_obs_82,0.2924088,"[R4 pyo 2-9 and pyo 1-2, derived] injeongryul (gye - deunggeup-oe) over population, 80-84 band, women, 2024; read at age 82. Carried for provenance; the model reads the three fitted parameters above"
+F,prev_obs_88,0.4730806,"[R4 pyo 2-9 and pyo 1-2, derived] injeongryul (gye - deunggeup-oe) over population, 85 and over band, women, 2024; read at age 88.5, the population-weighted mean age of the band. Carried for provenance; the model reads the three fitted parameters above"

@@ -1,0 +1,10 @@
+point_id,policy_id,sex,issue_age,premium_term_y,defer_gap_y,annuity_start_age,premium_pp,addl_prem_pp,payout_form,payout_term_y,guar_term_y,mort_vintage,min_fund_on,surr_chg_rate,holiday_years,loan_on,par,div_rate,lapse_basis,rate_scenario
+1,KR-PEN-0001,M,40,20,5,65,6000000,0,life_guar,10,10,issue,1,0.0,0,0,0,0.0,pension,base
+2,KR-PEN-0002,F,40,20,5,65,6000000,0,life_guar,10,10,issue,1,0.0,0,0,0,0.0,pension,base
+3,KR-PEN-0003,M,45,20,0,65,3600000,0,life_guar,10,20,issue,1,0.0,0,0,0,0.0,pension,base
+4,KR-PEN-0004,F,25,20,15,60,1200000,0,certain,20,10,issue,1,0.0,0,0,0,0.0,pension,base
+5,KR-PEN-0005,M,30,10,20,60,12000000,0,certain,10,10,issue,1,0.0,0,0,0,0.0,savings,base
+6,KR-PEN-0006,F,50,5,0,55,6000000,0,certain,15,10,issue,1,0.0,0,0,0,0.0,pension,floor
+7,KR-PEN-0007,M,40,20,5,65,6000000,0,life_guar,10,10,commencement,1,0.0,0,0,0,0.0,pension,base
+8,KR-PEN-0008,M,40,20,5,65,6000000,6000000,life_guar,10,10,issue,1,0.0867,0,0,0,0.0,pension,hybrid
+9,KR-PEN-0009,M,40,20,5,65,6000000,0,life_guar,10,10,ratchet,0,0.0,2,1,1,0.002,pension,base

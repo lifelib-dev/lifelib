@@ -1,0 +1,10 @@
+item,timing,freq,amount,amount_ratio,units,provenance
+incubator,block,0.06,50000.0,0.0,8.0,[std] frequency and expected paid days of the 저체중아 육아비용 (인큐베이터 일당). The formula is sourced and is implemented as written - 「최고 60일을 한도로 실제 사용일수에서 2일을 공제하고 인큐베이터 사용 1일당 보험가입금액 지급」 [S1] - so units is days *after* the two-day deduction and inside the 60-day cap; the frequency and the length-of-stay distribution are not published [R3]
+perinatal_cash,block,0.11,10000.0,0.0,7.5,"[std] frequency and expected paid days of the 주산기질환 입원일당, paid on a continuous stay of four days or more, 3일 초과 1일당, 1회 입원당 120일 한도 [S8] [S1]; day-capped rather than amount-capped, so its cost is a length-of-stay question [R3]"
+congenital_diag,block,0.02,1000000.0,0.0,1.0,"[std] frequency of a 선천성 기형, 변형 또는 염색체 이상 diagnosed after birth at a severity the 선천이상 진단비 pays on, 최초 1회한 [S1]"
+congenital_surg,block,0.008,1000000.0,0.0,1.0,"[std] frequency of a qualifying 선천이상 수술; some variants exclude 혀유착증 and 선천성모반, the two high-frequency low-severity conditions in the class [S1]"
+neonatal_haem,block,0.0016,0.0,0.2,1.0,"[std] frequency of a 신생아 뇌출혈 diagnosis, the benefit being 20% of the module's 가입금액 [S1]. Its frequency basis is regime-dependent rather than stationary: the 2013-09 supervisory decision requiring neonatal claims to be paid on the diagnosis name rather than the KCD code ended refusals of 뇌출혈 coded P52 and raised frequency sharply [R5]"
+birth_risk_low,birth,0.012,0.0,0.1,1.0,"[std] frequency of a 저체중아 출생 at the severity the 출생위험 limb's 10% tier pays on [S1]; the tier is not the 2.5kg statistical definition, a richer form carrying a separate 2.5kg tier at 5% [S1]"
+birth_risk_disab,birth,0.002,0.0,0.2,1.0,"[std] frequency of a 장해 출생, the 출생위험 limb's 20% tier [S1]"
+birth_risk_severe,birth,0.0006,0.0,1.0,1.0,"[std] frequency of a 심한 장애 출생, the 출생위험 limb's 100% tier [S1]"
+preterm,birth,0.0025,0.0,1.0,1.0,"[std] frequency of a birth within 27 weeks, the 조산 진단 limb paying the full 가입금액; one carrier's equivalent tests 31 weeks [S1] [S2]. The neonatal riders accept a foetus 임신 22주 이내 [S5], so the exposed window is short"

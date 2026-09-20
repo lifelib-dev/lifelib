@@ -1,0 +1,11 @@
+point_id,policy_id,sex,issue_age,sum_assured,prem_term,premium_annual,cv_floor_ratio,prem_susp_ratio,int_basis,decl_rate,lapse_basis,waiver_rate,loan_util,loan_year,bonus_rate,reduce_year,reduce_frac,reinstate_rate,mort_be_factor
+1,WL-KR-0001,M,40,100000000,20,2776140,0.5,0.9,fixed,0.025,loglinear,0.0,0.0,0,0.0,0,0.0,0.0,1.0
+2,WL-KR-0002,M,40,100000000,20,3084600,1.0,1.0,fixed,0.025,loglinear,0.0,0.0,0,0.0,0,0.0,0.0,1.0
+3,WL-KR-0003,M,40,100000000,20,2405988,0.0,0.78,fixed,0.025,loglinear,0.0,1.0,10,0.0,0,0.0,0.0,1.0
+4,WL-KR-0004,F,30,50000000,30,716780,0.5,0.9,fixed,0.025,loglinear,0.0,0.0,0,0.0,0,0.0,0.0,1.0
+5,WL-KR-0005,M,65,10000000,0,421791,0.5,0.9,fixed,0.025,loglinear,0.0,0.0,0,0.0,0,0.0,0.0,1.0
+6,WL-KR-0006,M,40,100000000,20,2776140,0.5,0.9,fixed,0.025,loglinear,0.0,1.0,10,0.0,0,0.0,0.0,1.0
+7,WL-KR-0007,M,45,100000000,20,3135514,0.5,0.9,fixed,0.025,loglinear,0.004,0.0,0,0.0,0,0.0,0.0,1.0
+8,WL-KR-0008,M,40,100000000,7,6744910,0.5,0.9,fixed,0.025,loglinear,0.0,0.0,0,0.138,0,0.0,0.0,1.0
+9,WL-KR-0009,F,45,100000000,20,3052387,1.0,1.0,linked,0.0275,loglinear,0.0,0.0,0,0.0,0,0.0,0.0,1.0
+10,WL-KR-0010,M,50,1000000000,10,56009330,0.3,0.815,fixed,0.025,flat,0.0,0.0,0,0.0,15,0.5,0.2,0.9
