@@ -1,0 +1,14 @@
+point_id,policy_id,sex,entry_age,conclusion_year,duration_init,ret_age,pols_if_init,prem_form,prem_base_pp,prem_mode,prem_dyn_rate,zuzahlung_pp,zuzahlung_end_dur,paidup_at_init,av_pp_init,ann_pp_init,gtd_rate,rentenfaktor_gtd,guarantee_period_y,surv_annuity_rate,buz_prem_share,tariff_id,beh_table_id,surplus_scenario_id,rf_scenario_id
+1,DE-BAS-0001,M,45,2026,0,67,1.0,regular,6000.00,annual,0.02,4000.00,22,0,0.00,0.00,0.0100,28.00,0,0.00,0.00,de_basis_std,base,base,base
+2,DE-BAS-0002,F,35,2026,0,67,1.0,regular,3000.00,monthly,0.03,0.00,0,0,0.00,0.00,0.0100,28.00,0,0.00,0.00,de_basis_std,base,base,base
+3,DE-BAS-0003,M,48,2026,0,67,1.0,regular,7200.00,quarterly,0.02,3000.00,19,0,0.00,0.00,0.0100,28.00,0,0.60,0.00,de_basis_std,base,base,base
+4,DE-BAS-0004,F,52,2026,0,67,1.0,regular,9000.00,half_yearly,0.02,0.00,0,0,0.00,0.00,0.0100,28.00,10,0.00,0.00,de_basis_std,base,base,base
+5,DE-BAS-0005,M,58,2026,0,67,1.0,single,60000.00,annual,0.00,0.00,0,0,0.00,0.00,0.0100,28.00,0,0.00,0.00,de_basis_std,base,base,base
+6,DE-BAS-0006,M,40,2009,17,60,1.0,regular,3600.00,monthly,0.02,0.00,0,0,75000.00,0.00,0.0225,26.00,0,0.00,0.00,de_basis_zill40,base,base,base
+7,DE-BAS-0007,F,38,2014,12,67,1.0,regular,0.00,annual,0.00,0.00,0,1,42000.00,0.00,0.0175,29.50,0,0.00,0.00,de_basis_zill40,base,base,base
+8,DE-BAS-0008,M,48,2006,20,65,1.0,regular,0.00,annual,0.00,0.00,0,0,0.00,7200.00,0.0275,30.00,0,0.00,0.00,de_basis_zill40,base,base,base
+9,DE-BAS-0009,M,50,2026,0,67,1.0,regular,30826.00,annual,0.02,0.00,0,0,0.00,0.00,0.0100,28.00,0,0.00,0.00,de_basis_std,base,base,base
+10,DE-BAS-0010,F,30,2026,0,67,1.0,regular,300.00,monthly,0.00,0.00,0,0,0.00,0.00,0.0100,28.00,0,0.00,0.00,de_basis_std,base,base,base
+11,DE-BAS-0011,M,42,2026,0,67,1.0,regular,3600.00,quarterly,0.02,1500.00,25,0,0.00,0.00,0.0100,28.00,0,0.00,0.49,de_basis_std,base,base,base
+12,DE-BAS-0012,F,55,2026,0,70,1.0,regular,12000.00,monthly,0.02,0.00,0,0,0.00,0.00,0.0100,28.00,20,0.60,0.00,de_basis_std,base,base,base
+13,DE-BAS-0013,M,46,2026,0,67,1.0,regular,6000.00,annual,0.00,0.00,0,0,0.00,0.00,0.0100,34.00,0,0.00,0.00,de_basis_std,base,base,low

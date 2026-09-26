@@ -1,0 +1,11 @@
+staffel_id,pflegegrad,benefit_pct,provenance
+delib_std,1,0.0000,"[std] Pflegegrad 1 is not a funding event in SGB XI either, so the mainstream Leistungsstaffel insures nothing there"
+delib_std,2,0.3000,[std] upper end of the observed 10-30% market range; grade 2 is where care at home begins in earnest
+delib_std,3,0.5000,[std] mid-range and the modal market value in the 30-50% band
+delib_std,4,0.7500,[std] mid-range of the observed 60-75% band
+delib_std,5,1.0000,"[std] the scaling constant, universally 100% of the vereinbarte Pflegerente"
+bahr,1,0.1000,"[R8] Pflege-Bahr statutory minimum grid, SGB XI s 127 [unverified]"
+bahr,2,0.2000,"[R8] Pflege-Bahr statutory minimum grid, SGB XI s 127 [unverified]"
+bahr,3,0.3000,"[R8] Pflege-Bahr statutory minimum grid, SGB XI s 127 [unverified]"
+bahr,4,0.4000,"[R8] Pflege-Bahr statutory minimum grid, SGB XI s 127 [unverified]"
+bahr,5,1.0000,"[R8] Pflege-Bahr statutory top step; a Pflegerente cannot be a gefoerderter Tarif, the grid is carried for comparison only [unverified]"

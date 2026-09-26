@@ -1,0 +1,5 @@
+prem_freq,load,provenance
+annual,1.0000,[std] no Ratenzuschlag on annual payment
+half_yearly,1.0100,"[std] 1.0 pct Ratenzuschlag; a charge, never credited"
+quarterly,1.0200,"[std] 2.0 pct Ratenzuschlag; a charge, never credited"
+monthly,1.0300,"[std] 3.0 pct Ratenzuschlag; a charge, never credited"

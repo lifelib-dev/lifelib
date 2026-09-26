@@ -1,0 +1,10 @@
+option_id,option_key,factor,provenance
+prem_mode,annual,1.000,"[std] Ratenzahlungszuschlag on the laufender Beitrag only: 1.000 annual, 1.020 half-yearly, 1.030 quarterly, 1.050 monthly. German market convention; no tariff sheet was reached"
+prem_mode,half_yearly,1.020,"[std] Ratenzahlungszuschlag on the laufender Beitrag only: 1.000 annual, 1.020 half-yearly, 1.030 quarterly, 1.050 monthly. German market convention; no tariff sheet was reached"
+prem_mode,quarterly,1.030,"[std] Ratenzahlungszuschlag on the laufender Beitrag only: 1.000 annual, 1.020 half-yearly, 1.030 quarterly, 1.050 monthly. German market convention; no tariff sheet was reached"
+prem_mode,monthly,1.050,"[std] Ratenzahlungszuschlag on the laufender Beitrag only: 1.000 annual, 1.020 half-yearly, 1.030 quarterly, 1.050 monthly. German market convention; no tariff sheet was reached"
+guarantee_period,0,1.000,"[std] Rentenfaktor reduction for a Rentengarantiezeit: 1.000 for none, 0.995 for 10 years, 0.974 for 20. Anchored on a Schicht-3 illustration in the sibling corpus and [unverified]; expressly not transferable to Schicht 1"
+guarantee_period,10,0.995,"[std] Rentenfaktor reduction for a Rentengarantiezeit: 1.000 for none, 0.995 for 10 years, 0.974 for 20. Anchored on a Schicht-3 illustration in the sibling corpus and [unverified]; expressly not transferable to Schicht 1"
+guarantee_period,20,0.974,"[std] Rentenfaktor reduction for a Rentengarantiezeit: 1.000 for none, 0.995 for 10 years, 0.974 for 20. Anchored on a Schicht-3 illustration in the sibling corpus and [unverified]; expressly not transferable to Schicht 1"
+survivor,0.00,1.000,"[std] Rentenfaktor reduction for a Hinterbliebenenrente of 60 pct of the main annuity, payable only to a permitted survivor [R1]. No anchor of any kind"
+survivor,0.60,0.930,"[std] Rentenfaktor reduction for a Hinterbliebenenrente of 60 pct of the main annuity, payable only to a permitted survivor [R1]. No anchor of any kind"

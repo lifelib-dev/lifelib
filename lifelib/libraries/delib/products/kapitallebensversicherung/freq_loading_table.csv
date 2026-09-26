@@ -1,0 +1,5 @@
+prem_freq,instalments,prem_freq_load,provenance
+annual,1,1.0000,[R28] Ratenzahlungszuschlag on an unechte unterjaehrige Zahlweise; the 0.0 pct level is [std]. Inert where unterjaehrig_form=echt
+half_yearly,2,1.0200,[R28] Ratenzahlungszuschlag on an unechte unterjaehrige Zahlweise; the 2.0 pct level is [std]. Inert where unterjaehrig_form=echt
+quarterly,4,1.0300,[R28] Ratenzahlungszuschlag on an unechte unterjaehrige Zahlweise; the 3.0 pct level is [std]. Inert where unterjaehrig_form=echt
+monthly,12,1.0500,[R28] Ratenzahlungszuschlag on an unechte unterjaehrige Zahlweise; the 5.0 pct level is [std]. Inert where unterjaehrig_form=echt

@@ -1,0 +1,69 @@
+nvg_id,policy_year,sum_uplift,provenance
+keine,1,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,2,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,3,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,4,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,5,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,6,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,7,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,8,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,9,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,10,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,11,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,12,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,13,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,14,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,15,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,16,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,17,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,18,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,19,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,20,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,21,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,22,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,23,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,24,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,25,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,26,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,27,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,28,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,29,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,30,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,31,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,32,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,33,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,34,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,35,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,36,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,37,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,38,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,39,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+keine,40,1.0,[std] no Nachversicherungsgarantie exercised; the base run (mechanic 8)
+nvg_zwei_erhoehungen,1,1.0,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"
+nvg_zwei_erhoehungen,2,1.0,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"
+nvg_zwei_erhoehungen,3,1.0,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"
+nvg_zwei_erhoehungen,4,1.0,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"
+nvg_zwei_erhoehungen,5,1.0,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"
+nvg_zwei_erhoehungen,6,1.2,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"
+nvg_zwei_erhoehungen,7,1.2,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"
+nvg_zwei_erhoehungen,8,1.2,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"
+nvg_zwei_erhoehungen,9,1.2,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"
+nvg_zwei_erhoehungen,10,1.2,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"
+nvg_zwei_erhoehungen,11,1.2,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"
+nvg_zwei_erhoehungen,12,1.4,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"
+nvg_zwei_erhoehungen,13,1.4,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"
+nvg_zwei_erhoehungen,14,1.4,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"
+nvg_zwei_erhoehungen,15,1.4,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"
+nvg_zwei_erhoehungen,16,1.4,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"
+nvg_zwei_erhoehungen,17,1.4,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"
+nvg_zwei_erhoehungen,18,1.4,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"
+nvg_zwei_erhoehungen,19,1.4,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"
+nvg_zwei_erhoehungen,20,1.4,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"
+nvg_zwei_erhoehungen,21,1.4,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"
+nvg_zwei_erhoehungen,22,1.4,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"
+nvg_zwei_erhoehungen,23,1.4,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"
+nvg_zwei_erhoehungen,24,1.4,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"
+nvg_zwei_erhoehungen,25,1.4,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"
+nvg_zwei_erhoehungen,26,1.4,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"
+nvg_zwei_erhoehungen,27,1.4,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"
+nvg_zwei_erhoehungen,28,1.4,"[std] two Nachversicherungsgarantie increases of 20 pct of the original sum, at policy years 6 and 12; no event list or cap was established (gap 7)"

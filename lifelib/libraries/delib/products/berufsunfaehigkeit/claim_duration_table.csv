@@ -1,0 +1,12 @@
+dur_year,recov_rate,mort_dis_sel_factor,provenance
+1,0.250,3.0,"[std] reactivation front-loaded on claim duration and disabled mortality select on it; shape from DAV 1997 RI / TI, which are not shipped [R16] [REG-R50]"
+2,0.130,2.0,"[std] reactivation front-loaded on claim duration and disabled mortality select on it; shape from DAV 1997 RI / TI, which are not shipped [R16] [REG-R50]"
+3,0.070,1.6,"[std] reactivation front-loaded on claim duration and disabled mortality select on it; shape from DAV 1997 RI / TI, which are not shipped [R16] [REG-R50]"
+4,0.040,1.4,"[std] reactivation front-loaded on claim duration and disabled mortality select on it; shape from DAV 1997 RI / TI, which are not shipped [R16] [REG-R50]"
+5,0.025,1.3,"[std] reactivation front-loaded on claim duration and disabled mortality select on it; shape from DAV 1997 RI / TI, which are not shipped [R16] [REG-R50]"
+6,0.018,1.2,"[std] reactivation front-loaded on claim duration and disabled mortality select on it; shape from DAV 1997 RI / TI, which are not shipped [R16] [REG-R50]"
+7,0.014,1.2,"[std] reactivation front-loaded on claim duration and disabled mortality select on it; shape from DAV 1997 RI / TI, which are not shipped [R16] [REG-R50]"
+8,0.011,1.2,"[std] reactivation front-loaded on claim duration and disabled mortality select on it; shape from DAV 1997 RI / TI, which are not shipped [R16] [REG-R50]"
+9,0.009,1.2,"[std] reactivation front-loaded on claim duration and disabled mortality select on it; shape from DAV 1997 RI / TI, which are not shipped [R16] [REG-R50]"
+10,0.008,1.2,"[std] reactivation front-loaded on claim duration and disabled mortality select on it; shape from DAV 1997 RI / TI, which are not shipped [R16] [REG-R50]"
+11,0.006,1.2,"[std] ultimate row, applied to claim year 11 and beyond; reactivation front-loading and disabled-mortality selection per DAV 1997 RI / TI [R16] [REG-R50]"

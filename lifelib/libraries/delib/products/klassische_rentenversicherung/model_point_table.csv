@@ -1,0 +1,15 @@
+point_id,policy_id,sex,issue_age,issue_year,duration_init,pols_if_init,premium_form,prem_gross_pp,premium_single_pp,prem_freq,prem_term_y,aufschub_y,int_rate_guar,charge_id,annuity_rate_guar,rf_scenario_id,decl_scenario_id,guar_capital_pp,death_benefit_form,db_incl_surplus,rgz_years,kapitalwahl_rate,pup_year,dynamik_rate,payout_system,av_pp_init,av_sur_pp_init,prem_cum_pp_init,alpha_amort_pp_init
+1,DE-RV-0001,M,50,2026,0,1.0,laufend,3000.00,0.00,annual,17,17,0.0100,zillmer_25,28.00,base,base,0.00,prem_refund,0,10,0.3000,0,0.0000,konstant,0.00,0.00,0.00,0.00
+2,DE-RV-0002,F,55,2026,0,1.0,einmal,0.00,50000.00,annual,1,12,0.0100,zillmer_25,28.00,base,base,0.00,deckungskapital,0,10,0.0000,0,0.0000,konstant,0.00,0.00,0.00,0.00
+3,DE-RV-0003,M,40,2026,0,1.0,laufend,1800.00,0.00,monthly,27,27,0.0100,zillmer_25,28.00,base,base,0.00,prem_refund,0,15,0.3000,0,0.0000,konstant,0.00,0.00,0.00,0.00
+4,DE-RV-0004,F,45,2026,0,1.0,laufend,2400.00,0.00,quarterly,20,22,0.0100,zillmer_25,28.00,base,base,0.00,prem_refund,1,10,0.3000,0,0.0000,teildynamisch,0.00,0.00,0.00,0.00
+5,DE-RV-0005,M,40,2026,0,1.0,laufend,2000.00,0.00,half_yearly,25,27,0.0100,zillmer_25,28.00,high,base,0.00,max,0,20,0.2000,0,0.0000,volldynamisch,0.00,0.00,0.00,0.00
+6,DE-RV-0006,M,42,2005,20,1.0,laufend,2592.00,0.00,annual,25,25,0.0275,zillmer_40,34.00,base,base,0.00,prem_refund,0,10,0.3000,0,0.0000,konstant,61190.90,3200.00,51840.00,2592.00
+7,DE-RV-0007,F,45,2026,0,1.0,laufend,3600.00,0.00,annual,22,22,0.0100,zillmer_25,28.00,base,base,0.00,prem_refund,0,10,0.3000,10,0.0000,konstant,0.00,0.00,0.00,0.00
+8,DE-RV-0008,M,35,2026,0,1.0,laufend,1200.00,0.00,annual,32,32,0.0100,zillmer_25,28.00,base,base,0.00,prem_refund,0,10,0.3000,3,0.0000,konstant,0.00,0.00,0.00,0.00
+9,DE-RV-0009,F,60,2026,0,1.0,laufend,6000.00,0.00,annual,7,7,0.0100,zillmer_25,28.00,base,base,0.00,prem_refund,0,0,1.0000,0,0.0000,konstant,0.00,0.00,0.00,0.00
+10,DE-RV-0010,M,52,2026,0,1.0,laufend,4200.00,0.00,annual,15,15,0.0100,zillmer_25,28.00,base,base,0.00,prem_refund,0,20,0.0000,0,0.0000,volldynamisch,0.00,0.00,0.00,0.00
+11,DE-RV-0011,F,48,2026,0,1.0,laufend,2400.00,0.00,annual,19,19,0.0100,zillmer_25,28.00,base,base,0.00,prem_refund,0,5,0.3000,0,0.0000,teildynamisch,0.00,0.00,0.00,0.00
+12,DE-RV-0012,M,45,2026,0,1.0,laufend,1500.00,0.00,annual,22,22,0.0100,zillmer_25,28.00,base,base,0.00,deckungskapital,1,10,0.3000,0,0.0500,konstant,0.00,0.00,0.00,0.00
+13,DE-RV-0013,F,55,2026,0,1.0,laufend,4800.00,0.00,annual,10,10,0.0100,zillmer_25,27.00,low,base,60000.00,max,0,10,0.3000,0,0.0000,konstant,0.00,0.00,0.00,0.00
+14,DE-RV-0014,M,47,2017,8,1.0,laufend,1800.00,0.00,annual,20,20,0.0090,zillmer_25,26.00,base,low,0.00,prem_refund,0,15,0.3000,0,0.0000,konstant,13302.39,345.33,14400.00,900.00

@@ -1,0 +1,201 @@
+scenario_id,policy_year,gross_return_ann,ter_ann,provenance
+base,1,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,2,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,3,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,4,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,5,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,6,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,7,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,8,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,9,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,10,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,11,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,12,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,13,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,14,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,15,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,16,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,17,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,18,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,19,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,20,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,21,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,22,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,23,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,24,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,25,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,26,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,27,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,28,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,29,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,30,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,31,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,32,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,33,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,34,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,35,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,36,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,37,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,38,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,39,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,40,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,41,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,42,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,43,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,44,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,45,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,46,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,47,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,48,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,49,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+base,50,0.05,0.0045,[std] 5.00% p.a. gross - a round long-horizon assumption; TER 0.45% p.a. active mixed fund; not a PRIIPs performance scenario [R8] [R9] [REG-R32]
+etf,1,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,2,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,3,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,4,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,5,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,6,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,7,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,8,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,9,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,10,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,11,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,12,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,13,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,14,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,15,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,16,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,17,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,18,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,19,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,20,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,21,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,22,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,23,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,24,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,25,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,26,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,27,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,28,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,29,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,30,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,31,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,32,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,33,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,34,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,35,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,36,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,37,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,38,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,39,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,40,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,41,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,42,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,43,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,44,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,45,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,46,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,47,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,48,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,49,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+etf,50,0.05,0.0015,[std] 5.00% p.a. gross; TER 0.15% p.a. passive ETF - the low-cost end of the argued TER range [S13] [S18]
+zero,1,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,2,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,3,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,4,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,5,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,6,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,7,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,8,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,9,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,10,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,11,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,12,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,13,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,14,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,15,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,16,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,17,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,18,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,19,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,20,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,21,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,22,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,23,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,24,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,25,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,26,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,27,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,28,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,29,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,30,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,31,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,32,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,33,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,34,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,35,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,36,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,37,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,38,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,39,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,40,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,41,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,42,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,43,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,44,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,45,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,46,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,47,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,48,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,49,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+zero,50,0.0,0.0045,[std] 0.00% p.a. gross - isolates the charge stack: every movement of the Fondsguthaben is a charge
+stress,1,-0.2,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,2,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,3,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,4,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,5,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,6,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,7,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,8,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,9,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,10,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,11,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,12,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,13,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,14,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,15,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,16,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,17,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,18,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,19,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,20,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,21,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,22,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,23,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,24,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,25,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,26,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,27,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,28,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,29,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,30,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,31,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,32,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,33,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,34,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,35,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,36,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,37,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,38,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,39,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,40,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,41,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,42,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,43,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,44,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,45,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,46,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,47,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,48,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,49,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites
+stress,50,0.05,0.0045,[std] -20.00% in policy year 1 then 5.00% p.a. - puts the fund far below the premiums paid so the Beitragsrueckgewaehr net amount at risk bites

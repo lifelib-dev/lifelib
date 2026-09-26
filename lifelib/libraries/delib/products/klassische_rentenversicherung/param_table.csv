@@ -1,0 +1,14 @@
+item,value,provenance
+expense_acq_pp,400.00,[std] 400 EUR per policy at issue; no German carrier publishes an expense assumption (gap 14)
+expense_maint_pp,45.00,"[std] 45 EUR per policy p.a. in the accumulation phase, inflating (gap 14)"
+expense_annuity_pp,30.00,"[std] 30 EUR per policy p.a. in the payout phase, inflating (gap 14)"
+expense_claim_pp,120.00,"[std] 120 EUR per death, surrender or commutation settlement (gap 14)"
+expense_infl,0.020,[std] 2.0% p.a. expense inflation; no source (gap 14)
+mort_be_factor,1.15,"[std] second-order = first-order x 1.15: for an annuity prudence means assuming mortality below best estimate, so the factor is above one [REG-R47] [REG-R49]"
+mort_base_year,2005,[R13] DAV 2004 R was intended for new business from 2005; the proxy's base year
+omega_age,121,"[std] terminal age of the shipped proxy; proj_len = omega_age - issue_age, so a life annuity is projected to exhaustion rather than to a fixed horizon"
+val_reserve_rate,0.015,"[std] 1.5% of the accumulated value crystallised at Rentenbeginn; the haelftige participation of Sec. 153(3) VVG is cited, no amount established [S4] [R4]"
+sur_ann_rate,0.12,"[std] Ueberschussrente at 12% of the garantierte Rente on the konstant system; mechanic cited, level not established [R20]"
+sur_ann_growth,0.015,"[std] 1.5% p.a. compound Ueberschussrente growth on the volldynamisch system; mechanic cited, level not established [R20] [R24]"
+sur_ann_theta,0.5,[std] teildynamisch split: half the constant increment plus half the growth rate [R20] [R24]
+roll_fwd_tol,1e-09,"[std] relative tolerance for the check_* roll-forward identities; a float comparison tolerance, not an actuarial assumption"

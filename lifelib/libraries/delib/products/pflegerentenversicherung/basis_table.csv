@@ -1,0 +1,14 @@
+param,value,provenance
+rechnungszins,0.01,"[REG-R14] [REG-R15] DeckRV s 2 Hoechstrechnungszins for new business from 1 January 2025, which stays with the contract for its whole term [unverified as to the date]"
+omega_age,110.0,[std] terminal age; mort_rate is forced to 1 at omega_age - 1 so the model is a closed system. The DAV tables run higher [R15] [REG-R51]
+unisex_mix_male,0.5,[std] the pricing blend; sex may not enter a premium for contracts concluded from 21 December 2012 [REG-R34]. Writing 60/40 against a 50/50 price is model risk 7
+rec_age_ref,75.0,"[std] age above which Reaktivierung is damped, so deterioration dominates recovery above 75 - property (b) a replacement table must preserve [R15]"
+rec_age_decay,0.1,"[std] exp(-0.10 x (age - 75)) damping on the recovery rates; order-of-magnitude reasoning, unsourced [unverified]"
+inc_cap,0.5,[std] shape device: without it the incidence exponential exceeds one before age 100
+beitragssumme_cap_age,85.0,[std] a lifelong-premium contract has no finite Beitragssumme without a convention; this is the convention the 25 permille Zillmerung base is struck on [REG-R16]
+roll_fwd_tol,1e-10,"[std] absolute tolerance of every check_* identity, scaled by pols_if_init or by P x U"
+inc_margin,1.25,[std] Rechnungsgrundlagen erster Ordnung: more claims. Only the DIRECTION is cited [REG-R8] [REG-R47]; no German Sicherheitszuschlag level for a Pflegetafel was established
+det_margin,1.15,[std] first-order margin: faster progression to the higher-paying grades [REG-R8] [REG-R47]
+rec_margin,0.8,"[std] first-order margin: fewer recoveries, so longer spells [REG-R8] [REG-R47]"
+care_mort_margin,0.85,"[std] first-order margin: lower mortality in care, so longer annuities [REG-R8] [REG-R47]"
+act_mort_margin,0.9,[std] first-order margin: more active lives survive to claim [REG-R8] [REG-R47]

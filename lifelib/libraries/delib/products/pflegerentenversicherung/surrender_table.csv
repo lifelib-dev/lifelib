@@ -1,0 +1,41 @@
+policy_year,rkw_prem_ratio,provenance
+1,0.000000,[std] zero: the 25 permille Zillmerung allowance of DeckRV s 4 is unamortised [REG-R16] [REG-R20]
+2,0.000000,[std] zero: the 25 permille Zillmerung allowance of DeckRV s 4 is unamortised [REG-R16] [REG-R20]
+3,0.050000,[std] turns positive in year 3 because VVG s 169 Abs. 3 spreads acquisition costs over at least the first five years [REG-R28]
+4,0.120000,[std] turns positive in year 3 because VVG s 169 Abs. 3 spreads acquisition costs over at least the first five years [REG-R28]
+5,0.200000,[std] turns positive in year 3 because VVG s 169 Abs. 3 spreads acquisition costs over at least the first five years [REG-R28]
+6,0.244000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+7,0.288000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+8,0.332000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+9,0.376000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+10,0.420000,[std] shipped knot of the Rueckkaufswert profile; no German Pflegerenten surrender table was established (research gap 1)
+11,0.436000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+12,0.452000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+13,0.468000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+14,0.484000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+15,0.500000,[std] shipped knot of the Rueckkaufswert profile; no German Pflegerenten surrender table was established (research gap 1)
+16,0.512000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+17,0.524000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+18,0.536000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+19,0.548000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+20,0.560000,[std] shipped knot of the Rueckkaufswert profile; no German Pflegerenten surrender table was established (research gap 1)
+21,0.568000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+22,0.576000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+23,0.584000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+24,0.592000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+25,0.600000,[std] shipped knot of the Rueckkaufswert profile; no German Pflegerenten surrender table was established (research gap 1)
+26,0.608000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+27,0.616000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+28,0.624000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+29,0.632000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+30,0.640000,[std] shipped knot of the Rueckkaufswert profile; no German Pflegerenten surrender table was established (research gap 1)
+31,0.646000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+32,0.652000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+33,0.658000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+34,0.664000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+35,0.670000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+36,0.676000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+37,0.682000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+38,0.688000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+39,0.694000,[std] linear interpolation between the shipped knots; year 40's ratio applies to every later policy year
+40,0.700000,[std] shipped knot of the Rueckkaufswert profile; no German Pflegerenten surrender table was established (research gap 1)

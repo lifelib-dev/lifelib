@@ -1,0 +1,15 @@
+point_id,policy_id,issue_age,sex,smoker,sum_assured,policy_term,prem_term,premium_form,prem_freq,benefit_schedule_id,nvg_schedule_id,surplus_form,lives,issue_age2,smoker2,rating_factor,mort_table_id,duration_y,issue_date
+1,RLV-000001,35,M,N,300000.0,25,25,laufend,jaehrlich,konstant,keine,beitragsverrechnung,1,0,-,1.0,dav2008t_proxy,0,2026-01-01
+2,RLV-000002,35,F,N,300000.0,25,25,laufend,jaehrlich,konstant,keine,beitragsverrechnung,1,0,-,1.0,dav2008t_proxy,0,2026-01-01
+3,RLV-000003,35,M,R,300000.0,25,25,laufend,jaehrlich,konstant,keine,beitragsverrechnung,1,0,-,1.0,dav2008t_proxy,0,2026-01-01
+4,RLV-000004,40,M,N,250000.0,20,20,laufend,monatlich,linear_fallend,keine,beitragsverrechnung,1,0,-,1.0,dav2008t_proxy,0,2026-01-01
+5,RLV-000005,33,F,N,400000.0,30,30,laufend,vierteljaehrlich,annuitaet_fallend_3pct,keine,beitragsverrechnung,1,0,-,1.0,dav2008t_proxy,0,2026-01-01
+6,RLV-000006,45,M,N,200000.0,20,12,laufend,halbjaehrlich,konstant,keine,beitragsverrechnung,1,0,-,1.0,dav2008t_proxy,0,2026-01-01
+7,RLV-000007,50,M,N,100000.0,10,1,einmal,jaehrlich,konstant,keine,beitragsverrechnung,1,0,-,1.0,dav2008t_proxy,0,2026-01-01
+8,RLV-000008,30,F,N,150000.0,30,30,laufend,jaehrlich,konstant,keine,beitragsverrechnung,1,0,-,1.0,dav2008t_proxy,12,2014-01-01
+9,RLV-000009,32,M,N,200000.0,28,28,laufend,jaehrlich,konstant,nvg_zwei_erhoehungen,beitragsverrechnung,1,0,-,1.0,dav2008t_proxy,0,2026-01-01
+10,RLV-000010,38,M,N,300000.0,22,22,laufend,monatlich,konstant,keine,beitragsverrechnung,2,36,N,1.0,dav2008t_proxy,0,2026-01-01
+11,RLV-000011,42,M,R,250000.0,18,18,laufend,jaehrlich,konstant,keine,beitragsverrechnung,1,0,-,1.75,dav2008t_proxy,0,2026-01-01
+12,RLV-000012,36,F,N,300000.0,25,25,laufend,jaehrlich,konstant,keine,keine,1,0,-,1.0,dav2008t_proxy,0,2026-01-01
+13,RLV-000013,60,M,N,50000.0,5,5,laufend,jaehrlich,konstant,keine,beitragsverrechnung,1,0,-,1.0,dav2008t_proxy,0,2026-01-01
+14,RLV-000014,18,M,N,100000.0,40,40,laufend,jaehrlich,konstant,keine,beitragsverrechnung,1,0,-,1.0,dav2008t_proxy,0,2026-01-01

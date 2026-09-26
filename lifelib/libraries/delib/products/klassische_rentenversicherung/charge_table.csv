@@ -1,0 +1,17 @@
+charge_id,item,value,provenance
+zillmer_25,alpha_rate,0.025,[REG-R16] Hoechstzillmersatz 25 per mille of the Beitragssumme from 1 January 2015; use of the cap [std]
+zillmer_25,alpha_spread_years,5,[REG-R28] Sec. 169(3) VVG: acquisition and distribution costs spread evenly over the first five contract years
+zillmer_25,beta_rate,0.040,[std] 4.0% of each gross premium; no German carrier publishes a beta loading (gap 14)
+zillmer_25,gamma_rate,0.0020,[std] 20 bp p.a. of the Deckungskapital; no published level (gap 14)
+zillmer_25,gamma_pup_rate,0.0030,[std] 30 bp p.a. while premium-free: a paid-up contract still bears administration cost [R2]
+zillmer_25,stornoabzug_rate,0.020,"[R1] [REG-R28] Sec. 169(5) VVG permits a deduction only if agreed, quantified and appropriate; level [std]"
+zillmer_25,min_annuity_mth,30.00,"[R2] Sec. 165 VVG Mindestversicherungsleistung threshold; level [std], no figure established (gap 22)"
+zillmer_25,annuity_admin_rate,0.015,[std] recorded and NOT applied: the Rentenfaktor is exogenous here and already carries the payout loading
+zillmer_40,alpha_rate,0.040,[REG-R16] Hoechstzillmersatz 40 per mille before 1 January 2015; the rate at conclusion applies [REG-R20]
+zillmer_40,alpha_spread_years,5,[REG-R28] Sec. 169(3) VVG: acquisition and distribution costs spread evenly over the first five contract years
+zillmer_40,beta_rate,0.040,[std] 4.0% of each gross premium; no German carrier publishes a beta loading (gap 14)
+zillmer_40,gamma_rate,0.0020,[std] 20 bp p.a. of the Deckungskapital; no published level (gap 14)
+zillmer_40,gamma_pup_rate,0.0030,[std] 30 bp p.a. while premium-free: a paid-up contract still bears administration cost [R2]
+zillmer_40,stornoabzug_rate,0.000,[R1] no Stornoabzug agreed on the legacy charge set; a deduction for unamortised acquisition cost is void
+zillmer_40,min_annuity_mth,30.00,"[R2] Sec. 165 VVG Mindestversicherungsleistung threshold; level [std], no figure established (gap 22)"
+zillmer_40,annuity_admin_rate,0.015,[std] recorded and NOT applied: the Rentenfaktor is exogenous here and already carries the payout loading

@@ -1,0 +1,15 @@
+point_id,policy_id,single_prem,entry_age,entry_year,birth_year,sex,defer_years,guar_years,refund_form,surv_pct,surv_age,surv_birth_year,surv_sex,payment_freq,payment_timing,tariff_int_rate,surplus_form,annuity_pp_init,duration_mth_init,pols_if_init
+1,SOF-000001,100000.00,65,2025,1960,M,0,10,none,0.00,0,0,M,12,advance,0.0100,teildynamisch,0.00,0,1.0
+2,SOF-000002,100000.00,65,2025,1960,M,0,0,none,0.00,0,0,M,12,advance,0.0100,teildynamisch,0.00,0,1.0
+3,SOF-000003,100000.00,65,2025,1960,M,0,0,full,0.00,0,0,M,12,advance,0.0100,teildynamisch,0.00,0,1.0
+4,SOF-000004,100000.00,65,2025,1960,M,0,0,none,0.60,62,1963,F,12,advance,0.0100,teildynamisch,0.00,0,1.0
+5,SOF-000005,150000.00,68,2025,1957,F,0,20,none,1.00,70,1955,M,12,advance,0.0100,konstant,0.00,0,1.0
+6,SOF-000006,100000.00,62,2025,1963,M,5,0,full,0.00,0,0,M,12,advance,0.0100,volldynamisch,0.00,0,1.0
+7,SOF-000007,100000.00,65,2025,1960,M,0,10,none,0.00,0,0,M,4,advance,0.0100,teildynamisch,0.00,0,1.0
+8,SOF-000008,200000.00,72,2025,1953,M,0,15,none,0.00,0,0,M,1,advance,0.0100,konstant,0.00,0,1.0
+9,SOF-000009,100000.00,65,2025,1960,M,0,10,none,0.00,0,0,M,12,arrears,0.0100,teildynamisch,0.00,0,1.0
+10,SOF-000010,100000.00,65,2012,1947,M,0,15,none,0.00,0,0,M,12,advance,0.0175,konstant,430.00,156,1.0
+11,SOF-000011,25000.00,85,2025,1940,F,0,0,none,0.00,0,0,M,2,advance,0.0100,konstant,0.00,0,1.0
+12,SOF-000012,500000.00,60,2025,1965,F,0,30,none,0.00,0,0,M,12,advance,0.0100,volldynamisch,0.00,0,1.0
+13,SOF-000013,250000.00,70,2022,1952,M,0,10,none,0.00,0,0,M,12,advance,0.0025,konstant,0.00,0,1.0
+14,SOF-000014,100000.00,65,2025,1960,M,0,10,none,0.00,0,0,M,12,advance,0.0100,none,0.00,0,1.0
