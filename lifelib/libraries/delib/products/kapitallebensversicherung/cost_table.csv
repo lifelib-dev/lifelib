@@ -1,0 +1,2 @@
+cost_id,alpha_rate,beta_rate,gamma_rate,acq_expense,maint_expense,expense_infl,claim_expense,comm_init_rate,comm_renew_rate,provenance
+std_2026,0.0250,0.0300,0.0015,300.00,45.00,0.0180,120.00,0.0250,0.0150,alpha_rate at the 25 permille DeckRV ceiling [R7] [REG-R16]; beta_rate form [R28]; comm_init_rate anchored to that ceiling and to Die Stuttgarter's reported 25 permille [R29]. All levels [std] - no German charge level of any kind was established (gap 7); gamma_rate form not established either (gap 17)

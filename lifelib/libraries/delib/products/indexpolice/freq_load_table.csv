@@ -1,0 +1,5 @@
+prem_freq,freq_load,provenance
+annual,1.000,"[std] Ratenzahlungszuschlag -- no Ratenzahlungszuschlag on the annual mode; market convention, no carrier tariff established [unverified]"
+half_yearly,1.020,"[std] Ratenzahlungszuschlag -- 2 pct half-yearly; market convention, no carrier tariff established [unverified]"
+quarterly,1.030,"[std] Ratenzahlungszuschlag -- 3 pct quarterly; market convention, no carrier tariff established [unverified]"
+monthly,1.050,"[std] Ratenzahlungszuschlag -- 5 pct monthly; market convention, no carrier tariff established [unverified]"

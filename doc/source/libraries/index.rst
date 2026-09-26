@@ -58,6 +58,7 @@ in the notes, asserted cell by cell.
    :doc:`uklib/index`              |modelx badge|  UK life and pension annuity reference products and models
    :doc:`jplib/index`              |modelx badge|  Japanese life and third-sector reference products and models
    :doc:`frlib/index`              |modelx badge|  French life, savings and annuity reference products and models
+   :doc:`delib/index`              |modelx badge|  German life, pension and disability reference products and models
    :doc:`krlib/index`              |modelx badge|  Korean life, health and annuity reference products and models
    =============================== =============== ===============================================================
 
@@ -70,6 +71,7 @@ in the notes, asserted cell by cell.
    uklib/index.md
    jplib/index.md
    frlib/index.md
+   delib/index.md
    krlib/index.md
 
 

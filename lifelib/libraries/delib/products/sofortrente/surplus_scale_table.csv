@@ -1,0 +1,5 @@
+surplus_form,surplus_init_pct,surplus_growth,provenance
+none,0.00,0.000,"[std] surplus switched off, so the Ueberschussrente's contribution to the projection is isolatable; not a market form"
+konstant,0.20,0.000,"[std] konstante Ueberschussrente: highest at outset, flat in intention only - the 20 % opening share sits mid-way in the 15-25 % gap between garantierte Rente and Gesamtrente the market is [unverified] said to run at [R20] [R21] [R23]"
+teildynamisch,0.10,0.010,"[std] teildynamische Ueberschussrente: part of the expected surplus taken up front, part left to finance a regular increase [R21] [R23]"
+volldynamisch,0.00,0.020,"[std] steigende (volldynamische) Ueberschussrente: nothing at outset, rising with each declaration; growth consistent with a Zinsueberschuss of one to two points over a 1,00 % Rechnungszins [R20] [R21]"

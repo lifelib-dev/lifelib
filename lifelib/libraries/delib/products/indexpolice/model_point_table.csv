@@ -1,0 +1,14 @@
+point_id,policy_id,sex,entry_age,dur_init,pols_if_init,ann_start_age,prem_form,prem_gross_pp,prem_freq,prem_term_y,av_pp_init,guar_locked_init,prem_paid_init,guar_level,guar_rate,payoff_form,index_id,elect_id,death_min_rate,ann_option,surr_charge_on
+1,DE-IDX-0001,M,40,0,1.0,67,level,2400.0,annual,27,0.0,0.0,0.0,0.9,0.01,cap,eqidx_vol17,always_index,0.5,annuity,1
+2,DE-IDX-0002,M,40,0,1.0,67,level,2400.0,annual,27,0.0,0.0,0.0,0.9,0.01,quote,eqidx_vol17,always_index,0.5,annuity,1
+3,DE-IDX-0003,F,40,0,1.0,67,level,2400.0,annual,27,0.0,0.0,0.0,0.9,0.01,quote,houseidx_vol5,always_index,0.5,annuity,1
+4,DE-IDX-0004,M,35,0,1.0,67,level,2400.0,monthly,32,0.0,0.0,0.0,0.9,0.01,cap,eqidx_vol17,always_index,0.5,annuity,1
+5,DE-IDX-0005,F,45,0,1.0,67,level,3600.0,quarterly,22,0.0,0.0,0.0,0.9,0.01,cap,eqidx_vol17,always_index,0.5,annuity,1
+6,DE-IDX-0006,M,50,0,1.0,65,level,6000.0,half_yearly,15,0.0,0.0,0.0,0.8,0.01,cap,eqidx_vol17,always_index,0.5,annuity,1
+7,DE-IDX-0007,F,55,0,1.0,67,single,50000.0,annual,1,0.0,0.0,0.0,0.9,0.01,cap,eqidx_vol17,always_index,0.5,cash,1
+8,DE-IDX-0008,M,40,8,1.0,67,level,6000.0,annual,27,50000.0,4300.0,48000.0,0.9,0.009,cap,eqidx_vol17,always_index,0.5,annuity,1
+9,DE-IDX-0009,M,55,0,1.0,67,level,2400.0,annual,12,0.0,0.0,0.0,1.0,0.01,cap,zero_path,always_index,0.5,annuity,1
+10,DE-IDX-0010,F,40,0,1.0,67,level,2400.0,annual,27,0.0,0.0,0.0,0.9,0.01,cap,eqidx_vol17,switch_at_15,0.5,annuity,1
+11,DE-IDX-0011,M,40,0,1.0,67,level,2400.0,annual,27,0.0,0.0,0.0,0.9,0.01,cap,eqidx_vol17,always_safe,0.5,annuity,1
+12,DE-IDX-0012,F,30,0,1.0,67,level,1800.0,annual,37,0.0,0.0,0.0,0.6,0.01,cap,eqidx_vol17,half_half,0.5,annuity,1
+13,DE-IDX-0013,M,45,4,1.0,67,level,3000.0,annual,12,9600.0,620.0,12000.0,0.9,0.0025,cap,eqidx_vol17,always_index,0.0,annuity,0

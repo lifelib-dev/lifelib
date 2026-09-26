@@ -1,4 +1,4 @@
-"""Every registered model in uslib, uklib, jplib, frlib and krlib exports to a working nomx package.
+"""Every registered model in the six country libraries exports to a working nomx package.
 
 ``Model.export`` writes a model out as a pure-Python package that does not import modelx.
 For these libraries that is a supported way to run the models, so the export is part of

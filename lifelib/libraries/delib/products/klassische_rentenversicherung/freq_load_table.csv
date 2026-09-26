@@ -1,0 +1,5 @@
+prem_freq,freq_load,n_instalments,provenance
+annual,1.000,1,[std] Ratenzahlungszuschlag; no German carrier's instalment loading was established (gap 14); annual payment carries no loading
+half_yearly,1.020,2,[std] Ratenzahlungszuschlag; no German carrier's instalment loading was established (gap 14)
+quarterly,1.030,4,[std] Ratenzahlungszuschlag; no German carrier's instalment loading was established (gap 14)
+monthly,1.050,12,[std] Ratenzahlungszuschlag; no German carrier's instalment loading was established (gap 14)

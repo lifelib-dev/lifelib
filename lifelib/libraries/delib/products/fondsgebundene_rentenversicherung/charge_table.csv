@@ -1,0 +1,5 @@
+charge_id,alpha_rate,alpha_spread_months,beta_rate,gamma_rate_ann,policy_fee_mth,zuzahlung_charge_rate,stornoabzug_rate,provenance
+std_gross,0.025,60,0.04,0.003,3.0,0.025,0.0,[std] composite commission tariff; alpha at the 25 permille Hoechstzillmersatz cap [R12] [R13] [REG-R16]; spread of 60 months per § 169 VVG [R1] [REG-R28]; beta/gamma/Stueckkosten levels established nowhere
+std_netto,0.0,60,0.01,0.002,2.0,0.0,0.0,[std] Nettotarif / Honorartarif: acquisition load removed from the tariff [S18]; the gap to std_gross is the acquisition load
+std_high,0.025,60,0.1,0.012,5.0,0.04,0.02,[std] top of the argued range on every ongoing charge; the only shipped row with a non-zero Stornoabzug [R1] [REG-R36]
+std_low,0.01,60,0.02,0.001,0.0,0.0,0.0,[std] bottom of the argued range; direct-writer / low-cost comparator [S10] [S13]

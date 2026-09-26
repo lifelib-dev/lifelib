@@ -1,0 +1,14 @@
+point_id,status,entry_age,sex,berufsgruppe,bu_rente_mth,cover_end_age,benefit_end_age,karenz_months,leistungsdyn_rate,premium_form,beitragsdyn_rate,prem_mode,gross_prem_ann,beitragsverrechnung,risk_factor,au_klausel,au_uplift,wiedereingliederung_months,duration_init_months,claim_duration_init
+1,aktiv,30,F,BG1,1500.0,67,67,0,0.02,level,0.0,monthly,0.0,0.7,1.0,False,1.0,6,0,0
+2,aktiv,30,M,BG1,1500.0,67,67,0,0.02,level,0.0,monthly,0.0,0.7,1.0,False,1.0,6,0,0
+3,aktiv,30,F,BG4,1500.0,67,67,0,0.02,level,0.0,monthly,0.0,0.7,1.0,False,1.0,6,0,0
+4,aktiv,25,F,BG2,1200.0,67,67,0,0.02,dynamik,0.03,annual,0.0,0.7,1.0,False,1.0,6,0,0
+5,aktiv,40,M,BG3,2000.0,67,67,6,0.02,level,0.0,quarterly,0.0,0.7,1.0,False,1.0,6,0,0
+6,aktiv,30,F,BG1,1500.0,67,67,0,0.02,level,0.0,half_yearly,0.0,0.7,1.0,False,1.0,6,180,0
+7,leistung,35,M,BG3,1800.0,67,67,0,0.02,level,0.0,monthly,0.0,0.7,1.0,False,1.0,6,200,8
+8,aktiv,50,M,BG5,1000.0,60,60,3,0.02,level,0.0,monthly,0.0,0.7,1.0,False,1.0,6,0,0
+9,aktiv,45,F,BG2,1500.0,67,63,0,0.02,level,0.0,monthly,0.0,0.7,1.0,False,1.0,6,0,0
+10,aktiv,33,M,BG1,1500.0,67,67,0,0.02,level,0.0,monthly,0.0,0.7,1.0,True,1.0,6,0,0
+11,aktiv,38,F,BG2,1500.0,67,67,0,0.02,level,0.0,monthly,0.0,0.7,1.5,False,1.0,6,0,0
+12,aktiv,30,M,BG1,1500.0,67,67,0,0.0,level,0.0,monthly,0.0,0.7,1.0,False,1.0,0,0,0
+13,aktiv,50,F,BG1,2500.0,67,67,12,0.02,level,0.0,monthly,2400.0,0.55,1.0,False,1.0,6,0,0

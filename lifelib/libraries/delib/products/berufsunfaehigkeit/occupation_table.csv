@@ -1,0 +1,6 @@
+berufsgruppe,occ_factor,label,provenance
+BG1,1.00,academic and pure office,"[std] reference class, factor 1.00 by construction; five-class cut and the classification shape from insurer Berufsgruppenverzeichnisse [S6]"
+BG2,1.40,qualified commercial and technical,[std] interpolated geometrically between the BG1 and BG4 anchors and extrapolated to BG5; carrier classifications are not comparable [S6]
+BG3,2.10,skilled trades with light physical content,[std] interpolated geometrically between the BG1 and BG4 anchors and extrapolated to BG5; carrier classifications are not comparable [S6]
+BG4,3.00,skilled manual trades,"[std] representative manual class, 3.00, inside the recalled 2x-4x manual/office premium band [S6] [unverified]"
+BG5,4.50,"heavy manual, hazardous and outdoor",[std] interpolated geometrically between the BG1 and BG4 anchors and extrapolated to BG5; carrier classifications are not comparable [S6]

@@ -1,0 +1,15 @@
+point_id,policy_id,sex,age_at_entry,duration_mth_init,status,rente_mth,staffel_id,prem_end_age,prem_mode,premium_mth,rating_factor,wartezeit_months,karenz_months,leistungsdynamik,beitragsrueckgewaehr,stornoabzug_rate,pols_if_init
+1,PFL-000001,F,45,0,aktiv,1000.0,delib_std,110,monthly,0.0,1.0,0,0,0.0,False,0.0,1.0
+2,PFL-000002,M,45,0,aktiv,1000.0,delib_std,110,monthly,0.0,1.0,0,0,0.0,False,0.0,1.0
+3,PFL-000003,F,55,0,aktiv,1000.0,delib_std,110,quarterly,0.0,1.0,0,0,0.0,False,0.0,1.0
+4,PFL-000004,M,40,0,aktiv,1000.0,delib_std,65,half_yearly,0.0,1.0,0,0,0.0,False,0.0,1.0
+5,PFL-000005,F,50,0,aktiv,1000.0,bahr,110,annual,0.0,1.0,0,0,0.0,False,0.0,1.0
+6,PFL-000006,F,60,0,aktiv,1000.0,delib_std,110,single,0.0,1.0,0,0,0.0,False,0.0,1.0
+7,PFL-000007,M,50,0,aktiv,1000.0,delib_std,110,monthly,0.0,1.0,36,6,0.0,False,0.0,1.0
+8,PFL-000008,F,45,0,aktiv,1000.0,delib_std,110,monthly,0.0,1.0,0,0,0.02,False,0.0,1.0
+9,PFL-000009,M,45,0,aktiv,1000.0,delib_std,65,monthly,0.0,1.0,0,0,0.0,True,0.0,1.0
+10,PFL-000010,F,48,0,aktiv,1000.0,delib_std,110,monthly,75.0,1.0,0,0,0.0,False,0.05,1.0
+11,PFL-000011,M,42,240,aktiv,1000.0,delib_std,110,monthly,58.80,1.0,0,0,0.0,False,0.0,1.0
+12,PFL-000012,F,55,336,pg3,1000.0,delib_std,110,monthly,88.45,1.0,0,0,0.0,False,0.0,1.0
+13,PFL-000013,M,65,0,aktiv,1500.0,delib_std,110,monthly,0.0,1.5,0,0,0.0,False,0.0,1.0
+14,PFL-000014,F,18,0,aktiv,500.0,delib_std,110,monthly,0.0,1.0,0,0,0.0,False,0.0,1.0

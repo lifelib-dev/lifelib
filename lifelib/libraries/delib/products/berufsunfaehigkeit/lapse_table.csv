@@ -1,0 +1,7 @@
+policy_year,lapse_rate,provenance
+1,0.040,[std] German BU lapse is low because cover cannot be replaced once health has changed; the 30-day Widerruf sits inside this rate [REG-R23] [S16]
+2,0.040,"[std] early-duration attrition, falling from 4.0 to the 2.0 ultimate; no German insurer publishes a BU Stornoquote [S16]"
+3,0.035,"[std] early-duration attrition, falling from 4.0 to the 2.0 ultimate; no German insurer publishes a BU Stornoquote [S16]"
+4,0.030,"[std] early-duration attrition, falling from 4.0 to the 2.0 ultimate; no German insurer publishes a BU Stornoquote [S16]"
+5,0.025,"[std] early-duration attrition, falling from 4.0 to the 2.0 ultimate; no German insurer publishes a BU Stornoquote [S16]"
+6,0.020,"[std] ultimate rate, applied to policy year 6 and beyond; no German insurer publishes a BU Stornoquote [S16]"

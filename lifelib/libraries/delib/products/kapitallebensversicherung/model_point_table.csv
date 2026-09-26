@@ -1,0 +1,15 @@
+point_id,policy_id,sex,smoker,issue_year,issue_age,duration_init,pols_if_init,policy_term,prem_term,sum_assured,death_ratio,prem_freq,unterjaehrig_form,rechnungszins,zillmer_on,cost_id,surplus_use,scenario_id,rating_factor,av_sur_pp_init,bonus_si_init,bfz_year
+1,DE-KLV-0001,M,N,2026,37,0,1.0,25,25,50000.0,1.0,annual,unecht,0.01,1,std_2026,ansammlung,base,1.0,0.0,0.0,0
+2,DE-KLV-0002,M,N,2026,37,0,1.0,25,1,50000.0,1.0,annual,unecht,0.01,1,std_2026,ansammlung,base,1.0,0.0,0.0,0
+3,DE-KLV-0003,M,N,2026,37,0,1.0,25,15,50000.0,1.0,annual,unecht,0.01,1,std_2026,ansammlung,low,1.0,0.0,0.0,0
+4,DE-KLV-0004,M,N,2026,37,0,1.0,25,25,50000.0,1.0,monthly,unecht,0.01,1,std_2026,ansammlung,base,1.0,0.0,0.0,0
+5,DE-KLV-0005,M,N,2026,37,0,1.0,25,25,50000.0,1.0,monthly,echt,0.01,1,std_2026,ansammlung,base,1.0,0.0,0.0,0
+6,DE-KLV-0006,M,N,2026,37,0,1.0,25,25,50000.0,1.0,half_yearly,unecht,0.01,1,std_2026,ansammlung,base,1.0,0.0,0.0,0
+7,DE-KLV-0007,F,N,2026,37,0,1.0,25,25,50000.0,1.0,quarterly,unecht,0.01,1,std_2026,ansammlung,base,1.0,0.0,0.0,0
+8,DE-KLV-0008,M,N,2026,37,0,1.0,25,25,50000.0,1.0,annual,unecht,0.01,1,std_2026,bonus,base,1.0,0.0,0.0,0
+9,DE-KLV-0009,M,N,2026,37,0,1.0,25,25,50000.0,1.0,annual,unecht,0.01,1,std_2026,beitragsverrechnung,base,1.0,0.0,0.0,0
+10,DE-KLV-0010,M,N,2012,40,14,1.0,30,30,50000.0,1.0,annual,unecht,0.0175,1,std_2026,ansammlung,base,1.0,6000.0,0.0,0
+11,DE-KLV-0011,M,N,2026,37,0,1.0,25,25,50000.0,1.0,annual,unecht,0.01,1,std_2026,ansammlung,base,1.0,0.0,0.0,10
+12,DE-KLV-0012,M,N,2026,45,0,1.0,20,20,6000.0,1.0,annual,unecht,0.01,1,std_2026,ansammlung,base,1.0,0.0,0.0,3
+13,DE-KLV-0013,M,N,2026,37,0,1.0,25,25,50000.0,1.0,annual,unecht,0.01,0,std_2026,ansammlung,base,1.0,0.0,0.0,0
+14,DE-KLV-0014,M,S,2026,55,0,1.0,12,12,30000.0,0.6,annual,unecht,0.01,1,std_2026,ansammlung,nil,1.5,0.0,0.0,0

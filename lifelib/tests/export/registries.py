@@ -1,12 +1,12 @@
-"""The registered models of ``uslib``, ``uklib``, ``jplib``, ``frlib`` and ``krlib``,
-read from their registries.
+"""The registered models of ``uslib``, ``uklib``, ``jplib``, ``frlib``, ``delib`` and
+``krlib``, read from their registries.
 
 Each of those libraries ships an in-library test suite whose registry — ``us_registry``,
-``uk_registry``, ``jp_registry``, ``fr_registry``, ``kr_registry`` — is the single source
-of truth for which models the library has and where they sit. ``test_model_conventions``
-asserts that the registry agrees with the folders on disk, so reusing it here means a
-model added to a library is covered by the export tests without a second list to keep in
-step.
+``uk_registry``, ``jp_registry``, ``fr_registry``, ``de_registry``, ``kr_registry`` — is
+the single source of truth for which models the library has and where they sit.
+``test_model_conventions`` asserts that the registry agrees with the folders on disk, so
+reusing it here means a model added to a library is covered by the export tests without a
+second list to keep in step.
 
 The registries are loaded **by path**. Those ``tests`` directories are not packages, and
 their modules are importable only because pytest prepends each directory to ``sys.path``
@@ -26,6 +26,7 @@ REGISTRIES = {
     "uklib": "uk_registry",
     "jplib": "jp_registry",
     "frlib": "fr_registry",
+    "delib": "de_registry",
     "krlib": "kr_registry",
 }
 

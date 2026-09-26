@@ -1,0 +1,6 @@
+item,value,unit,provenance
+acq_permille,25.000000,permille_of_beitragssumme,"[std] set exactly at the DeckRV s 4 Hoechstzillmersatz of 25 permille, cut from 40 by the LVRG from 1 January 2015, so the ceiling binds visibly [REG-R16] [REG-R20]"
+admin_prem_pct,0.030000,fraction_of_premium,[std] placeholder; absorbs the Ratenzahlungszuschlag the model does not charge separately. No German Pflegerenten charge level was established (research gap 2)
+admin_mth_pp,2.000000,eur_per_policy_per_month,"[std] placeholder at t = 0 prices, a plausible fraction of a mass-market monthly Beitrag; unsourced (research gap 2)"
+claim_expense_pp,1.500000,eur_per_annuity_payment,"[std] set low: the Pflegegrad is determined by the Medizinischer Dienst or MEDICPROOF and not by the insurer [R6], so claims cost is well below a BU-Rente's [REG-R29]"
+expense_infl,0.015000,annual_rate,[std] placeholder; over the anchor cell's 65 years it is a factor of about 2.6 on the per-policy line
