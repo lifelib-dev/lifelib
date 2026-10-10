@@ -14,6 +14,15 @@ Updates
     Follow <a href="https://www.linkedin.com/company/lifelib" target="_blank">lifelib on LinkedIn</a>
     for more frequent updates.</p>
 
+* *10 October 2026:*
+  lifelib :ref:`v0.17.2<relnotes_v0.17.2>` is released.
+  :mod:`~delib`, a new library of ten reference liability cash flow
+  projection models for German individual life, pension and
+  biometric-risk products, including the Basisrente and Riester-Rente
+  of the state-supported retirement layers and the disability income
+  cover written against the statutory definition of disability, is
+  added. The library is in its draft stage.
+
 * *21 September 2026:*
   lifelib :ref:`v0.17.1<relnotes_v0.17.1>` is released.
   :mod:`~krlib`, a new library of ten reference liability cash flow
@@ -45,13 +54,13 @@ Updates
   projection models for UK individual life products and the pension
   annuity, is added. The library is in its draft stage.
 
+.. Latest Updates End
+
 * *17 August 2026:*
   lifelib :ref:`v0.14.0<relnotes_v0.14.0>` is released.
   :mod:`~uslib`, a new library of twelve reference liability cash flow
   projection models for U.S. individual life and annuity products, is
   added. The library is in its draft stage.
-
-.. Latest Updates End
 
 * *9 Aug 2026:*
   New download available on the :doc:`download` page.

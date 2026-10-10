@@ -13,6 +13,69 @@ If you're using Anaconda, use the ``conda`` command instead::
     >>> conda update lifelib
 
 
+.. _relnotes_v0.17.2:
+
+lifelib v0.17.2 (10 October 2026)
+==================================
+
+New Library
+----------------
+
+This release adds a new library, :mod:`~delib`.
+:mod:`~delib` packages ten reference liability cash flow projection
+models for the individual life, pension and biometric-risk products
+sold in Germany, and, for each model, the product specification and
+technical notes it was built from. See the :mod:`~delib` page for more
+details. The library is in its draft stage.
+
+The coverage follows the Drei-Schichten-Modell, the three-layer
+structure the Alterseinkuenftegesetz imposed on German retirement
+saving in 2005, because which layer a contract sits in decides more
+about it than what it invests in. ``Basis_DE_S`` (Basisrente) is the
+Schicht 1 contract, ``Riester_DE_S`` (Riester-Rente) the Schicht 2
+contract. The four Schicht 3 savings models are ``KLV_DE_S``
+(Kapitallebensversicherung, the historic endowment), ``RV_DE_S``
+(klassische Rentenversicherung, the deferred annuity that replaced it),
+``FRV_DE_S`` (fondsgebundene Rentenversicherung, unit-linked) and
+``Index_DE_S`` (Indexpolice). ``Sofort_DE_S`` (Sofortrente) is the
+immediate annuity they pay out into. The three biometric models are
+``RLV_DE_S`` (Risikolebensversicherung, term), ``BU_DE_S``
+(Berufsunfaehigkeitsversicherung, disability income) and
+``Pflege_DE_S`` (Pflegerentenversicherung, long-term care). All ten run
+on the same 0-based monthly projection step as the other reference
+libraries and project one model point at a time.
+
+What separates the coverage from that of the sibling libraries is that
+each layer is defined as much by what the contract is forbidden to do
+as by what it does. The Basisrente may not be surrendered, commuted,
+assigned or inherited, so its model has no surrender value and no lapse
+decrement at all, and the test suite asserts the absences by name. The
+Riester-Rente receives a state Zulage paid into the contract as a real
+cash flow, and owes a statutory guarantee that contributions are
+returned at the start of the pension, which on the low-rate cell the
+account fails to reach and the insurer funds from its own resources.
+The Indexpolice, a conventional profit-participating contract whose
+declared surplus is spent on an index option, has no counterpart in
+any sibling library, and the Berufsunfaehigkeitsversicherung, the
+country's flagship protection product, is written against the
+statutory definition of disability in section 172 VVG and modelled as a
+multi-state model with recovery rather than a decrement model.
+
+The biometric tables a German insurer prices and reserves on, from DAV
+2008 T to DAV 1997 I, are the property of the Deutsche
+Aktuarvereinigung and are not published, so they are cited by name and
+never redistributed, and every biometric basis in the library is a
+documented proxy. Betriebliche Altersversorgung, group business, the
+substitutive private Krankenversicherung and Sterbegeldversicherung are
+out of scope.
+
+Changes
+------------
+
+* The test suite that exports every model with ``Model.export`` and
+  checks the exported package against the model it came from now
+  covers :mod:`~delib`'s ten models as well, bringing it to 57 models.
+
 .. _relnotes_v0.17.1:
 
 lifelib v0.17.1 (21 September 2026)
