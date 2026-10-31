@@ -109,6 +109,9 @@ def get_package_data(top_dirs: list):
     modelfiles = ['_dynamic_inputs']
     for topd in top_dirs:
         for root, dirs, files in os.walk(topd):
+            # Each library's _research/ notes stay in the repository and out of the
+            # distributions: they quote third-party documents verbatim.
+            dirs[:] = [d for d in dirs if d != '_research']
             for f in files:
                 l = f.split(".")
                 if len(l) > 1 and l[-1] in extensions:
