@@ -7,7 +7,7 @@ name = "lifelib"
 dynamic = ["version"]
 description = "Actuarial models in Python"
 readme = "README.rst"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 license = {text = "MIT License"}
 authors = [
     {name = "lifelib Developers", email = "admin@lifelib.io"}
@@ -25,6 +25,7 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
