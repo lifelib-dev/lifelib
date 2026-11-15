@@ -14,6 +14,14 @@ Updates
     Follow <a href="https://www.linkedin.com/company/lifelib" target="_blank">lifelib on LinkedIn</a>
     for more frequent updates.</p>
 
+* *15 November 2026:*
+  lifelib :ref:`v0.17.3<relnotes_v0.17.3>` is released.
+  Twelve in-force models, one for each product of :mod:`~uslib`,
+  are added. Each runs the library's ``_US_S`` model for the product
+  from a valuation date, projecting the policies in force there
+  together with new business. lifelib now requires Python 3.10 or
+  newer.
+
 * *10 October 2026:*
   lifelib :ref:`v0.17.2<relnotes_v0.17.2>` is released.
   :mod:`~delib`, a new library of ten reference liability cash flow
@@ -48,13 +56,13 @@ Updates
   the three third-sector products of medical, cancer and nursing care,
   is added. The library is in its draft stage.
 
+.. Latest Updates End
+
 * *22 August 2026:*
   lifelib :ref:`v0.15.0<relnotes_v0.15.0>` is released.
   :mod:`~uklib`, a new library of seven reference liability cash flow
   projection models for UK individual life products and the pension
   annuity, is added. The library is in its draft stage.
-
-.. Latest Updates End
 
 * *17 August 2026:*
   lifelib :ref:`v0.14.0<relnotes_v0.14.0>` is released.

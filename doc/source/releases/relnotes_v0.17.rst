@@ -13,6 +13,74 @@ If you're using Anaconda, use the ``conda`` command instead::
     >>> conda update lifelib
 
 
+.. _relnotes_v0.17.3:
+
+lifelib v0.17.3 (15 November 2026)
+==================================
+
+Enhancements
+----------------
+
+This release adds twelve in-force models to :mod:`~uslib`, one for
+each of its twelve products: ``Term_US_SEC``, ``WholeLife_US_SEC``,
+``UL_US_SEC``, ``ULSG_US_SEC``, ``IUL_US_SEC``, ``VUL_US_SEC``,
+``MYGA_US_SEC``, ``FIA_US_SEC``, ``RILA_US_SEC``, ``VA_US_SEC``,
+``SPIA_US_SEC`` and ``DIA_US_SEC``. Each is the library's ``_US_S``
+model for the same product taught to project from a valuation date,
+in the way :mod:`~basiclife`'s ``BasicTerm_SE`` extends
+``BasicTerm_S``. Besides policies issued at the valuation date, it
+takes policies already in force there and policies to be written in
+the ten years after it, and it reads the ``_US_S`` model's assumption
+tables in place, every assumption unchanged. The suffix adds lifelib's
+letters to ``S``: ``E`` for in force, as in ``BasicTerm_SE``, and
+``C`` for the compiled form, as in ``BasicTerm_SC``, because the same
+formulas are written to compile under modelx-cython. Each product's
+page gains In-Force Implementation Notes that explain what running in
+force changes, followed by the new model's cells reference.
+
+The ``SEC`` models are mechanics demonstrations, not pricing or
+reserving results. Their test suites hold each one to its ``_US_S``
+twin bit for bit on the points both can run. Those suites run on
+Python 3.13 alone, as they do in the lifelib-products repository where
+the libraries are developed, because the twin comparison is exact only
+there: ``sum()`` of floats is compensated from Python 3.12 on, and
+Python 3.14 rewords ``ZeroDivisionError``. The tests that compile the
+models are skipped in lifelib, which carries neither the build tool
+nor modelx-cython.
+
+Changes
+------------
+
+* lifelib now requires Python 3.10 or newer. Python 3.9 is no longer
+  supported.
+
+* In every country library, the cells reference of each model moves
+  into a folder of its own, ``<Model>/<Model>``, so that an ``_S``
+  model and its ``SEC`` twin can have Spaces of the same names. The
+  URLs of those pages change accordingly.
+
+* In :mod:`~uslib`, :mod:`~frlib`, :mod:`~delib` and :mod:`~krlib`,
+  the identifiers and provenance notes in the input tables that named
+  individual insurers or their products now refer to the cited source
+  instead, for example ``rate_id`` ``s3_2019`` in place of the
+  insurer-named key it replaces. No input value changes. The
+  documentation's citations were audited against their sources at the
+  same time.
+
+* The mortality rates of :mod:`~uslib`'s ``_US_S`` models are now
+  capped at 1, written ``min(q, 1.0)`` so that a missing input stays
+  NaN rather than reading as 1. No shipped model point reaches the
+  cap, so no shipped number changes.
+
+* Each library's ``_research`` folder of raw research notes is now
+  excluded from the wheel and the source distribution. The notes quote
+  third-party documents that the libraries may cite but not
+  redistribute, so they stay in the repository only.
+
+* The test suite that exports every model with ``Model.export`` and
+  checks the exported package against the model it came from now
+  covers the twelve ``SEC`` models as well, bringing it to 69 models.
+
 .. _relnotes_v0.17.2:
 
 lifelib v0.17.2 (10 October 2026)
