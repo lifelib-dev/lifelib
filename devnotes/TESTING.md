@@ -135,7 +135,7 @@ isort lifelib
 The project uses GitHub Actions for CI/CD:
 
 - **Tests**: Run on every push and pull request
-- **Python versions**: 3.9, 3.10, 3.11, 3.12, 3.13
+- **Python versions**: 3.11, 3.12, 3.13, 3.14
 - **Operating systems**: Ubuntu, Windows, macOS
 - **Coverage**: Uploaded to Codecov for Python 3.11 on Ubuntu
 
