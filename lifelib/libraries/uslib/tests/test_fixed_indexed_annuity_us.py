@@ -727,7 +727,8 @@ def test_pitfall_index_costs_are_deducted_before_the_cap_and_participation_rate(
 def test_the_spread_and_trigger_levels_are_marked_std(anchor, fixed_indexed_annuity):
     """The notes give the index-margin and trigger *forms* but declare no level.
 
-    ``max(f, p x R - s)`` [S8][R1] and ``d x 1{R >= 0}`` [R1] are printed; neither
+    ``max(f, p x R - s)`` [R1] (the "Index Margin" methods named at [S8]) and
+    ``d x 1{R >= 0}`` [R1] are printed; neither
     technical-notes.md nor product-spec.md states a value for ``s`` or ``d``.  Every
     number that is not from a source must carry [std], so the two levels the unsourced
     branches need are marked at the point of use.  Contrast ``par_rate``, which is [R1]'s
@@ -903,9 +904,9 @@ def test_the_rollup_schedule_steps_down_in_year_eleven(fixed_indexed_annuity):
         assert q.rollup_rate(anniv(year)) == 0.0
     assert q.rollup_pp(anniv(20)) == pytest.approx(
         0.02 * q.rollup_base_pp(anniv(19)), abs=CENT)
-    # The Nassau schedule is a flat 3% over fifteen anniversaries instead [S9].
+    # The simple schedule is a flat 3% over fifteen anniversaries instead [S9].
     p = fixed_indexed_annuity.Projection[3]
-    assert p.rollup_id() == "nassau"
+    assert p.rollup_id() == "simple"
     assert p.rollup_rate(anniv(1)) == pytest.approx(0.03, abs=RATE)
     assert p.rollup_rate(anniv(15)) == pytest.approx(0.03, abs=RATE)
     assert p.rollup_rate(anniv(16)) == 0.0

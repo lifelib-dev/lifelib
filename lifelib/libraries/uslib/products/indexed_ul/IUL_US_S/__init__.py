@@ -89,12 +89,16 @@ product spec: the 10.00% current cap and 2.00% guaranteed cap, 100% participatio
 0% floor of the Benchmark Index Account [S2][R1]; the 4.50% current and 1.00%
 guaranteed fixed-account rates [S2]; the 1-year S&P 500 point-to-point method and the
 12-month, up-to-12-concurrent segment ladder [S2][S3][S4]; the $10 monthly policy fee
-[S3][S5]; the $25 withdrawal fee and the fixed-account-first sourcing rule [S3] (the
+[S3][S5]; the $25 withdrawal fee and the fixed-account-first sourcing rule for loans [S3] (the
 $500 withdrawal minimum and the $500 cash surrender value floor of the same source are
-sourced but **not** enforced -- see "Not implemented"); the 61-day grace period and the cumulative-MNLP no-lapse test with its
-$20.80 per $1,000 band-1 rate [S3][S4]; the 10-year surrender charge period [S1][S5][S7];
+sourced but **not** enforced -- see "Not implemented"); the 61-day grace period [S3] and
+the cumulative-MNLP no-lapse test [S3] [S4] with its $20.80 per $1,000 band-1 rate [S3];
+the 10-year surrender charge period [S1][S5][S7];
 the IRC 7702(d) corridor factors [R4]; the standard-loan design [S3][S5][S7]. Everything
-else is a standardization introduced for the reference implementation: the 5% current
+else is a standardization introduced for the reference implementation: applying the
+fixed-account-first rule to withdrawals and the monthly deduction, which the source
+takes pro rata across accounts [S3]; reading the source's band-1 base annual minimum
+premium rate as the MNLP rate; the 5% current
 and 8% guaranteed premium loads, the $0.30 per $1,000 per-unit charge, the 65%
 current-to-guaranteed COI factor and the whole COI scale (2017 CSO is licensed and may
 not be reproduced [REG-R17]), the $25 per $1,000 surrender charge scale, the

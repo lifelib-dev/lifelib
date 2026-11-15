@@ -165,7 +165,7 @@ view of experience. They must not be mixed in the code.
 | MGV base / rate `i_nf` | 87.5% of premium excluding the bonus / 1.00% inside the 0.15%–3% corridor | [S10] [R2]; level **[std]** |
 | Guaranteed simple rollup `g(t)` | 5.00% (yrs 1–10), 2.00% (yrs 11–20), 0% after | [S2] |
 | Rollup base convention | flat dollar increment on premium adjusted for withdrawals | [S2] [S9] |
-| Stacking factor `m` | 150% of dollar credits, floored at 0 | [S8] [S9] |
+| Stacking factor `m` | 150% of dollar credits, floored at 0 | [S8] [S9]; floor [S9] |
 | Growth period `T_g` | min(first lifetime withdrawal, contract year 20) | [S1] [S2] |
 | Lifetime withdrawal percentages `π` | age-band table (`product-spec.md`); joint = single − 0.50% | [S3] [S1]; 80+ band **[std]** |
 | Minimum age for lifetime withdrawals | 50 | [S2] [S3] [S9] |
@@ -299,8 +299,8 @@ have produced. The benefit-base stack in step 3 is computed on `FI_a`, the year'
 the anniversary month's own accrual.
 
 Variants, all floored at `f`: `max(f, p × R)` [S4] [S10] [R1]; `max(f, min(c, p × R))` — worked at
-[R1] as `min(80% × 10%, 6%) = 6%`; `max(f, p × R − s)` [S8] [R1]; `d × 1{R ≥ 0}` [R1]; `max(f,
-Σ_{k=1..12} min(R_k, c_m))` [S4] [R1].
+[R1] as `min(80% × 10%, 6%) = 6%`; `max(f, p × R − s)` [R1], one carrier's "Index Margin"
+methods [S8]; `d × 1{R ≥ 0}` [R1]; `max(f, Σ_{k=1..12} min(R_k, c_m))` [S4] [R1].
 
 *Segment bookkeeping.* One annual segment per indexed account, created at anniversary `t` with
 balance `A⁽⁰⁾(t)` and maturing at anniversary `t + 1`; the credit locks at maturity and cannot be
@@ -338,7 +338,7 @@ minimum value in most states [S3] [S4] — implement as a switch **[std]**.
 **Step 3 — benefit base.**
 
     rollup(t) = g(t) × RB⁽⁰⁾(t)                   inside T_g, else 0        [S2] [S9]
-    stack(t)  = m × max( 0 , IC(t) + FI(t) )      inside T_g, else 0        [S8] [S9]
+    stack(t)  = m × max( 0 , IC(t) + FI(t) )      inside T_g, else 0        [S8] [S9]; floor [S9]
     BB⁽³⁾(t)  = BB⁽⁰⁾(t) + rollup(t) + stack(t)
     BB⁽⁴⁾(t)  = max( BB⁽³⁾(t) , AV⁽²⁾(t) )              annual step-up **[std]**
 
@@ -664,8 +664,8 @@ not reproduced.
   publication recorded earlier [REG-R33] — so their mechanics are no longer [unverified]; titles and
   continued incorporation remain independently confirmed by the VM-C index [REG-R41]. **AG 33's
   effective date, recorded on both sides because the two do not reconcile:** its own *Effective Date*
-  block reads "This guideline shall be effective on **December 31, 1998**, affecting all contracts
-  issued on or after January 1, 1981", with a grade-in of 33⅓ / 66⅔ / 100% that completed on
+  block makes the guideline effective on **December 31, 1998**, reaching every contract
+  issued on or after January 1, 1981, with a grade-in of 33⅓ / 66⅔ / 100% that completed on
   December 31, 2000 and therefore has **no live effect on any current valuation** [REG-R151]; the
   library elsewhere carries **December 31, 1995** for a differently-titled instrument from IRS
   Rev. Rul. 2002-6. The 1981 issue-date reach is common to both, the extracted pages carry **no
@@ -736,8 +736,8 @@ Known pitfalls:
 
 - **The behavioral assumptions above must not be reused in a CARVM valuation.** Every dynamic lapse,
   activation, utilization and excess-withdrawal formula in "Policyholder behavior modeling" is an
-  *experience* assumption. AG 33 states that for elective benefits "incidence rates should not be
-  based on tables reflecting past company experience, industry experience or other expectations" —
+  *experience* assumption. AG 33 directs that elective-benefit incidence rates not rest on tables
+  reflecting past company or industry experience or other expectations —
   the elective assumption is not an assumption at all but a **decision variable maximised over**,
   with all rates between 0% and 100% theoretically in scope and the greatest present value typically
   occurring at 0% or 100% [REG-R151]. Wiring the projection's behavior module into the reserve run is

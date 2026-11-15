@@ -12,6 +12,6 @@ follows it. Every source any of them cites is in [Sources](sources.md).
 product-spec
 technical-notes
 model
-RLV_DE_S
+RLV_DE_S/RLV_DE_S
 sources
 ```

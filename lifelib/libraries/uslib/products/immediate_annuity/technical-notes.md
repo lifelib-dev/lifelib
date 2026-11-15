@@ -457,8 +457,8 @@ only justification is directional: one carrier names the 10-year CMT change as t
 withdrawal amount [S5] and another confirms an interest-rate adjustment applies [S2].
 
 **Both constructions are best-estimate objects and are barred from a CARVM run.** Commutation
-is an *elective benefit* under AG 33, and for elective benefits "incidence rates should not be
-based on tables reflecting past company experience, industry experience or other expectations"
+is an *elective benefit* under AG 33, which directs that elective-benefit incidence rates not
+rest on tables reflecting past company or industry experience or other expectations
 — the guideline substitutes trial sets **maximised over**, theoretically all rates 0% to 100%,
 with 0% or 100% the typical optimum [REG-R151 *Definitions* 2](#uslib-reg-r151). A `u(y)` or `u(y, t)` vector
 fed into a reserve calculation is therefore not a conservative approximation of CARVM; it is a
@@ -470,8 +470,9 @@ the 30% cash withdrawal, which commutes against **life expectancy** on a life-on
 and permanently cuts all future income by 30% [S5] — the only retrieved feature that commutes
 a life-contingent stream. Anti-selection enters at **outset**, not through in-force behavior:
 voluntary annuitants self-select for longevity, and impaired lives are diverted to age-rated
-contracts [S8] whose valuation is governed by AG 9-C and VM-V's "rated age" definition
-[R1] [REG-R41]. The reference model carries this through θ, not through behavior dynamics.
+contracts [S8] (the source does not define its "age rating"; reading it as an impaired-life
+rating is [unverified]), whose valuation is governed by AG 9-C and VM-V's "rated age"
+definition [R1] [REG-R41]. The reference model carries this through θ, not through behavior dynamics.
 
 ---
 

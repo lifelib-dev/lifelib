@@ -433,8 +433,8 @@ physical document as R73 · Accessed: 2026-08-06 · Fetched: yes (local text ext
 whole item read in full** — three paragraphs, seven printed lines of substance). **Limit, and
 it is the point of the entry:** A-250 is **a pointer, not a reserve method**. It gives a
 definition, a separate-account asset-coverage requirement, and a delegation of the reserve
-itself to **Appendix A-820** "in accordance with actuarial procedures that recognize the
-variable nature of the benefits provided and any mortality guarantees". It contains **no
+itself to **Appendix A-820**, to be determined by actuarial procedures that reflect both the
+variable nature of the benefits and any mortality guarantees. It contains **no
 formula, no symbol, no factor, no table, no CARVM adaptation, no elective-benefit path rule,
 no interim-value rule and not the word CARVM**, and prints **no effective date**. It is cited
 by `technical-notes.md` for that **verified negative finding** as much as for anything it

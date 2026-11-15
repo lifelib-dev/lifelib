@@ -230,7 +230,8 @@ def premium_mode():
 
 
 def band():
-    """Face-amount band 1-4 **[std]**; the anchor cell is band 1."""
+    """Face-amount band 1-4: boundaries at $250,000 / $500,000 / $1,000,000 [S5], the
+    four-band choice **[std]**; the anchor cell is band 1."""
     f = sum_assured()
     return 1 if f < 250000 else 2 if f < 500000 else 3 if f < 1000000 else 4
 
@@ -393,12 +394,18 @@ def mort_rate_base(t):
 def mort_rate(t):
     """The **annual** mortality rate of the policy year containing month t.
 
-    Base x class factor x PLT deterioration. The PLT duration is
+    Base x class factor x PLT deterioration, capped at 1. The PLT duration is
     ``d = policy_year(t) - n``, so the multiplier applies from ``t = 12n`` (``d = 1``)
     on. :func:`mort_rate_mth` is the rate actually applied in the month.
+
+    Past 1 the monthly rate ``1 - (1 - q)^(1/12)`` has no real value, so the product is
+    capped, written ``min(q, 1.0)``: the product first and the bound second, so that a
+    missing base rate or class factor, a NaN, stays NaN, where ``min(1.0, q)`` would read
+    it as 1, certain death with every flow finite. No shipped point reaches the cap.
     """
     d = policy_year(t) - policy_term()
-    return mort_rate_base(t) * class_factor() * (plt_mort_factor(d) if d >= 1 else 1.0)
+    return min(mort_rate_base(t) * class_factor()
+               * (plt_mort_factor(d) if d >= 1 else 1.0), 1.0)
 
 
 def mort_rate_mth(t):

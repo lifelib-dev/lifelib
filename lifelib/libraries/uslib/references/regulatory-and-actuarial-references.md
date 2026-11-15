@@ -2240,8 +2240,8 @@ carried in its front matter and recorded at R73.
 - **Fetched:** yes (local text extraction; all ten printed pages read in full, including Attachment 1
   — the four computational methods, Attachment 2 — the "Hedged as Required" criteria, and the
   Attachment 3 and 4 certification forms)
-- **Annotation:** Scope is one sentence — "This Actuarial Guideline applies to all equity indexed
-  annuity contracts, **regardless of the date of issue**, that are subject to CARVM" — making it a
+- **Annotation:** Scope is one sentence, reaching every equity indexed annuity contract subject to
+  CARVM "**regardless of the date of issue**" — making it a
   valuation-date requirement that reaches the whole in-force block, and its Background covers equity
   indexed **immediate** designs as well as deferred ones, which the library had never recorded. AG 35
   does **not** perform the CARVM maximisation: every one of its four constructions ends with the same
@@ -2267,9 +2267,9 @@ carried in its front matter and recorded at R73.
   decrements and `n` the length of the option guarantee (1 year for an annual-ratchet design).
 - **Corrections to R40, which is frozen and is not amended here.** (i) **"Type 1" and "Type 2" are the
   guideline's own printed section headings and defined terms**, not "industry shorthand". (ii) R40's
-  asset-adequacy claim is **conditional in the printed text**: AG 35 says only that "[t]o the extent
-  required by law, regulation, or regulatory requirements, reserves established for equity indexed
-  annuity policies must be tested for adequacy using appropriate methods and assumptions" — it
+  asset-adequacy claim is **conditional in the printed text**: AG 35 has equity indexed annuity
+  reserves adequacy-tested on suitable methods and assumptions only "[t]o the extent required by
+  law, regulation, or regulatory requirements" — it
   **presupposes** the obligation rather than creating it, so the binding authority for FIA asset
   adequacy testing is the Standard Valuation Law and VM-30 [R1] [R100], with AG 35 as corroboration.
   The *modelling* conclusion R40 draws from it — that an FIA block cannot rely on the formulaic
@@ -2495,11 +2495,10 @@ carried in its front matter and recorded at R73.
 - **Annotation:** One printed page and three paragraphs, and the finding an implementer needs is
   negative: **A-250 is a pointer, not a reserve method.** ¶1 defines a variable annuity as a policy or
   contract, individual or group, providing annuity benefits that vary with the investment experience
-  of a separate account; ¶2 requires the insurer to maintain in each such separate account "assets
-  with a value at least equal to the reserves and other contract liabilities with respect to the
-  account"; and ¶3 sends the reserve itself to **Appendix A-820 (R153)**, "in accordance with
-  actuarial procedures that recognize the variable nature of the benefits provided and any mortality
-  guarantees". It contains **no formula, symbol, factor or table, no CARVM adaptation, no
+  of a separate account; ¶2 requires the insurer to hold, in every such separate account, assets
+  worth no less than that account's reserves and other contract liabilities; and ¶3 sends the
+  reserve itself to **Appendix A-820 (R153)**, to be determined by actuarial procedures that reflect
+  both the variable nature of the benefits and any mortality guarantees. It contains **no formula, symbol, factor or table, no CARVM adaptation, no
   elective-path enumeration rule and no interim-value rule** — the word CARVM does not appear — so
   nothing in it changes a variable-annuity or RILA formulaic run beyond the separate-account
   asset-coverage floor. (All three paragraphs sit under the heading "Definitions"; unlike A-255 and

@@ -4,7 +4,9 @@ Source ids ([S#]/[R#]) are carried over verbatim from
 `_research/indexed-ul.md` (research/access date for all citations: 2026-08-03) and are
 never renumbered. Only sources actually cited in `product-spec.md` or `technical-notes.md`
 are listed; the research file's uncited entries (R7, R9) are omitted here but remain in
-the research file. No new sources were fetched at drafting.
+the research file. No new sources were fetched at drafting. The S3, S5, S6 and S7 legend
+notes, the S3 and S5 edition notes and the S3 issuer line were completed on review (checked
+2026-10-24), in both files; they add no source.
 
 ---
 
@@ -31,11 +33,13 @@ the research file. No new sources were fetched at drafting.
 (uslib-indexed_ul-s3)=
 
 ### S3. Transamerica — "Navigating the Features of the Transamerica Financial Foundation IUL" (agent guide, 23448_FFIULAG1017)
-- Publisher: Transamerica Life Insurance Company
+- Publisher: Transamerica Premier Life Insurance Company, Cedar Rapids, IA, the issuer this 2017 document names (p.36); S4 (09/22) and the carrier's 08/23 agent guide 118488R8 name Transamerica Life Insurance Company as issuer of the same policy form (IUL09 / ICC16 IUL09)
 - Doc type: producer/agent guide (36 pp., incl. rate tables)
 - URL: https://s3-us-west-2.amazonaws.com/prod-orbital-resources/harpercole/Carriers/Transamerica/Products/IUL+Plans/23448_FFIULAG1017_Agent_Guide_Brochure_FINAL_Digital.pdf (distributor mirror of the Transamerica document; official Transamerica form number 23448_FFIULAG1017)
 - Accessed: 2026-08-03
 - Retrieved: YES (PDF fetched, full text extracted, 36 pp.)
+- Legend: "For Agent Use Only. Not for Distribution to the Public." — at the foot of every page (pp.1–35) and in the closing disclosure block on p.36; no copyright notice is printed (checked 2026-10-24)
+- Edition: form code "23448_FFIULAG1017" (p.36), which states "All rates in this brochure are effective as of October 2017 and are subject to change without notice." Superseded by the carrier's 08/23 edition of the same agent guide, 118488R8, whose rates are "effective as of October 2020", whose caps are 13% / 12% against this edition's 15% / 13.75%, which states "There is no fee for taking a withdrawal." and which applies the current per-unit charge for 16 years, level, against this edition's ten years, decreasing; S4 (09/22) likewise states "Charge: No fee on withdrawals" (checked 2026-10-24). Facts are as of the document date; the $25 withdrawal fee, the 15% / 13.75% caps and the ten-year decreasing per-unit charge cited from this source are the 2017 edition's.
 
 (uslib-indexed_ul-s4)=
 
@@ -54,6 +58,8 @@ the research file. No new sources were fetched at drafting.
 - URL: https://financial.nationwide.com/media/pdf/FLM-1490AO.pdf (the same path on nationwidefinancial.com returned HTTP 403; financial.nationwide.com succeeded)
 - Accessed: 2026-08-03
 - Retrieved: YES (PDF fetched, full text extracted, 4 pp.)
+- Legend: "FOR INSURANCE PROFESSIONAL USE — NOT FOR DISTRIBUTION TO THE PUBLIC" — once, at the head of the p.4 disclosures; pp.1–3 carry no notice (checked 2026-10-24)
+- Edition: "FLM-1490AO.14 (03/26)", "© 2026 Nationwide" (p.4); "Current rates are effective as of March 15, 2026, and are subject to change." (p.1, footnote 1). The same version was still served at the URL above on 2026-10-24; whether the product's rates changed after March 2026 was not determined (checked 2026-10-24). Facts are as of the document date.
 
 (uslib-indexed_ul-s6)=
 
@@ -63,6 +69,7 @@ the research file. No new sources were fetched at drafting.
 - URL: https://www.securian.com/content/dam/doc/il/eclipse-accumulator-ii-iul-fixed-loans-5-percent_108140-16.pdf
 - Accessed: 2026-08-03
 - Retrieved: YES (PDF fetched, full text extracted, 6 pp.)
+- Legend: "This is for financial professional use only. Not for use with the general public. This material may not be reproduced in any form where it is accessible to the general public." — once, in the p.6 disclosures, which also state "The materials were prepared for financial professionals who are experienced in investment and/ or insurance matters. As a result, they should not be reviewed or relied on by any other persons." (checked 2026-10-24)
 
 (uslib-indexed_ul-s7)=
 
@@ -72,6 +79,7 @@ the research file. No new sources were fetched at drafting.
 - URL: https://www.securian.com/financial-professionals/products/individual-life-insurance/indexed-universal-life/eclipse-accumulator.html
 - Accessed: 2026-08-03
 - Retrieved: YES (HTML fetched; specifications extracted via WebFetch summarization — see caveat in the research file's "Gaps": individual numbers should be re-verified before hard-coding)
+- Legend: the page opens behind a gate, a modal overlay in the same HTML that was not answered (the specifications were extracted from the page text behind it), which reads "This site is for financial professionals. It is not intended for consumers or the general public. Are you a financial professional? By clicking here to enter the site, you are attesting that you are duly licensed to sell life insurance and/or annuities or you are an employee of a properly licensed entity, you understand that this information is for financial professional use only, and that the information on the site is not for use with the general public."; a banner reads "This content is for financial professionals only. Not a financial professional? Visit our consumer site."; and the footer of the product details reads "For financial professional use only. Not for use with the public. This material may not be reproduced in any form where it is accessible to the general public." (checked 2026-10-24)
 
 (uslib-indexed_ul-s8)=
 

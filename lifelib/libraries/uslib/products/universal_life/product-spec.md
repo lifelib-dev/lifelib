@@ -80,8 +80,8 @@ Footnotes to [std] rows:
    Option C is offered by some (one caps C at 2x initial face [S1]; the specimen
    offers C [S3]) and is excluded to keep the reference recursion minimal.
 4. Observed issue-age ranges: 15 days–85 including a juvenile class [S1]; 18–85 with
-   preferred classes capped at 75 [S2]; 18–85 for the GUL contrast product [S4]. The
-   composite drops juvenile issues.
+   Select Preferred and Preferred Tobacco capped at 75 [S2]; 18–85 for the GUL
+   contrast product [S4]. The composite drops juvenile issues.
 5. Observed: 6–7 classes typical (7 on one current-assumption product, including a
    juvenile class [S1]; 5 on another [S2]; 6 on the GUL contrast product [S4]).
 6. Observed: $100,000 all classes [S1]; $50,000 Non-Tobacco/Tobacco and $100,000
@@ -139,9 +139,9 @@ Footnotes to [std] rows:
     (60% of guaranteed, flat across durations) is a pure modeling assumption: current
     (non-guaranteed) COI scales are not published in public documents — only
     guaranteed maxima appear in the specimen [S3]. All three current-assumption source
-    products charge COI monthly per $1,000 of net amount at risk with current scales
-    at or below guaranteed maxima [S1] [S2] [S3]; charging less than maximums must be
-    uniform by class [S3].
+    products charge COI monthly [S1] [S2] [S3], two of them per $1,000 of net amount at
+    risk [S1] [S3]; the specimen lets the insurer charge less than the guaranteed
+    maxima, with any lesser charge applied uniformly by class [S3].
 
 ### Surrender, withdrawal, loan
 
@@ -152,7 +152,7 @@ Footnotes to [std] rows:
 | Surrender charge — layers | Each face-increase layer carries its own schedule; face decreases do not reduce the surrender charge | [S3] |
 | Cash surrender value (CSV) | AV − surrender charge | [S3] [R1] |
 | Net cash surrender value (NCSV) | CSV − policy debt | [S3] |
-| Partial withdrawal | From first policy anniversary; minimum $200; fee $25; no surrender charge assessed on withdrawal | [S2] [S3] |
+| Partial withdrawal | From first policy anniversary; minimum $200; fee $25; no surrender charge assessed on withdrawal | [S3]; $25 fee also [S2] |
 | Free partial withdrawal amount | 10% of AV per policy year, first withdrawal each year | 10%-of-value carve-out [S3]; simplification **[std]** (14) |
 | Policy loan — charged rate | 2.75% annual, accrued daily, capitalized if unpaid at policy year end | design [S3]; value **[std]** (15) |
 | Policy loan — credited rate on loaned AV | 2.00% (guaranteed rate) — 0.75% guaranteed spread | spread [S3]; level **[std]** (15) |
@@ -196,8 +196,9 @@ Footnotes to [std] rows:
     for the anchor cell was $4,124.59 including riders [S3]. $150/month is set well
     below guideline limits so GPT/MEC constraints do not bind in the base projection.
 17. Observed lapse protection on current-assumption UL: short built-in NLG (5 years on
-    minimum premium [S1]) or optional flexible-duration shadow-account endorsements
-    (one such endorsement carries a catch-up provision [S2]). Lifetime
+    minimum premium [S1]) or flexible-duration shadow-account endorsements
+    (one such endorsement, tracked in a lapse protection account, carries a catch-up
+    provision [S2]). Lifetime
     secondary guarantees belong to dedicated GUL products [S4]. The base model excludes
     all secondary guarantees; modeling them changes the reserve regime (AG 38 / VM-20
     ULSG treatment [REG-R6] [REG-R7]).
@@ -264,7 +265,8 @@ the owner elects MEC status in writing [S3] [R3].
 - Face increases require evidence of insurability (specimen: insured no older than 90,
   minimum increase $25,000) and create a new coverage layer with its own COI rates,
   coverage charge, and surrender charge; decreases are limited to one per year, none
-  in year 1, and reduce layers LIFO [S3] [S2].
+  in year 1, and reduce layers LIFO [S3]; another fetched product allows decreases only
+  after the policy has been in force three years [S2].
 
 ### Account value mechanics
 
@@ -391,18 +393,20 @@ no-lapse guarantee/shadow-account endorsements [S1] [S2] [S4] (see footnote 17).
    duration-varying [S1]. Chosen: specimen values with the year-10 step-down, because
    the specimen is the mechanics anchor.
 5. **Surrender charges.** 9–10 year runoff is standard; expressed as rate per $1,000
-   by sex/class/age [S1] [S2] or fixed dollar amount with linear monthly amortization
-   [S3]. Chosen: 9-year, dollar-per-$1,000, monthly amortization.
-6. **COI structure.** All fetched products: monthly rate per $1,000 NAAR, guaranteed
-   maxima (CSO-capped), lower current scales, rates varying by issue
-   age/sex/class/duration [S1] [S2] [S3]. Chosen: specimen guaranteed table + flat 60%
+   by sex/class/age [S1] or fixed dollar amount with linear monthly amortization
+   [S3]; one guide states only a declining 9-year charge [S2]. Chosen: 9-year,
+   dollar-per-$1,000, monthly amortization.
+6. **COI structure.** All three current-assumption products charge COI monthly
+   [S1] [S2] [S3]: a rate per $1,000 NAAR [S1] [S3]; guaranteed maxima, with lower
+   current charges permitted [S3] (on the CSO cap, see "Account value mechanics"); rates
+   varying by issue age/sex/class/duration [S2] [S3]. Chosen: specimen guaranteed table + flat 60%
    current factor **[std]** (current scales are not public — see spec footnote 12).
 7. **DB options.** A and B universal; C (return of premium) offered by some [S1] [S3].
    Chosen: A and B only.
 8. **Loans.** Fixed-rate with guaranteed spread (0.75% [S3]; 2.5% [S2]) vs variable
    Moody's-indexed with 3% floor [S1]. Chosen: fixed with 0.75% spread.
-9. **Lapse protection.** Short built-in NLG (5 years [S1]) vs optional shadow-account
-   endorsement [S2] vs dedicated GUL [S4]. Chosen: 5-year NLG disclosed but not
+9. **Lapse protection.** Short built-in NLG (5 years [S1]) vs a flexible-duration
+   shadow-account endorsement [S2] vs dedicated GUL [S4]. Chosen: 5-year NLG disclosed but not
    modeled (spec footnote 17). The market separates "current assumption" from
    "lifetime guarantee" focuses, each ~27% of UL exposure, cash accumulation 33% [R7].
 10. **Vintage caveat.** The fetched documents span 2008–2023 form eras; parameter

@@ -1,0 +1,61 @@
+scenario_id,sub_id,t,gross_return,provenance
+base,1,0,0.00691200072,[std] illustrative; reverse-engineered from the notes' carried state so AV(12) = 104000 exactly
+base,1,12,0.010209265371,[std] illustrative; reverse-engineered so the anniversary-2 contract value is 112500 exactly and the step-up fires
+base,1,24,-0.009316853803,[std] illustrative; reverse-engineered so AV(26) = 110000 split 66000/44000
+base,1,26,0.012,worked example scenario month r_1 = +1.20% [std]
+base,1,27,0.005,[std] level continuation after the worked example month; about 6.2% p.a. gross
+base,2,0,0.006660136293,[std] illustrative; paired with sub_id 1 so both subaccounts grow at the same rate net of fund expense
+base,2,12,0.009956576182,[std] illustrative; paired with sub_id 1 so both subaccounts grow at the same rate net of fund expense
+base,2,24,-0.009564658817,[std] illustrative; paired with sub_id 1 so both subaccounts grow at the same rate net of fund expense
+base,2,26,-0.003,worked example scenario month r_2 = -0.30% [std]
+base,2,27,0.002,[std] level continuation after the worked example month; about 2.4% p.a. gross
+decline,1,0,-0.0075,[std] sustained decline that exhausts the account value and exercises the post-depletion GLWB stream
+decline,2,0,-0.0025,[std] sustained decline that exhausts the account value and exercises the post-depletion GLWB stream
+variant,1,0,0.004,[std] level path for the variant model points; about 4.9% p.a. gross
+variant,2,0,0.0015,[std] level path for the variant model points; about 1.8% p.a. gross
+base-M26,1,0,0.012,worked example scenario month r_1 = +1.20% [std]
+base-M26,1,1,0.005,[std] level continuation after the worked example month; about 6.2% p.a. gross
+base-M26,2,0,-0.003,worked example scenario month r_2 = -0.30% [std]
+base-M26,2,1,0.002,[std] level continuation after the worked example month; about 2.4% p.a. gross
+base-M6,1,0,0.00691200072,[std] illustrative; reverse-engineered from the notes' carried state so AV(12) = 104000 exactly
+base-M6,1,6,0.010209265371,[std] illustrative; reverse-engineered so the anniversary-2 contract value is 112500 exactly and the step-up fires
+base-M6,1,18,-0.009316853803,[std] illustrative; reverse-engineered so AV(26) = 110000 split 66000/44000
+base-M6,1,20,0.012,worked example scenario month r_1 = +1.20% [std]
+base-M6,1,21,0.005,[std] level continuation after the worked example month; about 6.2% p.a. gross
+base-M6,2,0,0.006660136293,[std] illustrative; paired with sub_id 1 so both subaccounts grow at the same rate net of fund expense
+base-M6,2,6,0.009956576182,[std] illustrative; paired with sub_id 1 so both subaccounts grow at the same rate net of fund expense
+base-M6,2,18,-0.009564658817,[std] illustrative; paired with sub_id 1 so both subaccounts grow at the same rate net of fund expense
+base-M6,2,20,-0.003,worked example scenario month r_2 = -0.30% [std]
+base-M6,2,21,0.002,[std] level continuation after the worked example month; about 2.4% p.a. gross
+base-M120,1,0,0.005,[std] level continuation after the worked example month; about 6.2% p.a. gross
+base-M120,2,0,0.002,[std] level continuation after the worked example month; about 2.4% p.a. gross
+base-M131,1,0,0.005,[std] level continuation after the worked example month; about 6.2% p.a. gross
+base-M131,2,0,0.002,[std] level continuation after the worked example month; about 2.4% p.a. gross
+decline-M144,1,0,-0.0075,[std] sustained decline that exhausts the account value and exercises the post-depletion GLWB stream
+decline-M144,2,0,-0.0025,[std] sustained decline that exhausts the account value and exercises the post-depletion GLWB stream
+base-M60,1,0,0.005,[std] level continuation after the worked example month; about 6.2% p.a. gross
+base-M60,2,0,0.002,[std] level continuation after the worked example month; about 2.4% p.a. gross
+base-M65,1,0,0.005,[std] level continuation after the worked example month; about 6.2% p.a. gross
+base-M65,2,0,0.002,[std] level continuation after the worked example month; about 2.4% p.a. gross
+base-M40,1,0,0.005,[std] level continuation after the worked example month; about 6.2% p.a. gross
+base-M40,2,0,0.002,[std] level continuation after the worked example month; about 2.4% p.a. gross
+variant-M41,1,0,0.004,[std] level path for the variant model points; about 4.9% p.a. gross
+variant-M41,2,0,0.0015,[std] level path for the variant model points; about 1.8% p.a. gross
+base-M560,1,0,0.005,[std] level continuation after the worked example month; about 6.2% p.a. gross
+base-M560,2,0,0.002,[std] level continuation after the worked example month; about 2.4% p.a. gross
+base-M719,1,0,0.005,[std] level continuation after the worked example month; about 6.2% p.a. gross
+base-M719,2,0,0.002,[std] level continuation after the worked example month; about 2.4% p.a. gross
+base-M125,1,0,0.005,[std] level continuation after the worked example month; about 6.2% p.a. gross
+base-M125,2,0,0.002,[std] level continuation after the worked example month; about 2.4% p.a. gross
+base-M100,1,0,0.005,[std] level continuation after the worked example month; about 6.2% p.a. gross
+base-M100,2,0,0.002,[std] level continuation after the worked example month; about 2.4% p.a. gross
+base-F15,1,15,0.00691200072,[std] illustrative; reverse-engineered from the notes' carried state so AV(12) = 104000 exactly
+base-F15,1,27,0.010209265371,[std] illustrative; reverse-engineered so the anniversary-2 contract value is 112500 exactly and the step-up fires
+base-F15,1,39,-0.009316853803,[std] illustrative; reverse-engineered so AV(26) = 110000 split 66000/44000
+base-F15,1,41,0.012,worked example scenario month r_1 = +1.20% [std]
+base-F15,1,42,0.005,[std] level continuation after the worked example month; about 6.2% p.a. gross
+base-F15,2,15,0.006660136293,[std] illustrative; paired with sub_id 1 so both subaccounts grow at the same rate net of fund expense
+base-F15,2,27,0.009956576182,[std] illustrative; paired with sub_id 1 so both subaccounts grow at the same rate net of fund expense
+base-F15,2,39,-0.009564658817,[std] illustrative; paired with sub_id 1 so both subaccounts grow at the same rate net of fund expense
+base-F15,2,41,-0.003,worked example scenario month r_2 = -0.30% [std]
+base-F15,2,42,0.002,[std] level continuation after the worked example month; about 2.4% p.a. gross

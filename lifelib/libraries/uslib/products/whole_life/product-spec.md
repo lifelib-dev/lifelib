@@ -19,9 +19,10 @@ flagged [unverified].
 
 Whole life (WL) insurance is permanent life insurance with level guaranteed premiums, a level
 guaranteed face amount, and a schedule of guaranteed cash values that reaches the face amount
-at age 100 (the endowment-at-100 design), with coverage in current policy forms continuing to a
-contractual maturity at age 121 [S1] [S3]. The mainstream U.S. product is **participating**
-(par) WL sold predominantly by mutual insurers: policies share in divisible surplus through
+at age 100 (the endowment-at-100 design) [S1] [S3], with coverage in one carrier's 2019-series
+policy forms continuing to a contractual maturity at age 121 [S1]. The mainstream U.S. product
+is **participating** (par) WL sold predominantly by mutual insurers: policies share in
+divisible surplus through
 annual Board-declared dividends that are not guaranteed [S1] [S3] [S4]. The surveyed mutuals have
 paid dividends without interruption for well over a century: one has done so since 1847 [S12],
 a second since 1854 [S9], a third since 1868 [S2] and a fourth since 1872 [S4]. That fourth
@@ -171,7 +172,7 @@ Footnotes:
 | Nonforfeiture options | Cash surrender; reduced paid-up (RPU); extended term insurance (ETI) | [S3] [R1] |
 | Automatic nonforfeiture option | Extended term insurance | **[std]** (o) |
 | Reinstatement | Within 5 years of default, evidence of insurability, arrears with 6% compound interest | [S1] [S3] |
-| Suicide/contestability | Standard 2-year provisions | [S7 for the FE forms]; par contract wording not captured — **[std]** (p) |
+| Suicide/contestability | Standard 2-year provisions | [S7 for the FE suicide exclusion]; par contract wording not captured — **[std]** (p) |
 | Free look | 10 days (state variations) | [S1] |
 
 Footnotes:
@@ -182,9 +183,11 @@ Footnotes:
 - (o) **[std]** ETI as automatic option: one carrier's lapse provision applies the nonforfeiture
   option "elected at issue" [S1]; no surveyed document states a default. ETI is adopted as the
   automatic option in the reference contract; RPU-at-election is also modeled.
-- (p) **[std]** 2-year suicide/contestability: verified only for the FE forms (2 years; 1 year
-  in ND [S7]). Applied to the par design as a standardization; immaterial to cash flow
-  projection at the modeled granularity.
+- (p) **[std]** 2-year suicide/contestability: only the FE suicide exclusion is verified (2 years
+  from the contestability date; 1 year in ND [S7]); a 2-year contestability period itself
+  is [unverified], because the retrieved FE documents do not state its length. Applied to the
+  par design as a standardization; immaterial to cash flow projection at the modeled
+  granularity.
 
 ### Secondary design: non-participating simplified-issue final-expense WL ("RefWL-FE")
 
@@ -306,8 +309,9 @@ rate is fixed 6% in arrears (5.66038% in advance) with **direct recognition**: d
 loaned values reflect loan-rate interest rather than the portfolio DIR [S1] [S3]. Unpaid loan
 interest capitalizes on the anniversary [S1]. Loans and accrued interest reduce death proceeds
 and surrender values [S1] [S3] [S9]. Market alternatives — one carrier's electable variable loan
-rate (Moody's-linked, 4.5% floor, no direct recognition) [S1] and another's default
-adjustable loan rate (no direct recognition) [S3] — are out of scope. Sustained heavy loan
+rate (maximum = the greater of a Moody's corporate bond average and 4.5%; no direct
+recognition) [S1] and another's default adjustable loan rate (no direct recognition) [S3] —
+are out of scope. Sustained heavy loan
 utilization can trigger overloan protection mechanics (one carrier's rider: forced RPU when the
 loan exceeds 99% of CV, insured ≥ 75, duration ≥ 15) [S11]; not modeled.
 
@@ -358,8 +362,8 @@ are out of scope.
 
 ### Out of scope (present in market, listed for completeness)
 
-Waiver of premium on disability (6-month wait, own-occ definitions, terminates ~65)
-[S1] [S3] [S11]; accidental death benefit [S6] [S11]; guaranteed insurability / purchase options
+Waiver of premium on disability [S1] (6-month wait, own-occ definitions, terminates ~65)
+[S3] [S11]; accidental death benefit [S6] [S11]; guaranteed insurability / purchase options
 [S3] [S11]; children's term [S11]; accelerated death benefit for terminal illness (near-
 universal, 12-month prognosis) [S6] [S11] [S12]; chronic illness / LTC acceleration and LTC
 riders with lien mechanics [S3] [S11] [S12]; index participation features [S1]; overloan

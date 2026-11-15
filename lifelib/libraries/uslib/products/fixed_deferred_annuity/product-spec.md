@@ -129,7 +129,7 @@ legal test [unverified].
 | Declared rate shape within the initial term | Level for the whole term | [S11]; choice **[std]** (6) |
 | Crediting frequency (contract) | Daily compounding to the declared annual effective rate | [S4] [S5] [S16] |
 | Guaranteed minimum interest rate (GMIR) | **0.25%** | [S11] |
-| Renewal architecture | Roll into a new 5-year guarantee period at a redeclared rate, with a fresh (shorter) surrender charge and MVA schedule | [S1] [S2] [S5] [S11]; choice **[std]** (7) |
+| Renewal architecture | Roll into a new 5-year guarantee period at a redeclared rate, with a fresh (lower) surrender charge and MVA schedule | [S1] (no MVA on that form) [S2] [S5] [S11]; choice **[std]** (7) |
 | Renewal surrender charge (renewal years 1→5) | 5%, 4%, 3%, 2%, 1% | [S2]; adoption **[std]** (8) |
 | Attained-age cap on the renewal charge | 4% at 94, 3% at 95, 2% at 96, 1% at 97, 0% at 98–100 | [S1] [S2] |
 | Renewal declared rate | Company discretion, never below the GMIR | [S1] [S2] [S11] [S16]; projection rule **[std]** (technical notes) |
@@ -152,11 +152,11 @@ legal test [unverified].
    not less than 1.00% [S13]. Camp A matches the charge and nonforfeiture anchor [S11]; the
    two produce entirely different lapse patterns and the technical notes carry both as a
    **model-point switch**.
-8. Observed: one carrier's California form 9/8/7/6/5/4/3 initial vs 5/5/5/5/5/4/3 renewal
-   [S1]; its New York form 7/6/5/4/3 initial vs 5/4/3/2/1 renewal [S2]. The two registered
-   contracts instead measure the charge from the **original purchase payment date**, so
-   reinvestment never restarts the clock [S3] [S4]. The composite adopts that New York
-   renewal schedule and age cap [S2].
+8. Observed: one carrier's 2014 California form 9/8/7/6/5/4/3 initial vs 5/5/5/5/5/4/3
+   renewal [S1]; its 2016 New York form 7/6/5/4/3 initial vs 5/4/3/2/1 renewal [S2]. The
+   two registered contracts instead measure the charge from the **original purchase
+   payment date**, so reinvestment never restarts the clock [S3] [S4]. The composite
+   adopts that New York renewal schedule and age cap [S2].
 9. Not described in the charge anchor's documents [S10] [S11] [S12]; taken from two other
    carriers [S1] [S2] [S5] [S6], where it is the retail norm. One registered contract's
    analogue is 90 days' notice with unelected money defaulting into a liquid transition
@@ -454,11 +454,11 @@ of exactly such a rider [REG-R62] [REG-R64].
    Camp A, with Camp B as a switch: the two produce entirely different lapse patterns and
    VM-22's own worked examples are built around the distinction [R2] [REG-R36].
 5. **Surrender charge shape.** Declining 7%–9% schedules dominate the commission-paid retail
-   market (9/8/7/6/5/4/3 [S1]; 9/8/7/6/5 [S10]; the Camp B carrier's 7/6/5/4/3/2/1 in New
-   York [S13]); that same carrier's non-New York schedule holds 7% flat for three years
-   first [S13]; one registered contract caps the charge at 5% and steps down in pairs [S4];
-   an RIA-distributed contract uses a **level 3%** every year paired with the interest-only
-   free withdrawal [S5] [S6]. *Chosen:* 9/8/7/6/5 [S10] — it is the schedule of the
+   market (9/8/7/6/5/4/3 on a 2014 form [S1]; 9/8/7/6/5 [S10]; the Camp B carrier's
+   7/6/5/4/3/2/1 in New York [S13]); that same carrier's non-New York schedule holds 7%
+   flat for three years first [S13]; one registered contract caps the charge at 5% and
+   steps down in pairs [S4]; an RIA-distributed contract uses a **level 3%** every year
+   paired with the interest-only free withdrawal [S5] [S6]. *Chosen:* 9/8/7/6/5 [S10] — it is the schedule of the
    charge/nonforfeiture anchor itself, it is exactly five rates for a five-year guarantee
    period (one per guarantee year, expiring with the term, so the surrender-charge clock and
    the guarantee-period clock coincide and the shock lapse has a single unambiguous date),

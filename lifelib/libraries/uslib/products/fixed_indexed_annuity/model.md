@@ -73,8 +73,8 @@ mid-year death or surrender is valued on the balance it actually has, and mainte
 falling where it is incurred. The variants the notes exclude stay excluded — monthly-sum
 crediting, a monthly charge deduction, daily interim values and mid-year withdrawal crediting
 — and the indexed account is deliberately **flat between anniversaries**, which is the sourced
-rule "withdrawals are not credited with index interest in the year they are taken" carried to
-mid-year exits.
+rule "withdrawals are not credited with index interest in the year they are taken" [S1] carried
+to mid-year exits.
 
 Because the monthly decrement rates compound to the annual ones and every contractual step is
 unmoved, **every anniversary value is what the annual step produced**: account value, benefit
@@ -493,13 +493,13 @@ $80 per contract per year maintenance expense inflating at 2.5%; the 0% premium 
 illustrative mortality table with an A/E factor of 100%; and the attained age 120 horizon.
 
 Two crediting parameters belong here rather than on the sourced list. The notes print the
-index-margin and performance-trigger *forms* — `max(f, p × R − s)` [S8] [R1] and
-`d × 1{R ≥ 0}` [R1] — but declare no level for either, in neither `technical-notes.md` nor
-`product-spec.md`. So `spread_rate = 2.00%` **[std]** and `trigger_rate = 4.50%` **[std]**
-are illustrative levels that exist only to exercise those branches, and must not be read as
-parameters of the composite. The two crediting parameters that *are* sourced are the cap,
-5.25% [S2], and the participation rate, 80% — the latter from [R1]'s worked
-`min(80% × 10%, 6%) = 6%`, which a test asserts.
+index-margin and performance-trigger *forms* — `max(f, p × R − s)` [R1] (the "Index
+Margin" methods named at [S8]) and `d × 1{R ≥ 0}` [R1] — but declare no level for either,
+in neither `technical-notes.md` nor `product-spec.md`. So `spread_rate = 2.00%` **[std]** and
+`trigger_rate = 4.50%` **[std]** are illustrative levels that exist only to exercise those
+branches, and must not be read as parameters of the composite. The two crediting parameters
+that *are* sourced are the cap, 5.25% [S2], and the participation rate, 80% — the latter
+from [R1]'s worked `min(80% × 10%, 6%) = 6%`, which a test asserts.
 
 Switched **off** by default so the base run reproduces the worked example:
 `index_cost_rate = 0` (the volatility-controlled-index haircut), `mgsv_annual_charge = 0`

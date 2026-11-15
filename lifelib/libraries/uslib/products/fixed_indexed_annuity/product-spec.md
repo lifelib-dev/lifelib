@@ -197,7 +197,7 @@ with a GLWB rider versus 33% without** [R8].
 | Growth mechanism (baseline) | **Blended**: guaranteed simple rollup **plus** index-credit stacking, plus an annual step-up | [S2] [S8] [S9]; blend **[std]** (13); step-up **[std]** (14) |
 | Guaranteed simple rollup rate | 5.00% of the rollup base in contract years 1–10; 2.00% in years 11–20; 0% thereafter | [S2] |
 | Rollup base | Premium adjusted for withdrawals — a flat dollar increment, **not** simple interest on the grown base | [S2] [S9] |
-| Stacking factor | 150% of the dollar interest credited in the contract year, floored at zero | [S8] [S9] |
+| Stacking factor | 150% of the dollar interest credited in the contract year, floored at zero | [S8] [S9]; floor [S9] |
 | Growth period | To the earlier of the first lifetime withdrawal and 20 contract years | [S1] [S2]; selection **[std]** (13) |
 | Annual step-up (ratchet) | `BB ← max(BB, account value)` tested at each anniversary | **[std]** (14) |
 | Rider charge | 0.95% p.a. of the **benefit base**, deducted from the account value at the end of each contract year, **after** index credits | [S9] |
@@ -230,8 +230,8 @@ Basis: [S3] for the 50–80 bands and both columns; the 80+ band extends [S3]'s 
     index interest" [S1] [S2] [S9]. The guaranteed rate comes from one carrier's *stacking* option
     (5.00%/2.00%) rather than its non-stacking option (10.00%/5.00%), since rollup and stack are
     not both sold at standalone levels [S2]; the 20-year window is that same carrier's [S1] [S2].
-    Its stacking factor is 200% [S2]; 150% is the factor at two other carriers [S8] [S9], and at
-    [S9] the window runs 15 anniversaries.
+    Its stacking factor is 200% [S2]; 150% is the factor in two other carriers' documents
+    [S8] [S9], and at [S9] the window runs 15 anniversaries.
 14. **No retrieved document describes an automatic annual ratchet during deferral.** Documented
     instead: one carrier increases the Income Account Value to the Contract Value on the day
     before income begins if the Contract Value is higher [S5]; another computes the Annual Benefit
@@ -263,9 +263,9 @@ max(floor, min(cap, R))` [S2] [S4] [S10] [R1], where `R` is the point-to-point r
 index over the contract year, dividends excluded [S6] [R1], and `floor` = 0% [S1] [S4] [S10]. The
 same engine must support: `max(f, p × R)` (participation) [S4] [S10] [R1]; `max(f, min(c, p × R))`
 (participation and cap) — worked at [R1] as `min(80% × 10%, 6%) = 6%`; `max(f, p × R − s)` (spread
-/ index margin) [S8] [R1]; `d × 1{R ≥ 0}` (performance trigger — a declared rate credited whenever
-the return is non-negative) [R1]; and `max(f, Σ₁₂ min(R_k, c_m))` (monthly sum with monthly cap)
-[S4] [R1].
+[R1]; one carrier's "Index Margin" methods [S8]); `d × 1{R ≥ 0}` (performance trigger — a
+declared rate credited whenever the return is non-negative) [R1]; and
+`max(f, Σ₁₂ min(R_k, c_m))` (monthly sum with monthly cap) [S4] [R1].
 
 Credits **lock in** once applied and cannot be lost to later declines [S1]; reallocation is
 permitted at the end of each crediting period, and an eliminated strategy's value moves to the
@@ -303,7 +303,7 @@ The benefit base is **notional**: no cash value, cannot be withdrawn, cannot be 
 sum [S1] [S9]. At each anniversary during the growth period:
 
     rollup = g(t) × rollup base                (simple, flat dollar)   [S2] [S9]
-    stack  = 150% × max(0, index credit + fixed interest)              [S8] [S9]
+    stack  = 150% × max(0, index credit + fixed interest)              [S8] [S9]; floor [S9]
     BB     = max( BB(prior) + rollup + stack , account value )         step-up **[std]**
 
 Two distinctions are commonly got wrong. **The rollup is not simple interest on the current base**
@@ -527,23 +527,23 @@ test — sorts every benefit into elective or non-elective, **prohibits experien
 incidence** (trial sets are maximised over instead), and determines the SVL §4b parameters at
 **contract** level (issue-year versus change-in-fund basis, cash settlement options, interest
 guaranteed on considerations received beyond 12 months) and at **benefit** level (guarantee
-duration, Plan Type) [REG-R151]. AG 35 applies "to all equity indexed annuity contracts, regardless
-of the date of issue, that are subject to CARVM" and supplies four computational methods — **CARVM
+duration, Plan Type) [REG-R151]. AG 35 reaches every equity indexed annuity contract subject to
+CARVM, "regardless of the date of issue", and supplies four computational methods — **CARVM
 with Updated Market Values**, the **Market Value Reserve Method**, its **Black-Scholes Projection
 Method** adaptation and the **Enhanced Discounted Intrinsic Method** — each of which ends by handing
 the greatest-present-value calculation back to AG 33; **"Type 1" and "Type 2" are the guideline's
 own printed section headings, not industry shorthand**, Type 1 (EDIM) gated on the "Hedged as
 Required" criteria with quarterly appointed-actuary certification and Type 2 on the Attachment 4
 assumption certification [REG-R152]. **Two corrections the reading forces on what this paragraph
-used to say.** (1) AG 33's *Effective Date* block reads "This guideline shall be effective on
-**December 31, 1998**, affecting all contracts issued on or after January 1, 1981" [REG-R151]; the
+used to say.** (1) AG 33's *Effective Date* block makes the guideline effective on
+**December 31, 1998**, reaching every contract issued on or after January 1, 1981 [REG-R151]; the
 library elsewhere carries **December 31, 1995** from IRS Rev. Rul. 2002-6 under a different title.
 The 1981 issue-date reach is common to both, but the extracted pages carry **no amendment history**,
 so the reconciliation is **unresolved** — "a later revision" would be an inference, not a fact.
 (2) AG 35 does **not** free-standingly require asset adequacy testing. Its provision is one
-conditional sentence — "**To the extent required by law, regulation, or regulatory requirements**,
-reserves established for equity indexed annuity policies must be tested for adequacy using
-appropriate methods and assumptions" [REG-R152] — which presupposes the obligation rather than
+conditional sentence, under which equity indexed annuity reserves are to be adequacy-tested on
+suitable methods and assumptions only "**[t]o the extent required by law, regulation, or
+regulatory requirements**" [REG-R152] — which presupposes the obligation rather than
 creating it; the binding authority is SVL §6.B and VM-30, with ASOP No. 22 the standard the analysis
 runs under [REG-R1] [REG-R100] [REG-R29], and AG 35 is corroboration. AG 35 also prints **no
 effective, adoption or operative date, no transition and no sunset**; its only temporal language is

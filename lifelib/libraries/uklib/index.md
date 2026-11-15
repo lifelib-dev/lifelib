@@ -261,7 +261,7 @@ python -m pytest tests -q
 * - `tests/`
   - One module per model for its worked example and invariants, plus `test_model_conventions_uk.py` for the house style, and `uk_registry.py` carrying the model registry.
 * - `_research/`
-  - The raw research notes every citation traces back to. Provenance, not documentation — shipped but not rendered.
+  - The raw research notes every citation traces back to. Provenance, not documentation — kept in the source repository, neither rendered nor packaged with lifelib.
 ```
 
 `_research/` carries one file per product plus `regulatory-actuarial.md`, and records which

@@ -12,6 +12,6 @@ follows it. Every source any of them cites is in [Sources](sources.md).
 product-spec
 technical-notes
 model
-WholeLife_KR_S
+WholeLife_KR_S/WholeLife_KR_S
 sources
 ```

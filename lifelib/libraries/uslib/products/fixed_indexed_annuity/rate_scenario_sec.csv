@@ -1,0 +1,92 @@
+scenario_id,t,index_level,mva_ref_yield,provenance
+worked,0,5000.0,0.03,"worked example [std]; the index is flat at I = 5,000 through anniversary 7 and the MVA reference yield sits at its issue level"
+worked,96,5450.0,0.035,"worked example; R(8) = 5,450/5,000 - 1 = 9.00% and it = 3.50% at the anniversary-8 surrender test, then both flat so index credits are zero from anniversary 9"
+growth,0,1000.0,0.03,"[std] illustrative index path; twenty annual returns mixing gains above the 5.25% cap with losses that exercise the 0% floor, then flat, with the MVA reference yield at its issue level"
+growth,12,1120.0,0.03,[std] illustrative index path
+growth,24,1030.4,0.04,"[std] the reference yield rises 100 bp at anniversary 2 and stays there, so a withdrawal or surrender inside the ten-year MVA period carries a negative market value adjustment"
+growth,36,1184.96,0.04,[std] illustrative index path
+growth,48,1220.5088,0.04,[std] illustrative index path
+growth,60,1489.0207,0.04,[std] illustrative index path
+growth,72,1414.5697,0.04,[std] illustrative index path
+growth,84,1541.881,0.04,[std] illustrative index path
+growth,96,1649.8127,0.04,[std] illustrative index path
+growth,108,1946.779,0.04,[std] illustrative index path
+growth,120,1713.1655,0.04,[std] illustrative index path
+growth,132,1901.6137,0.04,[std] illustrative index path
+growth,144,2015.7105,0.04,[std] illustrative index path
+growth,156,2297.91,0.04,[std] illustrative index path
+growth,168,2343.8682,0.04,[std] illustrative index path
+growth,180,2273.5522,0.04,[std] illustrative index path
+growth,192,2728.2626,0.04,[std] illustrative index path
+growth,204,2946.5236,0.04,[std] illustrative index path
+growth,216,3093.8498,0.04,[std] illustrative index path
+growth,228,3588.8658,0.04,[std] illustrative index path
+growth,240,3624.7545,0.04,[std] illustrative index path
+worked-M84,0,5000.0,0.03,"worked example [std]; the index is flat at I = 5,000 through anniversary 7 and the MVA reference yield sits at its issue level"
+worked-M84,12,5450.0,0.035,"worked example; R(8) = 5,450/5,000 - 1 = 9.00% and it = 3.50% at the anniversary-8 surrender test, then both flat so index credits are zero from anniversary 9"
+growth-M60,0,1489.0207,0.04,[std] illustrative index path
+growth-M60,12,1414.5697,0.04,[std] illustrative index path
+growth-M60,24,1541.881,0.04,[std] illustrative index path
+growth-M60,36,1649.8127,0.04,[std] illustrative index path
+growth-M60,48,1946.779,0.04,[std] illustrative index path
+growth-M60,60,1713.1655,0.04,[std] illustrative index path
+growth-M60,72,1901.6137,0.04,[std] illustrative index path
+growth-M60,84,2015.7105,0.04,[std] illustrative index path
+growth-M60,96,2297.91,0.04,[std] illustrative index path
+growth-M60,108,2343.8682,0.04,[std] illustrative index path
+growth-M60,120,2273.5522,0.04,[std] illustrative index path
+growth-M60,132,2728.2626,0.04,[std] illustrative index path
+growth-M60,144,2946.5236,0.04,[std] illustrative index path
+growth-M60,156,3093.8498,0.04,[std] illustrative index path
+growth-M60,168,3588.8658,0.04,[std] illustrative index path
+growth-M60,180,3624.7545,0.04,[std] illustrative index path
+worked-M95,0,5000.0,0.03,"worked example [std]; the index is flat at I = 5,000 through anniversary 7 and the MVA reference yield sits at its issue level"
+worked-M95,1,5450.0,0.035,"worked example; R(8) = 5,450/5,000 - 1 = 9.00% and it = 3.50% at the anniversary-8 surrender test, then both flat so index credits are zero from anniversary 9"
+growth-M150,0,2015.7105,0.04,[std] illustrative index path
+growth-M150,6,2297.91,0.04,[std] illustrative index path
+growth-M150,18,2343.8682,0.04,[std] illustrative index path
+growth-M150,30,2273.5522,0.04,[std] illustrative index path
+growth-M150,42,2728.2626,0.04,[std] illustrative index path
+growth-M150,54,2946.5236,0.04,[std] illustrative index path
+growth-M150,66,3093.8498,0.04,[std] illustrative index path
+growth-M150,78,3588.8658,0.04,[std] illustrative index path
+growth-M150,90,3624.7545,0.04,[std] illustrative index path
+worked-M216,0,5450.0,0.035,"worked example; R(8) = 5,450/5,000 - 1 = 9.00% and it = 3.50% at the anniversary-8 surrender test, then both flat so index credits are zero from anniversary 9"
+worked-M240,0,5450.0,0.035,"worked example; R(8) = 5,450/5,000 - 1 = 9.00% and it = 3.50% at the anniversary-8 surrender test, then both flat so index credits are zero from anniversary 9"
+growth-M6,0,1000.0,0.03,"[std] illustrative index path; twenty annual returns mixing gains above the 5.25% cap with losses that exercise the 0% floor, then flat, with the MVA reference yield at its issue level"
+growth-M6,6,1120.0,0.03,[std] illustrative index path
+growth-M6,18,1030.4,0.04,"[std] the reference yield rises 100 bp at anniversary 2 and stays there, so a withdrawal or surrender inside the ten-year MVA period carries a negative market value adjustment"
+growth-M6,30,1184.96,0.04,[std] illustrative index path
+growth-M6,42,1220.5088,0.04,[std] illustrative index path
+growth-M6,54,1489.0207,0.04,[std] illustrative index path
+growth-M6,66,1414.5697,0.04,[std] illustrative index path
+growth-M6,78,1541.881,0.04,[std] illustrative index path
+growth-M6,90,1649.8127,0.04,[std] illustrative index path
+growth-M6,102,1946.779,0.04,[std] illustrative index path
+growth-M6,114,1713.1655,0.04,[std] illustrative index path
+growth-M6,126,1901.6137,0.04,[std] illustrative index path
+growth-M6,138,2015.7105,0.04,[std] illustrative index path
+growth-M6,150,2297.91,0.04,[std] illustrative index path
+growth-M6,162,2343.8682,0.04,[std] illustrative index path
+growth-M6,174,2273.5522,0.04,[std] illustrative index path
+growth-M6,186,2728.2626,0.04,[std] illustrative index path
+growth-M6,198,2946.5236,0.04,[std] illustrative index path
+growth-M6,210,3093.8498,0.04,[std] illustrative index path
+growth-M6,222,3588.8658,0.04,[std] illustrative index path
+growth-M6,234,3624.7545,0.04,[std] illustrative index path
+growth-M696,0,3624.7545,0.04,[std] illustrative index path
+growth-M100,0,1649.8127,0.04,[std] illustrative index path
+growth-M100,8,1946.779,0.04,[std] illustrative index path
+growth-M100,20,1713.1655,0.04,[std] illustrative index path
+growth-M100,32,1901.6137,0.04,[std] illustrative index path
+growth-M100,44,2015.7105,0.04,[std] illustrative index path
+growth-M100,56,2297.91,0.04,[std] illustrative index path
+growth-M100,68,2343.8682,0.04,[std] illustrative index path
+growth-M100,80,2273.5522,0.04,[std] illustrative index path
+growth-M100,92,2728.2626,0.04,[std] illustrative index path
+growth-M100,104,2946.5236,0.04,[std] illustrative index path
+growth-M100,116,3093.8498,0.04,[std] illustrative index path
+growth-M100,128,3588.8658,0.04,[std] illustrative index path
+growth-M100,140,3624.7545,0.04,[std] illustrative index path
+worked-F15,15,5000.0,0.03,"worked example [std]; the index is flat at I = 5,000 through anniversary 7 and the MVA reference yield sits at its issue level"
+worked-F15,111,5450.0,0.035,"worked example; R(8) = 5,450/5,000 - 1 = 9.00% and it = 3.50% at the anniversary-8 surrender test, then both flat so index credits are zero from anniversary 9"

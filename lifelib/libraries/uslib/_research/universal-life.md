@@ -62,8 +62,20 @@ retrieved document are tagged [unverified].
 
 ### S2. Protective Life Insurance Company — "Protective Advantage Choice UL — Producer Guide" (PLAG.3459 (01.15))
 - Publisher: Protective Life Insurance Company (distributed via MRW Financial,
-  an authorized distributor; PDF is the insurer's producer guide)
-- Doc type: producer/agent guide (8 pages)
+  an authorized distributor [unverified]; PDF is the insurer's producer guide)
+- Doc type: producer/agent guide (8 pages), "For Financial Professional Use Only. Not for
+  Use With Consumers." (on 7 of the 8 pages, all but the full-page photo on printed p. 1);
+  no copyright, confidentiality or internal-use notice
+- Edition: stamped "PLAG.3459 (01.15)" (January 2015; policy form UL-21). Superseded: the
+  product has been withdrawn from sale (Protective's product-update notice of November 6,
+  2024 to its Edward Jones channel says it "will be withdrawn from sale upon the
+  introduction of Protective Lifetime Assurance UL", and the Protective product-change log
+  on the WinFlex illustration platform says "As of December 31, 2025, new sales of
+  Protective Advantage Choice UL (ACUL) will be discontinued."), and its pricing was
+  revised before then: the 2024 consumer guide
+  PLC.560869 (06.24), policy form UL-20, shows a 25% premium load, a $5.50 monthly
+  administrative charge and a 2.0% guaranteed rate, where this guide shows 10%, $5 and
+  2.5% (checked 2026-10-24). Facts are as of the document date.
 - URL fetched: https://www.mrwfinancial.com/wp-content/uploads/Advantage-Choice-UL.pdf
 - Retrieved: YES (full PDF read)
 - Product: Protective Advantage Choice UL (policy form UL-21), flexible premium
@@ -107,7 +119,7 @@ retrieved document are tagged [unverified].
     benefit payout endorsement), Terminal Illness accelerated benefit (up to 60%
     of DB or $1 million, whichever is less).
   - 1035 exchanges allowed; premium load applies; loan carryovers not allowed.
-  - Misc: 2-year contestable and suicide period; unisex rates in Montana; signed
+  - Misc: up to 2-year contestable and suicide period; unisex rates in Montana; signed
     illustration required.
 
 ### S3. Pacific Life Insurance Company — Sample (specimen) policy "Versa-Flex PRO" — FLEXIBLE PREMIUM ADJUSTABLE LIFE INSURANCE, policy form P08VP1 (8/08)
@@ -115,7 +127,9 @@ retrieved document are tagged [unverified].
   pacificlife.com)
 - Doc type: specimen policy (full contract, 19+ pages incl. policy
   specifications for a Male 35 Standard Nonsmoker, $100,000 basic coverage +
-  riders, policy date Nov 1, 2007)
+  riders, policy date Nov 1, 2007), "Producer Use Only. Not for Use with the
+  Public." in the footer of all 31 PDF pages (printed as "For Producer Use Only.
+  Not for Use with the Public." on PDF pp. 1, 5 and 31)
 - URL fetched: https://www.pacificlife.com/content/dam/paclife/lid/public/sample-policies/Sample_Policy_VF%20PRO%20II.pdf
 - Retrieved: YES (full PDF read)
 - This is the key mechanics source: full monthly-deduction machinery, GPT/CVAT
@@ -237,7 +251,18 @@ retrieved document are tagged [unverified].
 
 ### S4. Nationwide Life and Annuity Insurance Company — "Nationwide No-Lapse Guarantee UL II" producer presentation (FLM-1167AO.3 (06/22))
 - Publisher: Nationwide (distributed via Krause Agency portal mirror)
-- Doc type: producer marketing deck / product highlights (19 slides)
+- Doc type: producer marketing deck / product highlights (19 slides), "FOR FINANCIAL
+  PROFESSIONAL USE — NOT FOR DISTRIBUTION TO THE PUBLIC" (cover, disclosures, contents,
+  section-divider and closing slides) and "FOR FINANCIAL PROFESSIONAL USE ONLY — NOT FOR
+  DISTRIBUTION TO THE PUBLIC" (the other slides), in the slide footers and visible on
+  every PDF page
+- Edition: stamped "FLM-1167AO.3 (06/22)" and "© 2015 – 2022 Nationwide" (handout printed
+  9/13/2022). Superseded by
+  FLM-1167AO.5 (12/24), which Nationwide serves at
+  https://financial.nationwide.com/media/pdf/FLM-1167AO.pdf with the same legends and the
+  same product facts as cited here, but different case-study figures (premiums $2,910 and
+  $2,884 where this revision shows $2,915 and $3,815) (checked 2026-10-24). The product
+  is still marketed. Facts are as of the document date.
 - URL fetched: https://portal.krauseagency.com/wp-content/uploads/2025/02/Nationwide-No-Lapse-Guarantee-Universal-Life.pdf
 - Retrieved: YES (full PDF read)
 - Product: Nationwide No-Lapse Guarantee UL II — a fixed UL positioned for
@@ -258,8 +283,8 @@ retrieved document are tagged [unverified].
     18-80, Nontobacco Standard Plus 18-80, Nontobacco Standard 18-85, Tobacco
     Preferred 18-80, Tobacco Standard 18-85.
   - Long-Term Care Rider II (optional, extra charge): cash indemnity, monthly
-    payout options 2%, 3% or 4% of LTC specified amount up to 2x the HIPAA per
-    diem.
+    payout options 2%, 3% or 4% (the deck does not say of what) up to 2x the
+    HIPAA per diem.
   - Automated Premium Monitor service tracks premiums needed to maintain the
     guarantee.
   - Pricing examples (illustrative): F40, $500,000, NLG to 120: $2,915/year;
@@ -550,14 +575,15 @@ $100,000) are labeled as such.
 - COI charge = (monthly COI rate / 1000) × NAR [S3]; NAR = DB / NAR factor −
   AV, where the NAR factor discounts one month at the guaranteed rate
   (specimen: 1.0024663 = 1.03^(1/12)) and AV is measured before the deduction
-  [S3]. COI rates are per $1,000 of NAR in all three current-assumption source
-  products [S1][S2][S3].
+  [S3]. COI rates are per $1,000 of NAR in two of the three current-assumption
+  source products [S1] [S3]; the third states only that its monthly COI charge
+  varies by issue age, gender, class, policy year and ratings [S2].
 - Charges cease at attained age 121 (monthly deduction end date) [S2][S3];
   Symetra deducts COI to age 120 with premiums payable to 120 [S1].
 
 ### 2. Issue ages, classes, face amount bands
 - Issue ages: 15 days–85 (Symetra, incl. juvenile class) [S1]; 18–85 with
-  select-preferred classes capped at 75 (Protective) [S2]; 18–85 for NLG-to-120
+  Select Preferred and Preferred Tobacco capped at 75 (Protective) [S2]; 18–85 for NLG-to-120
   GUL (Nationwide) [S4].
 - Risk classes: 6-7 classes typical — e.g., Super/Select Preferred NT,
   Preferred NT, Standard Plus NT, Standard NT, Preferred Tobacco, Standard
@@ -568,7 +594,8 @@ $100,000) are labeled as such.
   Non-Tobacco/Tobacco, $100,000 preferred classes (Protective) [S2].
 - Face increases create separate coverage layers with own charges (min increase
   $25,000, max age 90 in specimen) [S3]; decreases restricted (none year 1, one
-  per year, floor) [S2][S3].
+  per year, floor) [S3]; Protective allows decreases only after 3 policy years,
+  not below minimum face [S2].
 
 ### 3. Premium structure and tax-qualification limits
 - Premiums flexible; planned premium is billing target only, no guarantee of
@@ -624,7 +651,8 @@ $100,000) are labeled as such.
 ### 7. Surrender, withdrawals, loans
 - CSV = AV − surrender charge; NCSV = CSV − policy debt [S3][R1 definitions].
 - Surrender charge patterns: 9-year decreasing schedule keyed to per-$1,000
-  rates by sex/class/issue age [S1][S2]; or dollar-amount schedule amortizing
+  rates by sex/class/issue age [S1]; declining over 9 years, basis not stated
+  [S2]; or dollar-amount schedule amortizing
   monthly to zero after year 10, per coverage layer [S3]. Nonforfeiture floor:
   retrospective minimum CSV per Model 585 Sec. 6A (expense-allowance
   amortization) [R1].
@@ -635,7 +663,7 @@ $100,000) are labeled as such.
   minimum [S2].
 - Loans: fixed-rate design — accrual up to 3.25%, loaned AV credited at
   guaranteed rate; max loan = AV − 3 monthly deductions − surrender charge −
-  debt [S3]; 5% in arrears with 2.5% credited on loaned value (200bp
+  debt [S3]; 5% in arrears with 2.5% credited on loaned value (250bp
   guaranteed spread) [S2]; variable-rate design — Moody's Corporate Bond Yield
   Average-based, floor 3% [S1]. Loan repayment priority: payments applied to
   loans first unless designated premium [S3].
@@ -647,7 +675,7 @@ $100,000) are labeled as such.
   fetched products use a 61-day grace period [S2][S3]; required grace premium
   >= 3 monthly deductions + load [S3].
 - No-lapse guarantees on current-assumption UL are typically short (Symetra: 5
-  years on minimum premium) [S1] or optional/flexible shadow-account
+  years on minimum premium) [S1] or flexible-duration shadow-account
   endorsements (Protective "Lapse Protection Endorsement" with catch-up
   provision) [S2]; dedicated GUL products guarantee to attained age 120 (or a
   chosen age, e.g., 70 with later extension right) — Nationwide NLG UL II
@@ -725,16 +753,19 @@ $100,000) are labeled as such.
    coverage-layer face with a step-down after year 10 [S3]; duration-varying
    [S1].
 5. Surrender charges: 9-10 year runoff is standard; expression differs (rate
-   per $1,000 by sex/class/age [S1][S2] vs fixed dollar amount with linear
-   monthly amortization [S3]).
-6. COI structure: all use monthly rate per $1,000 NAR with guaranteed maximums
-   (CSO-capped) and lower current scales; rates vary by issue age/sex/class/
-   duration (select & ultimate by policy year) [S1][S2][S3].
+   per $1,000 by sex/class/age [S1] vs fixed dollar amount with linear
+   monthly amortization [S3]; Protective states only a declining 9-year
+   charge [S2]).
+6. COI structure: all charge COI monthly [S1] [S2] [S3]; rate per $1,000 NAR
+   [S1] [S3]; guaranteed maximums with lower current charges permitted [S3]
+   (on the CSO cap see section 11 above);
+   rates vary by issue age/sex/class/duration (select & ultimate by policy
+   year) [S2] [S3].
 7. Death benefit options: A and B universal; a return-of-premium Option C
    offered by some (Symetra, Pacific Life) [S1][S3].
 8. Loans: fixed-rate with guaranteed spread (0.75% spread in [S3]; 2.5% spread
    in [S2]) vs variable Moody's-indexed rate with floor [S1].
-9. Lapse protection: short built-in NLG (5 years [S1]) vs optional
+9. Lapse protection: short built-in NLG (5 years [S1]) vs
    flexible-duration shadow-account endorsement [S2] vs full GUL products
    with lifetime secondary guarantees and ROP windows [S4]. The market
    separates "current assumption" (interest-sensitive, cash-value oriented)
@@ -772,7 +803,8 @@ $100,000) are labeled as such.
   [unverified as a legal statement; consistent with the absence of fixed-UL
   prospectuses in EDGAR searches performed].
 - Document vintages differ: Protective guide is 01/2015 and Pacific Life
-  specimen is 2008; both products/forms may have been superseded — parameter
+  specimen is 2008; the Protective product has since been withdrawn from sale
+  (see the S2 edition note) and the Pacific Life form may have been superseded — parameter
   LEVELS should be treated as era-representative, while MECHANICS are stable.
 - The IRC 7702/7702A summaries [R2][R3] and the AAA practice note summary
   [R6] were produced by an automated summarizer over the fetched pages; exact
@@ -789,7 +821,9 @@ $100,000) are labeled as such.
   official insurer documents (fmiagent.com, mrwfinancial.com,
   krauseagency.com); the documents carry the insurers' own form numbers
   (LIM-1286 10/23; PLAG.3459 01.15; FLM-1167AO.3 06/22) and are identical to
-  the insurer-issued materials so far as can be determined.
+  the insurer-issued materials so far as can be determined. For the S2 and S4
+  hosts the authorization is [unverified]: nothing on mrwfinancial.com or
+  krauseagency.com shows the insurer authorized the posting (checked 2026-10-24).
 - Symetra's surrender-charge-on-withdrawal rule (charges apply to withdrawals
   above 10% of policy value per year) appeared only in search-result snippets,
   not in the fetched fact sheet — treat as [unverified].

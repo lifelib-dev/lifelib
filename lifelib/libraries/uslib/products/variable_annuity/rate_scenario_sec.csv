@@ -1,0 +1,19 @@
+scenario_id,t,vix_sq,cmt10,provenance
+base,0,330.0,0.04,"[std] neutral: 330/33 - 10 = 0 leaves the VIX-linked fee at its initial rate, and a 4.00% CMT10 is the observed 10-year level"
+decline,0,330.0,0.04,[std] neutral; the decline scenario runs the [std] default fixed-rate modules
+variant,0,204.42,0.045,quarterly average daily VIX-squared 204.42 is the disclosed worked example [S4]; CMT10 4.50% [std]
+variant,12,602.3,0.03,"quarterly average daily VIX-squared 602.30 is the second disclosed example, unclipped 1.86% [S4]; CMT10 3.00% [std] drives the roll-up to its 4% floor"
+base-M26,0,330.0,0.04,"[std] neutral: 330/33 - 10 = 0 leaves the VIX-linked fee at its initial rate, and a 4.00% CMT10 is the observed 10-year level"
+base-M6,0,330.0,0.04,"[std] neutral: 330/33 - 10 = 0 leaves the VIX-linked fee at its initial rate, and a 4.00% CMT10 is the observed 10-year level"
+base-M120,0,330.0,0.04,"[std] neutral: 330/33 - 10 = 0 leaves the VIX-linked fee at its initial rate, and a 4.00% CMT10 is the observed 10-year level"
+base-M131,0,330.0,0.04,"[std] neutral: 330/33 - 10 = 0 leaves the VIX-linked fee at its initial rate, and a 4.00% CMT10 is the observed 10-year level"
+decline-M144,0,330.0,0.04,[std] neutral; the decline scenario runs the [std] default fixed-rate modules
+base-M60,0,330.0,0.04,"[std] neutral: 330/33 - 10 = 0 leaves the VIX-linked fee at its initial rate, and a 4.00% CMT10 is the observed 10-year level"
+base-M65,0,330.0,0.04,"[std] neutral: 330/33 - 10 = 0 leaves the VIX-linked fee at its initial rate, and a 4.00% CMT10 is the observed 10-year level"
+base-M40,0,330.0,0.04,"[std] neutral: 330/33 - 10 = 0 leaves the VIX-linked fee at its initial rate, and a 4.00% CMT10 is the observed 10-year level"
+variant-M41,0,602.3,0.03,"quarterly average daily VIX-squared 602.30 is the second disclosed example, unclipped 1.86% [S4]; CMT10 3.00% [std] drives the roll-up to its 4% floor"
+base-M560,0,330.0,0.04,"[std] neutral: 330/33 - 10 = 0 leaves the VIX-linked fee at its initial rate, and a 4.00% CMT10 is the observed 10-year level"
+base-M719,0,330.0,0.04,"[std] neutral: 330/33 - 10 = 0 leaves the VIX-linked fee at its initial rate, and a 4.00% CMT10 is the observed 10-year level"
+base-M125,0,330.0,0.04,"[std] neutral: 330/33 - 10 = 0 leaves the VIX-linked fee at its initial rate, and a 4.00% CMT10 is the observed 10-year level"
+base-M100,0,330.0,0.04,"[std] neutral: 330/33 - 10 = 0 leaves the VIX-linked fee at its initial rate, and a 4.00% CMT10 is the observed 10-year level"
+base-F15,15,330.0,0.04,"[std] neutral: 330/33 - 10 = 0 leaves the VIX-linked fee at its initial rate, and a 4.00% CMT10 is the observed 10-year level"

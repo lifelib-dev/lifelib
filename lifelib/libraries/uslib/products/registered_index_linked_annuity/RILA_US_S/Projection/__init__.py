@@ -3,7 +3,7 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""The by-contract projection of :mod:`~.RILA_US_S`.
+r"""The by-contract projection of :mod:`~.RILA_US_S`.
 
 The Space is parameterized by ``point_id``, so ``Projection[1]`` is an ItemSpace
 projecting model point 1::
@@ -1685,9 +1685,13 @@ def mort_rate(t):
     not a measurement, because public deferred-period annuitant mortality is thin
     [REG-R65] and the payout chassis's 108.4% is annuitant-select and deliberately not
     imported.
+
+    The product is capped at 1, written ``min(q, 1.0)``, so that an A/E above 1 cannot
+    carry a rate past certainty, and with the bound second a missing input, a NaN, stays
+    NaN, where ``min(1.0, q)`` would read it as 1. No shipped point reaches the cap.
     """
     rate = float(data.mort_table().loc[(age(t), sex()), "mort_rate"])   # noqa: F821
-    return rate * mort_ae_factor                                     # noqa: F821
+    return min(rate * mort_ae_factor, 1.0)                           # noqa: F821
 
 
 def mort_rate_mth(t):

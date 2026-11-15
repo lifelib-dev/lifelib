@@ -26,8 +26,8 @@ a contractually bounded conversion window [S2] [S3] [S6].
 
 Term is the commodity protection product of the U.S. individual life market. Pricing at the
 competitive cell examined in the research (Female 40, $1,000,000, best non-tobacco class,
-20-year term) is tightly clustered — the top seven carriers were within $4 per year of each
-other (≈$477–$480 annually) [S4]. The 20-year level term plan carries the highest in-force
+20-year term) was tightly clustered in a 2023 comparison — the top seven carriers were within
+$4 per year of each other (≈$477–$480 annually) [S4]. The 20-year level term plan carries the highest in-force
 exposure among level term types in the SOA/LIMRA 2015–2022 lapse study [R6]. For liability
 modeling, the economically dominant feature is the post-level-term (PLT) transition: the
 premium jump at the end of the level period triggers a shock lapse of 27%–96% and first-year
@@ -42,10 +42,10 @@ PLT mortality deterioration of 154%–1,066% of level-period mortality for Jump-
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Product type | Individual level premium term; renewable and convertible; level death benefit | [S2] [S3] [S6] |
+| Product type | Individual level premium term; renewable and convertible; level death benefit | [S2] [S3] [S6]; level death benefit [S2] [S6] |
 | Level term periods modeled | 10 / 20 / 30 years; **base cell = 20-year** | **[std]** (fn 1) |
 | Coverage expiry | Attained age 95 (renewal ceases; policy expires without value) | [S2] [S3] [S5] [S6] |
-| Age basis | Age nearest birthday (ANB); attained age = issue age + completed policy years | [S2] [S3] [S5] [S6] |
+| Age basis | Age nearest birthday (ANB); attained age = issue age + completed policy years | ANB [S2] [S3] [S5] [S6]; attained age [S3] [S6] |
 | Issue ages (non-tobacco) | 10-yr: 18–75; 20-yr: 18–70; 30-yr: 18–55 | **[std]** (fn 2) |
 | Issue ages (tobacco) | Cap 5 years lower than non-tobacco cap per plan; floor 18 | **[std]** (fn 2) |
 | Minimum face amount | $100,000 | [S1] [S2] [S3] [S5] [S6] |
@@ -68,8 +68,8 @@ PLT mortality deterioration of 154%–1,066% of level-period mortality for Jump-
    75 [S2], between the lowest observed 60 [S3] and the 80 shared by the other two [S1] [S5];
    the tobacco cap reduction of 5 years approximates the observed pattern (20-yr −8 yrs [S1],
    20-yr −5 yrs [S2]) without a per-plan table.
-3. **[std] Maximum face.** One carrier states no set maximum [S1]; another caps at
-   $1,000,000 reflecting its accelerated/online underwriting program [S3]; a third's bands run
+3. **[std] Maximum face.** One carrier states no set maximum [S1]; another capped face at
+   $1,000,000 in its 2018 guide [S3]; a third's bands run
    to $10,000,001+ [S2]. The reference model imposes no maximum; underwriting-program caps
    are a distribution feature, not a liability mechanic.
 
@@ -80,12 +80,12 @@ PLT mortality deterioration of 154%–1,066% of level-period mortality for Jump-
 | Rate classes | 4: Preferred Plus NT / Preferred NT / Standard NT / Standard Tobacco | **[std]** (fn 4) |
 | Substandard ratings | Not modeled | **[std]** (fn 5) |
 | Premium rate bands (by face) | 4: $100,000–249,999 / $250,000–499,999 / $500,000–999,999 / $1,000,000+ | [S5] boundaries; 4-band choice **[std]** (fn 6) |
-| Per-$1,000 rate behavior | Rate per $1,000 decreases by band, constant within band | [S2] [S3] [S5] |
+| Per-$1,000 rate behavior | Rate per $1,000 decreases by band, constant within band | rate set by band [S2] [S3] [S5]; decrease by band **[std]** (fn 6) |
 
 4. **[std] Rate classes.** Observed counts: 4 (Select Preferred, Preferred, Non-Tobacco,
    Tobacco [S1]), 5 ([S3]), 6 ([S2]), 8 ([S5]). The common skeleton is
-   preferred-plus/preferred/standard × tobacco with table ratings layered on a standard-type
-   class [S2] [S3] [S5]. Four classes (three NT tiers + one tobacco) keep the model-point
+   preferred-plus/preferred/standard × tobacco [S2] [S3] [S5], with table ratings layered on a
+   standard-type class [S2] [S5]. Four classes (three NT tiers + one tobacco) keep the model-point
    dimensionality small while preserving the preferred-structure mortality split that the
    2015 VBT relative-risk tables support [REG-R18].
 5. **[std] Substandard.** Observed: table ratings to Table D (with flat extras to
@@ -95,19 +95,22 @@ PLT mortality deterioration of 154%–1,066% of level-period mortality for Jump-
 6. **[std] Bands.** Observed band counts: 3 ([S3]), 4 ([S5]), and 7 and 10 for the two
    issuing companies covered by [S2]. The four-band grid and its boundaries [S5] are chosen
    as the median-complexity structure that still exhibits the band-reversal lapse dynamics
-   noted in the experience studies [R6].
+   noted in the experience studies [R6]. The retrieved documents give band boundaries but
+   not how rates differ between bands [S2] [S3] [S5]; the decrease in the rate per $1,000
+   from band to band is a modelling choice **[std]**, not exercised by the shipped band-1
+   table (fn 9).
 
 ### Premiums
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Premium guarantee | Gross premiums fully guaranteed for all policy years (level period + ART tail); printed in policy specifications at issue | [S3] [S6] |
+| Premium guarantee | Gross premiums fully guaranteed for all policy years (level period + ART tail); printed in policy specifications at issue | [S6] |
 | Premium structure | Banded per-$1,000 rate × (face/1,000) + annual policy fee | [S2] [S3] [S5] [S6] |
 | Annual policy fee | $65, fully guaranteed, level all years, non-commissionable | $65: [S6]; non-commissionable **[std]** (fn 7) |
 | Modal factors (× annual premium) | Semi-annual 0.52; quarterly 0.27; monthly 0.08333 | [S6] (fn 8) |
 | Level-period rate anchor 1 | M35 / Standard NT / $100,000 / 10-yr: $140/yr guaranteed (= $0.75 per $1,000 + $65 fee) | [S6] |
 | Level-period rate anchor 2 | F40 / best NT class / $1,000,000 / 20-yr: ≈ $477/yr (≈ $0.41–$0.48 per $1,000 + fee) | [S4] |
-| Full guaranteed rate table | Synthesized by the implementation, calibrated to the two anchors and the ART tail below | **[std]** (fn 9) |
+| Full guaranteed rate table | Synthesized by the implementation; the shipped table covers only the anchor 1 configuration, level period and ART tail below | **[std]** (fn 9) |
 
 7. **[std] Policy fee.** Observed: $90 / $80 for the two issuing companies covered by
    [S2]; $80–$90 by band, non-commissionable [S3]; $74 band 1 (commissionable) / $64 bands
@@ -121,8 +124,10 @@ PLT mortality deterioration of 154%–1,066% of level-period mortality for Jump-
 9. **[std] Rate table.** No carrier publishes full per-$1,000 rate tables by
    age/class/band/duration in the retrieved documents; only the two cells above were
    verified (research notes, "Gaps and caveats"). The reference implementation therefore
-   ships a synthesized guaranteed table constrained to reproduce both anchors and the ART
-   tail anchor points below.
+   ships a synthesized guaranteed table for the anchor 1 configuration only (T10 / M / StdNT /
+   band 1): it reproduces anchor 1 and the ART tail anchor points below, with the years between
+   interpolated. Anchor 2 [S4] is recorded for calibrating an extended table and is not in the
+   shipped one (see `model.md`).
 
 ### Post-level term (PLT)
 
@@ -166,7 +171,7 @@ PLT mortality deterioration of 154%–1,066% of level-period mortality for Jump-
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Grace period | 31 days; policy in force during grace; premium to end of policy month deducted from proceeds on death in grace | [S3] [S6] [S7] |
+| Grace period | 31 days; policy in force during grace; premium to end of policy month deducted from proceeds on death in grace | [S3] [S6] [S7]; deduction on death in grace [S6] |
 | Reinstatement | Within 3 years of lapse; evidence of insurability; overdue premiums with 6.00% compound interest | [S6] (fn 12) |
 | Incontestability | 2 years from issue (separately from reinstatement) | [S1] [S2] [S6] |
 | Suicide exclusion | 2 years; proceeds limited to premiums paid | [S2] [S6] (fn 13) |
@@ -175,8 +180,8 @@ PLT mortality deterioration of 154%–1,066% of level-period mortality for Jump-
 | Face increases | Not allowed after issue | [S3] |
 | Termination | Earliest of death, expiry (age 95), conversion, lapse, successful contest, owner request; pro-rata premium refund beyond month of termination | [S6] |
 
-12. One carrier allows 5 years (and 15 days after the 46-day post-due-date window without
-    evidence) [S3]; the specimen's 3-year/6% rule [S6] is adopted as it is complete
+12. One carrier allows 5 years (without evidence if within 15 days after the end of the
+    grace period, i.e. 46 days after the premium due date) [S3]; the specimen's 3-year/6% rule [S6] is adopted as it is complete
     contract language. Reinstatement is administratively real but not modeled as a
     decrement reversal in the base reference model (see technical notes).
 13. 1-year suicide period in CO, MO, ND in one carrier's forms [S2]; state variations are
@@ -204,7 +209,7 @@ PLT mortality deterioration of 154%–1,066% of level-period mortality for Jump-
 
 The gross premium for each policy year is guaranteed at issue and printed in the policy
 specifications for every year from issue to expiry at attained age 95 — level for the level
-term period, then annually increasing (ART pattern) [S3] [S6]. The annual premium decomposes
+term period, then annually increasing (ART pattern) [S6]. The annual premium decomposes
 as
 
 ```
@@ -218,7 +223,7 @@ ART scale [S2] [S6]. Modal premiums are `ModalFactor × AnnPrem` with factors 0.
 (e.g. 12 × 0.08333 ≈ 1.000 in the specimen, but 12 × 0.085 = 1.02 at another carrier [S2]).
 
 There are no non-guaranteed premium elements in the representative product: no dividends,
-no current-vs-guaranteed premium distinction [S3] [S6] (see fn 10 for the PLT scale choice).
+no current-vs-guaranteed premium distinction [S6] (see fn 10 for the PLT scale choice).
 
 ### Death benefit provisions
 
@@ -227,7 +232,7 @@ The death benefit is the level face amount in all years, including the ART tail
 "Variations" and not modeled [S3] [S5]). Proceeds on death equal face plus any rider
 benefits, plus a pro-rata refund of premium paid beyond the policy month of death, minus due
 and unpaid premium [S6]. If death occurs in the grace period, the premium to the end of the
-policy month is deducted from proceeds [S3] [S6].
+policy month is deducted from proceeds [S6].
 
 ### Account / cash value mechanics
 
@@ -249,14 +254,14 @@ of insurability and payment of overdue premiums accumulated at 6.00% compound in
 ### Renewal, conversion, maturity
 
 - **Renewal.** At the end of the level term period, coverage continues automatically
-  (no evidence of insurability) on the guaranteed ART scale, renewing annually to attained
+  (no evidence of insurability) on the guaranteed ART scale [S6], renewing annually to attained
   age 95, at which point the policy expires without value [S2] [S3] [S5] [S6].
 - **Conversion.** At any time before min(end of level period, attained age 70) the owner may
   convert all or part (once, ≥$250,000 converted, remainder ≥ minimum face) of the face to a
   permanent policy without evidence of insurability, at attained-age premium rates for the
-  same or most-comparable class; a conversion credit of one annual term premium is applied
-  to the new policy's initial premium when conversion occurs after policy year 1
-  [S2] [S3] [S6]. Conversion terminates the term policy (or reduces it, on partial
+  same or most-comparable class [S2] [S3] [S6]; a conversion credit of one annual term premium
+  is applied to the new policy's initial premium when conversion occurs after policy year 1
+  [S6]. Conversion terminates the term policy (or reduces it, on partial
   conversion) [S6].
 - **Maturity.** There is no maturity value; expiry at attained age 95 ends coverage [S6].
 
@@ -305,8 +310,7 @@ Listed for completeness; none is modeled in the reference implementation:
    lineup [S3]) weighted by in-force exposure [R6].
 2. **PLT design — the largest structural variation.** (a) Jump-to-ART with face unchanged
    ([S2] [S6]); (b) automatic face decrease with premium held level 3
-   years then ART (explicitly a design to avoid premium sticker-shock and
-   antiselective termination [S3]); (c) immediate face decrease with premium initially
+   years then ART (explicitly a design to avoid premium sticker-shock [S3]); (c) immediate face decrease with premium initially
    near-level then increasing ([S5]); (d) graded PLT premium scales, sometimes
    applied retroactively to in-force blocks [R4]. Jump-to-ART is chosen because the SOA
    found it the most common U.S. structure [R4] and the full guaranteed schedule is
@@ -328,8 +332,9 @@ Listed for completeness; none is modeled in the reference implementation:
    [S1] [S7], with numeric windows (8/13/18 years) [unverified]; a fifth carrier's
    month-based limits (96th/120th month) are [unverified]. Representative:
    min(level period, age 70) window + one-premium credit (fn 11).
-7. **Pricing dispersion.** At the F40/$1M/best-NT/20-year cell the top 7 carriers sit
-   within $4/yr (≈$477–$480) and the widest outlier is 54% higher [S4] — supporting a
+7. **Pricing dispersion.** At the F40/$1M/best-NT/20-year cell the top 7 carriers sat
+   within $4/yr (≈$477–$480) in a 2023 comparison and the widest outlier was 54% higher
+   [S4] — supporting a
    single representative rate scale calibrated to the cluster.
 
 ---

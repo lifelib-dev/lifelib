@@ -472,13 +472,16 @@ retrieved document are tagged [unverified]. The [R#] numbers in this file are
 - Doc type: producer portfolio overview (16 pages); **for producer use only**
 - URL fetched: https://producer.mutualofomaha.com/enterprise/wcm/connect/14033a75-36a8-4542-b987-a96fa72cc5b3/135880.pdf?MOD=AJPERES&ContentCache=NONE
 - Retrieved: YES (full PDF read). **Caveat: dated 9-2017.**
+- Legend: "For producer use only. Not for use with the general public." — once, on the cover (PDF p.1), directly above "All products and/or features may not be available in all states."; not repeated on pp.2–16 (checked 2026-10-24)
+- Edition: stamped "135880" and "Updated 9-17" on the cover (PDF p.1); the ratings page reads "(Rating as of 03/17)" (PDF p.4). No later edition of form 135880 was located. The carrier's public annuities page (https://www.mutualofomaha.com/annuities/plans) still lists Ultra-Income ("Policy Form C499LNA08P or state equivalent") and Income Access ("Policy Form 6954L-0602 or state equivalent") as income annuities, and names Income Annuity with Premium Return ("Policy Form ICC15L140P or state equivalent") only in its policy-form disclosures (checked 2026-10-24). Facts are as of the document date.
 - Facts extracted (income annuities; annuities underwritten by **United of Omaha
   Life Insurance Company**, and Companion Life in New York):
   - **Ultra-Income** (SPIA): **issue ages 0–85**; multiple payout options;
     payments must begin **within 13 months** following the purchase date; choice
     of payment frequency **monthly, quarterly, semiannually or annually**.
-    Optional features: **age rating available** (i.e., substandard/impaired-life
-    rating that raises income); **up to 6 percent Cost-of-Living Allowance
+    Optional features: **age rating available** (the source does not define
+    the term; the authors read it as a substandard/impaired-life rating that
+    raises income [unverified]); **up to 6 percent Cost-of-Living Allowance
     (COLA)**.
   - **Income Annuity with Premium Return** (SPIA): issue ages **59–85**; life
     only or joint life income payouts; payments must begin within 13 months;
@@ -1336,9 +1339,10 @@ disagreement is shown explicitly.
 - **Mutual of Omaha Income Access** optional features [S8]: **10% or 20% payment
   increase based on health condition**; **50% payment increase for nursing home
   confinement**; **survivor continuation option**.
-- **Mutual of Omaha Ultra-Income**: "**age rating available**" [S8] — impaired-risk
-  / medically underwritten SPIA, i.e. a rated (older) age is used to increase
-  income for the same premium. AG 9-C governs the valuation of such contracts and
+- **Mutual of Omaha Ultra-Income**: "**age rating available**" [S8] — the source
+  does not define the term; the authors read it as an impaired-risk / medically
+  underwritten SPIA, i.e. a rated (older) age is used to increase income for the
+  same premium [unverified]. AG 9-C governs the valuation of such contracts and
   its valuation-rate references are superseded by VM-V [R1]; VM-V handles this by
   defining "initial age" as the **rated age** (or an equivalent rated age on a
   substandard basis) [R1].
@@ -1683,16 +1687,18 @@ was successfully retrieved with numbers in it.
    pre-first-payment return-of-premium death benefit, and extends it to a
    **terminal-illness diagnosis with ≤ 12 months' life expectancy** [S2].
    NYL uniquely offers an explicit **25%/50% of premium** death benefit as a
-   payout option [S5]; Mutual of Omaha markets a whole product ("Income Annuity
-   with Premium Return") around return of premium on death [S8].
+   payout option [S5]; Mutual of Omaha's 2017 overview lists a whole product
+   ("Income Annuity with Premium Return") built around return of premium on
+   death [S8].
 
 7. **Temporary life** (income only while alive, for a fixed term, with **no** death
    benefit) was found at only one insurer — **Integrity IncomeSource**, 5–30 years
    [S4]. It is tax-recognized (IRS Tables IV/VIII exist precisely for it [R7]) but
    is rare in the retail market.
 
-8. **Impaired-risk / medically underwritten SPIAs.** Only Mutual of Omaha's
-   Ultra-Income advertises "**age rating available**" [S8], plus Income Access's
+8. **Impaired-risk / medically underwritten SPIAs.** Among the retrieved
+   documents, only Mutual of Omaha's 2017 overview lists "**age rating
+   available**" (Ultra-Income) [S8], plus Income Access's
    **10%/20% payment increase based on health condition** and **50% increase for
    nursing home confinement** [S8]. AG 9-C and VM-V's "rated age" definition
    confirm this is a recognized statutory category [R1].
@@ -1754,7 +1760,7 @@ adjustment; no cash value and no nonforfeiture floor.
    several describe the concept qualitatively [S1][S3][S6].
 
 5. **Mutual of Omaha Ultra-Income specifics are from a 2017 producer overview**
-   [S8]; the current brochure (`lc3146.pdf`) 404s and the product page's host
+   [S8]; the Ultra-Income brochure (`lc3146.pdf`) 404s and the product page's host
    (`webprod3.mutualofomaha.com`) does not resolve. The 6% COLA and "age rating"
    facts should be re-verified before being relied on.
 

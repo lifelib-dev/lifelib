@@ -79,7 +79,9 @@ Within each month the notes' monthiversary order is followed exactly:
    fixed account (:func:`seg_roll_pp`), from which the sweep at step 6 re-enters it
    into a new segment under the standing instruction **[std]**.
 3. **Withdrawals and new loans** are sourced fixed-account-first, then pro rata across
-   live segments [S3] (:func:`draw_from_fa_pp`, :func:`draw_from_seg_pp`); loan
+   live segments (:func:`draw_from_fa_pp`, :func:`draw_from_seg_pp`) -- the order one
+   carrier gives for loans [S3]; for withdrawals, which that carrier takes pro rata
+   across all unloaned accounts [S3], it is **[std]**; loan
    collateral moves into :func:`lca_pp`.
 4. **Death benefit and corridor** on the post-premium, post-withdrawal account value
    (:func:`db_pp`).
@@ -298,7 +300,7 @@ for the other quietly changes both answers.
 
 A segment is created at every monthiversary from the sweep and matures twelve months
 later, so between step 2 and step 7 of any month eleven segments are live and after the
-sweep twelve are -- the "up to 12 concurrent segments" of [S3][S4]. Segments are indexed
+sweep twelve are -- the "up to 12 segments" of [S4]. Segments are indexed
 by their creation month ``m``: :func:`seg_bal_pp` ``(t, m)`` is the balance at the end
 of month ``t`` of the segment born at ``m``, and is zero outside ``m <= t <= m + 11``.
 
@@ -476,8 +478,11 @@ def loan_first_year():
 def mnlp_rate():
     """The minimum monthly no-lapse premium rate per $1,000 of face, annualized [S3].
 
-    20.80 for M / Non-Tobacco / 45 / band 1 [S3].  The 250,000 example face is a
-    higher band whose rate is not public, so the band-1 rate stands in **[std]**.
+    20.80 for M / Non-Tobacco / 45 / band 1 [S3]: the entry in one carrier's base
+    annual minimum premium rate table for faces of $25,000-$99,999, which that carrier
+    does not label as MNLP rates, so reading it as the annualized MNLP is **[std]**.
+    The 250,000 example face falls in the same carrier's $100,000-and-up table, which
+    gives 11.32 for the same cell [S3]; the band-1 rate stands in **[std]**.
     """
     return float(model_point()["mnlp_rate"])
 
@@ -856,7 +861,7 @@ def loan_new_pp(t):
     """B_t: a new standard loan taken at BOM of policy month t **[std]**.
 
     The notes' distribution-scenario module borrows a level amount annually from a
-    start age [S3]; here that is ``loan_new_pp_ann`` from the first month of policy
+    start age **[std]**; here that is ``loan_new_pp_ann`` from the first month of policy
     year :func:`loan_first_year`.  **Zero in the baseline** -- the notes set loan
     utilization to none -- and switched on by model point 5.
 
@@ -1088,13 +1093,15 @@ def draw_pp(t):
     The withdrawal (gross of its fee) plus the collateral for any new standard loan.
     The loan collateral does not leave the *account value* -- it moves into
     :func:`lca_pp` -- but it does leave the fixed account and the segments, and it is
-    sourced by the same rule [S3].
+    sourced by the same rule: fixed account first, then pro rata across live segments,
+    the order one carrier gives for loans [S3].  Applied to the withdrawal the rule is
+    **[std]**: that carrier takes withdrawals pro rata across all unloaned accounts [S3].
     """
     return wd_pp(t) + loan_new_pp(t)
 
 
 def draw_from_seg_pp(t):
-    """The part of the step-3 draw sourced pro rata from live segments [S3].
+    """The part of the step-3 draw sourced pro rata from live segments (see :func:`draw_pp`).
 
     Only what the fixed account cannot cover, and never more than the live segments
     hold.  Being step 3 it has the **first** claim on the pool; the step-6 deduction
@@ -1109,7 +1116,7 @@ def draw_from_seg_pp(t):
 
 
 def draw_from_fa_pp(t):
-    """The part of the step-3 draw sourced from the fixed account, taken first [S3].
+    """The part of the step-3 draw sourced from the fixed account, taken first (see :func:`draw_pp`).
 
     Defined as the residual so that the two sources always sum to :func:`draw_pp`
     exactly; if neither the fixed account nor the segments can cover it, the fixed
@@ -1264,7 +1271,7 @@ def seg_bal_tot_pp(t):
 def seg_count(t):
     """The number of segments with a positive balance at the end of month t.
 
-    At most ``seg_term_mth`` (12), the contractual maximum [S3][S4]; zero throughout
+    At most ``seg_term_mth`` (12), the contractual maximum [S4]; zero throughout
     for a model point with ``index_alloc_rate() == 0``.
     """
     lo = max(0, t - seg_term_mth + 1)                                # noqa: F821
@@ -1549,7 +1556,7 @@ def surr_charge_pp(t):
     """SC_t: the surrender charge scheduled per policy in policy month t.
 
     Quoted on the **initial** face amount, because face decreases do not reduce the
-    surrender charge [S3][S7].  This is the schedule, not the amount collected: see
+    surrender charge [S3].  This is the schedule, not the amount collected: see
     :func:`surr_charge`.
     """
     return surr_charge_rate(t) * sum_assured() / 1000
@@ -1723,10 +1730,17 @@ def mort_rate(t):
     sex/smoker-distinct ANB validated against ILEC 2012-2019 [REG-R18][REG-R19]; those
     tables are licensed, so the shipped table is a small illustrative one **[std]**.
     Ages beyond the table take its last row, where the rate is 1.0.
+
+    The product is capped at 1, written ``min(q, 1.0)``: a class factor above 1 carries
+    the oldest ages' rates past 1, where the monthly rate ``1 - (1 - q)^(1/12)`` has no
+    real value, and with the bound second a missing input, a NaN, stays NaN, where
+    ``min(1.0, q)`` would read it as 1.  On every shipped point the product reaches 1.0, at
+    attained age 119, and never passes it, so the cap changes no shipped number.
     """
     tbl = data.mort_table()                                          # noqa: F821
     a = min(max(age(t), int(tbl.index.min())), int(tbl.index.max()))
-    return float(tbl.loc[a, "mort_rate"]) * class_factor() * mort_ae_factor  # noqa: F821
+    q = float(tbl.loc[a, "mort_rate"]) * class_factor() * mort_ae_factor  # noqa: F821
+    return min(q, 1.0)
 
 
 def mort_rate_mth(t):

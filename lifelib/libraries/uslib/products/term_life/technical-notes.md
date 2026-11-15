@@ -16,7 +16,7 @@ the reference implementation; [unverified] flags carry over from the research no
 
 - **Scope.** Single-life, fully underwritten level premium term per `product-spec.md`:
   10/20/30-year level periods (base cell 20-year), Jump-to-ART post-level term (PLT) with
-  unchanged face to expiry at attained age 95, convertible before min(end of level period,
+  unchanged face [S2] [S6] to expiry at attained age 95, convertible before min(end of level period,
   attained age 70), no cash value, non-participating [S2] [S3] [S6]. Gross liability cash
   flows only; reserves are pointers (see Valuation section).
 - **Projection frequency [std]: monthly.** Monthly steps (monthiversary processing) are
@@ -49,12 +49,12 @@ the reference implementation; [unverified] flags carry over from the research no
   carriers with verifiable age rules use ANB [S2] [S3] [S5] [S6], and 2017 CSO / 2015 VBT are
   published in ANB variants [R3] [REG-R18]. Attained age = issue age + completed policy
   years, `dur(t) = t // 12` completed at the start of month `t`, so age changes on the
-  anniversary and not on the birthday [S3] [S5] [S6].
+  anniversary and not on the birthday [S3] [S6].
 - **Model points.** Single-policy model points (seriatim); one policy per model point with
   a count/weight field for grouping. VM-20 NPR is a seriatim quantity [R2], so seriatim
   granularity keeps the projection reusable for valuation feeds.
 - **Units.** Currency in USD; face in dollars; rates per $1,000 where contractual
-  [S2] [S3] [S5]; decrement rates are quoted **annual effective** throughout and
+  **[std]**; decrement rates are quoted **annual effective** throughout and
   subscripted `m` where the monthly rate actually applied is meant.
 
 ---
@@ -108,19 +108,19 @@ elements [R2] [REG-R23]).
 
 | Item | Value | Basis |
 |---|---|---|
-| Guaranteed premium scale | Level `AP` for n years, then guaranteed ART scale to age 95; full schedule printed at issue | [S3] [S6] |
+| Guaranteed premium scale | Level `AP` for n years, then guaranteed ART scale to age 95; full schedule printed at issue | [S6] |
 | Anchor schedule (M35/StdNT/$100k/10-yr) | $140 (yrs 1–10); $764, $830, $992 (yr 15), $1,526 (yr 20), $4,250 (yr 30), $10,946 (yr 40), $30,965 (yr 50), $74,780 (yr 60 — the months `t = 708 … 719`, attained age 94, the final policy year to expiry at 95) | [S6] |
 | Policy fee | $65/yr, level, inside `AP` | [S6] |
 | Modal factors | SA 0.52 / Q 0.27 / M 0.08333 | [S6] |
 | Death benefit | Level face; proceeds = face + pro-rata unearned premium − due unpaid premium | [S6] |
 | Grace | 31 days | [S3] [S6] [S7] |
-| Conversion window / credit | min(n, age 70); credit = one annual premium after year 1 | [S2] [S3] [S6] |
+| Conversion window / credit | min(n, age 70); credit = one annual premium after year 1 | window [S2] [S3]; credit [S6] |
 | Expiry | Attained age 95 | [S2] [S3] [S5] [S6] |
 
 ### (b) Current non-guaranteed scales
 
 For this product there are none: premiums and death benefit are fully guaranteed
-[S3] [S6], and the representative product sets the current PLT scale equal to the
+[S6], and the representative product sets the current PLT scale equal to the
 guaranteed Jump-to-ART scale **[std]** (product-spec fn 10; graded current PLT scales
 observed in the market [R4] are a documented variation, not modeled). This block is
 intentionally empty so the input schema matches sibling products (UL etc.).
@@ -298,7 +298,7 @@ Numbered order each month:
    **[std]**.
 5. Apply deaths at `q_m`; pay claims at end of month: F (simplification (i) above).
 6. Apply conversions at `cv_m` if within the eligibility window; pay the conversion credit
-   of one **annualized** premium [S2] [S3] [S6] (before any lapse, so that conversion and
+   of one **annualized** premium [S6] (before any lapse, so that conversion and
    lapse compete on the same survivor pool).
 7. At the level-period-end monthiversary only — month `12n − 1` — apply the shock lapse to
    survivors in full **[std]** (per [R2] [R4] timing).

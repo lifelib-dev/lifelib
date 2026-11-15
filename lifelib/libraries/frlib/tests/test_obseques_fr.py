@@ -715,9 +715,9 @@ def test_the_shipped_inputs_mark_their_own_provenance():
         assert table["provenance"].str.startswith("[std]").all()
 
     surr = pd.read_csv(MODEL_DIR.parent / "surr_scale_table.csv")
-    axa = surr[(surr["scale"] == "axa_50_viager") & (surr["month"] > 0)]
-    assert axa["provenance"].str.startswith("[S14]").all()
-    assert axa[axa["month"] == 60]["surr_value"].iloc[0] == pytest.approx(784.01)
+    s14 = surr[(surr["scale"] == "s14_50_viager") & (surr["month"] > 0)]
+    assert s14["provenance"].str.startswith("[S14]").all()
+    assert s14[s14["month"] == 60]["surr_value"].iloc[0] == pytest.approx(784.01)
 
     single = pd.read_csv(MODEL_DIR.parent / "single_prem_table.csv")
     anchors = single[single["provenance"].str.startswith("[S5]")]
@@ -734,18 +734,18 @@ def test_the_shipped_inputs_mark_their_own_provenance():
 # The nine quinquennial anchors each standardised table publishes, transcribed from
 # _research/obseques.md section 11 exactly as printed, at 60 .. 540 months.
 PUBLISHED_SURR_ANCHORS = {
-    "axa_50_viager": [784.01, 1574.90, 2346.97, 3151.33, 3980.74,
+    "s14_50_viager": [784.01, 1574.90, 2346.97, 3151.33, 3980.74,
                       4828.57, 5659.93, 6429.96, 7135.11],
-    "axa_50_temp10": [2701.65, 5767.93, 6003.11, 6256.67, 6530.11,
+    "s14_50_temp10": [2701.65, 5767.93, 6003.11, 6256.67, 6530.11,
                       6824.80, 7142.86, 7485.99, 7854.08],
-    "cnp_50_viager": [650.15, 1275.19, 1876.68, 2460.79, 3004.02,
-                      3484.41, 3876.12, 4176.77, 4399.53],
-    "cnp_50_unique": [4162.06, 4282.64, 4398.69, 4511.38, 4616.18,
-                      4708.86, 4784.43, 4842.43, 4885.41],
-    "sogecap_70_viager": [1148.0, 2067.0, 2808.0, 3369.0, 3775.0,
-                          4129.0, 4473.0, 5000.0, 5000.0],
-    "mutex_50_temp25": [981.0, 1958.0, 2933.0, 3938.0, 5074.0,
-                        5057.0, 5043.0, 5033.0, 5026.0],
+    "s5_50_viager": [650.15, 1275.19, 1876.68, 2460.79, 3004.02,
+                     3484.41, 3876.12, 4176.77, 4399.53],
+    "s5_50_unique": [4162.06, 4282.64, 4398.69, 4511.38, 4616.18,
+                     4708.86, 4784.43, 4842.43, 4885.41],
+    "s15_70_viager": [1148.0, 2067.0, 2808.0, 3369.0, 3775.0,
+                      4129.0, 4473.0, 5000.0, 5000.0],
+    "s2_50_temp25": [981.0, 1958.0, 2933.0, 3938.0, 5074.0,
+                     5057.0, 5043.0, 5033.0, 5026.0],
 }
 
 
@@ -753,7 +753,7 @@ def test_every_published_surrender_anchor_is_shipped_not_interpolated(obseques):
     """Each grid carries all nine published anchors, not a sample of them.
 
     An omitted anchor does not round the scale, it replaces a published number with a
-    straight line between its neighbours.  The Mutex *temporaire* 25 ans grid is the case
+    straight line between its neighbours.  The [S2] *temporaire* 25 ans grid is the case
     that shows why: it **peaks** at 5074 EUR at 25 years and then declines, because the
     0.40 % p.a. charge on the guaranteed capital keeps running after the last premium.
     Dropping the 300-month anchor puts the model at 4497.50 there - 11 % low - and turns a
@@ -770,7 +770,7 @@ def test_every_published_surrender_anchor_is_shipped_not_interpolated(obseques):
         assert list(grid.index) == [0] + months, scale
         assert list(grid.loc[months]) == pytest.approx(values, abs=CENT), scale
 
-    peak = PUBLISHED_SURR_ANCHORS["mutex_50_temp25"]
+    peak = PUBLISHED_SURR_ANCHORS["s2_50_temp25"]
     assert peak[4] == max(peak) and peak[5] < peak[4] < 2 * peak[3]
     dropped = (peak[3] + peak[5]) / 2                     # the 300-month interpolant
     assert dropped == pytest.approx(4497.50, abs=CENT)

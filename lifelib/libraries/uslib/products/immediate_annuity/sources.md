@@ -103,9 +103,11 @@ below.
 - Publisher: Mutual of Omaha Insurance Company (official producer site)
 - Doc type: producer portfolio overview (16 pages); **for producer use only**
 - URL fetched: https://producer.mutualofomaha.com/enterprise/wcm/connect/14033a75-36a8-4542-b987-a96fa72cc5b3/135880.pdf?MOD=AJPERES&ContentCache=NONE
-- Retrieved: YES (full PDF read). **Caveat carried over: dated 9-2017**; the current
-  Ultra-Income brochure 404s and the product page host does not resolve, so the 6% COLA and
-  "age rating" facts should be re-verified before being relied on.
+- Retrieved: YES (full PDF read). **Caveat carried over: dated 9-2017**; the carrier's
+  Ultra-Income brochure (`lc3146.pdf`) 404s and the product page host does not resolve, so
+  the 6% COLA and "age rating" facts should be re-verified before being relied on.
+- Legend: "For producer use only. Not for use with the general public." — once, on the cover (PDF p.1), directly above "All products and/or features may not be available in all states."; not repeated on pp.2–16 (checked 2026-10-24)
+- Edition: stamped "135880" and "Updated 9-17" on the cover (PDF p.1); the ratings page reads "(Rating as of 03/17)" (PDF p.4). No later edition of form 135880 was located. The carrier's public annuities page (https://www.mutualofomaha.com/annuities/plans) still lists Ultra-Income ("Policy Form C499LNA08P or state equivalent") and Income Access ("Policy Form 6954L-0602 or state equivalent") as income annuities, and names Income Annuity with Premium Return ("Policy Form ICC15L140P or state equivalent") only in its policy-form disclosures (checked 2026-10-24). Facts are as of the document date.
 
 (uslib-immediate_annuity-s9)=
 

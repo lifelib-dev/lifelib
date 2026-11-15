@@ -25,9 +25,10 @@ Facts stated from general knowledge (not verifiable from a retrieved document) a
 
 ### S2 — Pacific Life, "PL PROMISE GUL — Product Facts" (producer piece)
 - Publisher: Pacific Life Insurance Company (Omaha, NE home office; not licensed in New York)
-- Doc type: producer guide / product fact sheet, LFP3476-2400 6/24, 3 pages, "For financial professional use only"
+- Doc type: producer guide / product fact sheet, LFP3476-2400 6/24, 3 pages, "For financial professional use only. Not for use with the public." (footer of every page)
 - URL fetched: https://life.pacificlife.com/content/dam/paclife-lid/public/plexpress/products/pl-promise-gul/LFP3476.pdf
 - Retrieved: YES (PDF fetched, full text extracted)
+- Edition: stamped "LFP3476-2400 6/24" and "23-VER-25B"; still served at the URL above (checked 2026-10-24), and whether a later edition of this piece exists was not determined. The companion client guide has since been revised (see S9; the current guide is stamped "ULC3674-00 3/26"). Both client guides give the children's rider as the Children's Term Rider, form series R17LYCTUL, where this piece gives the Children's Level Term Insurance Rider, Form R18LYCT. Facts are as of the document date.
 - Facts extracted:
   - Product design: "No-lapse guarantee universal life insurance, guarantees from age 90 to lifetime (age 121)"; policy form series P18PRUL, S18PRUL. [S2]
   - Issue ages 0–80, age nearest birthday. [S2]
@@ -37,7 +38,7 @@ Facts stated from general knowledge (not verifiable from a retrieved document) a
   - Surrender charge applies on full surrender, face decrease, or withdrawal within the policy's first 19 years; $25 withdrawal fee. [S2]
   - No-lapse guarantee mechanics: the Lifetime No-Lapse Guarantee Rider (form series R17LYFNL) is included at no additional charge; base no-lapse protection to insured's age 90 is included, extendable by the client "for the duration of their choosing—up to lifetime (age 121)"; if the "net no-lapse guarantee value" is zero, the no-lapse feature terminates and additional premiums would be required to resume it; a policy sustained solely by the no-lapse guarantee builds no cash value. [S2]
   - Return of premium (Enhanced Surrender Value Rider, form series R17LYESV, included at no charge for death benefits >= $50,000 with no-lapse guarantee elected to at least age 100; for issue ages 70+, guarantee duration must be at least 30 years):
-    - Issue ages 0–29: exercise at policy anniversaries 25 (35% / 50% by band) and 35 (75% / 100%);
+    - Issue ages 0–29: exercise at policy anniversaries 25 (35% / 75% by band) and 35 (50% / 100%);
     - Issue ages 30+: anniversaries 15 (50% / 75%), 20 (75% / 100%), 25 (100% / 100%);
     - lower percentages for face $50K–<$250K, higher for $250K+; maximum refund not to exceed 40% of the policy's death benefit; 60-day window following the anniversary; not available under $50,000 face. [S2]
   - Riders: Waiver of Monthly Deduction Rider (R18WMD; optional; issue ages 20–59; waives monthly policy charges during total disability prior to age 65; monthly charge; not available above Table 4 rating or face >= $5 million); Terminal Illness Rider (R16LYTIR; prepayment of up to 75% of death benefit, max $500,000, life expectancy 12 months or fewer); Children's Level Term Rider (R18LYCT; up to $10,000 per child, conversion at child's 25th birthday or insured's 65th to UL at up to 5x coverage, max $50,000, no underwriting; paid-up term for children on insured's death); Chronic Illness Care Rider (R18LYCHR; accelerated death benefit for chronic illness — 2 of 6 ADLs or severe cognitive impairment; eligible insureds 18–75; benefit payments capped at 100% of IRS per diem; monthly rider charge; added at issue). [S2]
@@ -64,9 +65,10 @@ Facts stated from general knowledge (not verifiable from a retrieved document) a
 
 ### S4 — Nationwide, "Nationwide No-Lapse Guarantee UL II — Product Highlights" (producer)
 - Publisher: Nationwide Life Insurance Company / Nationwide Life and Annuity Insurance Company, Columbus, OH
-- Doc type: producer product highlights sheet, FLM-1166AO.1 (07/18), 4 pages, "For insurance professional use only"
+- Doc type: producer product highlights sheet, FLM-1166AO.1 (07/18), 4 pages, "FOR INSURANCE PROFESSIONAL USE ONLY — NOT FOR DISTRIBUTION TO THE PUBLIC" (once on every page)
 - URL fetched: https://cdn2.hubspot.net/hubfs/1748227/NLG%20II%20PRODUCT%20HIGHLIGHTS%20FLM_1166AO_1_NLG_Product_Highlights_Final1.pdf (marketing-hub mirror of the official piece)
 - Retrieved: YES (PDF fetched, full text extracted)
+- Edition: stamped "FLM-1166AO.1 (07/18)" and "© 2018 Nationwide"; superseded by FLM-1166AO.3 (05/24), which Nationwide serves at https://nationwidefinancial.com/media/pdf/FLM-1166AO.pdf (checked 2026-10-24). The 05/24 edition repeats the parameters used here, but its rider list replaces the Accelerated Death Benefit for Terminal Illness Rider with Living Access Benefits (Chronic, Critical and Terminal Illness Riders). Facts are as of the document date.
 - Facts extracted:
   - Product type: flexible premium no-lapse guarantee universal life. Target market: risk-averse affluent clients ages 45–70 for estate/legacy, and ages 30–50 for income replacement. [S4]
   - Underwriting classes and issue ages (age nearest birthday): Nontobacco Preferred Plus 18–80; Nontobacco Preferred 18–80; Nontobacco Standard Plus 18–80; Nontobacco Standard 18–85; Tobacco Preferred 18–80; Tobacco Standard 18–85. [S4]
@@ -114,9 +116,10 @@ Facts stated from general knowledge (not verifiable from a retrieved document) a
 
 ### S7 — Protective, "Protective Lifetime Assurance UL — Producer Guide"
 - Publisher: Protective Life Insurance Company, Omaha, NE (successor GUL to Advantage Choice UL)
-- Doc type: producer guide, PLAG.1387452 (10.25), policy form UL-22, 8 pages, "For financial professional use only"
+- Doc type: producer guide, PLAG.1387452 (10.25), policy form UL-22, 8 pages, "For Financial Professional Use Only. Not for Use With Consumers." (every page)
 - URL fetched: https://finpro.protective.com/-/media/project/pli/finpro/download-assets/assets/1387000-1387999/plag/plag-1387452-10-25-laul-producerguide-10-13-25-digital.pdf
 - Retrieved: YES (PDF fetched, full text extracted)
+- Edition: stamped "PLAG.1387452 (10.25)"; superseded by PLAG.1387452 (11.25), the producer guide that Protective's protective.com product page now links (checked 2026-10-24). The 11.25 revision drops the "Optional endorsements and riders" section (the source here of the rider, return-of-premium endorsement, terminal-illness and premium-waiver facts) and describes the product as "Flexible premium, adjustable universal life insurance" rather than "Level-pay universal life insurance". A March 2026 repricing also changed the guarantee-age options [S8]. Facts are as of the document date.
 - Facts extracted:
   - Product design: "Level-pay universal life insurance for clients desiring customizable long-term guarantee lengths paired with predictable premium payments"; coverage length must be at least 20 years. [S7]
   - Issue ages/risk classes: Select Preferred 18–75; Preferred 18–85; Non-Tobacco 18–85; Tobacco 18–85. [S7]
@@ -149,6 +152,7 @@ Facts stated from general knowledge (not verifiable from a retrieved document) a
 - Doc type: consumer brochure, 15-47468-03 3/23 (23-VER-24), 6 pages
 - URL fetched: https://www.pacificlife.com/content/dam/paclife/lid/public/brochures/15-47468-03.pdf
 - Retrieved: YES (PDF fetched, full text extracted)
+- Edition: stamped "15-47468-03 3/23"; replaced by the client guide stamped "ULC3674-00 3/26" (23-VER-24B, served as LFC3674_Promise_GUL.pdf), which Pacific Life's public universal life page now links instead (checked 2026-10-24). Facts are as of the document date.
 - Facts extracted:
   - "Guaranteed coverage to age 90 (extendable up to age 121)"; policy guaranteed to remain in place until age 90 as long as at least the no-lapse guarantee premiums stated in the policy are paid; higher premiums extend the guarantee up to lifetime (121). [S9]
   - Guarantee mechanics: "A guarantee is included in the policy that will prevent policy lapse as long the net no-lapse guarantee value is sufficient to cover monthly policy charges." [S9]
@@ -297,7 +301,7 @@ Facts stated from general knowledge (not verifiable from a retrieved document) a
 ### Product architecture and guarantee mechanics
 - ULSG is flexible-premium universal life with the usual UL account-value mechanics (premium loads, monthly COI/expense deductions, interest crediting) plus a secondary guarantee: a conditional guarantee that the policy stays in force even if the account/fund value is exhausted [R2 definition; S2, S4, S9 product statements].
 - Two canonical secondary-guarantee designs, both recognized by regulation:
-  - Shadow account: a notional account with its own premium credits, interest credits, and COI/expense charges; the policy cannot lapse while the shadow (guarantee) value is positive [R2 VM-01; R1 8E Design #1]. Product examples: Nationwide's "extended no-lapse guaranteed value" that must stay > 0 net of indebtedness [S4]; Pacific Life's "net no-lapse guarantee value" that must be "sufficient to cover monthly policy charges," with the guarantee terminating if it hits zero [S2, S9].
+  - Shadow account: a notional account with its own premium credits, interest credits, and COI/expense charges; the policy cannot lapse while the shadow (guarantee) value is positive [R2 VM-01; R1 8E Design #1]. Product examples: Nationwide's "extended no-lapse guaranteed value" that must stay > 0 net of indebtedness [S4]; Pacific Life's "net no-lapse guarantee value" that must be "sufficient to cover monthly policy charges" [S9], with the guarantee terminating if it hits zero [S2, S9].
   - Cumulative premium test: policy stays in force if cumulative premiums paid (less withdrawals/indebtedness) meet a required accumulated-premium schedule [R1 8E Design #2; R2]. Product examples: Nationwide's initial (first-5-years) no-lapse guarantee [S4]; Penn Mutual Protection Guard's requirement that premiums paid less withdrawals exceed required no-lapse premiums [S5].
 - Guarantee duration election: the owner selects the guarantee horizon at issue and effectively "buys" duration through funding level:
   - Pacific Life: base guarantee to age 90 included; extendable to any duration up to lifetime/age 121 via higher premiums [S2, S9].
@@ -305,11 +309,11 @@ Facts stated from general knowledge (not verifiable from a retrieved document) a
   - Protective (Lifetime Assurance UL): no-lapse guarantee to age 90, 95, 100, 105, 110, or lifetime (121); minimum coverage length 20 years [S7, S8].
   - Corebridge: owner chooses "the number of years or age" of the guarantee [S1]; the launch announcement described a default to-age-105 guarantee [unverified — press-release snippet not fetched].
 - Late/missed premiums: because the guarantee measure accumulates with interest, timing matters. Pacific Life explicitly allows premiums up to one month early or late without harming the guarantee [S9]. Protective's design degrades gracefully — a missed premium shortens the guarantee age rather than voiding the guarantee (example: guarantee to 105 falls to 96 after skipping premiums in years 11 and 21) [S3]. Nationwide's initial NLG is a strict cumulative test [S4].
-- Catch-up provisions: Protective states lapse protection, once lost, "may be restored by paying additional or higher premiums," possibly significantly higher than illustrated [S7]; Pacific Life states additional premiums are required to resume a terminated no-lapse feature [S2]; Penn Mutual markets skip-and-catch-up flexibility within the premium test [S5]. AG 38 example 7 prescribes reserve treatment for unlimited catch-up rights (treated as unexpired secondary guarantees) [R1].
+- Catch-up provisions: Protective states that if lapse protection is lost, "your clients may restore it by paying additional or higher premiums," possibly significantly higher than illustrated [S7]; Pacific Life states additional premiums are required to resume a terminated no-lapse feature [S2]; Penn Mutual markets skip-and-catch-up flexibility within the premium test [S5]. AG 38 example 7 prescribes reserve treatment for unlimited catch-up rights (treated as unexpired secondary guarantees) [R1].
 - Effect of loans/withdrawals on the guarantee:
   - Penn Mutual: any policy loan nullifies the no-lapse guarantee; withdrawals reduce the premium-test measure [S5].
   - Nationwide: indebtedness directly reduces both the initial NLG premium test and the extended NLG value; partial surrenders and fees also subtract [S4].
-  - Pacific Life / Protective: loans and withdrawals reduce/impair the guarantee value or its duration (and withdrawals within the surrender-charge period also trigger surrender charges at Pacific Life) [S2, S3, S7].
+  - Protective: loans and withdrawals affect the cost and length of lapse protection [S3, S7]. Pacific Life: withdrawals within the surrender-charge period trigger surrender charges, and loans and withdrawals may reduce return-of-premium refund amounts [S2]; neither Pacific Life document (S2, S9) states how loans or withdrawals affect the no-lapse guarantee itself.
 - Thin cash value: guaranteed crediting is low (2.0% at Protective and Penn Mutual [S3, S5, S7]) and charges are high (25% premium load at Protective [S3, S7]); carriers state outright that a policy sustained solely by the no-lapse guarantee will not build cash value [S2] and that "cash value accumulation is unlikely" [S7]. Model 585 gives the commissioner authority to require higher cash values where substantially level benefit charges develop low or no cash values [R3].
 
 ### Issue ages and underwriting
@@ -332,7 +336,7 @@ Facts stated from general knowledge (not verifiable from a retrieved document) a
 ### Premium structure and premium guarantees
 - Flexible premium chassis, but sold and illustrated with a level "no-lapse guarantee premium" solved for the elected guarantee duration; paying more shortens the payment period or extends the guarantee; single-pay/1035 funding is a design "sweet spot" [S1, S2].
 - Modal loadings: non-annual modes carry modal factors (cost more); monthly requires EFT (Pacific Life) [S2].
-- Guaranteed premium concept: Corebridge markets "guaranteed premium that fits your budget" — level guaranteed premiums for the elected guarantee [S1]; Protective LAUL is described as "level-pay UL ... predictable premium payments" [S7].
+- Guaranteed premium concept: Corebridge markets "guaranteed premium that fits your budget" — level guaranteed premiums for the elected guarantee [S1]; Protective LAUL was described in the 10.25 producer guide as "level-pay UL ... predictable premium payments" [S7].
 - Rolling target compensation: 2-year rolling target (Nationwide) [S4].
 
 ### Charge structure (from retrieved documents)
@@ -346,7 +350,7 @@ Facts stated from general knowledge (not verifiable from a retrieved document) a
 ### Interest crediting
 - Guaranteed minimum crediting rate on the (real) account value: 2.0% (Protective ACUL/LAUL; Penn Mutual) [S3, S5, S7]; current rates discretionary, set periodically/annually [S3, S5].
 - Loaned values: credited 3.0% guaranteed (Nationwide) [S4]; 2.0% guaranteed (Protective LAUL) [S7].
-- Shadow-account credited rates are separate, internal parameters (not disclosed in consumer materials) [R2 definition; S4 mechanics]; AG 38 8E caps guaranteed shadow-account credits at Moody's composite corporate yield + 3% for reserve-classification purposes [R1].
+- Shadow-account credited rates are separate, internal parameters (not disclosed in consumer materials) [R2 definition]; AG 38 8E caps guaranteed shadow-account credits at Moody's composite corporate yield + 3% for reserve-classification purposes [R1].
 - Model 585 requires the policy to state guaranteed minimum interest and maximum charges, and forbids interest credits remaining conditional for longer than 24 months [R3].
 
 ### Surrender charges and return-of-premium features
@@ -359,19 +363,19 @@ Facts stated from general knowledge (not verifiable from a retrieved document) a
 - Withdrawal/partial surrender fee: $25 across Pacific Life, Nationwide, Protective [S2, S4, S7]; Nationwide minimum partial surrender $500, maximum tied to net surrender value less three months' deductions [S4].
 
 ### Loans
-- Availability: after policy year 1 (Nationwide, Protective, Pacific Life implied) [S3, S4, S7].
-- Fixed-rate designs: 5.0% charged in arrears with 3.0% credited on loaned values, both guaranteed (Nationwide — 200 bps guaranteed spread) [S4]; 5% charged / 2.0% credited (Protective LAUL — 300 bps spread) [S7]; 5% in arrears (Protective ACUL) [S3].
+- Availability: after policy year 1 (Nationwide, Protective) [S3, S4, S7]; Pacific Life's documents give no loan availability, so "after year 1" there is an assumption [unverified].
+- Fixed-rate designs: 5.0% charged with 3.0% credited on loaned values, both guaranteed (Nationwide — 200 bps guaranteed spread) [S4]; 5% charged / 2.0% credited (Protective LAUL — 300 bps spread) [S7]; 5% in arrears (Protective ACUL) [S3].
 - Variable-rate design: adjustable loan rate declared each January 1 (Penn Mutual) [S5].
 - Maximum loan: net surrender value less three months of deductions (Nationwide) [S4].
-- Guarantee interaction: loans reduce the guarantee value (Nationwide, Pacific Life, Protective) or void the guarantee entirely (Penn Mutual) [S4, S2, S7, S5].
+- Guarantee interaction: loans reduce the guarantee value (Nationwide) [S4], affect the cost and length of lapse protection (Protective) [S7], or void the guarantee entirely (Penn Mutual) [S5]; the Pacific Life documents say only that loans and withdrawals may reduce return-of-premium refund amounts [S2].
 
 ### Riders (common ULSG lineup, all from retrieved documents)
 - Terminal illness accelerated death benefit: up to 75% of DB, max $500,000, 12-month prognosis (Pacific Life) [S2, S9]; up to 60% of DB or $1 million (Protective LAUL) [S7]; offered by Nationwide and Penn Mutual [S4, S5].
 - Chronic illness accelerated benefit: 2-of-6 ADLs or severe cognitive impairment as trigger; per-diem-capped payments (Pacific Life, $3M advance cap in client guide) [S2, S9]; Corebridge Accelerated Access Solution (monthly payments until DB exhausted) [S1]; Penn Mutual CIAB automatically included, 90-day condition duration [S5]; Protective ExtendCare [S7]; Nationwide offers a true LTC Rider II (long-term care, including informal care) [S4].
-- Longevity/income riders: Corebridge Lifestyle Income Solution (DB converted to income from age 85) [S1]; Nationwide Income Provider-style owner-directed settlement options / Protective Income Provider Option endorsement (guaranteed installment payout of DB) [S4, S7].
+- Longevity/income riders: Corebridge Lifestyle Income Solution (DB converted to income from age 85) [S1]; Nationwide owner-directed settlement options [S4]; Protective Income Provider Option endorsement (guaranteed installment payout of DB) [S7].
 - Disability riders: waiver of monthly deductions (issue ages 20–59 PacLife, to age 65 benefit; 0–55 Penn Mutual with 4-month wait; Nationwide pays monthly deductions but not the full no-lapse premium — an important guarantee gap) [S2, S5, S4]; waiver of specified premium (Protective LAUL, 6-month wait) [S7]; Penn Mutual Disability Completion Benefit (waives all charges and credits premium to CV to age 70) [S5].
 - Children's term riders: $10,000/child typical with conversion privileges (PacLife: 5x up to $50K at child age 25; Penn Mutual: conversion at 23) [S2, S9, S5].
-- Accidental death benefit; additional insured term; guaranteed increase option; overloan protection; supplemental (business) exchange (Penn Mutual list) [S5, S4, S6].
+- Accidental death benefit [S4, S5, S6]; additional insured term; guaranteed increase option; overloan protection; supplemental (business) exchange (Penn Mutual list) [S5].
 
 ### Maturity / age-121 provisions
 - Nationwide: premiums to attained age 120, maturity at 120 with maturity extension provision [S4].
@@ -404,7 +408,7 @@ Facts stated from general knowledge (not verifiable from a retrieved document) a
    - Cumulative-premium-test designs persist in two places: as a simple initial guarantee layered under a shadow account (Nationwide's 5-year initial NLG) [S4], and as the whole design for shorter/limited guarantees (Penn Mutual Protection Guard, guarantee up to 30 years) [S5].
    - Regulation recognizes exactly these two families (VM-01 shadow account definition; AG 38 8E Policy Designs #1/#2) and treats multi-charge-set variants punitively (AG 38 Design #3, VM-20 multiple-SG rules) [R1, R2].
 2. Guarantee duration menu. Modern products let the client dial duration continuously through funding (PacLife: any duration from age 90 to 121 [S2]; Corebridge: any years/age [S1]), or from a discrete menu (Protective LAUL: 90/95/100/105/110/121 [S8]; Nationwide: age-120 or age-70 chassis, customizable [S4]). Penn Mutual's design caps the guarantee at 30 years — a "guard rail" design rather than lifetime GUL [S5].
-3. Loans vs the guarantee. The harshest treatment is Penn Mutual (any loan nullifies the guarantee) [S5]; mainstream treatment deducts indebtedness from the guarantee value (Nationwide, PacLife) [S4, S2]. This distinction materially changes liability modeling of loan utilization.
+3. Loans vs the guarantee. The harshest treatment is Penn Mutual (any loan nullifies the guarantee) [S5]; Nationwide deducts indebtedness from the guarantee value [S4]; the Pacific Life documents state no loan treatment for the guarantee. This distinction materially changes liability modeling of loan utilization.
 4. Surrender charges. Full range observed: none (Protective LAUL, offset by only a 25%-of-premium ROP) [S7], 9 years (Protective ACUL) [S3], 19 years incl. withdrawals/face decreases (PacLife) [S2], 20 years (Nationwide) [S4].
 5. Return-of-premium exit windows. Nearly universal in the segment but with different anniversaries (15/20/25 PacLife; 16/21 Nationwide; 20/25 Corebridge; 21/26 Protective ACUL; any time after 10 for LAUL's 25%) and caps (40% of face/DB at PacLife/Nationwide/Corebridge vs 50% of lowest DB at Protective) [S1–S4, S7, S9].
 6. Death benefit options. Guarantee-focused carriers restrict to level-only (PacLife, Nationwide) [S2, S4]; products marketed with accumulation flexibility keep level+increasing (Penn Mutual) [S5].

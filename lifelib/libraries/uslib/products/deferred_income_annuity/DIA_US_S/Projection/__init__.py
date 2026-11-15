@@ -770,13 +770,15 @@ def mort_rate(t, life):
     unprojected, which is what the worked example's survival curve is.
     ``mort_ae_factor`` is the experience A/E overlay, **[std]** at 1.00 - the notes set
     the deferral-phase A/E at 1.00 and give no number for the payout phase, the 2020-2024
-    study being cited without a factor [R15][REG-R61].
+    study being cited without a factor [R15][REG-R61].  The rate is capped at 1, the bound
+    second, so that a missing input, a NaN, stays NaN, where ``min(1.0, q)`` would read it
+    as 1.
     """
     q = mort_rate_base(t, life)
     if mort_basis() == "generational":
         k = calendar_year(t) - mort_table_year                       # noqa: F821
         q = q * (1.0 - improvement_rate(t, life)) ** k
-    return min(1.0, mort_ae_factor * q)                              # noqa: F821
+    return min(mort_ae_factor * q, 1.0)                              # noqa: F821
 
 
 def mort_rate_mth(t, life):

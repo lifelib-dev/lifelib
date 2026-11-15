@@ -102,7 +102,7 @@ deterministic run.
 | `fund_expense[i]` | annual rate | (0.0095, 0.0065) **[std]**, within 0.52%–2.28% [S2] |
 | `glwb_option` | enum {Value, Core, Plus} | Core [S3] |
 | `glwb_stepup_basis` | enum {annual_CV, highest_quarterly_CV} | annual_CV [S3] |
-| `gmdb_option` | enum {basic, rollup, HQAV, combination} | rollup [S3] |
+| `gmdb_option` | enum {basic, rollup, ratchet, combination} | rollup [S3] |
 | `cdsc_schedule` | vector by completed years since premium receipt | 8.5/7.5/6.5/5.5/5.0/4.0/2.0/0.0 % [S2] |
 | `rate_sheet_date` | date (first-class assumption) | 2026-04-27 [S3] |
 | `issue_date` | date | — |

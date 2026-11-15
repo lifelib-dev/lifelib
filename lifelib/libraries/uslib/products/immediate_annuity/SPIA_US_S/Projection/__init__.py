@@ -707,12 +707,14 @@ def mort_rate(t, life):
     attained age in each future calendar year uses its own improved rate.  The A/E factor
     belongs on the *projected* basis, matching the study's measurement convention - on
     the unprojected table the study's own answer is 99.6% [R9], and applying 1.084 there
-    misstates the mortality level by about 8%.
+    misstates the mortality level by about 8%.  The code writes each cap with its float
+    bound second, ``min(q, 1.0)``, so that a missing input, a NaN, stays NaN, where
+    ``min(1.0, q)`` would read it as 1.
     """
     k = calendar_year(t) - mort_table_year                           # noqa: F821
     q_base = mort_rate_base(t, life) * (1.0 - improvement_rate(t, life)) ** k
-    q_be = min(1.0, mort_ae_factor * q_base)                         # noqa: F821
-    return min(1.0, rating_factor() * q_be)
+    q_be = min(mort_ae_factor * q_base, 1.0)                         # noqa: F821
+    return min(rating_factor() * q_be, 1.0)
 
 
 def mort_rate_mth(t, life):

@@ -140,7 +140,7 @@ Footnotes:
 | Cost of insurance (COI) | Monthly rate × net amount at risk / 1,000; varies by age, sex, class, duration, band; guaranteed maximum = 2017 CSO ANB smoker-distinct ultimate; current = 65% of guaranteed | structure [S3]; guaranteed basis **[std]**/[REG-R17]; current ratio **[std]** (F15) |
 | Indexed-account asset charge | None in baseline (BIA has no charge-funded enhancement) | [R1] (F16) |
 | Surrender charge | Per $1,000 of initial face (and of each increase layer), 10-year period; initial $25.00 per $1,000 declining linearly to 0 at year 11 | period [S1] [S5] [S7]; scale **[std]** (F17) |
-| Withdrawal fee | $25 per withdrawal; minimum withdrawal $500; CSV may not fall below $500 | [S3] |
+| Withdrawal fee | $25 per withdrawal; minimum withdrawal $500; CSV may not fall below $500 | [S3] (2017 edition; no withdrawal fee in the 09/2022 print [S4]) |
 
 Footnotes:
 - **F12 [std]:** Observed at three carriers: 4% current all years / 6% guaranteed (6%/8%
@@ -180,7 +180,7 @@ Footnotes:
 | Participating loan — credited | Loaned value remains credited at indexed-account rates | [S5] (F19) |
 | Loan sourcing | Fixed account first, then pro rata across index accounts/segments | [S3] |
 | Minimum loan | $500 | [S3] |
-| Withdrawals | After free-look; pro rata across unloaned accounts; $500 minimum; $25 fee | [S3] |
+| Withdrawals | After free-look; pro rata across unloaned accounts; $500 minimum; $25 fee | [S3] (fee: 2017 edition; no withdrawal fee in the 09/2022 print [S4]) |
 | Illustration constraint | Illustrated loan credited rate ≤ illustrated loan charged rate + 50 bps | [R1] |
 
 Footnotes:
@@ -275,7 +275,8 @@ to 1% at 94–120) [S3].
 
 ### Withdrawals
 Partial withdrawals after free-look, pro rata across unloaned accounts, $500 minimum, $25
-fee [S3]; mid-segment withdrawals forfeit index credit on the withdrawn amount [S3].
+fee [S3] (2017 edition; no withdrawal fee in the 09/2022 print [S4]); mid-segment
+withdrawals forfeit index credit on the withdrawn amount [S3].
 Withdrawals reduce Option A death benefit dollar-for-dollar **[std]** (standard UL
 practice; not explicit in retrieved brochures). Withdrawals within the first 15 policy
 years associated with benefit reductions can be taxable under §7702(f)(7)(B) [S1].
@@ -285,7 +286,9 @@ If cash surrender value cannot cover the monthly deduction and the no-lapse test
 a 61-day grace period begins [S3]; the policy lapses if the required premium is unpaid at
 grace end. No-lapse test: cumulative premiums less loans/withdrawals ≥ cumulative minimum
 monthly no-lapse premium during the no-lapse period [S3] [S4] (representative MNLP rate:
-male non-tobacco issue age 45, band 1: $20.80 per $1,000 face annually [S3]).
+$20.80 per $1,000 face annually, the male non-tobacco issue age 45 entry of one carrier's
+base annual minimum premium rate table for faces of $25,000–$99,999 [S3]; that carrier
+does not label the table as MNLP rates, so reading it as the annualized MNLP is **[std]**).
 Reinstatement within 3 years with evidence of insurability [S3].
 
 ### Renewal / conversion / maturity

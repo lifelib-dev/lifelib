@@ -120,7 +120,7 @@ ASOP 2 [R8]); class (c) is the modeler's view of policyholder/insurer experience
 | Surrender charge schedule | $9.00/$1,000 initial, linear monthly runoff, 0 from the last month of policy year 9 (`t = 107`) | pattern [S1] [S2], mechanics [S3], amount **[std]** |
 | Corridor factors (GPT) | specimen table 250% (ages 0–40) → 101% (94+) | [S3] [R2] |
 | Loan spread (charged − credited on loaned AV) | 0.75% | [S3]; level **[std]** |
-| Grace | 61 days; required payment 3xMD + load | [S2] [S3] |
+| Grace | 61 days; required payment 3xMD + load | 61 days [S2] [S3]; required payment [S3] |
 | Charges cease / premiums stop | attained age 121 | [S2] [S3] |
 
 ### (b) Current non-guaranteed scales (snapshot; revisable NGEs [R8])
