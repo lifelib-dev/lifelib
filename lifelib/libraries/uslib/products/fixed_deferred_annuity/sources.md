@@ -12,7 +12,8 @@ in full at the end of this file, whose own access dates (2026-08-03 or 2026-08-0
 carried from `references/regulatory-and-actuarial-references.md`, and the four AP&P Manual
 appendix entries **REG-R151, REG-R152, REG-R153 and REG-R157**, accessed **2026-08-06** and
 added after drafting. Those four are the only post-drafting additions; nothing else in this
-file changed source or status.
+file changed source or status. The S1 and S2 legend and edition notes were completed on
+review (checked 2026-10-24); they add no source.
 
 ---
 
@@ -24,18 +25,33 @@ file changed source or status.
 - Publisher: Athene Annuity & Life Assurance Company (Wilmington, DE; main administrative
   office Greenville, SC). PDF hosted on iPipeline's forms repository, which distributes
   carrier-authored producer material.
-- Doc type: producer product fact sheet (2 pages), "FOR PRODUCER USE ONLY"
+- Doc type: producer product fact sheet (2 pages), "FOR PRODUCER USE ONLY. NOT TO BE USED
+  WITH THE OFFER OR SALE OF ANNUITIES." (banner at the top of both pages)
 - URL fetched: https://files.ipipeline.com/AALAC/AN1007CA.pdf
 - Retrieved: YES (full text extracted)
+- Edition: dated "(10/14)" in the footer of both pages. Superseded: the issuer merged into
+  Athene Annuity and Life Company effective October 11, 2024 (per an April 2026 Form N-4/A
+  filed with the SEC by Athene Annuity & Life Assurance Company of New York), and the
+  carrier's current MaxRate material, consumer brochure 76046 (04/22/26) for "Athene MaxRate
+  MYG (09/15) or state variations", describes a different design (3-, 5- and 7-year
+  guarantee terms with other withdrawal-charge schedules, an MVA in most states, no
+  attained-age cap table) (checked 2026-10-24). Facts are as of the document date.
 - Note carried over: this CA version has **no** market value adjustment provision.
 
 (uslib-fixed_deferred_annuity-s2)=
 
 ### S2. Athene Annuity & Life Assurance Company of New York — "ATHENE MaxRate® Multi-Year Guarantee Annuity (MYG)", producer fact sheet AN1007-NY (06/16)
 - Publisher: Athene Annuity & Life Assurance Company of New York (Nyack, NY)
-- Doc type: producer product fact sheet (4 pages), New York only
+- Doc type: producer product fact sheet (4 pages), New York only, "FOR PRODUCER USE ONLY. NOT
+  TO BE USED WITH THE OFFER OR SALE OF ANNUITIES." (header band on pages 1–3)
 - URL fetched: https://files.ipipeline.com/AALAC/AN1007NY.pdf
 - Retrieved: YES (full text extracted)
+- Edition: dated "(06/16)" in the footer of pages 1 and 4. Apparently superseded: the
+  carrier's current New York MaxRate material, consumer brochure 76047 (06/01/26) NY for
+  "Athene MaxRate MYG NMV (09/15)", describes a different design (3-, 5- and 7-year
+  guarantee terms, a level 10% withdrawal charge in its chart, no MVA described, no
+  attained-age cap table); whether this 2016 form is still sold was not confirmed (checked
+  2026-10-24). Facts are as of the document date.
 - Role in this library: source of the **symmetrically capped** MVA (adjustment, positive or
   negative, not greater than the withdrawal charge) and of the renewal 5/4/3/2/1 schedule.
 

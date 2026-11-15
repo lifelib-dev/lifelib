@@ -127,7 +127,7 @@ patterns; ASOP 2 governs insurer NGE determination itself [REG-R26]).
 | Shadow credited rate i^g | 5.5% annual effective (guaranteed) | **[std]**; AG 38 8E cap context [R1] |
 | Shadow COI | 55% of 2017 CSO maximum | **[std]** |
 | Shadow per-unit charge | $0.05 per $1,000 initial face /month; no per-policy charge | **[std]** |
-| Loan rates | 5.0% charged in arrears / 3.0% credited on loaned AV, guaranteed | [S4] |
+| Loan rates | 5.0% charged in arrears / 3.0% credited on loaned AV, guaranteed | [S4]; [S3], [S7] (in arrears) |
 | Surrender charge | 15-year linear schedule, $18/$1,000 initial level | **[std]** (spec note) |
 | ROP endorsement | 50% of CumPrem at anniversary 20, 100% at 25; cap 40% of face; 60-day windows | [S1]; [S3], [S4] (windows) |
 | Grace period | 61 days | [S7] |
@@ -224,8 +224,8 @@ anchored to the public highlights findings.
    loaned credited monthly rate (3.0% annual [S4]):
    `AV_t = AV_t''·(1+j_c)` (split loaned/unloaned when `L > 0`).
    `SG_t = SG_t''·(1+j^g)` — no floor at zero.
-8. **Loan interest.** `L_t = L_{t−1}·(1 + (1.05)^{1/12} − 1)` (5% in arrears [S4],
-   accrued monthly **[std]**; `L_{t−1}` is `loan_init` when `t = 0`).
+8. **Loan interest.** `L_t = L_{t−1}·(1 + (1.05)^{1/12} − 1)` (5% [S4], in arrears
+   [S3], [S7], accrued monthly **[std]**; `L_{t−1}` is `loan_init` when `t = 0`).
 9. **In-force test.** Guarantee active iff `SG_t − L_t > 0` [S4; S2, S9]. The policy
    is in force iff (base account can cover deductions, i.e., not in expired grace)
    OR the guarantee is active. Lapse occurs ONLY if all three hold: (i) base AV net
@@ -309,8 +309,8 @@ these notes (P* = $10,800 for male 60 NT Standard, $500,000, lifetime) is **[std
 
 To model the cumulative-premium-test design [R1 8E Design #2; S4 initial NLG; S5](#uslib-guaranteed_ul-r1):
 replace `SG_t` with the pair (`CumPrem_t^net`, `ReqPrem_t`), where
-`CumPrem_t^net = Σ premiums − Σ withdrawals − L_t` [S4] and `ReqPrem_t` is the
-contractual required accumulated premium schedule; guarantee active iff
+`CumPrem_t^net = Σ premiums − Σ withdrawals − Σ withdrawal fees − L_t` [S4] and
+`ReqPrem_t` is the contractual required accumulated premium schedule; guarantee active iff
 `CumPrem_t^net ≥ ReqPrem_t` [S4], [S5]. All other machinery (grace, catch-up = the
 schedule shortfall, solve on the required schedule) is unchanged. Note the harsher
 observed loan treatment in this family: one design voids the guarantee entirely on

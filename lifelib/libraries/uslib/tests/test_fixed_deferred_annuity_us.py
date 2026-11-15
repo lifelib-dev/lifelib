@@ -565,7 +565,11 @@ def test_base_lapse_and_the_shock(anchor):
 
 
 def test_rollover_repeats_the_shock_every_guarantee_period(anchor):
-    """Camp A: a repeating shock at contract years 6, 11, 16, ... [S1][S2][S5][S11]."""
+    """Camp A: a repeating shock at contract years 6, 11, 16, ... [S1] [S2] [S5] [S11].
+
+    The roll-over at each boundary is sourced; the 5-year cycle is the composite's [std]
+    (S1's California form renews for the same duration and has no MVA).
+    """
     shocks = [y for y in range(1, 41)
               if anchor.lapse_rate_base(12 * (y - 1)) == 0.75]
     assert shocks == [6, 11, 16, 21, 26, 31, 36]

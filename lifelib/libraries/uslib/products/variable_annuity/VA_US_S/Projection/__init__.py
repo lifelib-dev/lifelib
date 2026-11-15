@@ -497,7 +497,7 @@ def fund_expense_rate(i):
 
 
 def glwb_option():
-    """The GLWB election, and the key into the GAWA% grid; ``single_core`` [S3]."""
+    """The GLWB election, and the key into the GAWA% grid; ``s3_single`` [S3]."""
     return model_point()["glwb_option"]
 
 
@@ -515,11 +515,11 @@ def stepup_basis():
 
 
 def gmdb_option():
-    """``rollup``, ``HQAV`` or ``basic``.
+    """``rollup``, ``ratchet`` or ``basic``.
 
     ``rollup`` is the representative election: ``RB(t) = RB(t-1)(1 + rho)`` at each
     anniversary to the age cutoff, with a dollar-for-dollar withdrawal allowance applied
-    at Contract Year end [S1][S3]. ``HQAV`` is the annual ratchet ``max(RB, AV)`` at each
+    at Contract Year end [S1][S3]. ``ratchet`` is the annual ratchet ``max(RB, AV)`` at each
     anniversary with proportional withdrawal treatment [S1][S4][S7]. ``basic`` is the
     included no-charge proportional return of premium [S1][S2]; on that election the base
     *is* the return of premium, so :func:`np_pp` is not floored under it as well — see
@@ -1658,7 +1658,7 @@ def np_pp(t):
     """NP(t): cumulative Net Premiums, a floor under the death benefit [S1].
 
     Updated by premium only, as the notes' state table has it: it is never reduced for a
-    withdrawal. Under the ``rollup`` and ``HQAV`` elections it is therefore an unreduced
+    withdrawal. Under the ``rollup`` and ``ratchet`` elections it is therefore an unreduced
     floor beneath ``DB``. Under ``gmdb_option = "basic"`` the elected form is itself the
     proportional return of premium — carried on :func:`rb_pp`, which *does* fall with a
     withdrawal — and this cells is not layered over it, or the election would have no
@@ -1768,7 +1768,7 @@ def rb_pp_at(t, timing):
     """RB at month t read at ``BEF_PREM``, ``BEF_WD`` or ``BEF_ANNIV``.
 
     The ``rollup`` form accrues its withdrawal adjustment and applies it at the Contract
-    Year end; the ``HQAV`` and ``basic`` forms reduce the base proportionally at the
+    Year end; the ``ratchet`` and ``basic`` forms reduce the base proportionally at the
     withdrawal itself [S1].
     """
     r = rb_pp_init() if t == 0 else rb_pp(t - 1)
@@ -1804,7 +1804,7 @@ def rb_pp(t):
         r = max(0.0, (r - gmdb_dfd_acc_pp(t)) * gmdb_factor_acc(t))
         if age_at_anniv(t) <= gmdb_growth_cutoff_age:                # noqa: F821
             r = r * (1.0 + rollup_rate(t))
-    elif option == "HQAV":
+    elif option == "ratchet":
         if age_at_anniv(t) <= gmdb_growth_cutoff_age:                # noqa: F821
             r = max(r, av_pp(t))
     elif option == "basic":
@@ -1817,7 +1817,7 @@ def rb_pp(t):
 def gmdb_guarantee_pp(t):
     """The guarantee actually floored under the death benefit [S1].
 
-    ``max(NP(t), RB(t))`` under the ``rollup`` and ``HQAV`` elections, exactly as the
+    ``max(NP(t), RB(t))`` under the ``rollup`` and ``ratchet`` elections, exactly as the
     notes' ``DB = max(AV, NP, RB)`` reads: there ``NP`` is the *included* return of
     premium and ``RB`` the separately elected base, and the two are different guarantees.
 

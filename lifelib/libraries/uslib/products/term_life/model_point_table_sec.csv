@@ -1,0 +1,7 @@
+point_id,policy_id,age_at_entry,sex,rate_class,plan,sum_assured,premium_mode,policy_count,plt_mort_factor_override,duration_mth,row_kind,source_policy_id,source_mth
+1,TL-000001,35,M,StdNT,T10,100000.0,A,1.0,3.5,0,twin,TL-000001,0
+2,TL-000002,35,M,StdNT,T10,100000.0,A,1.0,,0,twin,TL-000002,0
+3,TL-000002-M12,35,M,StdNT,T10,100000.0,A,0.939248,,12,derived,TL-000002,12
+4,TL-000001-M126,35,M,StdNT,T10,100000.0,A,1.0838474140322372e-01,3.5,126,derived,TL-000001,126
+5,TL-000001-M719,35,M,StdNT,T10,100000.0,A,1.9988090701711986e-05,3.5,719,derived,TL-000001,719
+6,TL-000001-F3,35,M,StdNT,T10,100000.0,A,1.0,3.5,-3,future,TL-000001,-3

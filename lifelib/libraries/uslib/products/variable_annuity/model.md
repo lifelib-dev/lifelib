@@ -390,7 +390,7 @@ policy month, `t = 239` — a 77,459.06 per-contract overstatement of the floor 
 `DB`.
 
 The model takes the **elected form as governing**: `gmdb_guarantee_pp(t)` is
-`max(NP, RB)` on the `rollup` and `HQAV` elections and `RB` alone on `basic`. The choice
+`max(NP, RB)` on the `rollup` and `ratchet` elections and `RB` alone on `basic`. The choice
 is **[std]** and it is the reading that leaves neither table inert — the alternative
 leaves an emphasized contractual rule with no effect and an election that changes
 nothing. `np_pp` still carries cumulative net premiums exactly as the state table defines
@@ -452,7 +452,7 @@ same list.
   "disclosed but inactive".
 - **The combination GMDB** `max(roll-up, ratchet)`. It needs two parallel benefit bases,
   and the notes state neither which component carries the 0.90% charge nor how the
-  withdrawal adjustment splits between them. `rollup`, `HQAV` and `basic` are all
+  withdrawal adjustment splits between them. `rollup`, `ratchet` and `basic` are all
   implemented and all three are exercised by a model point — `basic` by two of them, one
   never withdrawing and one withdrawing, because a cell that never withdraws cannot
   exercise the form's proportional reduction at all (see *The `basic` GMDB election and

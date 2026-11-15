@@ -136,7 +136,8 @@ Retrieved: NO and **no content from it is asserted anywhere in this file**.
 ### S2. Athene Annuity and Life Company — "Athene Ascent<sup>SM</sup> Pro 10 Bonus — Product Guide, Rates effective July 1, 2022" (form 65220 (07/01/22))
 - Publisher: Athene Annuity and Life Company (insurer product guide / rate-and-spec
   sheet; PDF mirrored by a distributor site)
-- Doc type: producer product guide + declared rate sheet (6 pages)
+- Doc type: product guide + declared rate sheet (6 pages; a consumer insert marked
+  "This material is a general description intended for general public use.")
 - URL fetched: https://iamsascend.com/wp-content/uploads/2023/01/Ascent-Pro-Fact-Sheet.pdf
 - Retrieved: YES (full PDF text-extracted locally)
 - Facts extracted (rates are as of 07/01/2022 and are non-guaranteed):
@@ -612,9 +613,14 @@ Retrieved: NO and **no content from it is asserted anywhere in this file**.
 
 ### S8. Midland National Life Insurance Company — "MNL IncomeVantage® fixed index annuity — quick reference guide" (form 25665Y REV 1-20)
 - Publisher: Midland National Life Insurance Company — official midlandnational.com URL
-- Doc type: producer quick reference guide (1 page; "FOR FINANCIAL PROFESSIONAL ONLY")
+- Doc type: producer quick reference guide (1 page; "FOR FINANCIAL PROFESSIONAL ONLY.
+  NOT TO BE USED FOR CONSUMER SOLICITATION PURPOSES.")
 - URL fetched: https://www.midlandnational.com/documents/35445/8312558/25665Y.pdf/dcf404b7-a1fd-037e-b188-60cfacb0c537
 - Retrieved: YES (full PDF text-extracted locally)
+- Edition: form 25665Y REV 1-20 (PDF created 2019-11-08). IncomeVantage is not named on
+  Midland's public explore-annuities page, and a third-party review names an "MNL
+  IncomeVantage® Pro"; whether IncomeVantage 10 / 14 is still sold or has been
+  superseded was not confirmed (checked 2026-10-24). Facts are as of the document date.
 - Product: MNL IncomeVantage 10 / 14, flexible-premium FIA with a **built-in GLWB at
   no additional cost**. Forms AC/AS139A/ICC16-AS145A.MVA/AS145A.
 - Facts extracted:
@@ -883,7 +889,9 @@ Retrieved: NO and **no content from it is asserted anywhere in this file**.
 
 ### S12. Athene Annuity and Life Company — Ascent Pro producer product page (athene.com)
 - Publisher: Athene Annuity and Life Company
-- Doc type: product landing page
+- Doc type: product landing page (financial-professional section; site footer as served
+  on 2026-10-24: "For financial professional use only. Not to be used with the offer or
+  sale of annuities.")
 - URL fetched: https://www.athene.com/producer/products/ascent-pro
 - Retrieved: YES (HTML page; the linked PDFs are behind a Widen viewer, see failures)
 - Facts extracted: product positioned as an FIA "focused on income" with a built-in
@@ -1372,7 +1380,7 @@ Crediting methods encountered, with the parameters that must be modeled:
 |---|---|---|
 | Annual point-to-point with cap | credit rate = max(0, min(index return, cap)) | [R1][S4][S10] |
 | Annual point-to-point with participation rate | credit rate = max(0, par × index return) | [R1][S4][S10] |
-| Annual point-to-point with spread / index margin | credit rate = max(0, par × index return − spread) | [R1][S8] |
+| Annual point-to-point with spread / index margin | credit rate = max(0, par × index return − spread) | [R1]; [S8] lists Annual, Two-Year and Daily Average methods "with Index Margin" but gives no formula |
 | Combined cap + par | credit = min(par × index return, cap), floored at 0 — worked as min(80% × 10%, 6%) = 6% | [R1] |
 | Monthly sum (annualized) with monthly cap | credit rate = max(0, Σ over 12 months of min(monthly return, monthly cap)); the monthly floor is 0 in the Academy example but negative monthly returns are summed in full in many designs | [R1] worked example uses a 0% monthly floor; [S4] declares a monthly cap of 1.70% with a **guaranteed minimum monthly cap of 0.50%** |
 | Monthly / daily average | credit rate based on the average of monthly (or daily) index values over the term rather than the terminal value | [S6] (average monthly index value in the final year of the 5-year term), [S8] (Daily Average with Index Margin) |

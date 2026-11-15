@@ -13,12 +13,8 @@
 ## Source
 
 **Exact printed title.** The guideline's opening page prints the designation and the title on
-separate lines, both as shown:
-
-> Actuarial Guideline XXXIII
->
-> DETERMINING CARVM RESERVES
-> FOR ANNUITY CONTRACTS WITH ELECTIVE BENEFITS
+separate lines: the designation "Actuarial Guideline XXXIII", and beneath it, in capitals and broken
+over two lines, the title.
 
 (PDF p. 1496 / printed page AG33-1. The title is set in two lines as printed; it reads as the single
 title "Determining CARVM Reserves for Annuity Contracts With Elective Benefits".)
@@ -34,8 +30,7 @@ carry no volume statement.
 pages 1496–1503** of the manual.
 
 **Edition and copyright line.** Every one of the eight pages carries the footer
-
-> © 1999-2026 National Association of Insurance Commissioners
+"© 1999-2026 National Association of Insurance Commissioners".
 
 The **"As of March 2026"** edition line is the manual's own, taken from the retrieval of the whole
 volume [REG-R73]; **it does not appear on the extracted AG 33 pages**, which show only the copyright
@@ -52,13 +47,27 @@ The AP&P licence terms recorded elsewhere in the library (personal, non-commerci
 into software or other publication without permission) are unaffected by the price and still apply
 [REG-R73].
 
+**Licence caution.** The manual is licensed for personal, non-commercial use only; redistribution or
+integration "into any software or other publication" needs written NAIC permission [REG-R73].
+Following the library's rule (`references/regulatory-and-actuarial-references.md`, "Licence
+caution"), this file **paraphrases** AG 33 in the library's own words and cites each point by block
+(*Background Information*, *Purpose*, *Definitions*, *Text*, *Effective Date*), section or paragraph
+letter, and printed page (AG33-n) or PDF page. It **quotes only short phrases** — a defined term, an
+operative trigger or applicability phrase, a date rule, a heading — in quotation marks with their
+pinpoint. AG 33 itself prints no tables; the one table-like list it carries (the five SVL §4b
+parameters in *Text* 3) is **paraphrased, not reproduced**, and the table of printed quotations
+this note used to carry is now a list of pinpointed paraphrases ("Citation anchors"). Symbolic
+restatements are the library's own notation. Anyone who needs the exact printed wording should read
+it in the manual at the pages given.
+Revised 2026-10-25: verbatim extracts and transcribed tables replaced by paraphrase and pinpoint citations.
+
 **Structure as printed** (use these headings when citing; the guideline numbers its sections
 independently inside each of three blocks, so "Section 2" is ambiguous without the block name):
 
 | Block | Sections |
 |---|---|
 | **Background Information** (pp. AG33-1 to AG33-2) | 1 Introduction; 2 Annuitization Benefits; 3 Application of Incidence Rates in CARVM; 4 Integrated Benefit Stream Approach; 5 Valuation Interest Rates |
-| **Purpose** (p. AG33-3) | unnumbered, three sentences |
+| **Purpose** (p. AG33-3) | unnumbered, four sentences (purpose, applicability, rider carve-out, precedence) |
 | **Definitions** (pp. AG33-3 to AG33-4) | 1 Elective and Non-Elective Benefits in CARVM; 2 Elective and Non-Elective Incidence Rates in CARVM; 3 Integrated Benefit Stream |
 | **Text** (pp. AG33-4 to AG33-8) | 1 Greatest Present Value; 2 Examples of Integrated Benefit Streams That Must Be Considered (A Cash Value Streams, B Annuitization Streams, C Other Elective Benefit Streams); 3 Determination of Valuation Interest Rates; 4 Determination of Guarantee Duration and Plan Type (A, B, C, plus the GLIB example); 5 Change in Fund Basis; 6 Purchase Rates; 7 Practical Considerations |
 | **Effective Date** (p. AG33-8) | unnumbered, one paragraph |
@@ -71,12 +80,11 @@ resolves. Nothing in Background imposes a requirement on its own; the operative 
 
 ## Scope and applicability
 
-### The applicability sentence, verbatim
+### The applicability sentence
 
-> This Actuarial Guideline shall apply to all annuity contracts subject to CARVM, where any elective
-> benefits (as defined below) are available to the contract owner under the terms of the contract.
-
-(p. AG33-3 / PDF p. 1498, *Purpose*.)
+The *Purpose* block (p. AG33-3 / PDF p. 1498) makes the guideline apply "to all annuity contracts
+subject to CARVM" under whose terms the contract owner has any elective benefit — in the sense the
+*Definitions* block gives that term — available.
 
 Three things follow that the library needs, and each is load-bearing:
 
@@ -84,58 +92,49 @@ Three things follow that the library needs, and each is load-bearing:
    list, no account-value threshold, no premium threshold and no size test anywhere in the
    guideline. A contract subject to CARVM with **no** elective benefit is outside the applicability
    sentence — and the *Definitions* block expressly contemplates such a contract, classing as
-   non-elective the "benefits payable under either a deferred or immediate annuity contract (with or
-   without life contingencies), where no benefit options are available under the terms of the
-   contract" (p. AG33-3).
+   non-elective the benefits of a deferred or immediate annuity, life-contingent or not, under which
+   "no benefit options are available" (p. AG33-3).
 2. **"All annuity contracts subject to CARVM"** — the scope rides on CARVM's own scope, which AG 33
    does not restate by SVL section number (see "Interaction with the Standard Valuation Law" below).
-3. It is an **interpretation, not a new method.** Verbatim:
+3. It is an **interpretation, not a new method.** *Purpose* describes the guideline as codifying the
+   basic interpretation of CARVM, by clarifying which assumptions and methods meet the SVL's intent,
+   and states that it "does not constitute a change of method or basis" from any method used before
+   (p. AG33-3). The library already records — from IRS Rev. Rul. 2002-6 — that the IRS declined to
+   follow this characterisation for tax purposes under IRC §807(f); that ruling is a separate
+   document and nothing here confirms or disturbs it.
 
-> The purpose of this Actuarial Guideline is to codify the basic interpretation of CARVM and does
-> not constitute a change of method or basis from any previously used method, by clarifying the
-> assumptions and methodologies which will comply with the intent of the SVL.
+### Carve-out for separate life or health riders
 
-(p. AG33-3.) The library already records — from IRS Rev. Rul. 2002-6 — that the IRS declined to
-follow this characterisation for tax purposes under IRC §807(f); that ruling is a separate document
-and nothing here confirms or disturbs it.
-
-### Carve-out for separate life or health riders, verbatim
-
-> However, life or health insurance riders attached to an annuity contract, where all components of
-> the rider (e.g., premiums, benefits, contract charges, accumulation values and other components)
-> are separate and distinct from the components of the annuity contract, should be treated as a
-> separate life or health insurance contract not subject to this Actuarial Guideline.
-
-(p. AG33-3.) The test is **separateness of all components**, not the rider's label. Note the mirror
-statement in Background 1: the SVL's annuity standards reach "any annuity riders or endorsements,
-and any or all components of which, such as premiums, benefits, contract charges, primary or
-secondary accumulation values or other components" (p. AG33-1). So a rider whose components are
+A life or health insurance rider attached to an annuity is to be treated as a separate life or
+health contract, outside AG 33, when every one of its components — *Purpose* gives premiums,
+benefits, contract charges and accumulation values as examples — is "separate and distinct" from the
+annuity contract's components (p. AG33-3). The test is **separateness of all components**, not the
+rider's label. Note the mirror statement in Background 1: the SVL's annuity standards extend to
+annuity riders and endorsements and to any of their components, whether premiums, benefits or
+charges, or primary or secondary accumulation values (p. AG33-1). So a rider whose components are
 entangled with the annuity's stays inside AG 33; only a fully self-contained life/health rider
 leaves.
 
-### Precedence over AG 33, verbatim
+### Precedence over AG 33
 
-> While this Actuarial Guideline applies to all annuity contracts subject to CARVM, in the event an
-> actuarial guideline or regulation dealing with reserves is developed for a specific annuity
-> product design, the product specific actuarial guideline or regulation will take precedence over
-> the Actuarial Guideline.
+Although AG 33 reaches every annuity contract subject to CARVM, *Purpose* makes it give way to any
+guideline or regulation on reserves that is developed for a specific annuity product design: in that
+event "the product specific actuarial guideline or regulation will take precedence" (p. AG33-3). This is the
+general-versus-specific rule and it settles the *direction* of the AG 33 / AG 35 and AG 33 / AG 43
+relationships without naming either: a product-specific guideline wins. AG 33 **names no other
+guideline anywhere in the extracted text** — not AG 35, not AG 43, not AG IX, not AG XIII.
 
-(p. AG33-3.) This is the general-versus-specific rule and it settles the *direction* of the AG 33 /
-AG 35 and AG 33 / AG 43 relationships without naming either: a product-specific guideline wins. AG
-33 **names no other guideline anywhere in the extracted text** — not AG 35, not AG 43, not AG IX,
-not AG XIII.
+### Effective date and grade-in
 
-### Effective date and grade-in, verbatim and in full
+The *Effective Date* block (p. AG33-8 / PDF p. 1503) makes the guideline "effective on December
+31, 1998", reaching every contract issued on or after January 1, 1981. For contracts issued before
+December 31, 1998, a company may ask its domiciliary commissioner for a grade-in period, provided it
+satisfactorily demonstrates that its existing reserves for those contracts are adequate, in method
+and in level, taken in aggregate. Under that phase-in the company must hold, of the additional
+reserve that applying the guideline produces, at least 33 1/3% at December 31, 1998, at least
+66 2/3% at December 31, 1999, and 100% by December 31, 2000.
 
-> This guideline shall be effective on December 31, 1998, affecting all contracts issued on or after
-> January 1, 1981. A company may request a grade-in period for contracts issued prior to December
-> 31, 1998 from the domiciliary commissioner upon satisfactory demonstration that the method and
-> level of current reserves held for such contracts are adequate in the aggregate. This phase-in
-> will require establishment of no less than 33 1/3% of the additional reserves resulting from the
-> application of this guideline on December 31, 1998, no less than 66 2/3% on December 31, 1999, and
-> 100% by December 31, 2000.
-
-(p. AG33-8 / PDF p. 1503. This is the entire *Effective Date* block; there is nothing else.)
+(The *Effective Date* block contains nothing beyond these rules.)
 
 **This contradicts the date the library currently carries.** The library records AG 33 as "effective
 December 31, **1995**, for all contracts issued on or after January 1, 1981", sourced from IRS
@@ -151,8 +150,8 @@ current guideline's.
 
 **Grade-in mechanics worth noting for a model.** The phase-in is (a) **by request**, to the
 **domiciliary** commissioner, (b) conditioned on demonstrating existing reserves "are adequate in
-the aggregate", (c) applied to **the additional reserves resulting from the application of this
-guideline**, not to the whole reserve, and (d) fully run off by December 31, 2000 — so it has **no
+the aggregate", (c) applied only to the **additional** reserve that applying the guideline
+produces, not to the whole reserve, and (d) fully run off by December 31, 2000 — so it has **no
 live effect on any current valuation** and matters only to historical reconstruction. Note also the
 literal wording "contracts issued prior to December 31, **1998**" for eligibility, against an
 effective date of that same day; the guideline does not resolve contracts issued exactly on
@@ -170,40 +169,30 @@ transition onto VM-22 or VM-21, and no cross-reference to the Valuation Manual o
 AG 33 contains **no algebra whatsoever** — no formulas, no symbols, no tables and no numeric
 factors except the 7% expense allowance in *Text* 6 and the phase-in percentages in *Effective
 Date*. Any symbolic restatement below is the library's own notation, marked **[std, restatement]**,
-and is placed next to the guideline's own words so the two can be told apart.
+and is placed next to the paraphrase of the requirement it restates so the two can be told apart.
 
 ### 1. The two benefit categories — the classification every contract must pass through
 
-Verbatim, the mandatory sorting step (p. AG33-3):
+*Definitions* 1 (p. AG33-3) makes the sorting step mandatory: for CARVM reserving, every benefit the
+annuity contract offers must be assigned to exactly one of two defined categories.
 
-> For purposes of determining reserves under CARVM, each benefit available under the annuity
-> contract must be placed into one of the two categories defined as follows:
+**Non-Elective Benefits** (defined term): benefits that become payable to owners or beneficiaries
+only after a contingent or scheduled event has occurred that does not depend on the owner electing
+an option the contract specifies. The non-exhaustive examples are death, accidental death, disability and
+nursing home benefits, and the benefits of a deferred or immediate annuity — with or without life
+contingencies — under which the contract offers no benefit options.
 
-**Non-Elective Benefits**, verbatim:
-
-> Benefits that are payable to contract owners or beneficiaries only after the occurrence of a
-> contingent or scheduled event independent of a contract owner's election of an option specified in
-> the contract, including (but not limited to) death benefits, accidental death benefits, disability
-> benefits, nursing home benefits, and benefits payable under either a deferred or immediate annuity
-> contract (with or without life contingencies), where no benefit options are available under the
-> terms of the contract.
-
-**Elective Benefits**, verbatim:
-
-> Benefits that do not fall under the non-elective benefits category (i.e., benefit options that may
-> be freely elected under the terms of the contract). Elective benefits include (but are not limited
-> to) full surrenders, partial withdrawals, and full and partial annuitizations.
+**Elective Benefits** (defined term): every benefit outside the non-elective category, glossed in
+the text as benefit options the owner can freely elect under the contract. The non-exhaustive
+examples are full surrenders, partial withdrawals, and full and partial annuitizations.
 
 So the taxonomy is a **complement**: elective is defined as "not non-elective". The enumerated lists
 are both non-exhaustive ("including (but not limited to)").
 
-**The judgement clause**, verbatim (p. AG33-3):
-
-> In some cases it may not be clear whether some benefits are elective or non-elective. The presence
-> of certain types of non-elective benefits may affect other non-elective benefits and/or elective
-> benefits. The Valuation Actuary should use judgment in making these determinations by considering
-> factors such as the degree to which contract owner actions would be influenced by the availability
-> of each benefit in the contract.
+**The judgement clause** (p. AG33-3). *Definitions* 1 accepts that a benefit's category may
+sometimes be unclear, and that some non-elective benefits can affect other non-elective benefits or
+elective ones. The Valuation Actuary is to decide by judgment, weighing factors such as how far the
+availability of each benefit in the contract would sway contract owner actions.
 
 Note the criterion: **influence on contract owner behaviour**, not the accounting or product
 label. This is the guideline's only stated tie-breaker.
@@ -215,17 +204,15 @@ Type / guarantee duration rule sets its valuation rate (section 6).
 
 ### 2. Incidence assumptions — completely different rules on the two sides
 
-**Non-elective side**, verbatim (p. AG33-3):
+**Non-elective side** (*Definitions* 2, pp. AG33-3 to AG33-4). Incidence rates from SVL-prescribed
+tables are to be used both to determine the non-elective benefit payments and to discount every
+payment in an integrated benefit stream for survivorship. Where the SVL prescribes no incidence
+table, company or industry experience may be used as appropriate, provided it carries margins for
+conservatism. The SVL-prescribed annuity mortality tables govern every mortality-based benefit —
+annuitizations and death benefits among them — and the survivorship discount on all other kinds of
+benefit payment.
 
-> For non-elective benefits, incidence rates from tables prescribed by the SVL should be applied to
-> determine the payment of non-elective benefits and to discount, for survivorship, all benefit
-> payments included in an Integrated Benefit Stream, as defined below. If no incidence tables are
-> prescribed by the SVL, then company or industry experience (with margins for conservatism) may be
-> used, as appropriate. Annuity mortality tables prescribed by the SVL should be used to determine
-> all mortality based benefits under the contract (including, but not limited to, annuitizations and
-> death benefits) and to discount other types of benefit payments for survivorship.
-
-Three separate rules are packed in there and should be implemented separately:
+Three separate rules are packed into that paragraph and should be implemented separately:
 
 - **(2a) Prescribed table where one exists.** Non-elective incidence uses the SVL-prescribed table.
 - **(2b) Fallback where none exists.** "Company or industry experience (**with margins for
@@ -236,22 +223,20 @@ Three separate rules are packed in there and should be implemented separately:
   purely elective surrender and withdrawal streams. A cash-value stream is **not** valued on a
   mortality-free basis under AG 33.
 
-**A hard cut-off on non-mortality non-elective incidence**, verbatim (p. AG33-4):
-
-> Actuarial judgment should be used as to the appropriateness of applying any non-elective incidence
-> rates other than mortality. For non-elective waiver-of-surrender-charge benefits other than
-> mortality-based benefits and for similar non-elective benefits, incidence rates greater than zero
-> are not to be applied at any time in the projection after the earlier of: (a) the end of the
-> surrender charge period applicable immediately after the first premium is paid; and (b) when the
-> projected cash value has been depleted.
+**A hard cut-off on non-mortality non-elective incidence** (*Definitions* 2, p. AG33-4). Whether to
+apply any non-elective incidence rate other than mortality is left to actuarial judgment. For
+non-elective waiver-of-surrender-charge benefits that are not mortality-based, and for similar
+non-elective benefits, no positive incidence rate may be used at any point of the projection beyond
+the earlier of (a) the close of the surrender charge period in force immediately after the first
+premium is paid and (b) the time the projected cash value runs out.
 
 **[std, restatement]** For a non-mortality non-elective waiver-type benefit, incidence
 `ι(t) = 0` for all `t > T`, where
 
 ```
 T = min( SCP1 , T_depletion )
-SCP1        = end of the surrender charge period applicable immediately after the FIRST premium is paid
-T_depletion = first projection time at which the projected cash value has been depleted
+SCP1        = close of the surrender charge period in force right after the FIRST premium is paid
+T_depletion = first projection time at which the projected cash value is exhausted
 ```
 
 Two implementation traps in that one sentence. **SCP1 is fixed at first premium** — a later premium
@@ -260,17 +245,14 @@ that restarts or extends a surrender charge schedule does **not** extend `T`. An
 at depletion. This is the guideline's most mechanical, least ambiguous instruction and is trivially
 codeable.
 
-**Elective side**, verbatim (p. AG33-4):
-
-> For elective benefits, incidence rates should not be based on tables reflecting past company
-> experience, industry experience or other expectations. Instead, every potential guaranteed
-> elective benefit stream required to be reserved by CARVM must be considered in the determination
-> of integrated benefit streams as defined below. This is accomplished by considering trial sets of
-> guaranteed elective benefit incidence rates, either through numerical testing or analytical means,
-> to determine which trial set produces the "greatest present value" as described in Text paragraph
-> 1 below. Theoretically, this means that all possible elective benefit incidence rates between 0%
-> and 100% should be considered. However, in practice, such a greatest present value will typically
-> occur by assuming an incidence rate of either 0% or 100%.
+**Elective side** (*Definitions* 2, p. AG33-4). Elective incidence rates "should not be based on
+tables" that reflect the company's past experience, industry experience or other expectations. In
+their place, every potential guaranteed elective benefit stream that CARVM requires to be reserved
+must be taken into account when the integrated benefit streams are built. The means is to try sets of guaranteed
+elective incidence rates — by numerical testing or analytically — and find the set giving the
+"greatest present value" of *Text* 1. In theory that puts every elective incidence rate from 0% to
+100% in scope; the guideline adds that in practice the greatest present value will typically arise at
+a rate of either 0% or 100%.
 
 This is the **prohibition** the library has been missing: **experience-based lapse, withdrawal and
 annuitization assumptions are illegal in a CARVM valuation**. The elective assumption is not an
@@ -282,20 +264,17 @@ necessarily **test**, every stream.
 
 ### 3. The integrated benefit stream — the object being valued
 
-Verbatim (p. AG33-4):
+*Definitions* 3 (p. AG33-4) defines an integrated benefit stream as "one potential blend of
+guaranteed elective and non-elective benefits" available under the contract, formed by combining two
+legs:
 
-> An integrated benefit stream is one potential blend of guaranteed elective and non-elective
-> benefits available under the contract, determined as the combination of A and B, where:
->
-> A equals one potential stream of one or more types of guaranteed elective benefits available under
-> the terms of the contract, based upon a chosen set of elective benefit incidence rates; and
->
-> B equals the stream of all guaranteed non-elective benefits provided under the terms of the
-> contract, recognizing the guaranteed elective benefit stream under consideration in A above, and
-> the non-elective incidence rates defined in 2. above.
->
-> Both A and B above should be discounted for survivorship, based on the non-elective incidence
-> rates defined in 2. above.
+- **A** — one potential stream of guaranteed elective benefits, of one or more types, that the
+  contract makes available, generated by a chosen set of elective incidence rates;
+- **B** — the stream of every guaranteed non-elective benefit the contract provides, taking into
+  account both the elective stream under consideration in A and the non-elective incidence rates of
+  *Definitions* 2.
+
+Both legs are to be discounted for survivorship on the *Definitions* 2 non-elective incidence rates.
 
 Read the structure carefully, because it is asymmetric and the asymmetry is the whole point:
 
@@ -323,15 +302,12 @@ both legs survivorship-discounted on the SVL-prescribed annuity mortality
 
 ### 4. The greatest present value — the reserve itself
 
-Verbatim, *Text* 1 in full (p. AG33-4):
-
-> All guaranteed benefits potentially available under the terms of the contract must be considered
-> in the valuation process and analysis and the ultimate policy reserve held must be sufficient to
-> fund the greatest present value of all potential integrated benefit streams, reflecting all
-> guaranteed elective and non-elective benefits available to the contract owner. Each integrated
-> benefit stream available under the contract must be individually valued and the ultimate reserve
-> established must be the greatest of the present values of these values, based on valuation
-> interest rate(s) as defined in Section 3 below.
+*Text* 1 (p. AG33-4), the whole operative rule in one paragraph. Every guaranteed benefit the
+contract potentially offers must be taken into account in the valuation and its analysis, and the
+reserve finally held must be enough to fund the greatest present value among all potential
+integrated benefit streams, each reflecting every guaranteed elective and non-elective benefit open
+to the owner. Each stream must be valued on its own, and the reserve established must be the largest
+of those present values, computed at the "valuation interest rate(s)" that *Text* 3 defines.
 
 Note the plural in "valuation interest **rate(s)**" and its cross-reference to *Text* 3 — a single
 integrated benefit stream can be discounted at **more than one rate**, one per benefit component.
@@ -359,14 +335,12 @@ seam** — see "Gaps and caveats".
 *Text* 2, "Examples of Integrated Benefit Streams That Must Be Considered" (p. AG33-5). The heading
 says "Examples" but the body says "mandatory" twice; treat A and B as required and C as a catch-all.
 
-**A. Cash Value Streams** — verbatim:
-
-> One mandatory set of integrated benefit streams for a deferred annuity with cash settlement values
-> which must always be considered is any possible blend of future guaranteed partial withdrawals and
-> full surrenders available under the contract, as specified in the SVL, accumulated at the
-> guaranteed credited interest rate(s) and discounted at the valuation rate(s) of interest defined in
-> section 3 below, with appropriate recognition of all guaranteed non-elective benefits available
-> under the contract.
+**A. Cash Value Streams** (p. AG33-5). For a deferred annuity with cash settlement values, one
+"mandatory set" of streams must always be considered: every possible blend of future guaranteed
+partial withdrawals and full surrenders that the contract offers, as the SVL specifies them, with
+values rolled forward "at the guaranteed credited interest rate(s)" and discounted at the *Text* 3
+valuation rate(s), and with appropriate recognition of all the contract's guaranteed non-elective
+benefits.
 
 **The accumulate-at-guaranteed / discount-at-valuation split is stated explicitly here.** This
 directly confirms the construction the library already uses in
@@ -376,39 +350,31 @@ blend of ... partial withdrawals and full surrenders"** — the elective search 
 "surrender at each duration k"; it is every combination of partial withdrawal amounts and timings
 followed by a surrender.
 
-**B. Annuitization Streams** — verbatim:
-
-> A second mandatory set of integrated benefit streams that must be considered is any possible blend
-> of future guaranteed full or partial annuitization elections, as specified in the SVL, available to
-> the contract owner at each election date required by CARVM, with appropriate recognition of all
-> guaranteed non-elective benefits available under the terms of the contract. In determining the
-> integrated benefit streams to value the annuitization option, the guaranteed purchase rates
-> contained in the contract, as well as any other contract provisions, excluding any current purchase
-> rates which may be applicable, are applied to the accumulation fund.
+**B. Annuitization Streams** (p. AG33-5). The "second mandatory set" is every possible blend of
+future guaranteed full or partial annuitization elections, as the SVL specifies them, open to the
+owner at each election date CARVM requires — again with appropriate recognition of all guaranteed
+non-elective benefits. To value the annuitization option, the contract's guaranteed purchase rates
+and its other provisions are applied to the accumulation fund; any current purchase rates that might
+apply are left out.
 
 Three operative points: **guaranteed purchase rates** (not current) drive the annuitization stream;
 they are applied to the **accumulation fund** (defined term — see below); and **partial**
 annuitizations are in scope, so the search space includes streams that annuitize part of the fund and
 leave the rest to be surrendered or withdrawn.
 
-**"Accumulation fund" is a defined term**, given in Background 2 (p. AG33-1), verbatim:
+**"Accumulation fund" is a defined term**, given in Background 2 (p. AG33-1): "the policy value
+which is used to purchase an annuity option" under the contract's terms.
 
-> For purposes of this Actuarial Guideline, "accumulation fund" is defined as the policy value which
-> is used to purchase an annuity option under the terms of the contract.
+The definitional point Background 2 is making is that this value **may exceed the cash value**: it
+opens by observing that, under various contract forms, the cash value the owner can take is smaller
+than the amount available to buy an annuitization option. A model that carries only one account
+value cannot value the annuitization stream correctly; it needs the **annuitization basis** as a
+separate state variable.
 
-The definitional point Background 2 is making is that this value **may exceed the cash value**:
-"Varying forms of contracts provide that the cash value available to the contract owner is less than
-the amount available to purchase an annuitization option under the terms of the contract." A model
-that carries only one account value cannot value the annuitization stream correctly; it needs the
-**annuitization basis** as a separate state variable.
-
-**C. Other Elective Benefit Streams** — verbatim:
-
-> In addition to the cash value and annuitization streams described above, all other possible
-> guaranteed elective benefits available under the contract, including blends of more than one type
-> of guaranteed elective benefit, must be considered in a manner consistent with the mandatory cash
-> value and annuitization streams, with appropriate recognition of all guaranteed non-elective
-> benefits available under the contract.
+**C. Other Elective Benefit Streams** (p. AG33-5). Beyond the cash value and annuitization
+families, every other possible guaranteed elective benefit under the contract — blends of more than
+one type of guaranteed elective benefit included — must be considered consistently with the two
+mandatory families, once more with appropriate recognition of all guaranteed non-elective benefits.
 
 This is the residual clause that pulls in guaranteed living-benefit elections, elective enhanced
 withdrawal provisions, elective commutation and the like. **"Blends of more than one type"** is
@@ -416,32 +382,18 @@ stated a third time; it is plainly not an oversight.
 
 ### 6. Valuation interest rates — contract-level vs benefit-level parameters
 
-*Text* 3 (pp. AG33-5 to AG33-6). Verbatim:
+*Text* 3 (pp. AG33-5 to AG33-6) observes that SVL Section 4b sets an annuity's valuation rates from
+five parameters, lettered A to E: (A) the valuation basis, issue year or change in fund; (B) whether
+the annuity offers cash settlement options; (C) whether premiums received more than 12 months after
+issue — or, on the change in fund basis, after the valuation date — earn guaranteed interest; (D) the
+guarantee duration; and (E) the Plan Type. A, B and C are to be set "at a contract level", with
+further change-in-fund requirements left to *Text* 5; D and E are to be set "at a benefit level", as
+*Text* 4 lays out (p. AG33-5).
 
-> Section 4b of the SVL determines valuation rates for an annuity contract based on the following
-> Parameters:
->
-> A. The basis of valuation (issue year or change in fund);
->
-> B. Whether or not the annuity provides for cash settlement options;
->
-> C. Whether interest is guaranteed on premiums received more than 12 months following issue (or the
-> valuation date for change in fund basis);
->
-> D. The guarantee duration; and
->
-> E. The Plan Type.
->
-> Parameters A, B and C above should be determined at a contract level. Additional requirements
-> regarding the change in fund basis of valuation are set forth in Section 5 below. Parameters D and
-> E should be determined at a benefit level, as set forth in Section 4 below.
-
-and the definition of the two levels, verbatim:
-
-> Under a contract level determination, parameters are set based on the characteristics of the
-> contract as a whole. Under a benefit level determination, parameters are set based on the
-> characteristics of each benefit, resulting in potentially different valuation rates for each
-> benefit type comprising the integrated benefit stream.
+*Text* 3 then explains the two levels (p. AG33-6): a contract-level parameter follows the
+characteristics of the contract as a whole, while a benefit-level parameter follows those of each
+benefit, so each benefit type in an integrated benefit stream can end up with its own valuation
+rate.
 
 **This is the answer to "how do elective and non-elective benefits take different valuation rates".**
 The split is not elective-vs-non-elective as such; it is:
@@ -462,39 +414,31 @@ factors of its own.
 
 ### 7. Determining guarantee duration and Plan Type per benefit — *Text* 4
 
-Verbatim lead-in (p. AG33-6):
+*Text* 4 (p. AG33-6) takes guarantee duration and Plan Type from the particular characteristics of
+each benefit type making up the integrated benefit stream, under three rules and a per-payment
+qualifier.
 
-> Guarantee duration and Plan Type are based upon the specific characteristics of each individual
-> benefit type that comprise the integrated benefit stream, as follows:
-
-**A. Surrender and partial withdrawal portions** — verbatim:
-
-> For portions of the integrated benefit stream attributable to full surrender and partial withdrawal
-> benefits, the Plan Type should be based upon the withdrawal characteristics of the benefit, as
-> stated in the contract. This may result in a Plan Type A, B or C under the 1980 amendments of the
-> SVL. The guarantee duration is the number of years for which interest rates are guaranteed in
-> excess of the calendar year statutory valuation interest rate for life insurance policies with
-> guarantee duration in excess of twenty (20) years.
+**A. Surrender and partial withdrawal portions.** For the parts of the stream attributable to full
+surrender and partial withdrawal benefits, Plan Type follows the benefit's withdrawal
+characteristics as the contract states them, which can give Plan Type A, B or C under the 1980
+amendments of the SVL. Guarantee duration is the number of years over which the guaranteed interest
+rates stay above the calendar-year statutory valuation rate for life policies whose guarantee
+duration exceeds 20 years.
 
 Note the **guarantee duration definition** here is *not* "the length of the rate guarantee"; it is
 the number of years the credited guarantee **exceeds the calendar-year life valuation rate for
 guarantee durations over 20 years**. That is a comparison against an external published rate and has
 to be recomputed by calendar year of issue.
 
-**B. Full and partial annuitization portions** — verbatim:
-
-> For portions of the integrated benefit stream attributable to full and partial annuitization
-> benefits, the determination of the valuation interest rate involves the use of the appropriate Plan
-> Type and weighting factor as determined by the SVL, with the guarantee duration as the number of
-> years from the original date of issue or date of purchase, to the date the annuitization is assumed
-> to commence. If the underlying assumption is that the contract owner may withdraw funds only as an
-> immediate life annuity or as installments over 5 years or more, this will generally result in a Plan
-> Type A, under the 1980 amendments of the SVL, with the valuation interest rate changing as different
-> assumed annuitization dates determine guarantee durations which will fall into different guarantee
-> duration bands under the SVL. An assumed annuitization option which has a non-life contingent payout
-> period of less than five (5) years shall be considered a Plan Type C, with the valuation interest
-> rate changing as different assumed annuitization dates determine guarantee durations which will fall
-> into different guarantee duration bands under the SVL.
+**B. Full and partial annuitization portions.** For the parts attributable to full and partial
+annuitization benefits, the valuation interest rate uses the Plan Type and weighting factor that the
+SVL assigns, and the guarantee duration runs "from the original date of issue or date of purchase" to
+the date annuitization is assumed to begin. If the underlying assumption is that the owner's only
+ways to take funds are an immediate life annuity or installments spread over 5 years or more, the
+outcome will generally be Plan Type A (1980 amendments of the SVL). An assumed annuitization option whose payout
+period is not life-contingent and is under five years "shall be considered a Plan Type C". In both
+cases the valuation rate moves as different assumed annuitization dates give guarantee durations
+that land in different SVL guarantee-duration bands.
 
 So for annuitization: **guarantee duration = years from original issue (or purchase) to the assumed
 annuitization commencement date**, which means **the valuation rate is a function of the candidate
@@ -502,25 +446,20 @@ election date** and changes as the candidate moves across SVL guarantee-duration
 **A** for life annuities and non-life payouts of **5 years or more**, and **C** for non-life payouts
 of **less than 5 years** — the latter stated with "shall", the former with "will generally".
 
-**C. Non-elective portions** — verbatim:
+**C. Non-elective portions.** For the parts attributable to non-elective benefits, the underlying
+assumption is that withdrawal is not allowed, so Plan Type A should generally apply, with guarantee
+duration measured from issue or purchase to the first date on which non-elective benefits can be
+paid. That duration will usually be under five years, because non-elective coverage normally starts
+right after issue and benefits can become payable in the first contract year.
 
-> For portions of the integrated benefit stream attributable to non-elective benefits, since the
-> underlying assumption is that no withdrawal is permitted, Plan Type A should generally be used, with
-> a guarantee duration determined as the number of years from issue or purchase to the date
-> non-elective benefits may first be paid. In most cases, the guarantee duration should be less than
-> five years, since non-elective benefit coverage usually begins immediately after issue, with benefits
-> payable commencing in the first contract year.
-
-**Per-payment application, and the anti-abuse rider** — verbatim:
-
-> For benefit types incorporating multiple payments, paragraphs 4(A), 4(B), and 4(C) above should be
-> applied to each separate payment according to the withdrawal, annuitization, or non-elective benefit
-> characteristics of the contract and payment provisions at the time each payment is to be made. If a
-> portion of the integrated benefit stream is part of an immediate life annuity or a series of
-> installments over five (5) years or more, but can be changed directly or indirectly by exercise of
-> contract owner withdrawal options, then it would be inappropriate to apply paragraph 4(B) to that
-> portion of the integrated benefit stream, since the contractholder may withdraw funds other than as a
-> life annuity or in installments of five (5) years or more.
+**Per-payment application, and the anti-abuse rider** (p. AG33-6). Where a benefit type involves
+several payments, rules 4(A), 4(B) and 4(C) are applied payment by payment, according to the
+withdrawal, annuitization or non-elective character of the contract and its payment terms when each
+payment falls due. And where part of the stream is an immediate life annuity or a run of
+installments lasting five years or longer, yet "can be changed directly or indirectly by exercise of
+contract owner withdrawal options", the guideline calls it inappropriate to apply 4(B) to that part,
+because the owner could then draw funds otherwise than as a life annuity or as installments of five
+years or more.
 
 **Read that as a rule about rate-shopping**: you cannot claim the (usually more favourable) Plan Type
 A annuitization treatment for a payment stream that the owner can still get at by withdrawal. The
@@ -529,35 +468,25 @@ test is "**can be changed directly or indirectly**".
 ### 8. The worked example the guideline carries — the GLIB decomposition
 
 *Text* 4 closes with the guideline's only extended example (p. AG33-7). It is not numeric; it is a
-worked **classification**. Verbatim setup:
+worked **classification**. The setup: a Guaranteed Lifetime Income Benefit (GLIB) guarantees the
+owner of a fixed deferred annuity (traditional or indexed — see the note below the table) a
+formula-determined income for life, while the owner keeps traditional rights such as withdrawal to
+the underlying annuity's other values for as long as those values last. The income is typically
+taken out of one or more of the annuity's defined values while they stay positive. After electing
+the GLIB the owner may be able to stop and restart the income and to surrender all or part of any
+remaining annuity value, which can reduce or end later guaranteed income. Applying 4(A) and 4(B),
+the guideline splits the GLIB stream into two portions for Plan Type and guarantee duration.
 
-> For example, a Guaranteed Lifetime Income Benefit (GLIB) is a guarantee to the owner of a fixed
-> deferred annuity contract, whether traditional or indexed to an external referent such as an equity
-> index, that the owner can have a defined income for life in an amount determined by formula, while
-> the owner retains traditional rights (such as withdrawal) to the other values provided by the
-> underlying deferred annuity and while such values continue to exist. Income benefits are typically
-> deducted from one or more of the annuity's defined values to the extent such values remain positive.
-> Once the GLIB is elected, the contract owner may have rights to stop and restart the income benefit
-> and may also request full or partial surrender of any remaining annuity value, though doing so may
-> negatively impact or eliminate subsequent guaranteed income benefits. Thus, applying 4(A) and 4(B)
-> above, the GLIB benefit stream is seen to be composed of two portions to determine the Plan Type and
-> guarantee duration, as follows:
+**First portion** — the defined payments to the extent that they, or any fraction of them, are
+withdrawals that reduce or exhaust the annuity's defined values. Rule 4(A) applies, giving Plan Type
+A, B or C under the Standard Valuation Law's definitions and the contract's particular provisions,
+above all those on withdrawal. Rule 4(A) also governs any residual withdrawals still available once
+the GLIB has been elected.
 
-**First portion**, verbatim:
-
-> The first portion consists of the series of defined payments to the extent that the payments, or any
-> fraction thereof, are withdrawals that reduce or deplete the annuity's defined values. Applying
-> paragraph 4(A) to this portion would result in Plan Type A, Plan Type B, or Plan Type C, by following
-> the definitions of such contained within the Standard Valuation Law and reflecting the specific
-> contract provisions, especially with regard to withdrawal. Paragraph 4(A) would also apply to any
-> residual withdrawals that can be made following election of the GLIB benefit.
-
-**Second portion**, verbatim:
-
-> The second portion is a life annuity without option to take or receive additional amounts under the
-> contract, and consists of the payments not included in the above portion. Applying paragraph 4(B),
-> Plan Type A would generally apply to this segment with the guarantee duration determined using the
-> period from contract issue to commencement of payments in this second portion.
+**Second portion** — the payments not in the first portion: a life annuity under which the owner has
+no option "to take or receive additional amounts". Under rule 4(B), Plan Type A would generally
+apply, with guarantee duration measured from contract issue to the start of the second-portion
+payments.
 
 **What an implementer takes from this.** A GLWB/GLIB income stream is **split at the point of account
 exhaustion**, and the two halves get different valuation rates:
@@ -573,16 +502,12 @@ contemplates **indexed** contracts directly, on its own terms, without invoking 
 
 ### 9. Change in fund basis — *Text* 5
 
-Verbatim (p. AG33-7):
-
-> As indicated by section 4b.C.(1)(c)(vi) of the SVL, a company may elect to value annuity contracts
-> with cash settlement options on either an issue year basis or on a change in fund basis. Annuity
-> contracts with no cash settlement options must be valued on an issue year basis. The issue year
-> basis or change in fund basis should be determined for the contract as a whole, and thus must be
-> consistently applied to all portions of all integrated benefit streams available under the annuity
-> contract. The election of issue year or change in fund basis must be made at the issuance of the
-> contract and must not change during the term of the contract without the prior written approval of
-> the commissioner.
+*Text* 5 (p. AG33-7), invoking SVL section 4b.C.(1)(c)(vi): a company may choose to value annuity
+contracts that have cash settlement options on either the issue year basis or the change in fund
+basis, while contracts without cash settlement options must use the issue year basis. The basis
+belongs to the contract as a whole, so it has to be applied uniformly to every portion of every
+integrated benefit stream the contract offers. The choice must be made when the contract is issued
+and may not be altered during its term unless the commissioner gives prior written approval.
 
 Four rules: **no cash settlement options ⇒ issue year basis, mandatorily**; the basis is a
 **contract-level** attribute; it must be applied **consistently to every portion of every stream**;
@@ -596,28 +521,22 @@ content, and this note does not supply it.
 
 ### 10. Purchase rates and the 7% expense-allowance floor — *Text* 6
 
-This is the guideline's only numeric parameter. Verbatim (pp. AG33-7 to AG33-8):
+This is the guideline's only numeric parameter (*Text* 6, pp. AG33-7 to AG33-8). *Text* 6 notes that
+a contract may guarantee purchase rates more favourable than those it lists — for instance, a
+promise to offer at annuitization the rates given to new buyers of immediate annuities whenever
+those would yield a larger annuity benefit than the contract's guaranteed rates. That is a contract
+guarantee CARVM must value, and leaving it out understates the CARVM statutory formula reserve; the
+difficulty is that the company cannot know today what rate will apply when settlement is elected.
+So, to produce conservative formula reserves where the use of future unknown rates is guaranteed,
+the company "shall establish reserves not less than" the contract's accumulation fund value at the
+valuation date, less an "expense allowance" of at most 7% of that fund. The paragraph closes by
+relieving the company of any need to calculate a reserve for annuitizing business at current
+purchase rates under the *Text* 2.B "annuitization streams".
 
-> Contracts may provide, as contractual guarantees, the use of preferential purchase rates to those
-> listed in the contract. As an example, a contract may provide that the company will offer, at the
-> time of annuitization, the rates offered to new purchasers of immediate annuities if such rates will
-> provide a higher annuity benefit than would result from the contractually guaranteed rates provided
-> in the contract. This creates a contract guarantee which must be valued under CARVM. Ignoring this
-> benefit in determining reserves will produce reserves less than the statutory formula reserves
-> required under CARVM. Valuation of this benefit, however, is complicated by the fact that the
-> company does not currently know what the exact rate will be at the time of the settlement election.
-> In order to determine conservative statutory formula reserves, if use of future unknown rates are
-> guaranteed, the company shall establish reserves not less than the contract's accumulation fund
-> value, on the valuation date, reduced by an "expense allowance" not to exceed 7% of such fund. This
-> section does not require the calculation of a reserve for the annuitization of business based upon
-> current purchase rates pursuant to the "annuitization streams" described in Paragraph 2.B. above.
-
-and the parallel rule for payout-period excess amounts, verbatim:
-
-> Likewise for contracts which provide for additional amounts during the payout period over those
-> guaranteed at the commencement of the annuity payments, the reserve during the deferred period shall
-> not be less than the contract's accumulation fund reduced by an expense allowance not to exceed 7% of
-> such fund.
+The second paragraph states the parallel rule for payout-period excess amounts: where a contract
+provides additional amounts during the payout period beyond those guaranteed when annuity payments
+begin, the reserve during the deferred period likewise may not fall below the accumulation fund less
+an expense allowance of at most 7% of the fund (p. AG33-8).
 
 **[std, restatement]** Where either trigger applies, an additional **floor** attaches:
 
@@ -638,10 +557,10 @@ Four cautions:
    `AF·0.93` is the **lowest** permitted floor. The guideline does not prescribe how to set `EA`
    below the cap.
 2. **It is a floor on the reserve, not a substitute for the greatest-present-value calculation.**
-   The final sentence of the first paragraph is explicit that the section "does not require the
-   calculation of a reserve for the annuitization of business based upon current purchase rates
-   pursuant to the 'annuitization streams' described in Paragraph 2.B." — i.e. you do **not** have to
-   build current-rate annuitization streams; you take this floor instead.
+   The final sentence of the first paragraph is explicit that the section does not require any
+   reserve to be calculated for annuitizing business at current purchase rates under the Paragraph
+   2.B "annuitization streams" — i.e. you do **not** have to build current-rate annuitization
+   streams; you take this floor instead.
 3. **The base is the accumulation fund, not the cash value.** Where they differ (Background 2's
    whole point), the floor is on the larger.
 4. **This floor can bind on ordinary MYGA/FIA designs** with "better of current or guaranteed
@@ -650,25 +569,19 @@ Four cautions:
 
 ### 11. Practical considerations and the "consider, not test" standard — *Text* 7
 
-Verbatim (p. AG33-8):
+*Text* 7 (p. AG33-8), after restating the guideline's purpose, allows that other acceptable ways of
+applying CARVM may exist in practice that are substantially consistent with the guideline's own
+methods; they may be used with prior regulatory approval.
 
-> However, in practice there may be other acceptable methods of applying CARVM which are substantially
-> consistent with the methods described in this Actuarial Guideline. Such methods may also be used,
-> with prior regulatory approval.
-
-and:
-
-> Additionally, in applying this Actuarial Guideline there may theoretically be an infinite number of
-> contract owner options that are possible under the contract. However, it may not be practical,
-> possible or even appropriate to test every conceivable combination of potential integrated benefit
-> streams theoretically available under the contract. This Actuarial Guideline requires that the
-> actuary consider, not necessarily test, all potential integrated benefit streams to determine to what
-> extent each contract owner option has a material impact on the reserve. In practice, the actuary may
-> be able to eliminate some potential integrated benefit streams by analytical methods. The actuary may
-> also be able to demonstrate the reserve adequacy of certain approximations. For example, in certain
-> situations it may be shown that a CARVM reserve ignoring non-elective benefits, plus an "add-on"
-> reserve for non-elective benefits, is a reasonable approximation for the theoretically correct CARVM
-> reserve.
+It then turns to the size of the search. In theory a contract may offer an infinite number of owner
+options, and testing every conceivable combination of potential integrated benefit streams may be
+impractical, impossible or even inappropriate. The guideline therefore requires the actuary to
+"consider, not necessarily test," every potential integrated benefit stream, in order to judge how
+far each owner option materially affects the reserve. In practice some streams may be ruled out
+analytically, and the actuary may be able to show that certain approximations produce adequate
+reserves. The example given: in some situations a CARVM reserve that leaves out non-elective
+benefits, plus an "add-on" reserve for them, can be shown to approximate the theoretically correct
+CARVM reserve reasonably.
 
 **"Consider, not necessarily test"** is the sanctioned escape from combinatorial explosion, and it is
 conditioned on a **materiality** determination per contract-owner option and on the actuary being able
@@ -687,47 +600,45 @@ Stated plainly, because the library has an open question here:
   guideline are **"Section 4b of the SVL"** (*Text* 3), **"section 4b.C.(1)(c)(vi) of the SVL"**
   (*Text* 5), and generic references to "the SVL", "the 1980 revisions to the SVL" and "the 1980
   amendments of the SVL".
-- **It restates CARVM's definition rather than citing it.** Background 1, verbatim: "The SVL defined
-  methodology for annuity contracts, the commissioners annuity reserve valuation method (CARVM),
-  requires that reserves be the greatest of the respective excesses of the present values, at the date
-  of valuation, of the future guaranteed benefits, including guaranteed nonforfeiture benefits,
-  provided for by such contracts at the end of each respective contract year, over the present value,
-  at the date of valuation, of any future valuation considerations derived from future gross
-  considerations, required by the terms of such contracts, that become payable prior to the end of such
-  respective contract year." That is the §5a construction the library already implements
-  [REG-R1 §5a.B]; the mapping to "§5a" is the library's, made on content, and is sound — but it is not
-  AG 33's own citation.
+- **It restates CARVM's definition rather than citing it.** Background 1 (p. AG33-1) describes the
+  SVL's method for annuities, the commissioners annuity reserve valuation method, as setting the
+  reserve at the largest, taken over the contract-year ends, of the excess of (i) the present value
+  at the valuation date of the future guaranteed benefits — guaranteed nonforfeiture benefits
+  included — that the contract provides at the end of that contract year, over (ii) the present
+  value at the valuation date of any future valuation considerations, derived from the future gross
+  considerations the contract requires, that fall due before that contract year ends. That is the
+  §5a construction the library already implements [REG-R1 §5a.B]; the mapping to "§5a" is the
+  library's, made on content, and is sound — but it is not AG 33's own citation.
 - **The division of labour is therefore:** §5a supplies the *greatest-of-excesses over contract-year
   ends* skeleton and the deduction of future valuation considerations; §4b supplies the *rates*; AG 33
   supplies (i) what the candidate benefit streams are, (ii) what may and may not be assumed about
   incidence, (iii) at what level each §4b parameter is determined, and (iv) two floors (the 7% expense
   allowance cases).
-- **AG 33 adds a purpose statement to §5a's function**, Background 1, verbatim: "Such reserves are
-  established to adequately fund all guaranteed contract obligations, including those obligations which
-  are optional to the contract owner and which may not have yet been elected." That sentence is the
-  justification for the whole elective-path enumeration and is worth quoting when explaining why the
-  model must enumerate paths.
-- **AG 33 also states the SVL's own silences**, which is useful for knowing what AG 33 is *for*:
-  the SVL "is not explicit as to whether incidence tables prescribed under the SVL may be used"
-  (Background 3); "is not explicit regarding whether or how blends of more than one type of benefit
-  must be considered under CARVM" (Background 4); and "is not explicit as to how valuation interest
-  rates should be determined" for multi-benefit annuities and for death and nursing home benefits
-  (Background 5).
+- **AG 33 adds a purpose statement to §5a's function**: Background 1 says these reserves exist to
+  fund adequately every guaranteed contract obligation, including obligations that are optional to
+  the owner and "may not have yet been elected" (p. AG33-1). That sentence is the justification for
+  the whole elective-path enumeration and is worth citing when explaining why the model must
+  enumerate paths.
+- **AG 33 also states the SVL's own silences**, each introduced with the phrase "is not explicit",
+  which is useful for knowing what AG 33 is *for*: the SVL does not say whether its prescribed
+  incidence tables may be used for certain newer benefit types, as against considering every owner
+  option and choosing the incidence set with the greatest present value (Background 3); it does not
+  say whether or how blends of more than one benefit type must be considered under CARVM
+  (Background 4); and it does not say how valuation interest rates are to be set for annuities
+  offering more than one type of benefit, or for benefits such as death and nursing home benefits
+  (Background 5; all three on p. AG33-2).
 
 ### 13. The discontinuity problem AG 33 identifies but does not solve
 
 Background 2 (p. AG33-2) names a reserve-pattern problem an implementer will hit and should expect:
-
-> Frequently there are significant discontinuities in the reserves, both upward and downward, at the
-> time a settlement option is elected, between the reserve held immediately prior to the settlement as
-> compared to the reserve required for the greatest actuarial present value of the annuitization option
-> elected.
-
-with two stated causes: the difference between the **SPIA valuation rate available at election** and
-the **rate based on the original SPDA's date of issue**; and the difference between the **guaranteed
-purchase rate used for reserve development** and the **rate actually used at election**. AG 33 raises
-this in Background and **never resolves it in the Text block** — it is diagnosis, not remedy. A model
-that jumps at annuitization is exhibiting a documented feature, not necessarily a bug.
+when a settlement option is elected, the reserve held just before settlement and the reserve needed
+for the greatest actuarial present value of the chosen annuitization option frequently differ
+significantly, in either direction. It gives two stated causes: the difference between the **SPIA
+valuation rate available at election** and the **rate based on the original SPDA's date of issue**;
+and the difference between the **guaranteed purchase rate used for reserve development** and the
+**rate actually used at election**. AG 33 raises this in Background and **never resolves it in the
+Text block** — it is diagnosis, not remedy. A model that jumps at annuitization is exhibiting a
+documented feature, not necessarily a bug.
 
 ---
 
@@ -740,9 +651,9 @@ that jumps at annuitization is exhibiting a documented feature, not necessarily 
    implementation obligation is **path enumeration** — one benefit stream per elective path; missing a
    path can only understate the reserve." Confirmed, and strengthened: AG 33 requires blends across
    benefit types, not merely one path per benefit type (*Text* 2.C, three separate statements).
-2. **Worked example 2's construction.** "accumulated at the guaranteed credited interest rate(s) and
-   discounted at the valuation rate(s) of interest" (*Text* 2.A) is exactly what the library's SPDA
-   worked example does. The example remains **[std]** in its parameter values, but its *method* is now
+2. **Worked example 2's construction.** *Text* 2.A's instruction to accumulate "at the guaranteed
+   credited interest rate(s)" and to discount at the *Text* 3 valuation rate(s) is exactly what the
+   library's SPDA worked example does. The example remains **[std]** in its parameter values, but its *method* is now
    primary-sourced.
 3. **The required model output "Guaranteed benefit streams by elective path ... per contract, one
    stream per path"** in `us/regulatory/technical-notes.md`, "Required model outputs". Confirmed, and
@@ -750,11 +661,11 @@ that jumps at annuitization is exhibiting a documented feature, not necessarily 
    elective path, and a **per-payment benefit-component tag** so the right valuation rate can be
    applied.
 4. **Annuitization at guaranteed purchase rates.** R39's annotation says the elective set includes
-   "annuitization at guaranteed purchase rates". Confirmed verbatim at *Text* 2.B, with "excluding any
-   current purchase rates which may be applicable" — and with the *Text* 6 floor as the price of that
-   exclusion.
-5. **That AG 33 is an interpretation of CARVM rather than a separate method.** Confirmed verbatim in
-   *Purpose*.
+   "annuitization at guaranteed purchase rates". Confirmed at *Text* 2.B, which applies the
+   contract's guaranteed purchase rates and expressly excludes any current purchase rates that may
+   apply — with the *Text* 6 floor as the price of that exclusion.
+5. **That AG 33 is an interpretation of CARVM rather than a separate method.** Confirmed in the
+   *Purpose* block's own words (p. AG33-3).
 6. **AG 33's scope is elective-benefit annuity contracts.** The title the library has been citing
    ("...for Annuity Contracts With Elective Benefits", carried at R39 and in
    `us/regulatory/sources.md`) matches the printed title exactly. **R39's title is right**; it is the
@@ -785,8 +696,8 @@ that jumps at annuitization is exhibiting a documented feature, not necessarily 
     to it.** R39 says the guideline defines what "the 'efficient policyholder selection' assumption
     means in practice [unverified]". That phrase **does not appear in AG 33**. The actual standard is:
     experience-based elective incidence is **prohibited**; trial sets are maximised over; all rates
-    0%–100% are theoretically in scope; the greatest present value "will typically occur by assuming an
-    incidence rate of either 0% or 100%"; and the actuary must **consider, not necessarily test**, all
+    0%–100% are theoretically in scope; the maximum "will typically occur" at an incidence rate of 0%
+    or 100%; and the actuary must **consider, not necessarily test**, all
     streams. Replace the gloss with the guideline's own construction.
 11. **"AG 33 text not retrieved" caveats are now obsolete** and must be replaced with citations to
     R151 wherever they appear. The full list found: `README.md` (lines ~103, ~155, ~185);
@@ -819,11 +730,11 @@ that jumps at annuitization is exhibiting a documented feature, not necessarily 
 14. **The `us/regulatory/statutory-accounting-and-capital.md` applicability matrix row "Formulaic
     CARVM — SVL §5a, AG 33/AG 35" marks `x` for all six annuity products.** For AG 33 that is right
     for the five deferred/indexed/RILA/variable products but **overstated for a no-option SPIA**: AG
-    33's non-elective definition expressly covers "benefits payable under either a deferred or
-    immediate annuity contract (with or without life contingencies), **where no benefit options are
-    available**", and the applicability sentence requires that "any elective benefits ... are
-    available". A pure life-only SPIA with no commutation, no acceleration and no elective option is
-    **outside AG 33** — CARVM still applies, AG 33 does not. Mark it `(x)` or split the row.
+    33's non-elective definition expressly covers the benefits of a deferred or immediate annuity,
+    life-contingent or not, "**where no benefit options are available**", and the applicability
+    sentence requires that "any elective benefits" be available. A pure life-only SPIA with no
+    commutation, no acceleration and no elective option is **outside AG 33** — CARVM still applies,
+    AG 33 does not. Mark it `(x)` or split the row.
 
 ### Opened up / newly answerable — questions the library flagged that this text now reaches
 
@@ -850,14 +761,15 @@ that jumps at annuitization is exhibiting a documented feature, not necessarily 
     elective vs non-elective benefits" as unverified. **Answered, with a correction to the framing:**
     the split is not elective/non-elective, it is **contract-level parameters (A, B, C) versus
     benefit-level parameters (D guarantee duration, E Plan Type)**, producing "potentially different
-    valuation rates for each benefit type comprising the integrated benefit stream".
+    valuation rates for each benefit type comprising the integrated benefit stream" (*Text* 3,
+    p. AG33-6).
 18. **A concrete numeric CARVM constraint for deferred annuities.** The **7% expense-allowance floor**
     (*Text* 6) is now available and belongs in `us/regulatory/technical-notes.md`, "Formulaic
     reserves", next to the CARVM construction. It bites on any contract guaranteeing better-of current
     purchase rates, or additional payout-period amounts.
-19. **A sanctioned approximation.** "CARVM reserve ignoring non-elective benefits, plus an 'add-on'
-    reserve for non-elective benefits" is named in *Text* 7 as an example of a demonstrable
-    approximation. The library's implementation-notes section can cite this rather than presenting the
+19. **A sanctioned approximation.** A CARVM reserve that ignores non-elective benefits, plus an
+    "add-on" reserve for them, is named in *Text* 7 as an example of a demonstrable approximation.
+    The library's implementation-notes section can cite this rather than presenting the
     decomposition as an engineering shortcut.
 20. **Immutable per-contract flags.** The issue-year / change-in-fund election joins the
     life-contract/deposit-type classification as a flag **set at issue and locked** (commissioner's
@@ -876,41 +788,71 @@ that jumps at annuitization is exhibiting a documented feature, not necessarily 
 
 ---
 
-## Quotable anchors
+## Citation anchors
 
-**Quotation convention.** The PDF text layer inserts spurious spaces inside words at justified-line
-breaks (e.g. the source file renders *Definitions* 1's heading as `Elective and Non-Elec tive Benefits
-in CARVM`). In the quotations below **those intra-word spaces have been closed up and nothing else
-has been changed** — no words added, removed or reordered, no punctuation altered, no capitalisation
-changed. Anyone re-verifying against the PDF should expect the broken spacing.
+Each anchor gives the pinpoint, a one-line paraphrase in the library's words and, where the exact
+words are the point, a short key phrase in quotation marks. Numbering is kept from the earlier
+version of this note.
 
-| # | Quotation | Page |
-|---|---|---|
-| 1 | "This Actuarial Guideline shall apply to all annuity contracts subject to CARVM, where any elective benefits (as defined below) are available to the contract owner under the terms of the contract." | AG33-3 / PDF 1498 |
-| 2 | "The purpose of this Actuarial Guideline is to codify the basic interpretation of CARVM and does not constitute a change of method or basis from any previously used method" | AG33-3 / PDF 1498 |
-| 3 | "in the event an actuarial guideline or regulation dealing with reserves is developed for a specific annuity product design, the product specific actuarial guideline or regulation will take precedence over the Actuarial Guideline." | AG33-3 / PDF 1498 |
-| 4 | "This guideline shall be effective on December 31, 1998, affecting all contracts issued on or after January 1, 1981." | AG33-8 / PDF 1503 |
-| 5 | "no less than 33 1/3% of the additional reserves resulting from the application of this guideline on December 31, 1998, no less than 66 2/3% on December 31, 1999, and 100% by December 31, 2000." | AG33-8 / PDF 1503 |
-| 6 | "each benefit available under the annuity contract must be placed into one of the two categories" | AG33-3 / PDF 1498 |
-| 7 | "including (but not limited to) death benefits, accidental death benefits, disability benefits, nursing home benefits, and benefits payable under either a deferred or immediate annuity contract (with or without life contingencies), where no benefit options are available under the terms of the contract." | AG33-3 / PDF 1498 |
-| 8 | "Elective benefits include (but are not limited to) full surrenders, partial withdrawals, and full and partial annuitizations." | AG33-3 / PDF 1498 |
-| 9 | "For elective benefits, incidence rates should not be based on tables reflecting past company experience, industry experience or other expectations." | AG33-4 / PDF 1499 |
-| 10 | "all possible elective benefit incidence rates between 0% and 100% should be considered. However, in practice, such a greatest present value will typically occur by assuming an incidence rate of either 0% or 100%." | AG33-4 / PDF 1499 |
-| 11 | "incidence rates greater than zero are not to be applied at any time in the projection after the earlier of: (a) the end of the surrender charge period applicable immediately after the first premium is paid; and (b) when the projected cash value has been depleted." | AG33-4 / PDF 1499 |
-| 12 | "An integrated benefit stream is one potential blend of guaranteed elective and non-elective benefits available under the contract" | AG33-4 / PDF 1499 |
-| 13 | "the ultimate reserve established must be the greatest of the present values of these values, based on valuation interest rate(s) as defined in Section 3 below." | AG33-4 / PDF 1499 |
-| 14 | "accumulated at the guaranteed credited interest rate(s) and discounted at the valuation rate(s) of interest defined in section 3 below" | AG33-5 / PDF 1500 |
-| 15 | "the guaranteed purchase rates contained in the contract, as well as any other contract provisions, excluding any current purchase rates which may be applicable, are applied to the accumulation fund." | AG33-5 / PDF 1500 |
-| 16 | "Parameters A, B and C above should be determined at a contract level. … Parameters D and E should be determined at a benefit level" | AG33-5 / PDF 1500 |
-| 17 | "resulting in potentially different valuation rates for each benefit type comprising the integrated benefit stream." | AG33-6 / PDF 1501 |
-| 18 | "the guarantee duration as the number of years from the original date of issue or date of purchase, to the date the annuitization is assumed to commence." | AG33-6 / PDF 1501 |
-| 19 | "An assumed annuitization option which has a non-life contingent payout period of less than five (5) years shall be considered a Plan Type C" | AG33-6 / PDF 1501 |
-| 20 | "the company shall establish reserves not less than the contract's accumulation fund value, on the valuation date, reduced by an 'expense allowance' not to exceed 7% of such fund." | AG33-8 / PDF 1503 |
-| 21 | "This Actuarial Guideline requires that the actuary consider, not necessarily test, all potential integrated benefit streams to determine to what extent each contract owner option has a material impact on the reserve." | AG33-8 / PDF 1503 |
-| 22 | "a CARVM reserve ignoring non-elective benefits, plus an 'add-on' reserve for non-elective benefits, is a reasonable approximation for the theoretically correct CARVM reserve." | AG33-8 / PDF 1503 |
-| 23 | "Such reserves are established to adequately fund all guaranteed contract obligations, including those obligations which are optional to the contract owner and which may not have yet been elected." | AG33-1 / PDF 1496 |
-| 24 | "'accumulation fund' is defined as the policy value which is used to purchase an annuity option under the terms of the contract." | AG33-1 / PDF 1496 |
-| 25 | "The election of issue year or change in fund basis must be made at the issuance of the contract and must not change during the term of the contract without the prior written approval of the commissioner." | AG33-7 / PDF 1502 |
+**Quotation convention.** The PDF text layer used for this note inserts spurious spaces inside words
+at justified-line breaks (e.g. the source file renders *Definitions* 1's heading as `Elective and
+Non-Elec tive Benefits in CARVM`). In the short quotations in this note **those intra-word spaces
+have been closed up and nothing else has been changed** — no words added, removed or reordered, no
+punctuation altered, no capitalisation changed. Anyone re-verifying against the PDF should expect the
+broken spacing.
+
+1. ***Purpose*, AG33-3 / PDF p. 1498** — the guideline applies "to all annuity contracts subject to
+   CARVM" whose terms make any elective benefit available to the owner.
+2. ***Purpose*, AG33-3 / PDF p. 1498** — it codifies the basic interpretation of CARVM, which it says
+   "does not constitute a change of method or basis".
+3. ***Purpose*, AG33-3 / PDF p. 1498** — a reserve guideline or regulation developed for a specific
+   annuity product design overrides AG 33 ("will take precedence").
+4. ***Effective Date*, AG33-8 / PDF p. 1503** — "effective on December 31, 1998", reaching contracts
+   issued on or after January 1, 1981.
+5. ***Effective Date*, AG33-8 / PDF p. 1503** — grade-in on request: at least 33 1/3% of the
+   additional reserve at 31 Dec 1998, at least 66 2/3% at 31 Dec 1999, 100% by 31 Dec 2000.
+6. ***Definitions* 1, AG33-3 / PDF p. 1498** — every benefit under the contract must be put into one
+   of two categories, elective or non-elective.
+7. ***Definitions* 1, AG33-3 / PDF p. 1498** — non-elective examples: death, accidental death,
+   disability and nursing home benefits, and annuity benefits where "no benefit options are
+   available".
+8. ***Definitions* 1, AG33-3 / PDF p. 1498** — elective examples: full surrenders, partial
+   withdrawals, full and partial annuitizations (list non-exhaustive).
+9. ***Definitions* 2, AG33-4 / PDF p. 1499** — elective incidence rates "should not be based on
+   tables" reflecting past company or industry experience or other expectations.
+10. ***Definitions* 2, AG33-4 / PDF p. 1499** — every elective incidence rate from 0% to 100% is in
+    theory in scope; the maximum is typically at 0% or 100%.
+11. ***Definitions* 2, AG33-4 / PDF p. 1499** — non-mortality waiver-type incidence drops to zero
+    after the earlier of the first-premium surrender charge period's end and cash-value depletion.
+12. ***Definitions* 3, AG33-4 / PDF p. 1499** — the object valued: one possible mix of guaranteed
+    elective and non-elective benefits, built from legs A (elective) and B (non-elective).
+13. ***Text* 1, AG33-4 / PDF p. 1499** — each stream is valued separately; the reserve is the greatest
+    present value, at the *Text* 3 "valuation interest rate(s)".
+14. ***Text* 2.A, AG33-5 / PDF p. 1500** — cash-value streams roll forward at the guaranteed credited
+    rate(s) and are discounted at the valuation rate(s).
+15. ***Text* 2.B, AG33-5 / PDF p. 1500** — annuitization streams apply the contract's guaranteed
+    purchase rates to the accumulation fund, excluding current purchase rates.
+16. ***Text* 3, AG33-5 / PDF p. 1500** — parameters A–C are set "at a contract level", D and E "at a
+    benefit level".
+17. ***Text* 3, AG33-6 / PDF p. 1501** — benefit-level setting can give each benefit type in the
+    stream its own valuation rate.
+18. ***Text* 4(B), AG33-6 / PDF p. 1501** — for annuitization, guarantee duration runs from original
+    issue or purchase to the assumed annuitization commencement date.
+19. ***Text* 4(B), AG33-6 / PDF p. 1501** — a non-life-contingent payout of under five years "shall be
+    considered a Plan Type C".
+20. ***Text* 6, AG33-7 to AG33-8 / PDF pp. 1502–1503** — where future unknown purchase rates are
+    guaranteed, the reserve is floored at the accumulation fund less an "expense allowance" of at
+    most 7%.
+21. ***Text* 7, AG33-8 / PDF p. 1503** — the actuary must "consider, not necessarily test," every
+    potential stream, judging each owner option's materiality.
+22. ***Text* 7, AG33-8 / PDF p. 1503** — a CARVM reserve ignoring non-elective benefits plus an
+    "add-on" reserve can be shown to be a reasonable approximation.
+23. **Background 1, AG33-1 / PDF p. 1496** — CARVM reserves fund all guaranteed obligations,
+    including owner options that "may not have yet been elected".
+24. **Background 2, AG33-1 / PDF p. 1496** — "accumulation fund" is the policy value used to buy an
+    annuity option under the contract.
+25. ***Text* 5, AG33-7 / PDF p. 1502** — the issue-year / change-in-fund basis is elected at issue and
+    may change only with the commissioner's prior written approval.
 
 ---
 
@@ -958,14 +900,14 @@ changed. Anyone re-verifying against the PDF should expect the broken spacing.
     reproduced in AG 33 and not verified here.
 12. **"The 1980 amendments of the SVL" / "the 1980 revisions to the SVL"** — the source of Plan Types
     A, B and C and of the dynamic valuation-rate formula. Referenced, not reproduced.
-13. **"the calendar year statutory valuation interest rate for life insurance policies with guarantee
-    duration in excess of twenty (20) years"** — an externally published series that *Text* 4(A) uses
-    to define guarantee duration for withdrawal benefits. AG 33 gives no values and no citation.
+13. **The calendar-year statutory valuation interest rate for life insurance policies with guarantee
+    durations over 20 years** — an externally published series that *Text* 4(A) uses to define
+    guarantee duration for withdrawal benefits. AG 33 gives no values and no citation.
 14. **"tables prescribed by the SVL"** for non-elective incidence, and **"annuity mortality tables
     prescribed by the SVL"** for mortality-based benefits and survivorship discounting. Not identified
     by name or year in AG 33.
-15. **"a product specific actuarial guideline or regulation"** — the precedence clause names no
-    instrument.
+15. **"the product specific actuarial guideline or regulation"** — the precedence clause (*Purpose*,
+    p. AG33-3) names no instrument.
 
 ### Ambiguities in the text itself
 
@@ -987,11 +929,11 @@ changed. Anyone re-verifying against the PDF should expect the broken spacing.
 20. **"Elective benefits" is defined as the complement of non-elective**, so any classification
     dispute is really a dispute about the non-elective definition. The only tie-breaker offered is the
     behavioural-influence judgement clause.
-21. **The *Text* 6 first paragraph's closing sentence** — "This section does not require the
-    calculation of a reserve for the annuitization of business based upon current purchase rates
-    pursuant to the 'annuitization streams' described in Paragraph 2.B. above" — is a relief from
-    building current-rate streams, granted in the same breath as the 7% floor. It is clear on its face
-    but easy to read backwards; note it is a *narrowing* of the *Text* 2.B obligation, not a widening.
+21. **The *Text* 6 first paragraph's closing sentence** — that the section does not require a
+    reserve to be calculated for annuitizing business at current purchase rates under the Paragraph
+    2.B "annuitization streams" — is a relief from building current-rate streams, granted in the
+    same breath as the 7% floor. It is clear on its face but easy to read backwards; note it is a
+    *narrowing* of the *Text* 2.B obligation, not a widening.
 
 ### Extraction artefacts
 
@@ -1001,8 +943,8 @@ changed. Anyone re-verifying against the PDF should expect the broken spacing.
     `su rvivorship`, `excludi ng`, `guaran tee`, `spec ific`, `additi onal`, `clarificat ion`,
     `potent ial`, `add- on`, `satisfacto ry`, `adeq uate`, `referen t`, `righ ts`, `ea ch`,
     `de termination`. These are **artefacts of the text layer, not typographical errors in the
-    manual**. All quotations above have them closed up, per the convention stated in "Quotable
-    anchors".
+    manual**. The short quotations in this note have them closed up, per the convention stated in
+    "Citation anchors".
 23. **Irregular line breaks** — the extraction breaks lines at the PDF's typeset line ends, so
     sentences span several source lines. No sentence was found to be truncated or lost.
 24. **No superscripts, footnotes, tables, figures or formulas appear in these eight pages**, so no

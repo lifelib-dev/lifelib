@@ -280,7 +280,7 @@ def test_monthly_rates_compound_back_to_the_annual_ones(newbiz):
 
 
 def test_the_annual_events_stay_on_the_anniversary(newbiz, whole_life):
-    """The dividend, the paid-up-additions purchase and loan interest are annual [S1].
+    """The dividend, its purchase of paid-up additions and loan interest are annual [S1].
 
     Crediting a twelfth of the dividend each month, or capitalizing loan interest
     monthly, is a different product - so the model puts each on ``is_anniv`` and this

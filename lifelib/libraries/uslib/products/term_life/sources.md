@@ -14,6 +14,9 @@ fetched after drafting, by the stream that read seven AP&P Manual appendix items
 hand; their metadata is carried from
 `references/regulatory-and-actuarial-references.md`.
 
+The S3, S4 and S5 legend and edition notes, and the S5 host description, were completed on
+review (checked 2026-10-24); they add no source.
+
 ---
 
 ## Primary product sources (S#)
@@ -38,9 +41,10 @@ hand; their metadata is carried from
 
 ### S3 — Lincoln Financial: "Lincoln TermAccel Level Term — Product Reference Guide"
 - Publisher: The Lincoln National Life Insurance Company, Fort Wayne, IN
-- Doc type: producer/agent product reference guide (PDF, 11 pp., LCN 1895883-091317, revised 09/2018)
+- Doc type: producer/agent product reference guide (PDF, 11 pp., LCN 1895883-091317, revised 09/2018), "For agent or broker use only. Not for use with the public." (cover) and "For agent /broker use only. Not to be used with the general public." with "Training Material" (footer of pages 2–11)
 - URL: https://www.lincolnfinancial.com/public/microsite/pdf/TermAccel-Product-Reference-Guide-09.2018.pdf
 - Retrieved: YES (PDF downloaded and text-extracted)
+- Edition: stamped "LCN: 1895883-091317 (Last update 09/18)" on the cover, "(revised 09/2018)" in every footer and "©2018 Lincoln National Corporation" on page 11, for the version issued on policy form TRM5065/ICC14TRM5065. Superseded by Lincoln TermAccel Level Term (2019), issued on policy form TRM6069, whose client guide LCN-7509694-010825 (©2025) gives a $2.5 million maximum coverage amount and a fourth premium band ($1,000,000–$2,500,000, policy fee $70) (checked 2026-10-24). Facts are as of the document date; the $1,000,000 maximum face and the three-band structure cited from this source are the 2018 version's.
 
 (uslib-term_life-s4)=
 
@@ -49,14 +53,17 @@ hand; their metadata is carried from
 - Doc type: producer rate-comparison flyer (PDF, 2 pp.)
 - URL: https://life.pacificlife.com/content/dam/paclife-lid/public/plexpress/products/pl-promise-term/15-48861.pdf
 - Retrieved: YES (PDF downloaded and text-extracted)
+- Legend: the cited flyer's own legend is [unverified]: it can no longer be checked, because the URL above returns HTTP 404 and no archived copy could be retrieved. Its same-series successor 19-227G prints "For financial professional use only. Not for use with the public." in the footer of every page, and Pacific Life's producer bulletin of August 31, 2023 announcing new PL Promise Term pricing effective September 5, 2023 (23-VER-87, BT-52928-00 8/23) prints "For Financial Professional use only. Not for use with the public." on every page, so the flyer is treated as producer-only. The host site's landing page reads "This website is for contracted and appointed Life Insurance professionals, firms and designated partners.", and the PL Promise Term product page reads "This website is intended for financial professional use only. If you are not a financial professional, please visit our public website www.PacificLife.com ." (checked 2026-10-24).
+- Edition: identified at retrieval as 19-227E / 15-48861-11 9/23. It now returns HTTP 404, and the same folder serves the successor 19-227G (MPF5137-BM-04 and MPF5136-BM-04 9/26, combined in rate-comparison-combo-flyer.pdf), whose "Pacific Life PL Promise Term rates are effective 9/21/2026" (checked 2026-10-24). Facts, including the competitor premiums, are as of the document date.
 
 (uslib-term_life-s5)=
 
 ### S5 — Corebridge Financial: "Select-a-Term on the new SimpliNow Choice platform" (AGLC201669 REV0923)
 - Publisher: American General Life Insurance Company (AGL), Houston, TX / The United States Life Insurance Company in the City of New York (US Life) — Corebridge Financial
-- Doc type: producer guide / product highlights (PDF, 8 pp.)
-- URL: https://www.gbslife.com/media/29890/aglc201669.pdf (broker-dealer mirror of official Corebridge piece)
+- Doc type: producer guide / product highlights (PDF, 8 pp.), "FOR FINANCIAL PROFESSIONAL USE ONLY—NOT FOR PUBLIC DISTRIBUTION" (page 1) and "FOR FINANCIAL PROFESSIONAL USE ONLY. NOT FOR PUBLIC DISTRIBUTION." (page 8)
+- URL: https://www.gbslife.com/media/29890/aglc201669.pdf (copy of the Corebridge piece hosted by GBS Insurance and Financial Services, an insurance brokerage agency that is part of Arthur J. Gallagher; not a broker-dealer and not a Corebridge site)
 - Retrieved: YES (PDF downloaded and text-extracted)
+- Edition: stamped "AGLC201669 REV0923" (September 2023) in the footer of every page except the photographic page 4, and "©Corebridge Financial, Inc. All rights reserved." (page 8, no year); whether a later revision of this piece exists was not determined (checked 2026-10-24). Facts are as of the document date.
 
 (uslib-term_life-s6)=
 

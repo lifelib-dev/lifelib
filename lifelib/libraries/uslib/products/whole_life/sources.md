@@ -4,7 +4,9 @@ Source ids, titles, publishers, URLs, and fetched/not-fetched markers are carrie
 verbatim from `_research/whole-life.md` (research/access date for all citations:
 2026-08-03). Ids are never renumbered. Sources from the research file that are not cited in
 `product-spec.md` or `technical-notes.md` (R10, R11) are dropped from this list; they remain
-in the research file. No new sources were fetched at drafting.
+in the research file. No new sources were fetched at drafting. The S1, S2, S3 and S7 legend
+and edition notes, the S2 and S7 host notes and the S3 page count were completed on review
+(checked 2026-10-24), in both files; they add no source.
 
 ---
 
@@ -13,26 +15,29 @@ in the research file. No new sources were fetched at drafting.
 (uslib-whole_life-s1)=
 
 ### S1 — Guardian: Core Whole Life and Limited Pay Whole Life (2019 Series) Product Guide
-- Publisher: The Guardian Life Insurance Company of America (doc 2019-85695; "For Internal and Producer Use Only")
+- Publisher: The Guardian Life Insurance Company of America (doc 2019-85695; "For Internal and Producer Use Only. Not for Use with the General Public" — footer of every page)
 - Doc type: producer guide (PDF, 23 pp.)
 - URL: https://centurionagencyltd.com/guardian_whole_life_product_agent_guide_12-2019.pdf (agency file share hosting a genuine Guardian document)
 - Accessed: 2026-08-03. Retrieved: YES (PDF downloaded, full text extracted)
+- Edition: stamped "2019-85695 exp 9/21" on every page (revision history: September 2019). Superseded: Guardian's whole life brochure Pub4085 (07/26) states that Guardian Whole Life Products are issued on Policy Form 21-WL (rider form 21-PUA), where this guide lists the 18- and 19-series policy forms and 18-PUA (checked 2026-10-24). Facts are as of the document date.
 
 (uslib-whole_life-s2)=
 
 ### S2 — Guardian: Dividend Manual, Whole Life (2017 edition)
-- Publisher: The Guardian Life Insurance Company of America (doc 2019-81397; producer use only)
+- Publisher: The Guardian Life Insurance Company of America (doc 2019-81397; "For Producer Use Only. Not for use with the general public." — printed on every page)
 - Doc type: producer dividend manual (PDF, 5 pp.)
-- URL: https://www.centurionagencyltd.com/guardian_life_dividend_options_12-2019.pdf
+- URL: https://www.centurionagencyltd.com/guardian_life_dividend_options_12-2019.pdf (agency file share hosting a genuine Guardian document)
 - Accessed: 2026-08-03. Retrieved: YES (PDF downloaded, full text extracted)
+- Edition: the title block (p.2) reads "2017 Edition", and the cover (p.1) carries the document number with the expiry stamp "exp 6/21" and lists the 18- and 19-series policy forms. Those are not the forms Guardian names for its current whole life issues (Policy Form 21-WL, per Guardian brochure Pub4085, 07/26); no later edition of the manual was located (checked 2026-10-24). Facts are as of the document date.
 
 (uslib-whole_life-s3)=
 
 ### S3 — MassMutual: Whole Life Series Product Reference Guide
-- Publisher: Massachusetts Mutual Life Insurance Company (LI10804e-mmsd 522; "For financial professionals")
-- Doc type: producer product reference guide (PDF, 8 sections)
+- Publisher: Massachusetts Mutual Life Insurance Company (LI10804e-mmsd 522; "FOR FINANCIAL PROFESSIONALS. NOT FOR USE WITH THE PUBLIC." — once, on p.1)
+- Doc type: producer product reference guide (PDF, 35 pp.)
 - URL: https://www.aimcorfileshare.com/download.php?idFile=4417 (distributor file share hosting a genuine MassMutual document)
 - Accessed: 2026-08-03. Retrieved: YES (PDF downloaded, full text extracted)
+- Edition: "© 2022", footer identifiers "LI10804e-mmsd 522" and "MM202508-301302" (p.35; PDF created 2022-05-31). Apparently superseded: MassMutual's adjustable-loan-rate table LI7535 1026 lists whole life plans this guide does not describe (Whole Life 8 Pay, available since February 2024; Whole Life Guard 10 Pay and Whole Life 95, since September 2026) and dates Whole Life 12 Pay, which this guide already describes, from August 2022; a later edition of LI10804e was not retrieved (checked 2026-10-24). Facts are as of the document date.
 
 (uslib-whole_life-s4)=
 
@@ -61,10 +66,11 @@ in the research file. No new sources were fetched at drafting.
 (uslib-whole_life-s7)=
 
 ### S7 — United of Omaha: Living Promise Product and Underwriting Guide (California)
-- Publisher: United of Omaha Life Insurance Company (form 142658, producer use only)
+- Publisher: United of Omaha Life Insurance Company (form 142658; "For producer use only. Not for use with the general public." — once, on the cover)
 - Doc type: producer product & underwriting guide with rate tables (PDF)
-- URL: https://www.datocms-assets.com/13639/1563367329-moo-livingpromise-uw-guide.pdf
+- URL: https://www.datocms-assets.com/13639/1563367329-moo-livingpromise-uw-guide.pdf (third-party CMS asset host, not a carrier domain; the site that uploaded the file is not identified)
 - Accessed: 2026-08-03. Retrieved: YES (PDF downloaded, full text extracted)
+- Edition: California edition; no edition date is printed (PDF created 2016-05-19). Superseded: the carrier serves a later Living Promise Product and Underwriting Guide, form 461606 (PDF created 2021-07-13), with different Level and Graded premium rates and a $12 Graded policy fee (checked 2026-10-24). Facts are as of the document date.
 
 (uslib-whole_life-s8)=
 

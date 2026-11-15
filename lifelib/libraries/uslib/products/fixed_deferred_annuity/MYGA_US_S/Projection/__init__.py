@@ -370,7 +370,8 @@ def renewal_architecture():
     """``rollover`` (Camp A) or ``annual_redeclare`` (Camp B).
 
     ``rollover`` starts a fresh guarantee period, surrender charge schedule and MVA period
-    at each boundary [S1][S2][S5][S11], so the shock lapse repeats every n years.
+    at each boundary [S1] (no MVA on that form) [S2] [S5] [S11], so the shock lapse
+    repeats every n years.
     ``annual_redeclare`` redeclares the rate each anniversary with no further surrender
     charge and no MVA [S13], so the shock happens once.
     """
@@ -812,7 +813,7 @@ def surr_charge_year(t):
 
 
 def surr_charge_age_cap(t):
-    """The attained-age cap on the surrender charge: 4% at 94 down to 0% at 98+ [S1][S2].
+    """The attained-age cap on the surrender charge: 4% at 94 down to 0% at 98-100 [S1] [S2].
 
     Returns 1.0 below the sourced age band, i.e. no cap.
     """

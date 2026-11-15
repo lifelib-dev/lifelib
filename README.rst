@@ -82,7 +82,7 @@ https://github.com/lifelib-dev/lifelib
 Requirements
 ------------
 
-The lifelib package requires Python 3.6 or newer,
+The lifelib package requires Python 3.10 or newer,
 and the following third-party packages.
 
 * modelx

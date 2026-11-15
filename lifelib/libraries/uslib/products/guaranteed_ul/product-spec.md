@@ -82,12 +82,12 @@ cumulative-premium design as the principal variation.
 | Guarantee mechanism | Single shadow account (notional "guarantee value") with its own premium load, charges and credited rate | [S2], [S4], [S9]; [R1] 8E #1; [R2] |
 | In-force test | Policy cannot lapse while shadow account value minus policy indebtedness > 0 | [S4] (indebtedness deduction); [S2], [S9] |
 | Guarantee duration election | Owner elects any attained age from 90 to 121 (lifetime) at issue | [S1], [S2], [S9] |
-| Funding | Level "no-lapse guarantee premium" solved at issue so the shadow account stays positive to the elected guarantee age | [S1], [S2]; solve mechanics **[std]** (note 1) |
+| Funding | Level "no-lapse guarantee premium" solved at issue so the shadow account stays positive to the elected guarantee age | [S1], [S2], [S9]; solve mechanics **[std]** (note 1) |
 | Guarantee scope | Death benefit only; the guarantee provides no cash or surrender value | [S2], [S3] |
 | Premium timing tolerance | Premiums up to one month early or one month late do not impair the guarantee | [S9] |
 | Catch-up | Unlimited right to restore a lapsed guarantee by paying the accumulated shortfall (shadow-account deficit grossed up for the shadow premium load) | [S2], [S7] (restoration permitted, cost may exceed illustrated premiums); [R1] example 7 (unlimited catch-up = unexpired SG); formula **[std]** (note 2) |
 | Effect of withdrawals | Withdrawals reduce the shadow account dollar-for-dollar | [S4] (partial surrenders subtract from guarantee measure); exact treatment **[std]** (note 3) |
-| Effect of loans | Indebtedness is deducted from the shadow account in the in-force test (guarantee value itself not reduced) | [S4], [S2] |
+| Effect of loans | Indebtedness is deducted from the shadow account in the in-force test (guarantee value itself not reduced) | [S4] |
 
 **[std] notes:**
 1. Carriers publish only that a level guaranteed premium exists for the elected
@@ -103,8 +103,8 @@ cumulative-premium design as the principal variation.
    statements that restoration premiums "may be significantly higher than the premiums
    illustrated" [S7].
 3. Observed range: withdrawals reduce the guarantee measure (one carrier subtracts
-   partial surrenders and fees [S4]; two others state that loans and withdrawals
-   impair the guarantee value or duration [S2], [S3], [S7]); another carrier's
+   partial surrenders and fees [S4]; another states that loans and withdrawals
+   affect the cost and length of the guarantee [S3], [S7]); a third carrier's
    premium-test design subtracts withdrawals from premiums paid [S5]. Dollar-for-dollar
    reduction of the shadow account is the simplest representative treatment.
 
@@ -139,10 +139,11 @@ cumulative-premium design as the principal variation.
 
 ### Shadow account parameters (all standardized)
 
-Public documents do not disclose shadow-account parameters for any carrier; only the
-charge/credit categories are described [S4], [S9] and AG 38 8E caps guaranteed
-shadow-account interest credits at a Moody's-composite-yield-based index + 3% for
-reserve classification [R1]. The reference implementation therefore uses the following
+Public documents do not disclose shadow-account parameters for any carrier; the carrier
+documents describe only the policy's charge categories [S4], [S9], the regulatory
+definition names the shadow account's credit and charge types [R2], and AG 38 8E caps
+guaranteed shadow-account interest credits at a Moody's-composite-yield-based index +
+3% for reserve classification [R1]. The reference implementation therefore uses the following
 **[std]** parametrization, calibrated so that the solved level no-lapse premium is in
 the range of observed market premiums for lifetime-guarantee GUL (see technical notes,
 "Calibration").
@@ -162,14 +163,15 @@ the range of observed market premiums for lifetime-guarantee GUL (see technical 
    below the 25% base-account load [S3], [S7] — the shadow account must credit premiums
    more generously than the base account for the guarantee to outlast the cash value.
 2. Guaranteed shadow credits are contractual internal parameters, distinct from the
-   base credited rate [R2 shadow-account definition; S4 mechanics](#uslib-guaranteed_ul-r2); AG 38 8E caps them
+   base credited rate [R2 shadow-account definition](#uslib-guaranteed_ul-r2); AG 38 8E caps them
    at Moody's composite corporate yield + 3% for Design #1 classification [R1]. 5.5%
    is a standardization comfortably below plausible values of that cap and above the
    2.0% base guarantee [S3], [S5], [S7], producing the long-lived guarantee value the
    design requires.
 3. Not disclosed publicly. 55% of the CSO maximum keeps shadow COI below current base
-   COI (65% [std]) so the shadow account depletes more slowly than the base account —
-   the defining behavior of the product [S2], [S7].
+   COI (65% [std]) so the shadow account depletes more slowly than the base account and
+   the guarantee keeps the policy in force after the cash value is exhausted — the
+   defining behavior of the product [S2], [S7].
 4. Not disclosed publicly; a nominal per-unit charge is retained so the shadow account
    is not charge-free (AG 38 8E describes shadow accounts with expense charges [R1]).
 5. Not disclosed publicly; omitting a per-policy shadow charge is the simplest
@@ -182,8 +184,8 @@ the range of observed market premiums for lifetime-guarantee GUL (see technical 
 | Surrender charge period | 15 years, declining linearly to zero | **[std]** (note 1) |
 | Surrender charge amount | SC(t) = $18 per $1,000 of face × max(0, (180 − t)/180), t = policy month | **[std]** (note 1) |
 | Return of premium (ROP) endorsement | Exercise during the 60 days following policy anniversaries 20 (refund 50% of premiums paid) and 25 (100% of premiums paid); refund capped at 40% of face amount; full surrender required | [S1] (percentages, anniversaries, 40%-of-face cap); [S3], [S4] (60-day window mechanics) |
-| Withdrawals (partial surrenders) | Available after policy year 1; $25 fee per withdrawal; minimum $500; maximum = net surrender value less the greater of $500 or three months of deductions; may reduce face amount and impairs the guarantee | [S2], [S3], [S4], [S7] (availability/fee); [S4] (min/max) |
-| Policy loans | Available after policy year 1; loan interest 5.0% annual charged in arrears; loaned account value credited 3.0%, both guaranteed | [S4] |
+| Withdrawals (partial surrenders) | Available after policy year 1; $25 fee per withdrawal; minimum $500; maximum = net surrender value less the greater of $500 or three months of deductions; may reduce face amount and impairs the guarantee | [S3], [S4], [S7] (availability/fee); [S2] (fee); [S4] (min/max) |
+| Policy loans | Available after policy year 1; loan interest 5.0% annual charged in arrears; loaned account value credited 3.0%, both guaranteed | [S4]; [S3], [S7] (in arrears) |
 | Maximum loan | Net surrender value less three months of deductions | [S4] |
 | Grace period | 61 days from the monthiversary on which net cash value cannot cover the monthly deduction and the guarantee is not in effect; written notice required | [S7]; [R3] (minimum 30 days + notice) |
 | Reinstatement | Within 3 years of lapse, with evidence of insurability and payment of required premiums; guarantee restored only via catch-up payment | **[std]** (note 2) |
@@ -209,7 +211,7 @@ parameter values.
 
 ### Premium provisions
 
-Premiums are flexible in amount and timing after the first premium [S2], [S4]. The
+Premiums are flexible in amount and timing after the first premium [S3], [S4]. The
 policy is illustrated and sold with a level no-lapse guarantee premium `P*` solved for
 the elected guarantee age; paying more than `P*` shortens the payment period or
 extends/pre-funds the guarantee, and single-pay/1035 funding is an explicit design
@@ -227,8 +229,9 @@ Level option only: `DB_t = max(F, κ(x_t) × AV_t)` where `F` is face amount and
 guideline premium test [S2, S4 level-only design; R4 corridor requirement]. Because
 GUL account values are deliberately thin, `DB_t = F` in almost all months. The death
 proceeds equal `DB_t` less outstanding indebtedness and any due and unpaid charges
-**[std]** (standard UL practice; the retrieved documents state indebtedness/unpaid-
-charge offsets expressly only for the ROP refund [S4], not for death proceeds).
+**[std]** (standard UL practice; one retrieved document states that unpaid loans reduce
+the death benefit payable [S4], and states unpaid-charge offsets only for the
+return-of-premium surrender amount [S4]).
 
 ### Account value mechanics (base account)
 
@@ -266,18 +269,19 @@ nonguaranteed elements is governed by ASOP No. 2 [REG-R26].
 ### Loans
 
 After year 1, the owner may borrow up to the net surrender value less three months of
-deductions [S4]. Loan interest of 5.0% accrues in arrears; the loaned portion of the
-account value is credited at a guaranteed 3.0% (200 bps guaranteed spread) [S4].
+deductions [S4]. Loan interest of 5.0% accrues in arrears [S3], [S7]; the loaned portion
+of the account value is credited at a guaranteed 3.0% (200 bps guaranteed spread) [S4].
 Indebtedness is deducted from the guarantee in-force test (subtracted from the
 shadow account) [S4]; its deduction from death proceeds and the surrender value is
-standard UL treatment **[std]**. Observed variation: 300 bps spread
-(5%/2%) [S7]; adjustable declared loan rates [S5]; and one design in which any loan
+standard UL treatment, also stated by the same carrier [S4]. Observed variation: 300
+bps spread (5%/2%) [S7]; adjustable declared loan rates [S5]; and one design in which any loan
 voids the guarantee outright [S5].
 
 ### Withdrawals
 
-After year 1; $25 fee each [S2], [S3], [S4], [S7]; minimum $500, maximum = net surrender
-value less the greater of $500 or three months of deductions [S4]. A withdrawal
+After year 1 [S3], [S4], [S7]; $25 fee each [S2], [S3], [S4], [S7]; minimum $500,
+maximum = net surrender value less the greater of $500 or three months of deductions
+[S4]. A withdrawal
 reduces the account value dollar-for-dollar plus fee, may reduce the face amount
 (never below the product minimum [S4]), reduces the shadow account dollar-for-dollar
 **[std]** (see note 3 under "Secondary guarantee"), and within the surrender-charge
@@ -290,8 +294,8 @@ indebtedness) cannot cover the monthly deduction AND the guarantee is not in eff
 (`SG_t − L_t ≤ 0`), the policy enters a 61-day grace period [S7]. Lapse occurs only if
 the grace period expires without payment of the required premium. While the guarantee
 is in effect, exhaustion of the account value does not trigger grace — the account
-value is floored at zero and coverage continues [S2], [S3], [S9]. A lapsed policy may be
-reinstated within 3 years **[std]**; the guarantee itself is restored only by paying
+value is floored at zero **[std]** and coverage continues [S2], [S3], [S9]. A lapsed
+policy may be reinstated within 3 years **[std]**; the guarantee itself is restored only by paying
 the catch-up shortfall [S7; R1 example 7; formula **[std]**].
 
 ### Renewal / conversion / maturity
@@ -323,14 +327,15 @@ features apply to the base contract.
   impairment triggers; per-diem caps) [S1], [S2], [S5], [S7], [S9]
 - Long-term care rider (true LTC, including informal care) [S4]
 - Longevity/income riders: death benefit converted to income from age 85 [S1];
-  guaranteed installment death benefit payout endorsements [S4], [S7]
+  guaranteed installment death benefit payout endorsements [S7]; owner-directed
+  settlement options [S4]
 - Waiver of monthly deductions during disability [S2], [S4], [S5] — note the guarantee
   gap: one observed design waives monthly deductions but not the full no-lapse
   premium [S4]
 - Waiver of specified premium [S7]; disability completion benefit [S5]
 - Children's term riders with conversion privileges [S2], [S5], [S9]
-- Accidental death benefit; additional insured term; guaranteed increase option;
-  overloan protection; business exchange riders [S4], [S5], [S6]
+- Accidental death benefit [S4], [S5], [S6]; additional insured term; guaranteed
+  increase option; overloan protection; business exchange riders [S5]
 
 ---
 
@@ -352,10 +357,10 @@ features apply to the base contract.
    vs. discrete menu 90/95/100/105/110/121 [S8] vs. dual chassis age-120/age-70 with
    an upgrade option [S4] vs. hard 30-year cap [S5]. **Choice:** continuous election
    age 90–121 (superset of the menus; the solve is identical).
-3. **Loans vs. the guarantee.** Mainstream: indebtedness deducted from the guarantee
-   value [S2], [S4]. Harshest: any loan nullifies the guarantee [S5]. **Choice:**
-   indebtedness deduction — it is the majority design and keeps loan utilization
-   modelable rather than terminal.
+3. **Loans vs. the guarantee.** Observed: indebtedness deducted from the guarantee
+   value [S4]. Harshest: any loan nullifies the guarantee [S5]. **Choice:**
+   indebtedness deduction — the observed shadow-account treatment, which keeps loan
+   utilization modelable rather than terminal.
 4. **Missed premiums.** Some designs shorten the guarantee age gracefully (guarantee
    to 105 falling to 96 after two skipped premiums [S3]); shadow-account designs
    re-derive the horizon endogenously — a shortfall shows up as earlier shadow
@@ -364,9 +369,9 @@ features apply to the base contract.
 5. **Surrender charges.** Observed: none [S7]; 9 years [S3]; 19 years including
    withdrawals/face decreases [S2]; 20 years [S4]. **Choice:** 15-year declining
    **[std]** — mid-range, long enough to interact with the ROP windows.
-6. **ROP exit windows.** Nearly universal but heterogeneous: years 15/20/25 by band
-   [S2], [S9]; 16/21 [S4]; 20/25 [S1]; 21/26 [S3]; flat 25% any time after year 10
-   [S7]. Caps: 40% of face/DB [S1], [S2], [S4] vs. 50% of lowest DB [S3], [S7].
+6. **ROP exit windows.** Nearly universal but heterogeneous: years 15/20/25, or 25/35
+   for issue ages 0–29 [S2], [S9]; 16/21 [S4]; 20/25 [S1]; 21/26 [S3]; flat 25% any
+   time after year 10 [S7]. Caps: 40% of face/DB [S1], [S2], [S4] vs. 50% of lowest DB [S3], [S7].
    **Choice:** 20/25 with 40%-of-face cap [S1] — the built-in (no-election) variant
    with the modal cap.
 7. **Death benefit options.** Guarantee-focused carriers restrict to level-only

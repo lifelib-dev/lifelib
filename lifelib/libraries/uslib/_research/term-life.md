@@ -45,9 +45,10 @@ Access date for all citations: 2026-08-03.
 
 ### S3 — Lincoln Financial: "Lincoln TermAccel Level Term — Product Reference Guide"
 - Publisher: The Lincoln National Life Insurance Company, Fort Wayne, IN
-- Doc type: producer/agent product reference guide (PDF, 11 pp., LCN 1895883-091317, revised 09/2018)
+- Doc type: producer/agent product reference guide (PDF, 11 pp., LCN 1895883-091317, revised 09/2018), "For agent or broker use only. Not for use with the public." (cover) and "For agent /broker use only. Not to be used with the general public." with "Training Material" (footer of pages 2–11)
 - URL: https://www.lincolnfinancial.com/public/microsite/pdf/TermAccel-Product-Reference-Guide-09.2018.pdf
 - Retrieved: YES (PDF downloaded and text-extracted)
+- Edition: stamped "LCN: 1895883-091317 (Last update 09/18)" on the cover, "(revised 09/2018)" in every footer and "©2018 Lincoln National Corporation" on page 11, for the version issued on policy form TRM5065/ICC14TRM5065. Superseded by Lincoln TermAccel Level Term (2019), issued on policy form TRM6069, whose client guide LCN-7509694-010825 (©2025) gives a $2.5 million maximum coverage amount and a fourth premium band ($1,000,000–$2,500,000, policy fee $70) (checked 2026-10-24). Facts are as of the document date; the $1,000,000 maximum face and the three-band structure below are the 2018 version's.
 - Key facts: level premium periods 10/15/20/30 years, coverage to age 95; policy form
   TRM5065/ICC14TRM5065; underwriting classes Preferred Plus NT, Preferred NT, Standard NT,
   Preferred Tobacco, Standard Tobacco; issue ages 18-60 (30-year: NT 18-55, Tobacco 18-50);
@@ -64,6 +65,8 @@ Access date for all citations: 2026-08-03.
 - Doc type: producer rate-comparison flyer (PDF, 2 pp.)
 - URL: https://life.pacificlife.com/content/dam/paclife-lid/public/plexpress/products/pl-promise-term/15-48861.pdf
 - Retrieved: YES (PDF downloaded and text-extracted)
+- Legend: the cited flyer's own legend is [unverified]: it can no longer be checked, because the URL above returns HTTP 404 and no archived copy could be retrieved. Its same-series successor 19-227G prints "For financial professional use only. Not for use with the public." in the footer of every page, and Pacific Life's producer bulletin of August 31, 2023 announcing new PL Promise Term pricing effective September 5, 2023 (23-VER-87, BT-52928-00 8/23) prints "For Financial Professional use only. Not for use with the public." on every page, so the flyer is treated as producer-only. The host site's landing page reads "This website is for contracted and appointed Life Insurance professionals, firms and designated partners.", and the PL Promise Term product page reads "This website is intended for financial professional use only. If you are not a financial professional, please visit our public website www.PacificLife.com ." (checked 2026-10-24).
+- Edition: identified at retrieval as 19-227E / 15-48861-11 9/23. It now returns HTTP 404, and the same folder serves the successor 19-227G (MPF5137-BM-04 and MPF5136-BM-04 9/26, combined in rate-comparison-combo-flyer.pdf), whose "Pacific Life PL Promise Term rates are effective 9/21/2026" (checked 2026-10-24). Facts, including the competitor premiums, are as of the document date. The "rates effective 8/29/2023" below could not be re-checked against the flyer; in the series' 2023 bulletin and 2026 successor the corresponding footnote gives a CompuLife as-of date for competitor premiums separately from the Pacific Life rate-effective date, so whether 8/29/2023 is the rate-effective date or the competitor as-of date is [unverified].
 - Key facts: PL Promise Term is level premium term life insurance, policy form #P16LYT or
   ICC16 P16LYT with schedules S16LYT10/15/20/25/30 by level premium period (i.e., level
   periods 10/15/20/25/30 years); competitive premium comparison for Female age 40,
@@ -76,9 +79,10 @@ Access date for all citations: 2026-08-03.
 
 ### S5 — Corebridge Financial: "Select-a-Term on the new SimpliNow Choice platform" (AGLC201669 REV0923)
 - Publisher: American General Life Insurance Company (AGL), Houston, TX / The United States Life Insurance Company in the City of New York (US Life) — Corebridge Financial
-- Doc type: producer guide / product highlights (PDF, 8 pp.)
-- URL: https://www.gbslife.com/media/29890/aglc201669.pdf (broker-dealer mirror of official Corebridge piece)
+- Doc type: producer guide / product highlights (PDF, 8 pp.), "FOR FINANCIAL PROFESSIONAL USE ONLY—NOT FOR PUBLIC DISTRIBUTION" (page 1) and "FOR FINANCIAL PROFESSIONAL USE ONLY. NOT FOR PUBLIC DISTRIBUTION." (page 8)
+- URL: https://www.gbslife.com/media/29890/aglc201669.pdf (copy of the Corebridge piece hosted by GBS Insurance and Financial Services, an insurance brokerage agency that is part of Arthur J. Gallagher; not a broker-dealer and not a Corebridge site)
 - Retrieved: YES (PDF downloaded and text-extracted)
+- Edition: stamped "AGLC201669 REV0923" (September 2023) in the footer of every page except the photographic page 4, and "©Corebridge Financial, Inc. All rights reserved." (page 8, no year); whether a later revision of this piece exists was not determined (checked 2026-10-24). Facts are as of the document date.
 - Key facts: policy forms ICC21-19310/ICC21-19311 Rev0321; 18 term periods (10, every year
   15-30, and 35); 8 rate classes (Preferred Plus, Preferred NT, Standard Plus, Standard NT,
   Special NT, Preferred Tobacco, Standard Tobacco, Special Tobacco); substandard through
@@ -298,8 +302,8 @@ Access date for all citations: 2026-08-03.
 - Core design: guaranteed level gross premiums for an initial level term period, with the
   policy renewable annually thereafter without evidence of insurability at annually
   increasing premiums, to expiry at attained age 95 [S2][S3][S5][S6].
-- Premiums and death benefit are fully guaranteed; there is no cash value, no dividends
-  (non-participating), no policy loans [S3][S6]. Lincoln explicitly lists "Loans: N/A" [S3];
+- Premiums and death benefit are fully guaranteed [S6]; there is no cash value, no dividends
+  (non-participating), no policy loans [S3] [S6]. Lincoln explicitly lists "Loans: N/A" [S3];
   the Pacific Life specimen contract is labeled Non-Participating and terminates "without
   value" on lapse [S6].
 - The guaranteed maximum annual premiums for every policy year (level period + full ART
@@ -311,11 +315,12 @@ Access date for all citations: 2026-08-03.
   - Lincoln: semi-annual 0.515, quarterly 0.262, monthly 0.0875 [S3]
   - Corebridge (AGL): semiannual 0.5200, quarterly 0.2650, monthly 0.0845 [S5]
   - Pacific Life specimen: semi-annual 0.52, quarterly 0.27, monthly PAC 0.08333 [S6]
-- Grace period 31 days; policy remains in force during grace; premium to end of policy
-  month deducted from proceeds if death occurs in grace [S3][S6][S7].
+- Grace period 31 days; policy remains in force during grace [S3] [S6] [S7]; premium to end
+  of policy month deducted from proceeds if death occurs in grace [S6].
 - Reinstatement: within 3 years of lapse, evidence of insurability + overdue premiums with
-  6.00% compound interest (Pacific Life) [S6]; within 5 years (Lincoln; within 15 days after
-  the 46-day post-due-date window, no evidence needed) [S3].
+  6.00% compound interest (Pacific Life) [S6]; within 5 years (Lincoln; no evidence needed
+  within 15 days after the end of the grace period, i.e. 46 days after the premium due date)
+  [S3].
 
 ### 2. Level term periods offered
 - Protective Classic Choice: 10, 15, 20, 25, 30, 35, 40 years [S1]
@@ -340,9 +345,10 @@ Access date for all citations: 2026-08-03.
 ### 4. Face amounts and premium banding
 - Minimum face amount $100,000 at all carriers examined [S1][S2][S3][S5]; Pacific Life
   specimen sample also shows $100,000 minimum [S6]. Protective has no set maximum [S1];
-  Lincoln TermAccel caps at $1,000,000 (reflecting its accelerated/online underwriting
-  program) [S3]; Corebridge caps instant/AU+ approval at $1 million [S5].
-- Premium rate bands (rate per $1,000 decreases by band):
+  Lincoln TermAccel capped face at $1,000,000 in the 2018 guide [S3] (superseded; see the
+  S3 Edition note); Corebridge caps instant/AU+ approval at $1 million [S5].
+- Premium rate bands (rate per $1,000 decreases by band [unverified]; the documents list
+  the bands but do not state the direction):
   - Banner: 10 bands — $100k-249,999 / 250k-499,999 / 500k-749,999 / 750k-999,999 /
     1.0M-1,499,999 / 1.5M-1,999,999 / 2M-2,999,999 / 3M-4,999,999 / 5M-10M / >10M [S2]
   - William Penn: 7 bands [S2]
@@ -396,7 +402,7 @@ Access date for all citations: 2026-08-03.
 - Lincoln variant: automatic face amount decrease at the end of the level period with the
   gross premium held at the same level amount for three years, then annual premium
   increases to age 95 — explicitly described as a design to avoid premium "sticker-shock"
-  and antiselective termination [S3].
+  [S3].
 - Graded PLT premium structures (smaller initial jump, premiums grading up annually with
   larger subsequent increases) have become popular, in some cases implemented by changing
   PLT premiums on in-force blocks [R4].
@@ -488,8 +494,8 @@ Access date for all citations: 2026-08-03.
   after the 3rd policy year, re-banded; face increases not allowed after issue [S3].
 - Free look: 30 days in the interstate-compact specimen [S6]. Interstate Insurance Product
   Regulation Commission (IIPRC) standards govern compact-issued forms [S6].
-- Age basis: age nearest birthday at policy date, attained age = issue age + completed
-  policy years [S3][S5][S6].
+- Age basis: age nearest birthday at policy date [S3] [S5] [S6], attained age = issue age +
+  completed policy years [S3] [S6].
 
 ### 12. Valuation and reserving (U.S. statutory)
 - Pre-PBR statutory basis (Regulation XXX): basic reserve = greater of segmented and
@@ -544,13 +550,13 @@ Access date for all citations: 2026-08-03.
    premium initially near-level then increasing (Corebridge) [S5]; (d) graded PLT premium
    structures adopted by several carriers, sometimes retroactively on in-force [R4].
 3. Rate class counts range from 4 (Protective) to 8 (Corebridge) [S1][S5]; most carriers
-   use a preferred-plus/preferred/standard(+/-) x tobacco split with substandard table
-   ratings layered on a standard-type class [S2][S3][S5].
+   use a preferred-plus/preferred/standard(+/-) x tobacco split [S2] [S3] [S5] with
+   substandard table ratings layered on a standard-type class [S2] [S5].
 4. Policy fees range $64-$90 and may or may not be commissionable [S2][S3][S5][S6]; band
    structures range from 3 bands (Lincoln) to 10 (Banner) [S2][S3].
 5. Issue-age ranges: minimum 18 (Protective, Lincoln) or 20 (Banner, Corebridge); maximum
-   80 on 10-year plans (Protective, Corebridge) but only 60 for Lincoln's simplified
-   digital program [S1][S3][S5].
+   80 on 10-year plans (Protective, Corebridge) but only 60 for Lincoln's fully
+   underwritten automated program [S1] [S3] [S5].
 6. Conversion: all carriers allow conversion without evidence of insurability, typically
    bounded by the level period and attained age 70, but details vary — Banner grants 5
    years at issue ages 66+ [S2]; Lincoln guarantees full-portfolio access for 7 years via
@@ -558,9 +564,9 @@ Access date for all citations: 2026-08-03.
    conversion credit of about one annual premium [S6]; Protective sells an optional rider
    (Conversion Choice) that lengthens the window and adds a chronic-illness benefit
    [S1][S7].
-7. Pricing at the competitive cell (F40/$1M/best NT/20-yr) is tightly clustered: the top
-   7 carriers are within $4 per year of each other (~$477-$480), with laggards up to 54%
-   higher [S4].
+7. Pricing at the competitive cell (F40/$1M/best NT/20-yr) was tightly clustered in the
+   2023 comparison: the top 7 carriers were within $4 per year of each other (~$477-$480),
+   with others up to 54% higher [S4].
 8. Representative design for a reference model: a Banner/Pacific-Life-style contract —
    level guaranteed premiums for 10/15/20/30 years, banded per-$1,000 rates plus a fixed
    annual policy fee, 4-6 rate classes, renewal on a guaranteed ART scale to attained age

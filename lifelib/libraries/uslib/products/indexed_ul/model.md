@@ -249,7 +249,7 @@ twelve deductions are taken — only eleven of them are inside the credit base.
 The notes' baseline pays **annually**, at BOM of the first month of each policy year
 (`t ≡ 0 mod 12`), and sweeps **100%** of the fixed account. Nothing therefore arrives in
 the fixed account in the other eleven months of the year (`t = 1 … 11` of the first),
-nothing is swept, and the "up to 12 concurrent segments" of [S3] [S4] collapses to one
+nothing is swept, and the "up to 12 segments" of [S4] collapses to one
 segment a year. That is a correct consequence of the baseline, not a modelling shortcut
 — but it would leave the ladder machinery, and the notes' first pitfall about it,
 untested.
@@ -300,7 +300,9 @@ limits are left to the data. They are named in **Not implemented** below and pin
 ## One pool, two claims on it, in that order
 
 Withdrawals, new loan collateral and the monthly deduction are all sourced *fixed account
-first, then pro rata across live segments* [S3]. The withdrawal and the loan collateral go
+first, then pro rata across live segments*. That is the order one carrier gives for loans
+[S3]; for the withdrawal and the deduction it is a **[std]** convention, because the same
+carrier takes both pro rata across all accounts [S3]. The withdrawal and the loan collateral go
 at step 3 of the monthiversary; the deduction at step 6. Both draw on the same pool — the
 segments born in the previous eleven months, valued at the end of month `t − 1`,
 `seg_bal_active_pp(t)` — and the obvious implementation caps each of them at that pool.

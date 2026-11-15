@@ -599,8 +599,8 @@ def sg_naar_factor():
 def loan_rate_mth():
     """The monthly charged loan rate, ``(1 + r_L)^(1/12) - 1`` at r_L = 5.0% [S4].
 
-    Charged in arrears and guaranteed; monthly accrual is the model's discretization
-    **[std]**.
+    Charged in arrears [S3] [S7] and guaranteed [S4]; monthly accrual is the model's
+    discretization **[std]**.
     """
     return (1 + loan_rate_ann) ** (1 / 12) - 1                       # noqa: F821
 
@@ -681,7 +681,7 @@ def premium_pp(t):
 
     The scheduled premium in a premium month times :func:`prem_persistency`, zero
     otherwise, and zero from attained age 121 when premiums are no longer accepted
-    [S7].  Premiums are flexible in amount and timing after the first [S2][S4]; the
+    [S7].  Premiums are flexible in amount and timing after the first [S3] [S4]; the
     model projects the scheduled pattern, which is what the guarantee was solved on.
     """
     if age(t) >= charges_cease_age:                                  # noqa: F821
@@ -734,12 +734,14 @@ def cum_prem_pp(t):
 def wd_pp(t):
     """W_t: the partial withdrawal per policy at BOM of policy month t.
 
-    Available after policy year 1 and not after attained age 121 [S2][S3][S4][S7].  The
-    amount is the constant monthly figure in the model point's ``wd_pp`` column,
-    **0 in every shipped model point**: the notes set utilisation to zero in the base
-    model and give no pattern, so the mechanics are implemented and the behaviour is
-    left to the data **[std]**.  A withdrawal reduces the account value by the amount
-    plus the fee and the shadow account dollar-for-dollar, with no fee [S4].
+    Available after policy year 1 [S3] [S4] [S7] and not after attained age 121
+    **[std]**.  The amount is the constant monthly figure in the model point's
+    ``wd_pp`` column, **0 in every shipped model point**: the notes set utilisation
+    to zero in the base model and give no pattern, so the mechanics are implemented
+    and the behaviour is left to the data **[std]**.  A withdrawal reduces the account
+    value by the amount plus the fee and the shadow account dollar-for-dollar, with no
+    fee **[std]** (one observed design subtracts partial surrenders and their fees from
+    its guarantee measure [S4]).
     """
     if duration_mth(t) < 12 * wd_first_year:                         # noqa: F821
         return 0.0
@@ -862,7 +864,8 @@ def sg_coi_rate(t):
     """m_t^g: the shadow monthly COI rate, 55% of the guaranteed maximum **[std]**.
 
     Kept below the current base rate of 65% so the shadow account depletes more slowly
-    than the real one, which is the defining behaviour of the product [S2][S7].
+    than the real one and the guarantee keeps the policy in force after the account
+    value is exhausted, which is the defining behaviour of the product [S2] [S7].
     Rounded like :func:`coi_rate`.
     """
     r = coi_sg_factor * coi_rate_guar(t)                             # noqa: F821
@@ -894,9 +897,9 @@ def sg_coi_pp(t):
 def rider_charge_pp(t):
     """Rider charges deducted monthly, 0 in the base model **[std]**.
 
-    Rider charges are one of the sourced monthly charge categories [S2][S3][S4][S7][S9],
+    Rider charges are one of the sourced monthly charge categories [S2] [S4] [S9],
     but neither rider in scope carries one: the terminal illness accelerated benefit
-    takes no premium [S2][S9], and the return-of-premium endorsement is built into the
+    takes no premium [S9], and the return-of-premium endorsement is built into the
     representative contract rather than charged for [S1].  The term is carried, as it is
     on the universal life chassis, so that a rider module can be added without changing
     the recursion.
@@ -1174,14 +1177,14 @@ def loan_bal_pp_at(t, timing):
 def loan_bal_pp(t):
     """L_t: the policy loan balance per policy at the end of policy month t.
 
-    ``L_{t-1} x (1 + r_L)^(1/12)`` at the guaranteed 5.0% charged in arrears [S4],
-    accrued monthly **[std]**, with ``L_{t-1}`` the opening balance
+    ``L_{t-1} x (1 + r_L)^(1/12)`` at the guaranteed 5.0% [S4] charged in arrears
+    [S3] [S7], accrued monthly **[std]**, with ``L_{t-1}`` the opening balance
     ``loan_bal_pp_at(t, "BEF_INT")`` -- :func:`loan_bal_init` at ``t = 0``.  New loans
     and repayments are not modelled -- the notes give no utilisation pattern -- so
     this only rolls the model point's opening balance forward.  Indebtedness is
     deducted from the guarantee in-force test (:func:`sg_net_pp`), from death proceeds
     and from the surrender value; the shadow account itself is not reduced by it
-    [S4][S2].
+    [S4].
     """
     return loan_bal_pp_at(t, "BEF_INT") * (1 + loan_rate_mth())
 
@@ -1201,7 +1204,8 @@ def sg_pp_at(t, timing):
 
     ``"BEF_FEE"``
         After the withdrawal, which reduces the shadow account dollar-for-dollar and
-        carries **no fee** [S4] **[std]**, before the per-unit charge.
+        carries **no fee** **[std]**, before the per-unit charge (one observed design
+        subtracts partial surrenders and their fees from its guarantee measure [S4]).
 
     ``"BEF_COI"``
         After the shadow per-unit charge, before the shadow cost of insurance.  **This
@@ -1251,8 +1255,8 @@ def sg_net_pp(t):
     """SG_t - L_t: the shadow account net of indebtedness, the in-force test quantity.
 
     Indebtedness is deducted from the guarantee measure rather than from the shadow
-    account itself [S4][S2].  The mainstream design; the harshest observed alternative
-    voids the guarantee outright on any loan [S5].
+    account itself [S4].  The observed shadow-account design; the harshest observed
+    alternative voids the guarantee outright on any loan [S5].
     """
     return sg_pp(t) - loan_bal_pp(t)
 
@@ -1434,9 +1438,9 @@ def rop_anniversary(t):
     """The return-of-premium anniversary whose window contains month t, or 0 [S1].
 
     The endorsement is exercisable during the 60 days following policy anniversaries
-    20 and 25 [S1][S3][S4].  On a monthly grid the window is taken as the anniversary
-    month itself **[std]**, so the exercise rate is applied once rather than spread
-    over two monthiversaries.
+    20 and 25 [S1] (60-day window mechanics [S3] [S4]).  On a monthly grid the window
+    is taken as the anniversary month itself **[std]**, so the exercise rate is applied
+    once rather than spread over two monthiversaries.
     """
     if not rop_elected():
         return 0
@@ -1516,12 +1520,13 @@ def mort_rate(t):
     small illustrative one **[std]**, *not* the 2015 VBT the notes recommend -- that
     family is licensed and may not be reproduced here.  Ages beyond the table take its
     last row, where the rate is 1.0; the cap is what keeps a class factor above 1 from
-    pushing the terminal rate past certainty.
+    pushing the terminal rate past certainty.  It puts its bound second, so that a missing
+    input, a NaN, stays NaN, where ``min(1.0, q)`` would read it as 1.
     """
     tbl = data.mort_table()                                          # noqa: F821
     a = min(max(age(t), int(tbl.index.min())), int(tbl.index.max()))
-    return min(1.0, float(tbl.loc[a, "mort_rate"]) * class_factor()
-               * mort_ae_factor * mort_improve_factor(t))            # noqa: F821
+    return min(float(tbl.loc[a, "mort_rate"]) * class_factor()
+               * mort_ae_factor * mort_improve_factor(t), 1.0)       # noqa: F821
 
 
 def mort_rate_mth(t):

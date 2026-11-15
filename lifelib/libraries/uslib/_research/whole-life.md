@@ -14,10 +14,11 @@ date. Statements from general knowledge are tagged [unverified].
 ## Primary sources
 
 ### S1 — Guardian: Core Whole Life and Limited Pay Whole Life (2019 Series) Product Guide
-- Publisher: The Guardian Life Insurance Company of America (doc 2019-85695; "For Internal and Producer Use Only")
+- Publisher: The Guardian Life Insurance Company of America (doc 2019-85695; "For Internal and Producer Use Only. Not for Use with the General Public" — footer of every page)
 - Doc type: producer guide (PDF, 23 pp.)
 - URL: https://centurionagencyltd.com/guardian_whole_life_product_agent_guide_12-2019.pdf (agency file share hosting a genuine Guardian document)
 - Retrieved: YES (PDF downloaded, full text extracted)
+- Edition: stamped "2019-85695 exp 9/21" on every page (revision history: September 2019). Superseded: Guardian's whole life brochure Pub4085 (07/26) states that Guardian Whole Life Products are issued on Policy Form 21-WL (rider form 21-PUA), where this guide lists the 18- and 19-series policy forms and 18-PUA (checked 2026-10-24). Facts are as of the document date.
 - Facts extracted (all [S1]):
   - Product suite (2019 series): level-pay Whole Life Paid-Up at 95 (L95, form 18-L95), Paid-Up at 99 (L99, 18-L99), Paid-Up at 121 (L121, 18-L121); limited-pay 10 Pay WL (19-L10), 15 Pay WL (19-L15), 20 Pay WL (19-L20), Life Paid-Up at 65 (L65, 19-L65).
   - All products participating; dividends declared annually by the Board; no dividend in policy year 1.
@@ -43,10 +44,11 @@ date. Statements from general knowledge are tagged [unverified].
   - Backdating up to 6 months where permitted.
 
 ### S2 — Guardian: Dividend Manual, Whole Life (2017 edition)
-- Publisher: The Guardian Life Insurance Company of America (doc 2019-81397; producer use only)
+- Publisher: The Guardian Life Insurance Company of America (doc 2019-81397; "For Producer Use Only. Not for use with the general public." — printed on every page)
 - Doc type: producer dividend manual (PDF, 5 pp.)
-- URL: https://www.centurionagencyltd.com/guardian_life_dividend_options_12-2019.pdf
+- URL: https://www.centurionagencyltd.com/guardian_life_dividend_options_12-2019.pdf (agency file share hosting a genuine Guardian document)
 - Retrieved: YES (PDF downloaded, full text extracted)
+- Edition: the title block (p.2) reads "2017 Edition", and the cover (p.1) carries the document number with the expiry stamp "exp 6/21" and lists the 18- and 19-series policy forms. Those are not the forms Guardian names for its current whole life issues (Policy Form 21-WL, per Guardian brochure Pub4085, 07/26); no later edition of the manual was located (checked 2026-10-24). Facts are as of the document date.
 - Facts extracted (all [S2]):
   - Guardian is a mutual insurer; dividends paid to participating policyholders every year since 1868; not guaranteed; declared annually by the Board.
   - Dividend options: A Cash; B Reduce Premium (excess reduces loan interest); C Dividend Accumulation (interest rate announced with each year's dividend scale, changes annually); D Paid-Up Additions (default on permanent plans; option C default on par term); F OYT up to policy cash value, balance to dividend additions; G OYT up to CV, balance to reduce premium; I LTC Additions (only at issue, only with LTC rider); L OYT up to 2× face, balance to paid-up additions; P OYT up to 2× face, balance to reduce premium; Q OYT with Target Face Amount; R Increasing Q; S Premium Offset; U Dividends repay loan principal (interest billed separately).
@@ -57,23 +59,24 @@ date. Statements from general knowledge are tagged [unverified].
   - Dividends paid in cash / used to repay loans above cost basis may be ordinary income.
 
 ### S3 — MassMutual: Whole Life Series Product Reference Guide
-- Publisher: Massachusetts Mutual Life Insurance Company (LI10804e-mmsd 522; "For financial professionals")
-- Doc type: producer product reference guide (PDF, 8 sections)
+- Publisher: Massachusetts Mutual Life Insurance Company (LI10804e-mmsd 522; "FOR FINANCIAL PROFESSIONALS. NOT FOR USE WITH THE PUBLIC." — once, on p.1)
+- Doc type: producer product reference guide (PDF, 35 pp.)
 - URL: https://www.aimcorfileshare.com/download.php?idFile=4417 (distributor file share hosting a genuine MassMutual document)
 - Retrieved: YES (PDF downloaded, full text extracted)
+- Edition: "© 2022", footer identifiers "LI10804e-mmsd 522" and "MM202508-301302" (p.35; PDF created 2022-05-31). Apparently superseded: MassMutual's adjustable-loan-rate table LI7535 1026 lists whole life plans this guide does not describe (Whole Life 8 Pay, available since February 2024; Whole Life Guard 10 Pay and Whole Life 95, since September 2026) and dates Whole Life 12 Pay, which this guide already describes, from August 2022; a later edition of LI10804e was not retrieved (checked 2026-10-24). Facts are as of the document date.
 - Facts extracted (all [S3]):
   - Portfolio: Whole Life 100 (premiums to age 100, lowest premium), Whole Life 65 (paid up at 65), Whole Life 10/12/15/20 Pay, Whole Life High Early Cash Value (HECV, premiums to age 85, COLI/executive-benefit oriented). All level-premium participating policies; guaranteed level face; guaranteed CV = face at age 100.
   - Policy forms: Whole Life Legacy series MMWL-2018 / ICC18-MMWL (and MMWLA-2018 / ICC18-MMWLA); digital platform WL-2018 / ICC18WL.
   - Issue ages (non-qualified): WL100 0–90; WL65 0–60; 10/12/15/20 Pay 0–75; HECV 0–75. Qualified market from age 17. Gender-distinct except Montana (unisex); qualified policies unisex.
   - Minimum face: $25,000 generally; $100,000 for 10 Pay and 12 Pay and HECV; $10,000 qualified WL100; $1,000 conversion/GIR-exercise segments.
   - Policy fee: $50 annually (WL100, WL65, HECV); none on 10/12/15/20 Pay.
-  - Policy size bands (drive premiums and dividends): e.g. WL100 Band 1 $1,000–$24,999 … Band 5 $1M+; 10/12/15/20 Pay Band 1 $25,000–$99,999, Band 2 $100,000–$999,999(–$249,999/$999,999 tiering), Band 4 $1M+; band resets on face changes.
+  - Policy size bands (drive premiums and dividends): e.g. WL100 Band 1 $1,000–$24,999 … Band 5 $1M+; 10/12/15/20 Pay Band 1 $25,000–$99,999, Band 2 $100,000–$249,999, Band 3 $250,000–$999,999, Band 4 $1M+; band resets on face changes.
   - Guaranteed cash value interest rates: WL100 3.75% to age 100 (0% thereafter); WL65 3%; HECV 3%; 10 Pay 2%; 12 Pay 3%; 15 Pay 2.5%; 20 Pay 3% — all with CV = face at age 100. (Note the guaranteed interest basis varies BY PRODUCT within one insurer.)
   - Modal factors: semi-annual 0.5117; quarterly 0.2589; monthly 0.0870.
   - Risk classes: Ultra Preferred NT, Select Preferred NT, Non-Tobacco, Select Preferred Tobacco, Tobacco; below $50,000 face only NT/Tobacco; juveniles (0–16) NT only; table ratings A,B,C,D,E,F,H,J,L,P and flat extras; permanent ratings payable to 65 or 20 years if longer (not beyond premium period); preferred classes unavailable with table ratings/medical flat extras.
   - Premiums: basic annual premium varies by issue age, gender, class, band; no minimum annual premium; annual premium = basic + substandard + rider premiums.
   - Dividends: vary by gender, risk class, face band, issue age, duration, tax-qualified status; not guaranteed; first-year dividend paid (not contingent on 2nd-year premium); dividends may vary if fixed loan rate elected and loan outstanding (= direct recognition on the fixed-rate regime).
-  - Dividend options: Cash (CS); Reduce Premiums — excess to cash (RPC) or to PUAs (RPD); Paid-Up Additions (PD); Accumulation (DA); LISR/Flex (FLX); One-Year Term with excess to cash/PUA/reduce-premium (TCS/TPD/TRP — via Yearly Term Purchase rider, OYT amount = guaranteed CV); Reduce Loan (RN); Reduce Loan Interest (RI). Options are non-contractual (currently available).
+  - Dividend options: Cash (CS); Reduce Premiums — excess to cash (RPC) or to PUAs (RPD); Paid-Up Additions (PD); Accumulation (DA); LISR/Flex (FLX); One-Year Term with excess to cash/PUA/reduce-premium (TCS/TPD/TRP — via Yearly Term Purchase rider, OYT amount = guaranteed CV); Reduce Loan (RN); Reduce Loan Interest (RI). The One-Year Term, Reduce Loan and Reduce Loan Interest options are marked non-contractual (currently available).
   - Loans: anytime; either adjustable loan rate (ALR — default, no direct recognition) or fixed 6% with direct recognition; choice at issue, cannot change; ALR max = Moody's composite yield on seasoned corporate bonds (monthly average) or guaranteed rate + 1% if higher; LISR requires ALR.
   - Non-forfeiture options: cash, extended term insurance, reduced paid-up.
   - Reinstatement: within 31 days of grace-period end without evidence; within 5 years with evidence; back premiums + 6% interest.
@@ -118,10 +121,11 @@ date. Statements from general knowledge are tagged [unverified].
   - Policy forms: Level ICC12L080P (FL D354LFL12P); Graded ICC12L081P (FL D355LFL12P).
 
 ### S7 — United of Omaha: Living Promise Product and Underwriting Guide (California)
-- Publisher: United of Omaha Life Insurance Company (form 142658, producer use only)
+- Publisher: United of Omaha Life Insurance Company (form 142658; "For producer use only. Not for use with the general public." — once, on the cover)
 - Doc type: producer product & underwriting guide with rate tables (PDF)
-- URL: https://www.datocms-assets.com/13639/1563367329-moo-livingpromise-uw-guide.pdf
+- URL: https://www.datocms-assets.com/13639/1563367329-moo-livingpromise-uw-guide.pdf (third-party CMS asset host, not a carrier domain; the site that uploaded the file is not identified)
 - Retrieved: YES (PDF downloaded, full text extracted)
+- Edition: California edition; no edition date is printed (PDF created 2016-05-19). Superseded: the carrier serves a later Living Promise Product and Underwriting Guide, form 461606 (PDF created 2021-07-13), with different Level and Graded premium rates and a $12 Graded policy fee (checked 2026-10-24). Facts are as of the document date.
 - Facts extracted (all [S7]):
   - CA version: Level plan issue ages 45–85, face $2,000–$40,000, classes Standard Tobacco/Nontobacco; Graded 45–80, $2,000–$20,000, single Standard class (no tobacco split).
   - Underwriting: MIB, prescription-database check, random phone interviews; knock-out application questions Part 1 (decline) / Part 2 (graded only); point-of-sale tele-underwriting (Apptical).
@@ -327,7 +331,7 @@ date. Statements from general knowledge are tagged [unverified].
 All facts tagged. "Par WL" = participating whole life (Guardian/MassMutual/NYL/Penn Mutual/Northwestern Mutual designs); "FE WL" = final-expense simplified-issue WL (United of Omaha Living Promise).
 
 ### 1. Product structure and premium patterns
-- Canonical par WL chassis: level guaranteed premiums, level guaranteed face, guaranteed cash value schedule reaching the face amount at age 100 (endowment-at-100 design), with maturity/coverage continuing to age 121 [S1][S3].
+- Canonical par WL chassis: level guaranteed premiums, level guaranteed face, guaranteed cash value schedule reaching the face amount at age 100 (endowment-at-100 design) [S1] [S3], with maturity/coverage continuing to age 121 [S1].
 - Premium-paying variants observed:
   - Level pay to age 95 / 99 / 121 (Guardian L95/L99/L121) [S1]; to age 100 (MassMutual WL100 [S3]; Penn Mutual Protection WL II premiums to age 100 [S12]).
   - Limited pay: 10/15/20 pay + paid-up-at-65 (Guardian) [S1]; 10/12/15/20 pay + WL65 + pay-to-85 HECV (MassMutual) [S3]; 10-year pay (NYL Secure Wealth Plus) [S10]; payment periods 5 years to age 100 (Penn Mutual Accumulation WL) [S13].
@@ -365,14 +369,14 @@ All facts tagged. "Par WL" = participating whole life (Guardian/MassMutual/NYL/P
 ### 5. Death benefit and policy termination
 - DB = face + rider amounts + PUA face + dividend accumulations + terminal dividend items − loans/interest − due premium − accelerated benefits (Guardian's full formula) [S1].
 - Grace 31 days; reinstatement within 5 years with evidence and 6% interest on arrears (Guardian, MassMutual) [S1][S3].
-- Suicide exclusion 2 years (FE WL: return of premium less loans; 1 year in ND) [S7]; contestability restarts on reinstatement [S7].
+- Suicide exclusion 2 years (FE WL: return of premium less loans; 1 year in ND) [S7]; the suicide exclusion runs again for two years from reinstatement [S7].
 - Graded death benefit (FE WL Graded): natural-cause death in first 2 policy years pays premiums paid + 10%; accidental death pays full face from day 1 [S6][S7].
-- Maturity: FE WL endows at 100 (120 in FL) for face less loans [S8]; par WL policies mature at 121 with CV=face at 100 [S1][S3].
+- Maturity: FE WL endows at 100 (120 in FL) for face less loans [S8]; par WL policies mature at 121 [S1] with CV=face at 100 [S1] [S3].
 
 ### 6. Riders (typical set for a reference model)
 - Paid-up additions rider (single/flexible premium PUA purchases; expense charge 7.5–10% of PUA premium at MassMutual, guaranteed caps [S3]; payment limits set at issue [S11]).
 - Term riders on the insured (annually renewable to 95, 10-yr level current scale, ≤ 20× base face [S3]; 10-yr RT at Guardian [S1]).
-- Waiver of premium on disability (6-month wait; own-occ definition 2–6 yrs; terminates ~65) [S1][S3][S11].
+- Waiver of premium on disability [S1] (6-month wait; own-occ definition 2–6 yrs; terminates ~65) [S3] [S11].
 - Guaranteed insurability / purchase options (option ages ~22–46, amount caps e.g. min $25k / max lesser of 2× base or $125k at MassMutual) [S3][S11].
 - Accelerated death benefits: terminal illness (12-month prognosis) near-universal [S6][S11][S12]; chronic illness (2 of 6 ADLs) [S11]; LTC riders with monthly-benefit pools, 90-day elimination, lien mechanics (MassMutual LTCAccess: accelerate ≤ 90% of face, residual ≥ $25k, MMB $3k–$30k, periods 2–10 yrs, 4% MMB increase option) [S3].
 - Accidental death benefit (FE: additional DB = face [S6]; Penn Mutual caps $50k/$250k by age [S11]).
@@ -413,7 +417,7 @@ All facts tagged. "Par WL" = participating whole life (Guardian/MassMutual/NYL/P
 ## Gaps and caveats
 
 - Living Promise participation status: none of the retrieved documents states whether the policy pays dividends; final-expense WL from United of Omaha is generally non-participating [unverified]. Model it as non-par, but confirm from a specimen policy.
-- Guardian guide is the 2019 series (2017 CSO repricing); current-year rate books/dividend scales are producer-portal-only. The 2019 documents remain the best public description of the mechanics.
+- Guardian guide is the 2019 series (2017 CSO repricing); current-year rate books/dividend scales are producer-portal-only. The 2019 documents are the most detailed description of Guardian's mechanics retrieved, but both are producer-only and past their printed expiry dates (exp 9/21, exp 6/21), and Guardian now issues on Policy Form 21-WL (see the S1 and S2 entries).
 - MassMutual guide (S3) is the 2022 producer reference (LI10804e 522); the Legacy-series forms are 2018. Current "MassMutual Whole Life" digital-platform variants may differ in detail.
 - Full specimen policy forms (contract wording with the actual CV tables) were not publicly obtainable for the par carriers; guaranteed-CV *schedules* per unit were only obtained as basis descriptions (interest + mortality + endow-at-100), not as printed tables. A carrier illustration PDF (massmutual.com) was blocked (Akamai 403 / timeout).
 - New York Life product pages block server-side fetchers (403); content was retrieved by direct HTTP download with a browser user-agent. NYL Custom Whole Life parameters (face $50k–$1M, issue 0–70) appeared only in search-result snippets — [unverified].

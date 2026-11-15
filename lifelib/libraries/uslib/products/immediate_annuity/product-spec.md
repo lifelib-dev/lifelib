@@ -372,12 +372,13 @@ certain-portion commutation with its surrender charge [S1].
   value of remaining expected payments based on life expectancy at purchase, exercisable
   on the 5th, 10th or 15th anniversary, permanently cutting all future income by 30% [S5];
   the only retrieved feature that commutes a life-contingent stream.
-- **Impaired-risk features** — one carrier's "age rating available" on one payout product,
-  plus 10%/20% payment increases for health condition, a 50% increase for nursing home
-  confinement and a survivor continuation option on a second product of the same carrier
-  [S8]. From a 2017 producer document whose successor brochure 404s; re-verify before
-  relying on it. AG 9-C governs valuation of substandard contracts and VM-V's "initial
-  age" accommodates a **rated age** [R1] [REG-R41].
+- **Impaired-risk features** — one carrier's "age rating available" on one payout product
+  (the document does not define the term; reading it as an impaired-life rating is
+  [unverified]), plus 10%/20% payment increases for health condition, a 50% increase for
+  nursing home confinement and a survivor continuation option on a second product of the
+  same carrier [S8]. From a 2017 producer document; the carrier's Ultra-Income brochure
+  404s, so re-verify before relying on it. AG 9-C governs valuation of substandard contracts and
+  VM-V's "initial age" accommodates a **rated age** [R1] [REG-R41].
 - **Temporary life payouts** (5–30 years, income only while alive, no death benefit),
   at one carrier only [S4] — tax-recognized (IRS Tables IV/VIII exist for it [R7]) but rare;
   **percent-of-premium death benefit** (25% or 50%, barred on qualified policies and in New
@@ -457,9 +458,10 @@ operative for annuity contracts [REG-R1] [REG-R3]. The codified text is **AP&P A
 A-820**, read at first hand on 2026-08-06 [REG-R153] — the manual turned out to be a **free
 download**, not the paid publication the library had recorded [REG-R33], so the CARVM
 construction no longer rests on the Model #820 print alone. Three A-820 paragraphs bear
-directly on this product. **¶15** states CARVM as "the greatest of the respective excesses
-of the present values, at the date of valuation, of the future guaranteed benefits,
-including guaranteed nonforfeiture benefits" at the end of each contract year, less the
+directly on this product. **¶15** states CARVM as the **greatest of the respective
+excesses**, each measured at the valuation date: the present value of the future guaranteed
+benefits (guaranteed nonforfeiture benefits among them) that the contract provides for as at
+each contract year end, less the
 present value of future *valuation considerations* payable before that year end, with the
 guaranteed benefits projected on the **contractual** mortality (if any) and interest basis
 and the valuation basis entering through the discounting [REG-R153 ¶15](#uslib-reg-r153). **¶14** is the
@@ -478,12 +480,11 @@ future guaranteed benefits with the highest present value is used to set policy 
 **AG 33 does not reach a no-option SPIA.** Actuarial Guideline XXXIII — printed title
 *"Determining CARVM Reserves for Annuity Contracts With Elective Benefits"* — has now been
 read in full [REG-R151], and the finding for this product is a **negative** one. Its
-applicability sentence reads: "This Actuarial Guideline shall apply to all annuity contracts
-subject to CARVM, **where any elective benefits (as defined below) are available** to the
-contract owner under the terms of the contract"; and its *Definitions* block classes as
-**non-elective** "benefits payable under either a deferred or immediate annuity contract
-(with or without life contingencies), **where no benefit options are available** under the
-terms of the contract" [REG-R151 *Purpose*, *Definitions* 1](#uslib-reg-r151). A `life_only`, `cash_refund`
+applicability sentence reaches every annuity contract subject to CARVM, but only **where
+any elective benefit, as the guideline defines the term, is open to the contract owner** under the
+contract's terms; and its *Definitions* block classes as **non-elective** the benefits payable
+under a deferred or immediate annuity, life-contingent or not, "**where no benefit options are
+available**" under the contract's terms [REG-R151 *Purpose*, *Definitions* 1](#uslib-reg-r151). A `life_only`, `cash_refund`
 or `life_certain` contract of the composite design with **no commutation right** — the base
 configuration here, `commutation_enabled = false` — is therefore **inside CARVM and outside
 AG 33**. Add the commutation of the certain portion that two carriers offer [S1] [S5]
@@ -491,8 +492,8 @@ and the contract is inside both, because commutation is a benefit option "freely
 under the terms of the contract"; the mechanics of that case are worked in
 `technical-notes.md`, "Reserve basis". Two corrections to statements the library had carried
 second-hand, recorded here because both were repeated wherever AG 33 was cited by title only.
-**One, the effective date.** The guideline's own printed **Effective Date** block reads "This guideline shall be effective on **December 31, 1998**, affecting all contracts
-issued on or after January 1, 1981", against the **December 31, 1995** date the library
+**One, the effective date.** The guideline's own printed **Effective Date** block makes it effective on **December 31, 1998**, reaching every contract
+issued on or after January 1, 1981, against the **December 31, 1995** date the library
 carries from the Revenue Ruling for a differently-titled instrument — the 1 January 1981
 issue-date reach is common to both, the effective date is not, and the extracted pages carry
 **no amendment history**, so the natural reconciliation (a later revision) is an inference
@@ -565,8 +566,8 @@ table-by-issue-date rules the library previously did not carry [REG-R153 ¶6, A-
 ¶¶10–12, 15](#uslib-reg-r153): the **Annuity 2000 Mortality Table** for any individual annuity or pure
 endowment contract issued **1 January 2001 through 31 December 2014**; the **2012 IAR
 Mortality Table** for issues **on or after 1 January 2015**; **1983 Table "a" without
-projection** "solely when the contract is based on life contingencies and is issued to fund
-periodic benefits arising from" tort or out-of-court settlements, workers'-compensation-type
+projection** only where the contract is life-contingent and funds periodic benefits that
+arise from tort or out-of-court settlements, workers'-compensation-type
 claims, or long-term-disability claims where an annuity replaces continuing disability
 payments; and the **1994 GAR Table** for annuities purchased under a group annuity or pure
 endowment contract, **for which no effective date is printed**. A-821 also **prints the 2012

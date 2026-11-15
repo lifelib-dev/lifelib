@@ -61,6 +61,47 @@ the annual-step model and `basiclife/BasicTerm_S` and `savings/CashValue_SE` are
 ones. `S` carries a second sense in lifelib — scalar, one model point at a time, as against
 the vectorized `_M` models — and that is true of all twelve here.
 
+Every product also carries a second model, `<product>_US_SEC`, derived from its `_S` model.
+`E` is for running **in force**: `t` counts months from a valuation date shared by every
+model point, and a model point may be a policy issued at that date, one already in force at
+it, or one written after it, as in `basiclife/BasicTerm_SE`. `C` is for compiling, as
+`basiclife/BasicTerm_SC` does; `Term_US_SEC`, `WholeLife_US_SEC`, `UL_US_SEC`, `VUL_US_SEC`,
+`ULSG_US_SEC`, `MYGA_US_SEC`, `SPIA_US_SEC`, `DIA_US_SEC`, `FIA_US_SEC`, `IUL_US_SEC`,
+`VA_US_SEC` and `RILA_US_SEC` compile, and each `model-sec.md` says how. On the `_S` model's
+new-business points, issued at the valuation date, an `_SEC` model reproduces its `_S` model
+cell by cell. Where the worked example's point is already in force, as whole life's, the
+FIA's, the variable annuity's and guaranteed UL's are, the `_SEC` twin of that point
+continues the `_S` projection from the month it is valued at, its expenses apart, which
+inflate from the valuation date. Each `model-sec.md` says what running in force changes.
+`Term_US_SEC`, `WholeLife_US_SEC`, `SPIA_US_SEC`, `MYGA_US_SEC`, `UL_US_SEC`, `DIA_US_SEC`,
+`FIA_US_SEC`, `VUL_US_SEC`, `RILA_US_SEC`, `VA_US_SEC`, `ULSG_US_SEC` and `IUL_US_SEC` are
+all twelve: every product has its in-force model.
+
+**Compiled speed.** Each `_SEC` model's `model-sec.md` records what compiling buys, timed by
+`tools/bench_sec_cy.py`: one block of the committed model points repeated, each engine in a
+process of its own, the fastest of several runs. The figures below are `net_cf(t)` summed over
+each point's frame, the projection alone, in milliseconds a point, on the shared Linux
+machine each compile step ran on, under load, so they compare engines within a row better
+than products across rows. The export is the model as plain Python, `modelx`'s export,
+before compiling; `modelx` is the `_SEC` model itself. RILA's ratio to its export is the
+lowest, since making and releasing its 6.4 MB compiled point takes most of each point's
+time.
+
+| Product | Model | Compiled | Export | modelx | Compiled vs export | Compiled vs modelx |
+|---|---|---|---|---|---|---|
+| Term | [`Term_US_SEC`](products/term_life/model-sec.md) | 0.50 ms | 4.7 ms | 196 ms | 9.4× | 392× |
+| Whole life | [`WholeLife_US_SEC`](products/whole_life/model-sec.md) | 0.53 ms | 7.4 ms | 274 ms | 14.0× | 517× |
+| Universal life | [`UL_US_SEC`](products/universal_life/model-sec.md) | 1.21 ms | 14.5 ms | 545 ms | 12.0× | 450× |
+| Variable UL | [`VUL_US_SEC`](products/variable_ul/model-sec.md) | 2.53 ms | 34.9 ms | 964 ms | 13.8× | 381× |
+| Guaranteed UL | [`ULSG_US_SEC`](products/guaranteed_ul/model-sec.md) | 1.42 ms | 17.4 ms | 539 ms | 12.3× | 380× |
+| Indexed UL | [`IUL_US_SEC`](products/indexed_ul/model-sec.md) | 4.01 ms | 69.4 ms | 2,060 ms | 17.3× | 514× |
+| MYGA | [`MYGA_US_SEC`](products/fixed_deferred_annuity/model-sec.md) | 1.19 ms | 15.0 ms | 520 ms | 12.6× | 437× |
+| FIA | [`FIA_US_SEC`](products/fixed_indexed_annuity/model-sec.md) | 1.32 ms | 14.6 ms | 489 ms | 11.1× | 370× |
+| Variable annuity | [`VA_US_SEC`](products/variable_annuity/model-sec.md) | 1.70 ms | 22.2 ms | 815 ms | 13.1× | 479× |
+| RILA | [`RILA_US_SEC`](products/registered_index_linked_annuity/model-sec.md) | 2.00 ms | 8.33 ms | 167 ms | 4.2× | 84× |
+| SPIA | [`SPIA_US_SEC`](products/immediate_annuity/model-sec.md) | 0.808 ms | 7.66 ms | 197 ms | 9.5× | 244× |
+| DIA | [`DIA_US_SEC`](products/deferred_income_annuity/model-sec.md) | 0.860 ms | 8.49 ms | 199 ms | 9.9× | 231× |
+
 All twelve run on a **monthly** grid, the term, whole life and FIA models included since
 their conversion.
 
@@ -74,36 +115,38 @@ contractual event — mortality and lapse in the month they happen, interest and
 nonforfeiture floors accruing month by month so a mid-year exit is valued on the balance it
 actually has, and expenses falling where they are incurred. The two grids agree exactly on
 the in-force at every anniversary, and on every anniversary-dated contractual quantity;
-they differ on cash flow timing, which is what the monthly grid is for.
+they differ on cash flow timing, which is what the monthly grid is for. An `_SEC` model
+derives the policy year from its policy clock (`duration(t) = duration_mth(t) // 12`).
 
 **Life**
 
 | Product | Model | Grid | Representative design |
 |---|---|---|---|
-| [Level premium term](products/term_life/index.md) | `Term_US_S` | monthly | Guaranteed level premiums for 10/20/30 years, then jump-to-ART renewal at unchanged face to attained age 95; convertible until min(end of level period, age 70); no cash value. Contractually annual throughout, so the premium schedule, the ART renewals and the shock lapse sit on the anniversary |
-| [Whole life](products/whole_life/index.md) | `WholeLife_US_S` | monthly | Participating level-premium WL on a 2017 CSO / 4% nonforfeiture basis, three-factor contribution dividends, paid-up-additions default; plus a non-par final-expense variant. The dividend and the cash value schedule stay annual; the cash value interpolates between anniversaries |
-| [Universal life](products/universal_life/index.md) | `UL_US_S` | monthly | Flexible-premium current-assumption UL: monthly deductions, declared crediting over a guaranteed minimum, GPT corridor, DB options A/B — the **base chassis** for the three below |
-| [Indexed UL](products/indexed_ul/index.md) | `IUL_US_S` | monthly | UL chassis + S&P 500 annual point-to-point index account with cap, 100% participation, 0% floor — the AG 49-A benchmark design |
-| [Variable UL](products/variable_ul/index.md) | `VUL_US_S` | monthly | UL chassis + unitized separate-account subaccounts and a fixed option; SEC-registered, so charges are anchored on prospectus fee tables |
-| [Guaranteed UL](products/guaranteed_ul/index.md) | `ULSG_US_S` | monthly | UL chassis + shadow-account secondary guarantee (AG 38 §8E Design #1), funded by a solved level no-lapse premium; lapse-supported economics |
+| [Level premium term](products/term_life/index.md) | `Term_US_S`, `Term_US_SEC` | monthly | Guaranteed level premiums for 10/20/30 years, then jump-to-ART renewal at unchanged face to attained age 95; convertible until min(end of level period, age 70); no cash value. Contractually annual throughout, so the premium schedule, the ART renewals and the shock lapse sit on the anniversary |
+| [Whole life](products/whole_life/index.md) | `WholeLife_US_S`, `WholeLife_US_SEC` | monthly | Participating level-premium WL on a 2017 CSO / 4% nonforfeiture basis, three-factor contribution dividends, paid-up-additions default; plus a non-par final-expense variant. The dividend and the cash value schedule stay annual; the cash value interpolates between anniversaries |
+| [Universal life](products/universal_life/index.md) | `UL_US_S`, `UL_US_SEC` | monthly | Flexible-premium current-assumption UL: monthly deductions, declared crediting over a guaranteed minimum, GPT corridor, DB options A/B — the **base chassis** for the three below |
+| [Indexed UL](products/indexed_ul/index.md) | `IUL_US_S`, `IUL_US_SEC` | monthly | UL chassis + S&P 500 annual point-to-point index account with cap, 100% participation, 0% floor — the AG 49-A benchmark design |
+| [Variable UL](products/variable_ul/index.md) | `VUL_US_S`, `VUL_US_SEC` | monthly | UL chassis + unitized separate-account subaccounts and a fixed option; SEC-registered, so charges are anchored on prospectus fee tables |
+| [Guaranteed UL](products/guaranteed_ul/index.md) | `ULSG_US_S`, `ULSG_US_SEC` | monthly | UL chassis + shadow-account secondary guarantee (AG 38 §8E Design #1), funded by a solved level no-lapse premium; lapse-supported economics |
 
 **Annuity**
 
 | Product | Model | Grid | Representative design |
 |---|---|---|---|
-| [Fixed deferred (MYGA)](products/fixed_deferred_annuity/index.md) | `MYGA_US_S` | monthly | Single-premium book-value annuity: multi-year declared rate, surrender charge plus market value adjustment, Model #805 floor — the **deferred base chassis** |
-| [Fixed indexed (FIA)](products/fixed_indexed_annuity/index.md) | `FIA_US_S` | monthly | Index-linked credits at a 0% floor, premium bonus with vesting, and a guaranteed lifetime withdrawal benefit that continues after the account value is exhausted |
-| [Variable annuity](products/variable_annuity/index.md) | `VA_US_S` | monthly | Separate-account deferred annuity: subaccount units net of M&E, a guaranteed minimum death benefit, and a lifetime withdrawal rider fee-assessed on the benefit base |
-| [Registered index-linked (RILA)](products/registered_index_linked_annuity/index.md) | `RILA_US_S` | monthly | SEC-registered buffered annuity: point-to-point terms with a downside buffer and upside cap, and an AG 54 interim value |
-| [Immediate (SPIA)](products/immediate_annuity/index.md) | `SPIA_US_S` | monthly | Single premium converted immediately into a payment stream; life only, period certain, joint and survivor, refund forms, compound COLA — the **payout chassis** |
-| [Deferred income (DIA/QLAC)](products/deferred_income_annuity/index.md) | `DIA_US_S` | monthly | Flexible-premium contract with **no account value**: each premium buys a paid-up income slice, with a return-of-premium deferral death benefit and a QLAC variant |
+| [Fixed deferred (MYGA)](products/fixed_deferred_annuity/index.md) | `MYGA_US_S`, `MYGA_US_SEC` | monthly | Single-premium book-value annuity: multi-year declared rate, surrender charge plus market value adjustment, Model #805 floor — the **deferred base chassis** |
+| [Fixed indexed (FIA)](products/fixed_indexed_annuity/index.md) | `FIA_US_S`, `FIA_US_SEC` | monthly | Index-linked credits at a 0% floor, premium bonus with vesting, and a guaranteed lifetime withdrawal benefit that continues after the account value is exhausted |
+| [Variable annuity](products/variable_annuity/index.md) | `VA_US_S`, `VA_US_SEC` | monthly | Separate-account deferred annuity: subaccount units net of M&E, a guaranteed minimum death benefit, and a lifetime withdrawal rider fee-assessed on the benefit base |
+| [Registered index-linked (RILA)](products/registered_index_linked_annuity/index.md) | `RILA_US_S`, `RILA_US_SEC` | monthly | SEC-registered buffered annuity: point-to-point terms with a downside buffer and upside cap, and an AG 54 interim value |
+| [Immediate (SPIA)](products/immediate_annuity/index.md) | `SPIA_US_S`, `SPIA_US_SEC` | monthly | Single premium converted immediately into a payment stream; life only, period certain, joint and survivor, refund forms, compound COLA — the **payout chassis** |
+| [Deferred income (DIA/QLAC)](products/deferred_income_annuity/index.md) | `DIA_US_S`, `DIA_US_SEC` | monthly | Flexible-premium contract with **no account value**: each premium buys a paid-up income slice, with a return-of-premium deferral death benefit and a QLAC variant |
 
 (uslib-one-shape)=
 
 ### One shape, enforced
 
 Every model has the same two Spaces — `Data` reads the input CSVs once per model, and
-`Projection` is parameterized by `point_id` — with inputs as **external** CSVs beside
+`Projection` is parameterized by `point_id`, or by its position, `idx`, in an `_SEC` model
+that compiles — with inputs as **external** CSVs beside
 `run.py`, so the model folder holds formulas and nothing else. `Projection`'s docstring
 carries the mapping from the technical notes' actuarial symbols to the cells names.
 
@@ -124,19 +167,20 @@ registry, the directory on disk and the model's own `_name` all agree.
 Cells names come from lifelib — `basiclife/BasicTerm_S` first, then `savings/CashValue_SE` —
 so a name means the same thing in every model here and the same thing it means in lifelib.
 Where a cross-model review found one concept under two names, the conflict was settled once
-and the ruling is asserted, not merely documented:
+and the ruling is asserted, not merely documented. The `_SEC` models, which run in force at
+a valuation date, keep each ruling except where their column says otherwise:
 
-| Convention | Settled as |
-|---|---|
-| Time index | `t` is **0-based** and counts policy months: `t = 0` is the issue month of a policy projected from issue, period `t` runs from time `t` to time `t + 1`, and `proj_len()` is the number of periods from `t = 0` — the exclusive end of the frame, `result_cf()` covering `t = t_first, ..., proj_len() - 1`. A policy year is the derived 1-based label `duration(t) + 1`, never the index |
-| In-force count | `pols_if(t)` is the count at the **start** of period `t`, and is the weight on that same `result_cf()` row's cash flows. End-of-period state is reachable through `pols_if_at(t, timing)` |
-| Annual rates on a monthly grid | An assumption published annually stays annual in the unsuffixed cells and is converted at `1 - (1 - q)^(1/12)` for the month. A **contractually** annual event is never spread across the year to match: a dividend declaration, a shock lapse and a paid-up-additions purchase land whole on the anniversary month, and a premium lands whole on each date the elected mode bills it |
-| Rates | `mort_rate` / `lapse_rate` are **annual**; `mort_rate_mth` / `lapse_rate_mth` are monthly |
-| Net cash flow | `net_cf` is **income-positive** in every model. Where a product's notes print the stream outgo-positive (whole life, both payout annuities), that orientation survives verbatim as `liability_cf`, and `net_cf(t) == -liability_cf(t)` |
-| Roll-forward checks | `check_*()` takes no argument and returns `bool` over all `t` (the `CashValue_SE` form); a per-`t` residual lives at `check_*_resid(t)` |
-| Account value | `av_pp_at(t, timing)` / `av_at(t, timing)` with the `CashValue_SE` timing strings; `prem_to_av_pp` is the premium credited to it |
-| Withdrawals | `withdrawals(t)`, in a `withdrawals` column — an owner election, not a claim |
-| Benefit columns | `claims_death`, `claims_lapse`, `claims_maturity`, … named for the `kind` argument that produces them |
+| Convention | Settled as | In the `_SEC` models |
+|---|---|---|
+| Time index | `t` is **0-based** and counts policy months: `t = 0` is the issue month of a policy projected from issue, period `t` runs from time `t` to time `t + 1`, and `proj_len()` is the number of periods from `t = 0` — the exclusive end of the frame, `result_cf()` covering `t = t_first, ..., proj_len() - 1`. A policy year is the derived 1-based label `duration(t) + 1`, never the index | `t` counts months from the **valuation date**: `t = 0` is the valuation month for every point, however old the policy, and every frame runs `t = 0, ..., proj_len() - 1`, so the points' frames sum row by row into a block. The policy's own age is the policy clock, `duration_mth(t) = duration_mth_init() + t`, which every contractual cell reads, `duration(t)`, `policy_year(t)` and `age(t)` keeping their formulas on it. A point issued `k` months on holds zeros, not NaN, before its issue month, and nothing is active there. On a point issued at `t = 0` the two clocks coincide, and the model reproduces its `_S` twin |
+| In-force count | `pols_if(t)` is the count at the **start** of period `t`, and is the weight on that same `result_cf()` row's cash flows. End-of-period state is reachable through `pols_if_at(t, timing)` | The same weight, `pols_if(t) == pols_if_at(t, "BEF_DECR")`: the count carried in from `t - 1`, `pols_if_at(t, "BEF_NB")`, plus the month's new business, `pols_new_biz(t)`, whose column in `result_pols()` sums to the new-business points' `policy_count`. `result_cf()` keeps the `_S` columns exactly, and the counts the family adds are in `result_pols()`. The payout annuities differ: SPIA's `pols_if` is its `_S` closing measure, and DIA's the count on the books weighted by the probability that a covered life is alive |
+| Annual rates on a monthly grid | An assumption published annually stays annual in the unsuffixed cells and is converted at `1 - (1 - q)^(1/12)` for the month. A **contractually** annual event is never spread across the year to match: a dividend declaration, a shock lapse and a paid-up-additions purchase land whole on the anniversary month, and a premium lands whole on each date the elected mode bills it | As in the `_S` models |
+| Rates | `mort_rate` / `lapse_rate` are **annual**; `mort_rate_mth` / `lapse_rate_mth` are monthly | As in the `_S` models |
+| Net cash flow | `net_cf` is **income-positive** in every model. Where a product's notes print the stream outgo-positive (whole life, both payout annuities), that orientation survives verbatim as `liability_cf`, and `net_cf(t) == -liability_cf(t)` | As in the `_S` models |
+| Roll-forward checks | `check_*()` takes no argument and returns `bool` over all `t` (the `CashValue_SE` form); a per-`t` residual lives at `check_*_resid(t)` | As in the `_S` models |
+| Account value | `av_pp_at(t, timing)` / `av_at(t, timing)` with the `CashValue_SE` timing strings; `prem_to_av_pp` is the premium credited to it | As in the `_S` models |
+| Withdrawals | `withdrawals(t)`, in a `withdrawals` column — an owner election, not a claim | As in the `_S` models |
+| Benefit columns | `claims_death`, `claims_lapse`, `claims_maturity`, … named for the `kind` argument that produces them | As in the `_S` models |
 
 Absences are product facts, not gaps: a SPIA has no `premiums` and no lapse decrement, the
 payout annuities model `lives_if` (annuitant survival) alongside `pols_if` (contracts with
@@ -201,11 +245,16 @@ issue and the elapsed periods for an in-force point (`WholeLife_US_S`'s `proj_st
 This is lifelib's own convention (`basiclife/BasicTerm_S`, `savings/CashValue_SE`:
 `for t in range(proj_len())`). A contractual policy year is the 1-based label
 `duration(t) + 1` and is derived, never indexed by. The same rule holds in all twelve
-models, and `tests/test_model_conventions.py` asserts it for every model point.
+models, and `tests/test_model_conventions.py` asserts it for every model point. An `_SEC`
+model counts `t` from its valuation date instead, the same month for every model point,
+and its `model-sec.md` sets out the two clocks.
 
-Where a model publishes `result_cf_annual()` — `Term_US_S` and `WholeLife_US_S`, the two
-products whose contractual quantities are annual — it is the same frame summed into policy
-years, with `pols_if` the count entering each year.
+Where a model publishes `result_cf_annual()` — `Term_US_S`, `WholeLife_US_S` and `FIA_US_S`,
+the products whose contractual quantities are annual — it is the same frame summed into
+policy years, with `pols_if` the count entering each year. `Term_US_SEC`, `WholeLife_US_SEC`
+and `FIA_US_SEC` publish it too: for a point already in force at the valuation date, the
+first row holds the rest of the policy year the point is in, with `pols_if` the count at the
+valuation date, and for a point issued later, the months before issue are left out.
 
 The tests ship inside the library and run against *your* copy:
 
@@ -222,27 +271,31 @@ python -m pytest tests -q
 * - File or folder
   - Description
 * - `products/<product>/`
-  - One directory per product, holding its documents *and* its model together. Twelve of them.
+  - One directory per product, holding its documents *and* its models together. Twelve of them.
 * - `products/<product>/product-spec.md`
   - The representative product specification: mechanics, parameters, variation across insurers.
 * - `products/<product>/technical-notes.md`
   - The liability cash flow model on paper: state variables, recursions, processing order, worked example.
 * - `products/<product>/model.md`
   - How the model implements those notes — what was standardized, what diverges, what the tests cover.
+* - `products/<product>/model-sec.md`
+  - Where the product has an `_SEC` model: how it extends the `_S` one — the in-force interface, the two clocks, the departures.
 * - `products/<product>/sources.md`
   - Every source the product's documents cite, with URLs, access dates and retrieval status.
 * - `products/<product>/<Model>/`
   - The modelx model itself. Formulas only — no embedded data.
 * - `products/<product>/*.csv`
-  - The model's inputs, external to the model folder so they can be edited or swapped in place.
+  - The model's inputs, external to the model folder so they can be edited or swapped in place. An `_SEC` model reads the same tables and its own `model_point_table_sec.csv`, with any `*_sec.csv` companion beside or in place of a table, such as DIA's premium schedule or indexed UL's segment ladder, or the FIA's rate scenarios, RILA's market scenarios or the variable annuity's return and rate scenarios re-based to each model point, each generated from the `_S` model and its inputs and checked against them by the tests.
 * - `products/<product>/run.py`
-  - Reads the model and prints its cash flow statement.
+  - Reads the model and prints its cash flow statement. `run_sec.py` does the same for an `_SEC` model, for one model point or the whole block, and `--cython` runs the compiled model.
+* - `products/<product>/sample_sec.py`, `spec_sec.py`
+  - mx2cy's two inputs for compiling an `_SEC` model: the sample run that types each cell, and the size of each cell's cache.
 * - `references/`
   - The cross-product regulatory and actuarial bibliography, cited as `[REG-R#]`.
 * - `tests/`
-  - One module per model for its worked example and invariants, plus `test_model_conventions.py` for the house style, and `us_registry.py` carrying the model registry.
+  - One module per model for its worked example and invariants, plus `test_model_conventions.py` for the house style, `us_registry.py` carrying the model registry, and `sec_support.py`, the comparisons and the generator the `_SEC` tests share.
 * - `_research/`
-  - The raw research notes every citation traces back to. Provenance, not documentation — shipped but not rendered.
+  - The raw research notes every citation traces back to. Provenance, not documentation — kept in the source repository, neither rendered nor packaged with lifelib.
 ```
 
 ## Citation conventions

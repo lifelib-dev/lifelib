@@ -287,7 +287,8 @@ coincidence of the snapshot, not a model property.
   excess to PUAs **[std]** (excess-to-PUA per one carrier's reduce-premium option [S3]).
 - **ACCUM:** `DA_t = DA_{t−1} · (1 + i_d)^{1/12} + D_t`; the balance accrues monthly and the
   dividend lands on it at the anniversary, so twelve months compound to exactly the annual
-  credit; the balance adds to death and surrender proceeds [S1] [S2].
+  credit; the balance adds to death proceeds [S1] and, in the reference model, to surrender
+  proceeds **[std]**.
 
 ### PUA rider (in-scope rider)
 
@@ -413,8 +414,9 @@ Base behavior is static (schedules in class (c)). Dynamic overlays, all **[std]*
 - **Premium offset behavior:** once the prior anniversary's dividend covers the annual
   premium, a fraction
   `0.50` **[std]** of policyholders switch to REDUCE_PREM/premium-offset behavior (offset is a
-  real product feature: a lettered dividend option at one carrier [S2]; a named automatic
-  offset option at another [S3]). This shifts premium income to internal dividend application
+  real product feature: a lettered dividend option at one carrier [S2]; a named alternate
+  payment option at another, which uses dividends and PUA surrenders to pay premiums [S3]).
+  This shifts premium income to internal dividend application
   in later durations.
 - **Loan utilization:** static 0%/20% variants only **[std]**; no dynamic loan take-up (the
   6%-fixed direct-recognition design largely neutralizes loan arbitrage [S1] [S3]).
@@ -528,8 +530,8 @@ Known modeling pitfalls:
 - **First-dividend timing** (policy year 1 vs 2) shifts early-duration PUA compounding; it
   is a real cross-carrier difference [S1] [S3], keep it a parameter.
 - **Making an annual event monthly.** The dividend declaration, the capitalization of loan
-  interest and the purchase of paid-up additions are annual by contract [S1]. Crediting a
-  twelfth of the dividend each month, or capitalizing loan interest monthly, changes the
+  interest and the dividend's purchase of paid-up additions are annual by contract [S1].
+  Crediting a twelfth of the dividend each month, or capitalizing loan interest monthly, changes the
   answer and is not a refinement — it is a different product. On the monthly grid these
   events belong on the anniversary month and nowhere else.
 - **Converting the rate at the wrong point.** `q_m` and `w_m` are taken from the fully

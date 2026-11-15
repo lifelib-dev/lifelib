@@ -399,8 +399,8 @@ construction is therefore outside the library.
   seven printed lines of substance)
 - **Limit, and it is the point of the entry:** A-250 is **a pointer, not a reserve method**. It
   gives a definition, a separate-account asset-coverage requirement, and a delegation of the
-  reserve itself to **Appendix A-820** "in accordance with actuarial procedures that recognize the
-  variable nature of the benefits provided and any mortality guarantees". It contains **no
+  reserve itself to **Appendix A-820**, to be determined by actuarial procedures that reflect both
+  the variable nature of the benefits and any mortality guarantees. It contains **no
   formula, no symbol, no factor, no table, no CARVM adaptation, no elective-benefit path rule, no
   interim-value rule and not the word CARVM**, and prints **no effective date**. It is cited in
   this directory for that **verified negative finding** as much as for anything it supplies.

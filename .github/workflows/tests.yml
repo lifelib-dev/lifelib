@@ -23,7 +23,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
+        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
 
     steps:
     - name: Checkout code
@@ -48,8 +48,43 @@ jobs:
         pip install --force-reinstall --no-deps "modelx @ git+https://github.com/fumitoh/modelx.git@main"
 
     - name: Run tests with pytest
+      # uslib's _US_SEC test modules are left to the `sec` job below, as in
+      # lifelib-products' CI: they hold each SEC model to its S twin bit for bit, and
+      # parts of that hold only on the interpreter upstream verifies them on (S's sum()
+      # of floats is compensated from Python 3.12, and 3.14 rewords ZeroDivisionError).
+      # The SEC models themselves, their conventions and sec_support still run here.
       run: |
-        pytest -v
+        pytest -v --ignore-glob='*test_*_us_sec.py'
+
+  sec:
+    name: uslib SEC suites on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python 3.13
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip setuptools wheel
+        pip install -e .[test]
+        pip install docutils
+        pip install --force-reinstall --no-deps "modelx @ git+https://github.com/fumitoh/modelx.git@main"
+
+    - name: Run the _US_SEC test modules with pytest
+      shell: bash
+      run: |
+        pytest -q --durations=10 lifelib/libraries/uslib/tests/test_*_us_sec.py
 
   lint:
     name: Lint and code quality checks

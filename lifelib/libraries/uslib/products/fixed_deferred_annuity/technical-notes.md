@@ -153,8 +153,9 @@ Three classes are distinguished explicitly and must never be blended in a parame
 | Attained-age cap on renewal charge | 4% at 94, 3% at 95, 2% at 96, 1% at 97, 0% at 98–100 | [S1] [S2] |
 | MVA reference yield path `it` | exogenous scalar input series | **[std]**; index choice is state-filed [S8] [S12] |
 
-The renewal surrender charge schedule and its attained-age cap are printed as **contract
-terms** in [S1] [S2], not as declared elements; they are listed in (b) only because they
+The renewal surrender charge schedule [S2] and its attained-age cap [S1] [S2] are printed as
+**fixed product terms** in those producer fact sheets, which defer to the annuity contract
+for full details, not as declared elements; they are listed in (b) only because they
 attach at a renewal the insurer also re-rates. Load them from the guaranteed-element file
 and treat only the renewal *rate* as non-guaranteed.
 
@@ -351,7 +352,7 @@ external-index branch [R4] [REG-R45].
 
 | Value | Rule | Source design |
 |---|---|---|
-| `sym_sc` **[std]** | `M = clamp(M_raw, −C, +C)` | one carrier's New York form [S2] |
+| `sym_sc` **[std]** | `M = clamp(M_raw, −C, +C)` | one carrier's 2016 New York form [S2] |
 | `min_sc_interest` | `M = clamp(M_raw, −K, +K)` with `K = min(C, interest credited to date)` | the linear-duration family [S8] [S9] |
 | `asym_sc_snfl` | `M ≤ +C`; on the downside no cap — only `SB ≥ MGSV` binds | another carrier's MVA explainer [S12] |
 | `gmir_floor` | `AV + M ≥ P_accum@GMIR` (premiums less prior withdrawals accumulated at the GMIR); the surrender charge may still breach that level | the Camp B carrier [S13] |

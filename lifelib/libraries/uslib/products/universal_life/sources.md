@@ -5,6 +5,8 @@ over verbatim from `_research/universal-life.md` (the citation ground truth for
 [S#]/[R#] tags). Ids are never renumbered. Sources from the research file that are not
 cited in `product-spec.md` or `technical-notes.md` are omitted (dropped here: R9).
 No new sources were fetched at drafting; nothing is marked "added at drafting".
+The S2, S3 and S4 legend and edition notes were completed on review (checked
+2026-10-24), in both files; they add no source.
 
 Access date for all citations: 2026-08-03 — except the superseded-but-kept
 **REG-R110** entry, accessed **2026-08-04**, and the post-drafting entries
@@ -27,8 +29,20 @@ Access date for all citations: 2026-08-03 — except the superseded-but-kept
 
 ### S2. Protective Life Insurance Company — "Protective Advantage Choice UL — Producer Guide" (PLAG.3459 (01.15))
 - Publisher: Protective Life Insurance Company (distributed via MRW Financial,
-  an authorized distributor; PDF is the insurer's producer guide)
-- Doc type: producer/agent guide (8 pages)
+  an authorized distributor [unverified]; PDF is the insurer's producer guide)
+- Doc type: producer/agent guide (8 pages), "For Financial Professional Use Only. Not for
+  Use With Consumers." (on 7 of the 8 pages, all but the full-page photo on printed p. 1);
+  no copyright, confidentiality or internal-use notice
+- Edition: stamped "PLAG.3459 (01.15)" (January 2015; policy form UL-21). Superseded: the
+  product has been withdrawn from sale (Protective's product-update notice of November 6,
+  2024 to its Edward Jones channel says it "will be withdrawn from sale upon the
+  introduction of Protective Lifetime Assurance UL", and the Protective product-change log
+  on the WinFlex illustration platform says "As of December 31, 2025, new sales of
+  Protective Advantage Choice UL (ACUL) will be discontinued."), and its pricing was
+  revised before then: the 2024 consumer guide
+  PLC.560869 (06.24), policy form UL-20, shows a 25% premium load, a $5.50 monthly
+  administrative charge and a 2.0% guaranteed rate, where this guide shows 10%, $5 and
+  2.5% (checked 2026-10-24). Facts are as of the document date.
 - URL fetched: https://www.mrwfinancial.com/wp-content/uploads/Advantage-Choice-UL.pdf
 - Retrieved: YES (full PDF read)
 
@@ -39,7 +53,9 @@ Access date for all citations: 2026-08-03 — except the superseded-but-kept
   pacificlife.com)
 - Doc type: specimen policy (full contract, 19+ pages incl. policy specifications
   for a Male 35 Standard Nonsmoker, $100,000 basic coverage + riders, policy date
-  Nov 1, 2007)
+  Nov 1, 2007), "Producer Use Only. Not for Use with the Public." in the footer of all
+  31 PDF pages (printed as "For Producer Use Only. Not for Use with the Public." on
+  PDF pp. 1, 5 and 31)
 - URL fetched: https://www.pacificlife.com/content/dam/paclife/lid/public/sample-policies/Sample_Policy_VF%20PRO%20II.pdf
 - Retrieved: YES (full PDF read)
 - Role in this library: implementation anchor for monthly-deduction mechanics,
@@ -50,7 +66,18 @@ Access date for all citations: 2026-08-03 — except the superseded-but-kept
 
 ### S4. Nationwide Life and Annuity Insurance Company — "Nationwide No-Lapse Guarantee UL II" producer presentation (FLM-1167AO.3 (06/22))
 - Publisher: Nationwide (distributed via Krause Agency portal mirror)
-- Doc type: producer marketing deck / product highlights (19 slides)
+- Doc type: producer marketing deck / product highlights (19 slides), "FOR FINANCIAL
+  PROFESSIONAL USE — NOT FOR DISTRIBUTION TO THE PUBLIC" (cover, disclosures, contents,
+  section-divider and closing slides) and "FOR FINANCIAL PROFESSIONAL USE ONLY — NOT FOR
+  DISTRIBUTION TO THE PUBLIC" (the other slides), in the slide footers and visible on
+  every PDF page
+- Edition: stamped "FLM-1167AO.3 (06/22)" and "© 2015 – 2022 Nationwide" (handout printed
+  9/13/2022). Superseded by
+  FLM-1167AO.5 (12/24), which Nationwide serves at
+  https://financial.nationwide.com/media/pdf/FLM-1167AO.pdf with the same legends and the
+  same product facts as cited here, but different case-study figures (premiums $2,910 and
+  $2,884 where this revision shows $2,915 and $3,815) (checked 2026-10-24). The product
+  is still marketed. Facts are as of the document date.
 - URL fetched: https://portal.krauseagency.com/wp-content/uploads/2025/02/Nationwide-No-Lapse-Guarantee-Universal-Life.pdf
 - Retrieved: YES (full PDF read)
 - Role in this library: contrast case (guaranteed UL) for the current-assumption
@@ -322,7 +349,8 @@ descriptively where the variable-UL sibling is discussed and **nothing is cited 
 Extraction details live in `_research/universal-life.md`: that file records which
 facts came from which source, including the [unverified] flags, the failed/partial
 fetches (S5, R10), the mirror-hosting caveat for S1/S2/S4 (fetched from
-authorized-distributor mirrors carrying the insurers' own form numbers), and the
+authorized-distributor mirrors carrying the insurers' own form numbers; for the S2 and
+S4 hosts that authorization is [unverified]), and the
 vintage caveat that parameter levels are era-representative while mechanics are
 stable. The cross-product bibliography `_research/regulatory-actuarial.md` plays
 the same role for [REG-R#] tags — except for the AP&P appendix entries, whose provenance

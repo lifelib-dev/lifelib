@@ -27,9 +27,10 @@ added afterwards — **R153 (A-820, A-821, A-822)** and **R154 (A-830)**, both a
 
 ### S2 — Pacific Life, "PL PROMISE GUL — Product Facts" (producer piece)
 - Publisher: Pacific Life Insurance Company (Omaha, NE home office; not licensed in New York)
-- Doc type: producer guide / product fact sheet, LFP3476-2400 6/24, 3 pages, "For financial professional use only"
+- Doc type: producer guide / product fact sheet, LFP3476-2400 6/24, 3 pages, "For financial professional use only. Not for use with the public." (footer of every page)
 - URL fetched: https://life.pacificlife.com/content/dam/paclife-lid/public/plexpress/products/pl-promise-gul/LFP3476.pdf
 - Retrieved: YES (PDF fetched, full text extracted)
+- Edition: stamped "LFP3476-2400 6/24" and "23-VER-25B"; still served at the URL above (checked 2026-10-24), and whether a later edition of this piece exists was not determined. The companion client guide has since been revised (see S9; the current guide is stamped "ULC3674-00 3/26"). Both client guides give the children's rider as the Children's Term Rider, form series R17LYCTUL, where this piece gives the Children's Level Term Insurance Rider, Form R18LYCT. Facts are as of the document date.
 
 (uslib-guaranteed_ul-s3)=
 
@@ -43,9 +44,10 @@ added afterwards — **R153 (A-820, A-821, A-822)** and **R154 (A-830)**, both a
 
 ### S4 — Nationwide, "Nationwide No-Lapse Guarantee UL II — Product Highlights" (producer)
 - Publisher: Nationwide Life Insurance Company / Nationwide Life and Annuity Insurance Company, Columbus, OH
-- Doc type: producer product highlights sheet, FLM-1166AO.1 (07/18), 4 pages, "For insurance professional use only"
+- Doc type: producer product highlights sheet, FLM-1166AO.1 (07/18), 4 pages, "FOR INSURANCE PROFESSIONAL USE ONLY — NOT FOR DISTRIBUTION TO THE PUBLIC" (once on every page)
 - URL fetched: https://cdn2.hubspot.net/hubfs/1748227/NLG%20II%20PRODUCT%20HIGHLIGHTS%20FLM_1166AO_1_NLG_Product_Highlights_Final1.pdf (marketing-hub mirror of the official piece)
 - Retrieved: YES (PDF fetched, full text extracted)
+- Edition: stamped "FLM-1166AO.1 (07/18)" and "© 2018 Nationwide"; superseded by FLM-1166AO.3 (05/24), which Nationwide serves at https://nationwidefinancial.com/media/pdf/FLM-1166AO.pdf (checked 2026-10-24). The 05/24 edition repeats the parameters used here, but its rider list replaces the Accelerated Death Benefit for Terminal Illness Rider with Living Access Benefits (Chronic, Critical and Terminal Illness Riders). Facts are as of the document date.
 
 (uslib-guaranteed_ul-s5)=
 
@@ -68,9 +70,10 @@ added afterwards — **R153 (A-820, A-821, A-822)** and **R154 (A-830)**, both a
 
 ### S7 — Protective, "Protective Lifetime Assurance UL — Producer Guide"
 - Publisher: Protective Life Insurance Company, Omaha, NE (successor GUL to Advantage Choice UL)
-- Doc type: producer guide, PLAG.1387452 (10.25), policy form UL-22, 8 pages, "For financial professional use only"
+- Doc type: producer guide, PLAG.1387452 (10.25), policy form UL-22, 8 pages, "For Financial Professional Use Only. Not for Use With Consumers." (every page)
 - URL fetched: https://finpro.protective.com/-/media/project/pli/finpro/download-assets/assets/1387000-1387999/plag/plag-1387452-10-25-laul-producerguide-10-13-25-digital.pdf
 - Retrieved: YES (PDF fetched, full text extracted)
+- Edition: stamped "PLAG.1387452 (10.25)"; superseded by PLAG.1387452 (11.25), the producer guide that Protective's protective.com product page now links (checked 2026-10-24). The 11.25 revision drops the "Optional endorsements and riders" section (the source here of the rider, return-of-premium endorsement, terminal-illness and premium-waiver facts) and describes the product as "Flexible premium, adjustable universal life insurance" rather than "Level-pay universal life insurance". A March 2026 repricing also changed the guarantee-age options [S8]. Facts are as of the document date.
 
 (uslib-guaranteed_ul-s8)=
 
@@ -87,6 +90,7 @@ added afterwards — **R153 (A-820, A-821, A-822)** and **R154 (A-830)**, both a
 - Doc type: consumer brochure, 15-47468-03 3/23 (23-VER-24), 6 pages
 - URL fetched: https://www.pacificlife.com/content/dam/paclife/lid/public/brochures/15-47468-03.pdf
 - Retrieved: YES (PDF fetched, full text extracted)
+- Edition: stamped "15-47468-03 3/23"; replaced by the client guide stamped "ULC3674-00 3/26" (23-VER-24B, served as LFC3674_Promise_GUL.pdf), which Pacific Life's public universal life page now links instead (checked 2026-10-24). Facts are as of the document date.
 
 ---
 

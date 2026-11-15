@@ -16,9 +16,7 @@ This guide shows installation steps based on Windows,
 the steps are the same on other platforms, except that *command prompt*
 should be interpreted as *terminal* on Linux and Mac.
 
-lifelib works with Python 3.6 or newer.
-However, Python 3.6 reached its `end of life <https://devguide.python.org/devcycle/#end-of-life-branches>`_
-so if you're still using Python 3.6, you should upgrade it.
+lifelib works with Python 3.10 or newer.
 The newer the version of Python is, the faster it performs.
 
 Microsoft Excel is not required. You would only need Excel or its alternatives

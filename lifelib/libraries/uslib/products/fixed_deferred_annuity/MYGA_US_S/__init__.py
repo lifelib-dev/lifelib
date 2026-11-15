@@ -92,10 +92,10 @@ MVA factor — is part of the product and stays.
 **What is sourced and what is not.** The contractual elements come from the composite
 specimen: the 4.45% initial declared rate, the 0.25% GMIR and the 2.80% GMSV rate [S11];
 the 9/8/7/6/5 initial surrender charge schedule and the 10% free-withdrawal allowance
-[S10]; the 5/4/3/2/1 renewal schedule and its attained-age cap [S1][S2]; the linear
-duration MVA and its application base [S8][S9]; the symmetric cap at the surrender charge
-[S2]; the 30-day guarantee-period-end window [S1][S2][S5][S6]; the death benefit at full
-account value [S1][S2][S13]; and the Model #805 construction — 87.5% of gross
+[S10]; the 5/4/3/2/1 renewal schedule [S2] and its attained-age cap [S1] [S2]; the
+linear duration MVA and its application base [S8] [S9]; the symmetric cap at the surrender
+charge [S2]; the 30-day guarantee-period-end window [S1] [S2] [S5] [S6]; the death benefit
+at full account value [S1] [S2] [S13]; and the Model #805 construction — 87.5% of gross
 consideration accumulated at the contract GMSV rate, with the indexed statutory rate
 floored at **15 basis points, not 1%** [R1 4.A, 4.B]. The prescribed base lapse table and
 the dynamic lapse functional form are VM-22 [R2 6.B.5].

@@ -95,7 +95,7 @@ those in `product-spec.md`. Cells names, model-point columns and CSV headers are
 | `sum_assured` | EUR | 150,000 |
 | `cover_end_age` | int (death cover ceases at this attained age) | 75 |
 | `ptia_end_age` | int (PTIA cover ceases at this attained age) | 65 |
-| `premium_rate_id` | str (key into `premium_rate_table.csv`) | maif_2019 |
+| `premium_rate_id` | str (key into `premium_rate_table.csv`) | s3_2019 |
 | `rating_factor` | float (*surprime* multiplier on the tariff rate) | 1.00 |
 | `prem_freq` | enum {annual, half_yearly, quarterly, monthly} | annual |
 | `level_premium` | EUR; 0 = derive by equivalence (`constante` form only) | 0 |
@@ -175,7 +175,7 @@ paid-up state. That is a statutory fact about the product, not a modeling simpli
 
 **The attained-age tariff table** [S3] — *tarif de base annuel*, in per cent of the guaranteed
 capital, by attained age. The only complete French standalone temporaire décès rate card in the
-corpus; shipped as `premium_rate_table.csv` under `rate_id = maif_2019`:
+corpus; shipped as `premium_rate_table.csv` under `rate_id = s3_2019`:
 
 | Age | Rate | Age | Rate | Age | Rate | Age | Rate | Age | Rate |
 |---|---|---|---|---|---|---|---|---|---|
@@ -751,7 +751,7 @@ evidence for any of them.
 **Configuration.** `premium_form = revisable`, `benefit_shape = constant`
 (`benefit_schedule_id = constant`, factor 1.0 at every `t`), `issue_age = 58`,
 `sum_assured = 150 000 €`, `cover_end_age = 75`, `ptia_end_age = 65`,
-`premium_rate_id = maif_2019`, `rating_factor = 1.00`, `prem_freq = annual`
+`premium_rate_id = s3_2019`, `rating_factor = 1.00`, `prem_freq = annual`
 (`prem_freq_load = 1.000`, `prem_instalments = 1`, so the whole cotisation falls in the first
 month of each policy year), `waiting_period_y = 0`, `accident_multiplier = 1.00`. Hence
 `n = 75 − 58 = 17` policy years, `proj_len = 204` months, the frame is `t = 0 … 203`, and the

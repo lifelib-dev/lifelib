@@ -74,6 +74,26 @@ def published_statements(model):
             if name.startswith("result_") and not cells[name].parameters]
 
 
+def point_keys(model):
+    """The key of each model point's ``Projection`` ItemSpace, in table order.
+
+    Most models are parameterized by ``point_id``, the table's label. uslib's ``_US_SEC``
+    models are parameterized by ``idx``, the row's position, ``0 .. n-1``. Passing a label
+    to one of those does not fail; it selects a different point, label 1 being position 1,
+    and the last label runs off the table. So the keys come from the parameter, and an
+    unknown parameter raises rather than being guessed at, as ``us_registry.point_keys``
+    does.
+    """
+    table = model.Data.model_point_table()
+    parameters = tuple(model.Projection.parameters or ())
+    if parameters == ("idx",):
+        return list(range(len(table)))
+    if parameters == ("point_id",):
+        return list(table.index)
+    raise ValueError(f"{model.name}: Projection is parameterized by {parameters!r}; "
+                     "this knows ('point_id',) and ('idx',)")
+
+
 def assert_statements_match(model, nomx, point_id, statements):
     """Every published statement of one model point, compared value by value.
 
@@ -130,7 +150,7 @@ def test_the_first_model_point_matches_the_modelx_model(exported):
     _name, model, nomx, _package = exported
     statements = published_statements(model)
     assert "result_cf" in statements, "every model in these libraries publishes result_cf"
-    point_id = model.Data.model_point_table().index[0]
+    point_id = point_keys(model)[0]
     assert_statements_match(model, nomx, point_id, statements)
 
 
@@ -192,5 +212,5 @@ def test_every_model_point_matches_the_modelx_model(exported):
             f"Python {sys.version_info.major}.{sys.version_info.minor}; the first model "
             f"point is still compared above")
     statements = published_statements(model)
-    for point_id in model.Data.model_point_table().index:
+    for point_id in point_keys(model):
         assert_statements_match(model, nomx, point_id, statements)

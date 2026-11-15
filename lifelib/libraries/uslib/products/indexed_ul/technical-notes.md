@@ -64,7 +64,7 @@ the reference implementation. Parameter values here are identical to those in
 | Issue date / duration offset | date, months | t = 0 |
 | Existing loan balance | currency | 0 |
 | Tax test | enum {GPT, CVAT} | GPT **[std]** (spec F4) |
-| MNLP rate (no-lapse premium per $1,000 face p.a.) | rate table lookup | 20.80 for M/NT/45/band 1 [S3] (band-1 rate as placeholder — the 250,000 example face is a higher band whose rate is not public **[std]**) |
+| MNLP rate (no-lapse premium per $1,000 face p.a.) | rate table lookup | 20.80 for M/NT/45/band 1 [S3] (one carrier's base annual minimum premium rate, read as the annualized MNLP **[std]**; band-1 rate as placeholder **[std]** — the 250,000 example face falls in that carrier's $100,000-and-up table, which gives 11.32 for the same cell [S3]) |
 
 ## State variables
 
@@ -91,7 +91,8 @@ guaranteed minimum fixed rate 1.00% [S2]; guaranteed minimum cap 2.00% [S2]; gua
 participation 100% [S2]; floor 0% [S2] [R1]; guaranteed maximum charges (premium load 8%
 **[std]**, policy fee $15 **[std]**, per-unit $0.40 all years **[std]**, COI at 2017 CSO
 ANB ultimate **[std]**/[REG-R17]); surrender charge schedule **[std]**; loan charged rate
-3.00% **[std]**; corridor factors [R4]; MNLP rates [S3]. Guaranteed-basis projections use
+3.00% **[std]**; corridor factors [R4]; MNLP rates (one carrier's base annual minimum
+premium rates [S3], read as MNLP rates **[std]**). Guaranteed-basis projections use
 only this class.
 
 **(b) Current non-guaranteed scales** (insurer-declared; snapshots, re-declarable —
@@ -154,7 +155,8 @@ public bases):
 2. **Segment maturity** (for any k with t = m_k + 12): compute index credit (below), add
    to S_k; roll matured value into a new segment (standing instructions) **[std]**.
 3. **Withdrawals / new loans** processed: W_t + fee from FA then pro rata from segments
-   [S3]; new loan B_t moves collateral FA-first-then-pro-rata [S3] into LCA.
+   **[std]** (one carrier takes withdrawals pro rata across all unloaned accounts [S3]);
+   new loan B_t moves collateral FA-first-then-pro-rata [S3] into LCA.
 4. **Death benefit and NAAR:** DB_t per option and corridor on the post-premium,
    post-withdrawal account value; NAAR_t per the recursion below (DB discounted one
    month at the guaranteed rate, AV measured before the monthly deduction — the
@@ -377,7 +379,7 @@ Dominant assumptions (in rough order for an accumulation-funded model point):
 
 Known modeling pitfalls:
 
-- **Segment bookkeeping**: monthly segment ladders (up to 12 concurrent [S3] [S4]) must
+- **Segment bookkeeping**: monthly segment ladders (up to 12 concurrent [S4]) must
   track per-segment index start levels; collapsing to a single annual segment mis-times
   credits and distorts mid-segment surrender values [S3].
 - **Deduction sourcing vs credit base**: conventions differ by carrier (pro-rata remaining

@@ -26,9 +26,18 @@ resolution. Those are listed with `retrieved: NO` and nothing is asserted from t
 - Publisher: Athene Annuity & Life Assurance Company (Wilmington, DE; main
   administrative office Greenville, SC). PDF hosted on iPipeline's forms
   repository, which distributes carrier-authored producer material.
-- Doc type: producer product fact sheet (2 pages), "FOR PRODUCER USE ONLY".
+- Doc type: producer product fact sheet (2 pages), "FOR PRODUCER USE ONLY. NOT TO
+  BE USED WITH THE OFFER OR SALE OF ANNUITIES." (banner at the top of both pages).
 - URL fetched: https://files.ipipeline.com/AALAC/AN1007CA.pdf
 - Retrieved: YES (full text extracted)
+- Edition: dated "(10/14)" in the footer of both pages. Superseded: the issuer
+  merged into Athene Annuity and Life Company effective October 11, 2024 (per an
+  April 2026 Form N-4/A filed with the SEC by Athene Annuity & Life Assurance
+  Company of New York), and the carrier's current MaxRate material, consumer
+  brochure 76046 (04/22/26) for "Athene MaxRate MYG (09/15) or state variations",
+  describes a different design (3-, 5- and 7-year guarantee terms with other
+  withdrawal-charge schedules, an MVA in most states, no attained-age cap table)
+  (checked 2026-10-24). Facts are as of the document date.
 - Facts extracted:
   - Product is "a modified single premium deferred annuity contract that offers
     clients asset growth they can rely on with guaranteed interest rates."
@@ -64,9 +73,17 @@ resolution. Those are listed with `retrieved: NO` and nothing is asserted from t
 
 ### S2. Athene Annuity & Life Assurance Company of New York — "ATHENE MaxRate® Multi-Year Guarantee Annuity (MYG)", producer fact sheet AN1007-NY (06/16)
 - Publisher: Athene Annuity & Life Assurance Company of New York (Nyack, NY).
-- Doc type: producer product fact sheet (4 pages), New York only.
+- Doc type: producer product fact sheet (4 pages), New York only, "FOR PRODUCER USE
+  ONLY. NOT TO BE USED WITH THE OFFER OR SALE OF ANNUITIES." (header band on pages
+  1–3).
 - URL fetched: https://files.ipipeline.com/AALAC/AN1007NY.pdf
 - Retrieved: YES (full text extracted)
+- Edition: dated "(06/16)" in the footer of pages 1 and 4. Apparently superseded:
+  the carrier's current New York MaxRate material, consumer brochure 76047
+  (06/01/26) NY for "Athene MaxRate MYG NMV (09/15)", describes a different design
+  (3-, 5- and 7-year guarantee terms, a level 10% withdrawal charge in its chart, no
+  MVA described, no attained-age cap table); whether this 2016 form is still sold
+  was not confirmed (checked 2026-10-24). Facts are as of the document date.
 - Facts extracted:
   - Two variants: base MaxRate and "MaxRate with Enhanced Liquidity".
   - Issue ages 0–80 (actual age), Q and NQ. Initial premium $10,000 min,
@@ -1305,7 +1322,7 @@ across carriers, all variants are shown.
   / 50,000–99,999 / 100,000–1,499,999 / 1,500,000+) [S13]; MassMutual Ascend uses two
   ($100,000+ vs under $100,000) [S11].
 - **Renewal floor mechanisms observed (three distinct designs):**
-  1. **Explicit renewal-rate floor stated in the marketing document**: Athene — "the
+  1. **Explicit renewal-rate floor stated in the producer fact sheet**: Athene — "the
      rate will never be less than 1%" [S1][S2].
   2. **Contract GMIR, fixed at issue**: MassMutual Ascend SecureGain 5 minimum
      interest rate **0.25%** on the current ICC24 form [S11] (the older 4/23 brochure
@@ -1317,7 +1334,7 @@ across carriers, all variants are shown.
      minimum Specified Interest Rate for any of the Guaranteed Period Options" [S4].
 - **Renewal structure differs materially:**
   - Roll into a **new multi-year guarantee period** of the same (or elected) duration,
-    with a **new, usually shorter, surrender charge schedule**: Athene [S1][S2];
+    with a **new surrender charge schedule** (a reduced one for Athene): Athene [S1] [S2];
     Midland Oak ADVantage [S5][S6]; MassMutual Ascend (EWC and MVA apply "during each
     initial term **or any renewal terms**") [S11].
   - Roll into **annually redetermined rates with no new surrender charge**: NYL
@@ -1637,9 +1654,9 @@ amount, not the sum [S2].
   company practice) [S5][S6]; NYL (RMDs as calculated by NYLIAC under the RMD
   Automated option) [S13]; Athene Enhanced Liquidity [S2]; Nationwide (free amount =
   greater of 10% of Contract Value or the RMD, though the MVA still applies) [S4].
-- Worst treatment: Athene MaxRate base product — "RMDs will be treated as any other
-  withdrawal and subject to Withdrawal Charges" unless taken in the 30-day free-out
-  window [S1][S2].
+- Worst treatment: Athene MaxRate base product (2014/2016 forms) — "RMDs will be
+  treated as any other withdrawal and subject to Withdrawal Charges" unless taken in
+  the 30-day free-out window [S1] [S2].
 - Structural note: Oak ADVantage's **interest-only** free withdrawal [S5] makes the
   separate RMD concession essential, because an RMD can easily exceed a year's
   interest at older ages.
@@ -1760,10 +1777,11 @@ amount, not the sum [S2].
    (Nationwide's is fully specified including day-count, rounding and worked examples);
    family (ii) is the most common in current retail MYGAs.
 
-2. **MVA caps.** The biggest single divergence. Athene NY caps the MVA symmetrically
-   at the withdrawal charge [S2]. Midland caps it at min(surrender charge, interest
-   credited) both ways [S8][S9]. MassMutual Ascend caps only the **positive** side at
-   the early withdrawal charge and floors the negative side at the SNFL minimum [S12].
+2. **MVA caps.** The biggest single divergence. Athene's 2016 NY form caps the MVA
+   symmetrically at the withdrawal charge [S2]. Midland caps it at min(surrender
+   charge, interest credited) both ways [S8] [S9]. MassMutual Ascend caps only the
+   **positive** side at the early withdrawal charge and floors the negative side at
+   the SNFL minimum [S12].
    New York Life floors the MVA at premium accumulated at the GMIR [S13]. The two
    registered products impose **no cap at all** [S3][S4] — which is exactly why they
    are registered securities. A model must treat the cap as a first-class parameter,
@@ -1778,23 +1796,25 @@ amount, not the sum [S2].
 
 4. **Renewal architecture.** Two clean camps. Camp A rolls into a **new multi-year
    guarantee period with a fresh (lower) surrender charge schedule** — Athene
-   [S1][S2], Midland [S5][S6], MassMutual Ascend [S11]. Camp B drops to **annually
-   declared rates with no new surrender charge** — New York Life [S13]. Camp A creates
-   a repeating shock-lapse pattern at each renewal boundary; Camp B creates a single
+   (2014/2016 forms) [S1] [S2], Midland [S5] [S6], MassMutual Ascend [S11]. Camp B
+   drops to **annually declared rates with no new surrender charge** — New York Life
+   [S13]. Camp A creates a repeating shock-lapse pattern at each renewal boundary;
+   Camp B creates a single
    shock at the end of the initial term followed by ordinary interest-sensitive lapse.
    VM-22's Table 6.5 worked examples are explicitly built around this distinction [R2].
 
-5. **Surrender charge shape.** Classic declining schedules from 7%–9% (Athene CA
-   9/8/7/6/5/4/3 [S1]; MassMutual Ascend 9/8/7/6/5 [S10]; NYL NY 7/6/5/4/3/2/1 [S13])
-   dominate the commission-paid retail market. NYL's non-NY schedule holds 7% flat for
-   three years before declining [S13]. Nationwide's registered contract caps the charge
+5. **Surrender charge shape.** Classic declining schedules from 7%–9% (Athene's 2014
+   CA form 9/8/7/6/5/4/3 [S1]; MassMutual Ascend 9/8/7/6/5 [S10]; NYL NY
+   7/6/5/4/3/2/1 [S13]) dominate the commission-paid retail market. NYL's non-NY
+   schedule holds 7% flat for three years before declining [S13]. Nationwide's registered contract caps the charge
    at 5% and steps it down in pairs [S4]. Midland's RIA-distributed Oak ADVantage uses
    a **level 3%** in every year [S5][S6] — a distinctly fee-based-channel design that
    pairs a low, flat charge with an interest-only free withdrawal.
 
-6. **Guarantee-period-end handling.** Athene's **30-day free-out window** (no
-   withdrawal charge, no MVA, full accumulation value, income option available)
-   [S1][S2] and Midland's equivalent 30-day window [S5][S6] are the retail norm.
+6. **Guarantee-period-end handling.** The **30-day free-out window** on Athene's
+   2014/2016 forms (no withdrawal charge, no MVA, full accumulation value, income
+   option available) [S1] [S2] and Midland's equivalent 30-day window [S5] [S6] are the
+   retail norm.
    Nationwide gives 90 days' advance notice and defaults unelected money into a liquid
    Transition Account [S4]; Voya gives 18 days' notice with a 5-day election deadline
    and defaults to auto-reinvestment [S3].

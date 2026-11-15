@@ -508,13 +508,13 @@ def test_the_revisable_cotisation_moves_with_attained_age(temporaire_deces, fr_t
 def test_the_tariff_grid_is_a_lookup_and_keeps_its_step(temporaire_deces):
     """The +38 % step from 59 to 60 is in the published grid; a fitted curve loses it."""
     table = temporaire_deces.Data.premium_rate_table()
-    r59 = float(table.loc[("maif_2019", 59), "prem_rate"])
-    r60 = float(table.loc[("maif_2019", 60), "prem_rate"])
+    r59 = float(table.loc[("s3_2019", 59), "prem_rate"])
+    r60 = float(table.loc[("s3_2019", 60), "prem_rate"])
     assert r60 / r59 == pytest.approx(1.380531, abs=5e-7)
-    assert float(table.loc[("maif_2019", 58), "prem_rate"]) == 0.0105
-    assert float(table.loc[("maif_2019", 74), "prem_rate"]) == 0.0486
+    assert float(table.loc[("s3_2019", 58), "prem_rate"]) == 0.0105
+    assert float(table.loc[("s3_2019", 74), "prem_rate"]) == 0.0486
     # The flat 18-34 entry band is a feature of the card, not a gap in it.
-    assert {float(table.loc[("maif_2019", a), "prem_rate"])
+    assert {float(table.loc[("s3_2019", a), "prem_rate"])
             for a in range(18, 35)} == {0.0015}
 
 
@@ -1250,7 +1250,7 @@ def test_the_shipped_tables_mark_their_own_provenance():
         pytest.approx(1.09, rel=1e-6))
 
     rates = pd.read_csv(MODEL_DIR.parent / "premium_rate_table.csv")
-    assert set(rates["rate_id"]) == {"maif_2019"}
+    assert set(rates["rate_id"]) == {"s3_2019"}
     assert all("entry grid" in p for p in rates[rates["age"] <= 65]["provenance"])
     assert all("en cours de contrat" in p for p in rates[rates["age"] > 65]["provenance"])
 

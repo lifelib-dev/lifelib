@@ -135,7 +135,11 @@ isort lifelib
 The project uses GitHub Actions for CI/CD:
 
 - **Tests**: Run on every push and pull request
-- **Python versions**: 3.9, 3.10, 3.11, 3.12, 3.13
+- **Python versions**: 3.10, 3.11, 3.12, 3.13, 3.14
+- **uslib `_US_SEC` test modules**: run in their own `sec` job on Python 3.13 only, as
+  in lifelib-products, and skipped by the main matrix (`--ignore-glob='*test_*_us_sec.py'`).
+  Their bit-for-bit checks against the S models hold only on that interpreter, so run them
+  locally under 3.13 too.
 - **Operating systems**: Ubuntu, Windows, macOS
 - **Coverage**: Uploaded to Codecov for Python 3.11 on Ubuntu
 

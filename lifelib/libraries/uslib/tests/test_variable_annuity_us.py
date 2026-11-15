@@ -849,10 +849,10 @@ def test_highest_quarterly_step_up_basis(variable_annuity):
 
 
 def test_ratchet_gmdb_and_the_free_basic_death_benefit(variable_annuity):
-    """HQAV ratchets to contract value; the included basic benefit carries no charge."""
+    """The ratchet steps up to contract value; the included basic benefit has no charge."""
     ratchet = variable_annuity.Projection[5]
     basic = variable_annuity.Projection[7]
-    assert ratchet.gmdb_option() == "HQAV"
+    assert ratchet.gmdb_option() == "ratchet"
     assert ratchet.rb_pp(11) == pytest.approx(
         max(ratchet.rb_pp(10), ratchet.av_pp(11)), rel=1e-12)
     assert ratchet.rb_pp(23) >= ratchet.rb_pp(11)       # never falls without a withdrawal
@@ -1145,7 +1145,7 @@ def test_result_tables_shape(anchor):
 def test_every_switch_is_exercised_by_a_model_point(variable_annuity):
     """No branch of the notes' parameter set is dead code."""
     table = variable_annuity.Data.model_point_table()
-    assert set(table["gmdb_option"]) == {"rollup", "HQAV", "basic"}
+    assert set(table["gmdb_option"]) == {"rollup", "ratchet", "basic"}
     assert set(table["glwb_stepup_basis"]) == {"annual_CV", "highest_quarterly_CV"}
     assert set(table["fee_reset_rule"]) == {"none", "quinquennial", "vix"}
     assert set(table["rollup_rule"]) == {"fixed", "cmt_linked"}

@@ -47,7 +47,8 @@ the NAIC Valuation Manual.
 ### S2. Athene Annuity and Life Company — "Athene Ascent<sup>SM</sup> Pro 10 Bonus — Product Guide, Rates effective July 1, 2022" (form 65220 (07/01/22))
 - Publisher: Athene Annuity and Life Company (insurer product guide / rate-and-spec sheet; PDF
   mirrored by a distributor site)
-- Doc type: producer product guide + declared rate sheet (6 pages)
+- Doc type: product guide + declared rate sheet (6 pages; a consumer insert marked "This
+  material is a general description intended for general public use.")
 - URL fetched: https://iamsascend.com/wp-content/uploads/2023/01/Ascent-Pro-Fact-Sheet.pdf
 - Retrieved: YES (full PDF text-extracted locally)
 - Caveat carried over: declared rates are as of 07/01/2022 and are non-guaranteed; Athene's
@@ -116,12 +117,17 @@ the NAIC Valuation Manual.
 
 ### S8. Midland National Life Insurance Company — "MNL IncomeVantage® fixed index annuity — quick reference guide" (form 25665Y REV 1-20)
 - Publisher: Midland National Life Insurance Company — official midlandnational.com URL
-- Doc type: producer quick reference guide (1 page; "FOR FINANCIAL PROFESSIONAL ONLY")
+- Doc type: producer quick reference guide (1 page; "FOR FINANCIAL PROFESSIONAL ONLY. NOT TO BE
+  USED FOR CONSUMER SOLICITATION PURPOSES.")
 - URL fetched: https://www.midlandnational.com/documents/35445/8312558/25665Y.pdf/dcf404b7-a1fd-037e-b188-60cfacb0c537
 - Retrieved: YES (full PDF text-extracted locally)
 - Role in this library: the 150% stacking factor, the index-margin (spread) crediting method, and
   the disclosure that a built-in GLWB is funded through lower caps, participation rates and
   higher index margins rather than an explicit charge.
+- Edition: form 25665Y REV 1-20 (PDF created 2019-11-08). IncomeVantage is not named on
+  Midland's public explore-annuities page, and a third-party review names an "MNL
+  IncomeVantage® Pro"; whether IncomeVantage 10 / 14 is still sold or has been superseded was
+  not confirmed (checked 2026-10-24). Facts are as of the document date.
 
 (uslib-fixed_indexed_annuity-s9)=
 
