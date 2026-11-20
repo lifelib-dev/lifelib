@@ -486,7 +486,7 @@ def check_pv_net_cf():
 
     """
     cfs = np.array(list(net_cf(t) for t in range(max_proj_len()))).transpose()
-    pvs = cfs @ disc_factors()[:max_proj_len()]
+    pvs = cfs @ np.array([disc_factors(t) for t in range(max_proj_len())])
 
     return np.all(np.isclose(pvs, pv_net_cf()))
 
