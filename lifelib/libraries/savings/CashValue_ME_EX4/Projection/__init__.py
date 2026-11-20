@@ -824,12 +824,13 @@ def formula_option_put(t):
 
     """
     mps = model_point_table_ext()
-    cond = mps['policy_term'] * 12 == t
+    cond = (mps['policy_term'] * 12 == t) & (mps['premium_type'] == 'SINGLE')
     mps = mps.loc[cond]
 
     T = t / 12
-    S = av_at(0, 'BEF_FEE')[:, 1][cond]
-    X = (sum_assured() * pols_maturity(t))[:, 1][cond]
+    n = len(scen_index())
+    S = av_at(0, 'BEF_FEE')[::n][cond]
+    X = (sum_assured() * pols_maturity(t))[::n][cond]
     sigma = 0.03
     r = 0.02
     N = stats.norm.cdf
