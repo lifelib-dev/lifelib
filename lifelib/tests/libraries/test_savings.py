@@ -3,6 +3,7 @@ import pytest
 import numpy as np
 
 modelx = pytest.importorskip("modelx")
+scipy = pytest.importorskip("scipy")
 
 HERE = pathlib.Path(__file__).resolve()
 EX4_PATH = HERE.parents[2] / "libraries" / "savings" / "CashValue_ME_EX4"
