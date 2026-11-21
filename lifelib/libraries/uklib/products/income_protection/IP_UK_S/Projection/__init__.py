@@ -94,11 +94,11 @@ rho_m(z)                   rec_rate_mth(z)                 Monthly recovery rate
 q_S_a(z)                   mort_rate_sick(z)               Annual in-claim mortality
 q_S_m(z)                   mort_rate_sick_mth(z)           Monthly in-claim mortality
 s_S(z)                     claim_surv_step(z)              Monthly in-claim survival
-(the three vectors)        claim_rate_vectors()            rho_m, q_S_m and s_S as lists
+(the three vectors)        claim_rate_vectors()            rho_m, q_S_m and s_S as tuples
 l_H(t)                     pols_active(t)                  In state H at start of month t
 l_S(t, z)                  pols_sick_dur(t, z)             In claim at duration z
 l_S(t)                     pols_sick(t)                    Total in claim payment
-(the whole vector)         sick_cohorts(t)                 l_S(t, .) as a list
+(the whole vector)         sick_cohorts(t)                 l_S(t, .) as a tuple
 (none)                     pols_if(t)                      H + S: policies in force
 (none)                     pols_if_at(t, timing)           BEF_DECR / AFT_DECR
 n(t)                       pols_inception(t)               New claim inceptions
@@ -170,13 +170,14 @@ notes' first-listed pitfall — the duration gradient *is* the defining feature 
 protection terminations.
 
 :func:`sick_cohorts` holds the whole vector for one month and is the model's only
-list-valued cells. The alternative — a two-argument ``pols_sick_dur(t, z)`` recursion —
+vector-valued cells. The alternative — a two-argument ``pols_sick_dur(t, z)`` recursion —
 would be ``proj_len() x max_dur()`` separate cells, 130,000 of them on the anchor cell,
 each with its own cache entry. Keeping the vector in one cells per month makes it
 ``proj_len()`` cells with a loop inside, and :func:`pols_sick_dur` then reads an element
 out of it so that the notes' two-dimensional object is still addressable by name. The
-list is rebuilt rather than mutated on each step, so a caller cannot corrupt the cache
-by holding one.
+vector is a tuple, not a list: modelx hands every caller the cached object itself, so a
+list would let one caller's assignment rewrite the cache that later months are built
+from.
 
 The shipped termination basis suppresses the **age** dimension **[std]**. IP11 is
 two-dimensional in age and duration, with claimant mortality duration-dependent to five
@@ -597,8 +598,9 @@ def claim_surv_step(z):
 def claim_rate_vectors():
     """The three per-duration rate vectors, ``(rho_m, q_S_m, s_S)``, built once.
 
-    Element ``z - 1`` of each list is the value at claim duration ``z``, for
-    ``z = 1 ... max_dur()``.  Purely a performance shape: :func:`pols_recovery`,
+    Element ``z - 1`` of each tuple is the value at claim duration ``z``, for
+    ``z = 1 ... max_dur()``.  Tuples for the reason :func:`sick_cohorts` gives.
+    Purely a performance shape: :func:`pols_recovery`,
     :func:`pols_death_sick` and :func:`pols_sick_surv` each walk the whole cohort vector
     in every projected month, and reading the rates out of a list rather than calling
     :func:`rec_rate_mth` and friends per element turns ``proj_len() x max_dur()``
@@ -608,9 +610,9 @@ def claim_rate_vectors():
     definition of each rate.
     """
     zs = range(1, max_dur() + 1)
-    rec = [rec_rate_mth(z) for z in zs]
-    dth = [mort_rate_sick_mth(z) for z in zs]
-    return rec, dth, [(1.0 - r) * (1.0 - d) for r, d in zip(rec, dth)]
+    rec = tuple(rec_rate_mth(z) for z in zs)
+    dth = tuple(mort_rate_sick_mth(z) for z in zs)
+    return rec, dth, tuple((1.0 - r) * (1.0 - d) for r, d in zip(rec, dth))
 
 
 def esc_rate():
@@ -722,11 +724,11 @@ def lapse_rate_mth(t):
 
 
 def sick_cohorts(t):
-    """l_S(t, .): the in-claim population by claim duration, as a list.
+    """l_S(t, .): the in-claim population by claim duration, as a tuple.
 
     Element ``z - 1`` is the population in claim payment at the start of month t with
     claim duration ``z`` months, for ``z = 1 ... max_dur()`` (``z`` is 1-based; the
-    ``z - 1`` is list position, not a time offset).  The model's only list-valued
+    ``z - 1`` is tuple position, not a time offset).  The model's only vector-valued
     cells, and the reason is cost: a two-argument recursion would be
     ``proj_len() x max_dur()`` separate cells - 130,000 on the anchor cell - where this
     is ``proj_len()`` cells with a loop inside.  :func:`pols_sick_dur` reads an element
@@ -735,8 +737,11 @@ def sick_cohorts(t):
     At ``t = 0`` the vector is the seeded state: all zeros on an ``active`` cell, and
     ``pols_if_init()`` at cohort ``z0 + 1`` on an ``in_claim`` one.  Thereafter cohort 1
     is the previous month's inceptions and every other cohort is the previous cohort
-    survived one month.  A new list is built on each step rather than the previous one
-    mutated, so holding a returned list cannot corrupt the cache.
+    survived one month.
+
+    The vector is a tuple, never a list.  modelx returns the cached object itself, not
+    a copy, so a list would let any caller rewrite the cache in place - and every later
+    month is built from it.  A tuple makes that assignment a ``TypeError`` instead.
 
     From ``t = proj_len()`` on the vector is all zeros: every claim in payment
     terminates at the policy end date, the end of month ``proj_len() - 1``, without
@@ -744,17 +749,15 @@ def sick_cohorts(t):
     """
     n = max_dur()
     if t < 0 or t >= proj_len():
-        return [0.0] * n
+        return (0.0,) * n
     if t == 0:
         seed = pols_if_init() if status() == "in_claim" else 0.0
         z0 = claim_duration_months() + 1
-        return [seed if z == z0 else 0.0 for z in range(1, n + 1)]
+        return tuple(seed if z == z0 else 0.0 for z in range(1, n + 1))
     prev = sick_cohorts(t - 1)
     surv = claim_rate_vectors()[2]
-    out = [pols_inception(t - 1)]
-    for z in range(1, n):
-        out.append(prev[z - 1] * surv[z - 1])
-    return out
+    return (pols_inception(t - 1),) + tuple(
+        prev[z - 1] * surv[z - 1] for z in range(1, n))
 
 
 def pols_sick_dur(t, z):

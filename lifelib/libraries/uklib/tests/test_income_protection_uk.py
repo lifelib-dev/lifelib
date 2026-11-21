@@ -193,14 +193,32 @@ def test_a_seeded_claim_starts_at_its_stated_duration(income_protection):
     assert p.rec_rate(31) == 0.15
 
 
-def test_the_cohort_vector_is_rebuilt_not_mutated(uk_ip_claim):
-    """Holding a returned list cannot corrupt the cache."""
-    p = uk_ip_claim
-    v = p.sick_cohorts(2)
-    before = p.pols_sick(2)
-    v[0] = 999.0                                     # mutate the caller's copy
-    assert p.sick_cohorts(2)[0] != 999.0 or p.pols_sick(2) == before
-    assert p.pols_sick(2) == pytest.approx(before, rel=1e-14)
+def test_the_cached_vectors_cannot_be_written_through(income_protection):
+    """A caller holding a returned vector cannot corrupt the cache.
+
+    modelx returns the cached object itself, not a copy, so these cells return tuples.
+    This test used to assign into the returned ``sick_cohorts(2)``, which with a list
+    wrote 999 lives into the shared cache of model point 2 and broke the roll-forward
+    and population checks of whichever tests ran after it on a cold model - under
+    ``pytest -n auto``, every time.  It now reads a fresh instance and only *attempts*
+    the assignment.
+    """
+    model = mx.read_model(MODEL_DIR, name="IP_UK_S_immutable")
+    try:
+        p = model.Projection[2]
+        v = p.sick_cohorts(2)
+        assert v is p.sick_cohorts(2)                # the cache, not a copy
+        before = v[0]
+        with pytest.raises(TypeError):
+            v[0] = 999.0
+        for vec in p.claim_rate_vectors():
+            with pytest.raises(TypeError):
+                vec[0] = 999.0
+        assert p.sick_cohorts(2)[0] == before
+        assert p.check_pols_roll_fwd() is True
+        assert p.check_states() is True
+    finally:
+        model.close()
 
 
 # ---------------------------------------------------------------------------
