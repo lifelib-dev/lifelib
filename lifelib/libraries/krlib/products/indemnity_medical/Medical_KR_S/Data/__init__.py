@@ -39,9 +39,6 @@ claim_shape_file        claim_shape_table()           claim_shape_table.csv
 oop_ceiling_file        oop_ceiling_table()           oop_ceiling_table.csv
 ======================  ============================  ==========================
 
-The sex and stream columns accept the category names in the shipped CSVs and
-the integer enum codes written when a loaded table is saved back to CSV.
-
 .. rubric:: Every one of these files is a [std] construction, and that is a finding
 
 보험개발원 (Korea Insurance Development Institute) is the statutory 보험요율 산출기관
@@ -177,7 +174,7 @@ def mort_table():
     docstring.
     """
     frame = pd.read_csv(input_dir() / mort_table_file)                     # noqa: F821
-    frame["sex"] = [Sex(value) if type(value) is int else Sex[value] for value in frame["sex"]]
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
     return frame.set_index(["sex", "age"])
 
 
@@ -204,7 +201,7 @@ def utilisation_table():
     daily-average cap is applied against.
     """
     frame = pd.read_csv(input_dir() / utilisation_table_file)                     # noqa: F821
-    frame["sex"] = [Sex(value) if type(value) is int else Sex[value] for value in frame["sex"]]
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
     return frame.set_index(["sex", "age_start"])
 
 
@@ -219,9 +216,7 @@ def severity_table():
     of each distribution, not its mean, decides the claim.
     """
     frame = pd.read_csv(input_dir() / severity_table_file)                     # noqa: F821
-    frame["stream"] = [
-        Stream(value) if type(value) is int else Stream[value] for value in frame["stream"]
-    ]
+    frame["stream"] = [Stream[name] for name in frame["stream"]]
     return frame.set_index(["stream", "point"])
 
 

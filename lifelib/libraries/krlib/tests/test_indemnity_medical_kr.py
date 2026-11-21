@@ -63,7 +63,6 @@ the one limit that binds anywhere in the shipped table, 9 for 개인실손 중�
 import pathlib
 
 import modelx as mx
-from modelx.core.errors import FormulaError
 import pandas as pd
 import pytest
 
@@ -1569,9 +1568,8 @@ def test_pitfall_read_the_utilisation_table_at_the_attained_age(indemnity_medica
     """
     a = indemnity_medical.Projection[1]
     assert a.claims_ann_pp(6, Kind.ALL) == pytest.approx(183428.5019, abs=WON)
-    table = indemnity_medical.Data.utilisation_table().reset_index()
-    frozen = table.copy()
-    is_male = frozen["sex"] == Sex.M
+    frozen = pd.read_csv(CSV_DIR / indemnity_medical.Data.utilisation_table_file)
+    is_male = frozen["sex"] == Sex.M.name
     row40 = frozen[is_male & (frozen["age_start"] == 40)].iloc[0]
     mask = is_male & (frozen["age_start"] == 45)
     for column in ("adm_rate", "los_days", "visit_rate_ge", "visit_rate_np",
@@ -1991,11 +1989,10 @@ def test_the_shipped_mortality_runs_the_wrong_way_and_the_table_says_so(
     names = set(indemnity_medical.Projection.cells)
     assert "claims_death" not in names and "claims_lapse" not in names
     assert "cv_pp" not in names and "av_pp" not in names
-    # Keep the loaded table's integer sex codes in the replacement CSV.
-    stressed_mortality = indemnity_medical.Data.mort_table().copy()
+    stressed_mortality = pd.read_csv(CSV_DIR / indemnity_medical.Data.mort_table_file)
     stressed_mortality["mort_rate"] *= 5.0
     with _swapped("mort", "mort_table_file", stressed_mortality,
-                  "mort_table_x5.csv") as model:
+                  "mort_table_x5.csv", index=False) as model:
         p = model.Projection[1]
         assert p.mort_rate(0) == pytest.approx(5.0 * MORT_Q[40], rel=1e-12)
         assert p.pols_if(119) < a.pols_if(119)
@@ -2095,8 +2092,8 @@ def test_an_input_can_be_swapped_without_touching_formulas(indemnity_medical):
     and every one of them is meant to be replaced.
     """
     base = indemnity_medical.Projection[1].claims_ge_out_pp(1)
-    severity = indemnity_medical.Data.severity_table().reset_index()
-    doubled = severity["stream"] == Stream.ge_out
+    severity = pd.read_csv(CSV_DIR / indemnity_medical.Data.severity_table_file)
+    doubled = severity["stream"] == Stream.ge_out.name
     severity.loc[doubled, "cost"] = severity.loc[doubled, "cost"] * 2.0
     with _swapped("sev", "severity_table_file", severity,
                   "severity_table_alt.csv", index=False) as model:
@@ -2106,37 +2103,6 @@ def test_an_input_can_be_swapped_without_touching_formulas(indemnity_medical):
         assert p.check_indemnity() is True
     assert indemnity_medical.Projection[1].claims_ge_out_pp(1) == pytest.approx(
         base, rel=1e-14)
-
-
-@pytest.mark.parametrize(
-    ("table", "file_ref", "category"),
-    [
-        ("mort_table", "mort_table_file", "sex"),
-        ("utilisation_table", "utilisation_table_file", "sex"),
-        ("severity_table", "severity_table_file", "stream"),
-    ],
-)
-def test_enum_table_csv_round_trip(indemnity_medical, table, file_ref, category):
-    """A replacement CSV accepts the shipped labels and the saved enum codes."""
-    data = indemnity_medical.Data
-    loaded = getattr(data, table)()
-    assert pd.api.types.is_integer_dtype(loaded.index.get_level_values(category).dtype)
-    labels = pd.read_csv(CSV_DIR / getattr(data, file_ref))
-
-    for encoding, frame, index in (("labels", labels, False), ("codes", loaded, True)):
-        with _swapped(encoding, file_ref, frame, f"{table}_{encoding}.csv", index=index) as model:
-            pd.testing.assert_frame_equal(
-                getattr(model.Data, table)(), loaded, check_exact=False, rtol=1e-12, atol=1e-12
-            )
-
-    invalid = loaded.reset_index()
-    invalid.loc[0, category] = 999
-    with _swapped("invalid", file_ref, invalid, f"{table}_invalid.csv", index=False) as model:
-        with pytest.raises(FormulaError):
-            getattr(model.Data, table)()
-        error = mx.get_error()
-        assert isinstance(error, ValueError)
-        assert "999 is not a valid" in str(error)
 
 
 def test_the_docstrings_carry_this_products_own_reference_material(indemnity_medical):
