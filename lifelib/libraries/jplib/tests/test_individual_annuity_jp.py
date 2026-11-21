@@ -73,6 +73,7 @@ import pytest
 from modelx.core.errors import FormulaError
 
 from jp_registry import model_path
+from lifelib.libraries.jplib.products.individual_annuity.enums import AvTiming, Kind, MortTable, PayoutForm, PolTiming, Sex, Weighting
 
 MODEL_DIR = model_path("Annuity_JP_S")
 
@@ -285,8 +286,8 @@ PUBLISHED_ANCHORS = {
 }
 # The table whose female rows really are a setback of the male construction.
 SETBACK_TABLE = "annuity_payout_2007"
-OMEGA = {("death_cover_2018", "M"): 109, ("death_cover_2018", "F"): 113,
-         ("annuity_payout_2007", "M"): 122, ("annuity_payout_2007", "F"): 126}
+OMEGA = {(MortTable.death_cover_2018, "M"): 109, (MortTable.death_cover_2018, "F"): 113,
+         (MortTable.annuity_payout_2007, "M"): 122, (MortTable.annuity_payout_2007, "F"): 126}
 
 
 # ---------------------------------------------------------------------------
@@ -363,9 +364,9 @@ def test_worked_example_deferral_row(jp_annuity_anchor, t):
     assert a.pols_if(t) == pytest.approx(pols, abs=INFORCE)
     assert a.lives_if(t) == pytest.approx(lives, abs=INFORCE)
     assert a.premiums(t) == pytest.approx(prem, abs=YEN)
-    assert a.claims(t, "DEATH") == pytest.approx(death, abs=YEN)
-    assert a.claims(t, "LAPSE") == pytest.approx(lapse, abs=YEN)
-    assert a.claims(t, "ANNUITY") == 0.0
+    assert a.claims(t, Kind.DEATH) == pytest.approx(death, abs=YEN)
+    assert a.claims(t, Kind.LAPSE) == pytest.approx(lapse, abs=YEN)
+    assert a.claims(t, Kind.ANNUITY) == 0.0
     assert a.expenses(t) == pytest.approx(exp, abs=YEN)
     assert a.claim_expenses(t) == pytest.approx(claim_exp, abs=YEN)
     assert a.commissions(t) == pytest.approx(comm, abs=YEN)
@@ -469,9 +470,9 @@ def test_worked_example_payout_row(jp_annuity_anchor, t):
     assert a.pols_if(t) == pytest.approx(pols, abs=INFORCE)
     assert a.lives_if(t) == pytest.approx(lives, abs=INFORCE)
     assert a.premiums(t) == pytest.approx(prem, abs=YEN)
-    assert a.claims(t, "ANNUITY") == pytest.approx(annuity, abs=YEN)
-    assert a.claims(t, "DEATH") == pytest.approx(death, abs=YEN)
-    assert a.claims(t, "LAPSE") == pytest.approx(lapse, abs=YEN)
+    assert a.claims(t, Kind.ANNUITY) == pytest.approx(annuity, abs=YEN)
+    assert a.claims(t, Kind.DEATH) == pytest.approx(death, abs=YEN)
+    assert a.claims(t, Kind.LAPSE) == pytest.approx(lapse, abs=YEN)
     assert a.expenses(t) == pytest.approx(exp, abs=YEN)
     assert a.claim_expenses(t) == pytest.approx(claim_exp, abs=YEN)
     assert a.net_cf(t) == pytest.approx(net, abs=YEN)
@@ -500,13 +501,13 @@ def test_worked_example_first_month_trace(jp_annuity_anchor):
     assert a.premiums(0) == pytest.approx(180_000.00, abs=YEN)
     assert a.pols_death(0) == pytest.approx(DEATHS_0, abs=INFORCE)
     assert a.db_at_m(1) == 15_000.0
-    assert a.claims(0, "DEATH") == pytest.approx(15_000.0 * DEATHS_0, abs=YEN)
+    assert a.claims(0, Kind.DEATH) == pytest.approx(15_000.0 * DEATHS_0, abs=YEN)
     assert a.claim_expenses(0) == pytest.approx(5_000 * DEATHS_0, abs=YEN)
     assert a.pols_lapse(0) == pytest.approx(LAPSES_0, abs=INFORCE)
     assert a.av_at_m(1) == pytest.approx(14_164.681984, abs=FUND)
     assert a.surr_charge_at_m(1) == pytest.approx(178_500.0, abs=YEN)
     assert a.cv_at_m(1) == 0.0
-    assert a.claims(0, "LAPSE") == 0.0
+    assert a.claims(0, Kind.LAPSE) == 0.0
     assert a.cv_pp(1) == pytest.approx(7_976.183805, abs=FUND)   # at the anniversary
     assert min(u for u in range(1, 13) if a.cv_at_m(u) > 0.0) == 12
     assert a.expenses(0) == pytest.approx(30_000 + 4_000 / 12, abs=YEN)
@@ -532,8 +533,8 @@ def test_worked_example_second_month_trace(jp_annuity_anchor):
     assert a.mort_rate_mth(1) == pytest.approx(QM_0, abs=RATE)
     assert a.pols_death(1) == pytest.approx(DEATHS_1, abs=INFORCE)
     assert a.db_at_m(2) == 30_000.0
-    assert a.claims(1, "DEATH") == pytest.approx(30_000.0 * DEATHS_1, abs=YEN)
-    assert a.claims(1, "LAPSE") == 0.0
+    assert a.claims(1, Kind.DEATH) == pytest.approx(30_000.0 * DEATHS_1, abs=YEN)
+    assert a.claims(1, Kind.LAPSE) == 0.0
     assert a.expenses(1) == pytest.approx(4_000 / 12 * a.pols_if(1), abs=YEN)
     assert a.net_cf(1) == pytest.approx(-333.28, abs=YEN)
 
@@ -562,8 +563,8 @@ def test_worked_example_second_premium_trace(jp_annuity_anchor):
         ((a.av_pp(1) + a.prem_to_av_pp(1)) * 1.01 - q_pricing * 360_000)
         / (1 - q_pricing), abs=1e-9)
     assert a.cv_pp(2) == pytest.approx(197_646.281577, abs=FUND)
-    assert a.claims(11, "LAPSE") == pytest.approx(38.74, abs=YEN)   # the first one
-    assert a.claims(12, "LAPSE") == pytest.approx(95.29, abs=YEN)
+    assert a.claims(11, Kind.LAPSE) == pytest.approx(38.74, abs=YEN)   # the first one
+    assert a.claims(12, Kind.LAPSE) == pytest.approx(95.29, abs=YEN)
     assert a.expenses(12) == pytest.approx(4_000 / 12 * 1.01 * a.pols_if(12), abs=YEN)
     assert a.net_cf(12) == pytest.approx(165_299.40, abs=YEN)
     assert a.net_cf(11) < 0.0          # the sawtooth is the contract
@@ -614,7 +615,7 @@ def test_worked_example_last_deferral_month_trace(jp_annuity_anchor):
     assert a.mort_rate_mth(419) == pytest.approx(QM_34, abs=RATE)
     assert a.pols_death(419) == pytest.approx(DEATHS_419, abs=INFORCE)
     assert a.db_at_m(420) == 5_400_000.0
-    assert a.claims(419, "DEATH") == pytest.approx(5_400_000 * DEATHS_419, abs=YEN)
+    assert a.claims(419, Kind.DEATH) == pytest.approx(5_400_000 * DEATHS_419, abs=YEN)
     assert a.claim_expenses(419) == pytest.approx(5_000 * DEATHS_419, abs=YEN)
     assert a.expenses(419) == pytest.approx(
         4_000 / 12 * 1.01 ** 34 * a.pols_if(419), abs=YEN)
@@ -633,15 +634,15 @@ def test_worked_example_first_annuity_month_trace(jp_annuity_anchor):
     not draw.
     """
     a = jp_annuity_anchor
-    assert a.mort_table_name(420) == "annuity_payout_2007"
+    assert a.mort_table_name(420) == MortTable.annuity_payout_2007
     assert a.mort_rate_base(420) == pytest.approx(Q_BASE_35, abs=RATE)
     assert a.mort_rate(420) == pytest.approx(Q_35, abs=RATE)
     assert a.mort_rate_mth(420) == pytest.approx(QM_35, abs=RATE)
     assert a.annuity_pp(420) == ANNUITY_AMOUNT
-    assert a.claims(420, "ANNUITY") == pytest.approx(
+    assert a.claims(420, Kind.ANNUITY) == pytest.approx(
         ANNUITY_AMOUNT * a.pols_if(420), abs=YEN)
-    assert a.claims(420, "DEATH") == 0.0
-    assert a.claims(420, "LAPSE") == 0.0
+    assert a.claims(420, Kind.DEATH) == 0.0
+    assert a.claims(420, Kind.LAPSE) == 0.0
     assert a.premiums(420) == 0.0
     assert a.expenses(420) == pytest.approx(
         2_000 / 12 * 1.01 ** 35 * a.pols_if(420), abs=YEN)
@@ -651,7 +652,7 @@ def test_worked_example_first_annuity_month_trace(jp_annuity_anchor):
     # eleven months of maintenance expense and nothing else, then the next instalment
     for t in range(421, 432):
         assert a.annuity_pp(t) == 0.0
-        assert a.claims(t) == 0.0
+        assert a.claims(t, Kind.ALL) == 0.0
         assert a.net_cf(t) == pytest.approx(-a.expenses(t), abs=YEN)
     assert a.annuity_pp(432) == ANNUITY_AMOUNT
 
@@ -741,8 +742,8 @@ def test_pitfall_two_mortality_tables_with_the_margin_running_opposite_ways(
     """
     a = jp_annuity_anchor
     n = a.annuitisation_t()
-    assert a.mort_table_name(n - 1) == "death_cover_2018"
-    assert a.mort_table_name(n) == "annuity_payout_2007"
+    assert a.mort_table_name(n - 1) == MortTable.death_cover_2018
+    assert a.mort_table_name(n) == MortTable.annuity_payout_2007
     assert a.mort_be_factor(n - 1) == 0.85
     assert a.mort_be_factor(n) == 1.10
     assert a.mort_rate(n - 1) == pytest.approx(0.85 * a.mort_rate_base(n - 1), rel=1e-14)
@@ -751,12 +752,12 @@ def test_pitfall_two_mortality_tables_with_the_margin_running_opposite_ways(
     # The payout table is materially lighter at every adult age, which is why reading the
     # death-cover table after annuitisation is wrong in the expensive direction.
     for age, floor in ((80, 1.49), (90, 1.89)):
-        heavy = a.mort_rate_at_age("death_cover_2018", age)
-        light = a.mort_rate_at_age("annuity_payout_2007", age)
+        heavy = a.mort_rate_at_age(MortTable.death_cover_2018, age)
+        light = a.mort_rate_at_age(MortTable.annuity_payout_2007, age)
         assert heavy / light >= floor, f"age {age}: {heavy} against {light}"
     for age in range(65, 105):
-        assert (a.mort_rate_at_age("death_cover_2018", age)
-                > a.mort_rate_at_age("annuity_payout_2007", age))
+        assert (a.mort_rate_at_age(MortTable.death_cover_2018, age)
+                > a.mort_rate_at_age(MortTable.annuity_payout_2007, age))
 
     # And the tables run to different terminal ages, which is what bounds the life form.
     for (table, sex), omega in OMEGA.items():
@@ -779,12 +780,12 @@ def test_pitfall_kakutei_nenkin_instalments_are_certain_not_life_contingent(
     for t in range(n, a.proj_len()):
         assert a.pols_if(t) == a.pols_if(n), f"pols_if moved at t={t}"
         assert a.pols_death(t) == 0.0
-        assert a.claims(t, "DEATH") == 0.0
+        assert a.claims(t, Kind.DEATH) == 0.0
     # one instalment a policy year, of the same amount, and nothing in the eleven between
     for j in range(k):
-        assert a.claims(n + 12 * j, "ANNUITY") == pytest.approx(
-            a.claims(n, "ANNUITY"), abs=1e-9)
-        assert all(a.claims(t, "ANNUITY") == 0.0
+        assert a.claims(n + 12 * j, Kind.ANNUITY) == pytest.approx(
+            a.claims(n, Kind.ANNUITY), abs=1e-9)
+        assert all(a.claims(t, Kind.ANNUITY) == 0.0
                    for t in range(n + 12 * j + 1, n + 12 * j + 12))
     assert a.lives_if(n) == pytest.approx(0.91268274, abs=INFORCE)
     assert a.lives_if(a.proj_len()) == pytest.approx(0.77848987, abs=INFORCE)
@@ -845,7 +846,7 @@ def test_pitfall_the_lapse_decrement_stops_before_the_annuity_start_date(
             assert p.lapse_rate(t) == 0.0, f"point {point_id}, t={t}"
             assert p.lapse_rate_mth(t) == 0.0
             assert p.pols_lapse(t) == 0.0
-            assert p.claims(t, "LAPSE") == 0.0
+            assert p.claims(t, Kind.LAPSE) == 0.0
         assert p.lapse_rate(n - 13) > 0.0          # and only that policy year
         for s in range(p.annuitisation_y(), p.proj_years() + 1):
             assert p.cv_pp(s) == 0.0
@@ -909,8 +910,8 @@ def test_pitfall_two_yotei_riritsu_not_one(jp_annuity_anchor):
     assert wrong < a.annuity_due_factor()
     assert a.annuity_due_factor() / wrong - 1 == pytest.approx(0.0155, abs=5e-5)
     # The fund itself is accumulated at i_d and nothing else.
-    assert a.av_pp_at(0, "AFT_INT") == pytest.approx(
-        a.av_pp_at(0, "AFT_PREM") * (1 + i_d), rel=1e-14)
+    assert a.av_pp_at(0, AvTiming.AFT_INT) == pytest.approx(
+        a.av_pp_at(0, AvTiming.AFT_PREM) * (1 + i_d), rel=1e-14)
 
 
 def test_pitfall_the_death_benefit_stops_growing_at_premium_end(individual_annuity):
@@ -985,16 +986,16 @@ def test_pitfall_the_published_lapse_rate_is_measured_on_contract_amount(
     deferral decrement.
     """
     a = jp_annuity_anchor
-    count = a.lapse_rate_mean("count")
-    fund = a.lapse_rate_mean("fund")
+    count = a.lapse_rate_mean(Weighting.count)
+    fund = a.lapse_rate_mean(Weighting.fund)
     assert count == pytest.approx(LAPSE_MEAN_COUNT, abs=5e-7)
     assert fund == pytest.approx(LAPSE_MEAN_FUND, abs=5e-7)
     assert abs(count - LAPSE_PUBLISHED) < 0.0005      # calibrated against the published
     assert 1 - fund / count == pytest.approx(0.275, abs=0.02)
     # Both are means over the deferral anniversaries only, rebuilt here independently.
     ys = range(0, a.annuitisation_y())
-    for weighting, weights in (("count", [a.pols_if(12 * y) for y in ys]),
-                               ("fund", [a.av_pp(y) for y in ys])):
+    for weighting, weights in ((Weighting.count, [a.pols_if(12 * y) for y in ys]),
+                               (Weighting.fund, [a.av_pp(y) for y in ys])):
         num = sum(w * a.lapse_rate(12 * y) for w, y in zip(weights, ys))
         assert a.lapse_rate_mean(weighting) == pytest.approx(
             num / sum(weights), rel=1e-14)
@@ -1110,7 +1111,7 @@ def test_pitfall_the_annuity_amount_is_struck_once_from_the_issue_basis(
     assert a.check_annuity_total() is True
 
     life = individual_annuity.Projection[9]
-    assert life.payout_form() == "life_guar"
+    assert life.payout_form() == PayoutForm.life_guar
     assert life.annuity_fund_pp() == pytest.approx(a.annuity_fund_pp(), abs=1e-9)
     assert life.annuity_due_life_factor() == pytest.approx(LIFE_ANNUITY_DUE, abs=5e-7)
     assert life.annuity_amount_pp() == LIFE_ANNUITY_AMOUNT
@@ -1169,12 +1170,12 @@ def test_death_is_decremented_before_lapse(jp_annuity_anchor):
     """The notes' processing order: lapses are taken from the survivors of mortality."""
     a = jp_annuity_anchor
     for t in (0, 1, 5, 60, 240, 399):
-        assert a.pols_if_at(t, "BEF_DECR") == a.pols_if(t)
-        assert a.pols_if_at(t, "BEF_LAPSE") == pytest.approx(
+        assert a.pols_if_at(t, PolTiming.BEF_DECR) == a.pols_if(t)
+        assert a.pols_if_at(t, PolTiming.BEF_LAPSE) == pytest.approx(
             a.pols_if(t) * (1 - a.mort_rate_mth(t)), rel=1e-14)
         assert a.pols_lapse(t) == pytest.approx(
-            a.pols_if_at(t, "BEF_LAPSE") * a.lapse_rate_mth(t), rel=1e-14)
-        assert a.pols_if_at(t, "AFT_DECR") == pytest.approx(a.pols_if(t + 1), rel=1e-14)
+            a.pols_if_at(t, PolTiming.BEF_LAPSE) * a.lapse_rate_mth(t), rel=1e-14)
+        assert a.pols_if_at(t, PolTiming.AFT_DECR) == pytest.approx(a.pols_if(t + 1), rel=1e-14)
 
 
 def test_the_survivorship_rollforward_is_carried_separately(individual_annuity):
@@ -1248,7 +1249,7 @@ def test_the_guaranteed_instalments_sum_to_the_promised_total(individual_annuity
         if p.commute_rate() > 0.0:
             continue                       # the commuted contract pays no instalments
         n = p.annuitisation_t()
-        guaranteed = (p.payout_term_y() if p.payout_form() == "certain"
+        guaranteed = (p.payout_term_y() if p.payout_form() == PayoutForm.certain
                       else p.guar_term_y())
         # one instalment a policy year, in the anniversary months, and nothing between
         total = sum(p.annuity_pp(t) for t in range(n, n + 12 * guaranteed))
@@ -1277,22 +1278,22 @@ def test_the_mortality_tables_are_still_the_shipped_construction(individual_annu
     for (table, sex), anchors in PUBLISHED_ANCHORS.items():
         p = by_sex[sex]
         for age, rate in anchors.items():
-            assert p.mort_rate_at_age(table, age) == pytest.approx(rate, abs=5e-12)
+            assert p.mort_rate_at_age(MortTable[table], age) == pytest.approx(rate, abs=5e-12)
 
     # The graduation between two anchors is log-linear and rounded to five decimals, so
     # every non-anchor age is rebuildable from the two that bracket it.
     a = by_sex["M"]
-    ages = a.mort_anchor_ages("death_cover_2018")
+    ages = a.mort_anchor_ages(MortTable.death_cover_2018)
     for x in range(min(ages), max(ages)):
         if x in ages:
             continue
         lo = max(v for v in ages if v < x)
         hi = min(v for v in ages if v > x)
         expected = round(math.exp(
-            math.log(a.mort_rate_at_age("death_cover_2018", lo))
-            + (x - lo) / (hi - lo) * (math.log(a.mort_rate_at_age("death_cover_2018", hi))
-                                      - math.log(a.mort_rate_at_age("death_cover_2018", lo)))), 5)
-        assert a.mort_rate_at_age("death_cover_2018", x) == pytest.approx(
+            math.log(a.mort_rate_at_age(MortTable.death_cover_2018, lo))
+            + (x - lo) / (hi - lo) * (math.log(a.mort_rate_at_age(MortTable.death_cover_2018, hi))
+                                      - math.log(a.mort_rate_at_age(MortTable.death_cover_2018, lo)))), 5)
+        assert a.mort_rate_at_age(MortTable.death_cover_2018, x) == pytest.approx(
             expected, abs=5e-12), f"age {x}"
 
 
@@ -1312,17 +1313,17 @@ def test_the_life_annuity_election_off_and_on(individual_annuity, jp_annuity_anc
     the terminal age.  The ``+ 1`` is the count, not an off-by-one in the index.
     """
     a = jp_annuity_anchor
-    assert a.payout_form() == "certain"
+    assert a.payout_form() == PayoutForm.certain
     assert a.proj_len() == 12 * (a.annuitisation_y() + a.payout_term_y())
 
     p = individual_annuity.Projection[9]
     n, g = p.annuitisation_t(), p.guar_term_y()
-    assert p.payout_form() == "life_guar"
-    assert p.proj_years() == p.omega_age("annuity_payout_2007") - p.issue_age() + 1 == 93
+    assert p.payout_form() == PayoutForm.life_guar
+    assert p.proj_years() == p.omega_age(MortTable.annuity_payout_2007) - p.issue_age() + 1 == 93
     # the frame stops at the FIRST MONTH of the terminal-age year, where q is 1
-    assert p.proj_len() == 12 * (p.omega_age("annuity_payout_2007") - p.issue_age()) + 1
+    assert p.proj_len() == 12 * (p.omega_age(MortTable.annuity_payout_2007) - p.issue_age()) + 1
     assert len(p.result_cf()) == p.proj_len()
-    assert p.age(p.proj_len() - 1) == p.omega_age("annuity_payout_2007")
+    assert p.age(p.proj_len() - 1) == p.omega_age(MortTable.annuity_payout_2007)
     for t in range(n, n + 12 * g):
         assert p.pols_if(t) == p.pols_if(n)          # unconditional over the guarantee
     for j in range(g):
@@ -1337,15 +1338,15 @@ def test_the_life_annuity_election_off_and_on(individual_annuity, jp_annuity_anc
     # best-estimate factor: it is a pricing basis.
     i = p.int_rate_payout()
     total, surv, j = 0.0, 1.0, 0
-    a0, omega = p.annuity_start_age(), p.omega_age("annuity_payout_2007")
+    a0, omega = p.annuity_start_age(), p.omega_age(MortTable.annuity_payout_2007)
     while a0 + j <= omega:
         total += max(1.0 if j < g else 0.0, surv) / (1 + i) ** j
-        surv *= 1 - p.mort_rate_at_age("annuity_payout_2007", a0 + j)
+        surv *= 1 - p.mort_rate_at_age(MortTable.annuity_payout_2007, a0 + j)
         j += 1
     assert p.annuity_due_life_factor() == pytest.approx(total, rel=1e-14)
 
     other = individual_annuity.Projection[4]
-    assert other.payout_form() == "life_guar"
+    assert other.payout_form() == PayoutForm.life_guar
     assert other.annuity_due_life_factor() == pytest.approx(19.013626, abs=5e-7)
     assert other.annuity_amount_pp() == 342_300.0
 
@@ -1366,11 +1367,11 @@ def test_commutation_off_and_on(individual_annuity, jp_annuity_anchor):
     assert p.commute_rate() == 1.0
     assert p.pols_commute(n) == pytest.approx(p.pols_if(n), rel=1e-14)
     assert all(p.pols_commute(t) == 0.0 for t in range(0, p.proj_len()) if t != n)
-    assert p.claims(n, "COMMUTATION") == pytest.approx(
+    assert p.claims(n, Kind.COMMUTATION) == pytest.approx(
         p.commute_value_pp() * p.pols_if(n), abs=1e-6)
-    assert p.claims(n, "ANNUITY") == 0.0
+    assert p.claims(n, Kind.ANNUITY) == 0.0
     assert p.pols_if(n + 1) == 0.0
-    assert all(p.claims(t, "ANNUITY") == 0.0 for t in range(n, p.proj_len()))
+    assert all(p.claims(t, Kind.ANNUITY) == 0.0 for t in range(n, p.proj_len()))
     assert p.check_pols_roll_fwd() is True
     # The composite artefact is visible at this point too: the lump sum beats the fund.
     assert p.commute_value_pp() > p.annuity_fund_pp()
@@ -1471,7 +1472,7 @@ def test_the_dynamic_lapse_module_off_and_on(
         capped = model.Projection[1]
         assert capped.lapse_dyn_factor(0) == 2.0     # 1 + 20 x 0.19, capped
         assert capped.lapse_rate(0) == pytest.approx(0.12, rel=1e-14)
-        assert capped.lapse_rate_mean("count") > a.lapse_rate_mean("count")
+        assert capped.lapse_rate_mean(Weighting.count) > a.lapse_rate_mean(Weighting.count)
     finally:
         model.close()
 
@@ -1500,7 +1501,7 @@ def test_no_tail_states_on_the_certain_form(jp_annuity_anchor):
     assert a.pols_if(a.proj_len()) == 0.0
     assert a.pols_maturity(last_row) == pytest.approx(a.pols_if(last_row), rel=1e-14)
     assert all(a.pols_maturity(t) == 0.0 for t in range(0, last_row))
-    assert a.claims(last_row) == 0.0                 # expiry pays nothing
+    assert a.claims(last_row, Kind.ALL) == 0.0                 # expiry pays nothing
     assert a.net_cf(last_row) == pytest.approx(-a.expenses(last_row), abs=1e-9)
 
 
@@ -1551,10 +1552,10 @@ def test_there_is_no_maturity_benefit(individual_annuity, jp_annuity_anchor):
     a = jp_annuity_anchor
     last = a.proj_len() - 1
     assert a.pols_maturity(last) > 0.0
-    assert a.claims(last) == 0.0
+    assert a.claims(last, Kind.ALL) == 0.0
     n, k = a.annuitisation_t(), a.payout_term_y()
-    assert a.claims(n + 12 * (k - 1)) == pytest.approx(
-        a.claims(n + 12 * (k - 1), "ANNUITY"), abs=YEN)
+    assert a.claims(n + 12 * (k - 1), Kind.ALL) == pytest.approx(
+        a.claims(n + 12 * (k - 1), Kind.ANNUITY), abs=YEN)
 
 
 def test_premium_income_stops_at_payment_end_and_never_returns(individual_annuity):
@@ -1593,7 +1594,7 @@ def test_the_zero_deferral_gap_is_a_valid_model_point(individual_annuity):
     assert p.annuity_start_age() == 60
     assert p.premiums(168) > 0.0                 # the last premium month ...
     assert p.lapse_rate(168) == 0.0              # ... is inside the year lapse stops
-    assert p.claims(180, "ANNUITY") > 0.0
+    assert p.claims(180, Kind.ANNUITY) > 0.0
     assert p.check_pols_roll_fwd() is True and p.check_fund() is True
 
 
@@ -1629,22 +1630,22 @@ def test_the_female_basis_is_sourced_on_one_table_and_a_setback_on_the_other(
     """
     male = individual_annuity.Projection[1]
     female = individual_annuity.Projection[8]
-    assert male.sex() == "M" and female.sex() == "F"
-    for table in ("death_cover_2018", "annuity_payout_2007"):
+    assert male.sex() == Sex.M and female.sex() == Sex.F
+    for table in (MortTable.death_cover_2018, MortTable.annuity_payout_2007):
         assert female.omega_age(table) == male.omega_age(table) + 4
         # The female rate at a given age is the lighter of the two on both tables.
         assert female.mort_rate_at_age(table, 70) < male.mort_rate_at_age(table, 70)
 
     # The payout table really is a setback ...
     for age in (60, 80, 100):
-        assert female.mort_rate_at_age(SETBACK_TABLE, age + 4) == pytest.approx(
-            male.mort_rate_at_age(SETBACK_TABLE, age), rel=1e-12)
+        assert female.mort_rate_at_age(MortTable.annuity_payout_2007, age + 4) == pytest.approx(
+            male.mort_rate_at_age(MortTable.annuity_payout_2007, age), rel=1e-12)
     # ... and the death-cover table is not.
     for age, rate in PUBLISHED_ANCHORS[("death_cover_2018", "F")].items():
-        assert female.mort_rate_at_age("death_cover_2018", age) == pytest.approx(
+        assert female.mort_rate_at_age(MortTable.death_cover_2018, age) == pytest.approx(
             rate, abs=5e-12)
-        assert female.mort_rate_at_age("death_cover_2018", age + 4) != pytest.approx(
-            male.mort_rate_at_age("death_cover_2018", age), rel=1e-6)
+        assert female.mort_rate_at_age(MortTable.death_cover_2018, age + 4) != pytest.approx(
+            male.mort_rate_at_age(MortTable.death_cover_2018, age), rel=1e-6)
 
 
 def test_the_model_rejects_an_inconsistent_annuity_start_age(tmp_path):

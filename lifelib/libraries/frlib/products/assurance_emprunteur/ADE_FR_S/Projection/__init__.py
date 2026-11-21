@@ -339,10 +339,7 @@ def sex():
     retrieved, so a column the shipped tables cannot serve would produce model points
     that do not project.
     """
-    v = model_point()["sex"]
-    if v not in ("M", "F"):
-        raise ValueError("invalid sex")
-    return v
+    return Sex[model_point()["sex"]]
 
 
 def capital_initial():
@@ -389,10 +386,7 @@ def quotite():
 
 def premium_basis():
     """``capital_initial`` (a level rate) or ``capital_restant_du`` (a rate on the CRD)."""
-    v = model_point()["premium_basis"]
-    if v not in ("capital_initial", "capital_restant_du"):
-        raise ValueError("invalid premium_basis")
-    return v
+    return PremiumBasis[model_point()["premium_basis"]]
 
 
 def premium_rate_annual():
@@ -408,10 +402,7 @@ def premium_rate_annual():
 
 def indemnity_basis():
     """``forfaitaire`` (the *echeance* outright) or ``indemnitaire`` (capped at income loss)."""
-    v = model_point()["indemnity_basis"]
-    if v not in ("forfaitaire", "indemnitaire"):
-        raise ValueError("invalid indemnity_basis")
-    return v
+    return IndemnityBasis[model_point()["indemnity_basis"]]
 
 
 def income_loss_ratio():
@@ -431,7 +422,7 @@ def indemnity_ratio():
     One ratio in one place, so *indemnitaire* is the same benefit formula with IR below 1
     and never a second expression that can drift from the *forfaitaire* leg.
     """
-    return 1.0 if indemnity_basis() == "forfaitaire" else income_loss_ratio()
+    return 1.0 if indemnity_basis() == IndemnityBasis.forfaitaire else income_loss_ratio()
 
 
 def franchise_days():
@@ -480,10 +471,7 @@ def ipt_benefit_basis():
     triggers one payment of ``crd(t + 1) x quotite`` and leaves the model, exactly as a death
     does, so :func:`pols_ipt_close` is zero throughout.
     """
-    v = model_point()["ipt_benefit_basis"]
-    if v not in ("echeance", "crd"):
-        raise ValueError("invalid ipt_benefit_basis")
-    return v
+    return IptBenefitBasis[model_point()["ipt_benefit_basis"]]
 
 
 def deces_end_age():
@@ -514,10 +502,7 @@ def status():
     end of the loan is the disabled-life annuity a claims-in-payment reserve is quoted as,
     with the post-recovery active phase carried as well.
     """
-    v = model_point()["status"]
-    if v not in ("healthy", "itt", "ipt"):
-        raise ValueError("invalid status")
-    return v
+    return Status[model_point()["status"]]
 
 
 def claim_duration_months():
@@ -657,6 +642,11 @@ def cover_itt(t):
 
 # -- Decrement rates ---------------------------------------------------------
 
+def mort_schedule():
+    """The healthy-life mortality rates at the policy's sex, by pivot age."""
+    return data.mort_table().loc[sex()]                              # noqa: F821
+
+
 def mort_rate(t):
     """The **healthy-life** annual mortality rate at the attained age.
 
@@ -668,15 +658,14 @@ def mort_rate(t):
     :func:`mort_rate_ipt`; reading either out of this cells is the mistake the naming is
     there to prevent.
     """
-    sub = data.mort_table().loc[sex()]                               # noqa: F821
-    ages = sorted(int(a) for a in sub.index)
+    sub = mort_schedule()
     x = age(t)
-    if x <= ages[0]:
-        return float(sub.loc[ages[0], "mort_rate"])
-    if x >= ages[-1]:
-        return float(sub.loc[ages[-1], "mort_rate"])
-    lo = max(a for a in ages if a <= x)
-    hi = min(a for a in ages if a > x)
+    if x <= int(sub.index[0]):
+        return float(sub.loc[int(sub.index[0]), "mort_rate"])
+    if x >= int(sub.index[-1]):
+        return float(sub.loc[int(sub.index[-1]), "mort_rate"])
+    lo = int(sub.index.asof(x))
+    hi = int(sub.index[sub.index.searchsorted(x, side="right")])
     r_lo = float(sub.loc[lo, "mort_rate"])
     r_hi = float(sub.loc[hi, "mort_rate"])
     return r_lo + (r_hi - r_lo) * (x - lo) / (hi - lo)
@@ -708,6 +697,11 @@ def ptia_rate_mth(t):
     return 1.0 - (1.0 - ptia_rate(t)) ** (1.0 / 12.0)
 
 
+def itt_inception_schedule():
+    """The ITT inception rates at the policy's sex, by pivot age."""
+    return data.itt_inception_table().loc[sex()]                     # noqa: F821
+
+
 def itt_inception_rate(t):
     """The annual ITT **claim payment** inception rate out of ``healthy``.
 
@@ -720,16 +714,15 @@ def itt_inception_rate(t):
     state of its own.  Every value is **[std]**: nothing in the retrieved corpus gives a
     French ITT inception rate.
     """
-    sub = data.itt_inception_table().loc[sex()]                      # noqa: F821
-    ages = sorted(int(a) for a in sub.index)
+    sub = itt_inception_schedule()
     x = age(t)
-    if x <= ages[0]:
-        r = float(sub.loc[ages[0], "itt_inception_rate"])
-    elif x >= ages[-1]:
-        r = float(sub.loc[ages[-1], "itt_inception_rate"])
+    if x <= int(sub.index[0]):
+        r = float(sub.loc[int(sub.index[0]), "itt_inception_rate"])
+    elif x >= int(sub.index[-1]):
+        r = float(sub.loc[int(sub.index[-1]), "itt_inception_rate"])
     else:
-        lo = max(a for a in ages if a <= x)
-        hi = min(a for a in ages if a > x)
+        lo = int(sub.index.asof(x))
+        hi = int(sub.index[sub.index.searchsorted(x, side="right")])
         r_lo = float(sub.loc[lo, "itt_inception_rate"])
         r_hi = float(sub.loc[hi, "itt_inception_rate"])
         r = r_lo + (r_hi - r_lo) * (x - lo) / (hi - lo)
@@ -949,14 +942,13 @@ def crd_rate(t):
     matches the level 0.84 % scale to about 0.11 %.
     """
     tbl = data.crd_rate_table()                                      # noqa: F821
-    ages = sorted(int(a) for a in tbl.index)
     x = age(t)
-    if x <= ages[0]:
-        return float(tbl.loc[ages[0], "crd_rate"])
-    if x >= ages[-1]:
-        return float(tbl.loc[ages[-1], "crd_rate"])
-    lo = max(a for a in ages if a <= x)
-    hi = min(a for a in ages if a > x)
+    if x <= int(tbl.index[0]):
+        return float(tbl.loc[int(tbl.index[0]), "crd_rate"])
+    if x >= int(tbl.index[-1]):
+        return float(tbl.loc[int(tbl.index[-1]), "crd_rate"])
+    lo = int(tbl.index.asof(x))
+    hi = int(tbl.index[tbl.index.searchsorted(x, side="right")])
     r_lo = float(tbl.loc[lo, "crd_rate"])
     r_hi = float(tbl.loc[hi, "crd_rate"])
     return r_lo + (r_hi - r_lo) * (x - lo) / (hi - lo)
@@ -977,7 +969,7 @@ def prem_pp(t):
     CRD basis rises from EUR 125.33 in year 1 to EUR 164.03 in year 10 before falling to
     EUR 31.65 in year 20, because the attained-age rate climbs faster than the CRD falls.
     """
-    if premium_basis() == "capital_initial":
+    if premium_basis() == PremiumBasis.capital_initial:
         return capital_initial() * quotite() * premium_rate_annual() / 12.0
     return crd(12 * (policy_year(t) - 1)) * quotite() * crd_rate(t) / 12.0
 
@@ -1016,15 +1008,16 @@ def itt_cohorts_raw(t):
     if t < 0 or t > proj_len():
         return [0.0] * n
     if t == 0:
-        if status() != "itt":
+        if status() != Status.itt:
             return [0.0] * n
         seed = min(claim_duration_months(), n - 1)
         return [pols_if_init() if z == seed else 0.0 for z in range(n)]
     prev = itt_cohorts(t - 1)
     surv = itt_rate_vectors()[3]
-    out = [pols_itt_inception(t - 1)]
+    out = [0.0] * n
+    out[0] = pols_itt_inception(t - 1)
     for z in range(1, n):
-        out.append(prev[z - 1] * surv[z - 1])
+        out[z] = prev[z - 1] * surv[z - 1]
     return out
 
 
@@ -1082,7 +1075,7 @@ def pols_ipt_raw(t):
     if t < 0 or t > proj_len():
         return 0.0
     if t == 0:
-        return pols_if_init() if status() == "ipt" else 0.0
+        return pols_if_init() if status() == Status.ipt else 0.0
     return pols_ipt_close(t - 1)
 
 
@@ -1119,7 +1112,7 @@ def pols_healthy(t):
     if t < 0 or t >= proj_len():
         return 0.0
     if t == 0:
-        return pols_if_init() if status() == "healthy" else 0.0
+        return pols_if_init() if status() == Status.healthy else 0.0
     return (pols_healthy_close(t - 1)
             + pols_itt_transfer(t) + pols_ipt_transfer(t))
 
@@ -1294,7 +1287,7 @@ def pols_ipt_capital(t):
     gone, exactly as a death is.  The cells exists so that :func:`check_states` closes on
     both bases without a special case.
     """
-    return pols_ipt_entry(t) if ipt_benefit_basis() == "crd" else 0.0
+    return pols_ipt_entry(t) if ipt_benefit_basis() == IptBenefitBasis.crd else 0.0
 
 
 def pols_healthy_close(t):
@@ -1328,7 +1321,7 @@ def pols_ipt_close(t):
     """
     if t < 0 or t >= proj_len():
         return 0.0
-    if ipt_benefit_basis() == "crd":
+    if ipt_benefit_basis() == IptBenefitBasis.crd:
         return 0.0
     return pols_ipt_stay(t) + pols_ipt_entry(t)
 
@@ -1358,9 +1351,9 @@ def pols_if_at(t, timing):
     The intermediate points of the other models have no single-population meaning here,
     because four states are moving at once; the ``pols_*`` cells expose them instead.
     """
-    if timing == "BEF_DECR":
+    if timing == PolTiming.BEF_DECR:
         return pols_if(t)
-    if timing == "AFT_DECR":
+    if timing == PolTiming.AFT_DECR:
         if t < 0 or t >= proj_len() - 1:
             return 0.0
         return pols_if(t + 1)
@@ -1424,7 +1417,7 @@ def benefit_itt_pp():
     return echeance() * quotite() * indemnity_ratio() * claim_admission  # noqa: F821
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Benefit outgo in month t, by kind; the total when kind is omitted.
 
     ``"DEATH"``
@@ -1456,22 +1449,22 @@ def claims(t, kind=None):
     The two zero kinds are published rather than omitted so that the product facts are
     stated instead of inferred from a missing column.
     """
-    if kind is None:
+    if kind == Kind.ALL:
         return sum(claims(t, k) for k in
-                   ("DEATH", "PTIA", "ITT", "IPT", "LAPSE", "MATURITY"))
-    if kind == "DEATH":
+                   (Kind.DEATH, Kind.PTIA, Kind.ITT, Kind.IPT, Kind.LAPSE, Kind.MATURITY))
+    if kind == Kind.DEATH:
         deaths = pols_death_healthy(t) + pols_itt_death(t) + pols_ipt_death(t)
         return benefit_deces_pp(t) * deaths * cover_deces(t)
-    if kind == "PTIA":
+    if kind == Kind.PTIA:
         return benefit_deces_pp(t) * pols_ptia(t)
-    if kind == "ITT":
+    if kind == Kind.ITT:
         return benefit_itt_pp() * pols_itt_stay(t)
-    if kind == "IPT":
-        if ipt_benefit_basis() == "echeance":
+    if kind == Kind.IPT:
+        if ipt_benefit_basis() == IptBenefitBasis.echeance:
             return benefit_itt_pp() * (pols_ipt_stay(t) + pols_itt_to_ipt(t))
         return (benefit_deces_pp(t) * pols_ipt_capital(t)
                 * claim_admission)                                   # noqa: F821
-    if kind in ("LAPSE", "MATURITY"):
+    if kind in (Kind.LAPSE, Kind.MATURITY):
         return 0.0
     raise ValueError("invalid kind")
 
@@ -1506,7 +1499,7 @@ def liability_cf(t):
     that orientation in the technical notes.  It is published verbatim so that the notes
     and the model can be compared line by line, and :func:`net_cf` is its negative.
     """
-    return claims(t) + expenses(t) - premiums(t)
+    return claims(t, Kind.ALL) + expenses(t) - premiums(t)
 
 
 def net_cf(t):
@@ -1615,9 +1608,9 @@ def check_benefit_split_resid(t):
     mis-indexed duration shift moves one and not the other.  It also catches paying the
     ITT to IPT movers twice, or not at all, and paying a claim in the month it incepts.
     """
-    paid = claims(t, "ITT")
-    if ipt_benefit_basis() == "echeance":
-        paid = paid + claims(t, "IPT")
+    paid = claims(t, Kind.ITT)
+    if ipt_benefit_basis() == IptBenefitBasis.echeance:
+        paid = paid + claims(t, Kind.IPT)
         mass = (pols_itt_close(t) - pols_itt_inception(t)
                 + pols_ipt_close(t) + pols_cap_return(t))
     else:
@@ -1647,7 +1640,7 @@ def check_cover_end_resid(t):
     """
     if cover_itt(t):
         return 0.0
-    return claims(t, "ITT") + claims(t, "IPT") + pols_itt(t) + pols_ipt(t)
+    return claims(t, Kind.ITT) + claims(t, Kind.IPT) + pols_itt(t) + pols_ipt(t)
 
 
 def check_cover_end():
@@ -1685,7 +1678,7 @@ def pv_premiums():
                for t in range(proj_len()))
 
 
-def pv_claims(kind=None):
+def pv_claims(kind):
     """The present value of benefit outgo, by kind; the total when kind is omitted.
 
     On the anchor cell: Décès 7 170.56, PTIA 635.87, ITT 1 932.71 and IPT 1 293.18, so
@@ -1710,7 +1703,7 @@ def pv_outgo():
 
     EUR 11 366.49 on the anchor cell against EUR 12 602.19 of premium, a margin of 9.81 %.
     """
-    return pv_claims() + pv_expenses()
+    return pv_claims(Kind.ALL) + pv_expenses()
 
 
 # -- Result tables -----------------------------------------------------------
@@ -1734,12 +1727,12 @@ def result_cf():
             "pols_ipt": [pols_ipt(t) for t in ts],
             "crd": [crd(t + 1) for t in ts],
             "premiums": [premiums(t) for t in ts],
-            "claims_death": [claims(t, "DEATH") for t in ts],
-            "claims_ptia": [claims(t, "PTIA") for t in ts],
-            "claims_itt": [claims(t, "ITT") for t in ts],
-            "claims_ipt": [claims(t, "IPT") for t in ts],
-            "claims_lapse": [claims(t, "LAPSE") for t in ts],
-            "claims_maturity": [claims(t, "MATURITY") for t in ts],
+            "claims_death": [claims(t, Kind.DEATH) for t in ts],
+            "claims_ptia": [claims(t, Kind.PTIA) for t in ts],
+            "claims_itt": [claims(t, Kind.ITT) for t in ts],
+            "claims_ipt": [claims(t, Kind.IPT) for t in ts],
+            "claims_lapse": [claims(t, Kind.LAPSE) for t in ts],
+            "claims_maturity": [claims(t, Kind.MATURITY) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "liability_cf": [liability_cf(t) for t in ts],
             "net_cf": [net_cf(t) for t in ts],
@@ -1812,3 +1805,17 @@ inflation_rate = 0.018
 disc_rate = 0.025
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+PremiumBasis = ("Pickle", 2)
+
+IndemnityBasis = ("Pickle", 3)
+
+IptBenefitBasis = ("Pickle", 4)
+
+Status = ("Pickle", 5)
+
+PolTiming = ("Pickle", 6)
+
+Kind = ("Pickle", 7)

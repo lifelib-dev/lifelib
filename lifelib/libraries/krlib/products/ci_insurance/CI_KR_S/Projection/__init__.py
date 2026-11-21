@@ -171,7 +171,7 @@ l1(t, s)                   pols_if_ci_at(t, s)                 Post-CI, by cohor
 lp(t)                      pols_if_pay(t)                      In force and paying
 (waived)                   pols_waived(t)                      Waived on 장해 50%+
 C(t)                       pols_ci(t)                          CI accelerations in month t
-C(t, s)                    pols_ci_in(t, s)                    Entrants into cohort s
+C(t, b)                    pols_ci_in(t, basis)                Claims of month t on basis b
 (entrants)                 ci_cohort_entrants(s)               Cohort s at its entry month
 D(t)                       pols_death(t)                       Pre-CI deaths in month t
 D'(t)                      pols_death_ci(t)                    Post-CI deaths in month t
@@ -360,10 +360,7 @@ def sex():
     incidence where the female rates are far below the male ones, and by the savings
     element, which is sex-neutral.
     """
-    v = model_point()["sex"]
-    if v not in ("M", "F"):
-        raise ValueError("invalid sex")
-    return v
+    return Sex[model_point()["sex"]]
 
 
 def age_at_entry():
@@ -566,10 +563,7 @@ def first_year_scope():
     The modelling consequence is real — it requires the 중대한 암 incidence to be split
     into a breast component and the rest, which :func:`breast_share` supplies.
     """
-    v = model_point()["first_year_scope"]
-    if v not in ("breast", "all"):
-        raise ValueError("invalid first_year_scope")
-    return v
+    return FirstYearScope[model_point()["first_year_scope"]]
 
 
 def breast_share():
@@ -586,7 +580,7 @@ def breast_share():
     quantity used here is a *share* of one age's incidence, which is first-order
     insensitive to the half-year shift, and no adjustment is made **[std]**.
     """
-    return breast_share_f if sex() == "F" else breast_share_m        # noqa: F821
+    return breast_share_f if sex() == Sex.F else breast_share_m        # noqa: F821
 
 
 def lapse_basis():
@@ -606,10 +600,7 @@ def lapse_basis():
     profitability, and the resulting switching raised observed 표준형 lapse, which was fed
     back into the 무해지 assumption — 「악순환」 [REG-R27].
     """
-    v = model_point()["lapse_basis"]
-    if v not in ("log_linear", "table"):
-        raise ValueError("invalid lapse_basis")
-    return v
+    return LapseBasis[model_point()["lapse_basis"]]
 
 
 def mort_be_factor():
@@ -715,7 +706,7 @@ def omega_age():
     whole-life contract to 100 truncates the liability and projecting to 120 invents one.
     """
     tbl = data.mort_table().loc[sex()]                               # noqa: F821
-    return int(tbl.index[tbl["mort_rate"] >= 1.0][0])
+    return int([a for a in tbl.index if tbl.loc[a, "mort_rate"] >= 1.0][0])
 
 
 def proj_years():
@@ -973,11 +964,11 @@ def ci_wait_share(t):
         return 0.0
     y = age(t)
     total = 0.0
-    for cause in ("cancer", "ami", "stroke", "other", "ltc"):
+    for cause in (Cause.cancer, Cause.ami, Cause.stroke, Cause.other, Cause.ltc):
         total = total + ci_rate_at_age(y, cause)
     if total <= 0.0:
         return 0.0
-    return (ci_rate_at_age(y, "cancer") + ci_rate_at_age(y, "ltc")) / total
+    return (ci_rate_at_age(y, Cause.cancer) + ci_rate_at_age(y, Cause.ltc)) / total
 
 
 def ci_rate_base(t):
@@ -1000,7 +991,7 @@ def ci_rate_base(t):
         return 0.0
     y = age(t)
     total = 0.0
-    for cause in ("cancer", "ami", "stroke", "other", "ltc"):
+    for cause in (Cause.cancer, Cause.ami, Cause.stroke, Cause.other, Cause.ltc):
         total = total + ci_rate_at_age(y, cause)
     return min(1.0, total)
 
@@ -1074,7 +1065,7 @@ def ci_reduced_share(t):
     """
     if t < 0 or t >= 12 or first_year_factor >= 1.0:                 # noqa: F821
         return 0.0
-    if first_year_scope() == "all":
+    if first_year_scope() == FirstYearScope.all:
         return 1.0
     base = ci_rate_mth_base(t)
     if base <= 0.0:
@@ -1084,12 +1075,12 @@ def ci_reduced_share(t):
         return 0.0
     y = age(t)
     total = 0.0
-    for cause in ("cancer", "ami", "stroke", "other", "ltc"):
+    for cause in (Cause.cancer, Cause.ami, Cause.stroke, Cause.other, Cause.ltc):
         total = total + ci_rate_at_age(y, cause)
     if total <= 0.0:
         return 0.0
     mth = 1.0 - (1.0 - q) ** (1.0 / 12.0)
-    cancer = (mth * ci_rate_at_age(y, "cancer") / total
+    cancer = (mth * ci_rate_at_age(y, Cause.cancer) / total
               * ci_wait_factor_mth(t))
     return min(1.0, breast_share() * cancer / base)
 
@@ -1122,7 +1113,7 @@ def lapse_rate_ult():
     post-완납 rate for 무·저해지 business [REG-R27]; the table's own tail otherwise, read at
     the first month after 납입완료.  Annual, like everything in the table.
     """
-    if lapse_basis() == "log_linear":
+    if lapse_basis() == LapseBasis.log_linear:
         return lapse_post_paidup                                     # noqa: F821
     return lapse_rate_base(prem_period_mths())
 
@@ -1148,7 +1139,7 @@ def lapse_rate(t):
     that value is **suppressed** during the 납입기간, which is precisely why early
     surrender on this form is assumed low.
     """
-    if lapse_basis() != "log_linear":
+    if lapse_basis() != LapseBasis.log_linear:
         return min(1.0, lapse_rate_base(t))
     m = prem_end()
     y = policy_year(t) - 1
@@ -1609,6 +1600,9 @@ def resid_db_pp(t, s):
     return max(resid_nominal_pp(s), resid_floor_mult() * pol_val_pp(t))
 
 
+_is_cached = False
+
+
 def resid_nom_min_pp(t):
     """The smallest nominal residual carried by any cohort live at the start of month t.
 
@@ -1664,7 +1658,7 @@ def resid_nom_total_pp(t):
         1.0 - lapse_rate_ci_mth(t - 1))
     entrants = 0.0
     for s in (t, -t):
-        entrants = entrants + pols_ci_in(t - 1, s) * resid_nominal_pp(s)
+        entrants = entrants + ci_cohort_entrants(s) * resid_nominal_pp(s)
     return prev + entrants
 
 
@@ -1838,20 +1832,23 @@ def pols_ci(t):
     return pols_if_pre(t) * ci_rate_mth(t)
 
 
-def pols_ci_in(t, s):
-    """C(t, s): accelerations in month t entering post-CI cohort s.
+def pols_ci_in(t, basis):
+    """C(t, b): accelerations in month t paid on claim basis b.
 
-    Cohort ``t + 1`` — the month-end at which the month's claims are paid — takes the
-    full-benefit claims of month ``t``; cohort ``-(t + 1)`` takes the reduced ones, and is
-    empty outside the twelve months of the first policy year.
+    The full-benefit claims of month ``t`` (``ClaimBasis.FULL``) enter cohort ``t + 1`` — the
+    month-end at which the month's claims are paid; the reduced ones (``ClaimBasis.REDUCED``)
+    enter cohort ``-(t + 1)``, and are empty outside the twelve months of the first policy year.
     """
     if t < 0 or t >= proj_len():
         return 0.0
-    if s < 0:
-        if t >= 12 or s != -(t + 1):
+    if basis == ClaimBasis.REDUCED:
+        if t >= 12:
             return 0.0
         return pols_ci(t) * ci_reduced_share(t)
-    return pols_ci(t) * (1.0 - ci_reduced_share(t)) if s == t + 1 else 0.0
+    elif basis == ClaimBasis.FULL:
+        return pols_ci(t) * (1.0 - ci_reduced_share(t))
+    else:
+        raise ValueError("invalid basis")
 
 
 def ci_cohort_entrants(s):
@@ -1863,7 +1860,7 @@ def ci_cohort_entrants(s):
     """
     if s == 0:
         return 0.0
-    return pols_ci_in(abs(s) - 1, s)
+    return pols_ci_in(abs(s) - 1, ClaimBasis.REDUCED if s < 0 else ClaimBasis.FULL)
 
 
 def ci_surv(t):
@@ -1903,6 +1900,9 @@ def pols_if_ci_at(t, s):
     if base <= 0.0:
         return 0.0
     return ci_cohort_entrants(s) * ci_surv(t) / base
+
+
+_is_cached = False
 
 
 def pols_if_ci(t):
@@ -1950,14 +1950,14 @@ def pols_if_at(t, timing):
         l(t + 1), the end-of-month state, and zero at ``proj_len() - 1`` because
         the table's terminal rate is 1 and nobody survives the final policy year.
     """
-    if timing == "BEF_DECR":
+    if timing == PolTiming.BEF_DECR:
         return pols_if(t)
-    if timing == "BEF_LAPSE":
+    if timing == PolTiming.BEF_LAPSE:
         return (pols_if_pre(t) * (1.0 - ci_rate_mth(t))
                 * (1.0 - mort_rate_mth(t))
                 + pols_ci(t)
                 + pols_if_ci(t) * (1.0 - mort_rate_ci_mth(t)))
-    if timing == "AFT_DECR":
+    if timing == PolTiming.AFT_DECR:
         return pols_if(t + 1)
     raise ValueError("invalid timing")
 
@@ -2020,7 +2020,7 @@ def premiums(t):
     return premium_mth_pp() * pols_if_pay(t)
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Benefit outgo in month t, by kind; the total when kind is omitted.
 
     Every payment here falls at the **end** of month ``t``, which is the month-end
@@ -2053,15 +2053,15 @@ def claims(t, kind=None):
     Every one of these is floored at zero: a loan can outgrow the surrender value and,
     given long enough, the residual, and none of them may produce a negative payment.
     """
-    if kind is None:
-        return (claims(t, "CI") + claims(t, "DEATH") + claims(t, "DEATH_CI")
-                + claims(t, "LAPSE") + claims(t, "LAPSE_CI"))
-    if kind == "CI":
-        return sum(pols_ci_in(t, s) * accel_benefit_pp(s)
+    if kind == Kind.ALL:
+        return (claims(t, Kind.CI) + claims(t, Kind.DEATH) + claims(t, Kind.DEATH_CI)
+                + claims(t, Kind.LAPSE) + claims(t, Kind.LAPSE_CI))
+    if kind == Kind.CI:
+        return sum(ci_cohort_entrants(s) * accel_benefit_pp(s)
                    for s in (t + 1, -(t + 1)))
-    if kind == "DEATH":
+    if kind == Kind.DEATH:
         return max(0.0, base_benefit_pp(t + 1) - loan_pp(t)) * pols_death(t)
-    if kind == "DEATH_CI":
+    if kind == Kind.DEATH_CI:
         n = pols_if_ci(t)
         if n <= 0.0:
             return 0.0
@@ -2075,9 +2075,9 @@ def claims(t, kind=None):
         return sum(pols_if_ci_at(t, s) * mort_rate_ci_mth(t)
                    * max(0.0, resid_db_pp(t + 1, s) - loan)
                    for s in ci_cohort_ids(t))
-    if kind == "LAPSE":
+    if kind == Kind.LAPSE:
         return max(0.0, cv_pp(t + 1) - loan_pp(t)) * pols_lapse(t)
-    if kind == "LAPSE_CI":
+    if kind == Kind.LAPSE_CI:
         return max(0.0, cv_pp_ci(t + 1) - loan_pp(t)) * pols_lapse_ci(t)
     raise ValueError("invalid kind")
 
@@ -2167,7 +2167,7 @@ def net_cf(t):
     front-loads that outgo**: on the anchor cell the CI benefit is paid a decade or more
     before the death benefit it accelerates.
     """
-    return (premiums(t) - claims(t) - claim_expenses(t) - expenses(t)
+    return (premiums(t) - claims(t, Kind.ALL) - claim_expenses(t) - expenses(t)
             - commissions(t))
 
 
@@ -2271,7 +2271,7 @@ def check_accel_complement_resid(t):
     """
     resid = 0.0
     for s in (t + 1, -(t + 1)):
-        if pols_ci_in(t, s) == 0.0:
+        if ci_cohort_entrants(s) == 0.0:
             continue
         base = base_benefit_pp(abs(s))
         resid = resid + (accel_benefit_pp(s) + resid_nominal_pp(s) - base)
@@ -2371,9 +2371,9 @@ def check_net_cf_resid(t):
     sixth kind added to :func:`claims` and left out of the statement shows up here rather
     than silently vanishing from it.
     """
-    return (net_cf(t) - premiums(t) + claims(t, "CI") + claims(t, "DEATH")
-            + claims(t, "DEATH_CI") + claims(t, "LAPSE")
-            + claims(t, "LAPSE_CI") + claim_expenses(t) + expenses(t)
+    return (net_cf(t) - premiums(t) + claims(t, Kind.CI) + claims(t, Kind.DEATH)
+            + claims(t, Kind.DEATH_CI) + claims(t, Kind.LAPSE)
+            + claims(t, Kind.LAPSE_CI) + claim_expenses(t) + expenses(t)
             + commissions(t))
 
 
@@ -2401,11 +2401,11 @@ def result_cf():
         {
             "pols_if": [pols_if(t) for t in ts],
             "premiums": [premiums(t) for t in ts],
-            "claims_ci": [claims(t, "CI") for t in ts],
-            "claims_death": [claims(t, "DEATH") for t in ts],
-            "claims_death_ci": [claims(t, "DEATH_CI") for t in ts],
-            "claims_lapse": [claims(t, "LAPSE") for t in ts],
-            "claims_lapse_ci": [claims(t, "LAPSE_CI") for t in ts],
+            "claims_ci": [claims(t, Kind.CI) for t in ts],
+            "claims_death": [claims(t, Kind.DEATH) for t in ts],
+            "claims_death_ci": [claims(t, Kind.DEATH_CI) for t in ts],
+            "claims_lapse": [claims(t, Kind.LAPSE) for t in ts],
+            "claims_lapse_ci": [claims(t, Kind.LAPSE_CI) for t in ts],
             "claim_expenses": [claim_expenses(t) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "commissions": [commissions(t) for t in ts],
@@ -2539,3 +2539,17 @@ val_tol = 1e-08
 math = ("Module", "math")
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+FirstYearScope = ("Pickle", 3)
+
+LapseBasis = ("Pickle", 4)
+
+Cause = ("Pickle", 2)
+
+PolTiming = ("Pickle", 5)
+
+Kind = ("Pickle", 6)
+
+ClaimBasis = ("Pickle", 7)

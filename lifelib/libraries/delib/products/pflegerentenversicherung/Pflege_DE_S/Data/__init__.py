@@ -143,8 +143,9 @@ def mort_table():
     rates a replacement must preserve.  In-care mortality is not tabulated: it is this
     rate's force multiplied by ``mort_mult`` from *care_table.csv*.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file, index_col=["sex", "age"])     # noqa: F821
+    frame = pd.read_csv(input_dir() / mort_table_file)               # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"])
 
 
 def incidence_table():
@@ -154,8 +155,9 @@ def incidence_table():
     active state for care; the grade actually entered is drawn from ``entry_share`` in
     *care_table.csv*, because entry is not uniformly at the lowest grade.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / incidence_file, index_col=["sex", "age"])      # noqa: F821
+    frame = pd.read_csv(input_dir() / incidence_file)                # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"])
 
 
 def care_table():
@@ -213,8 +215,9 @@ def expense_table():
     payment made) and ``expense_infl`` (annual).  All five levels are **[std]**; only the
     25 ‰ ceiling the first is set exactly at is cited.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / expense_file, index_col="item")                # noqa: F821
+    frame = pd.read_csv(input_dir() / expense_file)                  # noqa: F821
+    frame["item"] = [ExpenseItem[name] for name in frame["item"]]
+    return frame.set_index("item")
 
 
 def basis_table():
@@ -227,8 +230,9 @@ def basis_table():
     margins ``inc_margin``, ``det_margin``, ``rec_margin``, ``care_mort_margin`` and
     ``act_mort_margin``.  Only the *Rechnungszins* is cited; everything else is **[std]**.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / basis_file, index_col="param")                 # noqa: F821
+    frame = pd.read_csv(input_dir() / basis_file)                    # noqa: F821
+    frame["param"] = [BasisParam[name] for name in frame["param"]]
+    return frame.set_index("param")
 
 
 # ---------------------------------------------------------------------------
@@ -253,3 +257,9 @@ expense_file = "expense_table.csv"
 basis_file = "basis_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+BasisParam = ("Pickle", 2)
+
+ExpenseItem = ("Pickle", 3)

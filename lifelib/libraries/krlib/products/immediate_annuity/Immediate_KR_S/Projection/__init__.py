@@ -277,10 +277,7 @@ def shape():
     election is irrevocable, is priced into the basis and is a model point column rather
     than a rider, because the three are three different liabilities.
     """
-    v = str(model_point()["shape"])
-    if v not in ("life", "inheritance", "certain"):
-        raise ValueError("unknown payout shape: %s" % v)
-    return v
+    return Shape[model_point()["shape"]]
 
 
 def sex():
@@ -290,10 +287,7 @@ def sex():
     annuity reads a mortality table at all.  The other two shapes still carry the sex,
     because their death benefit is projected on the same table.
     """
-    v = str(model_point()["sex"])
-    if v not in ("M", "F"):
-        raise ValueError("unknown sex: %s" % v)
-    return v
+    return Sex[model_point()["sex"]]
 
 
 def age_at_entry():
@@ -372,10 +366,7 @@ def retention_basis():
     resources.  The switch is meaningful on the inheritance shape only and is ignored
     elsewhere.
     """
-    v = str(model_point()["retention_basis"])
-    if v not in ("as_designed", "as_ordered"):
-        raise ValueError("unknown retention basis: %s" % v)
-    return v
+    return RetentionBasis[model_point()["retention_basis"]]
 
 
 def crediting_basis():
@@ -387,7 +378,7 @@ def crediting_basis():
     duration; it is not a product a carrier sells, but it is the basis on which the anchor
     carrier publishes its 해약환급금 run, and it is what exercises the duration stepping.
     """
-    return str(model_point()["crediting_basis"])
+    return CreditingBasis[model_point()["crediting_basis"]]
 
 
 def lapse_rate(t):
@@ -406,7 +397,7 @@ def lapse_rate(t):
     over the whole final year rather than the final month is what makes the monthly grid's
     in-force reproduce the annual-step model's at every 계약해당일.
     """
-    if shape() == "life":
+    if shape() == Shape.life:
         return 0.0
     if t >= proj_len() - 12:
         return 0.0
@@ -537,6 +528,11 @@ def db_rate():
     return float(charge_basis()["db_rate"])
 
 
+def credit_schedule():
+    """The crediting table rows of the policy's crediting basis, by dur_from."""
+    return data.crediting_table().loc[crediting_basis()]             # noqa: F821
+
+
 def decl_rate():
     """i_d: the 공시이율 (*gongsi iyul*), the declared crediting rate.
 
@@ -550,14 +546,13 @@ def decl_rate():
     two carriers that publish one publish differently.  Any model that claims to derive a
     Korean declared rate is not defensible; this one exposes it.
     """
-    tbl = data.crediting_table()                                     # noqa: F821
-    rows = tbl[tbl["basis_id"] == crediting_basis()]
-    if len(rows) == 0:
+    rows = credit_schedule()
+    if len(rows.index) == 0:
         raise ValueError("no crediting basis %s" % crediting_basis())
-    values = set(round(float(v), 12) for v in rows["decl_rate"])
+    values = set(round(float(rows.loc[d, "decl_rate"]), 12) for d in rows.index)
     if len(values) != 1:
         raise ValueError("declared rate is not uniform within a basis")
-    return float(rows["decl_rate"].iloc[0])
+    return float(rows.loc[rows.index[0], "decl_rate"])
 
 
 def min_guar_rate(t):
@@ -573,12 +568,11 @@ def min_guar_rate(t):
     the fund, never a floor on the annuity, which is the substance of the whole 과소지급
     dispute.
     """
-    tbl = data.crediting_table()                                     # noqa: F821
+    sub = credit_schedule()
     y = t // 12
-    for _, row in tbl.iterrows():
-        if (str(row["basis_id"]) == crediting_basis()
-                and int(row["dur_from"]) <= y < int(row["dur_to"])):
-            return float(row["min_guar_rate"])
+    lo = sub.index.asof(y)
+    if y < int(sub.loc[lo, "dur_to"]):
+        return float(sub.loc[lo, "min_guar_rate"])
     raise ValueError("no 최저보증이율 band for basis %s at t = %s"
                      % (crediting_basis(), t))
 
@@ -676,7 +670,7 @@ def maturity_benefit():
     ``V(0)`` by the whole first-day deduction is the entire mechanic of the retention, and
     of the dispute about it.
     """
-    return prem_pp() if shape() == "inheritance" else 0.0
+    return prem_pp() if shape() == Shape.inheritance else 0.0
 
 
 def annuity_factor_certain(m, i):
@@ -731,7 +725,7 @@ def annuity_factor():
     Defined on the life shape alone, and raises elsewhere: 「확정형과 상속형은 사망률을
     사용하지 않는다」.
     """
-    if shape() != "life":
+    if shape() != Shape.life:
         raise ValueError("only 종신연금형 converts the fund through an annuity factor")
     j = crediting_rate_mth(0)
     v = 1.0 / (1.0 + j)
@@ -751,7 +745,7 @@ def retention_pp(t):
     This is the term that was written into the 산출방법서 and not into the 약관, and the
     whole of 조정결정 제2017-17호 is about whether it is part of the contract.
     """
-    if shape() != "inheritance" or retention_basis() == "as_ordered":
+    if shape() != Shape.inheritance or retention_basis() == RetentionBasis.as_ordered:
         return 0.0
     return ((maturity_benefit() - av_pp(t))
             / accum_factor(annuity_term_mths() - t, crediting_rate_mth(t)))
@@ -777,10 +771,10 @@ def annuity_pp(t):
     :func:`annuity_pp_annual`, twelve times this figure; the monthly grid pays the monthly
     amount and needs no sub-annual correction to value it.
     """
-    if shape() == "life":
+    if shape() == Shape.life:
         return av_pp_init() / annuity_factor()
     j = crediting_rate_mth(t)
-    if shape() == "certain":
+    if shape() == Shape.certain:
         return av_pp(t) / annuity_factor_certain(annuity_term_mths() - t, j)
     return av_pp(t) * j - retention_pp(t)
 
@@ -837,7 +831,7 @@ def cv_pp(t):
     위법계약의 해지 route returns the 계약자적립액 rather than the surrender value, and on a
     product with no deduction the two coincide, so no separate cells is carried for it.
     """
-    if shape() == "life":
+    if shape() == Shape.life:
         return 0.0
     return max(av_pp(t) - surr_chg_pp(t), 0.0)
 
@@ -884,10 +878,10 @@ def pols_if(t):
     expense by and what ``result_cf()`` publishes first; the meaning is the technical notes'
     ``IF(t)``.
     """
-    if shape() == "life":
+    if shape() == Shape.life:
         guaranteed = pols_if_init() if t < annuity_term_mths() else 0.0
         return max(lives_if(t), guaranteed)
-    if shape() == "certain":
+    if shape() == Shape.certain:
         return surr_if(t)
     return lives_if(t) * surr_if(t)
 
@@ -912,9 +906,9 @@ def pols_lapse(t):
     measure alone; on the inheritance shape only a contract that has not become a death
     claim can be surrendered, so the deaths of the period come off first.
     """
-    if shape() == "life":
+    if shape() == Shape.life:
         return 0.0
-    if shape() == "certain":
+    if shape() == Shape.certain:
         return surr_if(t) * lapse_rate_mth(t)
     return (lives_if(t) * (1.0 - mort_rate_mth(t)) * surr_if(t)
             * lapse_rate_mth(t))
@@ -931,14 +925,14 @@ def pols_exit(t):
     That step is the shape's characteristic feature and an implementation that decremented
     the obligation on death would smooth it away.
     """
-    if shape() == "life":
+    if shape() == Shape.life:
         g = annuity_term_mths()
         if t < g - 1:
             return 0.0
         if t == g - 1:
             return pols_if_init() - lives_if(g)
         return pols_death(t)
-    if shape() == "certain":
+    if shape() == Shape.certain:
         return pols_lapse(t)
     return pols_death(t) + pols_lapse(t)
 
@@ -956,10 +950,10 @@ def payment_factor(t):
     is in-force survival to the payment date, the 생존연금 being payable 「살아있을 때」,
     with the death benefit taking the place of the payment for those who die.
     """
-    if shape() == "life":
+    if shape() == Shape.life:
         guaranteed = pols_if_init() if t + 1 <= annuity_term_mths() else 0.0
         return max(lives_if(t + 1), guaranteed)
-    if shape() == "certain":
+    if shape() == Shape.certain:
         return surr_if(t)
     return pols_if(t) * (1.0 - mort_rate_mth(t))
 
@@ -973,7 +967,7 @@ def pricing_factor(t):
     mortality at all.  The two are written separately rather than one calling the other, so
     that :func:`check_annuity_basis` compares two constructions instead of one with itself.
     """
-    if shape() == "life":
+    if shape() == Shape.life:
         guaranteed = 1.0 if t + 1 <= annuity_term_mths() else 0.0
         return max(lives_if(t + 1) / pols_if_init(), guaranteed)
     return 1.0
@@ -1008,7 +1002,7 @@ def retention_shortfall_pp():
     Model points 6 and 7 are the same contract on the two bases, so the difference between
     their cash flow statements is the quantity that was litigated from 2017 to 2025.
     """
-    if shape() == "inheritance" and retention_basis() == "as_ordered":
+    if shape() == Shape.inheritance and retention_basis() == RetentionBasis.as_ordered:
         return ((maturity_benefit() - av_pp_init())
                 * disc_factor(annuity_term_mths()))
     return 0.0
@@ -1024,7 +1018,7 @@ def proj_years():
     which it cannot on any shipped model point but can at a high enough issue age — the
     guarantee sets the horizon instead.
     """
-    if shape() == "life":
+    if shape() == Shape.life:
         return max(annuity_term(), omega_age - age_at_entry() + 1)   # noqa: F821
     return annuity_term()
 
@@ -1088,16 +1082,16 @@ def claims(t, kind):
     publish its own subtotal beside its parts, so ``result_cf()`` carries the three kinds
     split out and they sum, with the annuity and the outgo above, to ``net_cf``.
     """
-    if kind == "DEATH":
-        if shape() == "life":
+    if kind == Kind.DEATH:
+        if shape() == Shape.life:
             return 0.0
-        if shape() == "inheritance":
+        if shape() == Shape.inheritance:
             return pols_death(t) * (db_rate() * prem_pp() + av_pp(t + 1))
         return pols_death(t) * db_rate() * prem_pp()
-    if kind == "LAPSE":
+    if kind == Kind.LAPSE:
         return pols_lapse(t) * cv_pp(t + 1)
-    if kind == "MATURITY":
-        if shape() == "inheritance" and t == proj_len() - 1:
+    if kind == Kind.MATURITY:
+        if shape() == Shape.inheritance and t == proj_len() - 1:
             return pols_if(t + 1) * maturity_benefit()
         return 0.0
     raise ValueError("unknown claim kind: %s" % kind)
@@ -1105,7 +1099,7 @@ def claims(t, kind):
 
 def claims_death(t):
     """E[DTH(t)]: :func:`claims` on the ``DEATH`` kind, as a statement column."""
-    return claims(t, "DEATH")
+    return claims(t, Kind.DEATH)
 
 
 def claims_lapse(t):
@@ -1115,12 +1109,12 @@ def claims_lapse(t):
     retired across the library in favour of the name matching the ``kind`` argument that
     produces it.
     """
-    return claims(t, "LAPSE")
+    return claims(t, Kind.LAPSE)
 
 
 def claims_maturity(t):
     """E[MAT(t)]: :func:`claims` on the ``MATURITY`` kind, as a statement column."""
-    return claims(t, "MATURITY")
+    return claims(t, Kind.MATURITY)
 
 
 def commissions(t):
@@ -1165,9 +1159,9 @@ def net_cf(t):
     """
     return (premiums(t)
             - annuity_payments(t)
-            - claims(t, "DEATH")
-            - claims(t, "LAPSE")
-            - claims(t, "MATURITY")
+            - claims(t, Kind.DEATH)
+            - claims(t, Kind.LAPSE)
+            - claims(t, Kind.MATURITY)
             - commissions(t)
             - expenses(t))
 
@@ -1266,15 +1260,15 @@ def check_av_roll_fwd_resid(t):
     if t == 0:
         return av_pp_init() - av_pp(0)
     j = crediting_rate_mth(t - 1)
-    if shape() == "life":
+    if shape() == Shape.life:
         j0 = crediting_rate_mth(0)
         built = (av_pp_init() * (1.0 + j0) ** t
                  - annuity_pp(0) * accum_factor(t, j0))
-    elif shape() == "certain":
+    elif shape() == Shape.certain:
         m = annuity_term_mths() - (t - 1)
         built = (av_pp(t - 1) * annuity_factor_certain(m - 1, j)
                  / annuity_factor_certain(m, j))
-    elif retention_basis() == "as_ordered":
+    elif retention_basis() == RetentionBasis.as_ordered:
         built = av_pp(t - 1)
     else:
         m = annuity_term_mths() - (t - 1)
@@ -1305,10 +1299,10 @@ def check_av_terminal():
     """
     tol = val_tol * prem_pp()                                        # noqa: F821
     v = av_pp(proj_len())
-    if shape() == "certain":
+    if shape() == Shape.certain:
         return bool(abs(v) < tol)
-    if shape() == "inheritance":
-        target = (maturity_benefit() if retention_basis() == "as_designed"
+    if shape() == Shape.inheritance:
+        target = (maturity_benefit() if retention_basis() == RetentionBasis.as_designed
                   else av_pp_init())
         return bool(abs(v - target) < tol)
     return True
@@ -1329,7 +1323,7 @@ def check_annuity_basis_resid():
     """
     built = sum(annuity_pp(t) * pricing_factor(t) * disc_factor(t + 1)
                 for t in range(proj_len()))
-    if shape() == "inheritance":
+    if shape() == Shape.inheritance:
         built += maturity_benefit() * disc_factor(annuity_term_mths())
     return built - av_pp_init() - retention_shortfall_pp()
 
@@ -1369,7 +1363,7 @@ def check_rate_level():
     True on the other two shapes, whose annuities are recomputed every year and which
     therefore carry a stepping rate correctly; model point 8 is the one that does.
     """
-    if shape() != "life":
+    if shape() != Shape.life:
         return True
     i0 = crediting_rate(0)
     return bool(all(abs(crediting_rate(t) - i0) < 1e-15
@@ -1389,7 +1383,7 @@ def check_guarantee_certain():
     whole term is certain and the inheritance shape's annuity is conditional on survival
     throughout.
     """
-    if shape() != "life":
+    if shape() != Shape.life:
         return True
     return bool(all(abs(payment_factor(t) - pols_if_init()) < roll_fwd_tol  # noqa: F821
                     for t in range(0, annuity_term_mths())))
@@ -1405,10 +1399,10 @@ def check_payment_factor_resid(t):
     started weighting its certain payments by survival, or its survival payments by the
     guarantee, shows up here.
     """
-    if shape() == "life":
+    if shape() == Shape.life:
         guaranteed = pols_if_init() if t + 1 <= annuity_term_mths() else 0.0
         built = max(lives_if(t + 1), guaranteed)
-    elif shape() == "certain":
+    elif shape() == Shape.certain:
         built = pols_if(t)
     else:
         built = pols_if(t) - pols_death(t)
@@ -1434,7 +1428,7 @@ def check_surr_value():
     run of zeros — and the statutory 표준해약공제액 cap therefore binds nothing here.
     """
     tol = val_tol * prem_pp()                                        # noqa: F821
-    if shape() == "life":
+    if shape() == Shape.life:
         return bool(all(lapse_rate(t) == 0.0 and cv_pp(t) == 0.0
                         for t in range(proj_len())))
     return bool(all(abs(cv_pp(t) - max(av_pp(t), 0.0)) < tol
@@ -1462,9 +1456,9 @@ def result_cf():
             "pols_if": [pols_if(t) for t in ts],
             "premiums": [premiums(t) for t in ts],
             "annuity_payments": [annuity_payments(t) for t in ts],
-            "claims_death": [claims(t, "DEATH") for t in ts],
-            "claims_lapse": [claims(t, "LAPSE") for t in ts],
-            "claims_maturity": [claims(t, "MATURITY") for t in ts],
+            "claims_death": [claims(t, Kind.DEATH) for t in ts],
+            "claims_lapse": [claims(t, Kind.LAPSE) for t in ts],
+            "claims_maturity": [claims(t, Kind.MATURITY) for t in ts],
             "commissions": [commissions(t) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "liability_cf": [liability_cf(t) for t in ts],
@@ -1515,3 +1509,13 @@ roll_fwd_tol = 1e-10
 val_tol = 1e-12
 
 pd = ("Module", "pandas")
+
+Shape = ("Pickle", 2)
+
+Sex = ("Pickle", 1)
+
+RetentionBasis = ("Pickle", 4)
+
+CreditingBasis = ("Pickle", 3)
+
+Kind = ("Pickle", 5)

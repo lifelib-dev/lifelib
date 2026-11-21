@@ -66,6 +66,7 @@ from pytest import approx
 from modelx.core.errors import FormulaError
 
 from de_registry import MODELS, LIB
+from lifelib.libraries.delib.products.riester_rente.enums import AvTiming, ContribForm, Kind, PolTiming, PremFreq, Sex
 
 
 def model_files(folder):
@@ -301,9 +302,9 @@ def test_the_first_months_of_the_monthly_frame(de_riester_anchor, t):
     assert p.pols_if(t) == approx(pols, abs=SIX_DP)
     assert p.premiums(t) == approx(prem, abs=CENT)
     assert p.zulagen(t) == approx(zul, abs=CENT)
-    assert p.claims(t, "DEATH") == approx(cd, abs=CENT)
-    assert p.claims(t, "LAPSE") == approx(cl, abs=CENT)
-    assert p.claims(t, "TRANSFER") == approx(ct, abs=CENT)
+    assert p.claims(t, Kind.DEATH) == approx(cd, abs=CENT)
+    assert p.claims(t, Kind.LAPSE) == approx(cl, abs=CENT)
+    assert p.claims(t, Kind.TRANSFER) == approx(ct, abs=CENT)
     assert p.expenses(t) == approx(exp, abs=CENT)
     assert p.commissions(t) == approx(comm, abs=CENT)
     assert p.net_cf(t) == approx(net, abs=CENT)
@@ -350,7 +351,7 @@ def test_the_rente_is_paid_one_instalment_a_month(de_riester_anchor):
     # Every instalment in the window is the same amount on the same frozen count.
     for t in (first, first + 1, last):
         assert p.pols_annuity_pay(t) == approx(p.pols_conv(), rel=1e-12)
-        assert p.claims(t, "ANNUITY") == approx(
+        assert p.claims(t, Kind.ANNUITY) == approx(
             p.annuity_month_pp() * p.pols_conv(), abs=CENT)
     assert p.pols_annuity_pay(last + 1) == approx(p.pols_if(last + 1), rel=1e-12)
     assert df["claims_annuity"].iloc[first:last + 1].sum() == approx(
@@ -466,17 +467,17 @@ def test_projection_year_one_rebuilt_from_the_statute_up(de_riester_anchor):
     assert p.pols_if(12) == approx(0.9988 * 0.992 * 0.988, rel=1e-12)
     # The benefits struck on the ANNUAL A(1), then the expenses: a twelfth of the annual
     # maintenance, inflated on *contract* duration, plus the per-event claim expense whole.
-    assert p.claims(0, "DEATH") == approx(5568.986940 * q_mth, abs=CENT)
-    assert p.claims(0, "LAPSE") == approx(
+    assert p.claims(0, Kind.DEATH) == approx(5568.986940 * q_mth, abs=CENT)
+    assert p.claims(0, Kind.LAPSE) == approx(
         0.98 * 5568.98694 * (1 - q_mth) * w_mth, abs=CENT)
-    assert p.claims(0, "TRANSFER") == approx(
+    assert p.claims(0, Kind.TRANSFER) == approx(
         (5568.98694 - 50.0) * (1 - q_mth) * (1 - w_mth) * th_mth, abs=CENT)
     assert p.expenses(0) == approx(
         30.0 * 1.02 ** 3 / 12.0
         + 80.0 * (p.pols_death(0) + p.pols_lapse(0) + p.pols_transfer(0)), abs=CENT)
     assert p.commissions(0) == approx(0.015 * (1205.00 + 475.00), abs=CENT)
     assert p.net_cf(0) == approx(
-        1680.00 - p.claims(0, "DEATH") - p.claims(0, "LAPSE") - p.claims(0, "TRANSFER")
+        1680.00 - p.claims(0, Kind.DEATH) - p.claims(0, Kind.LAPSE) - p.claims(0, Kind.TRANSFER)
         - p.expenses(0) - 25.20, abs=CENT)
     assert p.net_cf(0) == approx(1642.25, abs=CENT)
 
@@ -525,11 +526,11 @@ def test_the_conversion_year_rebuilt_a_different_way(de_riester_anchor):
     assert p.annuity_pp(T) == approx(CONVERSION["annuity_pp"], abs=CENT)
     assert p.pols_conv() == approx(CONVERSION["pols_conv"], abs=SIX_DP)
     # Paid in the conversion MONTH, and the annuity one instalment at a time from it.
-    assert p.claims(p.t_conv(), "LUMPSUM") == approx(
+    assert p.claims(p.t_conv(), Kind.LUMPSUM) == approx(
         p.teilkapital_pp() * p.pols_conv(), rel=1e-12)
-    assert p.claims(p.t_conv(), "LUMPSUM") == approx(10536.61, abs=CENT)
-    assert all(p.claims(t, "LUMPSUM") == 0.0 for t in (p.t_conv() - 1, p.t_conv() + 1))
-    assert p.claims(p.t_conv(), "ANNUITY") == approx(
+    assert p.claims(p.t_conv(), Kind.LUMPSUM) == approx(10536.61, abs=CENT)
+    assert all(p.claims(t, Kind.LUMPSUM) == 0.0 for t in (p.t_conv() - 1, p.t_conv() + 1))
+    assert p.claims(p.t_conv(), Kind.ANNUITY) == approx(
         p.annuity_month_pp() * p.pols_conv(), abs=CENT)
     assert p.result_cf_annual().loc[T, "claims_annuity"] == approx(855.57, abs=CENT)
 
@@ -543,16 +544,16 @@ def test_the_account_rolls_forward_and_the_exit_charge_closes_it(de_riester_anch
     1,48 EUR in the first period, which is exactly the usual way this identity fails.
     """
     p = de_riester_anchor
-    opening_next = p.av_total_at(1, "BEF_PREM")
+    opening_next = p.av_total_at(1, AvTiming.BEF_PREM)
     assert opening_next == approx(5451.592054, abs=CENT)
     # The account is annual, so the identity is stated per projection year and the year's
     # exits and charges are summed over its twelve months.
     months = range(12)
     charge = sum(p.exit_charge_pp(t) for t in months)
     assert charge == approx(1.482574, abs=CENT)
-    out = sum(p.claims(t, "DEATH") + p.claims(t, "LAPSE") + p.claims(t, "TRANSFER")
+    out = sum(p.claims(t, Kind.DEATH) + p.claims(t, Kind.LAPSE) + p.claims(t, Kind.TRANSFER)
               for t in months)
-    rebuilt = (p.av_total_at(0, "BEF_PREM") + p.prem_to_av_pp(0) * p.pols_if(0)
+    rebuilt = (p.av_total_at(0, AvTiming.BEF_PREM) + p.prem_to_av_pp(0) * p.pols_if(0)
                + p.int_credited(0) - out - charge)
     assert rebuilt == approx(opening_next, abs=1e-9)
     assert p.check_av_roll_fwd_resid(0) == approx(0.0, abs=1e-9)
@@ -663,7 +664,7 @@ def test_the_guarantee_binds_on_the_low_scenario(riester_rente):
     assert p.annuity_capital_pp() == approx(14700.00, abs=CENT)
     assert p.annuity_month_pp() == approx(14700.0 / 10000.0 * 29.00, abs=CENT)
     assert p.annuity_pp(T) == approx(511.56, abs=CENT)
-    assert p.claims(p.t_conv(), "LUMPSUM") == approx(
+    assert p.claims(p.t_conv(), Kind.LUMPSUM) == approx(
         6300.0 * VARIANT_LOW_CONVERSION["pols_conv"], abs=CENT)
     assert p.check_conversion() is True
     df, acct = p.result_cf(), p.result_acct()
@@ -685,7 +686,7 @@ def test_variant_fixed_form_row(riester_rente, k):
     pols, prem, zul, intc, cd, cl, ct, ccom, exp, comm, net = VARIANT_FIXED[k]
     p = riester_rente.Projection[5]
     row = p.result_cf_annual().loc[k]
-    assert p.contrib_form() == "fixed" and p.contrib_fixed_pp() == 60.0
+    assert p.contrib_form() == ContribForm.fixed and p.contrib_fixed_pp() == 60.0
     assert row["pols_if"] == approx(pols, abs=SIX_DP)
     assert row["premiums"] == approx(prem, abs=CENT)
     assert row["zulagen"] == approx(zul, abs=CENT)
@@ -879,7 +880,7 @@ def test_the_guarantee_is_tested_only_at_rentenbeginn(de_riester_anchor):
     assert p.garantieluecke_pp(6) == 0.0
     assert p.guar_pp(0) > p.av_total_pp(0)
     for k in (0, 1, 2):
-        a = p.av_total_pp_at(k, "AFT_INT")
+        a = p.av_total_pp_at(k, AvTiming.AFT_INT)
         assert p.db_pp(k) == approx(a, rel=1e-12)
         assert p.cv_pp(k) == approx(0.98 * a, rel=1e-12)
         assert p.transfer_value_pp(k) == approx(a - 50.0, rel=1e-12)
@@ -1014,7 +1015,7 @@ def test_the_frequency_loading_is_charged_and_never_credited(riester_rente):
     for the deferral twice.
     """
     p = riester_rente.Projection[3]
-    assert p.prem_freq() == "monthly" and p.prem_freq_load() == 1.03
+    assert p.prem_freq() == PremFreq.monthly and p.prem_freq_load() == 1.03
     for k in (0, 1, 2, 4):
         e, z = p.eigenbeitrag_pp(k), p.zulage_pp(k)
         assert p.eigenbeitrag_paid_pp(k) == approx(1.03 * e, rel=1e-12)
@@ -1025,7 +1026,7 @@ def test_the_frequency_loading_is_charged_and_never_credited(riester_rente):
         assert p.prem_to_av_pp(k) == approx(
             (e + z) - p.acq_charge_pp(k) - (0.04 * (e + z) + 12.0), rel=1e-9)
     anchor = riester_rente.Projection[1]
-    assert anchor.prem_freq() == "annual" and anchor.prem_freq_load() == 1.0
+    assert anchor.prem_freq() == PremFreq.annual and anchor.prem_freq_load() == 1.0
     assert anchor.eigenbeitrag_paid_pp(0) == approx(anchor.eigenbeitrag_pp(0), rel=1e-12)
 
 
@@ -1045,7 +1046,7 @@ def test_removing_the_loading_moves_premiums_and_nothing_else():
                   ("prem_to_av_pp", "guar_pp", "eigenbeitrag_pp")}
         before["premiums"] = [p.premiums(12 * k) for k in ks]
         before["pols_if"] = [p.pols_if(12 * k) for k in ks]
-        before["claims_death"] = [p.claims(12 * k, "DEATH") for k in ks]
+        before["claims_death"] = [p.claims(12 * k, Kind.DEATH) for k in ks]
 
         table = pd.read_csv(model.Data.input_dir() / "freq_loading.csv",
                             index_col="prem_freq")
@@ -1062,7 +1063,7 @@ def test_removing_the_loading_moves_premiums_and_nothing_else():
             assert q.prem_to_av_pp(k) == approx(before["prem_to_av_pp"][i], rel=1e-12)
             assert q.guar_pp(k) == approx(before["guar_pp"][i], rel=1e-12)
             assert q.pols_if(12 * k) == approx(before["pols_if"][i], rel=1e-12)
-            assert q.claims(12 * k, "DEATH") == approx(before["claims_death"][i], rel=1e-12)
+            assert q.claims(12 * k, Kind.DEATH) == approx(before["claims_death"][i], rel=1e-12)
             assert before["premiums"][i] - q.premiums(12 * k) == approx(
                 0.03 * before["eigenbeitrag_pp"][i] * before["pols_if"][i], rel=1e-9)
         assert q.premiums(0) == approx(1020.00, abs=CENT)
@@ -1129,7 +1130,7 @@ def test_a_transfer_is_a_separate_decrement_from_a_surrender(riester_rente,
     """
     p = de_riester_anchor
     for k in (0, 4, 11, 16):
-        a = p.av_total_pp_at(k, "AFT_INT")
+        a = p.av_total_pp_at(k, AvTiming.AFT_INT)
         assert p.cv_pp(k) == approx(0.98 * a, rel=1e-12)
         assert p.transfer_value_pp(k) == approx(a - 50.0, rel=1e-12)
         assert p.transfer_value_pp(k) > p.cv_pp(k)
@@ -1145,7 +1146,7 @@ def test_a_transfer_is_a_separate_decrement_from_a_surrender(riester_rente,
     # The charge the insurer retains differs in kind: a percentage against a flat fee, both
     # struck monthly on the annual end-of-year account value.
     assert p.exit_charge_pp(0) == approx(
-        0.02 * p.av_total_pp_at(0, "AFT_INT") * p.pols_lapse(0) + 50.0 * p.pols_transfer(0),
+        0.02 * p.av_total_pp_at(0, AvTiming.AFT_INT) * p.pols_lapse(0) + 50.0 * p.pols_transfer(0),
         rel=1e-12)
 
 
@@ -1240,9 +1241,9 @@ def test_the_kleinbetragsrente_is_tested_after_the_lump_sum(riester_rente,
     assert small.commutation_pp() == approx(small.capital_conv_pp(), rel=1e-12)
     assert small.teilkapital_pp() == small.annuity_capital_pp() == 0.0
     assert small.annuity_pp(small.k_conv()) == 0.0 and small.annuity_month_pp() == 0.0
-    assert small.claims(T, "COMMUTATION") == approx(3828.31, abs=CENT)
-    assert small.claims(T, "LUMPSUM") == 0.0
-    assert all(small.claims(t, "ANNUITY") == 0.0 for t in range(T, small.proj_len()))
+    assert small.claims(T, Kind.COMMUTATION) == approx(3828.31, abs=CENT)
+    assert small.claims(T, Kind.LUMPSUM) == 0.0
+    assert all(small.claims(t, Kind.ANNUITY) == 0.0 for t in range(T, small.proj_len()))
     # The Abfindung discharges the contract: no decrement removes the population.
     assert small.pols_if(T + 1) == 0.0 and small.pols_death(T) == 0.0
     assert small.check_pols_roll_fwd() is True
@@ -1271,7 +1272,7 @@ def test_the_rentengarantiezeit_changes_who_is_paid_and_never_how_much(riester_r
     assert p.rentengarantie_years() == 10
     for t in range(T, T + 120):
         assert p.pols_annuity_pay(t) == approx(p.pols_conv(), rel=1e-12)
-        assert p.claims(t, "ANNUITY") == approx(71.301877, abs=CENT)
+        assert p.claims(t, Kind.ANNUITY) == approx(71.301877, abs=CENT)
     for t in (T + 120, T + 121, n - 1):
         assert p.pols_annuity_pay(t) == approx(p.pols_if(t), rel=1e-12)
     assert p.pols_annuity_pay(T + 119) > p.pols_if(T + 119)
@@ -1290,7 +1291,7 @@ def test_the_rentengarantiezeit_changes_who_is_paid_and_never_how_much(riester_r
                for t in (pure.t_conv(), pure.t_conv() + 5, pure.proj_len() - 1))
     assert pure.annuity_capital_pp() == approx(pure.capital_conv_pp(), rel=1e-12)
     assert pure.annuity_pp(pure.k_conv()) == approx(p.annuity_pp(17) / 0.70, rel=1e-9)
-    assert pure.claims(pure.t_conv(), "LUMPSUM") == 0.0
+    assert pure.claims(pure.t_conv(), Kind.LUMPSUM) == 0.0
 
 
 # --------------------------------------------------------------------------- pitfall 18
@@ -1307,10 +1308,10 @@ def test_benefits_are_published_gross_of_the_rueckzahlungsbetrag(riester_rente,
     cells = riester_rente.Projection.cells
     for t in (0, 48, 192):
         k = p.proj_year(t)
-        assert p.claims(t, "DEATH") == approx(
-            p.av_total_pp_at(k, "AFT_INT") * p.pols_death(t), rel=1e-12)
-        assert p.claims(t, "LAPSE") == approx(
-            0.98 * p.av_total_pp_at(k, "AFT_INT") * p.pols_lapse(t), rel=1e-12)
+        assert p.claims(t, Kind.DEATH) == approx(
+            p.av_total_pp_at(k, AvTiming.AFT_INT) * p.pols_death(t), rel=1e-12)
+        assert p.claims(t, Kind.LAPSE) == approx(
+            0.98 * p.av_total_pp_at(k, AvTiming.AFT_INT) * p.pols_lapse(t), rel=1e-12)
         assert p.db_pp(k) > p.zulage_cum_pp(k)      # nothing has been netted out
     assert p.zulage_cum_pp(0) == approx(475.00, abs=CENT)
     assert p.zulage_cum_pp(17) == approx(4050.00, abs=CENT)
@@ -1435,8 +1436,9 @@ def test_the_accessors_validate_and_the_within_year_reads_are_consistent(
     """claims(t) sums the six kinds, the enum accessors validate, and the timings agree."""
     p = de_riester_anchor
     for t in (0, 192, 204, 348):
-        assert p.claims(t) == approx(sum(p.claims(t, k) for k in CLAIM_KINDS), rel=1e-12)
-    assert p.claims(204) == approx(10536.610861 + 71.301877, abs=CENT)
+        assert p.claims(t, Kind.ALL) == approx(sum(p.claims(t, k) for k in (
+            Kind.DEATH, Kind.LAPSE, Kind.TRANSFER, Kind.LUMPSUM, Kind.COMMUTATION, Kind.ANNUITY)), rel=1e-12)
+    assert p.claims(204, Kind.ALL) == approx(10536.610861 + 71.301877, abs=CENT)
     with pytest.raises(FormulaError):
         p.claims(0, "SURRENDER")
     with pytest.raises(FormulaError):
@@ -1445,14 +1447,14 @@ def test_the_accessors_validate_and_the_within_year_reads_are_consistent(
         p.av_total_pp_at(0, "AFT_DECR")
     # The policy ledger reads take a month; the account reads take a projection year.
     for t in (0, 4, 16, 203):
-        assert p.pols_if_at(t, "BEF_DECR") == approx(p.pols_if(t), rel=1e-12)
-        assert p.pols_if_at(t, "AFT_DECR") == approx(p.pols_if(t + 1), rel=1e-12)
+        assert p.pols_if_at(t, PolTiming.BEF_DECR) == approx(p.pols_if(t), rel=1e-12)
+        assert p.pols_if_at(t, PolTiming.AFT_DECR) == approx(p.pols_if(t + 1), rel=1e-12)
     for k in (0, 4, 16):
-        assert p.av_total_pp_at(k, "BEF_PREM") == approx(p.av_total_pp(k), rel=1e-12)
-        assert p.av_total_pp_at(k, "AFT_PREM") == approx(p.av_total_pp(k) + p.prem_to_av_pp(k),
+        assert p.av_total_pp_at(k, AvTiming.BEF_PREM) == approx(p.av_total_pp(k), rel=1e-12)
+        assert p.av_total_pp_at(k, AvTiming.AFT_PREM) == approx(p.av_total_pp(k) + p.prem_to_av_pp(k),
                                                    rel=1e-12)
-        assert p.av_total_pp_at(k, "AFT_INT") == approx(p.av_total_pp(k + 1), rel=1e-12)
-        assert p.av_total_at(k, "BEF_PREM") == approx(
+        assert p.av_total_pp_at(k, AvTiming.AFT_INT) == approx(p.av_total_pp(k + 1), rel=1e-12)
+        assert p.av_total_at(k, AvTiming.BEF_PREM) == approx(
             p.av_total_pp(k) * p.pols_if(12 * k), rel=1e-12)
     assert p.av_total_pp(0) == approx(p.dk_pp_init() + p.surplus_pp_init(), rel=1e-12)
     assert p.av_total_pp(0) == approx(4010.98, abs=CENT)
@@ -1465,14 +1467,14 @@ def test_the_model_point_is_read_and_sex_reaches_no_rate(riester_rente, de_riest
     mortality rate and its *Rentenfaktor* are the anchor's to the last bit.
     """
     p = de_riester_anchor
-    assert p.sex() == "F"
+    assert p.sex() == Sex.F
     assert p.issue_age() == 47 and p.duration_init() == 3
     assert p.age_y(0) == 50 and p.calendar_year_y(0) == 2027 and p.duration_y(0) == 3
     assert p.age(0) == 50 and p.calendar_year(0) == 2027 and p.duration(0) == 3
     assert p.rentenbeginn_age() == 67 and p.k_conv() == 17 and p.t_conv() == 204
     assert p.proj_len_y() == 110 - 50 + 1 and p.proj_len() == 12 * p.proj_len_y()
     male = riester_rente.Projection[7]
-    assert male.sex() == "M" and male.age(0) == p.age(0)
+    assert male.sex() == Sex.M and male.age(0) == p.age(0)
     assert male.mort_rate(0) == approx(p.mort_rate(0), rel=1e-12)
     assert male.rentenfaktor_curr() == approx(p.rentenfaktor_curr(), rel=1e-12)
     cells = riester_rente.Projection.cells

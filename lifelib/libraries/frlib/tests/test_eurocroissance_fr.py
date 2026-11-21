@@ -59,6 +59,7 @@ import pytest
 from modelx.core.errors import FormulaError
 
 from fr_registry import MODELS, LIB
+from lifelib.libraries.frlib.products.eurocroissance.enums import AcctTiming, DecrementBasis, PolTiming, Sex
 
 
 def model_files(folder):
@@ -252,20 +253,20 @@ def test_the_opening_state_the_initial_versement_creates(eurocroissance, fr_ec_a
     """
     a = fr_ec_anchor
     assets, pm, prov_div, parts, u = OPENING_A
-    assert a.own_assets_at(0, "BOM") == pytest.approx(assets, abs=CENT)
-    assert a.pm_at(0, "BOM") == pytest.approx(pm, abs=CENT)
-    assert a.prov_div_at(0, "BOM") == pytest.approx(prov_div, abs=CENT)
-    assert a.parts_at(0, "BOM") == pytest.approx(parts, abs=PART)
-    assert a.part_value_at(0, "BOM") == pytest.approx(u, abs=PART)
-    assert a.provision_value_at(0, "BOM") == pytest.approx(assets, abs=CENT)
-    assert a.mg_at(0, "BOM") == pytest.approx(9800.00, abs=CENT)
+    assert a.own_assets_at(0, AcctTiming.BOM) == pytest.approx(assets, abs=CENT)
+    assert a.pm_at(0, AcctTiming.BOM) == pytest.approx(pm, abs=CENT)
+    assert a.prov_div_at(0, AcctTiming.BOM) == pytest.approx(prov_div, abs=CENT)
+    assert a.parts_at(0, AcctTiming.BOM) == pytest.approx(parts, abs=PART)
+    assert a.part_value_at(0, AcctTiming.BOM) == pytest.approx(u, abs=PART)
+    assert a.provision_value_at(0, AcctTiming.BOM) == pytest.approx(assets, abs=CENT)
+    assert a.mg_at(0, AcctTiming.BOM) == pytest.approx(9800.00, abs=CENT)
     b = eurocroissance.Projection[2]
     assets_b, parts_b, u_b = OPENING_B
-    assert b.own_assets_at(0, "BOM") == pytest.approx(assets_b, abs=CENT)
-    assert b.prov_div_at(0, "BOM") == pytest.approx(assets_b, abs=CENT)
-    assert b.pm_at(0, "BOM") == 0.0
-    assert b.parts_at(0, "BOM") == pytest.approx(parts_b, abs=PART)
-    assert b.part_value_at(0, "BOM") == pytest.approx(u_b, abs=PART)
+    assert b.own_assets_at(0, AcctTiming.BOM) == pytest.approx(assets_b, abs=CENT)
+    assert b.prov_div_at(0, AcctTiming.BOM) == pytest.approx(assets_b, abs=CENT)
+    assert b.pm_at(0, AcctTiming.BOM) == 0.0
+    assert b.parts_at(0, AcctTiming.BOM) == pytest.approx(parts_b, abs=PART)
+    assert b.part_value_at(0, AcctTiming.BOM) == pytest.approx(u_b, abs=PART)
     # The frame opens on the issue month, and the first policy year closes on the
     # WORKED_A[11] row.
     assert a.result_provisions().index[0] == 0
@@ -309,11 +310,11 @@ def test_the_year_three_versement_splits_at_the_just_struck_values(
     a = fr_ec_anchor
     t = anniv(3)
     assert t == 35
-    assert a.own_assets_at(t, "AFT_PERF") == pytest.approx(10842.49, abs=CENT)
-    assert a.pm_at(t, "AFT_STRIKE") == pytest.approx(8386.54, abs=CENT)
-    assert a.prov_div_at(t, "AFT_STRIKE") == pytest.approx(2455.95, abs=CENT)
-    assert a.parts_at(t, "AFT_PREM") == pytest.approx(190.8455, abs=PART)
-    assert a.part_value_at(t, "AFT_STRIKE") == pytest.approx(12.8688, abs=PART)
+    assert a.own_assets_at(t, AcctTiming.AFT_PERF) == pytest.approx(10842.49, abs=CENT)
+    assert a.pm_at(t, AcctTiming.AFT_STRIKE) == pytest.approx(8386.54, abs=CENT)
+    assert a.prov_div_at(t, AcctTiming.AFT_STRIKE) == pytest.approx(2455.95, abs=CENT)
+    assert a.parts_at(t, AcctTiming.AFT_PREM) == pytest.approx(190.8455, abs=PART)
+    assert a.part_value_at(t, AcctTiming.AFT_STRIKE) == pytest.approx(12.8688, abs=PART)
     # pm_added = 1,960.00 x 1.0225^-7 = 1,677.31, so pd_added = 282.69 buys 21.9672
     # parts.  Recomputing the division from the notes' rounded intermediates lands
     # within 2e-4 of the model's exact figure.
@@ -323,8 +324,8 @@ def test_the_year_three_versement_splits_at_the_just_struck_values(
     assert 282.69 / 12.8688 == pytest.approx(21.9672, abs=0.0002)
     # On Chassis B nothing goes to a PM, so the whole net versement buys parts.
     b = eurocroissance.Projection[2]
-    assert b.prov_div_at(t, "AFT_STRIKE") == pytest.approx(10637.52, abs=CENT)
-    assert b.parts_at(t, "AFT_PREM") == pytest.approx(956.6677, abs=PART)
+    assert b.prov_div_at(t, AcctTiming.AFT_STRIKE) == pytest.approx(10637.52, abs=CENT)
+    assert b.parts_at(t, AcctTiming.AFT_PREM) == pytest.approx(956.6677, abs=PART)
     assert b.parts_added_top_up(t) == pytest.approx(176.2694, abs=PART)
     assert 1960.00 / 11.1193 == pytest.approx(176.2694, abs=0.001)
 
@@ -384,8 +385,8 @@ def test_the_guarantee_level_is_the_products_real_dial(eurocroissance, fr_ec_anc
     assert fr_ec_anchor.insurer_contribution(t6) == pytest.approx(2134.08, abs=CENT)
     # The PM is 80.1% of the initial net versement at g = 100% and 64.0% at g = 80%,
     # struck as the opening state of month 0.
-    assert fr_ec_anchor.pm_at(0, "BOM") / 9800.0 == pytest.approx(0.801, abs=0.0005)
-    assert p80.pm_at(0, "BOM") / 9800.0 == pytest.approx(0.640, abs=0.0005)
+    assert fr_ec_anchor.pm_at(0, AcctTiming.BOM) / 9800.0 == pytest.approx(0.801, abs=0.0005)
+    assert p80.pm_at(0, AcctTiming.BOM) / 9800.0 == pytest.approx(0.640, abs=0.0005)
 
 
 def test_the_apport_dactifs_endows_the_pcdd_and_not_the_savers(eurocroissance):
@@ -535,12 +536,12 @@ def test_the_maintenance_expense_accrues_monthly(fr_ec_anchor):
     p = fr_ec_anchor
     for t in (1, 40, 100):
         assert p.expenses(t) == pytest.approx(
-            0.002 / 12.0 * p.provision_value(t) * p.pols_if_at(t, "AFT_DECR"),
+            0.002 / 12.0 * p.provision_value(t) * p.pols_if_at(t, PolTiming.AFT_DECR),
             rel=1e-12), t
     # Month 0 carries the acquisition costs as well, and exactly one maintenance accrual.
     acq = 0.05 * 10000.0 + 0.02 * 10000.0
     assert p.expenses(0) == pytest.approx(
-        acq + 0.002 / 12.0 * p.provision_value(0) * p.pols_if_at(0, "AFT_DECR"),
+        acq + 0.002 / 12.0 * p.provision_value(0) * p.pols_if_at(0, PolTiming.AFT_DECR),
         rel=1e-12)
     # Over the whole projection the worked-example cell carries 1,038.34 against the
     # annual grid's 1,040.52 -- the dropped opening striking, less the growth of the
@@ -635,13 +636,13 @@ def test_the_l134_3_contribution_earns_nothing_for_the_savers(fr_ec_anchor):
     # The surrender value exceeds the account's own assets by exactly the contribution.
     assert p.provision_value(t6) - p.own_assets(t6) == pytest.approx(
         p.insurer_contribution(t6), abs=1e-9)
-    assert p.own_assets_at(opens(7), "AFT_LEVY") == pytest.approx(10242.34, abs=CENT)
+    assert p.own_assets_at(opens(7), AcctTiming.AFT_LEVY) == pytest.approx(10242.34, abs=CENT)
     assert p.check_assets_roll_fwd() is True
     # The asset roll-forward check rebuilds the base the return accrues on; the companion
     # identity is that the month's investment income is struck on exactly that base.
     for t in (0, 1, 60, 71, 72):
-        base = (p.own_assets_at(t, "BOM") - p.parts_levy(t)
-                - p.wd_rate_mth(t) * p.provision_value_at(t, "BOM")
+        base = (p.own_assets_at(t, AcctTiming.BOM) - p.parts_levy(t)
+                - p.wd_rate_mth(t) * p.provision_value_at(t, AcctTiming.BOM)
                 + p.prem_after_charge_pp(t))
         assert p.invest_income(t) == pytest.approx(
             base * p.asset_return_mth(t), rel=1e-12), t
@@ -753,9 +754,9 @@ def test_an_in_force_extract_is_checked_against_the_restrike(eurocroissance):
     assert p.pm_init() == pytest.approx(8575.24, abs=CENT)
     # The extract is the OPENING state of the first projected month, at the valuation
     # date -- not that month's close.
-    assert p.pm_at(48, "BOM") == pytest.approx(p.pm_init(), abs=CENT)
-    assert p.pm_at(48, "BOM") == pytest.approx(
-        p.mg_at(48, "BOM") * p.disc_factor(48), abs=1e-9)
+    assert p.pm_at(48, AcctTiming.BOM) == pytest.approx(p.pm_init(), abs=CENT)
+    assert p.pm_at(48, AcctTiming.BOM) == pytest.approx(
+        p.mg_at(48, AcctTiming.BOM) * p.disc_factor(48), abs=1e-9)
     assert p.check_pm_restruck() is True
     # The frame is contiguous from there to the echeance: 72 months, not six years.
     assert list(p.result_cf().index) == list(range(48, 120))
@@ -777,21 +778,21 @@ def test_the_recurring_charge_is_a_levy_in_number_of_parts(eurocroissance, fr_ec
     p = fr_ec_anchor
     assert p.parts_levy(0) == pytest.approx(15.64, abs=CENT)
     assert p.parts_levy(0) == pytest.approx(
-        0.008 * p.prov_div_at(0, "BOM"), abs=1e-9)
-    assert 0.008 * p.provision_value_at(0, "BOM") == pytest.approx(78.40, abs=CENT)
+        0.008 * p.prov_div_at(0, AcctTiming.BOM), abs=1e-9)
+    assert 0.008 * p.provision_value_at(0, AcctTiming.BOM) == pytest.approx(78.40, abs=CENT)
     # It is an annual contract term taken at the OPENING of the policy year, so the other
     # eleven months carry none of it and the parts count is flat across them.
     assert p.parts_levy(1) == 0.0
-    assert p.parts_at(0, "AFT_LEVY") == pytest.approx(
-        p.parts_at(0, "BOM") * 0.992, abs=1e-12)
-    assert p.parts_at(1, "AFT_LEVY") == pytest.approx(p.parts_at(1, "BOM"), abs=1e-12)
+    assert p.parts_at(0, AcctTiming.AFT_LEVY) == pytest.approx(
+        p.parts_at(0, AcctTiming.BOM) * 0.992, abs=1e-12)
+    assert p.parts_at(1, AcctTiming.AFT_LEVY) == pytest.approx(p.parts_at(1, AcctTiming.BOM), abs=1e-12)
     assert p.parts(1) == pytest.approx(p.parts(0), abs=1e-12)
     assert p.check_parts_roll_fwd() is True
     # Seven levies and nothing else close the count from the post-top-up total.
     assert p.parts(anniv(3)) * 0.992 ** 7 == pytest.approx(201.1774, abs=PART)
     # With no 1 deg engagement the parts are the whole account, so the levy *is* 78.40.
     b = eurocroissance.Projection[2]
-    assert b.pm_at(0, "BOM") == 0.0 and b.parts_levy(0) == pytest.approx(78.40, abs=CENT)
+    assert b.pm_at(0, AcctTiming.BOM) == 0.0 and b.parts_levy(0) == pytest.approx(78.40, abs=CENT)
     assert b.parts(anniv(3)) * 0.992 ** 7 == pytest.approx(1070.9951, abs=PART)
 
 
@@ -804,7 +805,7 @@ def test_the_entry_charge_cuts_the_guarantee_and_a_rachat_runs_it_down(
     """mg after the top-up on the anniversary of policy year 3, t = 35, is 11,760.00."""
     p = fr_ec_anchor
     assert p.entry_charge_rate() == 0.02
-    assert p.mg_at(0, "BOM") == pytest.approx(9800.00, abs=CENT)
+    assert p.mg_at(0, AcctTiming.BOM) == pytest.approx(9800.00, abs=CENT)
     assert p.mg(anniv(2)) == pytest.approx(9800.00, abs=CENT)
     assert p.mg(anniv(3)) == pytest.approx(11760.00, abs=CENT)
     assert p.prem_init_after_charge() == pytest.approx(9800.00, abs=CENT)
@@ -816,7 +817,7 @@ def test_the_entry_charge_cuts_the_guarantee_and_a_rachat_runs_it_down(
     assert w.wd_rate(0) == pytest.approx(0.06, abs=1e-12)      # the ANNUAL rate
     assert w.mg(anniv(1)) == pytest.approx(9212.00, abs=CENT)
     assert w.wd_gross_pp(0) == pytest.approx(
-        w.wd_rate_mth(0) * w.provision_value_at(0, "BOM"), abs=1e-9)
+        w.wd_rate_mth(0) * w.provision_value_at(0, AcctTiming.BOM), abs=1e-9)
     assert w.check_guarantee_roll_fwd() is True
     # A partial rachat is an owner election, in its own column and never a claim.
     df = w.result_cf()
@@ -939,7 +940,7 @@ def test_two_accounts_on_one_asset_path_do_not_share_a_part_value(eurocroissance
     """
     a, b = eurocroissance.Projection[1], eurocroissance.Projection[2]
     assert a.scenario() == b.scenario()
-    assert a.part_value_at(0, "BOM") == b.part_value_at(0, "BOM") == 10.0
+    assert a.part_value_at(0, AcctTiming.BOM) == b.part_value_at(0, AcctTiming.BOM) == 10.0
     assert a.part_value(anniv(1)) != b.part_value(anniv(1))
     assert a.part_value(anniv(6)) == pytest.approx(5.0000, abs=PART)
     assert b.part_value(anniv(6)) == pytest.approx(8.9508, abs=PART)
@@ -1010,7 +1011,7 @@ def test_the_duration_eight_spike_and_the_lock_up(eurocroissance):
 def test_the_worked_example_switches_the_decrements_off(fr_ec_anchor):
     """pols_if stays at 1 to the echeance, so the provision path is the cash flow path."""
     p = fr_ec_anchor
-    assert p.decrement_basis() == "none"
+    assert p.decrement_basis() == DecrementBasis.none
     assert all(p.mort_rate(t) == 0.0 and p.lapse_rate(t) == 0.0
                for t in range(PROJ_LEN))
     assert all(p.mort_rate_mth(t) == 0.0 and p.lapse_rate_mth(t) == 0.0
@@ -1019,7 +1020,7 @@ def test_the_worked_example_switches_the_decrements_off(fr_ec_anchor):
     assert all(p.pols_if(t) == 1.0 for t in range(PROJ_LEN))
     # The notes' end-of-period l(t) is pols_if_at(t, "AFT_DECR"); it is nil in the last
     # projected month, which ends at the echeance, where the survivors mature.
-    assert p.pols_if_at(PROJ_LEN - 1, "AFT_DECR") == 0.0
+    assert p.pols_if_at(PROJ_LEN - 1, PolTiming.AFT_DECR) == 0.0
     assert p.pols_maturity(PROJ_LEN - 1) == 1.0
     assert p.check_pols_roll_fwd() is True
 
@@ -1044,8 +1045,8 @@ def test_pols_if_is_the_start_of_month_count_and_l_of_t_survives(eurocroissance)
         # Start of month t is the end of month t - 1, which closes on AFT_DECR.
         for t in range(t0 + 1, last + 1):
             assert p.pols_if(t) == pytest.approx(
-                p.pols_if_at(t - 1, "AFT_DECR"), rel=1e-12), (point_id, t)
-        assert p.pols_if_at(last, "AFT_DECR") == 0.0
+                p.pols_if_at(t - 1, PolTiming.AFT_DECR), rel=1e-12), (point_id, t)
+        assert p.pols_if_at(last, PolTiming.AFT_DECR) == 0.0
         # The maturity claim is carried by the survivors of the last month's mortality, and
         # the published exposure on that row is the count that entered it.
         assert p.pols_maturity(last) == pytest.approx(
@@ -1195,7 +1196,7 @@ def test_inputs_live_beside_the_model_and_mark_their_own_provenance(eurocroissan
     # the decrement of those months is read at age_anniv = 62, the age attained at the
     # anniversary that closes the year -- the notes' q(x + t + 1).
     p = eurocroissance.Projection[8]              # decrements on, male 61 at entry
-    raw = float(eurocroissance.Data.mort_table().loc[("M", 62), "mort_rate"])
+    raw = float(eurocroissance.Data.mort_table().loc[(Sex.M, 62), "mort_rate"])
     assert p.age(0) == 61 and p.age(11) == 61 and p.age(12) == 62
     assert p.age_anniv(0) == 62 and p.age_anniv(11) == 62
     assert p.mort_rate(0) == pytest.approx(raw * 0.80, rel=1e-12)     # the ANNUAL rate
@@ -1324,3 +1325,24 @@ def test_result_cf_annual_is_the_monthly_frame_summed(eurocroissance, fr_ec_anch
     assert ann.loc[3, "premiums"] == pytest.approx(2000.00, abs=CENT)
     assert ann["premiums"].sum() == pytest.approx(12000.00, abs=CENT)
     assert ann.loc[10, "claims_maturity"] == pytest.approx(12765.89, abs=CENT)
+
+
+def test_every_scenario_must_run_to_the_same_last_year():
+    """W3.3 (D68): the last scenario year is read from the policy's scenario, so the reader
+    refuses a table whose scenarios end in different years rather than clamping differently."""
+    model = mx.read_model(MODEL_DIR, name="EC_FR_S_d68")
+    try:
+        src = model.Data.input_dir() / "scenario_table.csv"
+        broken = pd.read_csv(src)
+        broken = broken[~((broken["scenario"] == "base") & (broken["year"] == broken["year"].max()))]
+        alt = "scenario_table_d68_broken.csv"
+        broken.to_csv(model.Data.input_dir() / alt, index=False)
+        try:
+            model.Data.scenario_table_file = alt
+            model.Data.clear_all()
+            with pytest.raises(FormulaError, match="scenario_table"):
+                model.Data.scenario_table()
+        finally:
+            (model.Data.input_dir() / alt).unlink(missing_ok=True)
+    finally:
+        model.close()

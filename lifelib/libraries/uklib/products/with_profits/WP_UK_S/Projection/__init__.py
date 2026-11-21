@@ -394,16 +394,12 @@ def chassis():
     fires between two monthly points is invisible to this projection.  See the Space
     docstring.
     """
-    v = model_point()["chassis"]
-    if v not in ("UWP_bond", "CWP_endowment"):
-        raise ValueError(
-            "invalid chassis; SF_prufund is out of scope on a monthly grid")
-    return v
+    return Chassis[model_point()["chassis"]]
 
 
 def is_unitised():
     """True on the unitised bond chassis, where the guaranteed benefit is a unit value."""
-    return chassis() == "UWP_bond"
+    return chassis() == Chassis.UWP_bond
 
 
 def age_at_entry():
@@ -413,7 +409,7 @@ def age_at_entry():
 
 def sex():
     """The sex (M / F) of the model point."""
-    return model_point()["sex"]
+    return Sex[model_point()["sex"]]
 
 
 def duration_inforce():
@@ -514,10 +510,7 @@ def tax_basis():
     The distinction is carried on the model point and is applied by supplying the return
     already on the right basis, rather than by grossing up inside the model.
     """
-    v = model_point()["tax_basis"]
-    if v not in ("life_net", "pension_gross"):
-        raise ValueError("invalid tax_basis")
-    return v
+    return TaxBasis[model_point()["tax_basis"]]
 
 
 def fund_return():
@@ -737,7 +730,7 @@ def wd_as_pp(t):
     pv = policy_value_open(t)
     if pv <= 0.0:
         return 0.0
-    return asset_share_at(t, "BEF_PREM") * w / pv
+    return asset_share_at(t, AsTiming.BEF_PREM) * w / pv
 
 
 def guar_charge_rate(t):
@@ -757,7 +750,7 @@ def guar_charge_rate(t):
     threshold back above.  That is the rule as written; a cap frozen at first breach
     would be a different rule and a materially different charge.
     """
-    prev_as = asset_share_at(t, "BEF_PREM")
+    prev_as = asset_share_at(t, AsTiming.BEF_PREM)
     prev_cum = guar_charge_cum_pp(t - 1) if t > proj_start() else 0.0
     if prev_as > 0.0 and prev_cum >= guar_charge_cap * prev_as:      # noqa: F821
         return 0.0
@@ -785,7 +778,7 @@ def amc_rate_mth():
 
 def guar_charge_pp(t):
     """The guarantee and smoothing charge actually deducted in month t."""
-    return guar_charge_rate_mth(t) * asset_share_at(t, "AFT_RETURN")
+    return guar_charge_rate_mth(t) * asset_share_at(t, AsTiming.AFT_RETURN)
 
 
 def guar_charge_cum_pp(t):
@@ -807,7 +800,7 @@ def misc_surplus_pp(t):
     operates them; the base model allocates none, so the rate is a monthly one only in
     the sense that nil is nil at any frequency.
     """
-    return misc_surplus_rate * asset_share_at(t, "BEF_PREM")         # noqa: F821
+    return misc_surplus_rate * asset_share_at(t, AsTiming.BEF_PREM)         # noqa: F821
 
 
 def fund_return_mth():
@@ -856,21 +849,21 @@ def asset_share_at(t, timing):
     unchanged: return, then charges, then the transfer, then the mortality charge on the
     balance the transfer left.
     """
-    if timing == "BEF_PREM":
+    if timing == AsTiming.BEF_PREM:
         if t <= proj_start():
             return asset_share_init()
         return asset_share(t - 1)
-    if timing == "BEF_RETURN":
-        return asset_share_at(t, "BEF_PREM") + premium_pp(t) - wd_as_pp(t)
-    if timing == "AFT_RETURN":
-        return asset_share_at(t, "BEF_RETURN") * (1.0 + fund_return_mth())
-    if timing == "AFT_CHARGE":
-        return (asset_share_at(t, "AFT_RETURN")
+    if timing == AsTiming.BEF_RETURN:
+        return asset_share_at(t, AsTiming.BEF_PREM) + premium_pp(t) - wd_as_pp(t)
+    if timing == AsTiming.AFT_RETURN:
+        return asset_share_at(t, AsTiming.BEF_RETURN) * (1.0 + fund_return_mth())
+    if timing == AsTiming.AFT_CHARGE:
+        return (asset_share_at(t, AsTiming.AFT_RETURN)
                 * (1.0 - amc_rate_mth() - guar_charge_rate_mth(t)))
-    if timing == "AFT_ST":
-        return asset_share_at(t, "AFT_CHARGE") - shareholder_transfer_pp(t)
-    if timing == "AFT_MC":
-        return (asset_share_at(t, "AFT_ST") - mort_charge_pp(t)
+    if timing == AsTiming.AFT_ST:
+        return asset_share_at(t, AsTiming.AFT_CHARGE) - shareholder_transfer_pp(t)
+    if timing == AsTiming.AFT_MC:
+        return (asset_share_at(t, AsTiming.AFT_ST) - mort_charge_pp(t)
                 + misc_surplus_pp(t))
     raise ValueError("invalid timing")
 
@@ -896,7 +889,7 @@ def asset_share(t):
     """
     if t < proj_start():
         return 0.0
-    return max(0.0, asset_share_at(t, "AFT_MC"))
+    return max(0.0, asset_share_at(t, AsTiming.AFT_MC))
 
 
 def unit_price(t):
@@ -1007,7 +1000,7 @@ def bonus_supportable(t):
     m = (bonus_horizon if is_unitised()                              # noqa: F821
          else max(1, policy_term() - policy_year(t)))
     r_e = fund_return() - amc_rate - guar_charge_rate(t)             # noqa: F821
-    proj = asset_share_at(t, "BEF_PREM") * (1.0 + r_e) ** m
+    proj = asset_share_at(t, AsTiming.BEF_PREM) * (1.0 + r_e) ** m
     p = premium_regular_pp()
     if p > 0.0:
         if abs(r_e) < 1e-12:
@@ -1080,6 +1073,11 @@ def shareholder_transfer_pp(t):
     return cost_of_bonus_pp(t) / shareholder_transfer_divisor        # noqa: F821
 
 
+def mort_schedule():
+    """The mortality rates of the policy's sex, by age."""
+    return data.mort_table().loc[sex()]                              # noqa: F821
+
+
 def mort_rate(t):
     """q(x + duration(t)): the **annual** best-estimate mortality rate **[std]**.
 
@@ -1091,8 +1089,7 @@ def mort_rate(t):
     projection decrements and charges by.
     """
     x = min(age(t), omega_age)                                       # noqa: F821
-    return min(1.0, float(data.mort_table().loc[                     # noqa: F821
-        (sex(), x), "mort_rate"]) * mort_be_factor)                  # noqa: F821
+    return min(1.0, float(mort_schedule().loc[x, "mort_rate"]) * mort_be_factor)                  # noqa: F821
 
 
 def mort_rate_mth(t):
@@ -1128,7 +1125,7 @@ def mort_charge_pp(t):
     charge is the first to carry the hardened one.
     """
     return mort_rate_mth(t) * max(0.0, death_guar_pp(t)
-                                  - asset_share_at(t, "AFT_ST"))
+                                  - asset_share_at(t, AsTiming.AFT_ST))
 
 
 def smooth_cap_dn_mth():
@@ -1291,15 +1288,15 @@ def claim_pp(t, kind):
         it is a modelling truncation rather than a contractual event.
     """
     base = guar_benefit_pp(t) + final_bonus_pp(t)
-    if kind == "DEATH":
+    if kind == ClaimKind.DEATH:
         return death_benefit_factor * base if is_unitised() else base  # noqa: F821
-    if kind == "SURRENDER":
+    if kind == ClaimKind.SURRENDER:
         if not is_unitised():
             return max(0.0, min(smoothed_payout(t), base))
         return base - mvr_applied_pp(t)
-    if kind == "GUARANTEE":
+    if kind == ClaimKind.GUARANTEE:
         return base
-    if kind == "MATURITY":
+    if kind == ClaimKind.MATURITY:
         if t != proj_len() - 1:
             return 0.0
         if is_unitised() and not is_forced_encashment():
@@ -1318,6 +1315,11 @@ def smoothing_cost_pp(t, kind):
     return claim_pp(t, kind) - asset_share(t)
 
 
+def lapse_schedule():
+    """The surrender rates of the policy's chassis, by policy year."""
+    return data.lapse_table().loc[chassis()]                         # noqa: F821
+
+
 def surr_rate_base(t):
     """The table **annual** surrender rate applying in month t **[std]**.
 
@@ -1326,7 +1328,7 @@ def surr_rate_base(t):
     years beyond the table take its last row.  A drafting construction: no public UK
     with-profits lapse experience was retrieved.
     """
-    tbl = data.lapse_table().loc[chassis()]                          # noqa: F821
+    tbl = lapse_schedule()
     y = min(policy_year(t), int(tbl.index.max()))
     return float(tbl.loc[y, "lapse_rate"])
 
@@ -1412,7 +1414,7 @@ def pols_if(t):
         return 0.0
     if t == proj_start():
         return pols_if_init()
-    return pols_if_at(t - 1, "AFT_DECR")
+    return pols_if_at(t - 1, PolTiming.AFT_DECR)
 
 
 def pols_if_at(t, timing):
@@ -1430,14 +1432,14 @@ def pols_if_at(t, timing):
         ``proj_len() - 1``, where the endowment matures and the bond
         projection is truncated.
     """
-    if timing == "BEF_DECR":
+    if timing == PolTiming.BEF_DECR:
         return pols_if(t)
-    if timing == "BEF_SURR":
+    if timing == PolTiming.BEF_SURR:
         return pols_if(t) * (1.0 - mort_rate_mth(t))
-    if timing == "AFT_DECR":
+    if timing == PolTiming.AFT_DECR:
         if t < proj_start() or t >= proj_len() - 1:
             return 0.0
-        return pols_if_at(t, "BEF_SURR") * (1.0 - surr_rate_mth(t))
+        return pols_if_at(t, PolTiming.BEF_SURR) * (1.0 - surr_rate_mth(t))
     raise ValueError("invalid timing")
 
 
@@ -1453,7 +1455,7 @@ def pols_surr(t):
     a guarantee-date month are visibly larger than its neighbours' - which is the point
     of dating the exercise rather than spreading it.
     """
-    return pols_if_at(t, "BEF_SURR") * surr_rate_mth(t)
+    return pols_if_at(t, PolTiming.BEF_SURR) * surr_rate_mth(t)
 
 
 def pols_maturity(t):
@@ -1490,21 +1492,21 @@ def withdrawals(t):
     return wd_pp(t) * pols_if(t)
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Benefit outgo in month t, by kind; the total when kind is omitted.
 
     ``"DEATH"``, ``"SURRENDER"`` and ``"MATURITY"`` weight :func:`claim_pp` by the
     corresponding decrement.  ``"GUARANTEE"`` is not a separate outgo: a guarantee-date
     exit *is* a surrender, paid MVR-free, so it is already inside the surrender line.
     """
-    if kind is None:
-        return sum(claims(t, k) for k in ("DEATH", "SURRENDER", "MATURITY"))
-    if kind == "DEATH":
-        return claim_pp(t, "DEATH") * pols_death(t)
-    if kind == "SURRENDER":
-        return claim_pp(t, "SURRENDER") * pols_surr(t)
-    if kind == "MATURITY":
-        return claim_pp(t, "MATURITY") * pols_maturity(t)
+    if kind == Kind.ALL:
+        return sum(claims(t, k) for k in (Kind.DEATH, Kind.SURRENDER, Kind.MATURITY))
+    if kind == Kind.DEATH:
+        return claim_pp(t, ClaimKind.DEATH) * pols_death(t)
+    if kind == Kind.SURRENDER:
+        return claim_pp(t, ClaimKind.SURRENDER) * pols_surr(t)
+    if kind == Kind.MATURITY:
+        return claim_pp(t, ClaimKind.MATURITY) * pols_maturity(t)
     raise ValueError("invalid kind")
 
 
@@ -1543,9 +1545,9 @@ def smoothing_cost(t):
     or smoothing pay more than the policies earned - which on a guarantee-date month is
     both the largest exit and the deepest shortfall at once.
     """
-    return (smoothing_cost_pp(t, "DEATH") * pols_death(t)
-            + smoothing_cost_pp(t, "SURRENDER") * pols_surr(t)
-            + smoothing_cost_pp(t, "MATURITY") * pols_maturity(t))
+    return (smoothing_cost_pp(t, ClaimKind.DEATH) * pols_death(t)
+            + smoothing_cost_pp(t, ClaimKind.SURRENDER) * pols_surr(t)
+            + smoothing_cost_pp(t, ClaimKind.MATURITY) * pols_maturity(t))
 
 
 def smoothing_account(t):
@@ -1571,7 +1573,7 @@ def net_cf(t):
     share appears nowhere in it: it is a state variable, not a cash flow, and the
     payouts it drives are already in ``claims``.
     """
-    return (premiums(t) - claims(t) - withdrawals(t)
+    return (premiums(t) - claims(t, Kind.ALL) - withdrawals(t)
             - expenses(t) - shareholder_transfers(t))
 
 
@@ -1601,7 +1603,7 @@ def check_asset_share_roll_fwd_resid(t):
     the floor is not binding, which is every month of every cell shipped here except the
     tail of the sustained down scenario.
     """
-    built = ((asset_share_at(t, "BEF_PREM") + premium_pp(t) - wd_as_pp(t))
+    built = ((asset_share_at(t, AsTiming.BEF_PREM) + premium_pp(t) - wd_as_pp(t))
              * (1.0 + fund_return_mth())
              * (1.0 - amc_rate_mth() - guar_charge_rate_mth(t))
              - shareholder_transfer_pp(t) - mort_charge_pp(t)
@@ -1719,9 +1721,9 @@ def result_cf():
             "pols_if": [pols_if(t) for t in ts],
             "asset_share": [asset_share(t) for t in ts],
             "premiums": [premiums(t) for t in ts],
-            "claims_death": [claims(t, "DEATH") for t in ts],
-            "claims_surrender": [claims(t, "SURRENDER") for t in ts],
-            "claims_maturity": [claims(t, "MATURITY") for t in ts],
+            "claims_death": [claims(t, Kind.DEATH) for t in ts],
+            "claims_surrender": [claims(t, Kind.SURRENDER) for t in ts],
+            "claims_maturity": [claims(t, Kind.MATURITY) for t in ts],
             "withdrawals": [withdrawals(t) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "shareholder_transfers": [shareholder_transfers(t) for t in ts],
@@ -1751,9 +1753,9 @@ def result_payout():
             "final_bonus_pp": [final_bonus_pp(t) for t in ts],
             "mvr_pp": [mvr_pp(t) for t in ts],
             "mvr_applied_pp": [mvr_applied_pp(t) for t in ts],
-            "claim_death": [claim_pp(t, "DEATH") for t in ts],
-            "claim_surrender": [claim_pp(t, "SURRENDER") for t in ts],
-            "claim_guarantee": [claim_pp(t, "GUARANTEE") for t in ts],
+            "claim_death": [claim_pp(t, ClaimKind.DEATH) for t in ts],
+            "claim_surrender": [claim_pp(t, ClaimKind.SURRENDER) for t in ts],
+            "claim_guarantee": [claim_pp(t, ClaimKind.GUARANTEE) for t in ts],
             "bonus_rate": [bonus_rate(t) for t in ts],
             "cost_of_bonus_pp": [cost_of_bonus_pp(t) for t in ts],
             "shareholder_transfer_pp": [shareholder_transfer_pp(t) for t in ts],
@@ -1818,3 +1820,17 @@ expense_maint = 30.0
 inflation_rate = 0.03
 
 pd = ("Module", "pandas")
+
+Chassis = ("Pickle", 2)
+
+Sex = ("Pickle", 1)
+
+TaxBasis = ("Pickle", 3)
+
+AsTiming = ("Pickle", 4)
+
+PolTiming = ("Pickle", 5)
+
+ClaimKind = ("Pickle", 6)
+
+Kind = ("Pickle", 7)

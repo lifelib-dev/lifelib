@@ -114,9 +114,10 @@ def mort_table():
     :func:`mort_anchor_table` — 死亡保険用 graduated log-linearly, 年金開始後用 on a Makeham law.
     See the Space docstring.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file,                               # noqa: F821
-        index_col=["table", "sex", "age"]).sort_index()
+    frame = pd.read_csv(input_dir() / mort_table_file)               # noqa: F821
+    frame["table"] = [MortTable[name] for name in frame["table"]]
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["table", "sex", "age"]).sort_index()             # noqa: F821
 
 
 def mort_anchor_table():
@@ -127,9 +128,10 @@ def mort_anchor_table():
     the library's input set: rates quoted and attributed, which the IAJ's terms permit — as
     opposed to a copy of the table, which they do not.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_anchor_file,                              # noqa: F821
-        index_col=["table", "sex"]).sort_index()
+    frame = pd.read_csv(input_dir() / mort_anchor_file)              # noqa: F821
+    frame["table"] = [MortTable[name] for name in frame["table"]]
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["table", "sex", "age"]).sort_index()             # noqa: F821
 
 
 def lapse_table():
@@ -150,9 +152,9 @@ def lapse_table():
     The rates are **annual** and are not restated per month: the rate is the observation,
     and ``Projection.lapse_rate_mth`` derives the monthly decrement from it.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / lapse_table_file,                              # noqa: F821
-        index_col=["segment", "from_year"]).sort_index()
+    frame = pd.read_csv(input_dir() / lapse_table_file)              # noqa: F821
+    frame["segment"] = [Segment[name] for name in frame["segment"]]
+    return frame.set_index(["segment", "from_year"]).sort_index()             # noqa: F821
 
 
 def pricing_table():
@@ -169,8 +171,9 @@ def pricing_table():
     ``surr_charge_years`` = 10 is an elapsed count of years, the length of the 解約控除
     run-off, not a point on the frame.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / pricing_table_file, index_col="item")          # noqa: F821
+    frame = pd.read_csv(input_dir() / pricing_table_file)                    # noqa: F821
+    frame["item"] = [PricingItem[name] for name in frame["item"]]
+    return frame.set_index("item")                                   # noqa: F821
 
 
 def expense_table():
@@ -180,8 +183,9 @@ def expense_table():
     :func:`pricing_table`, which is a pricing loading living inside the fund; mixing the
     two double-counts expense in one direction and destroys the calibration in the other.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / expense_table_file, index_col="item")          # noqa: F821
+    frame = pd.read_csv(input_dir() / expense_table_file)                    # noqa: F821
+    frame["item"] = [ExpenseItem[name] for name in frame["item"]]
+    return frame.set_index("item")                                   # noqa: F821
 
 
 def commute_factor_table():
@@ -215,3 +219,13 @@ expense_table_file = "expense_table.csv"
 commute_factor_file = "commute_factor_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+MortTable = ("Pickle", 2)
+
+Segment = ("Pickle", 3)
+
+PricingItem = ("Pickle", 4)
+
+ExpenseItem = ("Pickle", 5)

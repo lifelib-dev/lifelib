@@ -85,8 +85,9 @@ def mort_table():
     enabled, which is why a proxy of this quality is tolerable here and would not be
     elsewhere.  Sorted on read, because ``Projection.mort_rate`` indexes into it.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file, index_col=["sex", "age"]).sort_index()
+    frame = pd.read_csv(input_dir() / mort_table_file)              # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"]).sort_index()
 
 
 def surr_table():
@@ -112,3 +113,5 @@ mort_table_file = "mort_table.csv"
 surr_table_file = "surr_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)

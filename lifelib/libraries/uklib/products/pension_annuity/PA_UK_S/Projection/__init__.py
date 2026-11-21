@@ -304,9 +304,9 @@ def age_at_entry(life):
 def sex(life):
     """The sex (M / F) of the annuitant or dependant."""
     if life == 1:
-        return model_point()["annuitant_sex"]
+        return Sex[model_point()["annuitant_sex"]]
     if life == 2 and is_joint():
-        return model_point()["dependant_sex"]
+        return Sex[model_point()["dependant_sex"]]
     raise ValueError("invalid life")
 
 
@@ -375,10 +375,7 @@ def payment_timing():
     understates the liability by roughly one period's mortality per payment, which is
     material at high ages.
     """
-    v = model_point()["timing"]
-    if v not in ("arrears", "advance"):
-        raise ValueError("invalid timing")
-    return v
+    return PaymentTiming[model_point()["timing"]]
 
 
 def proportion():
@@ -388,7 +385,7 @@ def proportion():
     final partial period, which is the more common contractual design.
     """
     v = bool(model_point()["proportion"])
-    if v and payment_timing() != "arrears":
+    if v and payment_timing() != PaymentTiming.arrears:
         raise ValueError("proportion applies to arrears payments only")
     return v
 
@@ -399,10 +396,7 @@ def escalation_type():
     ``lpi5`` is RPI floored at zero and capped at 5%; ``rpi_catchup`` is a ratchet on
     the running peak of the RPI reference index.  See the Space docstring.
     """
-    v = model_point()["escalation_type"]
-    if v not in ("level", "fixed", "rpi_catchup", "lpi5"):
-        raise ValueError("invalid escalation_type")
-    return v
+    return EscalationType[model_point()["escalation_type"]]
 
 
 def escalation_rate():
@@ -435,10 +429,7 @@ def vp_basis():
     balance nets both streams.  See the Space docstring for the approximation the second
     basis carries in a probability-weighted run.
     """
-    v = model_point()["vp_basis"]
-    if v not in ("first_death", "last_survivor"):
-        raise ValueError("invalid vp_basis")
-    return v
+    return VpBasis[model_point()["vp_basis"]]
 
 
 def mort_basis():
@@ -450,10 +441,7 @@ def mort_basis():
     the notes' worked example - which is a scenario, not an expectation - reproduces
     exactly.  See the Space docstring.
     """
-    v = model_point()["mort_basis"]
-    if v not in ("table", "scenario"):
-        raise ValueError("invalid mort_basis")
-    return v
+    return MortBasis[model_point()["mort_basis"]]
 
 
 def death_mth(life):
@@ -546,7 +534,7 @@ def is_payment_mth(t):
     if t < 0:
         return False
     step = 12 // payment_freq()
-    if payment_timing() == "arrears":
+    if payment_timing() == PaymentTiming.arrears:
         return (t + 1) % step == 0
     return t % step == 0
 
@@ -560,7 +548,7 @@ def payment_surv_mth(t):
     survival for advance payments understates the liability by about one period's
     mortality per payment.
     """
-    return t + 1 if payment_timing() == "arrears" else t
+    return t + 1 if payment_timing() == PaymentTiming.arrears else t
 
 
 def rpi_index(a):
@@ -607,11 +595,11 @@ def annual_income(y):
     if y <= 1:
         return annual_income_init()
     e = escalation_type()
-    if e == "level":
+    if e == EscalationType.level:
         return annual_income_init()
-    if e == "fixed":
+    if e == EscalationType.fixed:
         return annual_income(y - 1) * (1.0 + escalation_rate())
-    if e == "lpi5":
+    if e == EscalationType.lpi5:
         step = min(esc_lpi_cap, max(0.0, rpi_rate))                  # noqa: F821
         return annual_income(y - 1) * (1.0 + step)
     return annual_income_init() * rpi_peak(y - 1) / rpi_index(0)
@@ -745,7 +733,7 @@ def lives_if(k, life):
         return 0.0
     if k <= 0:
         return 1.0
-    if mort_basis() == "scenario":
+    if mort_basis() == MortBasis.scenario:
         d = death_mth(life)
         return 0.0 if (d >= 0 and k > d) else 1.0
     return lives_if(k - 1, life) * (1.0 - mort_rate_mth(k - 1, life))
@@ -859,9 +847,9 @@ def cum_annuity_pp(k, kind):
     """
     if k <= 0:
         return 0.0
-    if kind == "ANNUITANT":
+    if kind == AnnuityKind.ANNUITANT:
         return cum_annuity_pp(k - 1, kind) + annuity_pp(k - 1)
-    if kind == "ALL":
+    if kind == AnnuityKind.ALL:
         paid = annuity_pp(k - 1) * (payment_factor(k - 1) + dependant_factor(k - 1))
         return cum_annuity_pp(k - 1, kind) + paid
     raise ValueError("invalid kind")
@@ -876,7 +864,7 @@ def vp_balance(k):
     """
     if vp_pct() <= 0.0:
         return 0.0
-    kind = "ANNUITANT" if vp_basis() == "first_death" else "ALL"
+    kind = AnnuityKind.ANNUITANT if vp_basis() == VpBasis.first_death else AnnuityKind.ALL
     return max(0.0, vp_pct() * purchase_price() - cum_annuity_pp(k, kind))
 
 
@@ -890,7 +878,7 @@ def annuity_payments(t):
     return pols_if_init() * annuity_pp(t) * (payment_factor(t) + dependant_factor(t))
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Expected lump-sum outgo in month t, by kind; the total when kind is omitted.
 
     ``"VP"``
@@ -910,17 +898,17 @@ def claims(t, kind=None):
         Zero on the representative default, where nothing is paid for the final
         partial period.
     """
-    if kind is None:
-        return sum(claims(t, k) for k in ("VP", "PROP"))
-    if kind == "VP":
+    if kind == Kind.ALL:
+        return sum(claims(t, k) for k in (Kind.VP, Kind.PROP))
+    if kind == Kind.VP:
         if vp_pct() <= 0.0:
             return 0.0
-        density = (lives_death(t, 1) if vp_basis() == "first_death"
+        density = (lives_death(t, 1) if vp_basis() == VpBasis.first_death
                    else lives_death_last(t))
-        measured_at = (t + 1 if (payment_timing() == "advance" and is_payment_mth(t))
+        measured_at = (t + 1 if (payment_timing() == PaymentTiming.advance and is_payment_mth(t))
                        else t)
         return pols_if_init() * density * vp_balance(measured_at)
-    if kind == "PROP":
+    if kind == Kind.PROP:
         if not proportion():
             return 0.0
         nxt = next_payment_mth(t)
@@ -973,7 +961,7 @@ def liability_cf(t):
     paid at outset, before the first projected month - and no surrender outgo, because
     the contract has no surrender value at any time.
     """
-    return annuity_payments(t) + claims(t) + expenses(t)
+    return annuity_payments(t) + claims(t, Kind.ALL) + expenses(t)
 
 
 def net_cf(t):
@@ -1000,7 +988,7 @@ def check_lives_roll_fwd_resid(k):
     and the residual is the sum of the per-life differences.
     """
     res = 0.0
-    scenario = mort_basis() == "scenario"
+    scenario = mort_basis() == MortBasis.scenario
     for i in (1, 2):
         if i == 2 and not is_joint():
             continue
@@ -1062,7 +1050,7 @@ def check_vp_bound():
     apply on the last-survivor basis, where the two benefits cannot both be triggered by
     the same death.
     """
-    if vp_pct() <= 0.0 or vp_basis() != "first_death":
+    if vp_pct() <= 0.0 or vp_basis() != VpBasis.first_death:
         return True
     return vp_pct() + dependant_pct() <= 1.0 + 1e-12
 
@@ -1080,8 +1068,8 @@ def result_cf():
         {
             "pols_if": [pols_if(t) for t in ts],
             "annuity_payments": [annuity_payments(t) for t in ts],
-            "claims_vp": [claims(t, "VP") for t in ts],
-            "claims_prop": [claims(t, "PROP") for t in ts],
+            "claims_vp": [claims(t, Kind.VP) for t in ts],
+            "claims_prop": [claims(t, Kind.PROP) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "liability_cf": [liability_cf(t) for t in ts],
             "net_cf": [net_cf(t) for t in ts],
@@ -1106,7 +1094,7 @@ def result_pols():
             "payment_factor": [payment_factor(t) for t in ts],
             "dependant_factor": [dependant_factor(t) for t in ts],
             "annuity_pp": [annuity_pp(t) for t in ts],
-            "cum_annuity_all": [cum_annuity_pp(t + 1, "ALL") for t in ts],
+            "cum_annuity_all": [cum_annuity_pp(t + 1, AnnuityKind.ALL) for t in ts],
             "vp_balance": [vp_balance(t + 1) for t in ts],
             "pols_if": [pols_if(t) for t in ts],
         },
@@ -1144,3 +1132,17 @@ expense_maint = 30.0
 inflation_rate = 0.03
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+PaymentTiming = ("Pickle", 2)
+
+EscalationType = ("Pickle", 3)
+
+VpBasis = ("Pickle", 4)
+
+MortBasis = ("Pickle", 5)
+
+AnnuityKind = ("Pickle", 6)
+
+Kind = ("Pickle", 7)

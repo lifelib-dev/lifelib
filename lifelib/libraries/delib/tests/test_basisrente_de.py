@@ -69,6 +69,7 @@ import pytest
 from modelx.core.errors import FormulaError
 
 from de_registry import MODELS, LIB
+from lifelib.libraries.delib.products.basisrente.enums import AvTiming, Kind, PolTiming
 
 
 CENT = 0.005          # money displayed to 2 d.p.
@@ -277,8 +278,8 @@ def test_the_twelve_months_of_the_first_payout_year(de_basis_anchor, t):
     assert p.pols_if(t) == pytest.approx(pols_if, abs=SIX_DP)
     assert p.ann_mth_pp(t) == pytest.approx(ANN_MTH_PP_CONV, abs=5e-6)
     assert p.ann_mth_pp(t) == pytest.approx(p.ann_pp(22) / 12.0, rel=1e-12)
-    assert p.claims(t, "ANNUITY") == pytest.approx(ann, abs=CENT)
-    assert p.claims(t, "ANNUITY") == pytest.approx(ANN_MTH_PP_CONV * pols_if, abs=CENT)
+    assert p.claims(t, Kind.ANNUITY) == pytest.approx(ann, abs=CENT)
+    assert p.claims(t, Kind.ANNUITY) == pytest.approx(ANN_MTH_PP_CONV * pols_if, abs=CENT)
     assert p.expenses(t) == pytest.approx(exp, abs=CENT)
     assert p.net_cf(t) == pytest.approx(net, abs=CENT)
     assert p.premiums(t) == 0.0 and p.commissions(t) == 0.0
@@ -358,8 +359,8 @@ def test_check_1_the_first_year_account_rebuilt_from_the_charge_scale(de_basis_a
         8140.00 - ALPHA_INSTALMENT - 70.00 - 36.00, rel=1e-12)
     assert p.prem_to_av_pp(0) == pytest.approx(N_ANCHOR_T0, rel=1e-12)
     assert p.cred_rate(0) == pytest.approx(0.026, rel=1e-12)
-    assert p.av_pp_at(0, "AFT_INT") == pytest.approx(AV_PP_AFT_INT_T0, rel=1e-12)
-    assert p.av_pp_at(0, "AFT_INT") == pytest.approx(
+    assert p.av_pp_at(0, AvTiming.AFT_INT) == pytest.approx(AV_PP_AFT_INT_T0, rel=1e-12)
+    assert p.av_pp_at(0, AvTiming.AFT_INT) == pytest.approx(
         N_ANCHOR_T0 * (1 + 0.026 - 0.0035), rel=1e-9)
     # The fund-level value the table publishes, one death decrement later.
     assert p.av(1) == pytest.approx(AV_ANCHOR_T1, rel=1e-12)
@@ -428,7 +429,7 @@ def test_check_3_the_conversion_and_the_branch_of_the_max_that_binds(de_basis_an
     assert p.ann_pp(22) == pytest.approx(ANN_PP_CONV, abs=5e-5)
     # And what is paid is a twelfth of it, once a month, to the lives in force that month.
     assert p.ann_mth_pp(264) == pytest.approx(ANN_MTH_PP_CONV, abs=5e-6)
-    assert p.claims(264, "ANNUITY") == pytest.approx(
+    assert p.claims(264, Kind.ANNUITY) == pytest.approx(
         ANN_MTH_PP_CONV * 0.9327803550, abs=CENT)
     ann = p.result_cf_annual()
     assert ann.loc[22, "claims_annuity"] == pytest.approx(7033.4955825855, abs=CENT)
@@ -456,7 +457,7 @@ def test_the_decrements_close_to_exactly_one(de_basis_anchor):
     # The whole cohort dies in the terminal year's LAST month, not a twelfth in each of them.
     assert p.mort_rate(n - 1) == 1.0 and p.mort_rate_mth(n - 1) == 1.0
     assert all(p.mort_rate_mth(t) == 0.0 for t in range(n - 12, n - 1))
-    assert p.claims(n - 1, "ANNUITY") > 0.0
+    assert p.claims(n - 1, Kind.ANNUITY) > 0.0
 
 
 # The published checks and the frame
@@ -664,8 +665,8 @@ def test_pitfall_1_no_surrender_value_and_none_of_the_names_that_carry_one(
     # The only three kinds of payment there are.
     for t in (0, 108, 264, 468, 923):
         assert p.check_no_capital_resid(t) == 0.0
-        assert p.claims(t) == pytest.approx(
-            p.claims(t, "DEATH") + p.claims(t, "ANNUITY") + p.claims(t, "SURVIVOR"),
+        assert p.claims(t, Kind.ALL) == pytest.approx(
+            p.claims(t, Kind.DEATH) + p.claims(t, Kind.ANNUITY) + p.claims(t, Kind.SURVIVOR),
             rel=1e-12)
     # The credit to the account is the raw arithmetic, with no floor of any kind under it.  On
     # model point 10 -- 300,00 EUR a year, the market's minimum recurring premium -- the charges
@@ -727,8 +728,8 @@ def test_pitfall_2_a_beitragsfreistellung_removes_the_premium_not_the_policy(de_
     for t in (0, 11, 47, 132, 263, 468, 911):
         assert p.pols_if(t + 1) == pytest.approx(
             p.pols_if(t) * (1 - p.mort_rate_mth(t)), rel=1e-12)
-        assert p.pols_if_at(t, "AFT_FREEZE") == pytest.approx(
-            p.pols_if_at(t, "AFT_DEATH"), rel=1e-12)
+        assert p.pols_if_at(t, PolTiming.AFT_FREEZE) == pytest.approx(
+            p.pols_if_at(t, PolTiming.AFT_DEATH), rel=1e-12)
         assert p.pols_paying(t) + p.pols_paidup(t) == pytest.approx(p.pols_if(t), rel=1e-12)
     assert p.check_pols_roll_fwd() is True
     # The freeze falls once a year, in its last month, and nowhere else.
@@ -793,25 +794,25 @@ def test_pitfall_3_the_paying_and_premium_free_blocks_are_not_averaged(de_basis_
     """
     p = de_basis_anchor
     # k = 1 is the first year with a premium-free block, and everyone in it froze together.
-    assert p.av_pu_at(1, "BEF_PREM") / p.pols_paidup(12) == pytest.approx(
+    assert p.av_pu_at(1, AvTiming.BEF_PREM) / p.pols_paidup(12) == pytest.approx(
         p.av_pp(1), rel=1e-12)
     for k in (2, 4, 9, 14, 21):
-        assert p.av_pp(k) > p.av_pu_at(k, "BEF_PREM") / p.pols_paidup(12 * k)
+        assert p.av_pp(k) > p.av_pu_at(k, AvTiming.BEF_PREM) / p.pols_paidup(12 * k)
     assert p.av_pp(9) == pytest.approx(82934.50, abs=CENT)
-    assert p.av_pu_at(9, "BEF_PREM") / p.pols_paidup(12 * 9) == pytest.approx(
+    assert p.av_pu_at(9, AvTiming.BEF_PREM) / p.pols_paidup(12 * 9) == pytest.approx(
         39549.19, abs=CENT)
     # The fund-level total is the only one that rolls forward on mortality alone, at the year's
     # ANNUAL rate -- which is what its twelve monthly rates compound to.
     for k in (1, 9, 21):
-        assert p.av_at(k, "BEF_PREM") == pytest.approx(
-            p.av_pp_at(k, "BEF_PREM") * p.pols_paying(12 * k) + p.av_pu_at(k, "BEF_PREM"),
+        assert p.av_at(k, AvTiming.BEF_PREM) == pytest.approx(
+            p.av_pp_at(k, AvTiming.BEF_PREM) * p.pols_paying(12 * k) + p.av_pu_at(k, AvTiming.BEF_PREM),
             rel=1e-12)
-        assert p.av_at(k + 1, "BEF_PREM") == pytest.approx(
-            p.av_at(k, "AFT_INT") * (1 - p.mort_rate(12 * k)), rel=1e-12)
+        assert p.av_at(k + 1, AvTiming.BEF_PREM) == pytest.approx(
+            p.av_at(k, AvTiming.AFT_INT) * (1 - p.mort_rate(12 * k)), rel=1e-12)
     assert p.check_av_roll_fwd() is True
     # A premium-free policy pays the Stueckkosten and the reserve charge and nothing else.
-    assert p.av_pu_at(9, "AFT_PREM") == pytest.approx(
-        p.av_pu_at(9, "BEF_PREM") - p.unit_cost_pp(9) * p.pols_paidup(12 * 9), rel=1e-12)
+    assert p.av_pu_at(9, AvTiming.AFT_PREM) == pytest.approx(
+        p.av_pu_at(9, AvTiming.BEF_PREM) - p.unit_cost_pp(9) * p.pols_paidup(12 * 9), rel=1e-12)
 
 
 # Pitfall 4 -- a charge is not an expense
@@ -968,7 +969,7 @@ def test_pitfall_9_death_pays_nothing_with_the_survivor_rider_off(basisrente,
     """
     p = de_basis_anchor
     assert float(p.model_point()["surv_annuity_rate"]) == 0.0
-    assert all(p.claims(t, "DEATH") == 0.0 for t in range(77))
+    assert all(p.claims(t, Kind.DEATH) == 0.0 for t in range(77))
     assert p.result_cf()["claims_death"].sum() == 0.0
     assert p.pols_death(4) > 0.0 and p.db_pp(4) > 0.0   # the deaths and the reserve are real
     assert p.check_av_roll_fwd() is True and p.check_no_capital() is True
@@ -996,20 +997,20 @@ def test_pitfall_10_the_death_benefit_is_conditional_and_buys_an_annuity(basisre
     # the end of the Versicherungsjahr, so a year's deaths release the annual-step figure.
     for t in (0, 7, 48, 132, 227):
         k = p.proj_year(t)
-        assert p.claims(t, "DEATH") == pytest.approx(
+        assert p.claims(t, Kind.DEATH) == pytest.approx(
             0.55 * p.mort_rate_mth(t)
             * (p.db_pp(k) * p.pols_paying(t) + p.db_pu_pp(k) * p.pols_paidup(t)),
             rel=1e-12)
-        assert p.db_pp(k) == p.av_pp_at(k, "AFT_INT")
+        assert p.db_pp(k) == p.av_pp_at(k, AvTiming.AFT_INT)
     for k in (0, 4, 11, 18):
         assert ann.loc[k, "claims_death"] == pytest.approx(
-            0.55 * p.mort_rate(12 * k) * p.av_at(k, "AFT_INT"), rel=1e-9)
+            0.55 * p.mort_rate(12 * k) * p.av_at(k, AvTiming.AFT_INT), rel=1e-9)
     assert ann.loc[0, "claims_death"] == pytest.approx(8.16, abs=CENT)
     assert ann.loc[18, "claims_death"] == pytest.approx(556.79, abs=CENT)
-    assert p.claims(0, "DEATH") == pytest.approx(0.68, abs=CENT)
+    assert p.claims(0, Kind.DEATH) == pytest.approx(0.68, abs=CENT)
     # It stops at Rentenbeginn: after that the annuity simply ends.
     assert p.ret_y() == 19 and p.ret_t() == 228
-    assert all(p.claims(t, "DEATH") == 0.0 for t in (228, 240, 468))
+    assert all(p.claims(t, Kind.DEATH) == 0.0 for t in (228, 240, 468))
     # The cover is bought out of the annuity.
     assert p.rf_option_factor() == pytest.approx(0.930, rel=1e-12)
     assert p.rentenfaktor_applied() == pytest.approx(31.50 * 0.930, rel=1e-12)
@@ -1083,7 +1084,7 @@ def test_pitfall_12_the_annuity_is_one_instalment_a_month_on_the_months_own_coun
     p = de_basis_anchor
     assert p.ann_freq == 12 and p.rf_unit == 10000.0
     for t in (264, 270, 275, 276, 468, 923):
-        assert p.claims(t, "ANNUITY") == pytest.approx(
+        assert p.claims(t, Kind.ANNUITY) == pytest.approx(
             p.ann_mth_pp(t) * p.pols_if(t), rel=1e-12)
         assert p.ann_mth_pp(t) == pytest.approx(p.ann_pp(p.proj_year(t)) / 12.0, rel=1e-12)
     # Not twelve of them on the year's opening count, which is what the annual grid did.
@@ -1091,7 +1092,7 @@ def test_pitfall_12_the_annuity_is_one_instalment_a_month_on_the_months_own_coun
     assert year < 12 * p.ann_mth_pp(264) * p.pols_if(264)
     # Nothing before Rentenbeginn, and afterwards the annuity compounds at the
     # Ueberschussrente once a year and nothing else touches it.
-    assert all(p.ann_mth_pp(t) == 0.0 and p.claims(t, "ANNUITY") == 0.0
+    assert all(p.ann_mth_pp(t) == 0.0 and p.claims(t, Kind.ANNUITY) == 0.0
                for t in (0, 108, 263))
     assert all(p.ann_pp(k) == 0.0 for k in (0, 9, 21))
     for k in (23, 39, 76):
@@ -1148,9 +1149,9 @@ def test_pitfall_14_the_guarantee_period_runs_from_rentenbeginn(basisrente):
     assert all(p.pols_gtd(t) == 0.0 for t in range(300, p.proj_len()))
     # The continuation is a stream of instalments, weighted by the same annuity, never commuted.
     for t in (181, 240, 299):
-        assert p.claims(t, "SURVIVOR") == pytest.approx(
+        assert p.claims(t, Kind.SURVIVOR) == pytest.approx(
             p.ann_mth_pp(t) * p.pols_gtd(t), rel=1e-12)
-    assert p.claims(300, "SURVIVOR") == 0.0
+    assert p.claims(300, Kind.SURVIVOR) == 0.0
     assert p.rf_option_factor() == pytest.approx(0.995, rel=1e-12)
     # Both options together on model point 12: twenty years, and a survivor's annuity.
     both = basisrente.Projection[12]
@@ -1225,7 +1226,7 @@ def test_pitfall_16_the_rechnungszins_attaches_at_conclusion_and_stays(basisrent
     assert in_payment.ret_y() == -3 and in_payment.ret_t() == -36
     assert in_payment.ann_pp(0) == pytest.approx(7200.00, abs=CENT)
     assert in_payment.ann_mth_pp(0) == pytest.approx(600.00, abs=CENT)
-    assert in_payment.claims(0, "ANNUITY") == pytest.approx(600.00, abs=CENT)
+    assert in_payment.claims(0, Kind.ANNUITY) == pytest.approx(600.00, abs=CENT)
     assert in_payment.result_cf_annual().loc[0, "claims_annuity"] == pytest.approx(
         7168.93, abs=CENT)
     assert in_payment.fund_at_conv() == 0.0 and in_payment.rentenfaktor_curr() == 0.0
@@ -1256,8 +1257,8 @@ def test_pitfall_17_the_buz_is_a_premium_share_that_enters_nothing(basisrente,
     assert "prem_total_pp" not in boundary.result_cf().columns   # and in no cash flow
     assert boundary.net_cf(0) == pytest.approx(
         boundary.premiums(0) + boundary.zuzahlungen(0)
-        - boundary.claims(0, "DEATH") - boundary.claims(0, "ANNUITY")
-        - boundary.claims(0, "SURVIVOR") - boundary.expenses(0)
+        - boundary.claims(0, Kind.DEATH) - boundary.claims(0, Kind.ANNUITY)
+        - boundary.claims(0, Kind.SURVIVOR) - boundary.expenses(0)
         - boundary.commissions(0), rel=1e-12)
     # With no BUZ the reporting cells is the contribution itself.
     p = de_basis_anchor

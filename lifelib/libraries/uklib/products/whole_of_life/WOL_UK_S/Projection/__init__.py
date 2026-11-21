@@ -239,10 +239,7 @@ def cell():
     The two cells share this engine and not their mortality basis, their lapse table,
     their expense levels or their benefit rules.  See the Space docstring.
     """
-    v = model_point()["cell"]
-    if v not in ("O50", "UW"):
-        raise ValueError("invalid cell")
-    return v
+    return Cell[model_point()["cell"]]
 
 
 def age_at_entry():
@@ -263,7 +260,7 @@ def sex():
     the rate factors and do not rate by sex, so on that cell this drives the shipped
     **[std]** proxy table and nothing contractual.
     """
-    return model_point()["sex"]
+    return Sex[model_point()["sex"]]
 
 
 def smoker():
@@ -272,7 +269,7 @@ def smoker():
     The underwritten specimen distinguishes three smoking states; they are collapsed to
     two here **[std]**.
     """
-    return model_point()["smoker"]
+    return Smoker[model_point()["smoker"]]
 
 
 def sum_assured():
@@ -301,10 +298,7 @@ def escalation():
     premium for each one percent of cover - and the over-50s RPI variant raises the cash
     sum by RPI capped at 10% and the premium by 1.5 x RPI capped at 15%.
     """
-    v = model_point()["escalation"]
-    if v not in ("level", "fixed_5pct", "rpi"):
-        raise ValueError("invalid escalation")
-    return v
+    return Escalation[model_point()["escalation"]]
 
 
 def cessation_mths():
@@ -409,7 +403,7 @@ def mort_basis():
     either cell the other's basis produces plausible-looking but wrong margins.  See the
     Space docstring.
     """
-    return "population" if cell() == "O50" else "assured"
+    return MortBasis.population if cell() == Cell.O50 else MortBasis.assured
 
 
 def mort_loading():
@@ -420,7 +414,7 @@ def mort_loading():
     pricing basis, so the loading is a placeholder to be calibrated - and a deliberately
     modest one, since population mortality is already heavier than insured experience.
     """
-    return mort_loading_o50 if cell() == "O50" else mort_loading_uw  # noqa: F821
+    return mort_loading_o50 if cell() == Cell.O50 else mort_loading_uw  # noqa: F821
 
 
 def mort_improve_factor(t):
@@ -436,6 +430,11 @@ def mort_improve_factor(t):
     return (1.0 - mort_improvement) ** duration(t)                   # noqa: F821
 
 
+def mort_schedule():
+    """The mortality rates of the policy's basis, sex and smoker status, by age."""
+    return data.mort_table().loc[(mort_basis(), sex(), smoker())]   # noqa: F821
+
+
 def mort_rate(t):
     """q(y): the annual mortality rate applied in the policy year containing month t.
 
@@ -443,8 +442,7 @@ def mort_rate(t):
     improvement factor, capped at 1.  Both shipped bases are **[std]** proxies shaped
     like the tables the notes name and are not published tables.
     """
-    q = float(data.mort_table().loc[                                 # noqa: F821
-        (mort_basis(), sex(), smoker(), age(t)), "mort_rate"])
+    q = float(mort_schedule().loc[age(t), "mort_rate"])
     return min(1.0, q * mort_loading() * mort_improve_factor(t))
 
 
@@ -463,9 +461,9 @@ def esc_cover_step():
     assumed and the decline rule is not implemented.
     """
     e = escalation()
-    if e == "level":
+    if e == Escalation.level:
         return 0.0
-    if e == "fixed_5pct":
+    if e == Escalation.fixed_5pct:
         return esc_fixed_cover * esc_take_up                         # noqa: F821
     return min(max(rpi_rate, 0.0), esc_rpi_cover_cap) * esc_take_up  # noqa: F821
 
@@ -478,9 +476,9 @@ def esc_prem_step():
     the source defines an increase only, with no decrease **[std]**.
     """
     e = escalation()
-    if e == "level":
+    if e == Escalation.level:
         return 0.0
-    if e == "fixed_5pct":
+    if e == Escalation.fixed_5pct:
         return esc_fixed_prem * esc_take_up                          # noqa: F821
     return min(max(esc_rpi_prem_mult * rpi_rate, 0.0),               # noqa: F821
                esc_rpi_prem_cap) * esc_take_up                       # noqa: F821
@@ -588,6 +586,11 @@ def crossover_mth():
     return -1
 
 
+def lapse_schedule():
+    """The lapse rates of the policy's cell, by policy year."""
+    return data.lapse_table().loc[cell()]                           # noqa: F821
+
+
 def lapse_rate_base(t):
     """The table annual lapse rate in month t **[std]**, before the crossover stress.
 
@@ -597,7 +600,7 @@ def lapse_rate_base(t):
     lapse study was retrieved - and on a product with no surrender value they are the
     single largest lever on the liability.
     """
-    tbl = data.lapse_table().loc[cell()]                             # noqa: F821
+    tbl = lapse_schedule()
     y = policy_year(t)
     return float(tbl.loc[min(y, int(tbl.index.max())), "lapse_rate"])
 
@@ -671,7 +674,7 @@ def pu_benefit(t):
     if t == 0:
         return 0.0
     return (pu_benefit(t - 1) * (1.0 - mort_rate_mth(t - 1))
-            + pols_convert(t - 1) * benefit_pp(t - 1, "PAID_UP"))
+            + pols_convert(t - 1) * benefit_pp(t - 1, BenefitKind.PAID_UP))
 
 
 def pols_all(t):
@@ -696,11 +699,11 @@ def pols_if_at(t, timing):
         the end-of-month count, the notes' ``l(t+1)``; zero in the last projected
         month, where the survivors are :func:`pols_maturity`.
     """
-    if timing == "BEF_DECR":
+    if timing == PolTiming.BEF_DECR:
         return pols_if(t)
-    if timing == "BEF_LAPSE":
+    if timing == PolTiming.BEF_LAPSE:
         return pols_if(t) * (1.0 - mort_rate_mth(t))
-    if timing == "AFT_DECR":
+    if timing == PolTiming.AFT_DECR:
         if t < 0 or t >= proj_len() - 1:
             return 0.0
         return pols_if(t + 1)
@@ -723,7 +726,7 @@ def pols_exit(t):
     What happens to them depends on :func:`pu_eligible`: they either terminate for
     nothing or convert to paid-up.
     """
-    return pols_if_at(t, "BEF_LAPSE") * lapse_rate_mth(t)
+    return pols_if_at(t, PolTiming.BEF_LAPSE) * lapse_rate_mth(t)
 
 
 def pols_convert(t):
@@ -785,25 +788,25 @@ def benefit_pp(t, kind):
         the pro-rata paid-up payout for a policy converting in month t,
         ``SA x N_paid / N_expected``.  Zero without the variant.
     """
-    if kind == "NON_ACC":
-        if cell() == "O50" and in_moratorium(t):
+    if kind == BenefitKind.NON_ACC:
+        if cell() == Cell.O50 and in_moratorium(t):
             return prem_cum_pp(t)
         return cover_pp(t)
-    if kind == "ACC":
-        if cell() != "O50":
+    if kind == BenefitKind.ACC:
+        if cell() != Cell.O50:
             return cover_pp(t)
         if in_moratorium(t):
             return cover_pp(t)
         return adb_multiplier() * cover_pp(t)
-    if kind == "DEATH":
-        if cell() == "O50":
-            return ((1.0 - acc_share) * benefit_pp(t, "NON_ACC")     # noqa: F821
-                    + acc_share * benefit_pp(t, "ACC"))              # noqa: F821
+    if kind == BenefitKind.DEATH:
+        if cell() == Cell.O50:
+            return ((1.0 - acc_share) * benefit_pp(t, BenefitKind.NON_ACC)     # noqa: F821
+                    + acc_share * benefit_pp(t, BenefitKind.ACC))              # noqa: F821
         if t < suicide_mths:                                         # noqa: F821
             return ((1.0 - suicide_share) * cover_pp(t)              # noqa: F821
                     + suicide_share * prem_cum_pp(t))                # noqa: F821
         return cover_pp(t)
-    if kind == "PAID_UP":
+    if kind == BenefitKind.PAID_UP:
         if not pu_variant():
             return 0.0
         return cover_pp(t) * payments_made(t) / payments_expected()
@@ -819,7 +822,7 @@ def premiums(t):
     return premium_pp(t) * pols_if(t)
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Death outgo in month t, by kind; the total when kind is omitted.
 
     ``"DEATH"``
@@ -834,20 +837,20 @@ def claims(t, kind=None):
         zero, always.  There is no surrender value at any time on either
         cell; the kind exists so the zero is stated rather than inferred.
     """
-    if kind is None:
-        return sum(claims(t, k) for k in ("DEATH", "DEATH_PU", "LAPSE"))
-    if kind == "DEATH":
-        return pols_death(t) * benefit_pp(t, "DEATH")
-    if kind == "DEATH_PU":
+    if kind == Kind.ALL:
+        return sum(claims(t, k) for k in (Kind.DEATH, Kind.DEATH_PU, Kind.LAPSE))
+    if kind == Kind.DEATH:
+        return pols_death(t) * benefit_pp(t, BenefitKind.DEATH)
+    if kind == Kind.DEATH_PU:
         return pu_benefit(t) * mort_rate_mth(t)
-    if kind == "LAPSE":
+    if kind == Kind.LAPSE:
         return 0.0
     raise ValueError("invalid kind")
 
 
 def expense_acq_pp():
     """The acquisition expense per policy at issue **[std]**: £150 on O50, £300 on UW."""
-    return expense_acq_o50 if cell() == "O50" else expense_acq_uw    # noqa: F821
+    return expense_acq_o50 if cell() == Cell.O50 else expense_acq_uw    # noqa: F821
 
 
 def expense_maint_pp():
@@ -857,7 +860,7 @@ def expense_maint_pp():
     so the expense margin erodes mechanically over a twenty-year-plus horizon.  A
     per-policy expense error compounds accordingly.
     """
-    return expense_maint_o50 if cell() == "O50" else expense_maint_uw  # noqa: F821
+    return expense_maint_o50 if cell() == Cell.O50 else expense_maint_uw  # noqa: F821
 
 
 def inflation_factor(t):
@@ -903,7 +906,7 @@ def net_cf(t):
     equal any column of that table.  Lapse contributes nothing at all: it moves
     :func:`pols_if` and pays no cash.
     """
-    return premiums(t) - claims(t) - expenses(t) - commissions(t)
+    return premiums(t) - claims(t, Kind.ALL) - expenses(t) - commissions(t)
 
 
 def check_pols_roll_fwd_resid(t):
@@ -959,9 +962,9 @@ def result_cf():
             "pols_if": [pols_if(t) for t in ts],
             "pols_pu": [pols_pu(t) for t in ts],
             "premiums": [premiums(t) for t in ts],
-            "claims_death": [claims(t, "DEATH") for t in ts],
-            "claims_death_pu": [claims(t, "DEATH_PU") for t in ts],
-            "claims_lapse": [claims(t, "LAPSE") for t in ts],
+            "claims_death": [claims(t, Kind.DEATH) for t in ts],
+            "claims_death_pu": [claims(t, Kind.DEATH_PU) for t in ts],
+            "claims_lapse": [claims(t, Kind.LAPSE) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "commissions": [commissions(t) for t in ts],
             "net_cf": [net_cf(t) for t in ts],
@@ -985,7 +988,7 @@ def result_pols():
             "pols_convert": [pols_convert(t) for t in ts],
             "prem_cum_pp": [prem_cum_pp(t) for t in ts],
             "cover_pp": [cover_pp(t) for t in ts],
-            "benefit_death_pp": [benefit_pp(t, "DEATH") for t in ts],
+            "benefit_death_pp": [benefit_pp(t, BenefitKind.DEATH) for t in ts],
             "mort_rate": [mort_rate(t) for t in ts],
             "lapse_rate": [lapse_rate(t) for t in ts],
         },
@@ -1043,3 +1046,19 @@ inflation_rate = 0.03
 comm_init_rate = 0.25
 
 pd = ("Module", "pandas")
+
+Cell = ("Pickle", 1)
+
+Sex = ("Pickle", 2)
+
+Smoker = ("Pickle", 3)
+
+Escalation = ("Pickle", 5)
+
+MortBasis = ("Pickle", 4)
+
+PolTiming = ("Pickle", 6)
+
+BenefitKind = ("Pickle", 7)
+
+Kind = ("Pickle", 8)

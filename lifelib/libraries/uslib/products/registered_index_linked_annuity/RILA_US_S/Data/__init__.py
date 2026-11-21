@@ -105,8 +105,9 @@ def model_point_table():
 
 def mort_table():
     """Annual mortality by attained age and sex, read from *mort_table.csv*."""
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file, index_col=["age", "sex"])     # noqa: F821
+    frame = pd.read_csv(input_dir() / mort_table_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["age", "sex"])
 
 
 def market_scenario():
@@ -176,3 +177,5 @@ lapse_file = "lapse_table.csv"
 withdrawal_file = "withdrawal_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)

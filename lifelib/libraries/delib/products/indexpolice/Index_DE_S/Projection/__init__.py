@@ -272,10 +272,7 @@ def sex():
     value with a floor rather than a sum at risk, mortality is a **timing** assumption and
     the choice moves the result very little.
     """
-    v = model_point()["sex"]
-    if v not in ("M", "F"):
-        raise ValueError("invalid sex")
-    return v
+    return Sex[model_point()["sex"]]
 
 
 def entry_age():
@@ -312,10 +309,7 @@ def ann_start_age():
 
 def prem_form():
     """``"level"`` (*laufender Beitrag*) or ``"single"`` (*Einmalbeitrag*)."""
-    v = model_point()["prem_form"]
-    if v not in ("level", "single"):
-        raise ValueError("invalid prem_form")
-    return v
+    return PremForm[model_point()["prem_form"]]
 
 
 def prem_freq():
@@ -323,10 +317,7 @@ def prem_freq():
 
     It selects the *Ratenzahlungszuschlag* in :func:`freq_load` and does nothing else.
     """
-    v = model_point()["prem_freq"]
-    if v not in ("annual", "half_yearly", "quarterly", "monthly"):
-        raise ValueError("invalid prem_freq")
-    return v
+    return PremFreq[model_point()["prem_freq"]]
 
 
 def prem_term_y():
@@ -387,10 +378,7 @@ def payoff_form():
     the *Quote* gives away a constant fraction in every state.  Model points 1 and 2 run
     them on the identical index path so the difference is visible rather than argued.
     """
-    v = model_point()["payoff_form"]
-    if v not in ("cap", "quote"):
-        raise ValueError("invalid payoff_form")
-    return v
+    return PayoffForm[model_point()["payoff_form"]]
 
 
 def index_id():
@@ -421,10 +409,7 @@ def ann_option():
     configuration of the model point, not a take-up rate: modelling it as a rate would
     stand in for a tax comparison this model does not perform.
     """
-    v = model_point()["ann_option"]
-    if v not in ("annuity", "cash"):
-        raise ValueError("invalid ann_option")
-    return v
+    return AnnOption[model_point()["ann_option"]]
 
 
 def surr_charge_on():
@@ -568,7 +553,7 @@ def prem_sum():
     collected is 2,520.00 EUR a year while ``prem_sum()`` is 2,400.00 x 32 = 76,800.00 EUR.
     Getting that wrong is a numbered pitfall.
     """
-    if prem_form() == "single":
+    if prem_form() == PremForm.single:
         return float(model_point()["prem_gross_pp"])
     return float(model_point()["prem_gross_pp"]) * prem_term_y()
 
@@ -595,7 +580,7 @@ def prem_base_pp(k):
     """
     if k < k_start() or k >= proj_len_y():
         return 0.0
-    if prem_form() == "single":
+    if prem_form() == PremForm.single:
         return float(model_point()["prem_gross_pp"]) if k == k_start() else 0.0
     return float(model_point()["prem_gross_pp"]) if k < prem_term_y() else 0.0
 
@@ -627,7 +612,7 @@ def prem_charge_acq_pp(k):
     if k < k_start() or k >= proj_len_y():
         return 0.0
     charge = min(acq_cost_rate, zill_cap_rate) * prem_sum()          # noqa: F821
-    if prem_form() == "single":
+    if prem_form() == PremForm.single:
         return charge if k == k_start() else 0.0
     spread = min(zill_years, prem_term_y())                          # noqa: F821
     return charge / spread if k < spread else 0.0
@@ -649,7 +634,7 @@ def prem_charge_acq_min_pp(k):
     if k < k_start() or k >= proj_len_y():
         return 0.0
     charge = min(acq_cost_rate, zill_cap_rate) * prem_sum()          # noqa: F821
-    if prem_form() == "single":
+    if prem_form() == PremForm.single:
         return charge if k == k_start() else 0.0
     spread = min(5, prem_term_y())
     return charge / spread if k < spread else 0.0
@@ -742,6 +727,11 @@ def surplus_rate(k):
     return float(data.surplus_rate_table().loc[k, "surplus_rate"])   # noqa: F821
 
 
+def election_schedule():
+    """The Wahlrecht path of this policy's elect_id, by policy year."""
+    return data.election_table().loc[elect_id()]                     # noqa: F821
+
+
 def elect_index(k):
     """``w(k)``: the fraction of year k's declared surplus directed to the index arm.
 
@@ -752,8 +742,8 @@ def elect_index(k):
     established, and ``always_index`` is a modelling choice made so that the base run
     demonstrates the index mechanic rather than a claim about behaviour.
     """
-    return float(data.election_table().loc[                          # noqa: F821
-        (elect_id(), k), "w"])
+    sub = election_schedule()
+    return float(sub.loc[k, "w"])
 
 
 def index_base_pp(k):
@@ -808,7 +798,7 @@ def pols_surv_year_end(k):
     What the monthly grid adds is that the lives which forfeited the year's credit are now
     dated — and the forfeiture is a month's event rather than a year-end lump.
     """
-    return pols_if_at(12 * k + 11, "AFT_LAPSE")
+    return pols_if_at(12 * k + 11, PolsTiming.AFT_LAPSE)
 
 
 def pols_death_year(k):
@@ -833,6 +823,11 @@ def surplus_credit(k):
 
 # --- the Indexjahr -----------------------------------------------------------
 
+def index_return_schedule():
+    """The monthly index returns of this policy's index_id, by policy year."""
+    return data.index_return_table().loc[index_id()]                 # noqa: F821
+
+
 def index_return(k, m):
     """``r(k, m)``: the index return of month m of *Indexjahr* k, as a decimal.
 
@@ -841,8 +836,33 @@ def index_return(k, m):
     *Indexstichtag* need not fall on the policy anniversary, no carrier's convention was
     established, and an annual-grid model has no other defensible alignment.
     """
-    return float(data.index_return_table().loc[                      # noqa: F821
-        (index_id(), k), "m%02d" % m])
+    sub = index_return_schedule()
+    if m == 1:
+        return float(sub.loc[k, "m01"])
+    elif m == 2:
+        return float(sub.loc[k, "m02"])
+    elif m == 3:
+        return float(sub.loc[k, "m03"])
+    elif m == 4:
+        return float(sub.loc[k, "m04"])
+    elif m == 5:
+        return float(sub.loc[k, "m05"])
+    elif m == 6:
+        return float(sub.loc[k, "m06"])
+    elif m == 7:
+        return float(sub.loc[k, "m07"])
+    elif m == 8:
+        return float(sub.loc[k, "m08"])
+    elif m == 9:
+        return float(sub.loc[k, "m09"])
+    elif m == 10:
+        return float(sub.loc[k, "m10"])
+    elif m == 11:
+        return float(sub.loc[k, "m11"])
+    elif m == 12:
+        return float(sub.loc[k, "m12"])
+    else:
+        raise ValueError("invalid month")
 
 
 def index_return_mth(t):
@@ -867,6 +887,11 @@ def index_return_capped_mth(t):
     return index_return_capped(duration(t), index_month(t))
 
 
+def index_param_schedule():
+    """The Cap and Quote of this policy's index_id, by policy year."""
+    return data.index_param_table().loc[index_id()]                  # noqa: F821
+
+
 def index_cap(k):
     """``C(k)``: the monthly Cap of *Indexjahr* k.
 
@@ -882,8 +907,8 @@ def index_cap(k):
     is why the Cap and :func:`surplus_rate` may not be chosen independently — see
     :func:`index_budget_ratio`.
     """
-    return float(data.index_param_table().loc[                       # noqa: F821
-        (index_id(), k), "cap"])
+    sub = index_param_schedule()
+    return float(sub.loc[k, "cap"])
 
 
 def index_quote(k):
@@ -894,8 +919,8 @@ def index_quote(k):
     same budget buys when the underlying is engineered to be cheap, and it moves the
     give-up from somewhere the purchaser can see to somewhere they cannot.
     """
-    return float(data.index_param_table().loc[                       # noqa: F821
-        (index_id(), k), "quote"])
+    sub = index_param_schedule()
+    return float(sub.loc[k, "quote"])
 
 
 def index_return_capped(k, m):
@@ -950,7 +975,7 @@ def index_credit_rate(k):
     and it is the only reason the arm has a positive expectation at all — with a 3 % cap on
     a 17 %-volatility index the expected value of a *capped month* is negative.
     """
-    if payoff_form() == "quote":
+    if payoff_form() == PayoffForm.quote:
         return max(index_quote(k) * index_return_year(k), 0.0)
     return max(index_sum(k), 0.0)
 
@@ -1025,7 +1050,7 @@ def av_pp(k):
         return 0.0
     if k == k_start():
         return av_pp_init()
-    return av_pp_at(k - 1, "AFT_CREDIT")
+    return av_pp_at(k - 1, AvTiming.AFT_CREDIT)
 
 
 def av_pp_at(k, timing):
@@ -1052,16 +1077,16 @@ def av_pp_at(k, timing):
         The maturity benefit is struck here and the two other exits are not,
         which is the product's own asymmetry and not a rounding of it.
     """
-    if timing == "BEF_PREM":
+    if timing == AvTiming.BEF_PREM:
         return av_pp(k)
-    if timing == "AFT_PREM":
+    if timing == AvTiming.AFT_PREM:
         return av_pp(k) + prem_to_av_pp(k)
-    if timing == "AFT_CHARGE":
-        return av_pp_at(k, "AFT_PREM") - av_charge_pp(k)
-    if timing == "AFT_GUAR":
-        return av_pp_at(k, "AFT_CHARGE") + guar_int_pp(k)
-    if timing == "AFT_CREDIT":
-        return (av_pp_at(k, "AFT_GUAR")
+    if timing == AvTiming.AFT_CHARGE:
+        return av_pp_at(k, AvTiming.AFT_PREM) - av_charge_pp(k)
+    if timing == AvTiming.AFT_GUAR:
+        return av_pp_at(k, AvTiming.AFT_CHARGE) + guar_int_pp(k)
+    if timing == AvTiming.AFT_CREDIT:
+        return (av_pp_at(k, AvTiming.AFT_GUAR)
                 + index_credit_pp(k) + surplus_credit_pp(k))
     raise ValueError("invalid timing")
 
@@ -1073,7 +1098,7 @@ def av_charge_pp(k):
     from the account rather than from the premium.  A **charge**, not an expense: it
     reduces the policyholder's *Deckungskapital* and does not appear in ``net_cf``.
     """
-    return exp_av_rate * av_pp_at(k, "AFT_PREM")                     # noqa: F821
+    return exp_av_rate * av_pp_at(k, AvTiming.AFT_PREM)                     # noqa: F821
 
 
 def av_charge(k):
@@ -1089,7 +1114,7 @@ def guar_int_pp(k):
     it is spent.  A model that credits the guarantee *and* the declared rate *and* the
     index payoff has spent the same money three times.
     """
-    return guar_rate() * av_pp_at(k, "AFT_CHARGE")
+    return guar_rate() * av_pp_at(k, AvTiming.AFT_CHARGE)
 
 
 def guar_int(k):
@@ -1144,7 +1169,7 @@ def av_released(k):
     ``net_cf``, not in the account roll-forward — which is exactly what makes
     :func:`check_av_roll_fwd` an exact identity rather than an approximate one.
     """
-    return (av_pp_at(k, "AFT_GUAR") * (pols_death_year(k) + pols_lapse_year(k))
+    return (av_pp_at(k, AvTiming.AFT_GUAR) * (pols_death_year(k) + pols_lapse_year(k))
             + av_pp(k + 1) * pols_maturity(12 * (k + 1) - 1))
 
 
@@ -1167,7 +1192,7 @@ def av_min_pp(k):
         return 0.0
     if k == k_start():
         return av_pp_init()
-    return av_min_pp_at(k - 1, "AFT_CREDIT")
+    return av_min_pp_at(k - 1, AvTiming.AFT_CREDIT)
 
 
 def av_min_pp_at(k, timing):
@@ -1176,17 +1201,17 @@ def av_min_pp_at(k, timing):
     Identical in structure, so that a reader comparing the two accounts is comparing one
     number — the acquisition charge — and not two recursions.
     """
-    if timing == "BEF_PREM":
+    if timing == AvTiming.BEF_PREM:
         return av_min_pp(k)
-    if timing == "AFT_PREM":
+    if timing == AvTiming.AFT_PREM:
         return (av_min_pp(k) + prem_gross_pp(k) - prem_charge_acq_min_pp(k)
                 - prem_charge_adm_pp(k))
-    if timing == "AFT_CHARGE":
-        return av_min_pp_at(k, "AFT_PREM") * (1.0 - exp_av_rate)     # noqa: F821
-    if timing == "AFT_GUAR":
-        return av_min_pp_at(k, "AFT_CHARGE") * (1.0 + guar_rate())
-    if timing == "AFT_CREDIT":
-        return (av_min_pp_at(k, "AFT_GUAR")
+    if timing == AvTiming.AFT_CHARGE:
+        return av_min_pp_at(k, AvTiming.AFT_PREM) * (1.0 - exp_av_rate)     # noqa: F821
+    if timing == AvTiming.AFT_GUAR:
+        return av_min_pp_at(k, AvTiming.AFT_CHARGE) * (1.0 + guar_rate())
+    if timing == AvTiming.AFT_CREDIT:
+        return (av_min_pp_at(k, AvTiming.AFT_GUAR)
                 + index_credit_pp(k) + surplus_credit_pp(k))
     raise ValueError("invalid timing")
 
@@ -1242,6 +1267,11 @@ def guar_cap_pp(k):
 
 # --- decrements --------------------------------------------------------------
 
+def mort_schedule():
+    """The death rates of this policy's sex, by attained age."""
+    return data.mort_table().loc[sex()]                              # noqa: F821
+
+
 def mort_rate(t):
     """``q_d(t)``: the **annual** death rate at the attained age of month t.
 
@@ -1253,7 +1283,8 @@ def mort_rate(t):
     The **annual** rate, flat across a policy year because the attained age steps on the
     anniversary; :func:`mort_rate_mth` is what the monthly recursion applies.
     """
-    return float(data.mort_table().loc[(sex(), age(t)), "qx"])       # noqa: F821
+    sub = mort_schedule()
+    return float(sub.loc[age(t), "qx"])
 
 
 def mort_rate_mth(t):
@@ -1344,7 +1375,7 @@ def pols_if(t):
         return pols_if_init()
     if t == proj_len():
         return 0.0
-    return pols_if_at(t - 1, "AFT_LAPSE")
+    return pols_if_at(t - 1, PolsTiming.AFT_LAPSE)
 
 
 def pols_if_at(t, timing):
@@ -1366,12 +1397,12 @@ def pols_if_at(t, timing):
         population the *Indexjahr* credit is given to; in the final policy
         year the surrender rate is zero, so that is the maturing cohort.
     """
-    if timing == "BEF_DECR":
+    if timing == PolsTiming.BEF_DECR:
         return pols_if(t)
-    if timing == "AFT_DEATH":
+    if timing == PolsTiming.AFT_DEATH:
         return pols_if(t) - pols_death(t)
-    if timing == "AFT_LAPSE":
-        return pols_if_at(t, "AFT_DEATH") - pols_lapse(t)
+    if timing == PolsTiming.AFT_LAPSE:
+        return pols_if_at(t, PolsTiming.AFT_DEATH) - pols_lapse(t)
     raise ValueError("invalid timing")
 
 
@@ -1388,7 +1419,7 @@ def pols_lapse(t):
     year's *Indexgutschrift* — the payoff exists only at the *Indexjahr* end — which is the
     behavioural asymmetry the annual grid could state but not date.
     """
-    return pols_if_at(t, "AFT_DEATH") * lapse_rate_mth(t)
+    return pols_if_at(t, PolsTiming.AFT_DEATH) * lapse_rate_mth(t)
 
 
 def pols_maturity(t):
@@ -1400,7 +1431,7 @@ def pols_maturity(t):
     """
     if t != proj_len() - 1:
         return 0.0
-    return pols_if_at(t, "AFT_LAPSE")
+    return pols_if_at(t, PolsTiming.AFT_LAPSE)
 
 
 # --- benefits ----------------------------------------------------------------
@@ -1419,7 +1450,7 @@ def db_pp(k):
     index credit**: the payoff exists only at the *Indexjahr* end **[std]**, so a death in
     month 7 forfeits it.
     """
-    return max(av_pp_at(k, "AFT_GUAR"), death_min_rate() * prem_sum())
+    return max(av_pp_at(k, AvTiming.AFT_GUAR), death_min_rate() * prem_sum())
 
 
 def min_surr_pp(k):
@@ -1434,7 +1465,7 @@ def min_surr_pp(k):
     conflating the two is a numbered pitfall.  With ``zill_years = 5`` they coincide and
     this floor is a no-op.
     """
-    return av_min_pp_at(k, "AFT_GUAR")
+    return av_min_pp_at(k, AvTiming.AFT_GUAR)
 
 
 def surr_charge_pp(k):
@@ -1447,7 +1478,7 @@ def surr_charge_pp(k):
     observed band runs from 0 % to 20 %, so 2 % is a deliberately mild **[std]**.
     """
     return (storno_rate * surr_charge_on()                           # noqa: F821
-            * max(av_pp_at(k, "AFT_GUAR"), min_surr_pp(k)))
+            * max(av_pp_at(k, AvTiming.AFT_GUAR), min_surr_pp(k)))
 
 
 def cv_pp(k):
@@ -1463,7 +1494,7 @@ def cv_pp(k):
     penalises surrendering just before one, and an annual grid with exits at the year end
     silently gives every surrender the favourable date.
     """
-    return max(av_pp_at(k, "AFT_GUAR"), min_surr_pp(k)) - surr_charge_pp(k)
+    return max(av_pp_at(k, AvTiming.AFT_GUAR), min_surr_pp(k)) - surr_charge_pp(k)
 
 
 def mat_pp(k):
@@ -1484,7 +1515,7 @@ def mat_pp(k):
     return max(av_pp(proj_len_y()), guar_cap_pp(proj_len_y()))
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Benefit outgo in **month** t, by kind; the total when kind is omitted.
 
     The **counts are monthly and the amounts are annual**, which is the shape of this
@@ -1508,13 +1539,13 @@ def claims(t, kind=None):
     different amounts — the maturity includes the year's *Indexjahr* and the other two do
     not — and that is the product's own rule.
     """
-    if kind is None:
-        return sum(claims(t, j) for j in ("DEATH", "LAPSE", "MATURITY"))
-    if kind == "DEATH":
+    if kind == ClaimKind.ALL:
+        return sum(claims(t, j) for j in (ClaimKind.DEATH, ClaimKind.LAPSE, ClaimKind.MATURITY))
+    if kind == ClaimKind.DEATH:
         return db_pp(duration(t)) * pols_death(t)
-    if kind == "LAPSE":
+    if kind == ClaimKind.LAPSE:
         return cv_pp(duration(t)) * pols_lapse(t)
-    if kind == "MATURITY":
+    if kind == ClaimKind.MATURITY:
         return mat_pp(duration(t)) * pols_maturity(t)
     raise ValueError("invalid kind")
 
@@ -1543,7 +1574,7 @@ def ann_monthly_pp():
     years out understates the liability by a margin that dwarfs every other assumption here,
     which is why the model **reports** an annuity and does not compute one.
     """
-    if ann_option() != "annuity":
+    if ann_option() != AnnOption.annuity:
         return 0.0
     return mat_pp(proj_len_y() - 1) / 10000.0 * rentenfaktor()
 
@@ -1607,8 +1638,8 @@ def net_cf(t):
     reported beside it and are **not** in it: they are movements of the policyholder's
     account, and they reach the insurer's cash flow only later, through a benefit.
     """
-    return (premiums(t) - claims(t, "DEATH") - claims(t, "LAPSE")
-            - claims(t, "MATURITY") - expenses(t))
+    return (premiums(t) - claims(t, ClaimKind.DEATH) - claims(t, ClaimKind.LAPSE)
+            - claims(t, ClaimKind.MATURITY) - expenses(t))
 
 
 def liability_cf(t):
@@ -1642,7 +1673,7 @@ def check_net_cf_resid(t):
     delib requires this cells of every model in the library: no model's headline number may
     be reconciled only in prose.
     """
-    return net_cf(t) - (premiums(t) - claims(t) - expenses(t))
+    return net_cf(t) - (premiums(t) - claims(t, ClaimKind.ALL) - expenses(t))
 
 
 def check_net_cf():
@@ -1652,7 +1683,7 @@ def check_net_cf():
     :func:`check_net_cf_resid` gives the signed residual of the month that failed.
     """
     return bool(all(abs(check_net_cf_resid(t)) <= roll_fwd_tol       # noqa: F821
-                    * max(abs(premiums(t)), abs(claims(t)),
+                    * max(abs(premiums(t)), abs(claims(t, ClaimKind.ALL)),
                           abs(expenses(t)), 1.0)
                     for t in range(t_start(), proj_len())))
 
@@ -1795,7 +1826,7 @@ def check_index_credit_resid(k):
     Cap to the annual return instead of the monthly one, or that forgets the floor
     altogether, breaks a bound here.
     """
-    if payoff_form() == "quote":
+    if payoff_form() == PayoffForm.quote:
         upper = index_quote(k) * max(index_return_year(k), 0.0)
     else:
         upper = 12.0 * index_cap(k)
@@ -1837,9 +1868,9 @@ def result_cf():
         {
             "pols_if": [pols_if(t) for t in ts],
             "premiums": [premiums(t) for t in ts],
-            "claims_death": [claims(t, "DEATH") for t in ts],
-            "claims_lapse": [claims(t, "LAPSE") for t in ts],
-            "claims_maturity": [claims(t, "MATURITY") for t in ts],
+            "claims_death": [claims(t, ClaimKind.DEATH) for t in ts],
+            "claims_lapse": [claims(t, ClaimKind.LAPSE) for t in ts],
+            "claims_maturity": [claims(t, ClaimKind.MATURITY) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "liability_cf": [liability_cf(t) for t in ts],
             "net_cf": [net_cf(t) for t in ts],
@@ -1936,3 +1967,19 @@ rentenfaktor_curr = 25.0
 roll_fwd_tol = 1e-08
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+PremForm = ("Pickle", 3)
+
+PremFreq = ("Pickle", 2)
+
+PayoffForm = ("Pickle", 4)
+
+AnnOption = ("Pickle", 5)
+
+AvTiming = ("Pickle", 6)
+
+PolsTiming = ("Pickle", 7)
+
+ClaimKind = ("Pickle", 8)

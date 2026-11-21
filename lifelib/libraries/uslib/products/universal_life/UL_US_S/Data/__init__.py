@@ -83,9 +83,10 @@ def coi_rates():
 
     Per $1,000 of net amount at risk, keyed by issue-age cell and policy year.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / coi_rates_file,                                # noqa: F821
-        index_col=["sex", "rate_class", "age_at_entry", "policy_year"])
+    frame = pd.read_csv(input_dir() / coi_rates_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    frame["rate_class"] = [RateClass[name] for name in frame["rate_class"]]
+    return frame.set_index(["sex", "rate_class", "age_at_entry", "policy_year"])
 
 
 def corridor_factors():
@@ -100,7 +101,9 @@ def mort_table():
 
 def class_factor_table():
     """The underwriting-class factors, read from *class_factor_table.csv*."""
-    return pd.read_csv(input_dir() / class_factor_file, index_col="rate_class")  # noqa: F821
+    frame = pd.read_csv(input_dir() / class_factor_file)             # noqa: F821
+    frame["rate_class"] = [RateClass[name] for name in frame["rate_class"]]
+    return frame.set_index("rate_class")
 
 
 def lapse_table():
@@ -142,3 +145,7 @@ prem_persistency_file = "prem_persistency.csv"
 surr_charge_file = "surr_charge_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+RateClass = ("Pickle", 2)

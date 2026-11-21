@@ -262,7 +262,7 @@ def sex():
     funeral rate card rates by sex, and acceptance is guaranteed with no medical
     selection of any kind.
     """
-    return model_point()["sex"]
+    return Sex[model_point()["sex"]]
 
 
 def age_at_entry():
@@ -295,10 +295,7 @@ def premium_form():
     later.  It decides the paying period, whether a premium-stop decrement applies at all,
     and whether the contract can overrun its own capital.
     """
-    v = model_point()["premium_form"]
-    if v not in ("single", "temporary", "lifetime"):
-        raise ValueError("invalid premium_form")
-    return v
+    return PremiumForm[model_point()["premium_form"]]
 
 
 def prem_term_y():
@@ -364,10 +361,7 @@ def carence_refund_basis():
     premium, net of instalment charges.  Gross is the reference **[std]**; the other two
     are carried because they are what two retrieved contracts actually say.
     """
-    v = model_point()["carence_refund_basis"]
-    if v not in ("gross", "net_assistance", "net_instalment"):
-        raise ValueError("invalid carence_refund_basis")
-    return v
+    return RefundBasis[model_point()["carence_refund_basis"]]
 
 
 def carence_refund_rate():
@@ -467,7 +461,7 @@ def surr_scale():
     so that the three are consistent, and feeding one insurer's premium into another's
     grid produces plausible-looking and wrong margins.
     """
-    return model_point()["surr_scale"]
+    return SurrScale[model_point()["surr_scale"]]
 
 
 def issue_month():
@@ -540,6 +534,11 @@ def age(t):
     return age_at_entry() + duration(t)
 
 
+def mort_schedule():
+    """The base mortality rates at the policy's sex, by attained age."""
+    return data.mort_table().loc[sex()]                              # noqa: F821
+
+
 def mort_rate_base(x):
     """q_base(x, sex): the table mortality rate at attained age x.
 
@@ -549,7 +548,7 @@ def mort_rate_base(x):
     walk-through basis exactly.  TH 00-02 and TF 00-02 are the homologated regulatory
     tables for this product; they are cited by name and never redistributed here.
     """
-    return float(data.mort_table().loc[(sex(), x), "mort_rate"])     # noqa: F821
+    return float(mort_schedule().loc[x, "mort_rate"])
 
 
 def select_uplift(t):
@@ -627,7 +626,7 @@ def lapse_rate(t):
     optionally stressed by ``1 + beta`` once cumulative premiums have passed the capital,
     which is off in the base run.
     """
-    if premium_form() == "single" or not in_paying_period(t):
+    if premium_form() == PremiumForm.single or not in_paying_period(t):
         return 0.0
     w = lapse_rate_base(t)
     if lapse_overrun_beta > 0.0 and cum_prem_pp(t) > capital_pp(t):  # noqa: F821
@@ -657,9 +656,9 @@ def in_paying_period(t):
     otherwise until the anniversary at which the attained age reaches it.
     """
     form = premium_form()
-    if form == "single":
+    if form == PremiumForm.single:
         return t == 0
-    if form == "temporary":
+    if form == PremiumForm.temporary:
         return t < 12 * prem_term_y()
     return prem_cease_age() == 0 or age(t) < prem_cease_age()
 
@@ -733,7 +732,7 @@ def surr_scale_anchors():
     hundred projected months.
     """
     tbl = data.surr_scale_table().loc[surr_scale()]                  # noqa: F821
-    return [(int(m), float(v)) for m, v in zip(tbl.index, tbl["surr_value"])]
+    return [(int(m), float(tbl.loc[m, "surr_value"])) for m in tbl.index]
 
 
 def surr_scale_pp(t):
@@ -842,10 +841,10 @@ def refund_pp(t):
     """
     base = cum_prem_pp(t)
     basis = carence_refund_basis()
-    if basis == "net_assistance":
+    if basis == RefundBasis.net_assistance:
         years = policy_year(t)
         base = max(0.0, base - assistance_prem_pp * years)           # noqa: F821
-    elif basis == "net_instalment" and prem_freq() > 1:
+    elif basis == RefundBasis.net_instalment and prem_freq() > 1:
         base = base / (1.0 + instalment_load)                        # noqa: F821
     return base * (1.0 + carence_refund_rate()) ** ((duration_mth(t) + 1) / 12.0)
 
@@ -876,16 +875,16 @@ def benefit_pp(t, kind):
         :func:`reduced_capital_pp`.  A paid-up policy is treated as past
         the waiting period and pays that amount for any cause.
     """
-    if kind == "ILL":
+    if kind == BenefitKind.ILL:
         return refund_pp(t) if in_carence(t) else capital_pp(t)
-    if kind == "ACC":
+    if kind == BenefitKind.ACC:
         if in_carence(t):
             return capital_pp(t)
         return min(accident_mult() * capital_pp(t), accident_cap)    # noqa: F821
-    if kind == "DEATH":
-        return ((1.0 - acc_share) * benefit_pp(t, "ILL")             # noqa: F821
-                + acc_share * benefit_pp(t, "ACC"))                  # noqa: F821
-    if kind == "PAID_UP":
+    if kind == BenefitKind.DEATH:
+        return ((1.0 - acc_share) * benefit_pp(t, BenefitKind.ILL)             # noqa: F821
+                + acc_share * benefit_pp(t, BenefitKind.ACC))                  # noqa: F821
+    if kind == BenefitKind.PAID_UP:
         return reduced_capital_pp(t)
     raise ValueError("invalid kind")
 
@@ -940,7 +939,7 @@ def capital_paid_up(t):
     if t == 0:
         return 0.0
     return (capital_paid_up(t - 1) * (1.0 - mort_rate_mth(t - 1))
-            + pols_convert(t - 1) * benefit_pp(t - 1, "PAID_UP"))
+            + pols_convert(t - 1) * benefit_pp(t - 1, BenefitKind.PAID_UP))
 
 
 def pols_all(t):
@@ -965,11 +964,11 @@ def pols_if_at(t, timing):
     ``"AFT_DECR"``
         the end-of-month count, the notes' ``l(t + 1)``.
     """
-    if timing == "BEF_DECR":
+    if timing == PolTiming.BEF_DECR:
         return pols_if(t)
-    if timing == "BEF_LAPSE":
+    if timing == PolTiming.BEF_LAPSE:
         return pols_if(t) * (1.0 - mort_rate_mth(t))
-    if timing == "AFT_DECR":
+    if timing == PolTiming.AFT_DECR:
         return pols_if(t + 1)
     raise ValueError("invalid timing")
 
@@ -994,7 +993,7 @@ def pols_exit(t):
     the rest surrenders and is paid the *provision mathematique*.  Neither is a
     forfeiture, which is the structural difference from the UK sibling.
     """
-    return pols_if_at(t, "BEF_LAPSE") * lapse_rate_mth(t)
+    return pols_if_at(t, PolTiming.BEF_LAPSE) * lapse_rate_mth(t)
 
 
 def pols_convert(t):
@@ -1019,11 +1018,11 @@ def pols_lapse(t):
 def crossover_mth(basis):
     """The first month in which cumulative premiums exceed the capital, by basis.
 
-    ``"ISSUE"``
+    ``CrossoverBasis.ISSUE``
         against the capital **at issue**, ``capital_0()``: ``t = 168``
         on the anchor cell, policy year 15.
 
-    ``"CURRENT"``
+    ``CrossoverBasis.CURRENT``
         against the **revalorised** capital in force: ``t = 204``, policy
         year 18 - three years later, because the capital has been
         growing too.
@@ -1045,10 +1044,10 @@ def crossover_mth(basis):
     columns by the age at the **end** of the year, so their "age 65" column is this
     model's attained age 64.
     """
-    if basis not in ("ISSUE", "CURRENT"):
+    if basis not in (CrossoverBasis.ISSUE, CrossoverBasis.CURRENT):
         raise ValueError("invalid basis")
     for t in range(proj_len()):
-        target = capital_0() if basis == "ISSUE" else capital_pp(t)
+        target = capital_0() if basis == CrossoverBasis.ISSUE else capital_pp(t)
         if cum_prem_pp(t) > target:
             return t
     return -1
@@ -1064,7 +1063,7 @@ def premiums(t):
     return prem_due_pp(t) * pols_if(t)
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Benefit outgo in month t, by kind; the total when kind is omitted.
 
     ``"DEATH"``
@@ -1095,13 +1094,13 @@ def claims(t, kind=None):
     the contract ends only on death, on *rachat* or on lapse, and maturity outgo is
     identically zero because there is no maturity.
     """
-    if kind is None:
-        return sum(claims(t, k) for k in ("DEATH", "DEATH_PAID_UP", "LAPSE"))
-    if kind == "DEATH":
-        return pols_death(t) * benefit_pp(t, "DEATH")
-    if kind == "DEATH_PAID_UP":
+    if kind == Kind.ALL:
+        return sum(claims(t, k) for k in (Kind.DEATH, Kind.DEATH_PAID_UP, Kind.LAPSE))
+    if kind == Kind.DEATH:
+        return pols_death(t) * benefit_pp(t, BenefitKind.DEATH)
+    if kind == Kind.DEATH_PAID_UP:
         return capital_paid_up(t) * mort_rate_mth(t)
-    if kind == "LAPSE":
+    if kind == Kind.LAPSE:
         return pols_lapse(t) * surr_value_pp(t)
     raise ValueError("invalid kind")
 
@@ -1143,8 +1142,8 @@ def liability_cf(t):
     the two side by side; :func:`net_cf` is its exact negative and is the library-wide
     sign.
     """
-    return (claims(t, "DEATH") + claims(t, "DEATH_PAID_UP")
-            + claims(t, "LAPSE") + expenses(t) - premiums(t))
+    return (claims(t, Kind.DEATH) + claims(t, Kind.DEATH_PAID_UP)
+            + claims(t, Kind.LAPSE) + expenses(t) - premiums(t))
 
 
 def net_cf(t):
@@ -1297,9 +1296,9 @@ def result_cf():
             "pols_if": [pols_if(t) for t in ts],
             "pols_paid_up": [pols_paid_up(t) for t in ts],
             "premiums": [premiums(t) for t in ts],
-            "claims_death": [claims(t, "DEATH") for t in ts],
-            "claims_death_paid_up": [claims(t, "DEATH_PAID_UP") for t in ts],
-            "claims_lapse": [claims(t, "LAPSE") for t in ts],
+            "claims_death": [claims(t, Kind.DEATH) for t in ts],
+            "claims_death_paid_up": [claims(t, Kind.DEATH_PAID_UP) for t in ts],
+            "claims_lapse": [claims(t, Kind.LAPSE) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "liability_cf": [liability_cf(t) for t in ts],
             "net_cf": [net_cf(t) for t in ts],
@@ -1320,7 +1319,7 @@ def result_pols():
             "pols_convert": [pols_convert(t) for t in ts],
             "capital_pp": [capital_pp(t) for t in ts],
             "cum_prem_pp": [cum_prem_pp(t) for t in ts],
-            "benefit_ill_pp": [benefit_pp(t, "ILL") for t in ts],
+            "benefit_ill_pp": [benefit_pp(t, BenefitKind.ILL) for t in ts],
             "surr_value_pp": [surr_value_pp(t) for t in ts],
             "mort_rate": [mort_rate(t) for t in ts],
             "lapse_rate": [lapse_rate(t) for t in ts],
@@ -1363,3 +1362,19 @@ inflation_rate = 0.018
 roll_fwd_tol = 1e-10
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+PremiumForm = ("Pickle", 3)
+
+RefundBasis = ("Pickle", 4)
+
+SurrScale = ("Pickle", 2)
+
+PolTiming = ("Pickle", 5)
+
+BenefitKind = ("Pickle", 6)
+
+Kind = ("Pickle", 7)
+
+CrossoverBasis = ("Pickle", 8)

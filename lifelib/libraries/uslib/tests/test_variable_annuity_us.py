@@ -30,6 +30,7 @@ import modelx as mx
 import pytest
 
 from us_registry import LIB
+from lifelib.libraries.uslib.products.variable_annuity.enums import Claim, FeeResetRule, GmdbOption, PolTiming, RollupRule, StepupBasis, Timing
 
 MODEL_PATH = LIB / "products/variable_annuity/VA_US_S"
 
@@ -165,9 +166,9 @@ def test_worked_example_step_1_bom_balances(reading):
     """Step 1: BOM balances 66,000.00 / 44,000.00, total 110,000.00."""
     p, t = reading
     g = WORKED_EXAMPLE
-    assert p.sa_pp_at(t, 1, "BEF_PREM") == pytest.approx(g["sa1_bom"], abs=CENT)
-    assert p.sa_pp_at(t, 2, "BEF_PREM") == pytest.approx(g["sa2_bom"], abs=CENT)
-    assert p.av_pp_at(t, "BEF_PREM") == pytest.approx(g["av_bom"], abs=CENT)
+    assert p.sa_pp_at(t, 1, Timing.BEF_PREM) == pytest.approx(g["sa1_bom"], abs=CENT)
+    assert p.sa_pp_at(t, 2, Timing.BEF_PREM) == pytest.approx(g["sa2_bom"], abs=CENT)
+    assert p.av_pp_at(t, Timing.BEF_PREM) == pytest.approx(g["av_bom"], abs=CENT)
 
 
 def test_worked_example_steps_2_and_3_no_premium_no_withdrawal(reading):
@@ -175,7 +176,7 @@ def test_worked_example_steps_2_and_3_no_premium_no_withdrawal(reading):
     p, t = reading
     assert p.premium_pp(t) == 0.0
     assert p.wd_pp(t) == 0.0
-    assert p.av_pp_at(t, "BEF_INV") == pytest.approx(
+    assert p.av_pp_at(t, Timing.BEF_INV) == pytest.approx(
         WORKED_EXAMPLE["av_bom"], abs=CENT)
 
 
@@ -187,9 +188,9 @@ def test_worked_example_step_4_growth(reading):
     assert p.inv_return_mth(t, 2) == -0.0030
     assert p.unit_growth(t, 1) == pytest.approx(g["growth_1"], abs=FACTOR)
     assert p.unit_growth(t, 2) == pytest.approx(g["growth_2"], abs=FACTOR)
-    assert p.sa_pp_at(t, 1, "BEF_FEE") == pytest.approx(g["sa1_aft_growth"], abs=CENT)
-    assert p.sa_pp_at(t, 2, "BEF_FEE") == pytest.approx(g["sa2_aft_growth"], abs=CENT)
-    assert p.av_pp_at(t, "BEF_FEE") == pytest.approx(g["av_aft_growth"], abs=CENT)
+    assert p.sa_pp_at(t, 1, Timing.BEF_FEE) == pytest.approx(g["sa1_aft_growth"], abs=CENT)
+    assert p.sa_pp_at(t, 2, Timing.BEF_FEE) == pytest.approx(g["sa2_aft_growth"], abs=CENT)
+    assert p.av_pp_at(t, Timing.BEF_FEE) == pytest.approx(g["av_aft_growth"], abs=CENT)
 
 
 def test_worked_example_step_5_rider_fees(reading):
@@ -203,9 +204,9 @@ def test_worked_example_step_5_rider_fees(reading):
     assert p.charge_pp(t) == pytest.approx(g["fee_total"], abs=CENT)
     assert p.sa_weight(t, 1) == pytest.approx(g["weight_1"], abs=WEIGHT)
     assert p.sa_weight(t, 2) == pytest.approx(g["weight_2"], abs=WEIGHT)
-    assert (p.sa_pp(t, 1) - p.sa_pp_at(t, 1, "BEF_FEE")) == pytest.approx(
+    assert (p.sa_pp(t, 1) - p.sa_pp_at(t, 1, Timing.BEF_FEE)) == pytest.approx(
         g["fee_sa1"], abs=CENT)
-    assert (p.sa_pp(t, 2) - p.sa_pp_at(t, 2, "BEF_FEE")) == pytest.approx(
+    assert (p.sa_pp(t, 2) - p.sa_pp_at(t, 2, Timing.BEF_FEE)) == pytest.approx(
         g["fee_sa2"], abs=CENT)
 
 
@@ -224,10 +225,10 @@ def test_worked_example_eom_balances(reading):
     assert p.sa_pp(t, 1) == pytest.approx(g["sa1_eom"], abs=CENT)
     assert p.sa_pp(t, 2) == pytest.approx(g["sa2_eom"], abs=CENT)
     assert p.av_pp(t) == pytest.approx(g["av_eom"], abs=CENT)
-    assert p.av_pp_at(t, "BEF_FEE") - p.charge_pp(t) == pytest.approx(
+    assert p.av_pp_at(t, Timing.BEF_FEE) - p.charge_pp(t) == pytest.approx(
         g["av_eom"], abs=CENT)
     # The account fell $140.81 over the month while the guarantee bases did not move.
-    assert p.av_pp_at(t, "BEF_PREM") - p.av_pp(t) == pytest.approx(140.81, abs=CENT)
+    assert p.av_pp_at(t, Timing.BEF_PREM) - p.av_pp(t) == pytest.approx(140.81, abs=CENT)
 
 
 def test_worked_example_memo_asset_charge(reading):
@@ -235,11 +236,11 @@ def test_worked_example_memo_asset_charge(reading):
     p, t = reading
     g = WORKED_EXAMPLE
     rate = 0.0130 / 12.0
-    sa1 = p.sa_pp_at(t, 1, "BEF_INV") * (1 + p.inv_return_mth(t, 1)) * (1 - 0.0095 / 12)
-    sa2 = p.sa_pp_at(t, 2, "BEF_INV") * (1 + p.inv_return_mth(t, 2)) * (1 - 0.0065 / 12)
-    assert sa1 / p.sa_pp_at(t, 1, "BEF_INV") == pytest.approx(
+    sa1 = p.sa_pp_at(t, 1, Timing.BEF_INV) * (1 + p.inv_return_mth(t, 1)) * (1 - 0.0095 / 12)
+    sa2 = p.sa_pp_at(t, 2, Timing.BEF_INV) * (1 + p.inv_return_mth(t, 2)) * (1 - 0.0065 / 12)
+    assert sa1 / p.sa_pp_at(t, 1, Timing.BEF_INV) == pytest.approx(
         g["gross_factor_1"], abs=FACTOR)
-    assert sa2 / p.sa_pp_at(t, 2, "BEF_INV") == pytest.approx(
+    assert sa2 / p.sa_pp_at(t, 2, Timing.BEF_INV) == pytest.approx(
         g["gross_factor_2"], abs=FACTOR)
     assert sa1 * rate == pytest.approx(g["asset_charge_1"], abs=CENT)
     assert sa2 * rate == pytest.approx(g["asset_charge_2"], abs=CENT)
@@ -308,9 +309,9 @@ def test_worked_example_carried_guarantee_bases(reading):
     """The state the notes carry into month 27: GWB 112,500, BB 112,500, RB 112,360."""
     p, t = reading
     c = CARRIED_STATE
-    assert p.gwb_pp_at(t, "BEF_ANNIV") == pytest.approx(c["gwb_anniv_2"], abs=CENT)
+    assert p.gwb_pp_at(t, Timing.BEF_ANNIV) == pytest.approx(c["gwb_anniv_2"], abs=CENT)
     assert p.bb_pp_bef_anniv(t) == pytest.approx(c["bb_anniv_2"], abs=CENT)
-    assert p.rb_pp_at(t, "BEF_ANNIV") == pytest.approx(c["rb_anniv_2"], abs=CENT)
+    assert p.rb_pp_at(t, Timing.BEF_ANNIV) == pytest.approx(c["rb_anniv_2"], abs=CENT)
     assert p.adj_pp(t) == pytest.approx(c["adj"], abs=CENT)
     assert p.bonus_end(t) == c["bonus_end_anniv_2"]
     assert p.has_wd_by(t) is False
@@ -403,15 +404,15 @@ def test_pitfall_gross_versus_net_death_claim(anchor):
     general-account strain is a memo, exactly equal to claims - claims_from_av.
     """
     t = 26
-    assert anchor.claim_pp(t, "DEATH") == pytest.approx(anchor.db_pp(t), rel=1e-12)
-    assert anchor.claims(t, "DEATH") == pytest.approx(
+    assert anchor.claim_pp(t, Claim.DEATH) == pytest.approx(anchor.db_pp(t), rel=1e-12)
+    assert anchor.claims(t, Claim.DEATH) == pytest.approx(
         anchor.db_pp(t) * anchor.pols_death(t), rel=1e-12)
-    assert anchor.claims_over_av(t, "DEATH") == pytest.approx(
+    assert anchor.claims_over_av(t, Claim.DEATH) == pytest.approx(
         anchor.gmdb_claims(t), rel=1e-12)
     assert anchor.gmdb_claims(t) == pytest.approx(
         anchor.gmdb_claim_pp(t) * anchor.pols_death(t), rel=1e-12)
     # The gross benefit is materially larger than the strain, so they cannot be swapped.
-    assert anchor.claims(t, "DEATH") > 40 * anchor.gmdb_claims(t)
+    assert anchor.claims(t, Claim.DEATH) > 40 * anchor.gmdb_claims(t)
     assert "gmdb_claims" not in set(anchor.result_cf().columns)
 
 
@@ -440,8 +441,8 @@ def test_pitfall_withdrawals_are_measured_gross_of_charges(excess):
     p, t = excess, 60                   # the 61st policy month
     assert p.wd_pp(t) == pytest.approx(20000.00, abs=CENT)      # the scheduled gross
     # The contract value falls by the gross amount, not by the cash paid.
-    assert p.av_pp_at(t, "BEF_INV") == pytest.approx(
-        p.av_pp_at(t, "BEF_WD") - p.wd_pp(t), rel=1e-12)
+    assert p.av_pp_at(t, Timing.BEF_INV) == pytest.approx(
+        p.av_pp_at(t, Timing.BEF_WD) - p.wd_pp(t), rel=1e-12)
     assert p.wd_payment_pp(t) == pytest.approx(
         p.wd_pp(t) - p.wd_charge_pp(t), rel=1e-12)
     assert p.wd_charge_pp(t) > 0.0
@@ -463,7 +464,7 @@ def test_pitfall_excess_withdrawal_ordering(excess):
     assert p.is_first_wd(t) is True
     assert p.age(t) == 65
     assert p.gawa_pct_at_age(65) == 0.0555
-    gwb_pre = p.gwb_pp_at(t, "BEF_WD")
+    gwb_pre = p.gwb_pp_at(t, Timing.BEF_WD)
     limit = p.wd_limit_pp(t)
     assert limit == pytest.approx(0.0555 * gwb_pre, rel=1e-12)      # fixed pre-withdrawal
     n = p.wd_nonexcess_pp(t)
@@ -471,18 +472,18 @@ def test_pitfall_excess_withdrawal_ordering(excess):
     assert n == pytest.approx(limit, rel=1e-12)
     assert e == pytest.approx(p.wd_pp(t) - limit, rel=1e-12)
     cv_pre = p.cv_pre_excess_pp(t)
-    assert cv_pre == pytest.approx(p.av_pp_at(t, "BEF_WD") - n, rel=1e-12)
+    assert cv_pre == pytest.approx(p.av_pp_at(t, Timing.BEF_WD) - n, rel=1e-12)
     factor = 1.0 - e / cv_pre
     assert p.excess_factor(t) == pytest.approx(factor, rel=1e-12)
-    assert p.gwb_pp_at(t, "BEF_ANNIV") == pytest.approx(
+    assert p.gwb_pp_at(t, Timing.BEF_ANNIV) == pytest.approx(
         (gwb_pre - n) * factor, rel=1e-12)
-    assert p.gawa_pp_at(t, "BEF_ANNIV") == pytest.approx(
-        min(limit * factor, p.gwb_pp_at(t, "BEF_ANNIV")), rel=1e-12)
+    assert p.gawa_pp_at(t, Timing.BEF_ANNIV) == pytest.approx(
+        min(limit * factor, p.gwb_pp_at(t, Timing.BEF_ANNIV)), rel=1e-12)
     assert p.bb_pp_bef_anniv(t) == pytest.approx(
-        p.gwb_pp_at(t, "BEF_ANNIV"), rel=1e-12)                     # min(GWB, BB)
+        p.gwb_pp_at(t, Timing.BEF_ANNIV), rel=1e-12)                     # min(GWB, BB)
     # The naive single-proportional reading is materially different.
-    naive = gwb_pre * (1.0 - p.wd_pp(t) / p.av_pp_at(t, "BEF_WD"))
-    assert naive < p.gwb_pp_at(t, "BEF_ANNIV") - 1.0
+    naive = gwb_pre * (1.0 - p.wd_pp(t) / p.av_pp_at(t, Timing.BEF_WD))
+    assert naive < p.gwb_pp_at(t, Timing.BEF_ANNIV) - 1.0
 
 
 def test_pitfall_any_withdrawal_kills_the_years_bonus(anchor):
@@ -536,15 +537,15 @@ def test_pitfall_bonus_period_restarts_on_a_bonus_base_increasing_step_up(
 def test_pitfall_gmdb_adjustment_is_applied_at_contract_year_end(excess):
     """Applying it at the withdrawal changes the base the roll-up compounds on [S1]."""
     p, t = excess, 60                   # the 61st policy month
-    assert p.gmdb_option() == "rollup"
+    assert p.gmdb_option() == GmdbOption.rollup
     # The withdrawal accrues but does not move RB in the month it is taken.
-    assert p.rb_pp_at(t, "BEF_ANNIV") == pytest.approx(p.rb_pp(t - 1), rel=1e-12)
+    assert p.rb_pp_at(t, Timing.BEF_ANNIV) == pytest.approx(p.rb_pp(t - 1), rel=1e-12)
     assert p.rb_pp(t) == pytest.approx(p.rb_pp(t - 1), rel=1e-12)    # not an anniversary
     assert p.gmdb_dfd_acc_pp(t) > 0.0
     assert p.gmdb_factor_acc(t) < 1.0
     # It lands at the Contract Year end, the end of t = 71.
     anniv = 71
-    bef = p.rb_pp_at(anniv, "BEF_ANNIV")
+    bef = p.rb_pp_at(anniv, Timing.BEF_ANNIV)
     adjusted = (bef - p.gmdb_dfd_acc_pp(anniv)) * p.gmdb_factor_acc(anniv)
     assert p.rb_pp(anniv) == pytest.approx(
         adjusted * (1.0 + p.rollup_rate(anniv)), rel=1e-12)
@@ -567,7 +568,7 @@ def test_pitfall_growth_cutoffs_are_age_based_not_duration_based(anchor, never_w
     credits = [y for y in range(1, 41)
                if anchor.age_at_anniv(12 * y - 1) <= 80]
     assert credits == list(range(1, 21))
-    assert never_wd.gmdb_option() == "rollup"
+    assert never_wd.gmdb_option() == GmdbOption.rollup
     assert never_wd.depleted_flag(479) is False     # still funded well past the cutoff
     for y in range(1, 21):
         assert never_wd.rb_pp(12 * y - 1) == pytest.approx(
@@ -617,9 +618,9 @@ def test_pitfall_charge_base_confusion(reading):
     """
     p, t = reading
     assert p.fee_glwb_pp(t) == pytest.approx(
-        (p.phi_glwb(t) / 4.0) * p.gwb_pp_at(t, "BEF_ANNIV"), rel=1e-12)
+        (p.phi_glwb(t) / 4.0) * p.gwb_pp_at(t, Timing.BEF_ANNIV), rel=1e-12)
     assert p.fee_gmdb_pp(t) == pytest.approx(
-        (p.phi_gmdb(t) / 4.0) * p.rb_pp_at(t, "BEF_ANNIV"), rel=1e-12)
+        (p.phi_gmdb(t) / 4.0) * p.rb_pp_at(t, Timing.BEF_ANNIV), rel=1e-12)
     # The rider fee on the account value would be a different number entirely.
     assert p.fee_glwb_pp(t) != pytest.approx(
         (p.phi_glwb(t) / 4.0) * p.av_pp(t), abs=1.0)
@@ -683,14 +684,14 @@ def test_glwb_activation_fixes_the_percentage_on_the_pre_withdrawal_gwb(anchor):
     assert anchor.age(t) == 70
     assert anchor.is_first_wd(t) is True
     assert anchor.gawa_pct_at_age(70) == 0.0575
-    gwb_pre = anchor.gwb_pp_at(t, "BEF_WD")
+    gwb_pre = anchor.gwb_pp_at(t, Timing.BEF_WD)
     assert anchor.gawa_pct_fixed(t) == 0.0575
     assert anchor.wd_limit_pp(t) == pytest.approx(0.0575 * gwb_pre, rel=1e-12)
     assert anchor.wd_pp(t) == pytest.approx(anchor.wd_limit_pp(t), rel=1e-12)
     # Within the limit, so dollar-for-dollar and no withdrawal charge [S1].
     assert anchor.wd_excess_pp(t) == 0.0
     assert anchor.wd_charge_pp(t) == 0.0
-    assert anchor.gwb_pp_at(t, "BEF_ANNIV") == pytest.approx(
+    assert anchor.gwb_pp_at(t, Timing.BEF_ANNIV) == pytest.approx(
         gwb_pre - anchor.wd_pp(t), rel=1e-12)
     # ... and it recurs at the start of every contract year thereafter.
     assert anchor.is_wd_month(132) is True
@@ -797,15 +798,15 @@ def test_subsequent_premium_raises_every_base(excess):
     p = excess
     assert p.premium_pp(t) == pytest.approx(25000.00, abs=CENT)
     net = p.prem_to_av_pp(t)
-    assert p.gwb_pp_at(t, "BEF_WD") == pytest.approx(
-        p.gwb_pp_at(t, "BEF_PREM") + net, rel=1e-12)
-    assert p.gawa_pp_at(t, "BEF_WD") == pytest.approx(
-        p.gawa_pp_at(t, "BEF_PREM") + p.gawa_pct_fixed(t - 1) * net, rel=1e-12)
-    assert p.rb_pp_at(t, "BEF_WD") == pytest.approx(
-        p.rb_pp_at(t, "BEF_PREM") + net, rel=1e-12)
+    assert p.gwb_pp_at(t, Timing.BEF_WD) == pytest.approx(
+        p.gwb_pp_at(t, Timing.BEF_PREM) + net, rel=1e-12)
+    assert p.gawa_pp_at(t, Timing.BEF_WD) == pytest.approx(
+        p.gawa_pp_at(t, Timing.BEF_PREM) + p.gawa_pct_fixed(t - 1) * net, rel=1e-12)
+    assert p.rb_pp_at(t, Timing.BEF_WD) == pytest.approx(
+        p.rb_pp_at(t, Timing.BEF_PREM) + net, rel=1e-12)
     assert p.np_pp(t) == pytest.approx(p.np_pp(t - 1) + net, rel=1e-12)
     assert p.rp_pp(t) == pytest.approx(p.rp_pp(t - 1) + p.premium_pp(t), rel=1e-12)
-    assert p.av_pp_at(t, "BEF_WD") == pytest.approx(
+    assert p.av_pp_at(t, Timing.BEF_WD) == pytest.approx(
         p.av_pp(t - 1) + net, rel=1e-12)
 
 
@@ -838,7 +839,7 @@ def test_base_surrender_table_and_the_withdrawal_year_factor(anchor):
 def test_highest_quarterly_step_up_basis(variable_annuity):
     """The highest contract value over the four most recent quarterly anniversaries [S1]."""
     p = variable_annuity.Projection[5]
-    assert p.stepup_basis() == "highest_quarterly_CV"
+    assert p.stepup_basis() == StepupBasis.highest_quarterly_CV
     for t in (11, 23, 35):
         assert p.stepup_base_pp(t) == pytest.approx(
             max(p.av_pp(t), p.av_pp(t - 3), p.av_pp(t - 6), p.av_pp(t - 9)), rel=1e-12)
@@ -852,11 +853,11 @@ def test_ratchet_gmdb_and_the_free_basic_death_benefit(variable_annuity):
     """The ratchet steps up to contract value; the included basic benefit has no charge."""
     ratchet = variable_annuity.Projection[5]
     basic = variable_annuity.Projection[7]
-    assert ratchet.gmdb_option() == "ratchet"
+    assert ratchet.gmdb_option() == GmdbOption.ratchet
     assert ratchet.rb_pp(11) == pytest.approx(
         max(ratchet.rb_pp(10), ratchet.av_pp(11)), rel=1e-12)
     assert ratchet.rb_pp(23) >= ratchet.rb_pp(11)       # never falls without a withdrawal
-    assert basic.gmdb_option() == "basic"
+    assert basic.gmdb_option() == GmdbOption.basic
     assert basic.phi_gmdb(0) == 0.0
     assert all(basic.fee_gmdb_pp(t) == 0.0 for t in (2, 11, 59, 119))
     assert basic.rb_pp(119) == pytest.approx(100000.0, rel=1e-12)   # no growth, no wd
@@ -878,12 +879,12 @@ def test_basic_gmdb_is_reduced_proportionally_and_np_does_not_floor_it(basic_gmd
     election.
     """
     p = basic_gmdb
-    assert p.gmdb_option() == "basic"
+    assert p.gmdb_option() == GmdbOption.basic
     assert p.wd_start_age() == 70
     t = 120                                     # the first withdrawal, attained age 70
     assert p.is_first_wd(t) is True
-    pre = p.rb_pp_at(t, "BEF_WD")
-    factor = 1.0 - p.wd_pp(t) / p.av_pp_at(t, "BEF_WD")
+    pre = p.rb_pp_at(t, Timing.BEF_WD)
+    factor = 1.0 - p.wd_pp(t) / p.av_pp_at(t, Timing.BEF_WD)
     assert pre == pytest.approx(100000.0, rel=1e-12)            # premiums, ungrown
     assert p.rb_pp(t) == pytest.approx(pre * factor, rel=1e-12)
     assert p.rb_pp(t) < pre - 1000.0                            # proportional, not d-f-d
@@ -900,7 +901,7 @@ def test_basic_gmdb_is_reduced_proportionally_and_np_does_not_floor_it(basic_gmd
     assert p.db_pp(t2) == pytest.approx(max(p.av_pp(t2), p.rb_pp(t2)), rel=1e-12)
     # The other elections are untouched: there NP is the *included* return of premium and
     # RB a separately elected base, so the notes' DB = max(AV, NP, RB) stands as printed.
-    assert anchor.gmdb_option() == "rollup"
+    assert anchor.gmdb_option() == GmdbOption.rollup
     for t3 in (26, 119, 131, 239):
         assert anchor.gmdb_guarantee_pp(t3) == pytest.approx(
             max(anchor.np_pp(t3), anchor.rb_pp(t3)), rel=1e-12)
@@ -909,7 +910,7 @@ def test_basic_gmdb_is_reduced_proportionally_and_np_does_not_floor_it(basic_gmd
 def test_vix_linked_fee_reset_reproduces_the_disclosed_examples(variable_annuity):
     """1.45% + 0.05% x (204.42/33 - 10) = 1.26%; 602.30 gives 1.86%, clipped to 1.82%."""
     p = variable_annuity.Projection[6]
-    assert p.fee_reset_rule() == "vix"
+    assert p.fee_reset_rule() == FeeResetRule.vix
     # The disclosed figures are printed to two decimals of a percent, so 5e-5 is half a
     # displayed unit: 204.42 gives 1.259728% and 602.30 gives 1.862576%.
     assert p.fee_rate_vix_raw(0.0145, 204.42) == pytest.approx(0.0126, abs=5e-5)
@@ -928,14 +929,14 @@ def test_vix_linked_fee_reset_reproduces_the_disclosed_examples(variable_annuity
 def test_cmt_linked_rollup_rate(variable_annuity):
     """10-year CMT + 1.00%, or 1.50% before the first withdrawal, floored 4% capped 8%."""
     p = variable_annuity.Projection[6]
-    assert p.rollup_rule() == "cmt_linked"
+    assert p.rollup_rule() == RollupRule.cmt_linked
     assert p.has_wd_by(11) is False
     assert p.rollup_rate(11) == pytest.approx(0.0450 + 0.0150, abs=1e-12)
     assert p.rollup_rate(23) == pytest.approx(0.0300 + 0.0150, abs=1e-12)
     assert p.rollup_rate(239) >= 0.04 and p.rollup_rate(239) <= 0.08
     # The base run's fixed rule is 6.00% at election ages up to 69.
     base = variable_annuity.Projection[1]
-    assert base.rollup_rule() == "fixed"
+    assert base.rollup_rule() == RollupRule.fixed
     assert base.rollup_pct() == 0.06
     assert base.rollup_rate(11) == 0.06
 
@@ -943,7 +944,7 @@ def test_cmt_linked_rollup_rate(variable_annuity):
 def test_quinquennial_fee_increase(variable_annuity):
     """+0.25% at each fifth Contract Anniversary, capped at the 3.00% maximum [S1]."""
     p = variable_annuity.Projection[7]
-    assert p.fee_reset_rule() == "quinquennial"
+    assert p.fee_reset_rule() == FeeResetRule.quinquennial
     assert p.phi_glwb(0) == 0.0125                      # contract years 1-5
     assert p.phi_glwb(60) == pytest.approx(0.0150, abs=1e-12)     # after 5 completed
     assert p.phi_glwb(120) == pytest.approx(0.0175, abs=1e-12)
@@ -1000,11 +1001,11 @@ def test_pols_if_is_the_start_of_period_count_and_the_row_weight(anchor):
     """
     assert anchor.pols_if(0) == anchor.pols_if_init()
     assert anchor.pols_if(1) == pytest.approx(
-        anchor.pols_if_at(0, "AFT_DECR"), rel=1e-15)
+        anchor.pols_if_at(0, PolTiming.AFT_DECR), rel=1e-15)
     for t in (0, 26, 120, 299):
-        assert anchor.pols_if(t) == anchor.pols_if_at(t, "BEF_DECR")
+        assert anchor.pols_if(t) == anchor.pols_if_at(t, PolTiming.BEF_DECR)
         assert anchor.pols_if(t + 1) == pytest.approx(
-            anchor.pols_if_at(t, "AFT_DECR"), rel=1e-15)
+            anchor.pols_if_at(t, PolTiming.AFT_DECR), rel=1e-15)
         # every weighted line on row t carries exactly pols_if(t)
         assert anchor.premiums(t) == pytest.approx(
             anchor.premium_pp(t) * anchor.pols_if(t), rel=1e-12)
@@ -1021,7 +1022,7 @@ def test_pols_if_is_the_start_of_period_count_and_the_row_weight(anchor):
         df.loc[t, "pols_if"], rel=1e-12)
     # In the horizon month the survivors leave as pols_maturity, so nothing opens t+1.
     assert anchor.pols_if(anchor.proj_len()) == 0.0
-    assert anchor.pols_if_at(anchor.proj_len() - 1, "AFT_DECR") > 0.0
+    assert anchor.pols_if_at(anchor.proj_len() - 1, PolTiming.AFT_DECR) > 0.0
 
 
 def test_wd_free_pp_is_the_free_allowance_portion(excess):
@@ -1085,7 +1086,7 @@ def test_net_cf_is_the_notes_ledger_and_net_cf_ga_is_the_memo(anchor):
     for t in (0, 26, 120, 299):
         assert anchor.net_cf(t) == pytest.approx(
             anchor.premiums(t) + anchor.charge_income(t)
-            - anchor.withdrawals(t) - anchor.glwb_payments(t) - anchor.claims(t)
+            - anchor.withdrawals(t) - anchor.glwb_payments(t) - anchor.claims(t, Claim.ALL)
             - anchor.expenses(t) - anchor.commissions(t) - anchor.premium_taxes(t),
             rel=1e-9)
         assert anchor.net_cf_ga(t) == pytest.approx(
@@ -1146,6 +1147,9 @@ def test_every_switch_is_exercised_by_a_model_point(variable_annuity):
     """No branch of the notes' parameter set is dead code."""
     table = variable_annuity.Data.model_point_table()
     assert set(table["gmdb_option"]) == {"rollup", "ratchet", "basic"}
+    assert set(table["glwb_option"]) == {"s3_single"}
+    assert set(variable_annuity.Data.gawa_pct_table().index.get_level_values("gawa_grid")) == {
+        "s3_single"}
     assert set(table["glwb_stepup_basis"]) == {"annual_CV", "highest_quarterly_CV"}
     assert set(table["fee_reset_rule"]) == {"none", "quinquennial", "vix"}
     assert set(table["rollup_rule"]) == {"fixed", "cmt_linked"}

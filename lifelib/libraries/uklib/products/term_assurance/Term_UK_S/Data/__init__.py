@@ -79,9 +79,10 @@ def mort_table():
     Read as the applied best-estimate rate on the ``applied`` mortality basis and as
     the ultimate rate on the ``select`` basis; see ``Projection.mort_basis``.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file,                               # noqa: F821
-        index_col=["sex", "smoker", "age"])
+    frame = pd.read_csv(input_dir() / mort_table_file)              # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    frame["smoker"] = [Smoker[name] for name in frame["smoker"]]
+    return frame.set_index(["sex", "smoker", "age"])
 
 
 def select_factor_table():
@@ -114,3 +115,7 @@ select_factor_file = "select_factor_table.csv"
 lapse_table_file = "lapse_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+Smoker = ("Pickle", 2)

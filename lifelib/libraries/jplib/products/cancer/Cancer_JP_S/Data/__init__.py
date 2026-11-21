@@ -115,9 +115,9 @@ def mort_table():
     why the distinction is load-bearing.  Read as the valuation-basis rate, which
     ``Projection.mort_rate`` scales by ``mort_be_factor``.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file,                               # noqa: F821
-        index_col=["sex", "age"])
+    frame = pd.read_csv(input_dir() / mort_table_file)               # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"]).sort_index()              # noqa: F821
 
 
 def incidence_table():
@@ -151,8 +151,9 @@ def survival_table():
     converts into an **excess hazard added to** the baseline rather than a replacement for
     it; ``Projection.mu_ex`` does that conversion.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / survival_table_file, index_col="sex")          # noqa: F821
+    frame = pd.read_csv(input_dir() / survival_table_file)           # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index("sex")                                    # noqa: F821
 
 
 def lapse_table():
@@ -175,8 +176,9 @@ def hosp_stay_table():
     14.4-day figure the base run uses, and ``age_band`` is the sourced four-band gradient
     that ``Projection.hosp_age_gradient`` switches to.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / hosp_stay_file)                                # noqa: F821
+    frame = pd.read_csv(input_dir() / hosp_stay_file)                # noqa: F821
+    frame["basis"] = [StayBasis[name] for name in frame["basis"]]
+    return frame.set_index(["basis", "age_from"])                    # noqa: F821
 
 
 # ---------------------------------------------------------------------------
@@ -197,3 +199,7 @@ lapse_table_file = "lapse_table.csv"
 hosp_stay_file = "hosp_stay_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+StayBasis = ("Pickle", 2)

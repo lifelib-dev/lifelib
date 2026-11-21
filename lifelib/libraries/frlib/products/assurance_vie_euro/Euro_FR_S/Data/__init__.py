@@ -102,8 +102,9 @@ def mort_table():
     the notes' placeholder ``q = 0.0060`` at male age 60 exactly.  Sorted on read,
     because ``Projection.mort_rate`` indexes into it.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file, index_col=["sex", "age"]).sort_index()
+    frame = pd.read_csv(input_dir() / mort_table_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"]).sort_index()
 
 
 def lapse_table():
@@ -138,9 +139,9 @@ def fin_rate_table():
     ``ref_rate`` is 2.20% throughout, the 2025 average Livret A rate.  These are
     **[std]** scenarios, not forecasts.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / fin_rate_file,                                 # noqa: F821
-        index_col=["scenario_id", "y"]).sort_index()
+    frame = pd.read_csv(input_dir() / fin_rate_file)                       # noqa: F821
+    frame["scenario_id"] = [Scenario[name] for name in frame["scenario_id"]]
+    return frame.set_index(["scenario_id", "y"]).sort_index()
 
 
 # ---------------------------------------------------------------------------
@@ -155,3 +156,7 @@ lapse_table_file = "lapse_table.csv"
 fin_rate_file = "fin_rate_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+Scenario = ("Pickle", 2)

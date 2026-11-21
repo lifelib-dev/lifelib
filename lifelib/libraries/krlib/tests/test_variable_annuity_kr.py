@@ -61,6 +61,7 @@ import pandas as pd
 import pytest
 
 from kr_registry import LIB, MODELS
+from lifelib.libraries.krlib.products.variable_annuity.enums import ChargeLine, CreditingBasis, FundSet, FundTiming, Kind, PolTiming, Scenario, Sex
 
 WON = 0.005          # money displayed to 2 d.p.
 FINE = 5e-10         # money and rates displayed to 10 d.p. in the hand traces
@@ -225,11 +226,11 @@ def test_the_anchor_cell_is_the_three_carrier_illustration_point(kr_va_anchor):
     """
     a = kr_va_anchor
     assert a.policy_id() == "VA-000001"
-    assert (a.sex(), a.age_at_entry(), a.basic_prem_pp()) == ("M", 40, 300000.0)
+    assert (a.sex(), a.age_at_entry(), a.basic_prem_pp()) == (Sex.M, 40, 300000.0)
     assert (a.pay_term(), a.annuity_age(), a.gmab_flag()) == (10, 60, 1)
-    assert a.fund_set() == "bond50_eq50"
-    assert a.scenario_id() == "base"
-    assert a.crediting_basis() == "decl_2026"
+    assert a.fund_set() == FundSet.bond50_eq50
+    assert a.scenario_id() == Scenario.base
+    assert a.crediting_basis() == CreditingBasis.decl_2026
     assert (a.addl_prem_ratio(), a.wd_ratio(), a.wd_start_year()) == (0.0, 0.0, 0)
     assert a.pols_if_init() == 1.0
 
@@ -329,10 +330,10 @@ def test_worked_example_row(kr_va_anchor, t):
     a = kr_va_anchor
     assert a.pols_if(t) == pytest.approx(pols, abs=INFORCE)
     assert a.premiums(t) == pytest.approx(prem, abs=WON)
-    assert a.claims(t, "DEATH") == pytest.approx(death, abs=WON)
-    assert a.claims(t, "LAPSE") == pytest.approx(lapse, abs=WON)
-    assert a.claims(t, "ANNUITY") == 0.0
-    assert a.claims(t, "MATURITY") == 0.0
+    assert a.claims(t, Kind.DEATH) == pytest.approx(death, abs=WON)
+    assert a.claims(t, Kind.LAPSE) == pytest.approx(lapse, abs=WON)
+    assert a.claims(t, Kind.ANNUITY) == 0.0
+    assert a.claims(t, Kind.MATURITY) == 0.0
     assert a.withdrawals(t) == 0.0
     assert a.fund_expenses(t) == 0.0
     assert a.expenses(t) == pytest.approx(exp, abs=WON)
@@ -374,10 +375,10 @@ def test_worked_example_month_zero_trace(kr_va_anchor):
     assert a.other_charge_pp(0) == 0.0
     assert a.prem_to_av_pp(0) == near(273990.0)
 
-    assert a.fund_pp_at(0, 1, "BEF_PREM") == 0.0
-    assert a.fund_pp_at(0, 1, "BEF_DEDUCT") == near(136995.0)
-    assert a.fund_pp_at(0, 2, "BEF_DEDUCT") == near(136995.0)
-    assert a.av_pp_at(0, "BEF_DEDUCT") == near(273990.0)
+    assert a.fund_pp_at(0, 1, FundTiming.BEF_PREM) == 0.0
+    assert a.fund_pp_at(0, 1, FundTiming.BEF_DEDUCT) == near(136995.0)
+    assert a.fund_pp_at(0, 2, FundTiming.BEF_DEDUCT) == near(136995.0)
+    assert a.av_pp_at(0, FundTiming.BEF_DEDUCT) == near(273990.0)
 
     assert a.risk_prem_pp(0) == near(0.000080 * 300000.0)
     assert a.gmdb_charge_pp(0) == near(0.0007 / 12.0 * 273990.0)
@@ -385,11 +386,11 @@ def test_worked_example_month_zero_trace(kr_va_anchor):
     assert a.gmab_charge_prem_pp(0) == near(0.0030 / 12.0 * 36000000.0)
     assert a.mth_deduct_pp(0) == near(9097.0640000000)
 
-    assert a.av_pp_at(0, "AFT_DEDUCT") == near(264892.9360000000)
-    assert a.fund_pp_at(0, 1, "AFT_DEDUCT") == near(132446.4680000000)
-    assert a.fund_pp_at(0, 2, "AFT_DEDUCT") == near(132446.4680000000)
+    assert a.av_pp_at(0, FundTiming.AFT_DEDUCT) == near(264892.9360000000)
+    assert a.fund_pp_at(0, 1, FundTiming.AFT_DEDUCT) == near(132446.4680000000)
+    assert a.fund_pp_at(0, 2, FundTiming.AFT_DEDUCT) == near(132446.4680000000)
     assert a.derisk_amount_pp(0) == 0.0
-    assert a.av_pp_at(0, "AFT_DERISK") == near(a.av_pp_at(0, "AFT_DEDUCT"))
+    assert a.av_pp_at(0, FundTiming.AFT_DERISK) == near(a.av_pp_at(0, FundTiming.AFT_DEDUCT))
 
     assert a.fund_growth(1) == near(1.0021321143490463)
     assert a.fund_growth(2) == near(1.0019650366374175)
@@ -398,7 +399,7 @@ def test_worked_example_month_zero_trace(kr_va_anchor):
     assert a.av_pp(0) == near(265435.5891770198)
     assert a.inv_income_pp(0) == near(653.2974409536)
     assert a.mgmt_fee_pp(0) == near(110.6442639337)
-    assert a.av_pp_at(0, "AFT_DERISK") + a.inv_income_pp(0) - a.mgmt_fee_pp(0) == (
+    assert a.av_pp_at(0, FundTiming.AFT_DERISK) + a.inv_income_pp(0) - a.mgmt_fee_pp(0) == (
         pytest.approx(a.av_pp(0), abs=1e-8))
 
 
@@ -422,8 +423,8 @@ def test_worked_example_month_zero_decrements_benefits_and_boundary(kr_va_anchor
     assert a.prem_paid_pp(0) == near(300000.0)
     assert a.db_pp(0) == near(300000.0)
     assert a.cv_pp(0) == 0.0
-    assert a.claims(0, "DEATH") == near(27.8605336001)
-    assert a.claims(0, "LAPSE") == 0.0
+    assert a.claims(0, Kind.DEATH) == near(27.8605336001)
+    assert a.claims(0, Kind.LAPSE) == 0.0
     assert a.expenses(0) == near(303000.0)
     assert a.commissions(0) == near(40200.0)
     assert a.net_cf(0) == near(-43227.8605336001)
@@ -450,9 +451,9 @@ def test_worked_example_month_three_trace(kr_va_anchor):
     assert a.fund_pp(2, 2) == near(398797.0766005968)
 
     assert a.prem_to_av_pp(3) == near(273990.0)
-    assert a.fund_pp_at(3, 1, "BEF_DEDUCT") == near(535924.0515490024)
-    assert a.fund_pp_at(3, 2, "BEF_DEDUCT") == near(535792.0766005968)
-    assert a.av_pp_at(3, "BEF_DEDUCT") == near(1071716.1281495993)
+    assert a.fund_pp_at(3, 1, FundTiming.BEF_DEDUCT) == near(535924.0515490024)
+    assert a.fund_pp_at(3, 2, FundTiming.BEF_DEDUCT) == near(535792.0766005968)
+    assert a.av_pp_at(3, FundTiming.BEF_DEDUCT) == near(1071716.1281495993)
 
     assert a.risk_prem_pp(3) == near(24.000000000000004)
     assert a.gmdb_charge_pp(3) == near(62.5167741421)
@@ -460,11 +461,11 @@ def test_worked_example_month_three_trace(kr_va_anchor):
     assert a.gmab_charge_prem_pp(3) == near(9000.0)
     assert a.mth_deduct_pp(3) == near(9309.7909675066)
 
-    assert a.av_pp_at(3, "AFT_DEDUCT") == near(1062406.3371820927)
-    share = a.fund_pp_at(3, 1, "BEF_DEDUCT") / a.av_pp_at(3, "BEF_DEDUCT")
+    assert a.av_pp_at(3, FundTiming.AFT_DEDUCT) == near(1062406.3371820927)
+    share = a.fund_pp_at(3, 1, FundTiming.BEF_DEDUCT) / a.av_pp_at(3, FundTiming.BEF_DEDUCT)
     assert share == near(0.5000615718)
-    assert a.fund_pp_at(3, 1, "AFT_DEDUCT") == near(531268.5828448085)
-    assert a.fund_pp_at(3, 2, "AFT_DEDUCT") == near(531137.7543372842)
+    assert a.fund_pp_at(3, 1, FundTiming.AFT_DEDUCT) == near(531268.5828448085)
+    assert a.fund_pp_at(3, 2, FundTiming.AFT_DEDUCT) == near(531137.7543372842)
     assert a.fund_pp(3, 1) == near(532401.3082134894)
     assert a.fund_pp(3, 2) == near(532181.4594840726)
     assert a.av_pp(3) == near(1064582.7676975620)
@@ -478,8 +479,8 @@ def test_worked_example_month_three_trace(kr_va_anchor):
     assert a.pols_death(3) == near(8.552248214049331e-05)
     assert a.pols_lapse(3) == near(0.024865681914111235)
     assert a.premiums(3) == near(276269.7765634630)
-    assert a.claims(3, "DEATH") == near(102.6269785686)
-    assert a.claims(3, "LAPSE") == near(5833.0604801209)
+    assert a.claims(3, Kind.DEATH) == near(102.6269785686)
+    assert a.claims(3, Kind.LAPSE) == near(5833.0604801209)
     assert a.expenses(3) == near(2762.6977656346)
     assert a.commissions(3) == near(37020.1500595040)
     assert a.net_cf(3) == near(230551.2412796349)
@@ -515,7 +516,7 @@ def test_worked_example_month_120_trace(kr_va_anchor):
     assert a.fund_pp(119, 2) == near(17814518.4822324300)
     assert a.premium_mth_pp(120) == 0.0
     assert a.prem_to_av_pp(120) == 0.0
-    assert a.av_pp_at(120, "BEF_DEDUCT") == near(35813337.7735828300)
+    assert a.av_pp_at(120, FundTiming.BEF_DEDUCT) == near(35813337.7735828300)
 
     assert a.risk_prem_rate(50) == near(0.000095)
     assert a.risk_prem_pp(120) == near(28.50)
@@ -529,9 +530,9 @@ def test_worked_example_month_120_trace(kr_va_anchor):
     assert a.gmab_charge_asset_pp(119) == near(7447.8465823581)
     assert a.mth_deduct_pp(120) - a.mth_deduct_pp(119) == pytest.approx(4011.48, abs=WON)
 
-    assert a.av_pp_at(120, "AFT_DEDUCT") == near(35799769.0501765460)
-    assert a.fund_pp_at(120, 1, "AFT_DEDUCT") == near(17992000.0163041000)
-    assert a.fund_pp_at(120, 2, "AFT_DEDUCT") == near(17807769.0338724400)
+    assert a.av_pp_at(120, FundTiming.AFT_DEDUCT) == near(35799769.0501765460)
+    assert a.fund_pp_at(120, 1, FundTiming.AFT_DEDUCT) == near(17992000.0163041000)
+    assert a.fund_pp_at(120, 2, FundTiming.AFT_DEDUCT) == near(17807769.0338724400)
     assert a.fund_pp(120, 1) == near(18030361.0177069050)
     assert a.fund_pp(120, 2) == near(17842761.9524546680)
     assert a.av_pp(120) == near(35873122.9701615730)
@@ -541,8 +542,8 @@ def test_worked_example_month_120_trace(kr_va_anchor):
     assert a.gmdb_claim_pp(120) == near(126877.0298384279)
     assert a.surr_chg_pp(120) == 0.0
     assert a.cv_pp(120) == near(a.av_pp(120))
-    assert a.claims(120, "DEATH") == near(1641.8340747357)
-    assert a.claims(120, "LAPSE") == near(54973.9519946892)
+    assert a.claims(120, Kind.DEATH) == near(1641.8340747357)
+    assert a.claims(120, Kind.LAPSE) == near(54973.9519946892)
     assert a.expenses(120) == near(664.0754971924)
     assert a.commissions(120) == 0.0
     assert a.net_cf(120) == near(-57279.8615666174)
@@ -565,17 +566,17 @@ def test_worked_example_month_204_derisking_trace(kr_va_anchor):
     """
     a = kr_va_anchor
     assert a.bond_weight(203) == near(0.5060742578243943)
-    assert a.av_pp_at(204, "AFT_DEDUCT") == near(41211386.0778102300)
-    assert a.fund_pp_at(204, 1, "AFT_DEDUCT") == near(20856021.6232423860)
-    assert a.fund_pp_at(204, 2, "AFT_DEDUCT") == near(20355364.4545678000)
+    assert a.av_pp_at(204, FundTiming.AFT_DEDUCT) == near(41211386.0778102300)
+    assert a.fund_pp_at(204, 1, FundTiming.AFT_DEDUCT) == near(20856021.6232423860)
+    assert a.fund_pp_at(204, 2, FundTiming.AFT_DEDUCT) == near(20355364.4545678000)
     assert a.derisk_amount_pp(204) == near(12113087.239005797)
     assert a.derisk_amount_pp(204) == pytest.approx(
-        0.80 * a.av_pp_at(204, "AFT_DEDUCT") - a.fund_pp_at(204, 1, "AFT_DEDUCT"),
+        0.80 * a.av_pp_at(204, FundTiming.AFT_DEDUCT) - a.fund_pp_at(204, 1, FundTiming.AFT_DEDUCT),
         abs=1e-6)
-    assert a.fund_pp_at(204, 1, "AFT_DERISK") == near(32969108.8622481820)
-    assert a.fund_pp_at(204, 2, "AFT_DERISK") == near(8242277.2155620450)
-    assert a.av_pp_at(204, "AFT_DERISK") == pytest.approx(
-        a.av_pp_at(204, "AFT_DEDUCT"), abs=1e-6)
+    assert a.fund_pp_at(204, 1, FundTiming.AFT_DERISK) == near(32969108.8622481820)
+    assert a.fund_pp_at(204, 2, FundTiming.AFT_DERISK) == near(8242277.2155620450)
+    assert a.av_pp_at(204, FundTiming.AFT_DERISK) == pytest.approx(
+        a.av_pp_at(204, FundTiming.AFT_DEDUCT), abs=1e-6)
     assert a.mgmt_fee_pp(203) == near(17143.341517276796)
     assert a.mgmt_fee_pp(204) == near(15148.108973641843)
     assert a.mgmt_fee_pp(204) / a.mgmt_fee_pp(203) == pytest.approx(0.884, abs=5e-4)
@@ -597,9 +598,9 @@ def test_every_event_row_of_the_statement(kr_va_anchor, t):
     a = kr_va_anchor
     assert a.pols_if(t) == pytest.approx(pols, abs=INFORCE)
     assert a.premiums(t) == pytest.approx(prem, abs=WON)
-    assert a.claims(t, "DEATH") == pytest.approx(death, abs=WON)
-    assert a.claims(t, "LAPSE") == pytest.approx(lapse, abs=WON)
-    assert a.claims(t, "ANNUITY") == pytest.approx(annuity, abs=WON)
+    assert a.claims(t, Kind.DEATH) == pytest.approx(death, abs=WON)
+    assert a.claims(t, Kind.LAPSE) == pytest.approx(lapse, abs=WON)
+    assert a.claims(t, Kind.ANNUITY) == pytest.approx(annuity, abs=WON)
     assert a.expenses(t) == pytest.approx(exp, abs=WON)
     assert a.commissions(t) == pytest.approx(comm, abs=WON)
     assert a.net_cf(t) == pytest.approx(net, abs=WON)
@@ -637,12 +638,12 @@ def test_the_two_guarantees_at_annuitisation(kr_va_anchor):
     assert a.annuity_charge_pp() == near(10894.80803982648)
     assert a.annuity_net_pp() == near(ANNUITY_NET_PP)
     assert a.pols_annuitised() == near(POLS_ANNUITISED)
-    assert a.claims(240, "ANNUITY") == near(200728.5776812762)
+    assert a.claims(240, Kind.ANNUITY) == near(200728.5776812762)
     assert a.annuity_ann_pp() == pytest.approx(
         a.annuity_fund_pp() / a.annuity_factor(), rel=1e-14)
     assert a.annuity_net_pp() == pytest.approx(
         a.annuity_ann_pp() * (1.0 - 0.005), rel=1e-14)
-    assert a.claims(240, "ANNUITY") == pytest.approx(
+    assert a.claims(240, Kind.ANNUITY) == pytest.approx(
         a.annuity_net_pp() * a.pols_annuitised(), rel=1e-14)
     # Only 9.26% of contracts reach it: a 90.7% exit probability before the strike date.
     assert a.pols_annuitised() == pytest.approx(0.0926, abs=5e-5)
@@ -673,10 +674,10 @@ def test_the_guarantee_period_step_at_t_360(kr_va_anchor):
     years of annuitant mortality at 보험나이 60–70 is the whole of the step.
     """
     a = kr_va_anchor
-    assert a.claims(348, "ANNUITY") == pytest.approx(200728.58, abs=WON)
-    assert a.claims(360, "ANNUITY") == pytest.approx(186188.58, abs=WON)
+    assert a.claims(348, Kind.ANNUITY) == pytest.approx(200728.58, abs=WON)
+    assert a.claims(360, Kind.ANNUITY) == pytest.approx(186188.58, abs=WON)
     assert a.annuity_net_pp() == near(ANNUITY_NET_PP)
-    step = 1.0 - a.claims(360, "ANNUITY") / a.claims(348, "ANNUITY")
+    step = 1.0 - a.claims(360, Kind.ANNUITY) / a.claims(348, Kind.ANNUITY)
     assert step == pytest.approx(0.0724, abs=5e-5)
     assert a.pols_annuity_oblig(348) == near(a.pols_annuitised())
     assert a.pols_annuity_oblig(360) == near(a.pols_if(360))
@@ -882,7 +883,7 @@ def test_the_separate_account_investment_identity_separates_four_bases(kr_va_anc
     assert a.check_charge_split() is True
     for t in (0, 3, 84, 120, 204, 239):
         lhs = a.inv_income_pp(t) - a.mgmt_fee_pp(t)
-        assert lhs == pytest.approx(a.av_pp(t) - a.av_pp_at(t, "AFT_DERISK"), abs=1e-6)
+        assert lhs == pytest.approx(a.av_pp(t) - a.av_pp_at(t, FundTiming.AFT_DERISK), abs=1e-6)
         assert abs(a.check_charge_split_resid(t)) <= 1e-8 * max(1.0, abs(a.av_pp(t)))
     # Vacuous after annuitisation, and it says so rather than being skipped.
     assert a.check_charge_split_resid(240) == 0.0
@@ -899,32 +900,32 @@ def test_the_processing_order_is_asserted_by_a_quantity_that_would_move(kr_va_an
     """
     a = kr_va_anchor
     # 3 then 4: the charge base includes the month's transfer.
-    assert a.av_pp_at(0, "BEF_PREM") == 0.0
+    assert a.av_pp_at(0, FundTiming.BEF_PREM) == 0.0
     assert a.gmdb_charge_pp(0) > 0.0
     assert a.gmdb_charge_pp(0) == near(0.0007 / 12.0 * 273990.0)
     # 4: pro rata, not equal — the shares have drifted off 0.5 by t = 3.
-    share = a.fund_pp_at(3, 1, "BEF_DEDUCT") / a.av_pp_at(3, "BEF_DEDUCT")
+    share = a.fund_pp_at(3, 1, FundTiming.BEF_DEDUCT) / a.av_pp_at(3, FundTiming.BEF_DEDUCT)
     assert share != pytest.approx(0.5, abs=1e-9)
-    assert a.fund_pp_at(3, 1, "AFT_DEDUCT") == pytest.approx(
-        a.fund_pp_at(3, 1, "BEF_DEDUCT") - a.mth_deduct_pp(3) * share, abs=1e-6)
+    assert a.fund_pp_at(3, 1, FundTiming.AFT_DEDUCT) == pytest.approx(
+        a.fund_pp_at(3, 1, FundTiming.BEF_DEDUCT) - a.mth_deduct_pp(3) * share, abs=1e-6)
     # 7 then 8: de-risking before growth, so the month's growth is on the new mix.
-    grown_without = sum(a.fund_pp_at(204, j, "AFT_DEDUCT") * a.fund_growth(j)
+    grown_without = sum(a.fund_pp_at(204, j, FundTiming.AFT_DEDUCT) * a.fund_growth(j)
                         for j in a.fund_ids())
     assert a.av_pp(204) != pytest.approx(grown_without, abs=1.0)
     assert a.av_pp(204) == pytest.approx(
-        sum(a.fund_pp_at(204, j, "AFT_DERISK") * a.fund_growth(j)
+        sum(a.fund_pp_at(204, j, FundTiming.AFT_DERISK) * a.fund_growth(j)
             for j in a.fund_ids()), abs=1e-6)
     # 9: death first, 해지 on the survivors of it.
     for t in (0, 3, 120):
-        assert a.pols_if_at(t, "BEF_DECR") == a.pols_if(t)
-        assert a.pols_if_at(t, "BEF_LAPSE") == pytest.approx(
+        assert a.pols_if_at(t, PolTiming.BEF_DECR) == a.pols_if(t)
+        assert a.pols_if_at(t, PolTiming.BEF_LAPSE) == pytest.approx(
             a.pols_if(t) - a.pols_death(t), rel=1e-15)
         assert a.pols_lapse(t) == pytest.approx(
-            a.pols_if_at(t, "BEF_LAPSE") * a.lapse_rate_mth(t), rel=1e-14)
-        assert a.pols_if_at(t, "AFT_DECR") == pytest.approx(a.pols_if(t + 1), abs=1e-15)
+            a.pols_if_at(t, PolTiming.BEF_LAPSE) * a.lapse_rate_mth(t), rel=1e-14)
+        assert a.pols_if_at(t, PolTiming.AFT_DECR) == pytest.approx(a.pols_if(t + 1), abs=1e-15)
     # 10: benefits on the end-of-month account, after growth.
     assert a.db_pp(200) == pytest.approx(a.av_pp(200), rel=1e-15)
-    assert a.db_pp(200) != pytest.approx(a.av_pp_at(200, "AFT_DEDUCT"), rel=1e-9)
+    assert a.db_pp(200) != pytest.approx(a.av_pp_at(200, FundTiming.AFT_DEDUCT), rel=1e-9)
 
 
 def test_the_published_columns_sum_to_net_cf_on_every_shipped_point(variable_annuity):
@@ -999,12 +1000,12 @@ def test_the_withdrawal_module_is_off_on_the_anchor_and_bounded_when_on(
     assert p.wd_pp(first - 12) == 0.0        # nothing before the eleventh anniversary
     assert p.wd_pp(first + 1) == 0.0         # and nothing in a non-anniversary month
     assert p.wd_pp(first) > 0.0
-    base = p.av_pp_at(first, "BEF_DEDUCT") - p.mth_deduct_pp(first)
+    base = p.av_pp_at(first, FundTiming.BEF_DEDUCT) - p.mth_deduct_pp(first)
     assert p.surr_chg_pp(first) == 0.0
     assert p.wd_pp(first) == pytest.approx(0.1 * base, abs=1e-6)
     assert p.wd_pp(first) <= p.wd_max_cv_ratio * base
     for t in range(first, p.t_ann(), 12):
-        assert p.av_pp_at(t, "BEF_DEDUCT") - p.mth_deduct_pp(t) - p.wd_pp(t) >= (
+        assert p.av_pp_at(t, FundTiming.BEF_DEDUCT) - p.mth_deduct_pp(t) - p.wd_pp(t) >= (
             p.wd_min_residual_pp - 1e-6)
     assert p.wd_cum_pp(p.t_ann() - 1) == pytest.approx(
         sum(p.wd_pp(t) for t in range(0, p.t_ann())), abs=1e-6)
@@ -1059,7 +1060,7 @@ def test_the_minimum_guaranteed_crediting_ladder_is_inert_on_the_anchor(
     assert a.annuity_int_rate() == near(0.025)
 
     p = variable_annuity.Projection[10]
-    assert p.crediting_basis() == "min_guar"
+    assert p.crediting_basis() == CreditingBasis.min_guar
     assert p.decl_rate(0) == 0.0
     assert p.credit_rate(0) == near(0.0100)
     assert p.credit_rate(10) == near(0.0050)
@@ -1085,9 +1086,9 @@ def test_pitfall_the_gmab_charge_has_two_components_on_two_bases(kr_va_anchor):
     assert a.gmab_charge_prem_pp(0) - a.gmab_charge_asset_pp(0) == pytest.approx(
         8942.92, abs=WON)
     assert a.gmab_prem_base_pp(0) == near(a.prem_total_pp())
-    assert a.gmab_prem_base_pp(0) != pytest.approx(a.av_pp_at(0, "BEF_DEDUCT"), rel=1e-3)
+    assert a.gmab_prem_base_pp(0) != pytest.approx(a.av_pp_at(0, FundTiming.BEF_DEDUCT), rel=1e-3)
     assert a.gmab_charge_asset_pp(0) == near(
-        0.0025 / 12.0 * a.av_pp_at(0, "BEF_DEDUCT"))
+        0.0025 / 12.0 * a.av_pp_at(0, FundTiming.BEF_DEDUCT))
     assert a.gmab_charge_prem_pp(0) == near(0.0030 / 12.0 * a.gmab_prem_base_pp(0))
 
 
@@ -1128,11 +1129,11 @@ def test_pitfall_the_monthly_deduction_rises_at_paid_up(kr_va_anchor):
     assert a.mth_deduct_pp(120) == near(13568.7234062888)
     assert a.maint_charge_after_pp(119) == 0.0
     assert a.maint_charge_after_pp(120) == near(3990.0)
-    assert a.charge_rate("maint_charge_after") == near(0.0133)
+    assert a.charge_rate(ChargeLine.maint_charge_after) == near(0.0133)
     # The money it draws back was put in during the premium period, by construction: the
     # 특별계정 투입보험료 is the 순보험료 plus the 납입 후 계약관리비용.
     assert a.prem_to_av_pp(0) > a.basic_prem_pp() * (
-        1.0 - a.loading_rate() - a.charge_rate("maint_charge_after"))
+        1.0 - a.loading_rate() - a.charge_rate(ChargeLine.maint_charge_after))
 
 
 def test_pitfall_the_front_end_charges_never_reach_the_separate_account(kr_va_anchor):
@@ -1175,10 +1176,10 @@ def test_pitfall_the_management_fee_is_inside_the_unit_price(kr_va_anchor):
     # The fee is not part of the 월공제액 and is not subtracted before the growth.
     assert a.mth_deduct_pp(0) == near(
         a.risk_prem_pp(0) + a.gmdb_charge_pp(0) + a.gmab_charge_pp(0))
-    cancelled = (a.av_pp_at(0, "AFT_DERISK") - a.mgmt_fee_pp(0)) * (1.03) ** (1 / 12)
+    cancelled = (a.av_pp_at(0, FundTiming.AFT_DERISK) - a.mgmt_fee_pp(0)) * (1.03) ** (1 / 12)
     assert a.av_pp(0) != pytest.approx(cancelled, abs=1e-6)
     assert a.av_pp(0) == pytest.approx(
-        a.av_pp_at(0, "AFT_DERISK") + a.inv_income_pp(0) - a.mgmt_fee_pp(0), abs=1e-8)
+        a.av_pp_at(0, FundTiming.AFT_DERISK) + a.inv_income_pp(0) - a.mgmt_fee_pp(0), abs=1e-8)
 
 
 def test_pitfall_the_gmab_is_a_european_option_not_a_floor(kr_va_anchor):
@@ -1216,7 +1217,7 @@ def test_pitfall_the_gmab_residual_is_not_profit(variable_annuity):
         pytest.approx(657417.59, abs=WON))
     assert sum(base.gmab_claims(t) for t in range(0, base.proj_len())) == 0.0
 
-    assert low.scenario_id() == "low"
+    assert low.scenario_id() == Scenario.low
     # −1.00% net of the 0.50% blended 운용보수 is a −0.50% gross asset return.
     assert low.gross_return(1) == near(-0.0050)
     assert low.gmab_claim_pp() == pytest.approx(10041179.61262558, abs=5e-6)
@@ -1242,13 +1243,13 @@ def test_pitfall_the_death_benefit_is_gross_and_splits_exactly(kr_va_anchor):
     for t in (0, 3, 120, 200, 239):
         assert a.db_pp(t) == pytest.approx(a.av_pp(t) + a.gmdb_claim_pp(t), abs=1e-8)
         assert a.check_gmdb_floor_resid(t) == pytest.approx(0.0, abs=1e-8)
-    assert a.claims(0, "DEATH") == near(27.860533600121418)
-    assert a.claims(0, "DEATH") == near(a.db_pp(0) * a.pols_death(0))
+    assert a.claims(0, Kind.DEATH) == near(27.860533600121418)
+    assert a.claims(0, Kind.DEATH) == near(a.db_pp(0) * a.pols_death(0))
     assert a.gmdb_claims(0) == near(a.gmdb_claim_pp(0) * a.pols_death(0))
-    assert a.claims_from_av(0, "DEATH") == near(a.av_pp(0) * a.pols_death(0))
-    assert a.claims(0, "DEATH") == pytest.approx(
-        a.claims_from_av(0, "DEATH") + a.gmdb_claims(0), abs=1e-9)
-    assert a.gmdb_claims(0) / a.claims(0, "DEATH") == pytest.approx(0.115, abs=5e-4)
+    assert a.claims_from_av(0, Kind.DEATH) == near(a.av_pp(0) * a.pols_death(0))
+    assert a.claims(0, Kind.DEATH) == pytest.approx(
+        a.claims_from_av(0, Kind.DEATH) + a.gmdb_claims(0), abs=1e-9)
+    assert a.gmdb_claims(0) / a.claims(0, Kind.DEATH) == pytest.approx(0.115, abs=5e-4)
 
 
 def test_pitfall_the_surrender_value_is_floored_at_zero(kr_va_anchor):
@@ -1263,8 +1264,8 @@ def test_pitfall_the_surrender_value_is_floored_at_zero(kr_va_anchor):
     assert a.cv_pp(0) == a.cv_pp(1) == a.cv_pp(2) == 0.0
     assert a.cv_pp(3) == near(234582.76753756206)
     assert a.av_pp(0) - a.surr_chg_pp(0) == pytest.approx(-564564.41, abs=WON)
-    assert a.claims(0, "LAPSE") == a.claims(1, "LAPSE") == a.claims(2, "LAPSE") == 0.0
-    assert a.claims(3, "LAPSE") == pytest.approx(5833.06, abs=WON)
+    assert a.claims(0, Kind.LAPSE) == a.claims(1, Kind.LAPSE) == a.claims(2, Kind.LAPSE) == 0.0
+    assert a.claims(3, Kind.LAPSE) == pytest.approx(5833.06, abs=WON)
     assert a.pols_lapse(0) > 0.0        # the exits happen; they are simply unpaid
     assert all(a.cv_pp(t) >= 0.0 for t in range(0, a.t_ann()))
     # The insurer never recovers more than the account holds, either.
@@ -1321,7 +1322,7 @@ def test_pitfall_the_statutory_cap_is_invisible_on_the_anchor(variable_annuity):
         assert p.surr_chg_cap_pp() == near(cap)
         assert p.surr_chg_pp(0) == near(cap)
         assert p.check_surr_chg_cap() is True
-        assert p.charge_rate("surr_charge") * p.prem_ann_pp() > p.surr_chg_cap_pp()
+        assert p.charge_rate(ChargeLine.surr_charge) * p.prem_ann_pp() > p.surr_chg_cap_pp()
 
 
 def test_pitfall_the_guaranteed_instalment_is_owed_to_every_annuitant(kr_va_anchor):
@@ -1355,8 +1356,8 @@ def test_pitfall_the_death_and_surrender_streams_stop_at_annuitisation(kr_va_anc
     """
     a = kr_va_anchor
     for t in (240, 241, 360, 600, 959):
-        assert a.claims(t, "DEATH") == 0.0
-        assert a.claims(t, "LAPSE") == 0.0
+        assert a.claims(t, Kind.DEATH) == 0.0
+        assert a.claims(t, Kind.LAPSE) == 0.0
         assert a.db_pp(t) == 0.0
         assert a.cv_pp(t) == 0.0
         assert a.lapse_rate(t) == 0.0
@@ -1444,17 +1445,17 @@ def test_pitfall_the_asset_based_charges_are_struck_after_the_premium(kr_va_anch
     ``gmdb_charge_pp(0)`` would be 0.00 instead of ₩15.98.
     """
     a = kr_va_anchor
-    assert a.av_pp_at(0, "BEF_PREM") == 0.0
-    assert a.av_pp_at(0, "BEF_DEDUCT") == near(273990.0)
+    assert a.av_pp_at(0, FundTiming.BEF_PREM) == 0.0
+    assert a.av_pp_at(0, FundTiming.BEF_DEDUCT) == near(273990.0)
     assert a.gmdb_charge_pp(0) > 0.0
     assert a.gmdb_charge_pp(0) == near(15.98275)
     assert a.gmab_charge_asset_pp(0) == near(57.081250000000004)
     assert a.gmdb_charge_pp(0) == near(
-        a.charge_rate("gmdb_charge") / 12.0 * a.av_pp_at(0, "BEF_DEDUCT"))
+        a.charge_rate(ChargeLine.gmdb_charge) / 12.0 * a.av_pp_at(0, FundTiming.BEF_DEDUCT))
     # And they are struck before the growth, so a rising month raises next month's charge.
-    assert a.av_pp_at(1, "BEF_DEDUCT") == near(a.av_pp(0) + a.prem_to_av_pp(1))
+    assert a.av_pp_at(1, FundTiming.BEF_DEDUCT) == near(a.av_pp(0) + a.prem_to_av_pp(1))
     assert a.gmdb_charge_pp(1) == near(
-        a.charge_rate("gmdb_charge") / 12.0 * a.av_pp_at(1, "BEF_DEDUCT"))
+        a.charge_rate(ChargeLine.gmdb_charge) / 12.0 * a.av_pp_at(1, FundTiming.BEF_DEDUCT))
     assert a.gmdb_charge_pp(1) > a.gmdb_charge_pp(0)
 
 
@@ -1502,8 +1503,8 @@ def test_pitfall_the_derisking_fires_inside_its_window_and_conserves(kr_va_ancho
     assert a.derisk_amount_pp(192) == 0.0     # outside the window
     assert a.derisk_amount_pp(205) == 0.0     # not a 계약해당일
     # It conserves the total, which is why check_av_roll_fwd does not see it.
-    assert a.av_pp_at(204, "AFT_DERISK") == pytest.approx(
-        a.av_pp_at(204, "AFT_DEDUCT"), abs=1e-6)
+    assert a.av_pp_at(204, FundTiming.AFT_DERISK) == pytest.approx(
+        a.av_pp_at(204, FundTiming.AFT_DEDUCT), abs=1e-6)
     assert a.check_av_roll_fwd() is True
     assert a.bond_weight(204) >= 0.80
 
@@ -1521,7 +1522,7 @@ def test_pitfall_a_withdrawal_rebases_both_guarantee_strikes(variable_annuity):
     assert p.gmab_base_pp() < p.prem_total_pp()
     first = 12 * p.wd_start_year()
     before = p.prem_paid_pp(first - 1)
-    av_bef = p.av_pp_at(first, "BEF_DEDUCT") - p.mth_deduct_pp(first)
+    av_bef = p.av_pp_at(first, FundTiming.BEF_DEDUCT) - p.mth_deduct_pp(first)
     assert p.wd_pp(first) > 0.0
     assert p.prem_paid_pp(first) == pytest.approx(
         (before + p.prem_pp(first)) * (av_bef - p.wd_pp(first)) / av_bef, abs=1e-6)
@@ -1548,8 +1549,8 @@ def test_pitfall_no_claims_column_beside_the_split_columns(kr_va_anchor):
         "claims_maturity", "withdrawals", "fund_expenses", "expenses", "commissions",
         "net_cf"}
     assert all(c == c.lower() for c in df.columns)
-    assert a.claims(3) == pytest.approx(
-        sum(a.claims(3, k) for k in ("DEATH", "LAPSE", "ANNUITY", "MATURITY")), abs=1e-9)
+    assert a.claims(3, Kind.ALL) == pytest.approx(
+        sum(a.claims(3, k) for k in (Kind.DEATH, Kind.LAPSE, Kind.ANNUITY, Kind.MATURITY)), abs=1e-9)
     outgo = df[["claims_death", "claims_lapse", "claims_annuity", "claims_maturity",
                 "withdrawals", "fund_expenses", "expenses", "commissions"]].sum(axis=1)
     assert (df["premiums"] - outgo - df["net_cf"]).abs().max() < 1e-8
@@ -1571,12 +1572,12 @@ def test_pitfall_net_cf_excludes_investment_return(kr_va_anchor):
     assert a.mgmt_fee_pp(0) > 0.0
     assert a.check_net_cf() is True
     assert a.net_cf(0) == near(
-        a.premiums(0) - a.claims(0) - a.withdrawals(0) - a.fund_expenses(0)
+        a.premiums(0) - a.claims(0, Kind.ALL) - a.withdrawals(0) - a.fund_expenses(0)
         - a.expenses(0) - a.commissions(0))
     # Neither ledger carries it either: the separate account's return is not a flow.
     assert a.net_cf_sep(0) == near(
         a.prem_to_av(0) - a.av_charges(0) - a.surr_charges(0)
-        - a.claims_from_av(0, "DEATH") - a.claims(0, "LAPSE")
+        - a.claims_from_av(0, Kind.DEATH) - a.claims(0, Kind.LAPSE)
         - a.withdrawals(0) - a.av_transfer(0) - a.fund_expenses(0))
 
 
@@ -1599,7 +1600,7 @@ def test_pitfall_charge_income_is_a_memo_not_revenue(kr_va_anchor):
     assert a.net_cf(0) != pytest.approx(a.premiums(0) + a.charge_income(0), rel=1e-6)
     # 연금수령기간 중 계약관리비용 is netted off the instalment, so it is a memo as well.
     assert a.annuity_charges(240) == near(a.annuity_charge_pp() * a.pols_annuitised())
-    assert a.claims(240, "ANNUITY") == near(a.annuity_net_pp() * a.pols_annuitised())
+    assert a.claims(240, Kind.ANNUITY) == near(a.annuity_net_pp() * a.pols_annuitised())
 
 
 def test_pitfall_the_model_runs_on_boheom_nai(variable_annuity):
@@ -1697,13 +1698,13 @@ def test_the_charge_table_carries_the_notes_own_rates(kr_va_anchor):
     """
     a = kr_va_anchor
     expected = {
-        "acq_charge": 0.0517, "maint_charge_in": 0.0350, "other_charge": 0.0000,
-        "maint_charge_after": 0.0133, "gmdb_charge": 0.0007,
-        "gmab_charge_asset": 0.0025, "gmab_charge_prem": 0.0030,
-        "fund_expense": 0.0000, "surr_charge": 0.2305555556, "surr_charge_cap": 0.0500,
-        "annuity_charge": 0.0050, "expense_acq": 300000.0, "expense_maint": 3000.0,
-        "comm_yr1": 0.0134, "comm_yr2": 0.0041, "comm_yr3": 0.0028,
-        "comm_yr4": 0.0025, "comm_yr5": 0.0011,
+        ChargeLine.acq_charge: 0.0517, ChargeLine.maint_charge_in: 0.0350, ChargeLine.other_charge: 0.0000,
+        ChargeLine.maint_charge_after: 0.0133, ChargeLine.gmdb_charge: 0.0007,
+        ChargeLine.gmab_charge_asset: 0.0025, ChargeLine.gmab_charge_prem: 0.0030,
+        ChargeLine.fund_expense: 0.0000, ChargeLine.surr_charge: 0.2305555556, ChargeLine.surr_charge_cap: 0.0500,
+        ChargeLine.annuity_charge: 0.0050, ChargeLine.expense_acq: 300000.0, ChargeLine.expense_maint: 3000.0,
+        ChargeLine.comm_yr1: 0.0134, ChargeLine.comm_yr2: 0.0041, ChargeLine.comm_yr3: 0.0028,
+        ChargeLine.comm_yr4: 0.0025, ChargeLine.comm_yr5: 0.0011,
     }
     for line, value in expected.items():
         assert a.charge_rate(line) == near(value), line
@@ -1722,7 +1723,7 @@ def test_the_fund_and_return_assumptions_are_the_ones_the_notes_publish(kr_va_an
     assumption.  This is the largest single gap in the model and it is a CSV away.
     """
     a = kr_va_anchor
-    assert a.fund_ids() == (1, 2)
+    assert a.fund_ids() == [1, 2]
     assert a.fund_is_bond(1) is True and a.fund_is_bond(2) is False
     assert a.fund_alloc(1) == near(0.5) and a.fund_alloc(2) == near(0.5)
     assert a.fund_mgmt_fee(1) == near(0.0040)
@@ -1773,5 +1774,5 @@ def test_the_inputs_live_beside_the_model_and_are_all_referenced(variable_annuit
     assert variable_annuity.Data.input_dir() == pathlib.Path(MODEL_DIR).parent
     inside = {p.name for p in MODEL_DIR.rglob("*")
               if p.is_file() and "__pycache__" not in p.parts}
-    assert inside == {"__init__.py", "_system.json"}
+    assert inside == {"__init__.py", "_system.json", "data.pickle"}
     assert not list(MODEL_DIR.glob("*.csv"))

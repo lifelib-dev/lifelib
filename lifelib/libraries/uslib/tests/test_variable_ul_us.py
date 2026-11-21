@@ -24,6 +24,7 @@ import modelx as mx
 import pytest
 
 from us_registry import LIB
+from lifelib.libraries.uslib.products.variable_ul.enums import Claim, DeathBenefitOption, PolTiming, Qualification, RateClass, Sex, Timing
 
 def model_files(folder):
     """The model's own file names, ignoring interpreter caches.
@@ -93,21 +94,21 @@ def anchor(variable_ul):
 def test_worked_example_step0_opening_balances(anchor):
     """Step 0: the model point opens where the worked example opens."""
     assert anchor.age_at_entry() == 45
-    assert anchor.sex() == "M"
-    assert anchor.rate_class() == "StdNT"
+    assert anchor.sex() == Sex.M
+    assert anchor.rate_class() == RateClass.StdNT
     assert anchor.sum_assured() == 500000.0
-    assert anchor.db_option() == "A"
-    assert anchor.qual_test() == "GPT"
+    assert anchor.db_option() == DeathBenefitOption.A
+    assert anchor.qual_test() == Qualification.GPT
     assert anchor.duration_mth_init() == 24
     assert anchor.duration_mth(0) == 24
     assert anchor.policy_year(0) == 3          # "policy year 3"
-    assert anchor.sa_pp_at(0, 1, "BEF_PREM") == pytest.approx(WE["sa1_bom"], abs=CENT)
-    assert anchor.sa_pp_at(0, 2, "BEF_PREM") == pytest.approx(WE["sa2_bom"], abs=CENT)
-    assert anchor.fa_pp_at(0, "BEF_PREM") == 0.0
-    assert anchor.la_pp_at(0, "BEF_PREM") == 0.0
-    assert anchor.loan_bal_pp_at(0, "BEF_PREM") == 0.0
-    assert anchor.av_pp_at(0, "BEF_PREM") == pytest.approx(WE["av_bom"], abs=CENT)
-    assert anchor.av_pp_at(0, "BEF_PREM") == anchor.av_pp_init()
+    assert anchor.sa_pp_at(0, 1, Timing.BEF_PREM) == pytest.approx(WE["sa1_bom"], abs=CENT)
+    assert anchor.sa_pp_at(0, 2, Timing.BEF_PREM) == pytest.approx(WE["sa2_bom"], abs=CENT)
+    assert anchor.fa_pp_at(0, Timing.BEF_PREM) == 0.0
+    assert anchor.la_pp_at(0, Timing.BEF_PREM) == 0.0
+    assert anchor.loan_bal_pp_at(0, Timing.BEF_PREM) == 0.0
+    assert anchor.av_pp_at(0, Timing.BEF_PREM) == pytest.approx(WE["av_bom"], abs=CENT)
+    assert anchor.av_pp_at(0, Timing.BEF_PREM) == anchor.av_pp_init()
 
 
 def test_worked_example_step2_premium_load_and_allocation(anchor):
@@ -124,11 +125,11 @@ def test_worked_example_step2_premium_load_and_allocation(anchor):
             == pytest.approx(WE["sa1_prem"], abs=CENT))
     assert (anchor.alloc(2) * anchor.prem_to_av_pp(0)
             == pytest.approx(WE["sa2_prem"], abs=CENT))
-    assert anchor.sa_pp_at(0, 1, "BEF_FEE") == pytest.approx(
+    assert anchor.sa_pp_at(0, 1, Timing.BEF_FEE) == pytest.approx(
         WE["sa1_bom"] + WE["sa1_prem"], abs=CENT)
-    assert anchor.sa_pp_at(0, 2, "BEF_FEE") == pytest.approx(
+    assert anchor.sa_pp_at(0, 2, Timing.BEF_FEE) == pytest.approx(
         WE["sa2_bom"] + WE["sa2_prem"], abs=CENT)
-    assert anchor.av_pp_at(0, "BEF_FEE") == pytest.approx(WE["av_bef_fee"], abs=CENT)
+    assert anchor.av_pp_at(0, Timing.BEF_FEE) == pytest.approx(WE["av_bef_fee"], abs=CENT)
 
 
 def test_worked_example_step5_death_benefit_and_naar(anchor):
@@ -151,7 +152,7 @@ def test_worked_example_step6_monthly_deduction(anchor):
     assert anchor.mth_deduction_sa_pp(0, 1) == pytest.approx(WE["md_sa1"], abs=CENT)
     assert anchor.mth_deduction_sa_pp(0, 2) == pytest.approx(WE["md_sa2"], abs=CENT)
     assert anchor.mth_deduction_fa_pp(0) == 0.0
-    assert anchor.av_pp_at(0, "BEF_INV") == pytest.approx(WE["av_bef_inv"], abs=CENT)
+    assert anchor.av_pp_at(0, Timing.BEF_INV) == pytest.approx(WE["av_bef_inv"], abs=CENT)
 
 
 def test_worked_example_step7_growth_factors(anchor):
@@ -175,13 +176,13 @@ def test_worked_example_step7_end_of_month_balances(anchor):
     assert anchor.la_pp(0) == 0.0
     # Each end-of-month balance is the post-deduction balance times its own factor.
     assert anchor.sa_pp(0, 1) == pytest.approx(
-        anchor.sa_pp_at(0, 1, "BEF_INV") * WE["growth_1"], rel=1e-6)
+        anchor.sa_pp_at(0, 1, Timing.BEF_INV) * WE["growth_1"], rel=1e-6)
     assert anchor.sa_pp(0, 2) == pytest.approx(
-        anchor.sa_pp_at(0, 2, "BEF_INV") * WE["growth_2"], rel=1e-6)
+        anchor.sa_pp_at(0, 2, Timing.BEF_INV) * WE["growth_2"], rel=1e-6)
     # sa_pp(0) is the closing balance of month 0, not the opening balance: the two
     # differ, and the closing balance of month 0 opens month 1.
-    assert anchor.sa_pp(0, 1) != anchor.sa_pp_at(0, 1, "BEF_PREM")
-    assert anchor.sa_pp_at(1, 1, "BEF_PREM") == anchor.sa_pp(0, 1)
+    assert anchor.sa_pp(0, 1) != anchor.sa_pp_at(0, 1, Timing.BEF_PREM)
+    assert anchor.sa_pp_at(1, 1, Timing.BEF_PREM) == anchor.sa_pp(0, 1)
 
 
 def test_worked_example_total_av_is_a_sum_of_rounded_parts(anchor):
@@ -279,9 +280,9 @@ def test_naar_carries_no_one_month_discount(anchor):
     cost of insurance - by about one month's guaranteed interest on the death benefit.
     """
     assert anchor.net_amt_at_risk(0) == pytest.approx(
-        anchor.db_pp(0) - anchor.av_pp_at(0, "BEF_FEE"), rel=1e-12)
+        anchor.db_pp(0) - anchor.av_pp_at(0, Timing.BEF_FEE), rel=1e-12)
     assert "naar_factor" not in anchor.cells
-    chassis = anchor.db_pp(0) / (1 + 0.02) ** (1 / 12) - anchor.av_pp_at(0, "BEF_FEE")
+    chassis = anchor.db_pp(0) / (1 + 0.02) ** (1 / 12) - anchor.av_pp_at(0, Timing.BEF_FEE)
     assert anchor.net_amt_at_risk(0) - chassis == pytest.approx(824.0, abs=1.0)
 
 
@@ -295,7 +296,7 @@ def test_the_chassis_differences_the_docstring_claims_are_real(anchor):
     for gone in ("naar_factor", "wd_free_pp", "gpt_ok", "is_mec"):
         assert gone not in anchor.cells
     assert anchor.net_amt_at_risk(0) == pytest.approx(
-        anchor.db_pp(0) - anchor.av_pp_at(0, "BEF_FEE"), rel=1e-12)
+        anchor.db_pp(0) - anchor.av_pp_at(0, Timing.BEF_FEE), rel=1e-12)
     assert anchor.units() == anchor.sum_assured() / 1000        # F_0, not F_t
     assert anchor.surr_charge_rate(0) == anchor.surr_charge_rate(11)  # steps by year
     assert anchor.inflation_rate == 0.0                         # not the chassis 2.5%
@@ -362,15 +363,15 @@ def test_pitfall_the_claim_is_the_full_death_benefit(anchor):
     The gross claim is the whole death benefit less policy debt; DB - AV is the net
     general-account strain and belongs to the derived net view only.
     """
-    assert anchor.claim_pp(0, "DEATH") == pytest.approx(
+    assert anchor.claim_pp(0, Claim.DEATH) == pytest.approx(
         anchor.db_pp_eom(0) - anchor.loan_bal_pp(0), rel=1e-12)
-    assert anchor.claims(0, "DEATH") == pytest.approx(
-        anchor.claim_pp(0, "DEATH") * anchor.pols_death(0), rel=1e-12)
+    assert anchor.claims(0, Claim.DEATH) == pytest.approx(
+        anchor.claim_pp(0, Claim.DEATH) * anchor.pols_death(0), rel=1e-12)
     assert anchor.claims_net(0) == pytest.approx(
         anchor.net_amt_at_risk_eom(0) * anchor.pols_death(0), rel=1e-12)
     # the gross claim is an order of magnitude larger at these funding levels
-    assert anchor.claims(0, "DEATH") > anchor.claims_net(0)
-    assert anchor.claims(0, "DEATH") - anchor.claims_net(0) == pytest.approx(
+    assert anchor.claims(0, Claim.DEATH) > anchor.claims_net(0)
+    assert anchor.claims(0, Claim.DEATH) - anchor.claims_net(0) == pytest.approx(
         anchor.av_pp(0) * anchor.pols_death(0), rel=1e-12)
 
 
@@ -391,7 +392,7 @@ def test_pitfall_naar_is_floored_at_zero(variable_ul):
     # constructed: a corridor of 1.00 on a policy funded above its face
     t = late[0]
     assert p.corridor_factor(t) == pytest.approx(1.00, abs=RATE)
-    if p.av_pp_at(t, "BEF_FEE") > p.sum_assured_at(t):
+    if p.av_pp_at(t, Timing.BEF_FEE) > p.sum_assured_at(t):
         assert p.net_amt_at_risk(t) == 0.0
 
 
@@ -447,7 +448,7 @@ def test_corridor_grades_to_100_at_95(variable_ul, anchor):
     # the anchor cell at attained age 90: the corridor, not the face, sets the DB
     t = next(t for t in range(anchor.proj_len()) if anchor.age(t) == 90)
     assert t == 516                                # duration_mth 540, the anniversary
-    av = anchor.av_pp_at(t, "BEF_FEE")
+    av = anchor.av_pp_at(t, Timing.BEF_FEE)
     assert av > anchor.sum_assured_at(t)
     assert anchor.db_pp(t) == pytest.approx(anchor.corridor_factor(t) * av, rel=1e-12)
     assert anchor.net_amt_at_risk(t) == pytest.approx(av * (1.042857 - 1), rel=1e-6)
@@ -476,9 +477,9 @@ def test_pitfall_me_is_charged_once_in_the_unit_value(anchor):
     assert anchor.mth_deduction_pp(0) == pytest.approx(WE["md"], abs=CENT)
     for i in (1, 2):
         assert anchor.me_charge_pp(0, i) == pytest.approx(
-            anchor.sa_pp_at(0, i, "BEF_ME") * anchor.me_rate_ann / 12, rel=1e-12)
+            anchor.sa_pp_at(0, i, Timing.BEF_ME) * anchor.me_rate_ann / 12, rel=1e-12)
         assert anchor.sa_pp(0, i) == pytest.approx(
-            anchor.sa_pp_at(0, i, "BEF_ME") - anchor.me_charge_pp(0, i), rel=1e-12)
+            anchor.sa_pp_at(0, i, Timing.BEF_ME) - anchor.me_charge_pp(0, i), rel=1e-12)
 
 
 def test_pitfall_pro_rata_deduction_guards_the_denominator(variable_ul):
@@ -492,7 +493,7 @@ def test_pitfall_pro_rata_deduction_guards_the_denominator(variable_ul):
     m = p.first_shortfall_month()
     assert m >= 0                                 # -1 would mean "never"
     dry = [t for t in range(m, p.proj_len())
-           if p.unloaned_av_pp_at(t, "BEF_FEE") <= 0]
+           if p.unloaned_av_pp_at(t, Timing.BEF_FEE) <= 0]
     assert dry, "expected model point 3 to exhaust its unloaned accounts"
     for t in dry[:6]:
         taken = (sum(p.mth_deduction_sa_pp(t, i) for i in p.subaccount_ids())
@@ -510,24 +511,24 @@ def test_pitfall_loan_account_earns_the_credited_rate(variable_ul):
     """
     p = variable_ul.Projection[4]
     assert p.loan_bal_init() == 8000.0
-    assert p.la_pp_at(0, "BEF_PREM") == 8000.0        # the opening collateral
-    assert p.loan_bal_pp_at(0, "BEF_PREM") == 8000.0  # and the opening debt
+    assert p.la_pp_at(0, Timing.BEF_PREM) == 8000.0        # the opening collateral
+    assert p.loan_bal_pp_at(0, Timing.BEF_PREM) == 8000.0  # and the opening debt
     assert p.duration_mth(0) == 120
     assert p.loan_cr_rate_ann(0) == 0.01
     assert p.loan_rate_ann(0) == 0.0105          # policy year 11: the preferred tier
     assert p.la_pp(0) == pytest.approx(8000.0 * 1.01 ** (1 / 12), rel=1e-12)
     assert p.loan_bal_pp(0) == pytest.approx(8000.0 * 1.0105 ** (1 / 12), rel=1e-12)
     assert p.loan_bal_pp(0) > p.la_pp(0)
-    assert p.la_pp_at(1, "BEF_PREM") == p.la_pp(0)    # month 0 closes, month 1 opens
-    assert p.loan_bal_pp_at(1, "BEF_PREM") == p.loan_bal_pp(0)
+    assert p.la_pp_at(1, Timing.BEF_PREM) == p.la_pp(0)    # month 0 closes, month 1 opens
+    assert p.loan_bal_pp_at(1, Timing.BEF_PREM) == p.loan_bal_pp(0)
     assert p.loan_spread(0) == pytest.approx(
         8000.0 * (1.0105 ** (1 / 12) - 1.01 ** (1 / 12)) * p.pols_if(0), rel=1e-12)
     # the loan account is part of AV but is excluded from the deduction base
-    assert p.av_pp_at(0, "BEF_FEE") == pytest.approx(
-        p.unloaned_av_pp_at(0, "BEF_FEE") + p.la_pp_at(0, "BEF_PREM"), rel=1e-12)
-    assert p.unloaned_av_pp_at(0, "BEF_FEE") < p.av_pp_at(0, "BEF_FEE")
+    assert p.av_pp_at(0, Timing.BEF_FEE) == pytest.approx(
+        p.unloaned_av_pp_at(0, Timing.BEF_FEE) + p.la_pp_at(0, Timing.BEF_PREM), rel=1e-12)
+    assert p.unloaned_av_pp_at(0, Timing.BEF_FEE) < p.av_pp_at(0, Timing.BEF_FEE)
     # DB and CSV are debt-reduced
-    assert p.claim_pp(0, "DEATH") == pytest.approx(
+    assert p.claim_pp(0, Claim.DEATH) == pytest.approx(
         p.db_pp_eom(0) - p.loan_bal_pp(0), rel=1e-12)
     assert p.ncsv_pp(0) == pytest.approx(p.csv_pp(0) - p.loan_bal_pp(0), rel=1e-12)
 
@@ -685,14 +686,14 @@ def test_account_value_is_the_sum_of_its_parts(variable_ul):
     """AV = sum(SA_i) + FA + LA; the debt is not part of it."""
     p = variable_ul.Projection[4]
     assert p.av_pp_init() == pytest.approx(40000 + 25000 + 10000 + 8000, abs=1e-9)
-    assert p.av_pp_at(0, "BEF_PREM") == pytest.approx(p.av_pp_init(), rel=1e-12)
+    assert p.av_pp_at(0, Timing.BEF_PREM) == pytest.approx(p.av_pp_init(), rel=1e-12)
     for t in (0, 1, 11, 119):
         assert p.av_pp(t) == pytest.approx(
             sum(p.sa_pp(t, i) for i in p.subaccount_ids())
             + p.fa_pp(t) + p.la_pp(t), rel=1e-12)
-        assert p.av_pp_at(t, "BEF_PREM") == pytest.approx(
-            sum(p.sa_pp_at(t, i, "BEF_PREM") for i in p.subaccount_ids())
-            + p.fa_pp_at(t, "BEF_PREM") + p.la_pp_at(t, "BEF_PREM"), rel=1e-12)
+        assert p.av_pp_at(t, Timing.BEF_PREM) == pytest.approx(
+            sum(p.sa_pp_at(t, i, Timing.BEF_PREM) for i in p.subaccount_ids())
+            + p.fa_pp_at(t, Timing.BEF_PREM) + p.la_pp_at(t, Timing.BEF_PREM), rel=1e-12)
 
 
 def test_fixed_option_earns_the_declared_rate(variable_ul):
@@ -700,18 +701,18 @@ def test_fixed_option_earns_the_declared_rate(variable_ul):
     p = variable_ul.Projection[4]
     assert p.crediting_rate_ann(0) == 0.01
     assert p.fixed_return_mth(0) == pytest.approx(1.01 ** (1 / 12) - 1, rel=1e-12)
-    assert p.fa_pp_at(0, "BEF_PREM") == p.fa_pp_init() == 10000.0
+    assert p.fa_pp_at(0, Timing.BEF_PREM) == p.fa_pp_init() == 10000.0
     assert p.fa_pp(0) == pytest.approx(
-        p.fa_pp_at(0, "BEF_INV") * 1.01 ** (1 / 12), rel=1e-12)
+        p.fa_pp_at(0, Timing.BEF_INV) * 1.01 ** (1 / 12), rel=1e-12)
 
 
 def test_option_b_death_benefit_tracks_the_account_value(variable_ul):
     """Option B: DB = F + AV', so the net amount at risk stays at the face amount."""
     p = variable_ul.Projection[3]
-    assert p.db_option() == "B"
+    assert p.db_option() == DeathBenefitOption.B
     for t in (0, 11, 119):
         assert p.db_pp(t) == pytest.approx(
-            max(p.sum_assured_at(t) + p.av_pp_at(t, "BEF_FEE"), p.db_corridor_pp(t)),
+            max(p.sum_assured_at(t) + p.av_pp_at(t, Timing.BEF_FEE), p.db_corridor_pp(t)),
             rel=1e-12)
         assert p.net_amt_at_risk(t) == pytest.approx(p.sum_assured_at(t), rel=1e-12)
 
@@ -748,9 +749,9 @@ def test_timing_and_kind_arguments_are_validated(anchor):
     _rejects("invalid kind", anchor.claim_pp, 0, "ANNUITIZATION")
     _rejects("invalid kind", anchor.claims, 0, "ANNUITIZATION")
     _rejects("invalid kind", anchor.claims_from_av, 0, "ANNUITIZATION")
-    for timing in ("BEF_MAT", "BEF_NB", "BEF_DECR"):
+    for timing in (PolTiming.BEF_MAT, PolTiming.BEF_NB, PolTiming.BEF_DECR):
         assert anchor.pols_if_at(0, timing) == anchor.pols_if(0)
-    assert anchor.claims_from_av(0, "MATURITY") == 0.0
+    assert anchor.claims_from_av(0, Claim.MATURITY) == 0.0
 
 
 def test_a_withdrawal_is_not_a_claim(variable_ul, anchor):
@@ -763,15 +764,15 @@ def test_a_withdrawal_is_not_a_claim(variable_ul, anchor):
     weights it by `pols_if`, since the withdrawal is taken by policies still in force.
     """
     _rejects("invalid kind", anchor.claims, 0, "WITHDRAWAL")
-    assert anchor.claim_pp(0, "WITHDRAWAL") == anchor.wd_pp(0)
+    assert anchor.claim_pp(0, Claim.WITHDRAWAL) == anchor.wd_pp(0)
     for t in (0, 11, 119):
         assert anchor.withdrawals(t) == pytest.approx(
-            anchor.claim_pp(t, "WITHDRAWAL") * anchor.pols_if(t), rel=1e-12)
+            anchor.claim_pp(t, Claim.WITHDRAWAL) * anchor.pols_if(t), rel=1e-12)
         # the kind=None total is deaths plus surrenders, and nothing else
-        assert anchor.claims(t) == pytest.approx(
-            anchor.claims(t, "DEATH") + anchor.claims(t, "LAPSE"), rel=1e-12)
+        assert anchor.claims(t, Claim.ALL) == pytest.approx(
+            anchor.claims(t, Claim.DEATH) + anchor.claims(t, Claim.LAPSE), rel=1e-12)
         assert anchor.net_cf(t) == pytest.approx(
-            anchor.premiums(t) - anchor.claims(t) - anchor.withdrawals(t)
+            anchor.premiums(t) - anchor.claims(t, Claim.ALL) - anchor.withdrawals(t)
             - anchor.expenses(t) - anchor.premium_taxes(t), rel=1e-12)
     # every shipped model point has W(t) = 0, the notes' baseline
     for point_id in variable_ul.Data.model_point_table().index:
@@ -789,7 +790,7 @@ def test_pols_if_is_the_start_of_month_weight(anchor):
     """
     df = anchor.result_cf()
     for t in (0, 1, 11, 119):
-        assert anchor.pols_if_at(t, "BEF_DECR") == anchor.pols_if(t)
+        assert anchor.pols_if_at(t, PolTiming.BEF_DECR) == anchor.pols_if(t)
         assert (anchor.premiums(t) / anchor.premium_pp(t)
                 == pytest.approx(anchor.pols_if(t), rel=1e-12))
         assert df.loc[t, "premiums"] / anchor.premium_pp(t) == pytest.approx(
@@ -854,7 +855,7 @@ def test_dynamic_behavior_module_can_be_switched_on():
         # on this new-business point.
         assert p.scenario_id() == "LEVEL6"
         assert p.pricing_return_mth() == pytest.approx(1.06 ** (1 / 12) - 1, rel=1e-12)
-        assert p.av_pricing_pp_at(0, "BEF_PREM") == 0.0   # nothing before issue
+        assert p.av_pricing_pp_at(0, Timing.BEF_PREM) == 0.0   # nothing before issue
         assert p.av_pricing_pp(0) > 0.0                   # the issue month's closing
         assert p.av_pricing_pp(0) == pytest.approx(p.av_pp(0), rel=1e-9)
         assert p.av_pricing_pp(11) == pytest.approx(p.av_pp(11), rel=1e-9)

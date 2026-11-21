@@ -174,8 +174,9 @@ import pytest
 from sec_support import (
     GENERATED_COLUMNS, SEC_SPECS, TWIN_EXEMPT_DEFAULT, build_sec_table, check_generated,
     codes, compiled_case, compiled_mismatches, exact_here, fingerprint_mismatches,
-    frame_mismatches, run_compiled, sweep, temp_inputs, twin_mismatches)
-from us_registry import model_path, point_keys, projection
+    frame_mismatches, point_index_scalars, run_compiled, sweep, temp_inputs, twin_mismatches)
+from released_twins import read_released_twin, sec_test_model_path as model_path
+from us_registry import point_keys, projection
 
 SEC, TWIN, TABLE = "ULSG_US_SEC", "ULSG_US_S", "model_point_table_sec.csv"
 SPEC = SEC_SPECS[SEC]
@@ -1010,7 +1011,7 @@ def s_model():
     (USLIB-SEC-PLAN.md §4, *Carried into Phase 1*), and the in-force tests read S's months
     off it, the cells its own sweep misses among them.  Frozen once swept (:func:`_freeze`).
     """
-    model = mx.read_model(model_path(TWIN), name=_name("s"))
+    model = read_released_twin(TWIN, model_name=_name("s"))
     for key in point_keys(model):
         _sweep_s(projection(model, key))
     _freeze()
@@ -3552,9 +3553,10 @@ def test_a_rate_or_factor_at_the_bound_of_its_range_is_read(tmp_path):
 # {each Data cell that refuses it: its message}.)  A mode on a single premium is never
 # decoded, in S as here.
 _NO_TYPE, _NO_MODE = "invalid premium type", "invalid premium mode"
-_NO_SCALE_2 = "coi_rates.csv has no scale for the sex and rate_class of point_id [2]"
+_NO_SCALE_2 = ("coi_rates.csv has no scale for the sex and rate_class of point_id "
+               f"{point_index_scalars(2)}")
 _NO_SCHEDULE_2 = ("surr_charge_table.csv has no schedule for the surr_charge_id of "
-                  "point_id [2], each of which has_surr_charge")
+                  f"point_id {point_index_scalars(2)}, each of which has_surr_charge")
 _JOINS = {
     "rate_class": (_NO_SCALE_2, {
         "class_factor": "class_factor_table.csv has no factor for the rate_class of "
@@ -6536,9 +6538,10 @@ def test_the_coi_schedules_are_numbered_by_key_whatever_the_file_order(tmp_path)
 # charge.
 _CHARGED = (4, 6)
 _NO_CLASS = "class_factor_table.csv has no factor for the rate_class of point_id [3, 6]"
-_NO_SCALE = "coi_rates.csv has no scale for the sex and rate_class of point_id [3, 6]"
+_NO_SCALE = ("coi_rates.csv has no scale for the sex and rate_class of point_id "
+             f"{point_index_scalars(3, 6)}")
 _NO_SCHEDULE = ("surr_charge_table.csv has no schedule for the surr_charge_id of point_id "
-                "[6], each of which has_surr_charge")
+                f"{point_index_scalars(6)}, each of which has_surr_charge")
 
 
 def _charged_only(points, edit=None):

@@ -391,9 +391,7 @@ def sex(life):
         v = model_point()["reversion_sex"]
     else:
         raise ValueError("invalid life")
-    if v not in ("M", "F", "mix"):
-        raise ValueError("invalid sex")
-    return v
+    return Sex[v]
 
 
 def annuity_rate():
@@ -435,10 +433,7 @@ def palier_scheme():
     A *rente par paliers* is a level-within-step function of duration, not an escalation:
     nothing compounds and the steps are contractual percentages of the initial level.
     """
-    v = model_point()["palier_scheme"]
-    if v not in ("none", "inc1", "inc2", "dec1", "dec2"):
-        raise ValueError("invalid palier_scheme")
-    return v
+    return PalierScheme[model_point()["palier_scheme"]]
 
 
 def palier_step_years():
@@ -448,7 +443,7 @@ def palier_step_years():
     parameterizes both.
     """
     v = int(model_point()["palier_step_years"])
-    if palier_scheme() == "none":
+    if palier_scheme() == PalierScheme.none:
         return 0
     if v not in (5, 10):
         raise ValueError("invalid palier_step_years")
@@ -472,10 +467,7 @@ def payment_timing():
     survival for advance payments understates the liability by roughly one period's
     mortality per payment, which is material at annuitant ages.
     """
-    v = model_point()["payment_timing"]
-    if v not in ("arrears", "advance"):
-        raise ValueError("invalid payment_timing")
-    return v
+    return PaymentTiming[model_point()["payment_timing"]]
 
 
 def arrerage_charge_rate():
@@ -508,10 +500,7 @@ def mort_basis():
     worked example - which is a scenario, not an expectation - reproduces exactly.  It
     never reaches the pricing side.  See the Space docstring.
     """
-    v = model_point()["mort_basis"]
-    if v not in ("table", "scenario"):
-        raise ValueError("invalid mort_basis")
-    return v
+    return MortBasis[model_point()["mort_basis"]]
 
 
 def death_mth(life):
@@ -616,12 +605,10 @@ def mort_rate_at_age(table_sex, gen, x):
     """
     if x >= omega_age:                                               # noqa: F821
         return 1.0
-    if table_sex == "mix":
-        return (portfolio_male_share * mort_rate_at_age("M", gen, x)  # noqa: F821
+    if table_sex == Sex.mix:
+        return (portfolio_male_share * mort_rate_at_age(Sex.M, gen, x)  # noqa: F821
                 + (1.0 - portfolio_male_share)                       # noqa: F821
-                * mort_rate_at_age("F", gen, x))
-    if table_sex not in ("M", "F"):
-        raise ValueError("invalid table_sex")
+                * mort_rate_at_age(Sex.F, gen, x))
     return float(data.mort_table().loc[(table_sex, gen, x), "mort_rate"])  # noqa: F821
 
 
@@ -661,7 +648,7 @@ def lives_if(t, life):
         return 0.0
     if t <= 0:
         return 1.0
-    if mort_basis() == "scenario":
+    if mort_basis() == MortBasis.scenario:
         d = death_mth(life)
         return 0.0 if (d >= 0 and t > d) else 1.0
     return lives_if(t - 1, life) * (1.0 - mort_rate_mth(t - 1, life))
@@ -802,11 +789,16 @@ def reversion_coeff():
         return 1.0
     d = birth_year(2) - birth_year(1)
     tbl = data.reversion_coeff_table()                               # noqa: F821
-    hit = tbl[((tbl["reversion_pct"] - reversion_pct()).abs() < 1e-9)
-              & (tbl["gen_diff_lo"] <= d) & (d <= tbl["gen_diff_hi"])]
-    if len(hit) != 1:
+    hits = 0
+    coeff = 0.0
+    for k in tbl.index:
+        if abs(k[0] - reversion_pct()) < 1e-9 and k[1] <= d <= tbl.loc[k, "gen_diff_hi"]:
+            if hits == 0:
+                coeff = float(tbl.loc[k, "reversion_coeff"])
+            hits += 1
+    if hits != 1:
         raise ValueError("no published reversion coefficient for this model point")
-    return float(hit["reversion_coeff"].iloc[0])
+    return coeff
 
 
 def option_coeff():
@@ -867,13 +859,13 @@ def palier_factor(t):
     further 12S months.
     """
     scheme = palier_scheme()
-    if scheme == "none":
+    if scheme == PalierScheme.none:
         return 1.0
-    if scheme == "inc1":
+    if scheme == PalierScheme.inc1:
         steps = (1.0, 2.0)
-    elif scheme == "inc2":
+    elif scheme == PalierScheme.inc2:
         steps = (1.0, 1.25, 1.50)
-    elif scheme == "dec1":
+    elif scheme == PalierScheme.dec1:
         steps = (1.0, 0.50)
     else:
         steps = (1.0, 0.75, 0.50)
@@ -907,7 +899,7 @@ def is_payment_mth(t):
     if t < 0:
         return False
     step = 12 // payment_freq()
-    if payment_timing() == "arrears":
+    if payment_timing() == PaymentTiming.arrears:
         return (t + 1) % step == 0
     return t % step == 0
 
@@ -920,7 +912,7 @@ def payment_surv_mth(t):
     advance instalment falls at the start of the month; 0 for the first instalment, where
     ``lives_if`` is 1.
     """
-    return t + 1 if payment_timing() == "arrears" else t
+    return t + 1 if payment_timing() == PaymentTiming.arrears else t
 
 
 def annuity_pp(t):
@@ -956,7 +948,7 @@ def prorata_pp(t):
     where the instalment covering the month of death was already paid at its start and
     nothing has accrued unpaid.
     """
-    if payment_timing() != "arrears":
+    if payment_timing() != PaymentTiming.arrears:
         return 0.0
     step = 12.0 / payment_freq()
     return (mths_since_payment(t) + 1) / step * annual_income(t) / payment_freq()
@@ -1039,9 +1031,9 @@ def cum_annuity_pp(t, kind):
     carrying a month-zero row: ``G(0)`` is what month 0 itself pays.
     """
     prev = 0.0 if t <= 0 else cum_annuity_pp(t - 1, kind)
-    if kind == "ANNUITANT":
+    if kind == AnnuityKind.ANNUITANT:
         return prev + annuity_pp(t)
-    if kind == "ALL":
+    if kind == AnnuityKind.ALL:
         paid = (annuity_pp(t) * (payment_factor(t) + reversion_factor(t))
                 + prorata_pp(t) * prorata_factor(t))
         return prev + paid
@@ -1081,7 +1073,7 @@ def annuity_payments(t):
             * (payment_factor(t) + reversion_factor(t)))
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Expected death-settlement outgo in month t, by kind; the total when kind is omitted.
 
     ``"PRORATA"``
@@ -1092,9 +1084,9 @@ def claims(t, kind=None):
         design is *capital aliéné*, with no death capital and no refund of any
         part of the *capital constitutif*.
     """
-    if kind is None:
-        return sum(claims(t, k) for k in ("PRORATA",))
-    if kind == "PRORATA":
+    if kind == Kind.ALL:
+        return sum(claims(t, k) for k in (Kind.PRORATA,))
+    if kind == Kind.PRORATA:
         return pols_if_init() * prorata_pp(t) * prorata_factor(t)
     raise ValueError("invalid kind")
 
@@ -1107,7 +1099,7 @@ def arrerage_charges(t):
     positive column and **subtracted** in :func:`liability_cf`, because the insurer keeps
     it: it is the one component of this statement that runs the other way.
     """
-    return arrerage_charge_rate() * (annuity_payments(t) + claims(t, "PRORATA"))
+    return arrerage_charge_rate() * (annuity_payments(t) + claims(t, Kind.PRORATA))
 
 
 def pols_if(t):
@@ -1168,7 +1160,7 @@ def liability_cf(t):
     no surrender value at any duration, and no death capital, the representative design
     being *capital aliéné*.
     """
-    return (annuity_payments(t) + claims(t) - arrerage_charges(t)
+    return (annuity_payments(t) + claims(t, Kind.ALL) - arrerage_charges(t)
             + expenses(t))
 
 
@@ -1198,7 +1190,7 @@ def check_lives_roll_fwd_resid(t):
     **time**, as in :func:`lives_if`: the survival rebuilt here is the one to time t.
     """
     res = 0.0
-    scenario = mort_basis() == "scenario"
+    scenario = mort_basis() == MortBasis.scenario
     for life in (1, 2):
         if life == 2 and reversion_pct() <= 0.0:
             continue
@@ -1271,9 +1263,9 @@ def check_cum_annuity_roll_fwd_resid(t):
     advance.
     """
     step = 12 // payment_freq()
-    start = step - 1 if payment_timing() == "arrears" else 0
+    start = step - 1 if payment_timing() == PaymentTiming.arrears else 0
     built = sum(annuity_pp(s) for s in range(start, t + 1, step))
-    return built - cum_annuity_pp(t, "ANNUITANT")
+    return built - cum_annuity_pp(t, AnnuityKind.ANNUITANT)
 
 
 def check_cum_annuity_roll_fwd():
@@ -1380,7 +1372,7 @@ def result_cf():
         {
             "pols_if": [pols_if(t) for t in ts],
             "annuity_payments": [annuity_payments(t) for t in ts],
-            "claims_prorata": [claims(t, "PRORATA") for t in ts],
+            "claims_prorata": [claims(t, Kind.PRORATA) for t in ts],
             "arrerage_charges": [arrerage_charges(t) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "liability_cf": [liability_cf(t) for t in ts],
@@ -1411,7 +1403,7 @@ def result_pols():
             "reversion_factor": [reversion_factor(t) for t in ts],
             "prorata_factor": [prorata_factor(t) for t in ts],
             "annuity_pp": [annuity_pp(t) for t in ts],
-            "cum_annuity_all": [cum_annuity_pp(t, "ALL") for t in ts],
+            "cum_annuity_all": [cum_annuity_pp(t, AnnuityKind.ALL) for t in ts],
             "pols_if": [pols_if(t) for t in ts],
         },
         index=pd.Index(ts, name="t"),                                # noqa: F821
@@ -1427,8 +1419,6 @@ point_id = 1
 
 omega_age = 120
 
-tariff_table_sex = "F"
-
 portfolio_male_share = 0.45
 
 rate_loading = 0.0227
@@ -1442,3 +1432,17 @@ expense_maint = 30.0
 inflation_rate = 0.015
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+PalierScheme = ("Pickle", 2)
+
+PaymentTiming = ("Pickle", 3)
+
+MortBasis = ("Pickle", 4)
+
+AnnuityKind = ("Pickle", 5)
+
+Kind = ("Pickle", 6)
+
+tariff_table_sex = ("Pickle", 7)

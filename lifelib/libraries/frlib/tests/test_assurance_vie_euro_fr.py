@@ -31,6 +31,7 @@ import pytest
 from modelx.core.errors import FormulaError
 
 from fr_registry import LIB, MODELS
+from lifelib.libraries.frlib.products.assurance_vie_euro.enums import AvTiming, GuaranteeForm, Kind, PolTiming, Scenario
 
 
 def model_files(folder):
@@ -314,8 +315,8 @@ def test_the_twelve_year_identities_close(fr_euro_anchor):
     # The month-0 roll-forward, term for term, at fund level.
     assert p.av(0) == pytest.approx(100000.00, abs=CENT)
     assert p.premiums(0) == pytest.approx(200.00, abs=CENT)
-    assert p.claims(0, "DEATH") == pytest.approx(50.24, abs=CENT)
-    assert p.claims(0, "LAPSE") == pytest.approx(340.11, abs=CENT)
+    assert p.claims(0, Kind.DEATH) == pytest.approx(50.24, abs=CENT)
+    assert p.claims(0, Kind.LAPSE) == pytest.approx(340.11, abs=CENT)
     assert p.av(1) == pytest.approx(99809.65, abs=CENT)
     assert p.pols_if(1) * p.av_pp(1) == pytest.approx(99809.65, abs=CENT)
     assert p.check_av_roll_fwd() is True
@@ -330,7 +331,7 @@ def test_the_guarantee_floor_never_binds_on_this_path(fr_euro_anchor):
     steps down once a year, at the anniversary, and the check runs at every month.
     """
     p = fr_euro_anchor
-    assert p.guarantee_form() == "net"
+    assert p.guarantee_form() == GuaranteeForm.net
     assert p.guar_floor_pp(opens(12)) == pytest.approx(99061.85, abs=CENT)
     assert p.av_pp(opens(12)) + p.soc_levy_cum_pp(opens(12)) == pytest.approx(
         139600.82, abs=CENT)
@@ -358,13 +359,13 @@ def test_the_management_charge_is_not_deducted_twice(fr_euro_anchor):
         t = anniv(y)
         assert p.pb_credited_pp(y) - p.fee_pp(y) == pytest.approx(
             p.int_credited_pp(y), abs=1e-9)
-        assert p.av_pp_at(t, "AFT_INT") == pytest.approx(
-            p.av_pp_at(t, "AFT_WD") + p.int_credited_pp(y), abs=1e-9)
+        assert p.av_pp_at(t, AvTiming.AFT_INT) == pytest.approx(
+            p.av_pp_at(t, AvTiming.AFT_WD) + p.int_credited_pp(y), abs=1e-9)
         # What the double deduction would cost: 0.60% of the closing balance, every year.
-        doubled = p.av_pp_at(t, "AFT_INT") * (1.0 - p.fee_rate())
-        assert p.av_pp_at(t, "AFT_INT") - doubled == pytest.approx(
-            p.fee_rate() * p.av_pp_at(t, "AFT_INT"), rel=1e-12)
-        assert p.av_pp_at(t, "AFT_INT") - doubled > 600.0
+        doubled = p.av_pp_at(t, AvTiming.AFT_INT) * (1.0 - p.fee_rate())
+        assert p.av_pp_at(t, AvTiming.AFT_INT) - doubled == pytest.approx(
+            p.fee_rate() * p.av_pp_at(t, AvTiming.AFT_INT), rel=1e-12)
+        assert p.av_pp_at(t, AvTiming.AFT_INT) - doubled > 600.0
 
 
 def test_the_management_charge_lands_whole_at_the_anniversary(fr_euro_anchor):
@@ -381,8 +382,8 @@ def test_the_management_charge_lands_whole_at_the_anniversary(fr_euro_anchor):
     assert "fee" not in p.result_cf().columns
     assert "fee_mth_pp" not in p.cells
     for t in range(opens(4), anniv(4)):
-        assert p.av_pp_at(t, "AFT_INT") == p.av_pp_at(t, "AFT_WD"), t
-    assert p.av_pp_at(anniv(4), "AFT_INT") > p.av_pp_at(anniv(4), "AFT_WD")
+        assert p.av_pp_at(t, AvTiming.AFT_INT) == p.av_pp_at(t, AvTiming.AFT_WD), t
+    assert p.av_pp_at(anniv(4), AvTiming.AFT_INT) > p.av_pp_at(anniv(4), AvTiming.AFT_WD)
     assert p.fee_pp(4) == pytest.approx(p.fee_rate() * p.pm_avg_pp(4), abs=1e-12)
 
 
@@ -630,7 +631,7 @@ def test_the_clock_reaches_dotation_vintages_and_a_young_profile_defers_it(
     is a **[std]** worth naming.
     """
     high = assurance_vie_euro.Projection[8]
-    assert high.scenario_id() == "high"
+    assert high.scenario_id() == Scenario.high
     assert all(high.ppb_dotation_pp(y) > 0.0 for y in range(12))
     for y in range(8, 14):
         assert high.ppb_forced_pp(y) == pytest.approx(
@@ -697,7 +698,7 @@ def test_the_social_levy_is_annual_not_deferred_to_surrender(fr_euro_anchor):
     total_int = sum(p.int_credited_pp(y) for y in range(12))
     assert total_levy == pytest.approx(0.172 * total_int, abs=1e-9)
     assert p.av_pp(opens(1)) == pytest.approx(
-        p.av_pp_at(anniv(0), "AFT_INT") - p.soc_levy_mth_pp(anniv(0)), abs=1e-12)
+        p.av_pp_at(anniv(0), AvTiming.AFT_INT) - p.soc_levy_mth_pp(anniv(0)), abs=1e-12)
     df = p.result_cf()
     outgo = df[["claims_death", "claims_lapse", "withdrawals", "expenses"]].sum(axis=1)
     assert (outgo - df["premiums"] - df["liability_cf"]).abs().max() == pytest.approx(
@@ -756,7 +757,7 @@ def test_the_death_benefit_is_the_account_value_with_no_uplift(fr_euro_anchor):
     for t in (0, 11, 64, anniv(5), 143, 359):
         assert p.db_pp(t) == pytest.approx(p.av_pp(t + 1), rel=1e-15)
         assert p.cv_pp(t) == pytest.approx(p.av_pp(t + 1), rel=1e-15)
-        assert p.claim_pp(t, "DEATH") == pytest.approx(p.claim_pp(t, "LAPSE"), rel=1e-15)
+        assert p.claim_pp(t, Kind.DEATH) == pytest.approx(p.claim_pp(t, Kind.LAPSE), rel=1e-15)
     with pytest.raises(FormulaError):
         p.claim_pp(0, "MATURITY")
     assert "claims_maturity" not in p.result_cf().columns
@@ -781,17 +782,17 @@ def test_mid_year_exits_take_no_in_year_revalorisation(fr_euro_anchor):
     assert p.tmg_rate() == 0.0
     for t in (0, 5, 64, 70, 130, 300):
         assert p.is_anniv(t) is False
-        assert p.claim_pp(t, "LAPSE") == pytest.approx(
-            p.av_pp_at(t, "AFT_WD"), rel=1e-15)
-        assert p.claim_pp(t, "DEATH") == pytest.approx(
-            p.av_pp_at(t, "AFT_WD"), rel=1e-15)
+        assert p.claim_pp(t, Kind.LAPSE) == pytest.approx(
+            p.av_pp_at(t, AvTiming.AFT_WD), rel=1e-15)
+        assert p.claim_pp(t, Kind.DEATH) == pytest.approx(
+            p.av_pp_at(t, AvTiming.AFT_WD), rel=1e-15)
     for y in (0, 5, 11):
         t = anniv(y)
-        assert p.claim_pp(t, "LAPSE") - p.av_pp_at(t, "AFT_WD") == pytest.approx(
+        assert p.claim_pp(t, Kind.LAPSE) - p.av_pp_at(t, AvTiming.AFT_WD) == pytest.approx(
             p.int_credited_pp(y) - p.soc_levy_pp(y), abs=1e-9)
-        assert p.claim_pp(t, "LAPSE") > p.av_pp_at(t, "AFT_WD")
+        assert p.claim_pp(t, Kind.LAPSE) > p.av_pp_at(t, AvTiming.AFT_WD)
     # Deaths then surrenders, on the monthly rates, at the end of every month.
-    assert p.pols_if_at(65, "AFT_DECR") == pytest.approx(
+    assert p.pols_if_at(65, PolTiming.AFT_DECR) == pytest.approx(
         p.pols_if(65) * (1 - p.mort_rate_mth(65)) * (1 - p.lapse_rate_mth(65)),
         abs=1e-12)
 
@@ -985,7 +986,7 @@ def test_the_dynamic_surrender_term_is_one_sided(assurance_vie_euro, fr_euro_anc
     assert len({p.lapse_dyn_add(t) for t in range(opens(8), opens(9))}) == 1
     # A 0.73% taux servi against a 2.20% Livret A adds 4.88 points to a 5% base rate.
     low = assurance_vie_euro.Projection[7]
-    assert low.scenario_id() == "low" and low.ts_net(19) < low.ref_rate(19)
+    assert low.scenario_id() == Scenario.low and low.ts_net(19) < low.ref_rate(19)
     assert low.lapse_dyn_add(opens(19)) == pytest.approx(0.048755, abs=RATE)
     assert low.lapse_rate(opens(19)) == pytest.approx(0.098755, abs=RATE)
 
@@ -1026,7 +1027,7 @@ def test_the_shipped_variants_behave_as_their_columns_say(assurance_vie_euro):
     anchor = assurance_vie_euro.Projection[1]
 
     gross = assurance_vie_euro.Projection[2]
-    assert gross.guarantee_form() == "gross" and anchor.guarantee_form() == "net"
+    assert gross.guarantee_form() == GuaranteeForm.gross and anchor.guarantee_form() == GuaranteeForm.net
     assert gross.av_pp(opens(12)) == pytest.approx(anchor.av_pp(opens(12)), rel=1e-15)
     assert gross.guar_floor_pp(opens(12)) == pytest.approx(
         anchor.guar_floor_pp(opens(12)) + 8738.15, abs=CENT)

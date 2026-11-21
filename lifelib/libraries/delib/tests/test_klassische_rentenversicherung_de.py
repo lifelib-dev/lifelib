@@ -58,6 +58,7 @@ import pytest
 from modelx.core.errors import FormulaError
 
 from de_registry import MODELS, LIB
+from lifelib.libraries.delib.products.klassische_rentenversicherung.enums import AvTiming, ClaimKind, PolsTiming
 
 
 @contextlib.contextmanager
@@ -316,9 +317,9 @@ def test_the_twelve_months_of_policy_year_one(de_rv_anchor, t):
     assert p.prem_due(t) == (t == 0)
     assert p.pols_if(t) == pytest.approx(pols_if, abs=SIX_DP)
     assert p.premiums(t) == pytest.approx(prem, abs=CENT)
-    assert p.claims(t, "DEATH") == pytest.approx(cd, abs=CENT)
-    assert p.claims(t, "LAPSE") == pytest.approx(cl, abs=CENT)
-    assert p.claims(t, "COMMUTATION") == 0.0
+    assert p.claims(t, ClaimKind.DEATH) == pytest.approx(cd, abs=CENT)
+    assert p.claims(t, ClaimKind.LAPSE) == pytest.approx(cl, abs=CENT)
+    assert p.claims(t, ClaimKind.COMMUTATION) == 0.0
     assert p.annuity_payments(t) == 0.0
     assert p.expenses(t) == pytest.approx(exp, abs=CENT)
     assert p.net_cf(t) == pytest.approx(net, abs=CENT)
@@ -409,8 +410,8 @@ def test_year_one_rebuilt_from_the_tariff_parameters(de_rv_anchor):
     assert p.charge_from_av_pp(0) == 0.0                 # the premium meets them all
     assert p.prem_to_av_pp(0) == pytest.approx(YEAR_ONE["prem_to_av"], abs=5e-5)
     assert p.int_credited_pp(0) == pytest.approx(YEAR_ONE["int_credited"], abs=5e-5)
-    assert p.av_pp_at(0, "AFT_INT") == pytest.approx(YEAR_ONE["av_end"], abs=5e-5)
-    assert p.spread_diff_pp_at(0, "AFT_INT") == pytest.approx(
+    assert p.av_pp_at(0, AvTiming.AFT_INT) == pytest.approx(YEAR_ONE["av_end"], abs=5e-5)
+    assert p.spread_diff_pp_at(0, AvTiming.AFT_INT) == pytest.approx(
         (0.0 + 1275.00 - 255.00) * 1.01, abs=5e-5)
     assert p.cv_tariff_pp(0) == pytest.approx(YEAR_ONE["cv_tariff"], abs=5e-5)
     assert p.cv_pp(0) == pytest.approx(YEAR_ONE["cv_floor"], abs=5e-5)   # the floor wins
@@ -446,7 +447,7 @@ def test_the_two_credits_sum_to_the_declared_rate_to_ten_decimals(de_rv_anchor):
     Both are struck on the same base, so the sum is the declared rate applied once.
     """
     p = de_rv_anchor
-    base = p.av_pp_at(0, "AFT_PREM")
+    base = p.av_pp_at(0, AvTiming.AFT_PREM)
     guarantee, surplus = 0.0100 * base, 0.0155 * base
     assert guarantee == pytest.approx(16.0063170368, abs=5e-11)
     assert surplus == pytest.approx(24.8097914070, abs=5e-11)
@@ -464,8 +465,8 @@ def test_the_rentenbeginn_rebuilt_from_the_two_balances(de_rv_anchor):
     and the first payout year's outgo is twelve of them.
     """
     p = de_rv_anchor
-    assert p.av_pp_at(16, "AFT_INT") == pytest.approx(CONVERSION["av_pp"], abs=CENT)
-    assert p.av_sur_pp_at(16, "AFT_INT") == pytest.approx(CONVERSION["av_sur_pp"], abs=CENT)
+    assert p.av_pp_at(16, AvTiming.AFT_INT) == pytest.approx(CONVERSION["av_pp"], abs=CENT)
+    assert p.av_sur_pp_at(16, AvTiming.AFT_INT) == pytest.approx(CONVERSION["av_sur_pp"], abs=CENT)
     assert p.capital_gross_pp() == pytest.approx(
         CONVERSION["av_pp"] + CONVERSION["av_sur_pp"], abs=CENT)
     assert p.val_reserve_pp() == pytest.approx(
@@ -486,7 +487,7 @@ def test_the_rentenbeginn_rebuilt_from_the_two_balances(de_rv_anchor):
     assert p.pols_surv_rb() == pytest.approx(CONVERSION["pols_surv_rb"], abs=SIX_DP)
     assert p.pols_commutation(203) == pytest.approx(0.30 * p.pols_surv_rb(), rel=1e-12)
     assert p.pols_commutation(203) == pytest.approx(CONVERSION["commutations"], abs=SIX_DP)
-    assert p.claims(203, "COMMUTATION") == pytest.approx(
+    assert p.claims(203, ClaimKind.COMMUTATION) == pytest.approx(
         CONVERSION["claims_commutation"], abs=CENT)
     assert p.pols_annuitization(203) == pytest.approx(p.pols_if(204), rel=1e-12)
     assert p.pols_annuitization(203) == pytest.approx(CONVERSION["annuitisations"], abs=SIX_DP)
@@ -520,13 +521,13 @@ def test_the_decrements_close_and_the_account_rolls_forward(de_rv_anchor):
 
     assert p.av_release(0) == pytest.approx(99.5429, abs=5e-5)
     assert p.av_release(0) == pytest.approx(
-        p.av_pp_at(0, "AFT_INT") * (p.pols_if(0) - p.pols_if(12)), rel=1e-12)
+        p.av_pp_at(0, AvTiming.AFT_INT) * (p.pols_if(0) - p.pols_if(12)), rel=1e-12)
     assert (p.av(0) + p.prem_to_av(0) + p.int_credited(0) - p.av_release(0)) == (
         pytest.approx(1517.0951, abs=5e-5)) == p.av(1)
     # In the last accumulation policy year the whole balance is released: the annuitants
     # convert and the commuters cash in.
     assert p.av_release(16) == pytest.approx(
-        p.av_pp_at(16, "AFT_INT") * p.pols_if(12 * 16), rel=1e-12)
+        p.av_pp_at(16, AvTiming.AFT_INT) * p.pols_if(12 * 16), rel=1e-12)
 
 
 def test_the_rentengarantiezeit_costs_what_the_notes_say(de_rv_anchor):
@@ -654,20 +655,20 @@ def test_pitfall_1_the_declared_rate_is_not_added_on_top_of_the_guarantee(
     """
     p = de_rv_anchor
     for k in (0, 4, 11, 16):
-        base = p.av_pp_at(k, "AFT_PREM")
+        base = p.av_pp_at(k, AvTiming.AFT_PREM)
         assert p.bonus_rate(k) == pytest.approx(0.0255 - 0.0100, abs=1e-12)
         assert p.int_credited_pp(k) + p.bonus_rate(k) * base == pytest.approx(
             p.decl_rate(k) * base, rel=1e-12)
     wrong = 0.0                       # the double-credited Ansammlungsguthaben, year by year
     for k in range(17):
         d = p.decl_rate(k)
-        wrong = wrong + d * p.av_pp_at(k, "AFT_PREM") + d * wrong
+        wrong = wrong + d * p.av_pp_at(k, AvTiming.AFT_PREM) + d * wrong
     assert wrong == pytest.approx(DOUBLE_CREDIT["av_sur"], abs=CENT)
-    assert p.av_pp_at(16, "AFT_INT") + wrong == pytest.approx(
+    assert p.av_pp_at(16, AvTiming.AFT_INT) + wrong == pytest.approx(
         DOUBLE_CREDIT["capital_gross"], abs=CENT)
-    assert (p.av_pp_at(16, "AFT_INT") + wrong) / p.capital_gross_pp() - 1 == (
+    assert (p.av_pp_at(16, AvTiming.AFT_INT) + wrong) / p.capital_gross_pp() - 1 == (
         pytest.approx(0.085, abs=0.0005))
-    assert 0.0355 * p.av_pp_at(0, "AFT_PREM") == pytest.approx(
+    assert 0.0355 * p.av_pp_at(0, AvTiming.AFT_PREM) == pytest.approx(
         DOUBLE_CREDIT["year_one"], abs=5e-5)                 # 56,82 EUR against 40,82 EUR
     assert p.int_credited_pp(0) + p.bonus_credited_pp(0) == pytest.approx(
         DOUBLE_CREDIT["correct_year_one"], abs=5e-5)
@@ -686,17 +687,17 @@ def test_pitfall_2_the_within_year_order_is_premium_then_charges_then_interest(d
     """
     p = de_rv_anchor
     for k in (0, 1, 8, 16):
-        assert p.av_pp_at(k, "BEF_PREM") == p.av_pp(k)
-        assert p.av_pp_at(k, "AFT_PREM") == pytest.approx(
+        assert p.av_pp_at(k, AvTiming.BEF_PREM) == p.av_pp(k)
+        assert p.av_pp_at(k, AvTiming.AFT_PREM) == pytest.approx(
             p.av_pp(k) + p.prem_to_av_pp(k) - p.charge_from_av_pp(k), rel=1e-12)
         assert p.int_credited_pp(k) == pytest.approx(
-            p.int_rate_guar() * p.av_pp_at(k, "AFT_PREM"), rel=1e-12)
-        assert p.av_pp_at(k, "AFT_INT") == pytest.approx(
-            p.av_pp_at(k, "AFT_PREM") + p.int_credited_pp(k), rel=1e-12)
+            p.int_rate_guar() * p.av_pp_at(k, AvTiming.AFT_PREM), rel=1e-12)
+        assert p.av_pp_at(k, AvTiming.AFT_INT) == pytest.approx(
+            p.av_pp_at(k, AvTiming.AFT_PREM) + p.int_credited_pp(k), rel=1e-12)
     opening_only = p.av_pp(0) * (1 + p.int_rate_guar()) + p.prem_to_av_pp(0)
-    assert p.av_pp_at(0, "AFT_INT") - opening_only == pytest.approx(
+    assert p.av_pp_at(0, AvTiming.AFT_INT) - opening_only == pytest.approx(
         p.int_rate_guar() * (p.prem_to_av_pp(0) - p.charge_from_av_pp(0)), rel=1e-12)
-    assert p.av_pp_at(0, "AFT_INT") - opening_only == pytest.approx(16.0063, abs=5e-5)
+    assert p.av_pp_at(0, AvTiming.AFT_INT) - opening_only == pytest.approx(16.0063, abs=5e-5)
     # The two charges struck on start-of-year balances, without which it would be circular.
     assert p.charge_admin_pp(1) == pytest.approx(0.0020 * p.av_pp(1), rel=1e-12)
     # The risk charge reads the **annual** first-order rate, at the first month of the year.
@@ -778,11 +779,11 @@ def test_pitfall_5_beitragsfreistellung_is_not_a_lapse(klassische_rentenversiche
     # duration-9 table rate, is the ordinary one.
     assert p.lapse_rate(12 * (pup - 2)) == 0.035
     assert p.pols_lapse(12 * (pup - 2)) == pytest.approx(
-        p.pols_if_at(12 * (pup - 2), "BEF_LAPSE") * p.lapse_rate_mth(12 * (pup - 2)),
+        p.pols_if_at(12 * (pup - 2), PolsTiming.BEF_LAPSE) * p.lapse_rate_mth(12 * (pup - 2)),
         rel=1e-12)
     assert p.pols_if(12 * (pup - 1)) == pytest.approx(0.668738, abs=SIX_DP)
     # The reset is real money, and it is credited in the transition row.
-    assert p.av_pp_at(pup - 2, "AFT_INT") == pytest.approx(30261.4467, abs=CENT)
+    assert p.av_pp_at(pup - 2, AvTiming.AFT_INT) == pytest.approx(30261.4467, abs=CENT)
     assert p.pup_value_pp() == pytest.approx(30303.9053, abs=CENT) == p.av_pp(pup - 1)
     assert p.pup_uplift(pup - 2) == pytest.approx(28.3937, abs=CENT)
     assert p.pup_uplift(pup - 1) == 0.0
@@ -805,7 +806,7 @@ def test_pitfall_5_beitragsfreistellung_is_not_a_lapse(klassische_rentenversiche
     # the whole decrement in the anniversary month and not a twelfth of the way into the year.
     assert [t for t in range(12, 24) if cash.lapse_rate_mth(t) == 1.0] == [23]
     assert all(cash.lapse_rate_mth(t) == 0.0 for t in range(12, 23))
-    assert cash.claims(23, "LAPSE") == pytest.approx(1828.4915, abs=CENT)
+    assert cash.claims(23, ClaimKind.LAPSE) == pytest.approx(1828.4915, abs=CENT)
     assert (cash.result_cf().loc[12:22, "claims_lapse"] == 0.0).all()
     assert cash.pols_if(24) == 0.0
     assert cash.result_cf().loc[24:].abs().sum().sum() == 0.0
@@ -820,7 +821,7 @@ def test_pitfall_6_the_kostenbeitrag_is_not_an_expense(de_rv_anchor, tmp_path):
     assert p.result_cf_annual().loc[1, "expenses"] == pytest.approx(451.1043, abs=5e-5)
     assert p.charge_due_pp(0) * p.pols_if(0) == pytest.approx(1399.3683, abs=5e-5)
     assert p.net_cf(0) == pytest.approx(
-        p.premiums(0) - p.claims(0) - p.annuity_payments(0) - p.expenses(0), rel=1e-12)
+        p.premiums(0) - p.claims(0, ClaimKind.ALL) - p.annuity_payments(0) - p.expenses(0), rel=1e-12)
 
     charges = pd.read_csv(INPUT_DIR / "charge_table.csv")
     is_25 = charges["charge_id"] == "zillmer_25"
@@ -848,7 +849,7 @@ def test_pitfall_7_the_surrender_value_is_floored_at_the_spread_reserve(de_rv_an
     p = de_rv_anchor
     assert all(p.cv_pp(k) == pytest.approx(max(p.cv_tariff_pp(k), p.cv_floor_pp(k)), rel=1e-12)
                and p.cv_floor_pp(k) == pytest.approx(
-                   p.av_pp_at(k, "AFT_INT") + p.spread_diff_pp_at(k, "AFT_INT"), rel=1e-12)
+                   p.av_pp_at(k, AvTiming.AFT_INT) + p.spread_diff_pp_at(k, AvTiming.AFT_INT), rel=1e-12)
                for k in range(17))
     assert all(p.cv_floor_pp(k) > p.cv_tariff_pp(k) for k in range(4))
     assert all(p.cv_floor_pp(k) < p.cv_tariff_pp(k) for k in range(4, 17))
@@ -857,10 +858,10 @@ def test_pitfall_7_the_surrender_value_is_floored_at_the_spread_reserve(de_rv_an
     assert all(p.charge_acq_spread_pp(k) == pytest.approx(1275.00 / 5, abs=CENT)
                for k in range(5))
     assert p.charge_acq_spread_pp(5) == 0.0
-    assert p.spread_diff_pp_at(1, "AFT_INT") == pytest.approx(
+    assert p.spread_diff_pp_at(1, AvTiming.AFT_INT) == pytest.approx(
         (p.spread_diff_pp(1) + p.charge_acq_pp(1) - p.charge_acq_spread_pp(1)) * 1.01,
         rel=1e-12) == pytest.approx(782.952, abs=CENT)
-    assert p.spread_diff_pp_at(16, "AFT_INT") > 0.0       # it never returns to zero
+    assert p.spread_diff_pp_at(16, AvTiming.AFT_INT) > 0.0       # it never returns to zero
     # Omitting the floor would cut the second year's surrender claim by the whole of the gap.
     lapses_year_1 = sum(p.pols_lapse(t) for t in range(12, 24))
     without_floor = p.cv_tariff_pp(1) * lapses_year_1
@@ -879,7 +880,7 @@ def test_pitfall_8_the_stornoabzug_cannot_recover_acquisition_costs(de_rv_anchor
     p = de_rv_anchor
 
     def gross(t):
-        return p.av_pp_at(t, "AFT_INT") + p.av_sur_pp_at(t, "AFT_INT")
+        return p.av_pp_at(t, AvTiming.AFT_INT) + p.av_sur_pp_at(t, AvTiming.AFT_INT)
 
     for t in (0, 4, 11, 16):
         assert p.surr_charge_pp(t) == pytest.approx(0.020 * gross(t), rel=1e-12)
@@ -925,7 +926,7 @@ def test_pitfall_9_the_product_uses_two_mortality_bases(de_rv_anchor):
         assert 1.0 - (1.0 - p.mort_rate_mth(t)) ** 12 == pytest.approx(
             p.mort_rate(t), rel=1e-14)                            # geometric, never q / 12
         assert p.mort_rate_mth(t) > p.mort_rate(t) / 12.0
-    assert p.claims(0, "DEATH") / (
+    assert p.claims(0, ClaimKind.DEATH) / (
         3000.00 * p.pols_if(0) * p.mort_rate_guar(0) * p.mort_rate_mth(0)
         / p.mort_rate(0)) == pytest.approx(1.15, rel=1e-9)
     assert p.omega_age() == 121 and p.age(852 - 12) == 120
@@ -1046,10 +1047,10 @@ def test_pitfall_14_the_kapitalwahlrecht_leaves_no_account_behind(
     p = de_rv_anchor
     n = 12 * 17                        # the Rentenbeginn falls at the end of month n - 1
     assert float(p.model_point()["kapitalwahl_rate"]) == 0.30
-    assert p.claims(n - 1, "COMMUTATION") == pytest.approx(
+    assert p.claims(n - 1, ClaimKind.COMMUTATION) == pytest.approx(
         p.capital_conv_pp() * 0.30 * p.pols_surv_rb(), rel=1e-12)
     assert p.result_cf()["claims_commutation"].sum() == pytest.approx(
-        p.claims(n - 1, "COMMUTATION"), rel=1e-12)      # that month and no other
+        p.claims(n - 1, ClaimKind.COMMUTATION), rel=1e-12)      # that month and no other
     assert p.pols_commutation(n - 1) + p.pols_annuitization(n - 1) == pytest.approx(
         p.pols_surv_rb(), rel=1e-12)
     assert all(p.av_pp(k) == 0.0 and p.av_sur_pp(k) == 0.0 for k in (17, 29, 70))
@@ -1059,7 +1060,7 @@ def test_pitfall_14_the_kapitalwahlrecht_leaves_no_account_behind(
     assert float(full.model_point()["kapitalwahl_rate"]) == 1.0
     assert full.pols_annuitization(n9 - 1) == 0.0
     assert full.pols_commutation(n9 - 1) == pytest.approx(full.pols_surv_rb(), rel=1e-12)
-    assert full.claims(n9 - 1, "COMMUTATION") == pytest.approx(30882.0276, abs=CENT)
+    assert full.claims(n9 - 1, ClaimKind.COMMUTATION) == pytest.approx(30882.0276, abs=CENT)
     assert full.capital_conv_pp() == pytest.approx(43630.1733, abs=CENT)
     assert full.pols_if(n9) == 0.0 and full.check_decrement_closure() is True
     assert full.result_cf().loc[n9:].abs().sum().sum() == 0.0
@@ -1080,8 +1081,8 @@ def test_pitfall_15_the_guarantee_vintage_is_a_model_point_attribute(
              for point_id in (1, 6, 14)}
     assert rates == {1: 0.0100, 6: 0.0275, 14: 0.0090}
     legacy = klassische_rentenversicherung.Projection[6]
-    for name, value in (("av_own", legacy.av_pp_at(24, "AFT_INT")),
-                        ("sur_own", legacy.av_sur_pp_at(24, "AFT_INT")),
+    for name, value in (("av_own", legacy.av_pp_at(24, AvTiming.AFT_INT)),
+                        ("sur_own", legacy.av_sur_pp_at(24, AvTiming.AFT_INT)),
                         ("conv_own", legacy.capital_conv_pp())):
         assert value == pytest.approx(LEGACY_VINTAGE_PROBE[name], abs=CENT), name
 
@@ -1093,13 +1094,13 @@ def test_pitfall_15_the_guarantee_vintage_is_a_model_point_attribute(
     with model_reading("model_point_file", alt, "RV_DE_S_one_rate") as model:
         q = model.Projection[6]
         assert q.int_rate_guar() == 0.0100
-        for name, value in (("av_global", q.av_pp_at(24, "AFT_INT")),
-                            ("sur_global", q.av_sur_pp_at(24, "AFT_INT")),
+        for name, value in (("av_global", q.av_pp_at(24, AvTiming.AFT_INT)),
+                            ("sur_global", q.av_sur_pp_at(24, AvTiming.AFT_INT)),
                             ("conv_global", q.capital_conv_pp())):
             assert value == pytest.approx(LEGACY_VINTAGE_PROBE[name], abs=CENT), name
-        assert q.av_pp_at(24, "AFT_INT") / legacy.av_pp_at(24, "AFT_INT") - 1 == (
+        assert q.av_pp_at(24, AvTiming.AFT_INT) / legacy.av_pp_at(24, AvTiming.AFT_INT) - 1 == (
             pytest.approx(-0.077, abs=0.001))
-        assert q.av_sur_pp_at(24, "AFT_INT") / legacy.av_sur_pp_at(24, "AFT_INT") - 1 == (
+        assert q.av_sur_pp_at(24, AvTiming.AFT_INT) / legacy.av_sur_pp_at(24, AvTiming.AFT_INT) - 1 == (
             pytest.approx(1.560, abs=0.005))
         assert q.bonus_rate(20) == pytest.approx(0.0155, abs=1e-12)   # and now it is positive
 

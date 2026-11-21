@@ -368,15 +368,12 @@ def cell():
     ``education`` is 学資保険, whose benefits are a staged 学資金 schedule plus a maturity
     payment, whose death payment is a return of premiums, and which carries the waiver.
     """
-    v = str(model_point()["cell"])
-    if v not in ("endowment", "education"):
-        raise ValueError("invalid cell: " + v)
-    return v
+    return Cell[model_point()["cell"]]
 
 
 def sex():
     """The sex (M / F) of the 被保険者 (*hihokensha*), the insured life."""
-    return str(model_point()["sex"])
+    return Sex[model_point()["sex"]]
 
 
 def issue_age():
@@ -399,9 +396,9 @@ def ph_sex():
     error, not a missing value: there is no waiver there and nothing for a second life to
     do.
     """
-    if cell() != "education":
+    if cell() != Cell.education:
         raise ValueError("the endowment cell has no 契約者 life")
-    return str(model_point()["ph_sex"])
+    return Sex[model_point()["ph_sex"]]
 
 
 def ph_issue_age():
@@ -410,7 +407,7 @@ def ph_issue_age():
     The second life of the education cell, whose decrement drives the waiver and runs
     over ``t = 0 .. m - 1`` only — the premium-paying periods.
     """
-    if cell() != "education":
+    if cell() != Cell.education:
         raise ValueError("the endowment cell has no 契約者 life")
     return int(model_point()["ph_issue_age"])
 
@@ -476,7 +473,7 @@ def waiver():
     is not, and :func:`wv_load` is the multiplier that would add it.
     """
     v = bool(model_point()["waiver"])
-    if v and cell() != "education":
+    if v and cell() != Cell.education:
         raise ValueError("the waiver is written on the education cell only")
     return v
 
@@ -522,13 +519,11 @@ def dividend_type():
     :func:`net_cf` evaluates this, so the rejection reaches the projection rather than
     waiting for a caller who might never ask.
     """
-    v = str(model_point()["dividend_type"])
-    if v == "five_year":
+    v = DividendType[model_point()["dividend_type"]]
+    if v == DividendType.five_year:
         raise ValueError(
             "dividend_type 'five_year' is out of scope: the ５年ごと利差配当 variant needs "
             "a 配当基準 no retrieved source publishes")
-    if v != "none":
-        raise ValueError("invalid dividend_type: " + v)
     return v
 
 
@@ -856,9 +851,9 @@ def benefit_schedule():
     tbl = data.benefit_schedule_table()                              # noqa: F821
     if sid not in tbl.index:
         return {}
-    sub = tbl.loc[[sid]]
-    return {int(a): float(b)
-            for a, b in zip(sub["k"], sub["benefit_pct"])}
+    sub = tbl.loc[sid]
+    return {int(a): float(sub.loc[a, "benefit_pct"])
+            for a in sub.index}
 
 
 def benefit_pct(k):
@@ -945,7 +940,7 @@ def prem_net_level_at(i):
     ``EPV(0) / a-due(x, m)`` where it is not.  A derived quantity, never an input: the
     gross premium is sourced and the loading is what falls out.
     """
-    if cell() == "endowment":
+    if cell() == Cell.endowment:
         return (sum_assured() * endow_epv(issue_age(), policy_term(), i)
                 / annuity_due(issue_age(), prem_term(), i))
     return edu_epv(0, i) / annuity_due(issue_age(), prem_term(), i)
@@ -998,7 +993,7 @@ def pol_val_at(k, i):
     """
     n, m = policy_term(), prem_term()
     ann = annuity_due(issue_age() + k, max(m - k, 0), i)
-    if cell() == "endowment":
+    if cell() == Cell.endowment:
         return (sum_assured() * endow_epv(issue_age() + k, n - k, i)
                 - prem_net_level_at(i) * ann)
     return edu_epv(k, i) - prem_net_level_at(i) * ann
@@ -1034,7 +1029,7 @@ def pol_val_db_pp(k):
     constructions: an endowment assurance carries the death benefit inside its EPV, while
     the education cell's death payment releases the value instead of adding to it.
     """
-    return sum_assured() if cell() == "endowment" else 0.0
+    return sum_assured() if cell() == Cell.endowment else 0.0
 
 
 def reserve_pp(k):
@@ -1176,7 +1171,7 @@ def death_ben_pp(t):
     each year until the value pulls clear for good in policy year 13.  A model that
     hard-codes either limb is right eleven months a year at best.
     """
-    if cell() == "endowment":
+    if cell() == Cell.endowment:
         return sum_assured() - loan_pp(duration(t))
     refund = (prem_cum_pp_m(t + 1)
               - sum_assured() * benefit_pct_cum(duration(t))
@@ -1256,7 +1251,7 @@ def pols_if_pay(t):
         return 0.0
     if t == 0:
         return 1.0
-    return pols_if_pay_at(t - 1, "AFT_DECR")
+    return pols_if_pay_at(t - 1, PolTiming.AFT_DECR)
 
 
 def pols_wv(t):
@@ -1271,7 +1266,7 @@ def pols_wv(t):
         return 0.0
     if t == 0:
         return 0.0
-    return pols_wv_at(t - 1, "AFT_DECR")
+    return pols_wv_at(t - 1, PolTiming.AFT_DECR)
 
 
 def pols_if_pay_at(t, timing):
@@ -1291,15 +1286,15 @@ def pols_if_pay_at(t, timing):
         l_p(t + 1), the end-of-month state, and zero from ``proj_len() - 1`` on because
         everything closes at the end of the term.
     """
-    if timing == "BEF_DECR":
+    if timing == PolTiming.BEF_DECR:
         return pols_if_pay(t)
-    if timing == "BEF_LAPSE":
+    if timing == PolTiming.BEF_LAPSE:
         return (pols_if_pay(t) * (1.0 - mort_rate_mth(t))
                 * (1.0 - mort_rate_ph_mth(t)))
-    if timing == "AFT_DECR":
+    if timing == PolTiming.AFT_DECR:
         if t < 0 or t >= proj_len() - 1:
             return 0.0
-        return pols_if_pay_at(t, "BEF_LAPSE") * (1.0 - lapse_rate_mth(t))
+        return pols_if_pay_at(t, PolTiming.BEF_LAPSE) * (1.0 - lapse_rate_mth(t))
     raise ValueError("invalid timing: " + str(timing))
 
 
@@ -1320,14 +1315,14 @@ def pols_wv_at(t, timing):
         a waived policy that surrenders at half the ordinary pace does so at half the pace
         every month rather than at half an annual rate spread unevenly.
     """
-    if timing == "BEF_DECR":
+    if timing == PolTiming.BEF_DECR:
         return pols_wv(t)
-    if timing == "BEF_LAPSE":
+    if timing == PolTiming.BEF_LAPSE:
         return pols_wv(t) * (1.0 - mort_rate_mth(t)) + pols_waived(t)
-    if timing == "AFT_DECR":
+    if timing == PolTiming.AFT_DECR:
         if t < 0 or t >= proj_len() - 1:
             return 0.0
-        return pols_wv_at(t, "BEF_LAPSE") * (
+        return pols_wv_at(t, PolTiming.BEF_LAPSE) * (
             1.0 - min(1.0, wv_lapse_mult() * lapse_rate_mth(t)))
     raise ValueError("invalid timing: " + str(timing))
 
@@ -1403,7 +1398,7 @@ def pols_surv(t):
     ``l_p_after(t) + h_after(t)``.  This is what the staged benefit and the maturity benefit
     are paid to, in **both** states.
     """
-    return pols_if_pay_at(t, "BEF_LAPSE") + pols_wv_at(t, "BEF_LAPSE")
+    return pols_if_pay_at(t, PolTiming.BEF_LAPSE) + pols_wv_at(t, PolTiming.BEF_LAPSE)
 
 
 def pols_lapse(t):
@@ -1414,8 +1409,8 @@ def pols_lapse(t):
     benefit just paid**.  Zero in the final month ``t = 12n - 1``, where :func:`lapse_rate`
     is zero.
     """
-    return (pols_if_pay_at(t, "BEF_LAPSE")
-            + pols_wv_at(t, "BEF_LAPSE") * wv_lapse_mult()) * lapse_rate_mth(t)
+    return (pols_if_pay_at(t, PolTiming.BEF_LAPSE)
+            + pols_wv_at(t, PolTiming.BEF_LAPSE) * wv_lapse_mult()) * lapse_rate_mth(t)
 
 
 def pols_maturity(t):
@@ -1454,7 +1449,7 @@ def premiums(t):
     return (premium_pp() - apl_advance_pp(t)) * pols_if_pay(t)
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Benefit outgo in policy month t, by kind; the total when kind is omitted.
 
     Every limb falls at the **end of the month**, which is where the value family is read.
@@ -1481,20 +1476,20 @@ def claims(t, kind=None):
         where a waiver carve-out terminates the contract.  Identically **zero** in the
         base run, and published as a column of zeros because the zero is the product fact.
     """
-    if kind is None:
+    if kind == Kind.ALL:
         return sum(claims(t, k) for k in
-                   ("DEATH", "STAGED", "MATURITY", "LAPSE", "PH_DEATH"))
-    if kind == "DEATH":
+                   (Kind.DEATH, Kind.STAGED, Kind.MATURITY, Kind.LAPSE, Kind.PH_DEATH))
+    if kind == Kind.DEATH:
         return max(0.0, death_ben_pp(t)) * pols_death(t)
-    if kind == "STAGED":
+    if kind == Kind.STAGED:
         if (t + 1) % 12 != 0:
             return 0.0
         return sum_assured() * benefit_pct((t + 1) // 12) * pols_surv(t)
-    if kind == "MATURITY":
+    if kind == Kind.MATURITY:
         return sum_assured() * pols_maturity(t)
-    if kind == "LAPSE":
+    if kind == Kind.LAPSE:
         return max(0.0, cv_at_m(t + 1) - loan_pp(duration(t))) * pols_lapse(t)
-    if kind == "PH_DEATH":
+    if kind == Kind.PH_DEATH:
         return pol_val_pre_at_m(t + 1) * pols_ph_term(t)
     raise ValueError("invalid kind: " + str(kind))
 
@@ -1597,7 +1592,7 @@ def net_cf(t):
     cash flow instead of being projected silently under a 有配当 label.
     """
     dividend_type()
-    return (premiums(t) - claims(t) - claim_expenses(t)
+    return (premiums(t) - claims(t, Kind.ALL) - claim_expenses(t)
             - expenses(t) - commissions(t))
 
 
@@ -1764,8 +1759,8 @@ def check_net_cf_resid(t):
     or a column counted twice, shows up here and nowhere else.
     """
     built = (premiums(t)
-             - claims(t, "DEATH") - claims(t, "STAGED") - claims(t, "MATURITY")
-             - claims(t, "LAPSE") - claims(t, "PH_DEATH")
+             - claims(t, Kind.DEATH) - claims(t, Kind.STAGED) - claims(t, Kind.MATURITY)
+             - claims(t, Kind.LAPSE) - claims(t, Kind.PH_DEATH)
              - claim_expenses(t) - expenses(t) - commissions(t))
     return net_cf(t) - built
 
@@ -1806,11 +1801,11 @@ def result_cf():
             "pols_if_pay": [pols_if_pay(t) for t in ts],
             "pols_wv": [pols_wv(t) for t in ts],
             "premiums": [premiums(t) for t in ts],
-            "claims_death": [claims(t, "DEATH") for t in ts],
-            "claims_staged": [claims(t, "STAGED") for t in ts],
-            "claims_maturity": [claims(t, "MATURITY") for t in ts],
-            "claims_lapse": [claims(t, "LAPSE") for t in ts],
-            "claims_ph_death": [claims(t, "PH_DEATH") for t in ts],
+            "claims_death": [claims(t, Kind.DEATH) for t in ts],
+            "claims_staged": [claims(t, Kind.STAGED) for t in ts],
+            "claims_maturity": [claims(t, Kind.MATURITY) for t in ts],
+            "claims_lapse": [claims(t, Kind.LAPSE) for t in ts],
+            "claims_ph_death": [claims(t, Kind.PH_DEATH) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "claim_expenses": [claim_expenses(t) for t in ts],
             "commissions": [commissions(t) for t in ts],
@@ -1918,3 +1913,13 @@ roll_fwd_tol = 1e-10
 val_tol = 1e-9
 
 pd = ("Module", "pandas")
+
+Cell = ("Pickle", 2)
+
+Sex = ("Pickle", 1)
+
+DividendType = ("Pickle", 3)
+
+PolTiming = ("Pickle", 4)
+
+Kind = ("Pickle", 5)

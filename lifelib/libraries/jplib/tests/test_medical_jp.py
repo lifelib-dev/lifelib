@@ -44,6 +44,7 @@ import pytest
 from modelx.core.errors import FormulaError
 
 from jp_registry import model_path
+from lifelib.libraries.jplib.products.medical.enums import Chassis, Kind, PolTiming, PremPeriod, Sex
 
 MODEL_DIR = model_path("Medical_JP_S")
 
@@ -135,9 +136,9 @@ def test_worked_example_row(jp_medical_anchor, t):
     a = jp_medical_anchor
     assert a.pols_if(t) == pytest.approx(pols, abs=INFORCE)
     assert a.premiums(t) == pytest.approx(prem, abs=YEN)
-    assert a.claims(t, "HOSP") == pytest.approx(hosp, abs=YEN)
-    assert a.claims(t, "SURGERY") == pytest.approx(surg, abs=YEN)
-    assert a.claims(t, "ADVANCED") == pytest.approx(adv, abs=YEN)
+    assert a.claims(t, Kind.HOSP) == pytest.approx(hosp, abs=YEN)
+    assert a.claims(t, Kind.SURGERY) == pytest.approx(surg, abs=YEN)
+    assert a.claims(t, Kind.ADVANCED) == pytest.approx(adv, abs=YEN)
     assert a.expenses(t) == pytest.approx(exp, abs=YEN)
     assert a.claim_expenses(t) == pytest.approx(cexp, abs=YEN)
     assert a.commissions(t) == pytest.approx(comm, abs=YEN)
@@ -182,13 +183,13 @@ def test_worked_example_month_zero_trace(jp_medical_anchor):
     assert a.age(0) == a.issue_age() == 40
     assert (a.policy_year(0), a.policy_year(11), a.policy_year(12)) == (1, 1, 2)
     assert a.premiums(0) == pytest.approx(2100.00, abs=YEN)
-    assert a.claims(0, "HOSP") == pytest.approx(
+    assert a.claims(0, Kind.HOSP) == pytest.approx(
         5000.0 * 15.20 * INC_RATE_MTH_40, abs=YEN)
     assert 0.92 * a.d_ben_dis(0) + 0.08 * a.d_ben_acc(0) == pytest.approx(
         a.d_ben(0), rel=1e-14)
-    assert a.claims(0, "SURGERY") == pytest.approx(
+    assert a.claims(0, Kind.SURGERY) == pytest.approx(
         INC_RATE_MTH_40 * SURG_PER_HOSP, abs=YEN)
-    assert a.claims(0, "ADVANCED") == pytest.approx(
+    assert a.claims(0, Kind.ADVANCED) == pytest.approx(
         ADV_FREQ_MTH * ADV_PER_EVENT, abs=YEN)
     # expenses is acquisition + maintenance only; the claim expense is its own line.
     assert a.claim_expenses(0) == pytest.approx(3000.0 * INC_RATE_MTH_40, abs=YEN)
@@ -295,7 +296,7 @@ def test_pitfall_juryoritsu_is_a_prevalence_not_an_incidence(medical):
     # The daily benefit multiplies *days*, never the prevalence: the model reached for
     # the prevalence would understate the month's hospitalization claim eighteenfold.
     naive = a.pols_if(0) * a.daily_amount() * a.d_ben(0) * prevalence / 12.0
-    assert a.claims(0, "HOSP") / naive == pytest.approx(18.069, abs=0.001)
+    assert a.claims(0, Kind.HOSP) / naive == pytest.approx(18.069, abs=0.001)
 
 
 def test_pitfall_the_five_day_minimum_is_an_amount_not_five_days(medical):
@@ -449,8 +450,8 @@ def test_pitfall_radiation_is_not_a_separate_claim_stream(medical):
     names = set(medical.Projection.cells) | set(medical.Projection.refs)
     assert not [n for n in names if "radiation" in n or n.startswith("rad_")]
     a = medical.Projection[1]
-    kinds = ("HOSP", "SURGERY", "ADVANCED", "LUMP", "LAPSE")
-    assert a.claims(0) == pytest.approx(sum(a.claims(0, k) for k in kinds), rel=1e-14)
+    kinds = (Kind.HOSP, Kind.SURGERY, Kind.ADVANCED, Kind.LUMP, Kind.LAPSE)
+    assert a.claims(0, Kind.ALL) == pytest.approx(sum(a.claims(0, k) for k in kinds), rel=1e-14)
     assert set(a.result_cf().columns) & {"claims_radiation"} == set()
     assert "放射線治療" in medical.Projection.cells["surg_ih_eff"].doc
 
@@ -492,7 +493,7 @@ def test_pitfall_no_surrender_value_no_apl_no_policy_loan(medical):
 
     for point_id in medical.Data.model_point_table().index:
         proj = medical.Projection[point_id]
-        if proj.prem_period_type() == "to_65":
+        if proj.prem_period_type() == PremPeriod.to_65:
             continue
         df = proj.result_cf()
         assert (df["claims_lapse"] == 0.0).all(), point_id
@@ -603,7 +604,7 @@ def test_pitfall_the_180_day_rule_groups_spells_it_is_not_a_waiting_period(medic
     a, p3 = medical.Projection[1], medical.Projection[3]
     assert a.claim_expenses(0) == pytest.approx(
         3000.0 * a.inc_rate_mth(0) * a.pols_if(0), rel=1e-14)
-    assert a.claims(0, "SURGERY") == pytest.approx(
+    assert a.claims(0, Kind.SURGERY) == pytest.approx(
         a.pols_if(0) * a.inc_rate_mth(0) * a.daily_amount()
         * (a.surg_ih_eff(0) * a.surg_mult_ih() + 0.15 * a.surg_mult_op()), rel=1e-14)
     assert p3.lump_claims_pp(0) == pytest.approx(p3.inc_rate_mth(0), rel=1e-14)
@@ -684,11 +685,11 @@ def test_mortality_is_decremented_before_lapse(jp_medical_anchor):
     """The notes' processing order [std]: lapses are taken from the survivors of death."""
     a = jp_medical_anchor
     for t in (0, 11, 120, 600):
-        assert a.pols_if_at(t, "BEF_DECR") == a.pols_if(t)
-        assert a.pols_if_at(t, "BEF_LAPSE") == pytest.approx(
+        assert a.pols_if_at(t, PolTiming.BEF_DECR) == a.pols_if(t)
+        assert a.pols_if_at(t, PolTiming.BEF_LAPSE) == pytest.approx(
             a.pols_if(t) * (1 - a.mort_rate_mth(t)), rel=1e-14)
         assert a.pols_lapse(t) == pytest.approx(
-            a.pols_if_at(t, "BEF_LAPSE") * a.lapse_rate_mth(t), rel=1e-14)
+            a.pols_if_at(t, PolTiming.BEF_LAPSE) * a.lapse_rate_mth(t), rel=1e-14)
         assert a.pols_death(t) == pytest.approx(
             a.pols_if(t) * a.mort_rate_mth(t), rel=1e-14)
 
@@ -702,7 +703,7 @@ def test_inforce_is_a_decreasing_probability(medical):
             assert 0.0 <= proj.pols_if(t) <= 1.0
             assert proj.pols_if(t + 1) <= proj.pols_if(t) + 1e-15
         assert proj.pols_if(proj.proj_len()) == 0.0
-        assert proj.pols_if_at(proj.proj_len() - 1, "AFT_DECR") == 0.0
+        assert proj.pols_if_at(proj.proj_len() - 1, PolTiming.AFT_DECR) == 0.0
 
 
 def test_the_monthly_rates_sit_below_their_annual_parents(jp_medical_anchor):
@@ -836,7 +837,7 @@ def test_lump_sum_rider_off_and_attached(medical):
     assert p3.result_cf()["claims_lump"].sum() == pytest.approx(231914.26, abs=YEN)
     assert p3.lump_count(p3.proj_len()) == pytest.approx(24.91, abs=0.005)
     assert p3.lump_count(p3.proj_len()) < p3.lump_max_count
-    assert p3.claims(0, "LUMP") == pytest.approx(
+    assert p3.claims(0, Kind.LUMP) == pytest.approx(
         100000.0 * p3.inc_rate_mth(0) * p3.pols_if(0), rel=1e-14)
     assert p3.check_lump_ledger() is True
 
@@ -891,7 +892,7 @@ def test_the_horizon_is_the_mortality_table_not_a_contract_term(medical):
     assert len(a.result_cf()) == a.proj_len()
     # Nothing is paid at the horizon beyond the ordinary monthly benefit limbs.
     last = a.proj_len() - 1
-    assert a.claims(last, "LAPSE") == 0.0
+    assert a.claims(last, Kind.LAPSE) == 0.0
     assert a.pols_maturity(last) == 0.0        # everybody has already died
     # ``pols_maturity`` counts cover ending at the scheduled end of the contract; a
     # payment for it would be ``claims(t, "MATURITY")``, and this product has none.
@@ -909,15 +910,15 @@ def test_the_teiki_flag_expires_at_its_final_renewal(medical):
     returning a number nobody should use.
     """
     p6 = medical.Projection[6]
-    assert p6.chassis() == "teiki"
+    assert p6.chassis() == Chassis.teiki
     assert p6.expiry_age() == 75
     assert p6.proj_len() == 12 * (75 - 35) == 480
     assert p6.age(p6.proj_len() - 1) == 74
     last = p6.proj_len() - 1
     assert all(p6.pols_maturity(t) == 0.0 for t in range(0, last, 19))
     assert p6.pols_maturity(last) > 0.0
-    assert p6.claims(last) == pytest.approx(
-        p6.claims(last, "HOSP") + p6.claims(last, "SURGERY"), rel=1e-12)
+    assert p6.claims(last, Kind.ALL) == pytest.approx(
+        p6.claims(last, Kind.HOSP) + p6.claims(last, Kind.SURGERY), rel=1e-12)
     assert p6.check_pols_roll_fwd() is True
     with pytest.raises(FormulaError):
         medical.Projection[1].expiry_age()
@@ -932,13 +933,13 @@ def test_the_short_pay_point_is_the_only_one_with_a_surrender_value(medical):
     non-zero for the only time anywhere in the library's medical model.
     """
     p4 = medical.Projection[4]
-    assert p4.prem_period_type() == "to_65"
+    assert p4.prem_period_type() == PremPeriod.to_65
     assert p4.prem_end_month() == 12 * (65 - 45) == 240
     assert p4.premiums(239) > 0.0 and p4.premiums(240) == 0.0
     assert p4.cv_pp(239) == 0.0
     assert p4.cv_pp(240) == 10.0 * p4.daily_amount() == 50000.0
-    assert p4.claims(239, "LAPSE") == 0.0
-    assert p4.claims(240, "LAPSE") == pytest.approx(
+    assert p4.claims(239, Kind.LAPSE) == 0.0
+    assert p4.claims(240, Kind.LAPSE) == pytest.approx(
         p4.pols_lapse(240) * 50000.0, rel=1e-14)
     assert p4.result_cf()["claims_lapse"].sum() > 0.0
 
@@ -957,8 +958,8 @@ def test_the_sex_factors_cross_the_incidence_ordering_between_30_and_40(medical)
     assert (table["inc_factor_m"] == 1.00).all()
     f30, f40 = medical.Projection[2], medical.Projection[5]
     m40 = medical.Projection[1]
-    assert f30.sex() == "F" and f30.issue_age() == 30
-    assert f40.sex() == "F" and f40.issue_age() == 40
+    assert f30.sex() == Sex.F and f30.issue_age() == 30
+    assert f40.sex() == Sex.F and f40.issue_age() == 40
 
     def male_rate(band):
         row = table.loc[band]
@@ -1045,7 +1046,7 @@ def test_net_cf_carries_the_notes_own_sign(medical):
     a = medical.Projection[1]
     assert a.net_cf(0) < 0.0 and a.net_cf(1) > 0.0
     assert a.net_cf(1) == pytest.approx(
-        a.premiums(1) - a.claims(1) - a.expenses(1) - a.claim_expenses(1)
+        a.premiums(1) - a.claims(1, Kind.ALL) - a.expenses(1) - a.claim_expenses(1)
         - a.commissions(1), abs=1e-9)
 
 
@@ -1139,7 +1140,7 @@ def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
     """
     model = _sandbox(tmp_path, "Medical_JP_S_swap")
     try:
-        base = model.Projection[1].claims(0, "HOSP")
+        base = model.Projection[1].claims(0, Kind.HOSP)
         doubled = model.Data.incidence_table().copy()
         doubled["juryoritsu_per_100k"] = doubled["juryoritsu_per_100k"] * 2
         alt = "incidence_table_doubled.csv"
@@ -1147,7 +1148,7 @@ def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
         model.Data.incidence_table_file = alt
         model.Data.clear_all()
         model.Projection.clear_all()
-        assert model.Projection[1].claims(0, "HOSP") == pytest.approx(
+        assert model.Projection[1].claims(0, Kind.HOSP) == pytest.approx(
             2 * base, rel=1e-12)
     finally:
         model.close()

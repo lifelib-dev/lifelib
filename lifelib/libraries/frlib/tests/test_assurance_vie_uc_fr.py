@@ -44,6 +44,7 @@ import pytest
 from modelx.core.errors import FormulaError
 
 from fr_registry import LIB, MODELS
+from lifelib.libraries.frlib.products.assurance_vie_uc.enums import ArbPattern, AvTiming, Kind, LapseDynamic, LevySource, PlancherBasis, PolTiming, Sex, WdPattern
 
 
 def model_files(folder):
@@ -125,7 +126,7 @@ def test_worked_example_row(fr_uc_anchor, t):
     assert p.units(t) == pytest.approx(units, abs=DIXMILL)
     assert p.av_uc_pp(t) == pytest.approx(av_uc, abs=CENTIME)
     assert p.av_euro_pp(t) == pytest.approx(av_eur, abs=CENTIME)
-    assert p.av_pp_at(t, "BEF_DECR") == pytest.approx(av, abs=CENTIME)
+    assert p.av_pp_at(t, AvTiming.BEF_DECR) == pytest.approx(av, abs=CENTIME)
     assert p.plancher_amount(t) == pytest.approx(floor, abs=CENTIME)
     assert p.nar(t) == pytest.approx(k, abs=CENTIME)
     assert p.mgmt_fee_uc_pp(t) == pytest.approx(fee, abs=CENTIME)
@@ -155,7 +156,7 @@ def test_the_issue_balances_and_the_derived_monthly_factors(fr_uc_anchor):
     assert p.units_open(0) == pytest.approx(p.units_init(), rel=1e-14)
     assert p.unit_price_open(0) == pytest.approx(p.unit_price_init(), rel=1e-14)
     assert p.av_euro_open_pp(0) == pytest.approx(p.av_euro_init_pp(), rel=1e-14)
-    assert p.av_pp_at(0, "OPENING") == pytest.approx(99000.00, abs=CENTIME)
+    assert p.av_pp_at(0, AvTiming.OPENING) == pytest.approx(99000.00, abs=CENTIME)
     # The in-force count is read the other way round: pols_if(t) is the count at the
     # START of month t, so the frame opens on pols_if(0).
     assert p.pols_if(0) == p.pols_if_init() == 1.0
@@ -237,10 +238,10 @@ def test_worked_example_terminal_quantities(fr_uc_anchor):
     """
     p = fr_uc_anchor
     assert p.uc_cost_basis(11) == pytest.approx(75420.62, abs=CENTIME)
-    assert p.pols_if_at(11, "AFT_DECR") == pytest.approx(0.968240, abs=5e-7)
-    assert p.av_at(11, "BEF_DECR") == pytest.approx(74874.07, abs=CENTIME)
+    assert p.pols_if_at(11, PolTiming.AFT_DECR) == pytest.approx(0.968240, abs=5e-7)
+    assert p.av_at(11, AvTiming.BEF_DECR) == pytest.approx(74874.07, abs=CENTIME)
     assert p.av_uc_at(11) + p.av_euro_at(11) == pytest.approx(
-        p.av_at(11, "BEF_DECR"), rel=1e-14)
+        p.av_at(11, AvTiming.BEF_DECR), rel=1e-14)
 
 
 def test_worked_example_partial_surrender_settlement(fr_uc_anchor):
@@ -253,8 +254,8 @@ def test_worked_example_partial_surrender_settlement(fr_uc_anchor):
     p = fr_uc_anchor
     assert p.av_uc_bef_wd_pp(5) == pytest.approx(83469.22, abs=CENTIME)
     assert p.av_euro_bef_wd_pp(5) == pytest.approx(20007.04, abs=CENTIME)
-    assert p.av_pp_at(5, "BEF_WD") == pytest.approx(103476.25, abs=CENTIME)
-    assert p.av_uc_bef_wd_pp(5) / p.av_pp_at(5, "BEF_WD") == pytest.approx(
+    assert p.av_pp_at(5, AvTiming.BEF_WD) == pytest.approx(103476.25, abs=CENTIME)
+    assert p.av_uc_bef_wd_pp(5) / p.av_pp_at(5, AvTiming.BEF_WD) == pytest.approx(
         0.80665095, abs=5e-9)
     assert p.wd_amount_pp(5) == pytest.approx(5000.00, abs=CENTIME)
     assert p.wd_uc_pp(5) == pytest.approx(4033.25, abs=CENTIME)
@@ -276,14 +277,14 @@ def test_worked_example_death_in_the_twelfth_month(fr_uc_anchor):
     observes weekly and levies monthly.
     """
     p = fr_uc_anchor
-    benefit = p.av_pp_at(11, "BEF_DECR") + p.nar(11)
+    benefit = p.av_pp_at(11, AvTiming.BEF_DECR) + p.nar(11)
     assert benefit == pytest.approx(93972.82, abs=CENTIME)
-    assert p.claims(11, "DEATH") == pytest.approx(benefit * p.pols_death(11), rel=1e-14)
+    assert p.claims(11, Kind.DEATH) == pytest.approx(benefit * p.pols_death(11), rel=1e-14)
     assert p.plancher_strain(11) == pytest.approx(
         p.nar(11) * p.pols_death(11), rel=1e-14)
     assert benefit == pytest.approx(
         p.plancher_amount(11) - p.plancher_charge_pp(11), abs=CENTIME)
-    assert p.av_pp_at(11, "BEF_LEVY") + p.nar(11) == pytest.approx(
+    assert p.av_pp_at(11, AvTiming.BEF_LEVY) + p.nar(11) == pytest.approx(
         p.plancher_amount(11), abs=CENTIME)
 
 
@@ -305,9 +306,9 @@ def test_the_unit_count_checks_the_notes_print(fr_uc_anchor):
 def test_the_net_amount_at_risk_closes_on_itself_in_arrears(fr_uc_anchor):
     """The ninth row, ``t = 8``: the base is 87,098.23 + 11.25, and 94,000 less it 6,890.52."""
     p = fr_uc_anchor
-    assert p.av_pp_at(8, "BEF_LEVY") == pytest.approx(
-        p.av_pp_at(8, "BEF_DECR") + p.plancher_charge_pp(8), rel=1e-14)
-    assert p.av_pp_at(8, "BEF_LEVY") == pytest.approx(87109.48, abs=CENTIME)
+    assert p.av_pp_at(8, AvTiming.BEF_LEVY) == pytest.approx(
+        p.av_pp_at(8, AvTiming.BEF_DECR) + p.plancher_charge_pp(8), rel=1e-14)
+    assert p.av_pp_at(8, AvTiming.BEF_LEVY) == pytest.approx(87109.48, abs=CENTIME)
     assert p.nar(8) == pytest.approx(94000.00 - 87109.48, abs=CENTIME)
     assert p.plancher_charge_pp(8) == pytest.approx(p.nar(8) * PI_65 / 12, rel=1e-14)
 
@@ -321,7 +322,7 @@ def test_the_decrement_conversion_is_geometric(fr_uc_anchor):
     p = fr_uc_anchor
     assert p.mort_rate(0) == pytest.approx(0.012, rel=1e-12)
     assert p.lapse_rate(0) == pytest.approx(0.020, rel=1e-12)
-    assert p.pols_if_at(11, "AFT_DECR") == pytest.approx(0.988 * 0.98, rel=1e-12)
+    assert p.pols_if_at(11, PolTiming.AFT_DECR) == pytest.approx(0.988 * 0.98, rel=1e-12)
     assert p.check_pols_roll_fwd() is True
 
 
@@ -353,14 +354,14 @@ def test_pols_if_is_the_weight_on_its_own_row(assurance_vie_uc):
             assert df.loc[t, "withdrawals"] == pytest.approx(
                 p.pols_if(t) * p.wd_amount_pp(t), rel=1e-14)
             # The three timings, and the end-of-month count under its own name.
-            assert p.pols_if_at(t, "BEF_DECR") == pytest.approx(p.pols_if(t), rel=1e-14)
-            assert (p.pols_if_at(t, "BEF_DECR") >= p.pols_if_at(t, "BEF_LAPSE")
-                    >= p.pols_if_at(t, "AFT_DECR"))
+            assert p.pols_if_at(t, PolTiming.BEF_DECR) == pytest.approx(p.pols_if(t), rel=1e-14)
+            assert (p.pols_if_at(t, PolTiming.BEF_DECR) >= p.pols_if_at(t, PolTiming.BEF_LAPSE)
+                    >= p.pols_if_at(t, PolTiming.AFT_DECR))
             if t + 1 < p.proj_len():
-                assert p.pols_if_at(t, "AFT_DECR") == pytest.approx(
+                assert p.pols_if_at(t, PolTiming.AFT_DECR) == pytest.approx(
                     p.pols_if(t + 1), rel=1e-14)
-        assert p.av_at(0, "BEF_DECR") == pytest.approx(
-            p.av_pp_at(0, "BEF_DECR") * p.pols_if_at(0, "AFT_DECR"), rel=1e-14)
+        assert p.av_at(0, AvTiming.BEF_DECR) == pytest.approx(
+            p.av_pp_at(0, AvTiming.BEF_DECR) * p.pols_if_at(0, PolTiming.AFT_DECR), rel=1e-14)
         assert p.check_pols_roll_fwd() is True
 
 
@@ -375,7 +376,7 @@ def test_the_plancher_basis_variants(assurance_vie_uc, point_id):
     p = assurance_vie_uc.Projection[point_id]
     assert p.plancher_amount(11) == pytest.approx(floor, abs=CENTIME)
     assert p.nar(11) == pytest.approx(k, abs=CENTIME)
-    assert p.av_pp_at(11, "BEF_LEVY") == pytest.approx(av_levy, abs=CENTIME)
+    assert p.av_pp_at(11, AvTiming.BEF_LEVY) == pytest.approx(av_levy, abs=CENTIME)
     assert sum(p.plancher_charge_pp(t) for t in range(12)) == pytest.approx(
         charge, abs=CENTIME)
     assert p.av_uc_pp(11) == pytest.approx(58136.28, abs=CENTIME)
@@ -394,7 +395,7 @@ def test_the_charge_base_is_the_risk_and_not_the_account_value(fr_uc_anchor):
     """
     p = fr_uc_anchor
     assert p.plancher_charge_pp(11) == pytest.approx(27.18, abs=CENTIME)
-    assert p.av_pp_at(11, "BEF_LEVY") * p.plancher_rate_mth(11) == pytest.approx(
+    assert p.av_pp_at(11, AvTiming.BEF_LEVY) * p.plancher_rate_mth(11) == pytest.approx(
         126.35, abs=CENTIME)
     for t in range(7):
         assert p.nar(t) == 0.0
@@ -409,7 +410,7 @@ def test_a_path_that_never_crosses_the_floor_pays_no_plancher_premium(assurance_
     df = p.result_cf()
     assert df["plancher_charge"].sum() == 0.0
     assert df["plancher_strain"].sum() == 0.0
-    assert all(p.av_pp_at(t, "BEF_LEVY") >= p.plancher_amount(t)
+    assert all(p.av_pp_at(t, AvTiming.BEF_LEVY) >= p.plancher_amount(t)
                for t in range(p.proj_len()))
 
 
@@ -420,7 +421,7 @@ def test_the_net_amount_at_risk_is_floored_at_zero(assurance_vie_uc):
     the premium a credit and the death strain a profit on the policyholder's own units.
     """
     p = assurance_vie_uc.Projection[11]
-    assert all(p.plancher_amount(t) - p.av_pp_at(t, "BEF_LEVY") < 0.0
+    assert all(p.plancher_amount(t) - p.av_pp_at(t, AvTiming.BEF_LEVY) < 0.0
                for t in (11, 119, 299))
     assert all(p.nar(t) == 0.0 for t in (11, 119, 299))
     for point_id in assurance_vie_uc.Data.model_point_table().index:
@@ -436,9 +437,9 @@ def test_the_cap_applies_to_the_risk_and_not_to_the_benefit(assurance_vie_uc):
     p = assurance_vie_uc.Projection[10]
     assert p.plancher_cap() == 300000.0
     assert p.nar(59) == 300000.0
-    assert p.plancher_amount(59) - p.av_pp_at(59, "BEF_LEVY") > 300000.0
-    benefit = p.av_pp_at(59, "BEF_DECR") + p.nar(59)
-    assert benefit == pytest.approx(p.av_pp_at(59, "BEF_DECR") + 300000.0, rel=1e-14)
+    assert p.plancher_amount(59) - p.av_pp_at(59, AvTiming.BEF_LEVY) > 300000.0
+    benefit = p.av_pp_at(59, AvTiming.BEF_DECR) + p.nar(59)
+    assert benefit == pytest.approx(p.av_pp_at(59, AvTiming.BEF_DECR) + 300000.0, rel=1e-14)
     assert p.plancher_charge_pp(59) == pytest.approx(
         300000.0 * p.plancher_rate_mth(59), rel=1e-14)
 
@@ -470,23 +471,23 @@ def test_the_cliquet_floor_is_reduced_proportionally_not_nominally(assurance_vie
     """
     p1 = assurance_vie_uc.Projection[1]
     p4 = assurance_vie_uc.Projection[4]
-    assert p4.plancher_basis() == "cliquet" and p4.plancher_ratchet_months() == 12
+    assert p4.plancher_basis() == PlancherBasis.cliquet and p4.plancher_ratchet_months() == 12
     assert p4.plancher_ratchet(11) == pytest.approx(94216.29, abs=CENTIME)
     assert p4.plancher_ratchet(11) == pytest.approx(
-        99000.0 * (1 - 5000.0 / p4.av_pp_at(5, "BEF_WD")), abs=CENTIME)
+        99000.0 * (1 - 5000.0 / p4.av_pp_at(5, AvTiming.BEF_WD)), abs=CENTIME)
     assert p1.plancher_amount(11) == pytest.approx(94000.00, abs=CENTIME)
     assert p4.plancher_amount(11) > p1.plancher_amount(11)
     p5 = assurance_vie_uc.Projection[5]
     assert p5.plancher_ratchet_months() == 1
     assert p5.plancher_amount(11) == pytest.approx(
-        p5.av_pp_at(5, "BEF_LEVY"), abs=CENTIME)
+        p5.av_pp_at(5, AvTiming.BEF_LEVY), abs=CENTIME)
 
 
 def test_the_indexee_floor_indexes_and_then_deducts_the_nominal_withdrawal(
         assurance_vie_uc):
     """97,378.25 at ``t = 11`` on a 3.50% a year indexation, and it bites two months early."""
     p = assurance_vie_uc.Projection[3]
-    assert p.plancher_basis() == "indexee" and p.plancher_index_rate() == 0.035
+    assert p.plancher_basis() == PlancherBasis.indexee and p.plancher_index_rate() == 0.035
     r = 1.035 ** (1 / 12)
     assert p.plancher_amount(5) == pytest.approx(99000.0 * r ** 6 - 5000.0, abs=CENTIME)
     assert p.plancher_amount(11) == pytest.approx(
@@ -501,8 +502,8 @@ def test_the_levy_source_decides_whether_the_rider_touches_the_units(assurance_v
     """
     p1 = assurance_vie_uc.Projection[1]
     p6 = assurance_vie_uc.Projection[6]
-    assert p1.plancher_levy_source() == "euro_first"
-    assert p6.plancher_levy_source() == "uc_units"
+    assert p1.plancher_levy_source() == LevySource.euro_first
+    assert p6.plancher_levy_source() == LevySource.uc_units
     assert p1.units(11) == pytest.approx(745.036125, abs=1e-6)
     assert p6.units(11) == pytest.approx(744.044774, abs=1e-6)
     for t in range(7, 12):
@@ -520,7 +521,7 @@ def test_the_levy_falls_on_the_units_when_the_euro_leg_cannot_pay(assurance_vie_
     is what makes the unit count path-dependent when it happens.
     """
     p = assurance_vie_uc.Projection[10]
-    assert p.plancher_levy_source() == "euro_first" and p.euro_alloc() == 0.0
+    assert p.plancher_levy_source() == LevySource.euro_first and p.euro_alloc() == 0.0
     assert p.av_euro_pp(59) == 0.0 and p.plancher_levy_eur_pp(59) == 0.0
     assert p.plancher_levy_uc_pp(59) == pytest.approx(
         p.plancher_charge_pp(59), rel=1e-14)
@@ -537,7 +538,7 @@ def test_the_cover_stops_at_the_cessation_age(assurance_vie_uc):
     assert p.nar(23) > 0.0 and p.nar(24) == 0.0
     assert p.plancher_charge_pp(24) == 0.0 and p.plancher_strain(24) == 0.0
     # But the floor would be firmly in the money if the cover had not ceased.
-    assert p.plancher_amount(24) > p.av_pp_at(24, "BEF_LEVY")
+    assert p.plancher_amount(24) > p.av_pp_at(24, AvTiming.BEF_LEVY)
     assert all(p.nar(t) == 0.0 for t in range(24, p.proj_len()))
 
 
@@ -585,7 +586,7 @@ def test_the_rider_is_an_election_not_a_premium(assurance_vie_uc):
     """
     p7 = assurance_vie_uc.Projection[7]
     assert p7.plancher_flag() is False
-    assert p7.plancher_amount(359) - p7.av_pp_at(359, "BEF_LEVY") > 25000.0
+    assert p7.plancher_amount(359) - p7.av_pp_at(359, AvTiming.BEF_LEVY) > 25000.0
     assert all(p7.nar(t) == 0.0 for t in (0, 119, 239, 359))
     assert p7.result_cf()["plancher_charge"].sum() == 0.0
     df = assurance_vie_uc.Projection[1].result_cf()
@@ -661,14 +662,14 @@ def test_the_account_value_and_the_unit_count_roll_forward(assurance_vie_uc):
         assert p.check_av_roll_fwd() is True
         assert p.check_unit_roll_fwd() is True
     p = assurance_vie_uc.Projection[1]
-    assert p.av_pp_at(0, "OPENING") == pytest.approx(p.prem_to_av_pp(), rel=1e-14)
+    assert p.av_pp_at(0, AvTiming.OPENING) == pytest.approx(p.prem_to_av_pp(), rel=1e-14)
     for t in (0, 2, 5, 11):
-        assert p.av_pp_at(t, "BEF_DECR") == pytest.approx(
-            p.av_pp_at(t, "OPENING") + p.uc_growth_pp(t) + p.euro_interest_pp(t)
+        assert p.av_pp_at(t, AvTiming.BEF_DECR) == pytest.approx(
+            p.av_pp_at(t, AvTiming.OPENING) + p.uc_growth_pp(t) + p.euro_interest_pp(t)
             - p.mgmt_fee_uc_pp(t) - p.arb_fee_pp(t) - p.wd_amount_pp(t)
             - p.plancher_charge_pp(t), abs=1e-7)
         if t > 0:
-            assert p.av_pp_at(t, "OPENING") == pytest.approx(p.av_pp(t - 1), rel=1e-14)
+            assert p.av_pp_at(t, AvTiming.OPENING) == pytest.approx(p.av_pp(t - 1), rel=1e-14)
     # And each month's closing euro balance opens the next month.
     for t in (0, 5, 10):
         assert p.av_euro_aft_credit_pp(t + 1) == pytest.approx(
@@ -744,7 +745,7 @@ def test_the_worked_example_runs_the_base_surrender_table_alone(fr_uc_anchor):
     from ``t = 7``, and the notes' decrement check would then not close.
     """
     p = fr_uc_anchor
-    assert p.lapse_dynamic() == "none"
+    assert p.lapse_dynamic() == LapseDynamic.none
     assert all(p.lapse_rate(t) == pytest.approx(0.02, rel=1e-12) for t in range(12))
     assert all(p.perf_factor(t) == 1.0 for t in range(12))
     assert p.return_12m(11) == pytest.approx(p.uc_return_ref, rel=1e-14)
@@ -756,7 +757,7 @@ def test_the_moneyness_multiplier_halves_surrender_while_the_floor_bites(
     year 2, and the full 0.04 x 1.198 once the cover has ceased and the guarantee is gone.
     """
     p = assurance_vie_uc.Projection[9]
-    assert p.lapse_dynamic() == "full"
+    assert p.lapse_dynamic() == LapseDynamic.full
     assert p.nar(11) > 0.0 and p.plancher_factor(11) == 0.5
     assert p.lapse_rate(11) == pytest.approx(0.02 * 0.5, rel=1e-12)
     assert p.perf_factor(12) == pytest.approx(1 + 2 * (0.049 + 0.05), rel=1e-9)
@@ -792,9 +793,9 @@ def test_the_programmed_and_progressive_patterns(assurance_vie_uc):
     of its own accord once the euro support is empty.
     """
     p = assurance_vie_uc.Projection[2]
-    assert p.wd_pattern() == "programmed" and p.arb_pattern() == "progressive"
+    assert p.wd_pattern() == WdPattern.programmed and p.arb_pattern() == ArbPattern.progressive
     assert p.wd_amount_pp(0) == pytest.approx(
-        p.av_pp_at(0, "BEF_WD") * 0.05 / 12, rel=1e-14)
+        p.av_pp_at(0, AvTiming.BEF_WD) * 0.05 / 12, rel=1e-14)
     assert p.arb_amount_pp(0) == pytest.approx(500.00, abs=CENTIME)
     assert p.av_euro_pp(119) == pytest.approx(0.0, abs=CENTIME)
     assert p.arb_amount_pp(119) == 0.0
@@ -896,7 +897,7 @@ def test_inputs_are_external_and_carry_their_provenance(assurance_vie_uc):
     assert lapse["provenance"].str.startswith("[std]").all()
     assert tariff["provenance"].str.contains(r"\[S4").all()
     # The mortality proxy is anchored on the notes' placeholder; the tariff is Spirica's.
-    assert float(mort.loc[("M", 65), "mort_rate"]) == pytest.approx(0.015, rel=1e-12)
+    assert float(mort.loc[(Sex.M, 65), "mort_rate"]) == pytest.approx(0.015, rel=1e-12)
     assert assurance_vie_uc.Projection.mort_be_factor == 0.8
     assert int(tariff.index.min()) == 12 and int(tariff.index.max()) == 74
     assert float(tariff.loc[65, "premium_per_10000"]) == 196.0
@@ -946,10 +947,35 @@ def test_round_trip_is_stable(tmp_path):
         p = reread.Projection[1]
         for t, row in WORKED_EXAMPLE.items():
             assert p.units(t) == pytest.approx(row[1], abs=DIXMILL)
-            assert p.av_pp_at(t, "BEF_DECR") == pytest.approx(row[4], abs=CENTIME)
+            assert p.av_pp_at(t, AvTiming.BEF_DECR) == pytest.approx(row[4], abs=CENTIME)
             assert p.nar(t) == pytest.approx(row[6], abs=CENTIME)
         assert "Notes symbol" in reread.Projection.doc
     finally:
         reread.close()
 
     assert model_files(dest) == model_files(MODEL_DIR)
+
+
+def test_the_scenario_segments_must_not_overlap():
+    """W3.3 (D68): uc_return_mth reads the last segment starting at or before the month, so
+    the reader refuses overlapping segments rather than answering differently."""
+    import pandas as pd
+    model = mx.read_model(MODEL_DIR, name="UC_FR_S_d68")
+    try:
+        src = model.Data.input_dir() / "uc_scenario_table.csv"
+        broken = pd.read_csv(src)
+        extra = broken[broken["scenario_id"] == "stress_yr1"].iloc[[0]].copy()
+        extra["from_month"] = 3
+        extra["to_month"] = 8
+        broken = pd.concat([broken, extra], ignore_index=True)
+        alt = "uc_scenario_table_d68_broken.csv"
+        broken.to_csv(model.Data.input_dir() / alt, index=False)
+        try:
+            model.Data.uc_scenario_table_file = alt
+            model.Data.clear_all()
+            with pytest.raises(FormulaError, match="uc_scenario_table"):
+                model.Data.uc_scenario_table()
+        finally:
+            (model.Data.input_dir() / alt).unlink(missing_ok=True)
+    finally:
+        model.close()

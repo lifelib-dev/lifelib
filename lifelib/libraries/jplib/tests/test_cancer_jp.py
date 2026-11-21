@@ -40,6 +40,7 @@ import pytest
 from modelx.core.errors import FormulaError
 
 from jp_registry import model_path
+from lifelib.libraries.jplib.products.cancer.enums import Chassis, Kind, PolTiming, PremPeriod, Sex, WaiverTrigger
 
 MODEL_DIR = model_path("Cancer_JP_S")
 
@@ -48,7 +49,7 @@ INFORCE = 5e-7       # pols_if and the healthy split, 6 d.p.
 DIAGNOSED = 5e-9     # the diagnosed state, 8 d.p.
 LEDGER = 5e-5        # the treatment-month ledger, 4 d.p.
 
-CARE_KINDS = ("DIAG", "INSITU", "HOSP", "SURGERY", "TREAT", "OUTPATIENT", "ADVANCED")
+CARE_KINDS = (Kind.DIAG, Kind.INSITU, Kind.HOSP, Kind.SURGERY, Kind.TREAT, Kind.OUTPATIENT, Kind.ADVANCED)
 
 
 @contextmanager
@@ -136,8 +137,8 @@ def test_the_anchor_cell_is_the_worked_examples_model_point(jp_cancer_anchor):
     """Model point 1 is the cell the notes' worked example projects."""
     p = jp_cancer_anchor
     assert p.issue_age() == 40
-    assert p.sex() == "M"
-    assert p.chassis() == "shushin"
+    assert p.sex() == Sex.M
+    assert p.chassis() == Chassis.shushin
     assert p.base_amount() == 10_000.0
     assert p.diag_benefit() == 1_000_000.0
     assert p.cycle_months() == 24
@@ -148,9 +149,9 @@ def test_the_anchor_cell_is_the_worked_examples_model_point(jp_cancer_anchor):
     assert p.treat_cap() == 60
     assert p.outp_daily() == 10_000.0
     assert p.wait_months() == 3
-    assert p.prem_period_type() == "whole_life"
+    assert p.prem_period_type() == PremPeriod.whole_life
     assert p.premium_mth_pp() == 3_000.0
-    assert p.waiver_trigger() == "cancer_diag"
+    assert p.waiver_trigger() == WaiverTrigger.cancer_diag
     assert p.adv_rider() is True
     assert p.disch_rider() is False
     assert p.repeat_conditioned() is False
@@ -211,7 +212,7 @@ def test_the_worked_examples_claim_lines(jp_cancer_anchor, t):
     row = WORKED_EXAMPLE_CLAIMS[t]
     for kind, expected in zip(CARE_KINDS, row):
         assert p.claims(t, kind) == pytest.approx(expected, abs=YEN), kind
-    assert p.claims(t) == pytest.approx(row[7], abs=YEN)
+    assert p.claims(t, Kind.ALL) == pytest.approx(row[7], abs=YEN)
     assert p.net_cf(t) == pytest.approx(row[8], abs=YEN)
 
 
@@ -227,7 +228,7 @@ def test_the_worked_examples_month_0_trace(jp_cancer_anchor):
     assert p.pols_cancer(0) == 0.0
     assert p.premiums(0) == pytest.approx(3_000.0 * 1.0, abs=YEN)
     assert p.cover(0) == 0.0
-    assert p.claims(0) == 0.0
+    assert p.claims(0, Kind.ALL) == 0.0
     assert p.claim_expenses(0) == 0.0
     assert p.expenses(0) == pytest.approx(250.0 + 20_000.0, abs=YEN)
     assert p.commissions(0) == pytest.approx(1.5 * 36_000.0, abs=YEN)
@@ -263,14 +264,14 @@ def test_the_worked_examples_month_3_trace_when_cover_attaches(jp_cancer_anchor)
     p = jp_cancer_anchor
     assert p.cover(3) == 1.0
     assert p.diag_first(3) == pytest.approx(0.000120016, abs=5e-10)
-    assert p.claims(3, "DIAG") == pytest.approx(120.0161, abs=5e-5)
+    assert p.claims(3, Kind.DIAG) == pytest.approx(120.0161, abs=5e-5)
     assert p.insitu_ev(3) == pytest.approx(0.0000146420, abs=5e-11)
-    assert p.claims(3, "INSITU") == pytest.approx(7.3210, abs=5e-5)
-    assert p.claims(3, "SURGERY") == pytest.approx(2.3427, abs=5e-5)
+    assert p.claims(3, Kind.INSITU) == pytest.approx(7.3210, abs=5e-5)
+    assert p.claims(3, Kind.SURGERY) == pytest.approx(2.3427, abs=5e-5)
     assert p.pols_cancer(3) == 0.0
-    for kind in ("HOSP", "TREAT", "OUTPATIENT", "ADVANCED"):
+    for kind in (Kind.HOSP, Kind.TREAT, Kind.OUTPATIENT, Kind.ADVANCED):
         assert p.claims(3, kind) == 0.0, kind
-    assert p.claims(3) == pytest.approx(120.0161 + 7.3210 + 2.3427, abs=5e-4)
+    assert p.claims(3, Kind.ALL) == pytest.approx(120.0161 + 7.3210 + 2.3427, abs=5e-4)
     assert p.expenses(3) == pytest.approx(244.1165, abs=5e-4)
     assert p.claim_expenses(3) == pytest.approx(0.6733, abs=5e-5)
     assert p.pols_healthy(4) == pytest.approx(
@@ -290,17 +291,17 @@ def test_the_worked_examples_month_4_trace_when_the_diagnosed_state_is_live(
     """
     p = jp_cancer_anchor
     assert p.pols_cancer(4) == pytest.approx(0.00011909, abs=DIAGNOSED)
-    assert p.claims(4, "HOSP") == pytest.approx(0.3573, abs=5e-5)
-    assert p.claims(4, "TREAT") == pytest.approx(1.1909, abs=5e-5)
+    assert p.claims(4, Kind.HOSP) == pytest.approx(0.3573, abs=5e-5)
+    assert p.claims(4, Kind.TREAT) == pytest.approx(1.1909, abs=5e-5)
     assert p.paid_months(4) == 0.10                 # M(4) = 0, so the cap does not bite
-    assert p.claims(4, "OUTPATIENT") == pytest.approx(0.1092, abs=5e-5)
-    assert p.claims(4, "ADVANCED") == pytest.approx(0.0786, abs=5e-5)
+    assert p.claims(4, Kind.OUTPATIENT) == pytest.approx(0.1092, abs=5e-5)
+    assert p.claims(4, Kind.ADVANCED) == pytest.approx(0.0786, abs=5e-5)
     assert p.insitu_ev(4) == pytest.approx(0.0000145242, abs=5e-11)
-    assert p.claims(4, "SURGERY") == pytest.approx(2.4975, abs=5e-5)
+    assert p.claims(4, Kind.SURGERY) == pytest.approx(2.4975, abs=5e-5)
     assert p.diag_first(4) == pytest.approx(0.000119053, abs=5e-10)
-    assert p.claims(4, "DIAG") == pytest.approx(119.0525, abs=5e-5)
+    assert p.claims(4, Kind.DIAG) == pytest.approx(119.0525, abs=5e-5)
     assert p.diag_rep(4) == 0.0                     # pols_open(4) is still empty
-    assert p.claims(4) == pytest.approx(130.5481, abs=5e-4)
+    assert p.claims(4, Kind.ALL) == pytest.approx(130.5481, abs=5e-4)
     assert p.premiums(4) == pytest.approx(3_000.0 * 0.968626, abs=5e-3)
     assert p.premiums(4) < 3_000.0 * p.pols_if(4)
     assert p.expenses(4) == pytest.approx(242.1863, abs=5e-4)
@@ -320,7 +321,7 @@ def test_policy_year_1_in_aggregate(jp_cancer_anchor):
     for column, total in POLICY_YEAR_1.items():
         assert df[column].sum() == pytest.approx(total, abs=5e-5), column
     ts = range(12)
-    assert sum(p.claims(t) for t in ts) == pytest.approx(
+    assert sum(p.claims(t, Kind.ALL) for t in ts) == pytest.approx(
         POLICY_YEAR_1_CLAIMS, abs=5e-5)
     assert sum(p.pols_if(t) for t in ts) == pytest.approx(11.491654, abs=INFORCE)
     assert sum(p.pols_healthy(t) for t in ts) == pytest.approx(11.487521, abs=INFORCE)
@@ -347,11 +348,11 @@ def test_the_benefit_per_diagnosed_life_month(jp_cancer_anchor):
     assert p.pols_cancer(t) > 0.0
     insitu_surgery = p.surg_mult() * p.base_amount() * 0.80 * p.insitu_ev(t)
     on_state = {
-        "HOSP": p.claims(t, "HOSP"),
-        "SURGERY": p.claims(t, "SURGERY") - insitu_surgery,
-        "TREAT": p.claims(t, "TREAT"),
-        "OUTPATIENT": p.claims(t, "OUTPATIENT"),
-        "ADVANCED": p.claims(t, "ADVANCED"),
+        "HOSP": p.claims(t, Kind.HOSP),
+        "SURGERY": p.claims(t, Kind.SURGERY) - insitu_surgery,
+        "TREAT": p.claims(t, Kind.TREAT),
+        "OUTPATIENT": p.claims(t, Kind.OUTPATIENT),
+        "ADVANCED": p.claims(t, Kind.ADVANCED),
     }
     total = 0.0
     for kind, per_month in PER_DIAGNOSED_LIFE_MONTH.items():
@@ -417,14 +418,14 @@ def test_the_waiting_period_is_a_hard_zero_not_a_reduced_rate(jp_cancer_anchor):
     p = jp_cancer_anchor
     for t in (0, 1, 2):
         assert p.cover(t) == 0.0
-        assert p.claims(t) == 0.0
+        assert p.claims(t, Kind.ALL) == 0.0
         assert all(p.claims(t, kind) == 0.0 for kind in CARE_KINDS)
         assert p.diag_first(t) == 0.0
         assert p.insitu_ev(t) == 0.0
         assert p.pols_cancer(t) == 0.0
         assert p.insitu_avail(t) == 1.0
     assert p.cover(3) == 1.0
-    assert p.claims(3) > 0.0
+    assert p.claims(3, Kind.ALL) > 0.0
     assert p.pols_healthy(3) == pytest.approx(p.pols_if(3), rel=1e-15)
 
 
@@ -480,11 +481,11 @@ def test_insitu_is_a_second_benefit_tier_not_a_discount_on_the_first(jp_cancer_a
     """
     p = jp_cancer_anchor
     t = 3
-    assert p.claims(t, "INSITU") == pytest.approx(
+    assert p.claims(t, Kind.INSITU) == pytest.approx(
         p.insitu_pct() * p.diag_benefit() * p.insitu_ev(t), rel=1e-14)
     # Not a share of the main line: the two are driven by different event counts.
-    assert p.claims(t, "INSITU") != pytest.approx(
-        p.insitu_pct() * p.claims(t, "DIAG"), rel=1e-6)
+    assert p.claims(t, Kind.INSITU) != pytest.approx(
+        p.insitu_pct() * p.claims(t, Kind.DIAG), rel=1e-6)
     # Its own ledger, which the diagnosis benefit does not touch.
     assert p.insitu_avail(t) == 1.0
     assert p.insitu_avail(t + 1) == pytest.approx(
@@ -519,7 +520,7 @@ def test_premiums_are_weighted_by_pols_healthy_and_claims_by_pols_cancer(cancer)
     assert on_if / on_healthy - 1.0 == pytest.approx(0.0614, abs=0.002)
     # And the claims side of the asymmetry: the care benefits ride on pols_cancer alone.
     t = 200
-    assert p.claims(t, "HOSP") == pytest.approx(
+    assert p.claims(t, Kind.HOSP) == pytest.approx(
         p.daily_amount() * p.hosp_stay_days(t) * p.hosp_rate_mth(t) * p.pols_cancer(t),
         rel=1e-14)
 
@@ -539,7 +540,7 @@ def test_a_diagnosed_life_cannot_lapse(cancer):
             (p.pols_healthy(t) - p.diag_first(t)) * (1.0 - p.mort_rate_mth(t))
             * p.lapse_rate_mth(t), rel=1e-14)
     p7 = cancer.Projection[7]
-    assert p7.waiver_trigger() == "none"
+    assert p7.waiver_trigger() == WaiverTrigger.none
     assert p7.lapse_rate_canc_mth(200) > 0.0
 
 
@@ -559,7 +560,7 @@ def test_there_is_no_l1_no_la_and_no_benefit_driven_termination(cancer):
     assert not [n for n in names if "limit" in n or "exhaust" in n]
     for t in (10, 400, 900):
         assert p.pols_cancer(t) > 0.0
-        assert p.claims(t, "HOSP") / p.pols_cancer(t) == pytest.approx(3000.0, abs=YEN)
+        assert p.claims(t, Kind.HOSP) / p.pols_cancer(t) == pytest.approx(3000.0, abs=YEN)
     # The roll-forward has only two ways out, and a payment is not one of them.
     for t in (3, 200, 700):
         assert p.pols_if(t) - p.pols_if(t + 1) == pytest.approx(
@@ -617,14 +618,14 @@ def test_the_treatment_benefits_unit_is_a_month_not_a_day_and_not_an_event(cance
     """
     p = cancer.Projection[1]
     t = 200
-    assert p.claims(t, "TREAT") == pytest.approx(
+    assert p.claims(t, Kind.TREAT) == pytest.approx(
         p.treat_benefit() * p.paid_months(t) * p.pols_cancer(t), rel=1e-14)
     assert p.paid_months(t) <= 1.0             # an indicator per month, not a count
     with switched("Cancer_JP_S_days", hosp_age_gradient=True) as model:
         q = model.Projection[1]
         assert q.hosp_stay_days(t) != p.hosp_stay_days(t)
-        assert q.claims(t, "HOSP") != pytest.approx(p.claims(t, "HOSP"), rel=1e-6)
-        assert q.claims(t, "TREAT") == pytest.approx(p.claims(t, "TREAT"), rel=1e-12)
+        assert q.claims(t, Kind.HOSP) != pytest.approx(p.claims(t, Kind.HOSP), rel=1e-6)
+        assert q.claims(t, Kind.TREAT) == pytest.approx(p.claims(t, Kind.TREAT), rel=1e-12)
 
 
 def test_the_60_month_cap_is_a_ledger_on_months_per_diagnosed_life(cancer):
@@ -681,7 +682,7 @@ def test_insitu_diagnoses_generate_surgery_and_nothing_continuing(cancer):
     p = cancer.Projection[1]
     t = 3
     assert p.insitu_ev(t) > 0.0
-    assert p.claims(t, "SURGERY") == pytest.approx(
+    assert p.claims(t, Kind.SURGERY) == pytest.approx(
         p.surg_mult() * p.base_amount() * 0.80 * p.insitu_ev(t), rel=1e-14)
     # No continuing exposure: the diagnosed state carries first diagnoses only.
     assert p.pols_cancer(t + 1) == pytest.approx(
@@ -701,7 +702,7 @@ def test_claims_lapse_is_zero_and_claims_death_does_not_exist(cancer):
         p = cancer.Projection[point_id]
         df = p.result_cf()
         assert (df["claims_lapse"] == 0.0).all(), point_id
-        assert p.claims(0, "LAPSE") == 0.0
+        assert p.claims(0, Kind.LAPSE) == 0.0
     cells = set(cancer.Projection.cells)
     assert "claims_death" not in cells
     assert "cv_pp" not in cells                       # no surrender value at any duration
@@ -812,8 +813,8 @@ def test_rounded_lines_do_not_re_add(jp_cancer_anchor):
     p = jp_cancer_anchor
     displayed = sum(round(p.claims(5, kind), 2) for kind in CARE_KINDS)
     assert displayed == pytest.approx(131.40, abs=1e-9)
-    assert round(p.claims(5), 2) == pytest.approx(131.39, abs=1e-9)
-    assert p.claims(5) == pytest.approx(sum(p.claims(5, k) for k in CARE_KINDS),
+    assert round(p.claims(5, Kind.ALL), 2) == pytest.approx(131.39, abs=1e-9)
+    assert p.claims(5, Kind.ALL) == pytest.approx(sum(p.claims(5, k) for k in CARE_KINDS),
                                         rel=1e-15)
     df = p.result_cf().head(12)
     lines = ["claims_diag", "claims_insitu", "claims_hosp", "claims_surgery",
@@ -876,18 +877,18 @@ def test_pols_if_at_reads_the_month_in_order(jp_cancer_anchor):
     """
     p = jp_cancer_anchor
     for t in (0, 3, 11, 240, 900):
-        assert p.pols_if_at(t, "BEF_DECR") == p.pols_if(t)
-        assert p.pols_if_at(t, "AFT_DECR") == pytest.approx(p.pols_if(t + 1), rel=1e-14)
-        assert p.pols_if(t) - p.pols_if_at(t, "BEF_LAPSE") == pytest.approx(
+        assert p.pols_if_at(t, PolTiming.BEF_DECR) == p.pols_if(t)
+        assert p.pols_if_at(t, PolTiming.AFT_DECR) == pytest.approx(p.pols_if(t + 1), rel=1e-14)
+        assert p.pols_if(t) - p.pols_if_at(t, PolTiming.BEF_LAPSE) == pytest.approx(
             p.pols_death(t), abs=1e-14)
-        assert p.pols_if_at(t, "BEF_LAPSE") - p.pols_if_at(t, "AFT_DECR") == (
+        assert p.pols_if_at(t, PolTiming.BEF_LAPSE) - p.pols_if_at(t, PolTiming.AFT_DECR) == (
             pytest.approx(p.pols_lapse(t), abs=1e-14))
     # The diagnosis transition is not one of the timings: it moves a life between states
     # inside the month and leaves the total untouched at all three points.
     t = 240
     blended = p.pols_if(t) * (1.0 - p.mort_rate_mth(t))
     assert p.diag_first(t) > 0.0 and p.pols_cancer(t) > 0.0
-    assert p.pols_if_at(t, "BEF_LAPSE") != pytest.approx(blended, rel=1e-12)
+    assert p.pols_if_at(t, PolTiming.BEF_LAPSE) != pytest.approx(blended, rel=1e-12)
     with pytest.raises(FormulaError):
         p.pols_if_at(1, "BEF_NOTHING")
 
@@ -941,7 +942,7 @@ def test_expenses_excludes_claim_handling_which_has_its_own_line(jp_cancer_ancho
             5_000.0 * (p.trig(t) + p.insitu_ev(t))
             + 3_000.0 * p.hosp_rate_mth(t) * p.pols_cancer(t), rel=1e-14)
         assert p.net_cf(t) == pytest.approx(
-            p.premiums(t) - p.claims(t) - p.expenses(t) - p.claim_expenses(t)
+            p.premiums(t) - p.claims(t, Kind.ALL) - p.expenses(t) - p.claim_expenses(t)
             - p.commissions(t), abs=1e-9)
     # The maintenance expense is on pols_if, so it survives the waiver; the claim expense
     # is not, so at t = 200 the two are moving on different populations.
@@ -973,7 +974,7 @@ def test_the_published_statement_re_adds_to_net_cf(jp_cancer_anchor):
             - df["commissions"] - df["net_cf"]).abs().max() == pytest.approx(
                 0.0, abs=1e-9)
     for t in (0, 3, 4, 200, 600):
-        assert outgo.loc[t] == pytest.approx(p.claims(t), abs=1e-9)
+        assert outgo.loc[t] == pytest.approx(p.claims(t, Kind.ALL), abs=1e-9)
 
 
 # ---------------------------------------------------------------------------
@@ -986,13 +987,13 @@ def test_the_validity_adjustment_is_off_and_de_recognises_when_switched_on(cance
     assert cancer.Projection.void_adjust is False
     assert p.pols_if_init() == 1.0 and p.void_prob() == 0.0
     base_premiums = sum(p.premiums(t) for t in range(p.proj_len()))
-    base_claims = sum(p.claims(t) for t in range(p.proj_len()))
+    base_claims = sum(p.claims(t, Kind.ALL) for t in range(p.proj_len()))
     with switched("Cancer_JP_S_void2", void_adjust=True) as model:
         q = model.Projection[1]
         scale = 1.0 - 0.000368681
         assert sum(q.premiums(t) for t in range(q.proj_len())) == pytest.approx(
             base_premiums * scale, rel=1e-8)
-        assert sum(q.claims(t) for t in range(q.proj_len())) == pytest.approx(
+        assert sum(q.claims(t, Kind.ALL) for t in range(q.proj_len())) == pytest.approx(
             base_claims * scale, rel=1e-8)
 
 
@@ -1054,8 +1055,8 @@ def test_the_hospital_stay_age_gradient_is_off_and_reads_the_bands_when_switched
         assert q.hosp_stay_days(0) == 10.7                 # age 40, the 35-64 band
         assert q.hosp_stay_days(12 * 25) == 15.5           # age 65
         assert q.hosp_stay_days(12 * 35) == 17.6           # age 75
-        assert q.claims(12 * 35, "HOSP") > p.claims(12 * 35, "HOSP")
-        assert q.claims(0, "SURGERY") == pytest.approx(p.claims(0, "SURGERY"),
+        assert q.claims(12 * 35, Kind.HOSP) > p.claims(12 * 35, Kind.HOSP)
+        assert q.claims(0, Kind.SURGERY) == pytest.approx(p.claims(0, Kind.SURGERY),
                                                        rel=1e-12)
 
 
@@ -1102,7 +1103,7 @@ def test_renewal_repricing_is_off_and_steps_the_premium_when_switched_on(cancer)
     """
     p1, p3 = cancer.Projection[1], cancer.Projection[3]
     assert cancer.Projection.renew_reprice_rate == 0.0
-    assert p3.chassis() == "teiki"
+    assert p3.chassis() == Chassis.teiki
     assert all(p3.premium_factor(t) == 1.0 for t in (0, 120, 240))
     assert p3.proj_len() == 12 * (116 - 50 + 1)          # the 定期 flag runs to omega too
     with switched("Cancer_JP_S_reprice", renew_reprice_rate=0.10) as model:
@@ -1113,7 +1114,7 @@ def test_renewal_repricing_is_off_and_steps_the_premium_when_switched_on(cancer)
         assert q3.premiums(120) == pytest.approx(
             1.10 * q3.premium_mth_pp() * q3.pols_healthy(120), rel=1e-14)
         assert q1.premium_factor(240) == 1.0             # 終身 does not reprice
-    assert p1.chassis() == "shushin"
+    assert p1.chassis() == Chassis.shushin
 
 
 def test_the_diagnosed_lapse_loading_is_inert_on_the_anchor_and_live_on_point_7(cancer):
@@ -1165,10 +1166,10 @@ def test_the_discharge_rider_is_off_on_every_point_but_8(cancer):
     p8 = cancer.Projection[8]
     assert p8.disch_rider() is True
     t = 200
-    assert p8.claims(t, "DISCHARGE") == pytest.approx(
+    assert p8.claims(t, Kind.DISCHARGE) == pytest.approx(
         10.0 * p8.base_amount() * 0.60 * p8.hosp_rate_mth(t) * p8.pols_cancer(t),
         rel=1e-14)
-    assert sum(p8.claims(t, "DISCHARGE") for t in range(p8.proj_len())) > 0.0
+    assert sum(p8.claims(t, Kind.DISCHARGE) for t in range(p8.proj_len())) > 0.0
 
 
 # ---------------------------------------------------------------------------
@@ -1217,7 +1218,7 @@ def test_the_sex_split_crosses_and_the_clamp_binds_only_on_the_100_plus_band(can
     to exactly zero and caps the male rate at twice the band rate.
     """
     p1, p2 = cancer.Projection[1], cancer.Projection[2]
-    assert p2.sex() == "F" and p2.issue_age() == 35
+    assert p2.sex() == Sex.F and p2.issue_age() == 35
     assert p2.sex_factor(37.5) == pytest.approx(0.551547, abs=5e-7)
     assert 2.0 - p2.sex_factor(37.5) > p2.sex_factor(37.5)          # female above male
     assert p2.sex_factor(72.5) == pytest.approx(1.377629, abs=5e-7)
@@ -1245,14 +1246,14 @@ def test_the_premium_paying_period_stops_at_65_on_the_short_pay_points(cancer):
     expense runs for another half-century with no premium against it.
     """
     p5 = cancer.Projection[5]
-    assert p5.prem_period_type() == "to_65" and p5.issue_age() == 20
+    assert p5.prem_period_type() == PremPeriod.to_65 and p5.issue_age() == 20
     t64, t65 = 12 * 44, 12 * 45
     assert p5.age(t64) == 64 and p5.age(t65) == 65
     assert p5.prem_payable(t64) == 1.0 and p5.premiums(t64) > 0.0
     assert p5.prem_payable(t65) == 0.0 and p5.premiums(t65) == 0.0
     assert p5.pols_if(t65) > 0.0                       # cover continues unpaid
     assert p5.maint_expenses(t65) > 0.0
-    assert cancer.Projection[1].prem_period_type() == "whole_life"
+    assert cancer.Projection[1].prem_period_type() == PremPeriod.whole_life
     assert cancer.Projection[1].prem_payable(12 * 45) == 1.0
 
 
@@ -1263,7 +1264,7 @@ def test_the_no_waiver_design_reverses_both_consequences(cancer):
     ``pols_payer`` and ``lapse_rate_canc_mth`` are cells rather than constants.
     """
     p7 = cancer.Projection[7]
-    assert p7.waiver_trigger() == "none"
+    assert p7.waiver_trigger() == WaiverTrigger.none
     for t in (4, 200, 600):
         assert p7.pols_payer(t) == pytest.approx(p7.pols_if(t), rel=1e-15)
         assert p7.premiums(t) == pytest.approx(
@@ -1324,7 +1325,7 @@ def test_result_cf_publishes_the_notes_columns(jp_cancer_anchor):
         "expenses", "claim_expenses", "commissions", "net_cf",
     ]
     assert "claims" not in df.columns
-    assert jp_cancer_anchor.claims(5) == pytest.approx(
+    assert jp_cancer_anchor.claims(5, Kind.ALL) == pytest.approx(
         df.loc[5, [c for c in df.columns if c.startswith("claims_")]].sum(), abs=1e-9)
     assert df.index.name == "t"
     assert len(df) == jp_cancer_anchor.proj_len() == 924
@@ -1355,7 +1356,7 @@ def test_the_model_point_table_carries_its_eight_variants(cancer):
     assert sorted(set(table["insitu_pct"])) == [0.10, 0.50, 1.00]
     assert table["issue_age"].min() == 20 and table["issue_age"].max() == 75
     assert not cancer.Projection[4].adv_rider()
-    assert sum(cancer.Projection[4].claims(t, "ADVANCED")
+    assert sum(cancer.Projection[4].claims(t, Kind.ADVANCED)
                for t in range(cancer.Projection[4].proj_len())) == 0.0
 
 
@@ -1364,12 +1365,12 @@ def test_the_model_point_table_carries_its_eight_variants(cancer):
 # each must come back out of the file unchanged -- that is the property the graduation was
 # chosen for, and the property nine independent curve fits failed to have.
 SOURCED_ANCHORS = {
-    ("M", 30): 0.00041, ("M", 40): 0.00076, ("M", 60): 0.00548, ("M", 65): 0.00845,
-    ("M", 75): 0.02242, ("M", 80): 0.04046, ("M", 85): 0.07110, ("M", 90): 0.11657,
-    ("M", 115): 0.58241, ("M", 116): 1.00000,
-    ("F", 30): 0.00022, ("F", 40): 0.00043, ("F", 60): 0.00209, ("F", 65): 0.00317,
-    ("F", 70): 0.00510, ("F", 75): 0.00967, ("F", 80): 0.01899, ("F", 85): 0.03843,
-    ("F", 90): 0.07574, ("F", 118): 1.00000,
+    (Sex.M, 30): 0.00041, (Sex.M, 40): 0.00076, (Sex.M, 60): 0.00548, (Sex.M, 65): 0.00845,
+    (Sex.M, 75): 0.02242, (Sex.M, 80): 0.04046, (Sex.M, 85): 0.07110, (Sex.M, 90): 0.11657,
+    (Sex.M, 115): 0.58241, (Sex.M, 116): 1.00000,
+    (Sex.F, 30): 0.00022, (Sex.F, 40): 0.00043, (Sex.F, 60): 0.00209, (Sex.F, 65): 0.00317,
+    (Sex.F, 70): 0.00510, (Sex.F, 75): 0.00967, (Sex.F, 80): 0.01899, (Sex.F, 85): 0.03843,
+    (Sex.F, 90): 0.07574, (Sex.F, 118): 1.00000,
 }
 
 
@@ -1384,14 +1385,14 @@ def test_the_shipped_mortality_table_is_a_construction_not_a_copy(cancer):
     """
     tbl = cancer.Data.mort_table()
     assert tbl["provenance"].str.contains(r"\[std\]").all()
-    assert "第三分野標準生命表2018" in tbl.loc[("M", 40), "provenance"]
+    assert "第三分野標準生命表2018" in tbl.loc[(Sex.M, 40), "provenance"]
     for key, rate in SOURCED_ANCHORS.items():
         assert tbl.loc[key, "mort_rate"] == rate, key
         assert "ANCHOR" in tbl.loc[key, "provenance"], key
     # The terminal rate is itself a sourced 1.00000, not a curve closing on one, and the
     # best-estimate factor is capped rather than pushing it past 1.
-    assert tbl.loc[("M", 116), "mort_rate"] == 1.0
-    assert tbl.loc[("F", 118), "mort_rate"] == 1.0
+    assert tbl.loc[(Sex.M, 116), "mort_rate"] == 1.0
+    assert tbl.loc[(Sex.F, 118), "mort_rate"] == 1.0
     assert cancer.Projection[1].mort_rate(cancer.Projection[1].proj_len() - 1) == 1.0
 
 
@@ -1405,7 +1406,7 @@ def test_the_graduation_is_log_linear_between_the_sourced_anchors(cancer):
     """
     p = cancer.Projection[1]
     tbl = cancer.Data.mort_table()
-    for sex, a, b in (("M", 40, 60), ("M", 90, 115), ("F", 65, 70), ("F", 85, 90)):
+    for sex, a, b in ((Sex.M, 40, 60), (Sex.M, 90, 115), (Sex.F, 65, 70), (Sex.F, 85, 90)):
         qa, qb = tbl.loc[(sex, a), "mort_rate"], tbl.loc[(sex, b), "mort_rate"]
         for x in range(a + 1, b):
             expected = qa * (qb / qa) ** ((x - a) / (b - a))
@@ -1415,7 +1416,7 @@ def test_the_graduation_is_log_linear_between_the_sourced_anchors(cancer):
             assert "ANCHOR" not in tbl.loc[(sex, x), "provenance"], (sex, x)
     # Cut to the ages this model reads: the composite's 20-75 issue-age range run out to
     # each sex's terminal age, 116 male and 118 female.
-    for sex, top in (("M", 116), ("F", 118)):
+    for sex, top in ((Sex.M, 116), (Sex.F, 118)):
         ages = sorted(a for (s, a) in tbl.index if s == sex)
         assert ages == list(range(20, top + 1)), sex
     assert p.mort_rate_at_age(40) == 0.00076
@@ -1447,4 +1448,4 @@ def test_the_incidence_basis_is_sourced_and_reproduced(cancer):
     assert sf.loc[37.5, "f_male"] == pytest.approx(72.92 / 132.21, abs=5e-6)
     assert sf.loc[72.5, "f_male"] == pytest.approx(2684.60 / 1948.71, abs=5e-6)
     surv = cancer.Data.survival_table()
-    assert surv.loc["M", "surv_5y"] == 0.6317 and surv.loc["F", "surv_5y"] == 0.6684
+    assert surv.loc[Sex.M, "surv_5y"] == 0.6317 and surv.loc[Sex.F, "surv_5y"] == 0.6684

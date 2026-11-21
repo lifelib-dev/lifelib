@@ -46,6 +46,8 @@ model point of every model in the registry.
 import math
 import re
 from collections import Counter
+from enum import Enum, EnumMeta
+import pickle
 
 import modelx as mx
 import pytest
@@ -189,8 +191,16 @@ def test_model_folder_holds_formulas_only(name):
     which stores its inputs inside the model.
     """
     folder = model_path(name)
-    assert not (folder / "_data").exists()
-    for pattern in ("*.pickle", "*.csv", "*.xlsx", "*.xls"):
+    # D30: enum classes are pickled References in _data/data.pickle (IntEnum classes, or the enum
+    # member a model parameter holds, D31(b))
+    enum_file = folder / "_data/data.pickle"
+    if enum_file.exists():
+        with enum_file.open("rb") as stream:
+            refs = pickle.load(stream)
+        assert refs and all(isinstance(value, (EnumMeta, Enum)) for value in refs.values())
+    assert list(folder.rglob("*.pickle")) == ([enum_file] if enum_file.exists() else [])
+    assert not (folder / "_data").exists() or list((folder / "_data").iterdir()) == [enum_file]
+    for pattern in ("*.csv", "*.xlsx", "*.xls"):
         assert not list(folder.rglob(pattern)), f"{name}: data inside the model folder"
     assert {p.name for p in folder.iterdir() if p.is_file()} == {
         "__init__.py", "_system.json"}

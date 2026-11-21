@@ -138,9 +138,9 @@ def mort_table():
     the two triggers of the premium waiver.  The largest age present is 120, where the
     rate is 1.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file,                               # noqa: F821
-        index_col=["sex", "age"]).sort_index()
+    frame = pd.read_csv(input_dir() / mort_table_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"]).sort_index()
 
 
 def incidence_table():
@@ -158,9 +158,10 @@ def incidence_table():
     발생률(3~100%) at 5세, 상해 1급 — 남자 0.0001823, 여자 0.0001163 [S1] — the only
     published Korean child morbidity rate in the whole research file.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / incidence_file,                                # noqa: F821
-        index_col=["cause", "sex", "age"]).sort_index()
+    frame = pd.read_csv(input_dir() / incidence_file)                     # noqa: F821
+    frame["cause"] = [Cover[name] for name in frame["cause"]]
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["cause", "sex", "age"]).sort_index()
 
 
 def basis_table():
@@ -174,8 +175,9 @@ def basis_table():
     broad-definition factor on the two adult-disease limbs, and the 순보험료 share used in
     the 표준해약공제액 computation.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / basis_file, index_col="param")                 # noqa: F821
+    frame = pd.read_csv(input_dir() / basis_file)                     # noqa: F821
+    frame["param"] = [BasisParam[name] for name in frame["param"]]
+    return frame.set_index("param")
 
 
 def neonatal_table():
@@ -189,8 +191,10 @@ def neonatal_table():
     deduction and inside the cap, which is why the module's cost is a length-of-stay
     question rather than an amount question.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / neonatal_file, index_col="item")               # noqa: F821
+    frame = pd.read_csv(input_dir() / neonatal_file, index_col="item")  # noqa: F821
+    frame["timing"] = pd.Series([NeoTiming[name] for name in frame["timing"]], index=frame.index,
+                                dtype=object)
+    return frame
 
 
 def lapse_table():
@@ -202,8 +206,9 @@ def lapse_table():
     guideline's 원칙모형 [REG-R27] [R11], ``disclosed`` the 적용해지율 one carrier
     publishes for its suppressed forms [S1], and ``flat`` a level comparison vector.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / lapse_table_file, index_col="lapse_basis")     # noqa: F821
+    frame = pd.read_csv(input_dir() / lapse_table_file)                     # noqa: F821
+    frame["lapse_basis"] = [LapseBasis[name] for name in frame["lapse_basis"]]
+    return frame.set_index("lapse_basis")
 
 
 def av_table():
@@ -218,9 +223,9 @@ def av_table():
     pays nothing at 만기.  Splitting the progression in two is what lets one shipped grid
     serve every 보험기간 without re-basing the published figures.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / av_table_file,                                 # noqa: F821
-        index_col=["curve", "key"]).sort_index()
+    frame = pd.read_csv(input_dir() / av_table_file)                     # noqa: F821
+    frame["curve"] = [AvCurve[name] for name in frame["curve"]]
+    return frame.set_index(["curve", "key"]).sort_index()
 
 
 # ---------------------------------------------------------------------------
@@ -241,3 +246,15 @@ lapse_table_file = "lapse_table.csv"
 av_table_file = "av_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+Cover = ("Pickle", 2)
+
+LapseBasis = ("Pickle", 3)
+
+NeoTiming = ("Pickle", 4)
+
+BasisParam = ("Pickle", 5)
+
+AvCurve = ("Pickle", 6)

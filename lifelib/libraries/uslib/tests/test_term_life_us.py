@@ -18,6 +18,7 @@ import modelx as mx
 import pytest
 
 from us_registry import MODELS, LIB
+from lifelib.libraries.uslib.products.term_life.enums import PremiumMode
 
 def model_files(folder):
     """The model's own file names, ignoring interpreter caches.
@@ -194,7 +195,7 @@ def test_premium_mode_drives_the_instalments(term_life):
     Reference rather than by a model point, because the specimen prices only this cell.
     """
     anchor = term_life.Projection[1]
-    assert anchor.premium_mode() == "A"
+    assert anchor.premium_mode() == PremiumMode.A
     assert anchor.modal_factor() == 1.0
     assert anchor.premium_pp(0) == 140.0
     assert all(anchor.premium_pp(t) == 0.0 for t in range(1, 12))
@@ -392,8 +393,8 @@ def test_model_folder_holds_formulas_only():
     basiclife/BasicTerm_S, which stores its inputs inside the model.
     """
     folder = LIB / MODELS["Term_US_S"][0]
-    assert not (folder / "_data").exists()
-    assert not list(folder.rglob("*.pickle"))
+    assert list((folder / "_data").iterdir()) == [folder / "_data" / "data.pickle"]
+    assert list(folder.rglob("*.pickle")) == [folder / "_data" / "data.pickle"]
     assert not list(folder.rglob("*.csv"))
     assert not list(folder.rglob("*.xlsx"))
     assert {p.name for p in folder.iterdir() if p.is_file()} == {

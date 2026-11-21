@@ -143,9 +143,14 @@ def mort_table():
     A **[std]** proxy, not DAV 2004 R; see the Space docstring for what it is, what its
     anchor is and what a replacement must preserve.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file,                               # noqa: F821
-        index_col=["basis", "sex", "age"])
+    frame = pd.read_csv(                                             # noqa: F821
+        input_dir() / mort_table_file)                               # noqa: F821
+    frame["basis"] = [Basis[name] for name in frame["basis"]]
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    span = frame.groupby(["basis", "sex"])["age"].agg(["min", "max"])
+    if (span["min"] != frame["age"].min()).any() or (span["max"] != frame["age"].max()).any():
+        raise ValueError("mort_table: every (basis, sex) must span the same ages")
+    return frame.set_index(["basis", "sex", "age"])
 
 
 def improvement_table():
@@ -156,9 +161,13 @@ def improvement_table():
     than being applied on top of a period rate keyed to the projection year.  A **[std]**
     proxy; DAV 2004 R's own trend is not public.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / improvement_file,                              # noqa: F821
-        index_col=["basis", "age"])
+    frame = pd.read_csv(                                             # noqa: F821
+        input_dir() / improvement_file)                              # noqa: F821
+    frame["basis"] = [Basis[name] for name in frame["basis"]]
+    span = frame.groupby("basis")["age"].agg(["min", "max"])
+    if (span["min"] != frame["age"].min()).any() or (span["max"] != frame["age"].max()).any():
+        raise ValueError("improvement_table: every basis must span the same ages")
+    return frame.set_index(["basis", "age"])
 
 
 def surplus_scale_table():
@@ -174,8 +183,10 @@ def surplus_scale_table():
     outset and rising with each declaration.  The four forms are **not** calibrated to
     equal present value here, and a user who needs them to be must do that calibration.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / surplus_scale_file, index_col="surplus_form")  # noqa: F821
+    frame = pd.read_csv(                                             # noqa: F821
+        input_dir() / surplus_scale_file)                            # noqa: F821
+    frame["surplus_form"] = [SurplusForm[name] for name in frame["surplus_form"]]
+    return frame.set_index("surplus_form")
 
 
 def hoechstrechnungszins_table():
@@ -205,3 +216,9 @@ surplus_scale_file = "surplus_scale_table.csv"
 hoechstrechnungszins_file = "hoechstrechnungszins_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+Basis = ("Pickle", 2)
+
+SurplusForm = ("Pickle", 3)

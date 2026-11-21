@@ -35,6 +35,7 @@ import pytest
 from modelx.core.errors import FormulaError
 
 from fr_registry import MODELS, LIB
+from lifelib.libraries.frlib.products.obseques.enums import BenefitKind, CrossoverBasis, Kind, PremiumForm, RefundBasis, Sex
 
 
 def model_files(folder):
@@ -99,13 +100,13 @@ def test_worked_example_row(fr_obseques_anchor, t):
     assert p.policy_year(t) == year
     assert p.capital_pp(t) == pytest.approx(capital, abs=CENT)
     assert p.cum_prem_pp(t) == pytest.approx(cum, abs=CENT)
-    assert p.benefit_pp(t, "ILL") == pytest.approx(db_ill, abs=CENT)
-    assert p.benefit_pp(t, "ACC") == pytest.approx(capital, abs=CENT)
+    assert p.benefit_pp(t, BenefitKind.ILL) == pytest.approx(db_ill, abs=CENT)
+    assert p.benefit_pp(t, BenefitKind.ACC) == pytest.approx(capital, abs=CENT)
     assert p.surr_value_pp(t) == pytest.approx(surr, abs=CENT)
     assert p.pols_if(t) == pytest.approx(pols, abs=INFORCE)
     assert p.premiums(t) == pytest.approx(prem, abs=CENT)
-    assert p.claims(t, "DEATH") == pytest.approx(death, abs=CENT)
-    assert p.claims(t, "LAPSE") == pytest.approx(lapse, abs=CENT)
+    assert p.claims(t, Kind.DEATH) == pytest.approx(death, abs=CENT)
+    assert p.claims(t, Kind.LAPSE) == pytest.approx(lapse, abs=CENT)
 
 
 def test_the_undiscounted_totals_over_the_full_horizon(fr_obseques_anchor):
@@ -141,8 +142,8 @@ def test_the_first_month_trace_on_the_shipped_basis(fr_obseques_anchor):
     assert p.mort_rate_mth(0) == pytest.approx(Q_M_1, abs=5e-9)
     assert p.lapse_rate(0) == 0.06
     assert p.lapse_rate_mth(0) == pytest.approx(W_M_1, abs=5e-9)
-    assert p.benefit_pp(0, "DEATH") == pytest.approx(569.2285, abs=CENT)
-    assert p.claims(0, "DEATH") == pytest.approx(0.380884, abs=5e-7)
+    assert p.benefit_pp(0, BenefitKind.DEATH) == pytest.approx(569.2285, abs=CENT)
+    assert p.claims(0, Kind.DEATH) == pytest.approx(0.380884, abs=5e-7)
 
 
 def test_survivorship_compounds_back_to_the_annual_rates(fr_obseques_anchor):
@@ -193,14 +194,14 @@ def test_paying_the_capital_inside_the_carence(fr_obseques_anchor):
     """
     p = fr_obseques_anchor
     for t in range(12):
-        assert p.benefit_pp(t, "ILL") == pytest.approx(p.cum_prem_pp(t), abs=CENT)
-        assert p.benefit_pp(t, "ILL") == pytest.approx(336.03, abs=CENT)
-        assert p.benefit_pp(t, "ILL") < p.capital_pp(t)
+        assert p.benefit_pp(t, BenefitKind.ILL) == pytest.approx(p.cum_prem_pp(t), abs=CENT)
+        assert p.benefit_pp(t, BenefitKind.ILL) == pytest.approx(336.03, abs=CENT)
+        assert p.benefit_pp(t, BenefitKind.ILL) < p.capital_pp(t)
     wrong = p.mort_rate_mth(0) * p.capital_pp(0)
     assert wrong == pytest.approx(3.345618, abs=5e-7)
-    assert p.claims(0, "DEATH") == pytest.approx(0.380884, abs=5e-7)
-    assert wrong / p.claims(0, "DEATH") == pytest.approx(8.78, abs=0.005)
-    year_one = sum(p.claims(t, "DEATH") for t in range(12))
+    assert p.claims(0, Kind.DEATH) == pytest.approx(0.380884, abs=5e-7)
+    assert wrong / p.claims(0, Kind.DEATH) == pytest.approx(8.78, abs=0.005)
+    year_one = sum(p.claims(t, Kind.DEATH) for t in range(12))
     year_one_wrong = sum(p.pols_if(t) * p.mort_rate_mth(t) * p.capital_pp(t)
                          for t in range(12))
     assert year_one == pytest.approx(4.4274, abs=5e-5)
@@ -216,15 +217,15 @@ def test_dropping_the_accident_leg_inside_the_carence(fr_obseques_anchor):
     p = fr_obseques_anchor
     assert p.acc_share == 0.05
     for t in range(12):
-        assert p.benefit_pp(t, "ACC") == pytest.approx(p.capital_pp(t), abs=CENT)
+        assert p.benefit_pp(t, BenefitKind.ACC) == pytest.approx(p.capital_pp(t), abs=CENT)
     refund_only = p.mort_rate_mth(0) * p.cum_prem_pp(0)
     assert refund_only == pytest.approx(0.224846, abs=5e-7)
-    assert refund_only / p.claims(0, "DEATH") == pytest.approx(0.59, abs=0.005)
-    year_one_wrong = sum(p.pols_if(t) * p.mort_rate_mth(t) * p.benefit_pp(t, "ILL")
+    assert refund_only / p.claims(0, Kind.DEATH) == pytest.approx(0.59, abs=0.005)
+    year_one_wrong = sum(p.pols_if(t) * p.mort_rate_mth(t) * p.benefit_pp(t, BenefitKind.ILL)
                          for t in range(12))
     assert year_one_wrong == pytest.approx(2.6136, abs=5e-5)
     # Nearly half the year-one benefit is the small accidental tail paying the capital.
-    assert 0.05 * 5000.0 / p.benefit_pp(0, "DEATH") > 0.43
+    assert 0.05 * 5000.0 / p.benefit_pp(0, BenefitKind.DEATH) > 0.43
 
 
 def test_accruing_the_refund_base_monthly_when_the_premium_is_annual(fr_obseques_anchor):
@@ -243,7 +244,7 @@ def test_accruing_the_refund_base_monthly_when_the_premium_is_annual(fr_obseques
                   * (0.95 * 336.03 * (t + 1) / 12 + 0.05 * 5000.0) for t in range(12))
     assert 336.03 / 12 == pytest.approx(28.00, abs=CENT)
     assert accrued == pytest.approx(3.2750, abs=5e-5)
-    assert accrued / sum(p.claims(t, "DEATH") for t in range(12)) == pytest.approx(
+    assert accrued / sum(p.claims(t, Kind.DEATH) for t in range(12)) == pytest.approx(
         0.74, abs=0.005)
 
 
@@ -258,17 +259,17 @@ def test_the_carence_boundary_is_a_step_not_a_curve(fr_obseques_anchor):
     """
     p = fr_obseques_anchor
     assert p.in_carence(11) is True and p.in_carence(12) is False
-    assert p.claims(12, "DEATH") / p.claims(11, "DEATH") == pytest.approx(
+    assert p.claims(12, Kind.DEATH) / p.claims(11, Kind.DEATH) == pytest.approx(
         7.8080, abs=5e-5)
     assert p.pols_if(12) / p.pols_if(11) == pytest.approx(0.994191, abs=5e-7)
     assert p.mort_rate_mth(12) / p.mort_rate_mth(11) == pytest.approx(0.885251, abs=5e-7)
-    assert p.benefit_pp(12, "DEATH") / p.benefit_pp(11, "DEATH") == pytest.approx(
+    assert p.benefit_pp(12, BenefitKind.DEATH) / p.benefit_pp(11, BenefitKind.DEATH) == pytest.approx(
         8.871657, abs=5e-7)
-    assert p.benefit_pp(11, "DEATH") == pytest.approx(
+    assert p.benefit_pp(11, BenefitKind.DEATH) == pytest.approx(
         0.95 * 336.03 + 0.05 * 5000.0, abs=CENT)
-    assert p.benefit_pp(12, "DEATH") == pytest.approx(5050.00, abs=CENT)
+    assert p.benefit_pp(12, BenefitKind.DEATH) == pytest.approx(5050.00, abs=CENT)
     # And it is the largest single month-on-month step in the whole death-outgo series.
-    outgo = [p.claims(t, "DEATH") for t in range(p.proj_len())]
+    outgo = [p.claims(t, Kind.DEATH) for t in range(p.proj_len())]
     steps = [outgo[i] - outgo[i - 1] for i in range(1, len(outgo))]
     assert max(steps) == pytest.approx(outgo[12] - outgo[11], rel=1e-12)
 
@@ -281,21 +282,21 @@ def test_the_accidental_multiplier_applies_past_the_carence_only(obseques):
     """
     p1, p6 = obseques.Projection[1], obseques.Projection[6]
     assert p6.accident_mult() == 2.0
-    assert all(p6.benefit_pp(t, "ACC") == 5000.0 for t in range(12))
-    assert p6.benefit_pp(12, "ACC") == pytest.approx(10100.00, abs=CENT)
-    assert p6.benefit_pp(12, "ACC") <= p6.accident_cap
-    assert p6.claims(12, "DEATH") > p1.claims(12, "DEATH")
+    assert all(p6.benefit_pp(t, BenefitKind.ACC) == 5000.0 for t in range(12))
+    assert p6.benefit_pp(12, BenefitKind.ACC) == pytest.approx(10100.00, abs=CENT)
+    assert p6.benefit_pp(12, BenefitKind.ACC) <= p6.accident_cap
+    assert p6.claims(12, Kind.DEATH) > p1.claims(12, Kind.DEATH)
     # It moves only the accidental share: 5 % of the capital on top of the blend.
-    assert p6.benefit_pp(12, "DEATH") == pytest.approx(5050.0 * 1.05, abs=CENT)
+    assert p6.benefit_pp(12, BenefitKind.DEATH) == pytest.approx(5050.0 * 1.05, abs=CENT)
     # And the refund basis is a model point column too - gross, net of the assistance
     # premium, net of instalment charges: three insurers, three bases.  The netting is
     # not a rounding difference.
     p12 = obseques.Projection[12]
-    assert p1.carence_refund_basis() == "gross"
+    assert p1.carence_refund_basis() == RefundBasis.gross
     assert p1.refund_pp(0) == pytest.approx(336.03, abs=CENT)
-    assert p6.carence_refund_basis() == "net_assistance"
+    assert p6.carence_refund_basis() == RefundBasis.net_assistance
     assert p6.refund_pp(0) == pytest.approx(336.03 - 12.0, abs=CENT)
-    assert p12.carence_refund_basis() == "net_instalment"
+    assert p12.carence_refund_basis() == RefundBasis.net_instalment
     assert p12.prem_freq() == 12 and p12.cum_prem_pp(0) == pytest.approx(343.42 / 12)
     assert p12.refund_pp(0) == pytest.approx(343.42 / 12 / 1.022, abs=CENT)
     # Stripping the loading recovers the unloaded annual premium almost exactly.
@@ -318,7 +319,7 @@ def test_revalorising_too_early_or_revalorising_the_wrong_thing(fr_obseques_anch
     assert all(p.capital_pp(t) == pytest.approx(5000.00, abs=CENT) for t in range(12))
     assert p.capital_pp(12) == pytest.approx(5050.00, abs=CENT)
     assert p.check_capital_reval() is True
-    assert p.benefit_pp(11, "ILL") == p.benefit_pp(0, "ILL")
+    assert p.benefit_pp(11, BenefitKind.ILL) == p.benefit_pp(0, BenefitKind.ILL)
     assert p.carence_refund_rate() == 0.0
     assert p.refund_pp(11) == pytest.approx(p.cum_prem_pp(11), abs=CENT)
 
@@ -353,7 +354,7 @@ def test_getting_the_revalorisation_coupling_backwards(obseques):
     # The capital is identical on both, so the whole difference is premium income - and
     # indexed premiums reach the capital sooner.
     assert p4.capital_pp(204) == pytest.approx(p1.capital_pp(204), rel=1e-12)
-    assert p4.crossover_mth("ISSUE") < p1.crossover_mth("ISSUE")
+    assert p4.crossover_mth(CrossoverBasis.ISSUE) < p1.crossover_mth(CrossoverBasis.ISSUE)
     assert "reval_prem_linked" in obseques.Data.model_point_table().columns
 
 
@@ -368,11 +369,11 @@ def test_measuring_the_overrun_against_the_wrong_capital(fr_obseques_anchor):
     pure stress dial and is off in the base run, so the table rate applies on both sides.
     """
     p = fr_obseques_anchor
-    assert p.crossover_mth("ISSUE") == 168 and p.policy_year(168) == 15
+    assert p.crossover_mth(CrossoverBasis.ISSUE) == 168 and p.policy_year(168) == 15
     assert p.cum_prem_pp(156) < p.capital_0()
     assert p.cum_prem_pp(168) == pytest.approx(5040.45, abs=CENT)
     assert p.cum_prem_pp(168) > p.capital_0()
-    assert p.crossover_mth("CURRENT") == 204 and p.policy_year(204) == 18
+    assert p.crossover_mth(CrossoverBasis.CURRENT) == 204 and p.policy_year(204) == 18
     assert p.cum_prem_pp(192) < p.capital_pp(192)
     assert p.cum_prem_pp(204) > p.capital_pp(204)
     assert (204 - 168) / 12 == 3.0
@@ -399,7 +400,7 @@ def test_the_standardised_tables_date_their_columns_a_year_later(obseques):
     assert p.cum_prem_pp(168) == pytest.approx(2467.80, abs=CENT)
     assert p.cum_prem_pp(528) == pytest.approx(7403.40, abs=CENT)
     # 164.52 x 31 = 5100.12 first exceeds the capital in policy year 31, at age 80.
-    assert p.crossover_mth("ISSUE") == 360
+    assert p.crossover_mth(CrossoverBasis.ISSUE) == 360
     assert p.policy_year(360) == 31 and p.age(360) == 80
     assert p.cum_prem_pp(360) == pytest.approx(5100.12, abs=CENT)
 
@@ -416,11 +417,11 @@ def test_letting_lifetime_premiums_stop_by_accident(obseques):
     via, tmp, uni, to80 = (obseques.Projection[1], obseques.Projection[2],
                            obseques.Projection[3], obseques.Projection[10])
     # -1, not 0, is the "never crosses" sentinel: t = 0 is a real month on this frame.
-    assert uni.premium_form() == "single" and uni.crossover_mth("ISSUE") == -1
+    assert uni.premium_form() == PremiumForm.single and uni.crossover_mth(CrossoverBasis.ISSUE) == -1
     assert uni.cum_prem_pp(uni.proj_len() - 1) == pytest.approx(4274.04, abs=CENT)
     assert uni.cum_prem_pp(uni.proj_len() - 1) < uni.capital_0()
-    assert tmp.premium_form() == "temporary" and tmp.prem_term_y() == 10
-    assert tmp.crossover_mth("ISSUE") == 84                # the eighth instalment
+    assert tmp.premium_form() == PremiumForm.temporary and tmp.prem_term_y() == 10
+    assert tmp.crossover_mth(CrossoverBasis.ISSUE) == 84                # the eighth instalment
     assert tmp.cum_prem_pp(tmp.proj_len() - 1) == pytest.approx(651.26 * 10, abs=CENT)
     assert tmp.prem_due_pp(120) == 0.0
     assert via.prem_cease_age() == 0
@@ -446,7 +447,7 @@ def test_treating_lapse_as_free(fr_obseques_anchor):
     """
     p = fr_obseques_anchor
     df = p.result_cf()
-    assert p.claims(0, "LAPSE") > 0.0
+    assert p.claims(0, Kind.LAPSE) > 0.0
     # Every month up to the last, where mortality is forced to 1 and nobody survives to
     # surrender.
     assert (df.loc[df.index <= 743, "claims_lapse"] > 0.0).all()
@@ -456,7 +457,7 @@ def test_treating_lapse_as_free(fr_obseques_anchor):
     assert without == pytest.approx(3242.81, abs=CENT)
     assert without / TOTAL_NET_BEFORE_EXPENSES - 1 == pytest.approx(0.45, abs=0.005)
     for t in (0, 59, 204, 479):
-        assert p.claims(t, "LAPSE") == pytest.approx(
+        assert p.claims(t, Kind.LAPSE) == pytest.approx(
             p.pols_lapse(t) * p.surr_value_pp(t), rel=1e-14)
 
 
@@ -518,8 +519,8 @@ def test_treating_reduction_as_termination(obseques):
             rel=1e-12)
         assert p5.capital_paid_up(t + 1) == pytest.approx(
             p5.capital_paid_up(t) * (1 - p5.mort_rate_mth(t))
-            + p5.pols_convert(t) * p5.benefit_pp(t, "PAID_UP"), rel=1e-12)
-        assert p5.claims(t, "DEATH_PAID_UP") == pytest.approx(
+            + p5.pols_convert(t) * p5.benefit_pp(t, BenefitKind.PAID_UP), rel=1e-12)
+        assert p5.claims(t, Kind.DEATH_PAID_UP) == pytest.approx(
             p5.capital_paid_up(t) * p5.mort_rate_mth(t), rel=1e-14)
     # Paid-up policies pay no premium.
     assert p5.premiums(299) == pytest.approx(
@@ -607,7 +608,7 @@ def test_the_projection_is_exhausted_at_the_limiting_age(obseques):
     assert p.pols_if(last + 2) == 0.0
     assert all(p.mort_rate(t) <= 1.0 for t in range(0, p.proj_len(), 12))
     p8 = obseques.Projection[8]
-    assert p8.age_at_entry() == 70 and p8.sex() == "F"
+    assert p8.age_at_entry() == 70 and p8.sex() == Sex.F
     assert p8.proj_len() == 516 == 12 * (112 - 70 + 1)
     assert p8.age(p8.proj_len() - 1) == 112 and p8.check_truncation() is True
     # The female rates are a flat factor on the male proxy.
@@ -653,7 +654,7 @@ def test_result_cf_shape_and_both_signs_of_the_net_flow(fr_obseques_anchor):
     assert p.expenses(0) == pytest.approx(150.0 + 24.0 / 12, abs=CENT)
     assert p.expenses(12) == pytest.approx(24.0 / 12 * 1.018 * p.pols_all(12), rel=1e-12)
     assert p.net_cf(0) == pytest.approx(
-        p.premiums(0) - p.claims(0) - p.expenses(0), rel=1e-14)
+        p.premiums(0) - p.claims(0, Kind.ALL) - p.expenses(0), rel=1e-14)
 
 
 def test_docstrings_describe_the_current_structure(obseques):
@@ -802,12 +803,12 @@ def test_an_input_can_be_swapped_without_touching_formulas():
         alt_name = "mort_table_light.csv"
         lighter.to_csv(model.Data.input_dir() / alt_name)
         try:
-            base = model.Projection[1].claims(12, "DEATH")
+            base = model.Projection[1].claims(12, Kind.DEATH)
             model.Data.mort_table_file = alt_name
             model.Data.clear_all()
             model.Projection.clear_all()
             assert model.Projection[1].mort_rate(0) == pytest.approx(0.004, rel=1e-12)
-            assert model.Projection[1].claims(12, "DEATH") < base
+            assert model.Projection[1].claims(12, Kind.DEATH) < base
         finally:
             (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
     finally:
@@ -833,8 +834,8 @@ def test_round_trip_is_stable(tmp_path):
         anchor = reread.Projection[1]
         for t, row in WORKED_EXAMPLE.items():
             assert anchor.pols_if(t) == pytest.approx(row[5], abs=INFORCE)
-            assert anchor.claims(t, "DEATH") == pytest.approx(row[7], abs=CENT)
-            assert anchor.claims(t, "LAPSE") == pytest.approx(row[8], abs=CENT)
+            assert anchor.claims(t, Kind.DEATH) == pytest.approx(row[7], abs=CENT)
+            assert anchor.claims(t, Kind.LAPSE) == pytest.approx(row[8], abs=CENT)
         assert "Notes symbol" in reread.Projection.doc
     finally:
         reread.close()

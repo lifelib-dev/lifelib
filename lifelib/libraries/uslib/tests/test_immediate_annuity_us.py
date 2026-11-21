@@ -31,6 +31,7 @@ import modelx as mx
 import pytest
 
 from us_registry import LIB
+from lifelib.libraries.uslib.products.immediate_annuity.enums import Form, Kind, PaymentTiming
 
 MODEL_PATH = LIB / "products/immediate_annuity/SPIA_US_S"
 
@@ -191,12 +192,12 @@ def test_cash_refund_lump_sum(immediate_annuity):
     # G is indexed by time, so the notes' G(13) is cum_annuity_pp(13) unchanged: the
     # thirteen instalments of months 0 ... 12, paid by the time month 13 opens.
     assert p.cum_annuity_pp(13) == pytest.approx(12 * 500.00 + 515.00, abs=CENT)
-    assert p.claim_pp(13, "REFUND") == pytest.approx(93485.00, abs=CENT)
-    assert p.claims(13) == pytest.approx(93485.00, abs=CENT)
-    assert p.claims(13, "REFUND") == pytest.approx(93485.00, abs=CENT)
+    assert p.claim_pp(13, Kind.REFUND) == pytest.approx(93485.00, abs=CENT)
+    assert p.claims(13, Kind.ALL) == pytest.approx(93485.00, abs=CENT)
+    assert p.claims(13, Kind.REFUND) == pytest.approx(93485.00, abs=CENT)
     # Paid once, at the terminating death, and never again.
-    assert p.claims(12) == 0.0
-    assert p.claims(14) == 0.0
+    assert p.claims(12, Kind.ALL) == 0.0
+    assert p.claims(14, Kind.ALL) == 0.0
 
 
 def test_derived_installment_refund_period(immediate_annuity):
@@ -323,7 +324,7 @@ def test_advance_survival_is_the_period_start_at_every_frequency(immediate_annui
     recorded as dead.
     """
     q = immediate_annuity.Projection[14]
-    assert q.payment_freq() == 4 and q.payment_timing() == "advance"
+    assert q.payment_freq() == 4 and q.payment_timing() == PaymentTiming.advance
     assert [t for t in range(14) if q.is_payment_mth(t)] == [0, 3, 6, 9, 12]
     for t in (0, 3, 6, 9, 12):
         assert q.payment_surv_mth(t) == t        # the start of the month, at every m
@@ -346,10 +347,10 @@ def test_pitfall_refund_balance_timing(immediate_annuity):
     ``cum_annuity_pp(t + 1)`` on advance; the death is in month ``t = 13``.
     """
     arrears, advance = immediate_annuity.Projection[6], immediate_annuity.Projection[11]
-    assert arrears.claim_pp(13, "REFUND") == pytest.approx(93485.00, abs=CENT)
-    assert advance.claim_pp(13, "REFUND") == pytest.approx(92970.00, abs=CENT)
+    assert arrears.claim_pp(13, Kind.REFUND) == pytest.approx(93485.00, abs=CENT)
+    assert advance.claim_pp(13, Kind.REFUND) == pytest.approx(92970.00, abs=CENT)
     # Exactly one instalment apart, and the advance figure is the smaller of the two.
-    assert arrears.claim_pp(13, "REFUND") - advance.claim_pp(13, "REFUND") == (
+    assert arrears.claim_pp(13, Kind.REFUND) - advance.claim_pp(13, Kind.REFUND) == (
         pytest.approx(515.00, abs=CENT))
 
 
@@ -464,7 +465,7 @@ def test_there_is_no_premium_income_in_the_projection(anchor):
     assert anchor.premium_net_pp() == 100000.0          # tau = 0 in the base run
     for t in (0, 13, 119):
         assert anchor.liability_cf(t) == pytest.approx(
-            anchor.annuity_payments(t) + anchor.claims(t)
+            anchor.annuity_payments(t) + anchor.claims(t, Kind.ALL)
             + anchor.commutations(t) + anchor.expenses(t), rel=1e-12)
 
 
@@ -587,7 +588,7 @@ def test_certain_only_expense_stops_with_the_last_payment(immediate_annuity):
     over the 540 months after the contract ended.  ``pols_if`` follows the prose.
     """
     p = immediate_annuity.Projection[15]
-    assert p.form() == "certain_only" and p.certain_mths_eff() == 120
+    assert p.form() == Form.certain_only and p.certain_mths_eff() == 120
     assert p.payment_factor_life(59) == 0.0            # no life contingency at all
     assert p.lives_if_last(240) == pytest.approx(0.7046, abs=5e-5)   # still alive ...
     assert p.pols_if(119) == 1.0
@@ -614,7 +615,7 @@ def test_survival_is_a_decreasing_probability(immediate_annuity):
 def test_payment_months_follow_the_frequency(anchor):
     """m = 12 in arrears: every month is a payment month, and T is the whole grid."""
     assert anchor.payment_freq() == 12
-    assert anchor.payment_timing() == "arrears"
+    assert anchor.payment_timing() == PaymentTiming.arrears
     assert all(anchor.is_payment_mth(t) for t in range(24))
     assert anchor.is_payment_mth(0) is True            # t = 0 is a projected month ...
     assert anchor.is_payment_mth(-1) is False          # ... and nothing precedes it

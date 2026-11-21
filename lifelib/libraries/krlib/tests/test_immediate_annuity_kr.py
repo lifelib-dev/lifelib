@@ -55,6 +55,7 @@ import pytest
 from modelx.core.errors import FormulaError
 
 from kr_registry import LIB, MODELS
+from lifelib.libraries.krlib.products.immediate_annuity.enums import CreditingBasis, Kind, RetentionBasis, Sex, Shape
 
 WON = 0.005          # money displayed to 2 d.p.
 SUB_WON = 5e-7       # the hand traces' full-precision won amounts
@@ -317,15 +318,15 @@ CHECKS_WITH_RESID = {
 
 # The charge basis, by shape, every rate of it [std] in its adoption or its derivation.
 CHARGE_RATES = {
-    "life": {"acq_charge_rate": 0.0220, "admin_charge_rate": 0.0130,
+    Shape.life: {"acq_charge_rate": 0.0220, "admin_charge_rate": 0.0130,
              "risk_prem_rate": 0.0000, "comm_rate": 0.0200,
              "acq_expense_rate": 0.0150, "annuity_charge_rate": 0.0080,
              "db_rate": 0.00},
-    "inheritance": {"acq_charge_rate": 0.0220, "admin_charge_rate": 0.0130,
+    Shape.inheritance: {"acq_charge_rate": 0.0220, "admin_charge_rate": 0.0130,
                     "risk_prem_rate": 0.0147, "comm_rate": 0.0200,
                     "acq_expense_rate": 0.0150, "annuity_charge_rate": 0.0080,
                     "db_rate": 0.10},
-    "certain": {"acq_charge_rate": 0.0220, "admin_charge_rate": 0.0130,
+    Shape.certain: {"acq_charge_rate": 0.0220, "admin_charge_rate": 0.0130,
                 "risk_prem_rate": 0.0147, "comm_rate": 0.0200,
                 "acq_expense_rate": 0.0150, "annuity_charge_rate": 0.0080,
                 "db_rate": 0.10},
@@ -491,10 +492,10 @@ def test_worked_example_assumption_table(kr_immediate_anchor):
     assert a.mort_rate(0) == 0.00353 and a.mort_rate(120) == 0.00728
     assert all(a.lapse_rate(t) == 0.0 for t in range(0, a.proj_len()))
     assert all(a.lapse_rate_mth(t) == 0.0 for t in range(0, a.proj_len()))
-    assert a.shape() == "life" and a.sex() == "M" and a.age_at_entry() == 60
+    assert a.shape() == Shape.life and a.sex() == Sex.M and a.age_at_entry() == 60
     assert a.prem_pp() == 100000000.0 and a.annuity_term() == 10
     assert a.annuity_term_mths() == 120
-    assert a.crediting_basis() == "decl_2017" and a.pols_if_init() == 1.0
+    assert a.crediting_basis() == CreditingBasis.decl_2017 and a.pols_if_init() == 1.0
 
 
 # ---------------------------------------------------------------------------
@@ -579,9 +580,9 @@ def test_the_three_claims_columns_are_zero_at_every_t(kr_immediate_anchor):
     for column in ("claims_death", "claims_lapse", "claims_maturity"):
         assert column in df.columns
         assert (df[column] == 0.0).all(), column
-    assert all(a.claims(t, "DEATH") == 0.0 for t in range(0, a.proj_len()))
-    assert all(a.claims(t, "LAPSE") == 0.0 for t in range(0, a.proj_len()))
-    assert all(a.claims(t, "MATURITY") == 0.0 for t in range(0, a.proj_len()))
+    assert all(a.claims(t, Kind.DEATH) == 0.0 for t in range(0, a.proj_len()))
+    assert all(a.claims(t, Kind.LAPSE) == 0.0 for t in range(0, a.proj_len()))
+    assert all(a.claims(t, Kind.MATURITY) == 0.0 for t in range(0, a.proj_len()))
 
 
 # ---------------------------------------------------------------------------
@@ -864,11 +865,11 @@ def test_the_dispute_panel_period_zero_trace_as_designed(immediate_annuity):
         DESIGNED["annuity_payments"], abs=SUB_WON)
     assert p.av_pp(1) == pytest.approx(DESIGNED["av_pp_1"], abs=SUB_WON)
     assert p.pols_death(0) == pytest.approx(DESIGNED["pols_death"], abs=EXACT)
-    assert p.claims(0, "DEATH") == pytest.approx(DESIGNED["claims_death"], abs=SUB_WON)
-    assert p.claims(0, "DEATH") == pytest.approx(
+    assert p.claims(0, Kind.DEATH) == pytest.approx(DESIGNED["claims_death"], abs=SUB_WON)
+    assert p.claims(0, Kind.DEATH) == pytest.approx(
         p.pols_death(0) * (0.10 * p.prem_pp() + p.av_pp(1)), rel=1e-14)
     assert p.pols_lapse(0) == pytest.approx(DESIGNED["pols_lapse"], abs=EXACT)
-    assert p.claims(0, "LAPSE") == pytest.approx(DESIGNED["claims_lapse"], abs=SUB_WON)
+    assert p.claims(0, Kind.LAPSE) == pytest.approx(DESIGNED["claims_lapse"], abs=SUB_WON)
     assert p.commissions(0) == pytest.approx(2000000.0, abs=SUB_WON)
     assert p.expenses(0) == pytest.approx(DESIGNED["expenses"], abs=SUB_WON)
     assert p.net_cf(0) == pytest.approx(DESIGNED["net_cf"], abs=SUB_WON)
@@ -892,8 +893,8 @@ def test_the_dispute_panel_period_zero_trace_as_ordered(immediate_annuity):
     assert p.av_pp(1) == pytest.approx(p.av_pp(0), abs=1e-6)
     assert p.annuity_payments(0) == pytest.approx(
         ORDERED["annuity_payments"], abs=SUB_WON)
-    assert p.claims(0, "DEATH") == pytest.approx(ORDERED["claims_death"], abs=SUB_WON)
-    assert p.claims(0, "LAPSE") == pytest.approx(ORDERED["claims_lapse"], abs=SUB_WON)
+    assert p.claims(0, Kind.DEATH) == pytest.approx(ORDERED["claims_death"], abs=SUB_WON)
+    assert p.claims(0, Kind.LAPSE) == pytest.approx(ORDERED["claims_lapse"], abs=SUB_WON)
     assert p.expenses(0) == pytest.approx(ORDERED["expenses"], abs=SUB_WON)
     assert p.net_cf(0) == pytest.approx(ORDERED["net_cf"], abs=SUB_WON)
 
@@ -933,10 +934,10 @@ def test_the_dispute_costs_the_insurer_the_whole_first_day_deduction(immediate_a
     assert [c for c in table.columns
             if str(table.loc[6, c]) != str(table.loc[7, c]) and c != "policy_id"] == [
         "retention_basis"]
-    assert designed.retention_basis() == "as_designed"
-    assert ordered.retention_basis() == "as_ordered"
+    assert designed.retention_basis() == RetentionBasis.as_designed
+    assert ordered.retention_basis() == RetentionBasis.as_ordered
     for p in (designed, ordered):
-        assert p.shape() == "inheritance"
+        assert p.shape() == Shape.inheritance
         assert p.annuity_term() == 10 and p.proj_len() == 120
         assert p.av_pp_init() == pytest.approx(AV_PP_INIT_LOADED, abs=SUB_WON)
         assert p.av_pp_init() == pytest.approx(
@@ -1094,7 +1095,7 @@ def test_the_certain_shape_load_cross_check(immediate_annuity):
     """
     p = immediate_annuity.Projection[9]
     j = p.crediting_rate_mth(0)
-    assert p.shape() == "certain"
+    assert p.shape() == Shape.certain
     assert p.av_pp_init() == pytest.approx(AV_PP_INIT_LOADED, abs=SUB_WON)
     assert p.annuity_factor_certain(120, j) == pytest.approx(A_120_MTH, abs=FACTOR)
     assert p.annuity_pp(0) == pytest.approx(CERTAIN_ANNUITY, abs=SUB_WON)
@@ -1119,7 +1120,7 @@ def test_the_certain_shape_load_cross_check(immediate_annuity):
     assert p.av_pp(120) == pytest.approx(0.0, abs=1e-6)
     assert abs(p.av_pp(120)) < 1e-7 * p.prem_pp()
     assert p.check_av_terminal() is True
-    assert all(p.claims(t, "LAPSE") == 0.0 for t in range(108, 120))
+    assert all(p.claims(t, Kind.LAPSE) == 0.0 for t in range(108, 120))
     assert p.annuity_payments(119) == pytest.approx(CERTAIN_LAST_INSTALMENT, abs=WON)
     assert p.annuity_payments(119) / df["annuity_payments"].sum() == pytest.approx(
         0.0077, abs=5e-5)
@@ -1209,12 +1210,12 @@ def test_the_obligation_rolls_forward_on_its_own_decrements(immediate_annuity,
             0.0, abs=1e-12)
     assert sum(a.pols_exit(t) for t in range(0, a.proj_len())) == pytest.approx(
         1.0, abs=1e-9)
-    for point_id, expected in ((6, "inheritance"), (9, "certain")):
+    for point_id, expected in ((6, Shape.inheritance), (9, Shape.certain)):
         p = immediate_annuity.Projection[point_id]
         assert p.shape() == expected
         assert p.check_pols_roll_fwd() is True
         for t in range(0, p.proj_len()):
-            built = (p.pols_lapse(t) if p.shape() == "certain"
+            built = (p.pols_lapse(t) if p.shape() == Shape.certain
                      else p.pols_death(t) + p.pols_lapse(t))
             assert p.pols_exit(t) == pytest.approx(built, rel=1e-14), (point_id, t)
 
@@ -1319,16 +1320,16 @@ def test_the_notes_processing_order_is_the_order_the_model_runs(immediate_annuit
 
     for t in range(0, inheritance.proj_len()):
         rho_p = inheritance.db_rate() * inheritance.prem_pp()
-        assert inheritance.claims(t, "DEATH") == pytest.approx(
+        assert inheritance.claims(t, Kind.DEATH) == pytest.approx(
             inheritance.pols_death(t) * (rho_p + inheritance.av_pp(t + 1)), rel=1e-14)
-        assert inheritance.claims(t, "DEATH") != pytest.approx(
+        assert inheritance.claims(t, Kind.DEATH) != pytest.approx(
             inheritance.pols_death(t) * (rho_p + inheritance.av_pp(t)), rel=1e-9)
         assert inheritance.pols_lapse(t) == pytest.approx(
             inheritance.lives_if(t) * (1.0 - inheritance.mort_rate_mth(t))
             * inheritance.surr_if(t) * inheritance.lapse_rate_mth(t), rel=1e-14)
         assert certain.pols_lapse(t) == pytest.approx(
             certain.surr_if(t) * certain.lapse_rate_mth(t), rel=1e-14)
-    assert inheritance.claims(0, "DEATH") == pytest.approx(
+    assert inheritance.claims(0, Kind.DEATH) == pytest.approx(
         DESIGNED["claims_death"], abs=SUB_WON)
     assert inheritance.pols_death(0) * (0.10 * inheritance.prem_pp()
                                         + inheritance.av_pp(0)) == pytest.approx(
@@ -1338,14 +1339,14 @@ def test_the_notes_processing_order_is_the_order_the_model_runs(immediate_annuit
         certain.lapse_rate_mth(0), rel=1e-14)
 
     n = inheritance.proj_len() - 1             # the last projected period
-    assert inheritance.claims(n, "MATURITY") == pytest.approx(
+    assert inheritance.claims(n, Kind.MATURITY) == pytest.approx(
         inheritance.pols_if(n + 1) * inheritance.maturity_benefit(), rel=1e-14)
-    assert all(inheritance.claims(t, "MATURITY") == 0.0 for t in range(0, n))
+    assert all(inheritance.claims(t, Kind.MATURITY) == 0.0 for t in range(0, n))
     assert inheritance.pols_if(n + 1) < inheritance.pols_if(n)
     for point_id in (1, 9):
         q = immediate_annuity.Projection[point_id]
         assert q.maturity_benefit() == 0.0
-        assert all(q.claims(t, "MATURITY") == 0.0 for t in range(0, q.proj_len()))
+        assert all(q.claims(t, Kind.MATURITY) == 0.0 for t in range(0, q.proj_len()))
 
 
 def test_the_published_statement_adds_up(immediate_annuity, kr_immediate_anchor):
@@ -1422,7 +1423,7 @@ def test_the_surrender_deduction_is_nil_and_the_statutory_cap_binds_nothing(
         for t in range(0, p.proj_len() + 1):
             assert p.surr_chg_pp(t) == 0.0
             assert p.cv_pp(t) == pytest.approx(max(p.av_pp(t), 0.0), abs=1e-6)
-        assert p.claims(0, "LAPSE") == pytest.approx(
+        assert p.claims(0, Kind.LAPSE) == pytest.approx(
             p.pols_lapse(0) * p.cv_pp(1), rel=1e-14)
 
 
@@ -1545,7 +1546,7 @@ def test_pitfall_proj_len_is_a_row_count_not_a_last_index(immediate_annuity):
         assert df.index[0] == 0 and df.index[-1] == p.proj_len() - 1, point_id
         assert p.proj_len() == horizon == 12 * years
         assert p.proj_years() == years
-        if p.shape() == "life":
+        if p.shape() == Shape.life:
             assert p.proj_years() == max(p.annuity_term(),
                                          OMEGA_AGE - p.age_at_entry() + 1)
             assert p.mort_rate(p.proj_len() - 1) == 1.0
@@ -1589,7 +1590,7 @@ def test_pitfall_the_mortality_rate_is_read_at_the_start_of_the_period(
 
     def wrong_q(t):
         x = min(a.age_at_entry() + t // 12 + 1, OMEGA_AGE)
-        q = float(table.loc[(a.sex(), x), "mort_rate"])
+        q = float(table.loc[(a.sex().name, x), "mort_rate"])
         return 1.0 / (12 - t % 12) if q >= 1.0 else 1.0 - (1.0 - q) ** (1.0 / 12.0)
 
     v = 1.0 / (1.0 + a.crediting_rate_mth(0))
@@ -1667,7 +1668,7 @@ def test_pitfall_the_life_shape_annuity_is_not_re_struck_each_year(immediate_ann
     """
     for point_id in (1, 2, 3, 4, 5):
         p = immediate_annuity.Projection[point_id]
-        assert p.shape() == "life"
+        assert p.shape() == Shape.life
         level = p.annuity_pp(0)
         assert all(p.annuity_pp(t) == level for t in range(0, p.proj_len())), point_id
         assert p.check_rate_level() is True, point_id
@@ -1695,7 +1696,7 @@ def test_pitfall_av_pp_is_not_floored_at_zero(kr_immediate_anchor):
             a.av_pp_init() * (1.0 + j0) ** t
             - a.annuity_pp(0) * a.accum_factor(t, j0), abs=1e-3)
         assert a.cv_pp(t) == 0.0
-    assert all(a.claims(t, "LAPSE") == 0.0 for t in range(0, a.proj_len()))
+    assert all(a.claims(t, Kind.LAPSE) == 0.0 for t in range(0, a.proj_len()))
     assert "payment obligation remains" in a.cells["pols_if"].doc
 
 
@@ -1839,11 +1840,11 @@ def test_pitfall_no_death_benefit_is_paid_on_the_jongsin_yeongeum_hyeong(
     """
     for point_id in (1, 2, 3, 4, 5):
         p = immediate_annuity.Projection[point_id]
-        assert p.shape() == "life"
+        assert p.shape() == Shape.life
         assert p.db_rate() == 0.0
         assert p.risk_prem_rate() == 0.0        # and no 위험보험료 is deducted for one
         assert p.risk_prem_pp() == 0.0
-        assert all(p.claims(t, "DEATH") == 0.0
+        assert all(p.claims(t, Kind.DEATH) == 0.0
                    for t in range(0, p.proj_len())), point_id
         assert p.result_cf()["claims_death"].sum() == 0.0
     a = immediate_annuity.Projection[1]
@@ -1863,15 +1864,15 @@ def test_pitfall_the_death_benefit_is_measured_on_the_fund_carried_forward(
     month of fund growth where on the annual grid it cost a year of it.
     """
     p = immediate_annuity.Projection[6]
-    assert p.claims(0, "DEATH") == pytest.approx(DESIGNED["claims_death"], abs=SUB_WON)
-    assert p.claims(0, "DEATH") == pytest.approx(
+    assert p.claims(0, Kind.DEATH) == pytest.approx(DESIGNED["claims_death"], abs=SUB_WON)
+    assert p.claims(0, Kind.DEATH) == pytest.approx(
         p.mort_rate_mth(0) * (0.10 * p.prem_pp() + p.av_pp(1)), rel=1e-13)
     start_of_period = p.mort_rate_mth(0) * (0.10 * p.prem_pp() + p.av_pp(0))
     assert start_of_period == pytest.approx(30946.43, abs=WON)
-    assert p.claims(0, "DEATH") - start_of_period == pytest.approx(10.77, abs=WON)
+    assert p.claims(0, Kind.DEATH) - start_of_period == pytest.approx(10.77, abs=WON)
     # On the certain shape it is the 10% alone: the instalments run on their own dates.
     certain = immediate_annuity.Projection[9]
-    assert certain.claims(0, "DEATH") == pytest.approx(
+    assert certain.claims(0, Kind.DEATH) == pytest.approx(
         certain.pols_death(0) * 0.10 * certain.prem_pp(), rel=1e-14)
     assert certain.db_rate() == 0.10
 
@@ -1889,7 +1890,7 @@ def test_pitfall_no_lapse_decrement_touches_the_life_shape(immediate_annuity):
     table = immediate_annuity.Data.model_point_table()
     for point_id in (1, 2, 3, 4, 5):
         p = immediate_annuity.Projection[point_id]
-        assert p.shape() == "life"
+        assert p.shape() == Shape.life
         assert float(table.loc[point_id, "lapse_rate"]) == 0.0
         assert p.check_surr_value() is True, point_id
         assert all(p.lapse_rate(t) == 0.0 for t in range(0, p.proj_len()))
@@ -1916,10 +1917,10 @@ def test_pitfall_no_surrender_fires_in_the_final_period(immediate_annuity):
         assert all(p.lapse_rate(t) == 0.0 for t in range(n - 11, n + 1))
         assert all(p.lapse_rate_mth(t) == 0.0 for t in range(n - 11, n + 1))
         assert p.pols_lapse(n) == 0.0
-        assert p.claims(n, "LAPSE") == 0.0, point_id
+        assert p.claims(n, Kind.LAPSE) == 0.0, point_id
         assert p.result_cf().loc[n, "claims_lapse"] == 0.0
     inheritance = immediate_annuity.Projection[6]
-    assert inheritance.claims(inheritance.proj_len() - 1, "MATURITY") > 0.0
+    assert inheritance.claims(inheritance.proj_len() - 1, Kind.MATURITY) > 0.0
     assert inheritance.cv_pp(inheritance.proj_len()) == pytest.approx(
         MATURITY_BENEFIT, abs=1e-6)          # the two amounts a lapse would confuse
 
@@ -1934,13 +1935,13 @@ def test_pitfall_the_maturity_benefit_is_weighted_one_period_later(immediate_ann
     """
     p = immediate_annuity.Projection[6]
     n = p.proj_len() - 1                       # the last projected period
-    assert p.claims(n, "MATURITY") == pytest.approx(
+    assert p.claims(n, Kind.MATURITY) == pytest.approx(
         DISPUTE_TOTALS[6]["claims_maturity"], abs=WON)
-    assert p.claims(n, "MATURITY") == pytest.approx(
+    assert p.claims(n, Kind.MATURITY) == pytest.approx(
         p.pols_if(n + 1) * p.maturity_benefit(), rel=1e-14)
     earlier = p.pols_if(n) * p.maturity_benefit()
     assert earlier == pytest.approx(MATURITY_EARLIER_WEIGHT, abs=WON)
-    assert earlier - p.claims(n, "MATURITY") == pytest.approx(43838.76, abs=WON)
+    assert earlier - p.claims(n, Kind.MATURITY) == pytest.approx(43838.76, abs=WON)
     assert p.pols_if(n + 1) < p.pols_if(n)
 
 
@@ -2004,7 +2005,7 @@ def test_pitfall_no_aggregate_claims_column_stands_beside_the_split(kr_immediate
     assert a.check_net_cf() is True
     with pytest.raises(FormulaError):
         a.claims(1, "SURRENDER")                # the kind argument validates
-    assert a.claims(1, "DEATH") == 0.0
+    assert a.claims(1, Kind.DEATH) == 0.0
 
 
 # ---------------------------------------------------------------------------
@@ -2021,7 +2022,7 @@ def test_the_std_charge_parameters_the_notes_state(immediate_annuity, shape):
     is what makes the premium split close, and ``comm_rate``, which sits **below** the
     계약체결비용 so that the charge covers the commission at the same moment.
     """
-    point_id = {"life": 1, "inheritance": 6, "certain": 9}[shape]
+    point_id = {Shape.life: 1, Shape.inheritance: 6, Shape.certain: 9}[shape]
     p = immediate_annuity.Projection[point_id]
     assert p.shape() == shape
     for name, value in CHARGE_RATES[shape].items():
@@ -2066,7 +2067,7 @@ def test_the_std_rate_and_behaviour_assumptions_the_notes_state(immediate_annuit
     for point_id in (6, 7, 8, 9):
         p = immediate_annuity.Projection[point_id]
         assert p.lapse_rate(0) == 0.02
-        assert p.shape() in ("inheritance", "certain")
+        assert p.shape() in (Shape.inheritance, Shape.certain)
     df = immediate_annuity.Projection[6].result_cf()
     assert df["claims_lapse"].sum() == pytest.approx(15854560.39, abs=WON)
     assert df["claims_lapse"].sum() / df["annuity_payments"].sum() == pytest.approx(

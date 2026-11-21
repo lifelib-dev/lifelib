@@ -340,10 +340,7 @@ def chassis():
     continuous across the renewal, so the projection horizon is unchanged; what the
     renewal really does is reprice, and that is the ``renew_reprice_rate`` switch.
     """
-    v = model_point()["chassis"]
-    if v not in ("shushin", "teiki"):
-        raise ValueError("invalid chassis")
-    return v
+    return Chassis[model_point()["chassis"]]
 
 
 def issue_age():
@@ -368,10 +365,7 @@ def sex():
     male and female incidence curves cross: female incidence is nearly three times male at
     35-39 and half of it at 70-74.
     """
-    v = model_point()["sex"]
-    if v not in ("M", "F"):
-        raise ValueError("invalid sex")
-    return v
+    return Sex[model_point()["sex"]]
 
 
 def base_amount():
@@ -488,10 +482,7 @@ def prem_period_type():
     arises** on any retrieved contract; the 短期払 variant is the only route by which this
     chassis acquires a surrender value at all, which the model does not carry either way.
     """
-    v = model_point()["prem_period"]
-    if v not in ("whole_life", "to_65"):
-        raise ValueError("invalid prem_period")
-    return v
+    return PremPeriod[model_point()["prem_period"]]
 
 
 def premium_mth_pp():
@@ -520,7 +511,7 @@ def prem_mode():
     a monthly grid whose step *is* the payment interval.  It is also why the 90-day waiting
     period lands exactly on a grid boundary.
     """
-    return model_point()["prem_mode"]
+    return PremMode[model_point()["prem_mode"]]
 
 
 def waiver_trigger():
@@ -534,10 +525,7 @@ def waiver_trigger():
     :func:`lapse_rate_canc_mth`.  The disability incidence itself is out of scope
     **[std scope]**: no basis for it appears in this product's source set.
     """
-    v = model_point()["waiver_trigger"]
-    if v not in ("cancer_diag", "disability", "none"):
-        raise ValueError("invalid waiver_trigger")
-    return v
+    return WaiverTrigger[model_point()["waiver_trigger"]]
 
 
 def adv_rider():
@@ -582,7 +570,7 @@ def omega_age():
     projection ends where the published table ends rather than where a fitted curve
     happens to close.
     """
-    return omega_age_male if sex() == "M" else omega_age_female      # noqa: F821
+    return omega_age_male if sex() == Sex.M else omega_age_female      # noqa: F821
 
 
 def proj_len():
@@ -754,7 +742,7 @@ def lapse_rate_canc_mth(t):
     the product exists to pay.  On the disability-trigger and no-waiver designs the premium
     does not stop, and the rate becomes the healthy one scaled by ``lapse_canc_factor``.
     """
-    if waiver_trigger() == "cancer_diag":
+    if waiver_trigger() == WaiverTrigger.cancer_diag:
         return 0.0
     return lapse_rate_mth(t) * lapse_canc_factor                     # noqa: F821
 
@@ -848,7 +836,7 @@ def inc_rate(t):
     """
     both = inc_rate_both(t)
     f = sex_factor(inc_band_at_age(age(t)) + 2.5)
-    limb = f if sex() == "M" else 2.0 - f
+    limb = f if sex() == Sex.M else 2.0 - f
     return both * limb * sel_lapse_factor(t)
 
 
@@ -1043,13 +1031,13 @@ def pols_if_at(t, timing):
     :func:`result_pols` — for the state movement; ``pols_if_at`` answers only how many
     lives are left, never which state they are in.
     """
-    if timing == "BEF_DECR":
+    if timing == PolTiming.BEF_DECR:
         return pols_if(t)
-    if timing == "BEF_LAPSE":
+    if timing == PolTiming.BEF_LAPSE:
         return ((pols_healthy(t) - diag_first(t)) * (1.0 - mort_rate_mth(t))
                 + (pols_cancer(t) + diag_first(t))
                 * (1.0 - mort_rate_canc_mth(t)))
-    if timing == "AFT_DECR":
+    if timing == PolTiming.AFT_DECR:
         return pols_if(t + 1)
     raise ValueError("invalid timing")
 
@@ -1155,6 +1143,11 @@ def pols_lapse(t):
 # ===== Cells: the care-benefit bases and their ledgers =====
 
 
+def hosp_stay_schedule():
+    """The mean-stay rows of the model's basis, keyed by age_from."""
+    return data.hosp_stay_table().loc[hosp_stay_basis()]             # noqa: F821
+
+
 def hosp_stay_days(t):
     """L: the mean cancer hospitalisation in days.
 
@@ -1164,10 +1157,8 @@ def hosp_stay_days(t):
     because the gradient is published on four broad bands and the incidence on twenty-one
     narrow ones.
     """
-    tbl = data.hosp_stay_table()                                     # noqa: F821
-    basis = "age_band" if hosp_age_gradient else "all_ages"          # noqa: F821
-    rows = tbl[(tbl["basis"] == basis) & (tbl["age_from"] <= age(t))]
-    return float(rows.sort_values("age_from")["days"].iloc[-1])
+    sub = hosp_stay_schedule()
+    return float(sub.loc[sub.index.asof(age(t)), "days"])
 
 
 def hosp_rate_mth(t):
@@ -1282,7 +1273,7 @@ def pols_payer(t):
     cancer diagnosis does not stop the premium.  Weighting the premium by ``pols_if`` on
     the composite overstates income by exactly the waived population.
     """
-    if waiver_trigger() == "cancer_diag":
+    if waiver_trigger() == WaiverTrigger.cancer_diag:
         return pols_healthy(t)
     return pols_if(t)
 
@@ -1295,7 +1286,7 @@ def premium_factor(t):
     expiry at a flat rate and records the tension rather than resolving it; set
     ``renew_reprice_rate`` above zero to step the premium at each renewal instead.
     """
-    if chassis() != "teiki" or renew_reprice_rate == 0.0:            # noqa: F821
+    if chassis() != Chassis.teiki or renew_reprice_rate == 0.0:            # noqa: F821
         return 1.0
     return (1.0 + renew_reprice_rate) ** (t // renewal_months)       # noqa: F821
 
@@ -1307,7 +1298,7 @@ def prem_payable(t):
     after which the cover continues unpaid — and so does the maintenance expense, which is
     what makes expense inflation a first-order lever on a short-pay design.
     """
-    if prem_period_type() == "to_65" and age(t) >= 65:
+    if prem_period_type() == PremPeriod.to_65 and age(t) >= 65:
         return 0.0
     return 1.0
 
@@ -1324,7 +1315,7 @@ def premiums(t):
     return premium_mth_pp() * premium_factor(t) * pols_payer(t) * prem_payable(t)
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Benefit outgo in month t, by kind; the total when kind is omitted.
 
     ``"DIAG"``
@@ -1375,35 +1366,35 @@ def claims(t, kind=None):
     check: ¥3,000.00 inpatient, ¥1,458.33 surgery, ¥10,000.00 treatment, ¥916.67
     outpatient and ¥660.00 advanced medicine — ¥16,035.00 in total.
     """
-    if kind is None:
+    if kind == Kind.ALL:
         return sum(claims(t, k) for k in (
-            "DIAG", "INSITU", "HOSP", "SURGERY", "TREAT", "OUTPATIENT",
-            "ADVANCED", "DISCHARGE", "LAPSE"))
-    if kind == "DIAG":
+            Kind.DIAG, Kind.INSITU, Kind.HOSP, Kind.SURGERY, Kind.TREAT, Kind.OUTPATIENT,
+            Kind.ADVANCED, Kind.DISCHARGE, Kind.LAPSE))
+    if kind == Kind.DIAG:
         return diag_benefit() * trig(t)
-    if kind == "INSITU":
+    if kind == Kind.INSITU:
         return insitu_pct() * diag_benefit() * insitu_ev(t)
-    if kind == "HOSP":
+    if kind == Kind.HOSP:
         return (daily_amount() * hosp_stay_days(t) * hosp_rate_mth(t)
                 * pols_cancer(t))
-    if kind == "SURGERY":
+    if kind == Kind.SURGERY:
         return surg_mult() * base_amount() * (
             surg_per_hosp * hosp_rate_mth(t) * pols_cancer(t)        # noqa: F821
             + surg_per_insitu * insitu_ev(t))                        # noqa: F821
-    if kind == "TREAT":
+    if kind == Kind.TREAT:
         return treat_benefit() * paid_months(t) * pols_cancer(t)
-    if kind == "OUTPATIENT":
+    if kind == Kind.OUTPATIENT:
         return outp_daily() * (outp_days / 12.0) * pols_cancer(t)    # noqa: F821
-    if kind == "ADVANCED":
+    if kind == Kind.ADVANCED:
         pay = adv_pay(t)
         top_up = min(adv_topup_rate * pay, adv_topup_cap)            # noqa: F821
         return adv_freq_mth() * (pay + top_up) * pols_cancer(t)
-    if kind == "DISCHARGE":
+    if kind == Kind.DISCHARGE:
         if not disch_rider():
             return 0.0
         return (disch_mult * base_amount() * disch_qual_share        # noqa: F821
                 * hosp_rate_mth(t) * pols_cancer(t))
-    if kind == "LAPSE":
+    if kind == Kind.LAPSE:
         return 0.0
     raise ValueError("invalid kind")
 
@@ -1489,7 +1480,7 @@ def net_cf(t):
     disjoint.  Every error in incidence therefore hits both sides of the cash flow at once,
     roughly doubling its effect here.
     """
-    return (premiums(t) - claims(t) - expenses(t) - claim_expenses(t)
+    return (premiums(t) - claims(t, Kind.ALL) - expenses(t) - claim_expenses(t)
             - commissions(t))
 
 
@@ -1694,15 +1685,15 @@ def result_cf():
             "pols_healthy": [pols_healthy(t) for t in ts],
             "pols_cancer": [pols_cancer(t) for t in ts],
             "premiums": [premiums(t) for t in ts],
-            "claims_diag": [claims(t, "DIAG") for t in ts],
-            "claims_insitu": [claims(t, "INSITU") for t in ts],
-            "claims_hosp": [claims(t, "HOSP") for t in ts],
-            "claims_surgery": [claims(t, "SURGERY") for t in ts],
-            "claims_treat": [claims(t, "TREAT") for t in ts],
-            "claims_outpatient": [claims(t, "OUTPATIENT") for t in ts],
-            "claims_advanced": [claims(t, "ADVANCED") for t in ts],
-            "claims_discharge": [claims(t, "DISCHARGE") for t in ts],
-            "claims_lapse": [claims(t, "LAPSE") for t in ts],
+            "claims_diag": [claims(t, Kind.DIAG) for t in ts],
+            "claims_insitu": [claims(t, Kind.INSITU) for t in ts],
+            "claims_hosp": [claims(t, Kind.HOSP) for t in ts],
+            "claims_surgery": [claims(t, Kind.SURGERY) for t in ts],
+            "claims_treat": [claims(t, Kind.TREAT) for t in ts],
+            "claims_outpatient": [claims(t, Kind.OUTPATIENT) for t in ts],
+            "claims_advanced": [claims(t, Kind.ADVANCED) for t in ts],
+            "claims_discharge": [claims(t, Kind.DISCHARGE) for t in ts],
+            "claims_lapse": [claims(t, Kind.LAPSE) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "claim_expenses": [claim_expenses(t) for t in ts],
             "commissions": [commissions(t) for t in ts],
@@ -1740,6 +1731,11 @@ def result_pols():
         },
         index=pd.Index(ts, name="t"),                                # noqa: F821
     )
+
+
+def hosp_stay_basis():
+    """The mean-stay basis chosen by ``hosp_age_gradient``: the age bands or all ages."""
+    return StayBasis.age_band if hosp_age_gradient else StayBasis.all_ages  # noqa: F821
 
 
 # ---------------------------------------------------------------------------
@@ -1824,3 +1820,19 @@ roll_fwd_tol = 1e-10
 math = ("Module", "math")
 
 pd = ("Module", "pandas")
+
+Chassis = ("Pickle", 3)
+
+Sex = ("Pickle", 1)
+
+PremPeriod = ("Pickle", 4)
+
+PremMode = ("Pickle", 5)
+
+WaiverTrigger = ("Pickle", 6)
+
+StayBasis = ("Pickle", 2)
+
+PolTiming = ("Pickle", 7)
+
+Kind = ("Pickle", 8)

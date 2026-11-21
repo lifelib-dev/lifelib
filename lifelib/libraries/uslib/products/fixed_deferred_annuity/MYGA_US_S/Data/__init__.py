@@ -83,15 +83,16 @@ def model_point_table():
 
 def mort_table():
     """Annual mortality by attained age and sex, read from *mort_table.csv*."""
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file, index_col=["age", "sex"])     # noqa: F821
+    frame = pd.read_csv(input_dir() / mort_table_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["age", "sex"])
 
 
 def surr_charge_table():
     """Surrender charge rates by schedule and contract year, from *surr_charge_table.csv*."""
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / surr_charge_file,                              # noqa: F821
-        index_col=["schedule", "contract_year"])
+    frame = pd.read_csv(input_dir() / surr_charge_file)                     # noqa: F821
+    frame["schedule"] = [Schedule[name] for name in frame["schedule"]]
+    return frame.set_index(["schedule", "contract_year"])
 
 
 def surr_charge_age_cap_table():
@@ -149,3 +150,7 @@ withdrawal_file = "withdrawal_table.csv"
 mva_factor_file = "mva_factor_table.csv"
 
 pd = ("Module", "pandas")
+
+Schedule = ("Pickle", 1)
+
+Sex = ("Pickle", 2)

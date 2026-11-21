@@ -150,9 +150,10 @@ def mort_table():
     not redistributed here.  See the Space docstring for the anchor that fixes it and for
     what a replacement must preserve.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file,                               # noqa: F821
-        index_col=["sex", "age"])
+    frame = pd.read_csv(                                             # noqa: F821
+        input_dir() / mort_table_file)                               # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"])
 
 
 def lapse_table():
@@ -203,8 +204,10 @@ def freq_loading_table():
     unterjährige Zahlweise — an instalment of an annual *Versicherungsperiode* — and is
     inert where the sub-annual period is genuine.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / freq_loading_file, index_col="prem_freq")      # noqa: F821
+    frame = pd.read_csv(                                             # noqa: F821
+        input_dir() / freq_loading_file)                             # noqa: F821
+    frame["prem_freq"] = [PremFreq[name] for name in frame["prem_freq"]]
+    return frame.set_index("prem_freq")
 
 
 def deckrv_table():
@@ -238,3 +241,7 @@ freq_loading_file = "freq_loading_table.csv"
 deckrv_file = "deckrv_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+PremFreq = ("Pickle", 2)

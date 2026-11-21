@@ -49,6 +49,8 @@ Each product comes with the product specification and technical notes
 that its model was built from, and the model reproduces the worked example
 in the notes, asserted cell by cell.
 
+See :doc:`model-authoring` for the supported expressions and input domains.
+
 .. table::
 
    =============================== =============== ===============================================================
@@ -73,6 +75,7 @@ in the notes, asserted cell by cell.
    frlib/index.md
    delib/index.md
    krlib/index.md
+   model-authoring.md
 
 
 Miscellaneous Models

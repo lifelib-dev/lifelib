@@ -84,6 +84,7 @@ import pytest
 from modelx.core.errors import FormulaError
 
 from kr_registry import LIB, MODELS
+from lifelib.libraries.krlib.products.long_term_care.enums import CvForm, DemParam, Grade, Kind, LapseForm, LapseParam, PolTiming, PremMode, PrevParam, Sex
 
 
 MODEL_DIR = LIB / MODELS["LTC_KR_S"][0]
@@ -150,14 +151,14 @@ def lifetime(p):
     is the maturity month and contributes nothing to any of these sums.
     """
     ts = range(p.proj_len())
-    lump = sum(p.claims(t, "LUMP") for t in ts)
-    annuity = sum(p.claims(t, "ANNUITY") for t in ts)
+    lump = sum(p.claims(t, Kind.LUMP) for t in ts)
+    annuity = sum(p.claims(t, Kind.ANNUITY) for t in ts)
     return {
         "premiums": sum(p.premiums(t) for t in ts),
         "claims_lump": lump,
         "claims_annuity": annuity,
         "benefit": lump + annuity,
-        "claims_lapse": sum(p.claims(t, "LAPSE") for t in ts),
+        "claims_lapse": sum(p.claims(t, Kind.LAPSE) for t in ts),
         "net_cf": sum(p.net_cf(t) for t in ts),
         "entries": sum(p.pols_entry_care(t) for t in ts),
     }
@@ -173,7 +174,7 @@ def pv_benefit_over_premium(p):
     j = (1.0 + p.prem_int_rate) ** (1.0 / 12.0) - 1.0
     ts = range(p.proj_len())
     pv_prem = sum(p.premiums(t) * (1.0 + j) ** -t for t in ts)
-    pv_ben = sum((p.claims(t, "LUMP") + p.claims(t, "ANNUITY")) * (1.0 + j) ** -t
+    pv_ben = sum((p.claims(t, Kind.LUMP) + p.claims(t, Kind.ANNUITY)) * (1.0 + j) ** -t
                  for t in ts)
     return pv_ben / pv_prem
 
@@ -208,12 +209,12 @@ def test_the_anchor_cell_is_the_worked_examples_model_point(kr_ltc_anchor):
     p = kr_ltc_anchor
     assert p.policy_id() == "LTC-000001"
     assert p.issue_age() == 40
-    assert p.sex() == "M"
+    assert p.sex() == Sex.M
     assert p.term_age() == 90
     assert p.prem_period_years() == 20
     assert p.prem_period_mths() == 240
-    assert p.prem_mode() == "monthly"
-    assert p.benefit_grade() == "g2"
+    assert p.prem_mode() == PremMode.monthly
+    assert p.benefit_grade() == Grade.g2
     assert p.lump_amount() == 10_000_000.0
     assert p.annuity_on() is True
     assert p.annuity_high() == 500_000.0
@@ -223,8 +224,8 @@ def test_the_anchor_cell_is_the_worked_examples_model_point(kr_ltc_anchor):
     assert p.dementia_rider() is False
     assert p.wait_mths() == 3
     assert p.red_mths() == 12
-    assert p.cv_form() == "mijigeup"
-    assert p.lapse_form() == "mujihae"
+    assert p.cv_form() == CvForm.mijigeup
+    assert p.lapse_form() == LapseForm.mujihae
     assert p.uw_loading() == 1.0
     assert p.premium_mth_pp() == 5_600.0
     assert p.pols_if_init() == 1.0
@@ -252,7 +253,7 @@ def test_the_worked_examples_assumption_values(kr_ltc_anchor):
     assert p.prev_rate_at(40) == pytest.approx(0.00038039917723430234, rel=FULL)
     assert p.prev_care_at(40) == pytest.approx(0.00008444861734601512, rel=FULL)
     assert p.prev_light_at(40) == pytest.approx(0.0002959505598882872, rel=FULL)
-    assert p.share_ge_at("g2", 40) == 0.222
+    assert p.share_ge_at(Grade.g2, 40) == 0.222
     assert p.sub65_factor_at(40) == pytest.approx(0.04710884458012182, rel=FULL)
     assert p.inc_rate_direct_at(40) == pytest.approx(0.0000022292964462128687, rel=FULL)
     assert p.inc_rate_light_at(40) == pytest.approx(0.00010426974412244515, rel=FULL)
@@ -319,21 +320,21 @@ def test_the_prevalence_logistic_is_fitted_through_the_five_sourced_injeongryul(
     still passes through the data it was fitted to.
     """
     p = kr_ltc_anchor
-    assert p.prev_param("prev_ceil") == 0.7480
-    assert p.prev_param("prev_beta") == 0.14692252
-    assert p.prev_param("prev_x_mid") == 91.61515338
+    assert p.prev_param(PrevParam.prev_ceil) == 0.7480
+    assert p.prev_param(PrevParam.prev_beta) == 0.14692252
+    assert p.prev_param(PrevParam.prev_x_mid) == 91.61515338
     table = long_term_care.Data.prevalence_table()
-    for age, key in ((67, "prev_obs_67"), (72, "prev_obs_72"), (77, "prev_obs_77"),
-                     (82, "prev_obs_82"), (88.5, "prev_obs_88")):
-        observed = float(table.loc[("M", key), "value"])
+    for age, key in ((67, PrevParam.prev_obs_67), (72, PrevParam.prev_obs_72), (77, PrevParam.prev_obs_77),
+                     (82, PrevParam.prev_obs_82), (88.5, PrevParam.prev_obs_88)):
+        observed = float(table.loc[(Sex.M, key), "value"])
         assert p.prev_rate_at(age) == pytest.approx(observed, rel=0.052), age
     assert p.prev_rate_at(65) == pytest.approx(0.014691, abs=5e-7)
     assert p.prev_rate_at(85) == pytest.approx(0.205325, abs=5e-7)
     # The derivative is the analytic one, beta P (1 - P / ceil), not a difference quotient.
     for age in (40, 65, 85):
         assert p.prev_slope_at(age) == pytest.approx(
-            p.prev_param("prev_beta") * p.prev_rate_at(age)
-            * (1.0 - p.prev_rate_at(age) / p.prev_param("prev_ceil")), rel=FULL)
+            p.prev_param(PrevParam.prev_beta) * p.prev_rate_at(age)
+            * (1.0 - p.prev_rate_at(age) / p.prev_param(PrevParam.prev_ceil)), rel=FULL)
 
 
 # The notes' "The first policy year, cash flow" table, to the six decimals it displays.
@@ -416,10 +417,10 @@ def test_the_worked_examples_first_year_cash_flow(kr_ltc_anchor, t):
      exp, claim_exp, comm, ncf) = WORKED_EXAMPLE_CF[t]
     assert p.pols_if(t) == pytest.approx(pols_if, abs=WON6)
     assert p.premiums(t) == pytest.approx(prem, abs=WON6)
-    assert p.claims(t, "LUMP") == pytest.approx(lump, abs=WON6)
-    assert p.claims(t, "ANNUITY") == pytest.approx(annuity, abs=WON6)
-    assert p.claims(t, "DEATH") == pytest.approx(death, abs=WON6)
-    assert p.claims(t, "VOID") == pytest.approx(void, abs=WON6)
+    assert p.claims(t, Kind.LUMP) == pytest.approx(lump, abs=WON6)
+    assert p.claims(t, Kind.ANNUITY) == pytest.approx(annuity, abs=WON6)
+    assert p.claims(t, Kind.DEATH) == pytest.approx(death, abs=WON6)
+    assert p.claims(t, Kind.VOID) == pytest.approx(void, abs=WON6)
     assert p.expenses(t) == pytest.approx(exp, abs=WON6)
     assert p.claim_expenses(t) == pytest.approx(claim_exp, abs=WON6)
     assert p.commissions(t) == pytest.approx(comm, abs=WON6)
@@ -473,7 +474,7 @@ def test_the_worked_examples_month_0_trace(kr_ltc_anchor):
     assert p.pols_void(0) == pytest.approx(0.00000018577470385107238, rel=FULL)
     assert p.cum_prem_pp(0) == 0.0                   # paid before month 0's own premium
     assert p.cum_prem_pp(1) == 5_600.0               # ...which is what the void returns
-    assert p.claims(0, "VOID") == pytest.approx(
+    assert p.claims(0, Kind.VOID) == pytest.approx(
         5_600.0 * 0.00000018577470385107238, abs=WON6)
     assert p.pols_healthy_mid(0) == pytest.approx(0.9999911250799526, rel=FULL)
     assert p.pols_light_mid(0) == pytest.approx(0.000008689145343537096, rel=FULL)
@@ -482,7 +483,7 @@ def test_the_worked_examples_month_0_trace(kr_ltc_anchor):
         0.9999911250799526 * 0.0000813708009308467
         + 0.000008689145343537096 * 0.0001465199263399608, rel=FULL)
     assert p.av_pp(0) == 0.0
-    assert p.claims(0, "DEATH") == 0.0               # the account opens at nil
+    assert p.claims(0, Kind.DEATH) == 0.0               # the account opens at nil
     assert p.pols_lapse(0) == pytest.approx(0.0069238178955, abs=5e-13)
     assert p.expenses(0) == pytest.approx(5.2 * 5_600 + 200.0, abs=WON6)
     assert p.commissions(0) == pytest.approx(7.8 * 5_600, abs=WON6)
@@ -522,11 +523,11 @@ def test_the_worked_examples_month_1_trace(kr_ltc_anchor):
     assert p.pols_entry_care(1) == 0.0               # 1 = t < W = 3
     assert p.pols_void(1) == pytest.approx(0.00000020889418843702306, rel=FULL)
     assert p.cum_prem_pp(1) == 5_600.0
-    assert p.claims(1, "VOID") == pytest.approx(
+    assert p.claims(1, Kind.VOID) == pytest.approx(
         11_200.0 * 0.00000020889418843702306, abs=WON6)
     assert p.prem_accum_factor(1) == pytest.approx(1.0016515813, abs=5e-11)
     assert p.av_pp(1) == pytest.approx(4449.066773, abs=WON6)
-    assert p.claims(1, "DEATH") == pytest.approx(
+    assert p.claims(1, Kind.DEATH) == pytest.approx(
         p.av_pp(1) * p.pols_death_act(1), rel=FULL)
     assert p.expenses(1) == pytest.approx(200.0 * 0.992994624977843, abs=WON6)
     assert p.commissions(1) == 0.0                   # no renewal commission before t = 12
@@ -557,11 +558,11 @@ def test_the_worked_examples_month_3_trace_is_the_first_payable_certification(
     assert p.pols_entry_care(3) == pytest.approx(0.0000002539279657861477, rel=FULL)
     assert p.pols_void(3) == 0.0
     assert p.red_factor(3) == 0.525
-    assert p.claims(3, "LUMP") == pytest.approx(
+    assert p.claims(3, Kind.LUMP) == pytest.approx(
         10_000_000 * 0.525 * 0.0000002539279657861477, abs=WON6)
     # The frozen annuity amount is the grade blend read at 만나이 65, times r(3).
-    assert p.share_ge_at("g1", 65) == pytest.approx(0.07985714285714286, rel=FULL)
-    assert p.share_ge_at("g2", 65) == pytest.approx(0.1677142857142857, rel=FULL)
+    assert p.share_ge_at(Grade.g1, 65) == pytest.approx(0.07985714285714286, rel=FULL)
+    assert p.share_ge_at(Grade.g2, 65) == pytest.approx(0.1677142857142857, rel=FULL)
     blended = ((0.07985714285714286 * 500_000
                 + (0.1677142857142857 - 0.07985714285714286) * 300_000)
                / 0.1677142857142857)
@@ -569,13 +570,13 @@ def test_the_worked_examples_month_3_trace_is_the_first_payable_certification(
     assert p.ann_amount_at(3) == pytest.approx(blended * 0.525, rel=FULL)
     assert p.ann_amount_at(3) == pytest.approx(207495.7410562181, rel=FULL)
     assert p.ann_count(3) == pytest.approx(p.pols_entry_care(3), rel=FULL)
-    assert p.claims(3, "ANNUITY") == pytest.approx(
+    assert p.claims(3, Kind.ANNUITY) == pytest.approx(
         207495.7410562181 * 0.0000002539279657861477, abs=WON6)
     assert p.claim_expenses(3) == pytest.approx(
         30_000 * 0.0000002539279657861477, abs=WON6)
     assert p.ann_tests(3) == 0.0                     # the first annual test is twelve months on
     assert p.av_pp(3) == pytest.approx(13369.256441, abs=WON6)
-    assert p.claims(3, "DEATH") == pytest.approx(
+    assert p.claims(3, Kind.DEATH) == pytest.approx(
         13369.256441 * p.pols_death_act(3), abs=WON6)
     assert p.net_cf(3) == pytest.approx(
         5483.131826 - 1.333122 - 0.052689 - 1.065193 - 195.826137 - 0.007618,
@@ -597,9 +598,9 @@ def test_the_worked_examples_month_12_trace_is_the_gamaek_expiring(kr_ltc_anchor
     assert p.lapse_rate(12) == pytest.approx(0.06352246697177472, rel=FULL)
     assert p.red_factor(12) == 1.0
     assert p.pols_entry_care(12) == pytest.approx(0.00000046011303806134214, rel=FULL)
-    assert p.claims(12, "LUMP") == pytest.approx(
+    assert p.claims(12, Kind.LUMP) == pytest.approx(
         10_000_000 * 1.0 * 0.00000046011303806134214, abs=WON6)
-    step = p.claims(12, "LUMP") / p.claims(11, "LUMP")
+    step = p.claims(12, Kind.LUMP) / p.claims(11, Kind.LUMP)
     assert step == pytest.approx(2.09, abs=0.005)
     assert 1.0 / 0.525 == pytest.approx(1.90, abs=0.005)   # of which the 감액 is this much
     # Every cohort still inside the twelve-month guarantee, so every weight is 1.
@@ -651,8 +652,8 @@ def test_the_worked_examples_month_240_trace_is_the_surrender_value_cliff(kr_ltc
     assert p.pols_lapse(239) == pytest.approx(0.0000536909, abs=INFORCE)
     assert p.pols_lapse(240) == pytest.approx(0.0004306951, abs=INFORCE)
     assert p.pols_lapse(240) / p.pols_lapse(239) == pytest.approx(8.0, abs=0.05)
-    assert p.claims(239, "LAPSE") == 0.0
-    assert p.claims(240, "LAPSE") == pytest.approx(281.9020, abs=WON4)
+    assert p.claims(239, Kind.LAPSE) == 0.0
+    assert p.claims(240, Kind.LAPSE) == pytest.approx(281.9020, abs=WON4)
     assert p.premiums(239) > 0.0 and p.premiums(240) == 0.0
     assert p.net_cf(239) == pytest.approx(2496.2682, abs=WON4)
     assert p.net_cf(240) == pytest.approx(-1284.5196, abs=WON4)
@@ -704,10 +705,10 @@ def test_the_notes_milestone_rows(kr_ltc_anchor, t):
     assert p.pols_act(t) == pytest.approx(pols_act, abs=WON4)
     assert p.pols_care(t) == pytest.approx(pols_care, abs=WON4)
     assert p.premiums(t) == pytest.approx(prem, abs=WON4)
-    assert p.claims(t, "LUMP") == pytest.approx(lump, abs=WON4)
-    assert p.claims(t, "ANNUITY") == pytest.approx(annuity, abs=WON4)
-    assert p.claims(t, "DEATH") == pytest.approx(death, abs=WON4)
-    assert p.claims(t, "LAPSE") == pytest.approx(lapse, abs=WON4)
+    assert p.claims(t, Kind.LUMP) == pytest.approx(lump, abs=WON4)
+    assert p.claims(t, Kind.ANNUITY) == pytest.approx(annuity, abs=WON4)
+    assert p.claims(t, Kind.DEATH) == pytest.approx(death, abs=WON4)
+    assert p.claims(t, Kind.LAPSE) == pytest.approx(lapse, abs=WON4)
     assert p.expenses(t) == pytest.approx(exp, abs=WON4)
     assert p.claim_expenses(t) == pytest.approx(claim_exp, abs=WON4)
     assert p.commissions(t) == pytest.approx(comm, abs=WON4)
@@ -725,10 +726,10 @@ def test_the_mortality_table_steps_at_the_gyeyak_haedangil(kr_ltc_anchor):
     on, would smooth these steps away.
     """
     p = kr_ltc_anchor
-    assert p.claims(299, "DEATH") == pytest.approx(487.5506, abs=WON4)
-    assert p.claims(300, "DEATH") == pytest.approx(534.0717, abs=WON4)
-    assert p.claims(479, "DEATH") == pytest.approx(1412.0604, abs=WON4)
-    assert p.claims(480, "DEATH") == pytest.approx(1546.9336, abs=WON4)
+    assert p.claims(299, Kind.DEATH) == pytest.approx(487.5506, abs=WON4)
+    assert p.claims(300, Kind.DEATH) == pytest.approx(534.0717, abs=WON4)
+    assert p.claims(479, Kind.DEATH) == pytest.approx(1412.0604, abs=WON4)
+    assert p.claims(480, Kind.DEATH) == pytest.approx(1546.9336, abs=WON4)
     assert p.age(299) == 64 and p.age(300) == 65
     assert p.mort_rate(299) == p.mort_rate_at_age(64)
     assert p.mort_rate(300) == p.mort_rate_at_age(65)
@@ -775,13 +776,13 @@ def test_policy_year_1_in_aggregate(kr_ltc_anchor):
         YEAR_1["pols_care"], abs=WON6)
     assert sum(p.premiums(t) for t in ts) == pytest.approx(
         YEAR_1["premiums"], abs=WON6)
-    assert sum(p.claims(t, "LUMP") for t in ts) == pytest.approx(
+    assert sum(p.claims(t, Kind.LUMP) for t in ts) == pytest.approx(
         YEAR_1["claims_lump"], abs=WON6)
-    assert sum(p.claims(t, "ANNUITY") for t in ts) == pytest.approx(
+    assert sum(p.claims(t, Kind.ANNUITY) for t in ts) == pytest.approx(
         YEAR_1["claims_annuity"], abs=WON6)
-    assert sum(p.claims(t, "DEATH") for t in ts) == pytest.approx(
+    assert sum(p.claims(t, Kind.DEATH) for t in ts) == pytest.approx(
         YEAR_1["claims_death"], abs=WON6)
-    assert sum(p.claims(t, "VOID") for t in ts) == pytest.approx(
+    assert sum(p.claims(t, Kind.VOID) for t in ts) == pytest.approx(
         YEAR_1["claims_void"], abs=WON6)
     assert sum(p.expenses(t) for t in ts) == pytest.approx(
         YEAR_1["expenses"], abs=WON6)
@@ -935,11 +936,11 @@ def test_what_the_numbers_say(kr_ltc_anchor):
     by row.
     """
     p = kr_ltc_anchor
-    year1_benefit = sum(p.claims(t, "LUMP") + p.claims(t, "ANNUITY") for t in range(12))
+    year1_benefit = sum(p.claims(t, Kind.LUMP) + p.claims(t, Kind.ANNUITY) for t in range(12))
     year1_premium = sum(p.premiums(t) for t in range(12))
     assert year1_benefit == pytest.approx(18.87, abs=5e-3)
     assert year1_benefit / year1_premium == pytest.approx(0.00029, abs=5e-6)
-    benefit = [p.claims(t, "LUMP") + p.claims(t, "ANNUITY") for t in range(p.proj_len())]
+    benefit = [p.claims(t, Kind.LUMP) + p.claims(t, Kind.ANNUITY) for t in range(p.proj_len())]
     total = sum(benefit)
     assert total == pytest.approx(814977.8329, abs=WON4)
     over_85 = sum(b for t, b in enumerate(benefit) if p.age(t) >= 85)
@@ -1002,13 +1003,13 @@ def test_the_processing_order_is_certification_then_mortality_then_lapse(kr_ltc_
     """
     p = kr_ltc_anchor
     for t in (0, 1, 3, 12, 240, 599):
-        assert p.pols_if_at(t, "BEF_DECR") == p.pols_if(t)
-        assert p.pols_if_at(t, "AFT_DECR") == p.pols_if(t + 1)
-        assert p.pols_if(t) - p.pols_if_at(t, "BEF_LAPSE") == pytest.approx(
+        assert p.pols_if_at(t, PolTiming.BEF_DECR) == p.pols_if(t)
+        assert p.pols_if_at(t, PolTiming.AFT_DECR) == p.pols_if(t + 1)
+        assert p.pols_if(t) - p.pols_if_at(t, PolTiming.BEF_LAPSE) == pytest.approx(
             p.pols_death(t) + p.pols_void(t), abs=1e-15)
-        assert p.pols_if_at(t, "BEF_LAPSE") - p.pols_if(t + 1) == pytest.approx(
+        assert p.pols_if_at(t, PolTiming.BEF_LAPSE) - p.pols_if(t + 1) == pytest.approx(
             p.pols_lapse(t), abs=1e-15)
-        assert p.pols_if(t) > p.pols_if_at(t, "BEF_LAPSE") > p.pols_if(t + 1)
+        assert p.pols_if(t) > p.pols_if_at(t, PolTiming.BEF_LAPSE) > p.pols_if(t + 1)
     # Certification is taken from the start-of-month counts, before any decrement.
     for t in (0, 60, 300):
         assert p.pols_entry_light(t) == pytest.approx(
@@ -1113,11 +1114,11 @@ def test_the_bojang_gaesiil_boundary_is_the_month_and_not_the_day_after(kr_ltc_a
             assert p.pols_entry_care(t) == 0.0 and p.pols_void(t) > 0.0
         else:
             assert p.pols_void(t) == 0.0 and p.pols_entry_care(t) > 0.0
-    assert p.claims(0, "VOID") > 0.0                 # one month's premium already paid
-    assert p.claims(1, "VOID") > 0.0 and p.claims(2, "VOID") > 0.0
-    assert p.claims(3, "VOID") == 0.0
+    assert p.claims(0, Kind.VOID) > 0.0                 # one month's premium already paid
+    assert p.claims(1, Kind.VOID) > 0.0 and p.claims(2, Kind.VOID) > 0.0
+    assert p.claims(3, Kind.VOID) == 0.0
     for t in (0, 1, 2):
-        assert p.claims(t, "VOID") == pytest.approx(
+        assert p.claims(t, Kind.VOID) == pytest.approx(
             p.cum_prem_pp(t + 1) * p.pols_void(t), rel=FULL)
 
 
@@ -1142,7 +1143,7 @@ def test_the_gamaek_gigan_is_a_step_and_it_is_frozen_at_certification(kr_ltc_anc
     assert p.ann_amount_at(11) == pytest.approx(p.ann_amount_at(3), rel=FULL)
     # and the lump sum takes the factor of the month it is paid in, which is the same month
     for t in (3, 11, 12, 120):
-        assert p.claims(t, "LUMP") == pytest.approx(
+        assert p.claims(t, Kind.LUMP) == pytest.approx(
             p.lump_amount() * p.red_factor(t) * p.pols_entry_care(t), rel=FULL)
 
 
@@ -1163,28 +1164,28 @@ def test_the_annuity_ledger_is_a_cohort_sum_with_a_guarantee_and_a_cap(kr_ltc_an
         built_pay = 0.0
         for u in range(0, min(t, n_a - 1) + 1):
             s = t - u
-            weight = 1.0 if u < g_a else p.care_surv(s, s + 12 * (u // 12))
+            weight = 1.0 if u < g_a else p.care_surv(s + 12 * (u // 12), u // 12)
             built_count += p.pols_entry_care(s) * weight
             built_pay += p.ann_amount_at(s) * p.pols_entry_care(s) * weight
         assert p.ann_count(t) == pytest.approx(built_count, rel=FULL), t
         assert p.ann_pay(t) == pytest.approx(built_pay, rel=FULL), t
-        assert p.claims(t, "ANNUITY") == pytest.approx(p.ann_pay(t), rel=FULL)
+        assert p.claims(t, Kind.ANNUITY) == pytest.approx(p.ann_pay(t), rel=FULL)
     # Inside the guarantee every weight is exactly 1; the first release is at u = 12.
     for u in range(0, g_a):
         assert (1.0 if u < g_a else 0.0) == 1.0
-    assert p.care_surv(3, 3 + 12) < 1.0
+    assert p.care_surv(3 + 12, 1) < 1.0
     # The cap and the maturity truncation bind jointly.
     assert p.ann_count(p.proj_len() - 1) == 0.0
     assert p.ann_pay(p.proj_len() - 1) == 0.0
     assert p.ann_count(500) == pytest.approx(
         sum(p.pols_entry_care(500 - u)
-            * (1.0 if u < g_a else p.care_surv(500 - u, 500 - u + 12 * (u // 12)))
+            * (1.0 if u < g_a else p.care_surv(500 - u + 12 * (u // 12), u // 12))
             for u in range(0, n_a)), rel=FULL)
     assert p.pols_entry_care(500 - n_a) > 0.0        # a cohort just outside the window
     # The annual proof-of-life test falls on the anniversary of the 진단확정일, not monthly.
     assert p.ann_tests(14) == 0.0
     assert p.ann_tests(15) == pytest.approx(
-        p.pols_entry_care(3) * p.care_surv(3, 15), rel=FULL)
+        p.pols_entry_care(3) * p.care_surv(15, 1), rel=FULL)
 
 
 def test_the_account_and_the_surrender_value_have_two_branches_that_meet(kr_ltc_anchor):
@@ -1229,19 +1230,19 @@ def test_the_three_surrender_value_forms_differ_in_which_side_they_attach_to(
     form is a model point field and not a switch on a ratio.
     """
     p1 = long_term_care.Projection[1]
-    assert p1.cv_form() == "mijigeup"
+    assert p1.cv_form() == CvForm.mijigeup
     assert p1.cv_pp(239) == 0.0
     assert p1.cv_pp(240) == pytest.approx(0.5 * p1.av_pp(240), rel=FULL)
 
     p6 = long_term_care.Projection[6]
-    assert p6.cv_form() == "half_during"
+    assert p6.cv_form() == CvForm.half_during
     n6 = p6.prem_period_mths()
     assert p6.cv_pp(n6 - 1) == pytest.approx(0.5 * p6.av_pp(n6 - 1), rel=FULL)
     assert p6.cv_pp(n6) == pytest.approx(p6.av_pp(n6), rel=FULL)
     assert p6.cv_pp(n6 - 1) > 0.0                    # not nil during, unlike 미지급형
 
     p7 = long_term_care.Projection[7]
-    assert p7.cv_form() == "pyojun"
+    assert p7.cv_form() == CvForm.pyojun
     n_chg = 12 * min(p7.surr_chg_years, p7.prem_period_years())
     assert n_chg == 84                               # the seven-year 해약공제기간 cap
     assert p7.surr_chg_pp(0) == pytest.approx(
@@ -1262,9 +1263,9 @@ def test_claims_re_add_to_the_seven_published_kinds(kr_ltc_anchor):
     and its no-kind branch has to be the sum of the parts the statement publishes.
     """
     p = kr_ltc_anchor
-    kinds = ("LUMP", "ANNUITY", "DEMENTIA", "DEATH", "LAPSE", "VOID", "MATURITY")
+    kinds = (Kind.LUMP, Kind.ANNUITY, Kind.DEMENTIA, Kind.DEATH, Kind.LAPSE, Kind.VOID, Kind.MATURITY)
     for t in (0, 1, 3, 12, 240, 540, 600):
-        assert p.claims(t) == pytest.approx(
+        assert p.claims(t, Kind.ALL) == pytest.approx(
             sum(p.claims(t, kind) for kind in kinds), rel=FULL)
     assert "claims" not in p.result_cf().columns
     with pytest.raises(FormulaError):
@@ -1289,7 +1290,7 @@ def test_four_columns_are_zero_on_purpose(kr_ltc_anchor, long_term_care):
     assert df["claims_lapse"].iloc[240] > 0.0
     assert df["claims_void"].sum() > 0.0
     assert df["claims_void"].sum() == pytest.approx(0.0073, abs=WON4)
-    assert p.pols_maturity(600) > 0.0 and p.claims(600, "MATURITY") == 0.0
+    assert p.pols_maturity(600) > 0.0 and p.claims(600, Kind.MATURITY) == 0.0
     riderless = [pid for pid in long_term_care.Data.model_point_table().index
                  if not long_term_care.Projection[pid].dementia_rider()]
     assert len(riderless) == 7
@@ -1421,18 +1422,18 @@ def test_pitfall_p_c_prime_needs_the_full_product_rule(kr_ltc_anchor):
     """
     p = kr_ltc_anchor
     for x, ratio in ((65, 1.82), (75, 1.19)):
-        naive = p.share_ge_at("g2", x) * p.prev_slope_at(x)
+        naive = p.share_ge_at(Grade.g2, x) * p.prev_slope_at(x)
         assert naive / p.prev_care_slope_at(x) == pytest.approx(ratio, abs=0.005), x
     assert p.prev_care_slope_at(65) == pytest.approx(
-        p.share_slope_at("g2", 65) * p.prev_rate_at(65)
-        + p.share_ge_at("g2", 65) * p.prev_slope_at(65), rel=FULL)
-    assert p.share_slope_at("g2", 65) < 0.0
-    assert p.share_slope_at("g2", 75) < 0.0
-    assert p.share_ge_at("g2", 72) == pytest.approx(0.1270, abs=5e-5)
-    assert p.share_ge_at("g2", 82) == pytest.approx(0.1110, abs=5e-5)
-    assert p.claims(239, "LUMP") == pytest.approx(139.1227, abs=WON4)
-    assert p.claims(240, "LUMP") == pytest.approx(101.8715, abs=WON4)
-    assert p.claims(240, "LUMP") < p.claims(239, "LUMP")
+        p.share_slope_at(Grade.g2, 65) * p.prev_rate_at(65)
+        + p.share_ge_at(Grade.g2, 65) * p.prev_slope_at(65), rel=FULL)
+    assert p.share_slope_at(Grade.g2, 65) < 0.0
+    assert p.share_slope_at(Grade.g2, 75) < 0.0
+    assert p.share_ge_at(Grade.g2, 72) == pytest.approx(0.1270, abs=5e-5)
+    assert p.share_ge_at(Grade.g2, 82) == pytest.approx(0.1110, abs=5e-5)
+    assert p.claims(239, Kind.LUMP) == pytest.approx(139.1227, abs=WON4)
+    assert p.claims(240, Kind.LUMP) == pytest.approx(101.8715, abs=WON4)
+    assert p.claims(240, Kind.LUMP) < p.claims(239, Kind.LUMP)
     assert p.prev_rate_at(60) < p.prev_rate_at(70)   # while the all-grade rate rises
 
 
@@ -1453,13 +1454,13 @@ def test_pitfall_the_gamaek_is_frozen_and_must_not_be_re_tested(long_term_care):
         # the cash-flow months, t = 0 ... proj_len() - 2; the last row is the maturity
         # month and pays nothing, so the counterfactual must not reach it either
         n = p.proj_len() - 1
-        correct = sum(p.claims(t, "ANNUITY") for t in range(n))
+        correct = sum(p.claims(t, Kind.ANNUITY) for t in range(n))
         re_tested = 0.0
         for t in range(n):
             for u in range(0, min(t, p.annuity_max_mths() - 1) + 1):
                 s = t - u
                 weight = (1.0 if u < p.annuity_guar_mths()
-                          else p.care_surv(s, s + 12 * (u // 12)))
+                          else p.care_surv(s + 12 * (u // 12), u // 12))
                 amount = p.ann_amount_at(s) / p.red_factor(s) * p.red_factor(t)
                 re_tested += amount * p.pols_entry_care(s) * weight
         assert re_tested - correct == pytest.approx(excess, abs=5e-3), point_id
@@ -1479,10 +1480,10 @@ def test_pitfall_the_annuitys_first_instalment_falls_in_the_month_of_certificati
     p = kr_ltc_anchor
     assert p.pols_entry_care(3) > 0.0
     assert p.ann_count(3) == pytest.approx(p.pols_entry_care(3), rel=FULL)
-    assert p.claims(3, "ANNUITY") == pytest.approx(
+    assert p.claims(3, Kind.ANNUITY) == pytest.approx(
         p.ann_amount_at(3) * p.pols_entry_care(3), rel=FULL)
-    assert p.claims(3, "ANNUITY") > 0.0              # the same month as the lump sum
-    assert p.claims(3, "LUMP") > 0.0
+    assert p.claims(3, Kind.ANNUITY) > 0.0              # the same month as the lump sum
+    assert p.claims(3, Kind.LUMP) > 0.0
     # Monthly instalments against an annual test: every month inside the window is paid.
     for t in range(4, 15):
         assert p.ann_count(t) > p.ann_count(t - 1)
@@ -1497,9 +1498,9 @@ def test_pitfall_the_annuitys_first_instalment_falls_in_the_month_of_certificati
             if s < 0:
                 continue
             weight = (1.0 if u < g_a
-                      else p.care_surv(s + 12, s + 12 + 12 * (u // 12)))
+                      else p.care_surv(s + 12 + 12 * (u // 12), u // 12))
             deferred += p.ann_amount_at(s) * p.pols_entry_care(s) * weight
-    correct = sum(p.claims(t, "ANNUITY") for t in range(n))
+    correct = sum(p.claims(t, Kind.ANNUITY) for t in range(n))
     assert 1.0 - deferred / correct == pytest.approx(0.104, abs=0.002)
 
 
@@ -1538,13 +1539,13 @@ def test_pitfall_care_state_survival_is_a_partial_product(kr_ltc_anchor, long_te
     model point, which is precisely why it would be found late.
     """
     p = kr_ltc_anchor
-    for s, t in ((0, 0), (3, 15), (100, 220), (400, 500)):
+    for s, t in ((0, 0), (3, 15), (100, 220), (400, 496)):  # anniversary spans: care_surv is keyed (t, j)
         expected = 1.0
         for u in range(s, t):
             expected *= 1.0 - p.mort_rate_care_mth(u)
-        assert p.care_surv(s, t) == pytest.approx(expected, rel=FULL), (s, t)
-    assert p.care_surv(50, 50) == 1.0
-    assert p.care_surv(50, 40) == 1.0                # t <= s is unit, not an error
+        assert p.care_surv(t, (t - s) // 12) == pytest.approx(expected, rel=FULL), (s, t)
+    assert p.care_surv(50, 0) == 1.0
+    assert p.care_surv(40, -1) == 1.0                # t <= s is unit, not an error
     # Where the cap binds, and that a cumulative product from issue is already nil there.
     assert 3.0 * p.mort_rate_at_age(107) < 1.0
     assert 3.0 * p.mort_rate_at_age(108) >= 1.0
@@ -1634,10 +1635,10 @@ def test_pitfall_a_certification_inside_the_window_is_a_decrement_not_a_deferred
     the window having closed.
     """
     p = kr_ltc_anchor
-    assert p.pols_void(0) > 0.0 and p.claims(0, "VOID") > 0.0
-    assert p.claims(0, "VOID") == pytest.approx(
+    assert p.pols_void(0) > 0.0 and p.claims(0, Kind.VOID) > 0.0
+    assert p.claims(0, Kind.VOID) == pytest.approx(
         p.premium_mth_pp() * p.pols_void(0), rel=FULL)
-    assert p.pols_void(3) == 0.0 and p.claims(3, "VOID") == 0.0
+    assert p.pols_void(3) == 0.0 and p.claims(3, Kind.VOID) == 0.0
     assert p.pols_entry_care(3) > 0.0
     # The voided lives are a decrement: they are in the roll-forward and not in pols_care.
     assert p.pols_care_mid(1) == pytest.approx(
@@ -1648,7 +1649,7 @@ def test_pitfall_a_certification_inside_the_window_is_a_decrement_not_a_deferred
         assert p.check_pols_roll_fwd_resid(t) == pytest.approx(0.0, abs=1e-12)
     assert sum(p.pols_void(t) for t in range(p.proj_len())) == pytest.approx(
         0.000000626279, abs=COUNT)
-    assert sum(p.claims(t, "VOID") for t in range(p.proj_len())) == pytest.approx(
+    assert sum(p.claims(t, Kind.VOID) for t in range(p.proj_len())) == pytest.approx(
         0.0073, abs=WON4)
 
 
@@ -1688,15 +1689,15 @@ def test_pitfall_claims_death_is_the_gyeyakja_jeongnipaek_not_a_death_benefit(
     """
     p = kr_ltc_anchor
     ts = range(p.proj_len())
-    total_death = sum(p.claims(t, "DEATH") for t in ts)
+    total_death = sum(p.claims(t, Kind.DEATH) for t in ts)
     total_prem = sum(p.premiums(t) for t in ts)
     assert total_death == pytest.approx(326783.9323, abs=WON4)
     assert total_death / total_prem == pytest.approx(0.336, abs=5e-4)
-    assert total_death > sum(p.claims(t, "LUMP") for t in ts)
+    assert total_death > sum(p.claims(t, Kind.LUMP) for t in ts)
     for t in (1, 120, 300, 540):
-        assert p.claims(t, "DEATH") == pytest.approx(
+        assert p.claims(t, Kind.DEATH) == pytest.approx(
             p.av_pp(t) * p.pols_death_act(t), rel=FULL)
-        assert p.claims(t, "DEATH") != pytest.approx(
+        assert p.claims(t, Kind.DEATH) != pytest.approx(
             p.lump_amount() * p.pols_death_act(t), rel=1e-3)
     # Deaths in the care state pay nothing, and there are 0.0166 of them.
     assert sum(p.pols_death_care(t) for t in ts) == pytest.approx(
@@ -1786,7 +1787,7 @@ def test_pitfall_widening_the_threshold_is_not_a_re_scaling(tmp_path):
     wide = variant_model(tmp_path, "LTC_KR_S_g5", benefit_grade="g5")
     try:
         q = wide.Projection[1]
-        assert q.benefit_grade() == "g5"
+        assert q.benefit_grade() == Grade.g5
         totals = lifetime(q)
         assert totals["benefit"] == pytest.approx(1978328.4751, abs=WON4)
         assert totals["benefit"] / base_benefit == pytest.approx(2.43, abs=0.005)
@@ -1797,7 +1798,7 @@ def test_pitfall_widening_the_threshold_is_not_a_re_scaling(tmp_path):
     narrow = variant_model(tmp_path, "LTC_KR_S_g1", benefit_grade="g1")
     try:
         q = narrow.Projection[1]
-        assert q.benefit_grade() == "g1"
+        assert q.benefit_grade() == Grade.g1
         assert pv_benefit_over_premium(q) == pytest.approx(0.1997, abs=5e-5)
         assert lifetime(q)["benefit"] < base_benefit
     finally:
@@ -1817,7 +1818,7 @@ def test_pitfall_the_two_modules_run_in_opposite_sex_directions(long_term_care):
     """
     male = long_term_care.Projection[1]
     female = long_term_care.Projection[2]
-    assert male.sex() == "M" and female.sex() == "F"
+    assert male.sex() == Sex.M and female.sex() == Sex.F
     assert female.premium_mth_pp() / male.premium_mth_pp() == 1.5
     # the certification prevalence crosses over at about 70
     assert female.prev_rate_at(65) < male.prev_rate_at(65)
@@ -1830,8 +1831,8 @@ def test_pitfall_the_two_modules_run_in_opposite_sex_directions(long_term_care):
     assert first_entry_rate(female, 60) < first_entry_rate(male, 60)
     assert first_entry_rate(female, 70) > first_entry_rate(male, 70)
     # the dementia sex factor is flat in age, so the ratio never moves
-    assert male.dem_param("dem_factor_m") == 0.9568
-    assert female.dem_param("dem_factor_f") == 1.0346
+    assert male.dem_param(DemParam.dem_factor_m) == 0.9568
+    assert female.dem_param(DemParam.dem_factor_f) == 1.0346
     ratios = [female.dem_prev_at(x) / male.dem_prev_at(x) for x in (40, 65, 75, 85)]
     assert ratios == [pytest.approx(1.0346 / 0.9568, rel=FULL)] * 4
     assert all(r > 1.0 for r in ratios)              # dearer, where the market is cheaper
@@ -1855,11 +1856,11 @@ def test_pitfall_the_care_state_is_absorbing_because_the_contract_makes_it_so(
             (p.pols_care(t) + p.pols_entry_care(t))
             * (1.0 - p.mort_rate_care_mth(t)), rel=FULL)
     # the annuity is metered on survival, and the survival is the care state's own
-    assert p.care_surv(300, 312) == pytest.approx(
+    assert p.care_surv(312, 1) == pytest.approx(
         (1.0 - p.mort_rate_care_mth(300)) ** 12, rel=1e-9)
     # the lump sum is once only: it rides on first entries, never on the stock
     for t in (120, 300, 540):
-        assert p.claims(t, "LUMP") == pytest.approx(
+        assert p.claims(t, Kind.LUMP) == pytest.approx(
             p.lump_amount() * p.red_factor(t) * p.pols_entry_care(t), rel=FULL)
         assert p.pols_care(t) > p.pols_entry_care(t)
     # and there is no cells anywhere in this model that moves a life out of the care state
@@ -2097,10 +2098,10 @@ def test_the_std_table_parameters_are_the_notes_own(long_term_care):
     계약자적립액 anchors are the published 환급률 progression doubled.
     """
     p = long_term_care.Projection[1]
-    assert p.lapse_param("lapse_year1") == 0.08
-    assert p.lapse_param("lapse_completion") == 0.001
-    assert p.lapse_param("lapse_ultimate") == 0.008
-    assert p.lapse_param("lapse_level_std") == 0.04
+    assert p.lapse_param(LapseParam.lapse_year1) == 0.08
+    assert p.lapse_param(LapseParam.lapse_completion) == 0.001
+    assert p.lapse_param(LapseParam.lapse_ultimate) == 0.008
+    assert p.lapse_param(LapseParam.lapse_level_std) == 0.04
     # the log-linear path: geometric in policy year from year 1 to 납입완료, then ultimate
     n = p.prem_period_years()
     for year in (1, 5, 10, 20):
@@ -2109,9 +2110,9 @@ def test_the_std_table_parameters_are_the_notes_own(long_term_care):
             0.08 * (0.001 / 0.08) ** ((year - 1) / (n - 1)), rel=FULL), year
     assert p.lapse_rate(12 * (n - 1)) == pytest.approx(0.001, rel=FULL)
     assert p.lapse_rate(12 * n) == 0.008
-    assert p.dem_param("dem_ceil") == 0.8298
-    assert p.dem_param("dem_beta") == 0.08706045
-    assert p.dem_param("dem_x_mid") == 100.12641335
+    assert p.dem_param(DemParam.dem_ceil) == 0.8298
+    assert p.dem_param(DemParam.dem_beta) == 0.08706045
+    assert p.dem_param(DemParam.dem_x_mid) == 100.12641335
     assert p.av_ratio_at(0.0) == 0.974
 
 
@@ -2128,8 +2129,8 @@ def test_the_disclosed_incidence_table_carries_the_sex_ratio_the_notes_read_off_
     """
     table = long_term_care.Data.incidence_table()
     for age, ratio in ((40, 0.357), (50, 0.575), (60, 0.882)):
-        male = float(table.loc[("M", age), "rate_g1"])
-        female = float(table.loc[("F", age), "rate_g1"])
+        male = float(table.loc[(Sex.M, age), "rate_g1"])
+        female = float(table.loc[(Sex.F, age), "rate_g1"])
         assert female / male == pytest.approx(ratio, abs=5e-4), age
     male_p = long_term_care.Projection[1]
     female_p = long_term_care.Projection[2]
@@ -2208,7 +2209,7 @@ def test_sensitivity_lapse_is_the_dominant_lever_and_its_sign_is_the_opposite_on
     model = variant_model(tmp_path, "LTC_KR_S_lapsestd", lapse_form="pyojun")
     try:
         q = model.Projection[1]
-        assert q.lapse_form() == "pyojun"
+        assert q.lapse_form() == LapseForm.pyojun
         assert q.lapse_rate(0) == 0.04 and q.lapse_rate(300) == 0.04
         totals = lifetime(q)
         assert totals["benefit"] == pytest.approx(317015.5544, abs=WON4)
@@ -2259,9 +2260,9 @@ def test_sensitivity_the_grade_share_moves_the_split_and_re_times_it(tmp_path):
                           flatten)
     try:
         q = model.Projection[1]
-        assert q.share_ge_at("g2", 40) == 0.1328
-        assert q.share_ge_at("g2", 85) == 0.1328
-        assert q.share_slope_at("g2", 70) == 0.0
+        assert q.share_ge_at(Grade.g2, 40) == 0.1328
+        assert q.share_ge_at(Grade.g2, 85) == 0.1328
+        assert q.share_slope_at(Grade.g2, 70) == 0.0
         totals = lifetime(q)
         assert totals["benefit"] / 814977.8329 - 1.0 == pytest.approx(0.008, abs=0.001)
         assert totals["claims_lump"] / 268065.6927 - 1.0 == pytest.approx(
@@ -2273,9 +2274,9 @@ def test_sensitivity_the_grade_share_moves_the_split_and_re_times_it(tmp_path):
     anchor = mx.read_model(MODEL_DIR, name="LTC_KR_S_share")
     try:
         p = anchor.Projection[1]
-        assert p.share_ge_at("g2", 60) == pytest.approx(0.222, abs=5e-4)
-        assert p.share_ge_at("g2", 82) == pytest.approx(0.111, abs=5e-4)
-        assert p.share_ge_at("g2", 60) / p.share_ge_at("g2", 82) == pytest.approx(
+        assert p.share_ge_at(Grade.g2, 60) == pytest.approx(0.222, abs=5e-4)
+        assert p.share_ge_at(Grade.g2, 82) == pytest.approx(0.111, abs=5e-4)
+        assert p.share_ge_at(Grade.g2, 60) / p.share_ge_at(Grade.g2, 82) == pytest.approx(
             2.0, abs=0.02)
     finally:
         anchor.close()
@@ -2317,12 +2318,12 @@ def test_the_ganbyeong_yeongeum_is_on_at_the_anchor_and_off_at_point_4(long_term
     p1 = long_term_care.Projection[1]
     p4 = long_term_care.Projection[4]
     assert p1.annuity_on() is True and p4.annuity_on() is False
-    assert p4.term_age() == 95 and p4.benefit_grade() == "g5"
+    assert p4.term_age() == 95 and p4.benefit_grade() == Grade.g5
     for t in (0, 12, 200, 400):
         assert p4.ann_count(t) == 0.0
         assert p4.ann_pay(t) == 0.0
         assert p4.ann_tests(t) == 0.0
-        assert p4.claims(t, "ANNUITY") == 0.0
+        assert p4.claims(t, Kind.ANNUITY) == 0.0
     assert p4.ann_amount_at(100) == 0.0
     assert (p4.result_cf()["claims_annuity"] == 0.0).all()
     assert p4.check_ann_ledger() is True
@@ -2348,7 +2349,7 @@ def test_the_dementia_rider_is_off_at_the_anchor_and_on_at_points_5_and_8(
         assert p1.dem_inc_rate_mth(t) == 0.0
         assert p1.pols_entry_dem(t) == 0.0
         assert p1.pols_dem(t) == 0.0
-        assert p1.claims(t, "DEMENTIA") == 0.0
+        assert p1.claims(t, Kind.DEMENTIA) == 0.0
 
     for point_id in (5, 8):
         q = long_term_care.Projection[point_id]
@@ -2360,9 +2361,9 @@ def test_the_dementia_rider_is_off_at_the_anchor_and_on_at_points_5_and_8(
             assert q.pols_entry_dem(t) == 0.0
         assert q.dem_inc_rate_mth(15) > 0.0
         assert q.pols_entry_dem(15) > 0.0
-        assert q.claims(15, "DEMENTIA") == pytest.approx(
+        assert q.claims(15, Kind.DEMENTIA) == pytest.approx(
             q.dementia_amount() * q.pols_entry_dem(15), rel=FULL)
-        assert sum(q.claims(t, "DEMENTIA") for t in range(q.proj_len())) > 0.0
+        assert sum(q.claims(t, Kind.DEMENTIA) for t in range(q.proj_len())) > 0.0
         # the first-event counter never outgrows the block it rides on
         for t in (16, 200, q.proj_len() - 1):
             assert 0.0 <= q.pols_dem(t) <= q.pols_if(t) + 1e-12
@@ -2380,7 +2381,7 @@ def test_the_g6_gate_leaves_no_light_state_at_all(long_term_care):
     cell never reaches.
     """
     p5 = long_term_care.Projection[5]
-    assert p5.benefit_grade() == "g6"
+    assert p5.benefit_grade() == Grade.g6
     for x in (65, 75, 85):
         assert p5.prev_light_at(x) == pytest.approx(0.0, abs=1e-15)
         assert p5.prog_rate_at(x) == 0.0
@@ -2432,10 +2433,10 @@ def test_the_ganpyeon_simsa_loading_is_a_premium_multiplier_only(long_term_care,
         for t in (0, 120, 300):
             assert plain.pols_entry_care(t) == pytest.approx(
                 p8.pols_entry_care(t), rel=FULL), t
-            assert plain.claims(t, "LUMP") == pytest.approx(
-                p8.claims(t, "LUMP"), rel=FULL), t
-            assert plain.claims(t, "ANNUITY") == pytest.approx(
-                p8.claims(t, "ANNUITY"), rel=FULL), t
+            assert plain.claims(t, Kind.LUMP) == pytest.approx(
+                p8.claims(t, Kind.LUMP), rel=FULL), t
+            assert plain.claims(t, Kind.ANNUITY) == pytest.approx(
+                p8.claims(t, Kind.ANNUITY), rel=FULL), t
         # only the premium-driven lines move, and they move by exactly the loading
         assert p8.premiums(120) == pytest.approx(1.4 * plain.premiums(120), rel=FULL)
         assert p8.av_pp(120) == pytest.approx(1.4 * plain.av_pp(120), rel=FULL)
@@ -2481,7 +2482,7 @@ def test_the_annuity_cap_of_point_7_is_sixty_months(long_term_care):
     t = 200
     assert p7.ann_count(t) == pytest.approx(
         sum(p7.pols_entry_care(t - u)
-            * (1.0 if u < 12 else p7.care_surv(t - u, t - u + 12 * (u // 12)))
+            * (1.0 if u < 12 else p7.care_surv(t - u + 12 * (u // 12), u // 12))
             for u in range(0, 60)), rel=FULL)
     assert p7.pols_entry_care(t - 60) > 0.0          # a cohort just outside the window
     assert p7.check_ann_ledger() is True

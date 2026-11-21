@@ -205,8 +205,9 @@ def mort_table():
     see the Space docstring for what it is, what it is not, and what a replacement must
     preserve.  Sex selects the best-estimate row only and is never a rating factor.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_file, index_col=["sex", "age"])           # noqa: F821
+    frame = pd.read_csv(input_dir() / mort_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"])
 
 
 def lapse_table():
@@ -231,8 +232,9 @@ def freq_load_table():
     premium **collected** and does not enter the *Beitragssumme*, so it changes neither
     the acquisition charge nor the *Mindesttodesfallschutz* floor.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / freq_load_file, index_col="prem_freq")         # noqa: F821
+    frame = pd.read_csv(input_dir() / freq_load_file)                # noqa: F821
+    frame["prem_freq"] = [PremFreq[name] for name in frame["prem_freq"]]
+    return frame.set_index("prem_freq")
 
 
 # ---------------------------------------------------------------------------
@@ -255,3 +257,7 @@ lapse_file = "lapse_table.csv"
 freq_load_file = "freq_load_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+PremFreq = ("Pickle", 2)

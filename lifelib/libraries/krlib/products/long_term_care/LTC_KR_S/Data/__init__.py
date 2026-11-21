@@ -123,9 +123,9 @@ def mort_table():
     is no best-estimate adjustment factor, because the anchor is an experience statistic and
     not a valuation margin.  The largest age present is 120, where ``mort_rate`` is 1.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file,                               # noqa: F821
-        index_col=["sex", "age"])
+    frame = pd.read_csv(input_dir() / mort_table_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"])
 
 
 def prevalence_table():
@@ -136,8 +136,10 @@ def prevalence_table():
     logistic **[std]** fitted through them, ``prev_ceil``, ``prev_beta`` and ``prev_x_mid``.
     The anchors are carried for provenance; the model reads the three fitted parameters.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / prevalence_file, index_col=["sex", "param"])   # noqa: F821
+    frame = pd.read_csv(input_dir() / prevalence_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    frame["param"] = [PrevParam[name] for name in frame["param"]]
+    return frame.set_index(["sex", "param"])
 
 
 def grade_share_table():
@@ -151,8 +153,9 @@ def grade_share_table():
     at 85 and over.  The grade keys are ASCII codes for the six-point statutory scale and
     the model point column ``benefit_grade`` holds one of them.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / grade_share_file, index_col=["grade", "age"])  # noqa: F821
+    frame = pd.read_csv(input_dir() / grade_share_file)                     # noqa: F821
+    frame["grade"] = [Grade[name] for name in frame["grade"]]
+    return frame.set_index(["grade", "age"])
 
 
 def incidence_table():
@@ -165,8 +168,9 @@ def incidence_table():
     is the sub-65 age gradient and the sex ratio, and the ratio of the two is published by
     :func:`~.LTC_KR_S.Projection.disclosed_inc_ratio_at` as the calibration finding.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / incidence_file, index_col=["sex", "age"])      # noqa: F821
+    frame = pd.read_csv(input_dir() / incidence_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"])
 
 
 def dementia_table():
@@ -177,8 +181,9 @@ def dementia_table():
     when ``dementia_rider`` is on, but read once per model regardless, as every table here
     is.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / dementia_file, index_col="param")              # noqa: F821
+    frame = pd.read_csv(input_dir() / dementia_file)                     # noqa: F821
+    frame["param"] = [DemParam[name] for name in frame["param"]]
+    return frame.set_index("param")
 
 
 def lapse_table():
@@ -190,8 +195,9 @@ def lapse_table():
     durational *shape* between the first year and 납입완료 is the guidance's own log-linear
     principle model and is applied in :func:`~.LTC_KR_S.Projection.lapse_rate`.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / lapse_table_file, index_col="param")           # noqa: F821
+    frame = pd.read_csv(input_dir() / lapse_table_file)                     # noqa: F821
+    frame["param"] = [LapseParam[name] for name in frame["param"]]
+    return frame.set_index("param")
 
 
 def av_table():
@@ -228,3 +234,13 @@ lapse_table_file = "lapse_table.csv"
 av_table_file = "av_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+Grade = ("Pickle", 2)
+
+PrevParam = ("Pickle", 3)
+
+DemParam = ("Pickle", 4)
+
+LapseParam = ("Pickle", 5)

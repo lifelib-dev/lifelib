@@ -44,6 +44,7 @@ import pytest
 from modelx.core.errors import FormulaError
 
 from uk_registry import MODELS, LIB
+from lifelib.libraries.uklib.products.with_profits.enums import AsTiming, Chassis, ClaimKind, Kind, PolTiming, TaxBasis
 
 PENNY = 0.01          # the notes display money to 2 d.p. and truncate, not round
 
@@ -129,17 +130,17 @@ def test_worked_example_asset_share_steps(with_profits, key):
     p = with_profits.Projection[1 if key == "up" else 2]
     e = WORKED_EXAMPLE[key]
     months = range(T0, T + 1)
-    assert p.asset_share_at(T0, "BEF_PREM") == pytest.approx(AS_OPEN, abs=PENNY)
-    assert p.asset_share_at(T0, "BEF_RETURN") == pytest.approx(AS_OPEN, abs=PENNY)
-    amc = sum(p.asset_share_at(t, "AFT_RETURN") * p.amc_rate_mth() for t in months)
+    assert p.asset_share_at(T0, AsTiming.BEF_PREM) == pytest.approx(AS_OPEN, abs=PENNY)
+    assert p.asset_share_at(T0, AsTiming.BEF_RETURN) == pytest.approx(AS_OPEN, abs=PENNY)
+    amc = sum(p.asset_share_at(t, AsTiming.AFT_RETURN) * p.amc_rate_mth() for t in months)
     assert amc == pytest.approx(e["amc_year"], abs=PENNY)
     assert sum(p.guar_charge_pp(t) for t in months) == pytest.approx(
         e["guar_charge_year"], abs=PENNY)
     assert sum(p.mort_charge_pp(t) for t in months) == pytest.approx(
         e["mort_charge_year"], abs=PENNY)
-    assert p.asset_share_at(T, "AFT_CHARGE") == pytest.approx(e["aft_charge"], abs=PENNY)
-    assert p.asset_share_at(T, "AFT_ST") == pytest.approx(e["aft_st"], abs=PENNY)
-    assert p.asset_share_at(T, "AFT_MC") == pytest.approx(e["asset_share"], abs=PENNY)
+    assert p.asset_share_at(T, AsTiming.AFT_CHARGE) == pytest.approx(e["aft_charge"], abs=PENNY)
+    assert p.asset_share_at(T, AsTiming.AFT_ST) == pytest.approx(e["aft_st"], abs=PENNY)
+    assert p.asset_share_at(T, AsTiming.AFT_MC) == pytest.approx(e["asset_share"], abs=PENNY)
     assert p.asset_share(T) == pytest.approx(e["asset_share"], abs=PENNY)
 
 
@@ -229,12 +230,12 @@ def test_worked_example_payouts(with_profits, key):
     """All three payout bases: guarantee-date, surrender and death."""
     p = with_profits.Projection[1 if key == "up" else 2]
     e = WORKED_EXAMPLE[key]
-    assert p.claim_pp(T, "GUARANTEE") == pytest.approx(e["pay_guarantee"], abs=PENNY)
-    assert p.claim_pp(T, "SURRENDER") == pytest.approx(e["pay_surrender"], abs=PENNY)
-    assert p.claim_pp(T, "DEATH") == pytest.approx(e["pay_death"], abs=PENNY)
-    assert p.claim_pp(T, "DEATH") == pytest.approx(
-        1.01 * p.claim_pp(T, "GUARANTEE"), abs=PENNY)
-    assert p.claim_pp(T, "MATURITY") == 0.0          # the bond is whole of life
+    assert p.claim_pp(T, ClaimKind.GUARANTEE) == pytest.approx(e["pay_guarantee"], abs=PENNY)
+    assert p.claim_pp(T, ClaimKind.SURRENDER) == pytest.approx(e["pay_surrender"], abs=PENNY)
+    assert p.claim_pp(T, ClaimKind.DEATH) == pytest.approx(e["pay_death"], abs=PENNY)
+    assert p.claim_pp(T, ClaimKind.DEATH) == pytest.approx(
+        1.01 * p.claim_pp(T, ClaimKind.GUARANTEE), abs=PENNY)
+    assert p.claim_pp(T, ClaimKind.MATURITY) == 0.0          # the bond is whole of life
 
 
 @pytest.mark.parametrize("key", sorted(WORKED_EXAMPLE))
@@ -242,9 +243,9 @@ def test_worked_example_smoothing_costs(with_profits, key):
     """Payout less asset share, the excess the estate absorbs on an exit."""
     p = with_profits.Projection[1 if key == "up" else 2]
     e = WORKED_EXAMPLE[key]
-    assert p.smoothing_cost_pp(T, "GUARANTEE") == pytest.approx(
+    assert p.smoothing_cost_pp(T, ClaimKind.GUARANTEE) == pytest.approx(
         e["cost_guarantee"], abs=PENNY)
-    assert p.smoothing_cost_pp(T, "SURRENDER") == pytest.approx(
+    assert p.smoothing_cost_pp(T, ClaimKind.SURRENDER) == pytest.approx(
         e["cost_surrender"], abs=PENNY)
 
 
@@ -259,8 +260,8 @@ def test_worked_example_the_down_scenario_is_the_one_to_read(uk_wp_down):
     """
     p = uk_wp_down
     assert p.asset_share(T) / AS_OPEN == pytest.approx(0.8395, abs=5e-5)
-    assert p.claim_pp(T, "SURRENDER") / S_OPEN == pytest.approx(0.9101, abs=5e-5)
-    assert p.claim_pp(T, "SURRENDER") / p.asset_share(T) == pytest.approx(
+    assert p.claim_pp(T, ClaimKind.SURRENDER) / S_OPEN == pytest.approx(0.9101, abs=5e-5)
+    assert p.claim_pp(T, ClaimKind.SURRENDER) / p.asset_share(T) == pytest.approx(
         1.066, abs=5e-4)
     assert p.mvr_pp(T) < max(0.0, p.guar_benefit_pp(T) - p.asset_share(T))
     capped = [p.smoothed_payout_capped(t) != p.asset_share(t) for t in range(T0, T + 1)]
@@ -271,7 +272,7 @@ def test_worked_example_the_up_scenario_pays_the_asset_share(uk_wp_up):
     """Neither the cap nor the corridor binds by the year's end in A."""
     p = uk_wp_up
     assert p.smoothed_payout(T) == pytest.approx(p.asset_share(T))
-    assert p.claim_pp(T, "SURRENDER") / p.asset_share(T) == pytest.approx(1.0)
+    assert p.claim_pp(T, ClaimKind.SURRENDER) / p.asset_share(T) == pytest.approx(1.0)
     # The payout opens below the asset share, so the cap's *ceiling* holds it back for
     # the first few months - smoothing works in both directions.
     assert p.smoothed_payout(T0) < p.asset_share(T0)
@@ -285,12 +286,12 @@ def test_the_endowment_maturity_check_line(with_profits):
     month.  The maturity value lands on the last projected month ``proj_len() - 1``.
     """
     p = with_profits.Projection[5]
-    assert p.chassis() == "CWP_endowment"
+    assert p.chassis() == Chassis.CWP_endowment
     assert p.proj_start() == 0                    # new business
     assert p.proj_len() == 300                    # 25 policy years, t = 0 .. 299
     n = p.proj_len() - 1
     assert p.guar_benefit_pp(n) == pytest.approx(CWP_MATURITY, abs=PENNY)
-    assert p.claim_pp(n, "MATURITY") == pytest.approx(CWP_MATURITY, abs=PENNY)
+    assert p.claim_pp(n, ClaimKind.MATURITY) == pytest.approx(CWP_MATURITY, abs=PENNY)
     # exactly 25 steps in the guarantee over 300 months
     steps = [t for t in range(p.proj_len())
              if abs(p.guar_benefit_pp(t) - p.guar_benefit_open(t)) > 1e-9]
@@ -298,7 +299,7 @@ def test_the_endowment_maturity_check_line(with_profits):
     assert steps == [12 * y + 11 for y in range(25)]
     # The asset share falls short of the guarantee, so the estate meets the difference.
     assert p.asset_share(n) < CWP_MATURITY
-    assert p.smoothing_cost_pp(n, "MATURITY") == pytest.approx(678.91, abs=0.02)
+    assert p.smoothing_cost_pp(n, ClaimKind.MATURITY) == pytest.approx(678.91, abs=0.02)
 
 
 def test_the_declaration_is_annual_on_every_model_point(with_profits):
@@ -335,7 +336,7 @@ def test_the_asset_share_is_published_beside_the_flows_and_not_in_them(uk_wp_up)
     for t in df.index[:5]:
         assert df.at[t, "asset_share"] == pytest.approx(p.asset_share(t))
         assert p.net_cf(t) == pytest.approx(
-            p.premiums(t) - p.claims(t) - p.withdrawals(t)
+            p.premiums(t) - p.claims(t, Kind.ALL) - p.withdrawals(t)
             - p.expenses(t) - p.shareholder_transfers(t))
 
 
@@ -349,8 +350,8 @@ def test_the_step_order_is_charges_then_transfer_then_mortality_charge(uk_wp_dow
     p = uk_wp_down
     q, dbg = p.mort_rate_mth(T), p.death_guar_pp(T)
     assert p.mort_charge_pp(T) == pytest.approx(
-        q * max(0.0, dbg - p.asset_share_at(T, "AFT_ST")), abs=1e-9)
-    wrong = q * max(0.0, dbg - p.asset_share_at(T, "AFT_CHARGE"))
+        q * max(0.0, dbg - p.asset_share_at(T, AsTiming.AFT_ST)), abs=1e-9)
+    wrong = q * max(0.0, dbg - p.asset_share_at(T, AsTiming.AFT_CHARGE))
     assert wrong < p.mort_charge_pp(T) - 0.01
 
 
@@ -414,7 +415,7 @@ def test_a_declaration_hardens_the_payout_at_a_cost_of_a_ninth(uk_wp_up):
     assert hardened == pytest.approx(552.04, abs=PENNY)
     # The mortality charge is nil in this scenario, so the transfer is the only cost.
     assert p.mort_charge_pp(T) == 0.0
-    cost = p.asset_share_at(T, "AFT_CHARGE") - p.asset_share(T)
+    cost = p.asset_share_at(T, AsTiming.AFT_CHARGE) - p.asset_share(T)
     assert cost == pytest.approx(p.shareholder_transfer_pp(T), abs=1e-9)
     assert cost == pytest.approx(hardened / 9.0, abs=1e-9)
     # And the payout is still the guarantee plus the final bonus, exactly.
@@ -573,23 +574,23 @@ def test_the_mvr_is_not_applied_in_the_guarantee_date_month(uk_wp_down):
     assert p.is_guarantee_date(GUAR_MTH) is True
     assert p.mvr_pp(GUAR_MTH) > 0.0
     assert p.mvr_applied_pp(GUAR_MTH) == 0.0
-    assert p.claim_pp(GUAR_MTH, "SURRENDER") == pytest.approx(
-        p.claim_pp(GUAR_MTH, "GUARANTEE"))
+    assert p.claim_pp(GUAR_MTH, ClaimKind.SURRENDER) == pytest.approx(
+        p.claim_pp(GUAR_MTH, ClaimKind.GUARANTEE))
     # the eleven months before it are inside the same policy year and are not the date
     for t in range(GUAR_MTH - 11, GUAR_MTH):
         assert p.policy_year(t) == 10
         assert p.is_guarantee_date(t) is False
         assert p.mvr_applied_pp(t) == pytest.approx(p.mvr_pp(t))
-        assert p.claim_pp(t, "SURRENDER") < p.claim_pp(t, "GUARANTEE")
+        assert p.claim_pp(t, ClaimKind.SURRENDER) < p.claim_pp(t, ClaimKind.GUARANTEE)
 
 
 def test_the_mvr_is_not_applied_on_death(uk_wp_down):
     """A death payout is the uplifted full value on either chassis."""
     p = uk_wp_down
     assert p.mvr_applied_pp(T) > 0.0
-    assert p.claim_pp(T, "DEATH") == pytest.approx(
+    assert p.claim_pp(T, ClaimKind.DEATH) == pytest.approx(
         1.01 * (p.guar_benefit_pp(T) + p.final_bonus_pp(T)), abs=PENNY)
-    assert p.claim_pp(T, "DEATH") > p.claim_pp(T, "SURRENDER")
+    assert p.claim_pp(T, ClaimKind.DEATH) > p.claim_pp(T, ClaimKind.SURRENDER)
 
 
 def test_the_mvr_is_unitised_only(with_profits):
@@ -603,7 +604,7 @@ def test_the_mvr_is_unitised_only(with_profits):
     assert p.guar_benefit_pp(0) > p.smoothed_payout(0) + 19000.0
     assert p.mvr_pp(0) == 0.0
     assert p.mvr_applied_pp(0) == 0.0
-    assert p.claim_pp(0, "SURRENDER") == pytest.approx(p.smoothed_payout(0))
+    assert p.claim_pp(0, ClaimKind.SURRENDER) == pytest.approx(p.smoothed_payout(0))
     assert all(p.mvr_pp(t) == 0.0 for t in range(p.proj_len()))
 
 
@@ -612,8 +613,8 @@ def test_the_endowment_surrender_value_is_capped_at_the_prospective_value(with_p
     p = with_profits.Projection[6]
     for t in range(p.proj_start(), p.proj_len()):
         prospective = p.guar_benefit_pp(t) + p.final_bonus_pp(t)
-        assert p.claim_pp(t, "SURRENDER") <= prospective + 1e-9
-        assert p.claim_pp(t, "SURRENDER") == pytest.approx(
+        assert p.claim_pp(t, ClaimKind.SURRENDER) <= prospective + 1e-9
+        assert p.claim_pp(t, ClaimKind.SURRENDER) == pytest.approx(
             min(p.smoothed_payout(t), prospective))
 
 
@@ -686,10 +687,10 @@ def test_the_surrender_rate_is_capped_at_one(with_profits):
 def test_deaths_come_before_surrenders(uk_wp_up):
     """The processing order: surrenders are taken from the survivors of mortality."""
     p = uk_wp_up
-    assert p.pols_if_at(T, "BEF_SURR") == pytest.approx(
+    assert p.pols_if_at(T, PolTiming.BEF_SURR) == pytest.approx(
         p.pols_if(T) * (1.0 - p.mort_rate_mth(T)))
     assert p.pols_surr(T) == pytest.approx(
-        p.pols_if_at(T, "BEF_SURR") * p.surr_rate_mth(T))
+        p.pols_if_at(T, PolTiming.BEF_SURR) * p.surr_rate_mth(T))
     assert p.pols_death(T) == pytest.approx(p.pols_if(T) * p.mort_rate_mth(T))
 
 
@@ -737,9 +738,9 @@ def test_the_fund_exhausts_the_projection_and_forces_an_encashment(with_profits)
     # A real contractual ending, so the survivors are paid — residual final bonus and all.
     last = p.proj_len() - 1
     assert p.pols_maturity(last) > 0.0
-    assert p.claim_pp(last, "MATURITY") == pytest.approx(
+    assert p.claim_pp(last, ClaimKind.MATURITY) == pytest.approx(
         p.guar_benefit_pp(last) + p.final_bonus_pp(last))
-    assert p.claims(last, "MATURITY") > 0.0
+    assert p.claims(last, Kind.MATURITY) > 0.0
 
 
 def test_a_limiting_age_ending_pays_nothing(uk_wp_up):
@@ -750,8 +751,8 @@ def test_a_limiting_age_ending_pays_nothing(uk_wp_up):
     assert p.is_forced_encashment() is False
     last = p.proj_len() - 1
     assert p.age(last) == 119                   # the last year before the limiting age
-    assert p.claim_pp(last, "MATURITY") == 0.0
-    assert p.claims(last, "MATURITY") == 0.0
+    assert p.claim_pp(last, ClaimKind.MATURITY) == 0.0
+    assert p.claims(last, Kind.MATURITY) == 0.0
 
 
 # ---------------------------------------------------------------------------
@@ -849,8 +850,8 @@ def test_the_smoothed_fund_chassis_is_out_of_scope(tmp_path):
 
 def test_the_tax_basis_validates(uk_wp_up, with_profits):
     """life_net or pension_gross; the return is supplied on the basis that applies."""
-    assert uk_wp_up.tax_basis() == "life_net"
-    assert with_profits.Projection[6].tax_basis() == "pension_gross"
+    assert uk_wp_up.tax_basis() == TaxBasis.life_net
+    assert with_profits.Projection[6].tax_basis() == TaxBasis.pension_gross
 
 
 def test_the_claim_kinds_validate(uk_wp_up):
@@ -866,9 +867,9 @@ def test_claims_total_the_three_paid_kinds(with_profits):
     for point_id in (1, 2, 5):
         p = with_profits.Projection[point_id]
         for t in range(p.proj_start(), p.proj_start() + 5):
-            assert p.claims(t) == pytest.approx(
-                p.claims(t, "DEATH") + p.claims(t, "SURRENDER")
-                + p.claims(t, "MATURITY"))
+            assert p.claims(t, Kind.ALL) == pytest.approx(
+                p.claims(t, Kind.DEATH) + p.claims(t, Kind.SURRENDER)
+                + p.claims(t, Kind.MATURITY))
 
 
 # ---------------------------------------------------------------------------
@@ -1009,7 +1010,7 @@ def test_round_trip_is_stable(tmp_path):
             e = WORKED_EXAMPLE[key]
             assert p.asset_share(T) == pytest.approx(e["asset_share"], abs=PENNY)
             assert p.smoothed_payout(T) == pytest.approx(e["smoothed"], abs=PENNY)
-            assert p.claim_pp(T, "SURRENDER") == pytest.approx(
+            assert p.claim_pp(T, ClaimKind.SURRENDER) == pytest.approx(
                 e["pay_surrender"], abs=PENNY)
         assert "Notes symbol" in reread.Projection.doc
     finally:

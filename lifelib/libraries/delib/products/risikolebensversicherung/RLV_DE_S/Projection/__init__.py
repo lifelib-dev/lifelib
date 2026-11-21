@@ -423,10 +423,7 @@ def sex():
     ``sex_mix_male`` is the model's **[std]** 50/50 stand-in for it, and it is one of the
     largest single sources of unexplained rate spread between German carriers.
     """
-    v = model_point()["sex"]
-    if v not in ("M", "F"):
-        raise ValueError("invalid sex")
-    return v
+    return Sex[model_point()["sex"]]
 
 
 def smoker():
@@ -439,10 +436,7 @@ def smoker():
     are aggregate-rated.  It enters both mortality bases, so a smoker pays more *and* is
     expected to claim more.
     """
-    v = model_point()["smoker"]
-    if v not in ("N", "R"):
-        raise ValueError("invalid smoker")
-    return v
+    return Smoker[model_point()["smoker"]]
 
 
 def sum_assured():
@@ -484,10 +478,8 @@ def premium_form():
     exercises the premium engine at a boundary rather than adding a second engine.  The
     cells is a stated consistency gate: ``einmal`` requires ``prem_term = 1``.
     """
-    v = model_point()["premium_form"]
-    if v not in ("laufend", "einmal"):
-        raise ValueError("invalid premium_form")
-    if v == "einmal" and prem_term() != 1:
+    v = PremiumForm[model_point()["premium_form"]]
+    if v == PremiumForm.einmal and prem_term() != 1:
         raise ValueError("einmal requires prem_term = 1")
     return v
 
@@ -502,7 +494,7 @@ def prem_freq():
     monthly-paying contract is terminable monthly and its exits are not concentrated at
     policy anniversaries.  This model books them at anniversaries and says so.
     """
-    return model_point()["prem_freq"]
+    return PremFreq[model_point()["prem_freq"]]
 
 
 def benefit_schedule_id():
@@ -526,10 +518,7 @@ def surplus_form():
     one, which is model point 12 and the cleanest available control on the whole surplus
     mechanic.
     """
-    v = model_point()["surplus_form"]
-    if v not in ("beitragsverrechnung", "keine"):
-        raise ValueError("invalid surplus_form")
-    return v
+    return SurplusForm[model_point()["surplus_form"]]
 
 
 def lives():
@@ -553,11 +542,11 @@ def issue_age2():
 def smoker2():
     """The second life's smoker status, R or N; ``-`` where ``lives = 1``."""
     v = model_point()["smoker2"]
-    if v not in ("N", "R", "-"):
-        raise ValueError("invalid smoker2")
-    if lives() == 2 and v == "-":
-        raise ValueError("lives = 2 requires a smoker2 of N or R")
-    return v
+    if v == "-":
+        if lives() == 2:
+            raise ValueError("lives = 2 requires a smoker2 of N or R")
+        return v
+    return Smoker[v]
 
 
 def rating_factor():
@@ -713,6 +702,11 @@ def age2(t):
 # Mortality: the shipped table, and the two orders built from it
 
 
+def mort_schedule():
+    """The death rates of this policy's mortality table, by sex, smoker status and age."""
+    return data.mort_table().loc[mort_table_id()]                    # noqa: F821
+
+
 def mort_rate_at_age(sex_code, smoker_code, x):
     """q(x) tilde: the shipped second-order table rate for one life at one attained age.
 
@@ -722,8 +716,8 @@ def mort_rate_at_age(sex_code, smoker_code, x):
     unsourced mortality level to a single number.  A **[std]** proxy for DAV 2008 T; see
     the ``Data`` docstring for the anchors a replacement must preserve.
     """
-    return float(data.mort_table().at[                               # noqa: F821
-        (mort_table_id(), sex_code, smoker_code, int(x)), "mort_rate"])
+    sub = mort_schedule()
+    return float(sub.at[(sex_code, smoker_code, int(x)), "mort_rate"])
 
 
 def mort_rate_base(t):
@@ -757,12 +751,12 @@ def mort_rate_blend(t):
     **[std]**.
     """
     w_m = sex_mix_male                                               # noqa: F821
-    q_a = (w_m * mort_rate_at_age("M", smoker(), age(t))
-           + (1.0 - w_m) * mort_rate_at_age("F", smoker(), age(t)))
+    q_a = (w_m * mort_rate_at_age(Sex.M, smoker(), age(t))
+           + (1.0 - w_m) * mort_rate_at_age(Sex.F, smoker(), age(t)))
     if lives() == 1:
         return q_a
-    q_b = (w_m * mort_rate_at_age("M", smoker2(), age2(t))
-           + (1.0 - w_m) * mort_rate_at_age("F", smoker2(), age2(t)))
+    q_b = (w_m * mort_rate_at_age(Sex.M, smoker2(), age2(t))
+           + (1.0 - w_m) * mort_rate_at_age(Sex.F, smoker2(), age2(t)))
     return q_a + q_b - q_a * q_b
 
 
@@ -846,6 +840,11 @@ def mort_rate_tar(t):
 # The Versicherungssumme, and the para 161 benefit switch
 
 
+def benefit_factor_schedule():
+    """The benefit factors of this policy's benefit schedule, by policy year."""
+    return data.benefit_schedule().loc[benefit_schedule_id()]        # noqa: F821
+
+
 def benefit_factor(t):
     """f(t): the *Versicherungssumme* schedule factor, from *benefit_schedule.csv*.
 
@@ -861,8 +860,13 @@ def benefit_factor(t):
     contractual schedule parameter fixed at issue; it does not follow the borrower's loan
     if that is refinanced, repaid early or rolled onto a new fixed rate.
     """
-    return float(data.benefit_schedule().at[                         # noqa: F821
-        (benefit_schedule_id(), policy_year(t)), "benefit_factor"])
+    sub = benefit_factor_schedule()
+    return float(sub.at[policy_year(t), "benefit_factor"])
+
+
+def nvg_uplift_schedule():
+    """The sum uplifts of this policy's Nachversicherungsgarantie schedule, by policy year."""
+    return data.nvg_schedule().loc[nvg_schedule_id()]                # noqa: F821
 
 
 def sum_uplift_y(y):
@@ -884,8 +888,8 @@ def sum_uplift_y(y):
     decision.  What the model does *with* an increase is not exogenous — see
     :func:`benefit_paid_pp`.
     """
-    return float(data.nvg_schedule().at[                             # noqa: F821
-        (nvg_schedule_id(), int(y) + 1), "sum_uplift"])
+    sub = nvg_uplift_schedule()
+    return float(sub.at[int(y) + 1, "sum_uplift"])
 
 
 def sum_uplift(t):
@@ -1237,7 +1241,7 @@ def beitragsverrechnung_rate():
 
     Zero where ``surplus_form = keine``, the § 153-excluded non-participating tariff.
     """
-    if surplus_form() == "keine":
+    if surplus_form() == SurplusForm.keine:
         return 0.0
     m = sicherheitszuschlag_m                                        # noqa: F821
     raw = (decl_scale * surplus_share * (m / (1.0 + m))              # noqa: F821
@@ -1426,9 +1430,9 @@ def res_pp_at(y, timing):
     HGB § 341f, the *Zinszusatzreserve* and the Solvency II best estimate are cited in the
     technical notes and computed nowhere.
     """
-    if timing == "AFT_PREM":
-        return res_pp_at(y, "BEF_PREM") + (prem_net_level_pp() if y < prem_term() else 0.0)
-    if timing != "BEF_PREM":
+    if timing == ResTiming.AFT_PREM:
+        return res_pp_at(y, ResTiming.BEF_PREM) + (prem_net_level_pp() if y < prem_term() else 0.0)
+    if timing != ResTiming.BEF_PREM:
         raise ValueError("invalid timing")
     if y >= proj_len_y():
         return 0.0
@@ -1496,7 +1500,7 @@ def pols_if(t):
         return 0.0
     if t == proj_start():
         return pols_if_init()
-    return pols_if_at(t - 1, "AFT_DECR")
+    return pols_if_at(t - 1, PolsTiming.AFT_DECR)
 
 
 def pols_if_at(t, timing):
@@ -1515,11 +1519,11 @@ def pols_if_at(t, timing):
         l(t+1), the end-of-month state, after deaths, lapses and — in the final month —
         the expiry, which is why it is exactly zero at ``t = proj_len() - 1``.
     """
-    if timing == "BEF_DECR":
+    if timing == PolsTiming.BEF_DECR:
         return pols_if(t)
-    if timing == "BEF_LAPSE":
+    if timing == PolsTiming.BEF_LAPSE:
         return pols_if(t) * (1.0 - mort_rate_mth(t))
-    if timing == "AFT_DECR":
+    if timing == PolsTiming.AFT_DECR:
         if t < proj_start() or t >= proj_len():
             return 0.0
         return (pols_if(t) - pols_death(t) - pols_lapse(t) - pols_maturity(t))
@@ -1551,7 +1555,7 @@ def pols_lapse(t):
     on the **other** side of the ledger: acquisition cost is incurred at issue and
     recovered over the term, so an early lapse is a loss to the insurer.
     """
-    return pols_if_at(t, "BEF_LAPSE") * lapse_rate_mth(t)
+    return pols_if_at(t, PolsTiming.BEF_LAPSE) * lapse_rate_mth(t)
 
 
 def pols_maturity(t):
@@ -1618,7 +1622,7 @@ def prem_rebate(t):
     return prem_rebate_inst_pp(t) * pols_if(t)
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Benefit outgo in period t, by kind; the total when kind is omitted.
 
     ``"DEATH"``
@@ -1644,13 +1648,13 @@ def claims(t, kind=None):
     a model with cash surrender values will wire one in, and every total in the frame will
     still look plausible.
     """
-    if kind is None:
-        return sum(claims(t, k) for k in ("DEATH", "LAPSE", "MATURITY"))
-    if kind == "DEATH":
+    if kind == ClaimKind.ALL:
+        return sum(claims(t, k) for k in (ClaimKind.DEATH, ClaimKind.LAPSE, ClaimKind.MATURITY))
+    if kind == ClaimKind.DEATH:
         return benefit_paid_pp(t) * pols_death(t)
-    if kind == "LAPSE":
+    if kind == ClaimKind.LAPSE:
         return 0.0
-    if kind == "MATURITY":
+    if kind == ClaimKind.MATURITY:
         return 0.0
     raise ValueError("invalid kind")
 
@@ -1777,7 +1781,7 @@ def net_cf(t):
     liability cash flows and leaves discounting, the *Deckungsrückstellung*, Solvency II
     technical provisions and the SCR to a layer that consumes them.
     """
-    return premiums(t) - claims(t) - expenses(t) - commissions(t)
+    return premiums(t) - claims(t, ClaimKind.ALL) - expenses(t) - commissions(t)
 
 
 def liability_cf(t):
@@ -1932,10 +1936,10 @@ def check_res_roll_fwd_resid(y):
     in-force one whose cash flows start later: the reserve is a tariff quantity and the
     tariff was struck at issue.
     """
-    lhs = (res_pp_at(y, "AFT_PREM")) * (1.0 + rechnungszins)         # noqa: F821
+    lhs = (res_pp_at(y, ResTiming.AFT_PREM)) * (1.0 + rechnungszins)         # noqa: F821
     q1 = mort_rate_tar(12 * y)
     rhs = (q1 * benefit_pp(12 * y)
-           + (1.0 - q1) * res_pp_at(y + 1, "BEF_PREM"))
+           + (1.0 - q1) * res_pp_at(y + 1, ResTiming.BEF_PREM))
     return lhs - rhs
 
 
@@ -1950,9 +1954,9 @@ def check_res_roll_fwd():
     reserve, and building a projection that cannot close.
     """
     tol = val_tol * max(sum_assured(), 1.0)                          # noqa: F821
-    if abs(res_pp_at(0, "BEF_PREM")) > tol:
+    if abs(res_pp_at(0, ResTiming.BEF_PREM)) > tol:
         return False
-    if abs(res_pp_at(proj_len_y(), "BEF_PREM")) > tol:
+    if abs(res_pp_at(proj_len_y(), ResTiming.BEF_PREM)) > tol:
         return False
     return all(abs(check_res_roll_fwd_resid(y)) <= tol
                for y in range(proj_len_y()))
@@ -1970,7 +1974,7 @@ def check_no_cash_value_resid(t):
     total in the frame still looks plausible.  A named check that must stay at zero makes
     that edit fail loudly.
     """
-    return claims(t, "LAPSE") + claims(t, "MATURITY")
+    return claims(t, ClaimKind.LAPSE) + claims(t, ClaimKind.MATURITY)
 
 
 def check_no_cash_value():
@@ -2010,9 +2014,9 @@ def result_cf():
             "prem_gross": [prem_gross(t) for t in ts],
             "premiums": [premiums(t) for t in ts],
             "prem_rebate": [prem_rebate(t) for t in ts],
-            "claims_death": [claims(t, "DEATH") for t in ts],
-            "claims_lapse": [claims(t, "LAPSE") for t in ts],
-            "claims_maturity": [claims(t, "MATURITY") for t in ts],
+            "claims_death": [claims(t, ClaimKind.DEATH) for t in ts],
+            "claims_lapse": [claims(t, ClaimKind.LAPSE) for t in ts],
+            "claims_maturity": [claims(t, ClaimKind.MATURITY) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "commissions": [commissions(t) for t in ts],
             "net_cf": [net_cf(t) for t in ts],
@@ -2082,8 +2086,8 @@ def result_pols():
             "prem_rebate_pp": [prem_rebate_pp(t) for t in ts],
             "prem_paid_pp": [prem_paid_pp(t) for t in ts],
             "prem_inst_pp": [prem_inst_pp(t) for t in ts],
-            "res_pp": [res_pp_at(duration(t), "BEF_PREM") for t in ts],
-            "res_zill_pp": [res_zill_pp_at(duration(t), "BEF_PREM") for t in ts],
+            "res_pp": [res_pp_at(duration(t), ResTiming.BEF_PREM) for t in ts],
+            "res_zill_pp": [res_zill_pp_at(duration(t), ResTiming.BEF_PREM) for t in ts],
         },
         index=pd.Index(ts, name="t"),                                # noqa: F821
     )
@@ -2141,3 +2145,19 @@ roll_fwd_tol = 1e-10
 val_tol = 1e-09
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+Smoker = ("Pickle", 2)
+
+PremiumForm = ("Pickle", 4)
+
+PremFreq = ("Pickle", 3)
+
+SurplusForm = ("Pickle", 5)
+
+ResTiming = ("Pickle", 6)
+
+PolsTiming = ("Pickle", 7)
+
+ClaimKind = ("Pickle", 8)

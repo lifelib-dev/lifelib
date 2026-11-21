@@ -121,8 +121,9 @@ def mort_table():
     Space docstring.  Includes 高度障害, which the published table's death rate already
     carries, so 高度障害 is not a second decrement anywhere in this model.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file, index_col=["sex", "age"])     # noqa: F821
+    frame = pd.read_csv(input_dir() / mort_table_file)               # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"]).sort_index()              # noqa: F821
 
 
 def lapse_table():
@@ -133,9 +134,9 @@ def lapse_table():
     public anchor at all and is a **[std]** judgement.  Policy years beyond the last
     row take that row.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / lapse_table_file,                              # noqa: F821
-        index_col=["shape", "policy_year"])
+    frame = pd.read_csv(input_dir() / lapse_table_file)              # noqa: F821
+    frame["shape"] = [Shape[name] for name in frame["shape"]]
+    return frame.set_index(["shape", "policy_year"])                 # noqa: F821
 
 
 def charge_table():
@@ -145,9 +146,10 @@ def charge_table():
     解約控除 scale, the 低解約返戻金割合 ramp, the three constants of the 市場価格調整
     reconstruction and the two 特別積立金 rates, each with its own provenance.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / charge_table_file,                             # noqa: F821
-        index_col=["shape", "item"])
+    frame = pd.read_csv(input_dir() / charge_table_file)             # noqa: F821
+    frame["shape"] = [Shape[name] for name in frame["shape"]]
+    frame["item"] = [ChargeItem[name] for name in frame["item"]]
+    return frame.set_index(["shape", "item"])                        # noqa: F821
 
 
 def fx_path_table():
@@ -176,3 +178,9 @@ charge_table_file = "charge_table.csv"
 fx_path_file = "fx_path_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+Shape = ("Pickle", 2)
+
+ChargeItem = ("Pickle", 3)

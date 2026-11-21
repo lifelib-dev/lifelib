@@ -362,10 +362,7 @@ def sex():
     table [S7].  The scale itself is not public, so the sex effect reaches this model
     through the **[std]** utilisation factors rather than through a premium table.
     """
-    v = model_point()["sex"]
-    if v not in ("M", "F"):
-        raise ValueError("invalid sex")
-    return v
+    return Sex[model_point()["sex"]]
 
 
 def issue_age():
@@ -634,6 +631,11 @@ def pols_if_init():
 
 # --- Decrements -------------------------------------------------------------
 
+def mort_max_age():
+    """The last age of the mortality table at the policy's sex."""
+    return int(data.mort_table().loc[sex()].index.max())             # noqa: F821
+
+
 def mort_rate(t):
     """The annual mortality rate at the attained 만나이 in policy month t.
 
@@ -643,8 +645,7 @@ def mort_rate(t):
     prudence is the reverse of every protection product in this library and an
     over-statement of mortality is *anti*-conservative.
     """
-    x = min(age(t), int(data.mort_table().index.get_level_values(   # noqa: F821
-        "age").max()))
+    x = min(age(t), mort_max_age())
     return float(data.mort_table().loc[(sex(), x), "mort_rate"])     # noqa: F821
 
 
@@ -719,7 +720,7 @@ def pols_if(t):
         return 0.0
     if t == 0:
         return pols_if_init()
-    return pols_if_at(t - 1, "AFT_DECR")
+    return pols_if_at(t - 1, PolTiming.AFT_DECR)
 
 
 def pols_if_at(t, timing):
@@ -747,18 +748,18 @@ def pols_if_at(t, timing):
     decline — is **[std]**; nothing published fixes it, and on rates of this size the
     ordering is worth less than a basis point a year.
     """
-    if timing == "BEF_DECR":
+    if timing == PolTiming.BEF_DECR:
         return pols_if(t)
-    if timing == "BEF_LAPSE":
+    if timing == PolTiming.BEF_LAPSE:
         return pols_if(t) * (1.0 - mort_rate_mth(t))
-    if timing == "BEF_SUSPEND":
-        return pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate_mth(t))
-    if timing == "BEF_RENEWAL":
-        return pols_if_at(t, "BEF_SUSPEND") * (1.0 - suspend_rate_mth(t))
-    if timing == "AFT_DECR":
+    if timing == PolTiming.BEF_SUSPEND:
+        return pols_if_at(t, PolTiming.BEF_LAPSE) * (1.0 - lapse_rate_mth(t))
+    if timing == PolTiming.BEF_RENEWAL:
+        return pols_if_at(t, PolTiming.BEF_SUSPEND) * (1.0 - suspend_rate_mth(t))
+    if timing == PolTiming.AFT_DECR:
         if t < 0 or t >= proj_len() - 1:
             return 0.0
-        return pols_if_at(t, "BEF_RENEWAL") * (1.0 - renewal_decline(t))
+        return pols_if_at(t, PolTiming.BEF_RENEWAL) * (1.0 - renewal_decline(t))
     raise ValueError("invalid timing")
 
 
@@ -785,7 +786,7 @@ def pols_lapse(t):
     policyholder who cancels mid-term recovers the 미경과보험료 under 상법 제649조, which
     is a return of premium and not a surrender value.
     """
-    return pols_if_at(t, "BEF_LAPSE") * lapse_rate_mth(t)
+    return pols_if_at(t, PolTiming.BEF_LAPSE) * lapse_rate_mth(t)
 
 
 def pols_suspend(t):
@@ -793,7 +794,7 @@ def pols_suspend(t):
 
     Zero on every model point but 9.  See :func:`suspend_rate`.
     """
-    return pols_if_at(t, "BEF_SUSPEND") * suspend_rate_mth(t)
+    return pols_if_at(t, PolTiming.BEF_SUSPEND) * suspend_rate_mth(t)
 
 
 def pols_renewal_decline(t):
@@ -804,7 +805,7 @@ def pols_renewal_decline(t):
     and a decline is the exercise of a contractual option at a contractual date, and on
     a one-year renewable contract the second is the one the product is exposed to.
     """
-    return pols_if_at(t, "BEF_RENEWAL") * renewal_decline(t)
+    return pols_if_at(t, PolTiming.BEF_RENEWAL) * renewal_decline(t)
 
 
 def pols_maturity(t):
@@ -820,10 +821,15 @@ def pols_maturity(t):
     """
     if t != proj_len() - 1:
         return 0.0
-    return pols_if_at(t, "BEF_RENEWAL") * (1.0 - renewal_decline(t))
+    return pols_if_at(t, PolTiming.BEF_RENEWAL) * (1.0 - renewal_decline(t))
 
 
 # --- Utilisation and severity, by policy year -------------------------------
+
+def util_top_age():
+    """The last age band start of the utilisation table at the policy's sex."""
+    return int(data.utilisation_table().loc[sex()].index.max())      # noqa: F821
+
 
 def util_band(y):
     """The five-year utilisation band containing the attained age in policy year y.
@@ -833,8 +839,7 @@ def util_band(y):
     NHIS coverage-ratio series comes at.
     """
     x = issue_age() + y - 1
-    top = int(data.utilisation_table().index.get_level_values(       # noqa: F821
-        "age_start").max())
+    top = util_top_age()
     return min(5 * (x // 5), top)
 
 
@@ -845,9 +850,30 @@ def util_value(y, column):
     not, because a longer stay is not a more frequent one and the room-differential cap
     is applied against the stay length itself.
     """
-    v = float(data.utilisation_table().loc[                          # noqa: F821
-        (sex(), util_band(y)), column])
-    if column == "los_days":
+    if column == UtilColumn.adm_rate:
+        v = float(data.utilisation_table().loc[                      # noqa: F821
+            (sex(), util_band(y)), "adm_rate"])
+    elif column == UtilColumn.los_days:
+        v = float(data.utilisation_table().loc[                      # noqa: F821
+            (sex(), util_band(y)), "los_days"])
+    elif column == UtilColumn.visit_rate_ge:
+        v = float(data.utilisation_table().loc[                      # noqa: F821
+            (sex(), util_band(y)), "visit_rate_ge"])
+    elif column == UtilColumn.visit_rate_np:
+        v = float(data.utilisation_table().loc[                      # noqa: F821
+            (sex(), util_band(y)), "visit_rate_np"])
+    elif column == UtilColumn.act_rate_physio:
+        v = float(data.utilisation_table().loc[                      # noqa: F821
+            (sex(), util_band(y)), "act_rate_physio"])
+    elif column == UtilColumn.act_rate_inject:
+        v = float(data.utilisation_table().loc[                      # noqa: F821
+            (sex(), util_band(y)), "act_rate_inject"])
+    elif column == UtilColumn.act_rate_mri:
+        v = float(data.utilisation_table().loc[                      # noqa: F821
+            (sex(), util_band(y)), "act_rate_mri"])
+    else:
+        raise ValueError("invalid column")
+    if column == UtilColumn.los_days:
         return v
     return v * util_mult()
 
@@ -860,7 +886,7 @@ def adm_rate(y):
     level is solved from the anchor calibration; the age curve follows the NHIS coverage
     ratio by age band [R9].
     """
-    return util_value(y, "adm_rate")
+    return util_value(y, UtilColumn.adm_rate)
 
 
 def los_days(y):
@@ -873,7 +899,7 @@ def los_days(y):
     generous treatment than a nightly cap, and one a per-night implementation
     understates.
     """
-    return util_value(y, "los_days")
+    return util_value(y, UtilColumn.los_days)
 
 
 def visit_rate_ge(y):
@@ -884,7 +910,7 @@ def visit_rate_ge(y):
     is of merged visits, which is why a 3세대 frequency basis cannot be carried across
     without adjustment.
     """
-    return util_value(y, "visit_rate_ge")
+    return util_value(y, UtilColumn.visit_rate_ge)
 
 
 def visit_rate_np(y):
@@ -893,7 +919,7 @@ def visit_rate_np(y):
     Excludes the three 3대비급여 classes, which are counted as acts and carry their own
     deductibles and limits.
     """
-    return util_value(y, "visit_rate_np")
+    return util_value(y, UtilColumn.visit_rate_np)
 
 
 def act_rate_physio(y):
@@ -905,7 +931,7 @@ def act_rate_physio(y):
     rule that makes the ₩30,000 per-act floor expensive for the insured.  근골격계 질환
     claims, of which this is the bulk, were 15.8% of all 실손 claims in 2025 [R7].
     """
-    return util_value(y, "act_rate_physio")
+    return util_value(y, UtilColumn.act_rate_physio)
 
 
 def act_rate_inject(y):
@@ -917,7 +943,7 @@ def act_rate_inject(y):
     procedure, the drug and the consumables together.  Non-covered injections were
     ₩2.81조, 18.5% of all claims, in 2024 [R8].
     """
-    return util_value(y, "act_rate_inject")
+    return util_value(y, UtilColumn.act_rate_inject)
 
 
 def act_rate_mri(y):
@@ -928,7 +954,7 @@ def act_rate_mri(y):
     rather than to the insurer.  There is **no count limit** on this class, only the
     ₩3,000,000 money limit.
     """
-    return util_value(y, "act_rate_mri")
+    return util_value(y, UtilColumn.act_rate_mri)
 
 
 def trend_ge(y):
@@ -987,12 +1013,25 @@ def sev_points(stream):
     rule to a mean removes both kinks.
     """
     sub = data.severity_table().loc[stream]                          # noqa: F821
-    return list(zip(sub["cost"].tolist(), sub["prob"].tolist()))
+    return list(zip([int(sub.loc[k, "cost"]) for k in sub.index],
+                [float(sub.loc[k, "prob"]) for k in sub.index]))
+
+
+def sev_costs(stream):
+    """The costs of :func:`sev_points` as floats: the vector form of sev_points (rule V, D90)."""
+    sub = data.severity_table().loc[stream]                          # noqa: F821
+    return [float(sub.loc[k, "cost"]) for k in sub.index]
+
+
+def sev_probs(stream):
+    """The probabilities of :func:`sev_points`: the vector form of sev_points (rule V, D90)."""
+    sub = data.severity_table().loc[stream]                          # noqa: F821
+    return [float(sub.loc[k, "prob"]) for k in sub.index]
 
 
 def sev_mean(stream):
     """The expected cost of one event in a severity stream, KRW, before any trend."""
-    return sum(c * p for c, p in sev_points(stream))
+    return sum(c * p for c, p in zip(sev_costs(stream), sev_probs(stream)))
 
 
 # --- 급여 reimbursement — the main contract ---------------------------------
@@ -1004,7 +1043,7 @@ def oop_incurred_ge(y):
     일부본인부담금 and 전액본인부담금 [S1 기본형 제3조] [REG-R53], across admissions and
     outpatient visits.  This is the quantity the 본인부담상한제 caps.
     """
-    return (adm_rate(y) * sev_mean("ge_in") + visit_rate_ge(y) * sev_mean("ge_out")) \
+    return (adm_rate(y) * sev_mean(Stream.ge_in) + visit_rate_ge(y) * sev_mean(Stream.ge_out)) \
         * trend_ge(y)
 
 
@@ -1061,7 +1100,7 @@ def claims_ge_in_pp(y):
     the identical ₩2,000,000 appears in a 2세대 carrier document [S4].  It applies to
     inpatient treatment only; there is no annual cap on the outpatient deductible.
     """
-    cost = adm_rate(y) * sev_mean("ge_in") * trend_ge(y) * oop_trunc(y)
+    cost = adm_rate(y) * sev_mean(Stream.ge_in) * trend_ge(y) * oop_trunc(y)
     retained = cost * retain_rate_ge()
     top_up = max(0.0, retained - cap_inpatient_retain)               # noqa: F821
     return cost * (1.0 - retain_rate_ge()) + top_up
@@ -1079,7 +1118,7 @@ def paid_out_per_visit(stream, floor, retain, trend):
     ₩250,000 of covered cost on the 급여 side, the same point at both tiers.
     """
     tot = 0.0
-    for c, p in sev_points(stream):
+    for c, p in zip(sev_costs(stream), sev_probs(stream)):
         cost = c * trend
         ded = max(floor, retain * cost)
         tot += p * min(max(0.0, cost - ded), visit_cap())
@@ -1098,8 +1137,8 @@ def claims_ge_out_pp(y):
     """
     tr = trend_ge(y) * oop_trunc(y)
     r = retain_rate_ge()
-    clinic = paid_out_per_visit("ge_out", ded_clinic, r, tr)         # noqa: F821
-    hosp = paid_out_per_visit("ge_out", ded_hospital, r, tr)         # noqa: F821
+    clinic = paid_out_per_visit(Stream.ge_out, ded_clinic, r, tr)         # noqa: F821
+    hosp = paid_out_per_visit(Stream.ge_out, ded_hospital, r, tr)         # noqa: F821
     return visit_rate_ge(y) * (clinic_share() * clinic
                                + (1.0 - clinic_share()) * hosp)
 
@@ -1138,9 +1177,9 @@ def claims_np_in_pp(y):
     a per-night implementation of the cap understates the benefit.
     """
     tr = trend_np(y)
-    base = sev_mean("np_in") * tr * (1.0 - retain_rate_np())
+    base = sev_mean(Stream.np_in) * tr * (1.0 - retain_rate_np())
     room = 0.0
-    for c, p in sev_points("np_room"):
+    for c, p in zip(sev_costs(Stream.np_room), sev_probs(Stream.np_room)):
         room += p * min(room_rate * c * tr,                          # noqa: F821
                         room_cap_day * los_days(y))                  # noqa: F821
     return adm_rate(y) * (base + room)
@@ -1174,11 +1213,11 @@ def claims_np_out_pp(y):
     """
     tr = trend_np(y)
     r = retain_rate_np()
-    out = visits_np_eff(y) * paid_out_per_visit("np_out", ded_np_out, r, tr)  # noqa: F821
+    out = visits_np_eff(y) * paid_out_per_visit(Stream.np_out, ded_np_out, r, tr)  # noqa: F821
     carve = 0.0
     if three_np():
         acts = min(act_rate_inject(y), act_limit_three)              # noqa: F821
-        carve = acts * inject_carve_share * paid_per_act("inject", tr)  # noqa: F821
+        carve = acts * inject_carve_share * paid_per_act(Stream.inject, tr)  # noqa: F821
     return out + carve
 
 
@@ -1218,7 +1257,7 @@ def paid_per_act(stream, trend):
     of the three, the act counter.
     """
     tot = 0.0
-    for c, p in sev_points(stream):
+    for c, p in zip(sev_costs(stream), sev_probs(stream)):
         cost = c * trend
         tot += p * max(0.0, cost - max(ded_np_out,                   # noqa: F821
                                        retain_rate_np() * cost))
@@ -1272,7 +1311,7 @@ def claims_physio_pp(y):
     """
     if not three_np():
         return 0.0
-    return min(acts_physio_eff(y) * paid_per_act("physio", trend_np(y)),
+    return min(acts_physio_eff(y) * paid_per_act(Stream.physio, trend_np(y)),
                limit_physio)                                         # noqa: F821
 
 
@@ -1284,7 +1323,7 @@ def claims_inject_pp(y):
     """
     if not three_np():
         return 0.0
-    return min(acts_inject_eff(y) * paid_per_act("inject", trend_np(y)),
+    return min(acts_inject_eff(y) * paid_per_act(Stream.inject, trend_np(y)),
                limit_inject)                                         # noqa: F821
 
 
@@ -1296,7 +1335,7 @@ def claims_mri_pp(y):
     """
     if not three_np():
         return 0.0
-    return min(act_rate_mri(y) * paid_per_act("mri", trend_np(y)),
+    return min(act_rate_mri(y) * paid_per_act(Stream.mri, trend_np(y)),
                limit_mri)                                            # noqa: F821
 
 
@@ -1315,7 +1354,7 @@ def claims_np_pp(y):
     return claims_np_main_pp(y) + claims_np_three_pp(y)
 
 
-def claims_ann_pp(y, kind=None):
+def claims_ann_pp(y, kind):
     """The claim per policy in policy year y, by kind, after every limit.
 
     ``"GE_IN"``, ``"GE_OUT"``, ``"NP_IN"``, ``"NP_OUT"``, ``"NP_THREE"``.  The 급여 and
@@ -1323,18 +1362,18 @@ def claims_ann_pp(y, kind=None):
     still add to the limited total; the 3대비급여 limb is already at its own sub-limits.
     With no ``kind`` the sum over all five.
     """
-    if kind is None:
+    if kind == Kind.ALL:
         return sum(claims_ann_pp(y, k) for k in
-                   ("GE_IN", "GE_OUT", "NP_IN", "NP_OUT", "NP_THREE"))
-    if kind == "GE_IN":
+                   (Kind.GE_IN, Kind.GE_OUT, Kind.NP_IN, Kind.NP_OUT, Kind.NP_THREE))
+    if kind == Kind.GE_IN:
         return claims_ge_in_pp(y) * ge_limit_factor(y)
-    if kind == "GE_OUT":
+    if kind == Kind.GE_OUT:
         return claims_ge_out_pp(y) * ge_limit_factor(y)
-    if kind == "NP_IN":
+    if kind == Kind.NP_IN:
         return claims_np_in_pp(y) * np_limit_factor(y) if np_rider() else 0.0
-    if kind == "NP_OUT":
+    if kind == Kind.NP_OUT:
         return claims_np_out_pp(y) * np_limit_factor(y) if np_rider() else 0.0
-    if kind == "NP_THREE":
+    if kind == Kind.NP_THREE:
         return claims_np_three_pp(y)
     raise ValueError("invalid kind")
 
@@ -1360,12 +1399,12 @@ def loss_incurred_pp(y):
     if not np_rider():
         return ge
     tr = trend_np(y)
-    np_cost = adm_rate(y) * (sev_mean("np_in") + sev_mean("np_room")) * tr \
-        + visit_rate_np(y) * sev_mean("np_out") * tr
+    np_cost = adm_rate(y) * (sev_mean(Stream.np_in) + sev_mean(Stream.np_room)) * tr \
+        + visit_rate_np(y) * sev_mean(Stream.np_out) * tr
     if three_np():
-        np_cost += (act_rate_physio(y) * sev_mean("physio")
-                    + act_rate_inject(y) * sev_mean("inject")
-                    + act_rate_mri(y) * sev_mean("mri")) * tr
+        np_cost += (act_rate_physio(y) * sev_mean(Stream.physio)
+                    + act_rate_inject(y) * sev_mean(Stream.inject)
+                    + act_rate_mri(y) * sev_mean(Stream.mri)) * tr
     return ge + np_cost
 
 
@@ -1415,7 +1454,8 @@ def shape_mean():
     into a multiple of the mean.
     """
     tbl = data.claim_shape_table()                                   # noqa: F821
-    return float((tbl["share"] * tbl["claim_amount"]).sum())
+    return float(sum(tbl.loc[k, "share"] * tbl.loc[k, "claim_amount"]
+                 for k in tbl.index))
 
 
 def shape_rel(bucket):
@@ -1691,7 +1731,7 @@ def premiums(t):
     return prem_gross_mth(policy_year(t)) * pols_if(t)
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Benefit outgo at the end of policy month t, by kind.
 
     ``"GE_IN"`` 급여 입원, ``"GE_OUT"`` 급여 통원, ``"NP_IN"`` 비급여 입원 including the
@@ -1704,9 +1744,9 @@ def claims(t, kind=None):
     relativity window — runs on the policy year, so the month is a presentation grid for
     an annual quantity rather than a unit of account.
     """
-    if kind is None:
+    if kind == Kind.ALL:
         return sum(claims(t, k) for k in
-                   ("GE_IN", "GE_OUT", "NP_IN", "NP_OUT", "NP_THREE"))
+                   (Kind.GE_IN, Kind.GE_OUT, Kind.NP_IN, Kind.NP_OUT, Kind.NP_THREE))
     return pols_if(t) * claims_ann_pp(policy_year(t), kind) / 12.0
 
 
@@ -1742,7 +1782,7 @@ def claim_expenses(t):
     in 2025 [R7].  Making it proportional to claims is the **[std]** choice because that is
     what drives it.
     """
-    return expense_claim_rate * claims(t)                            # noqa: F821
+    return expense_claim_rate * claims(t, Kind.ALL)                            # noqa: F821
 
 
 def commissions(t):
@@ -1773,7 +1813,7 @@ def net_cf(t):
     adds to the premium.  Year-1 claims on the anchor cell are 82.8% of year-1 premium,
     which reproduces the published 4세대 2022 combined loss ratio exactly.
     """
-    return (premiums(t) - claims(t) - expenses(t)
+    return (premiums(t) - claims(t, Kind.ALL) - expenses(t)
             - claim_expenses(t) - commissions(t))
 
 
@@ -1814,7 +1854,7 @@ def check_net_cf_resid(t):
     the printed statement, or counted twice, shows up here; so does a claim expense
     folded back into :func:`expenses` instead of standing on its own line.
     """
-    return net_cf(t) - (premiums(t) - claims(t) - expenses(t)
+    return net_cf(t) - (premiums(t) - claims(t, Kind.ALL) - expenses(t)
                         - claim_expenses(t) - commissions(t))
 
 
@@ -1939,13 +1979,13 @@ def check_annual_limits_resid(y):
     resid += max(0.0, acts_inject_eff(y) - act_limit_three)          # noqa: F821
     tr_ge = trend_ge(y) * oop_trunc(y)
     resid += max(0.0, paid_out_per_visit(
-        "ge_out", ded_clinic, retain_rate_ge(), tr_ge)               # noqa: F821
+        Stream.ge_out, ded_clinic, retain_rate_ge(), tr_ge)               # noqa: F821
         - visit_cap() - 1e-6)
     resid += max(0.0, paid_out_per_visit(
-        "ge_out", ded_hospital, retain_rate_ge(), tr_ge)             # noqa: F821
+        Stream.ge_out, ded_hospital, retain_rate_ge(), tr_ge)             # noqa: F821
         - visit_cap() - 1e-6)
     resid += max(0.0, paid_out_per_visit(
-        "np_out", ded_np_out, retain_rate_np(), trend_np(y))         # noqa: F821
+        Stream.np_out, ded_np_out, retain_rate_np(), trend_np(y))         # noqa: F821
         - visit_cap() - 1e-6)
     return resid
 
@@ -1966,7 +2006,7 @@ def check_indemnity_resid(y):
     retention, a deductible subtracted twice, or a per-visit cap applied to the wrong
     side of the deduction would all show here.
     """
-    return max(0.0, claims_ann_pp(y) - loss_incurred_pp(y) - 1e-6)
+    return max(0.0, claims_ann_pp(y, Kind.ALL) - loss_incurred_pp(y) - 1e-6)
 
 
 def check_indemnity():
@@ -2030,11 +2070,11 @@ def result_cf():
         {
             "pols_if": [pols_if(t) for t in ts],
             "premiums": [premiums(t) for t in ts],
-            "claims_ge_in": [claims(t, "GE_IN") for t in ts],
-            "claims_ge_out": [claims(t, "GE_OUT") for t in ts],
-            "claims_np_in": [claims(t, "NP_IN") for t in ts],
-            "claims_np_out": [claims(t, "NP_OUT") for t in ts],
-            "claims_np_three": [claims(t, "NP_THREE") for t in ts],
+            "claims_ge_in": [claims(t, Kind.GE_IN) for t in ts],
+            "claims_ge_out": [claims(t, Kind.GE_OUT) for t in ts],
+            "claims_np_in": [claims(t, Kind.NP_IN) for t in ts],
+            "claims_np_out": [claims(t, Kind.NP_OUT) for t in ts],
+            "claims_np_three": [claims(t, Kind.NP_THREE) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "claim_expenses": [claim_expenses(t) for t in ts],
             "commissions": [commissions(t) for t in ts],
@@ -2189,3 +2229,13 @@ cash_tol = 1e-06
 shape_tol = 1e-09
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+Stream = ("Pickle", 2)
+
+UtilColumn = ("Pickle", 3)
+
+PolTiming = ("Pickle", 4)
+
+Kind = ("Pickle", 5)

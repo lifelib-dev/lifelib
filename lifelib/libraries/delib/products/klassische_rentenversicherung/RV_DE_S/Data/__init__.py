@@ -147,8 +147,9 @@ def mort_table():
     **[std]** proxy, not DAV 2004 R; see the Space docstring for what it is, what it is
     anchored on and what a replacement must preserve.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_file, index_col=["sex", "age"])           # noqa: F821
+    frame = pd.read_csv(input_dir() / mort_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"])
 
 
 def decl_rate_table():
@@ -193,8 +194,9 @@ def charge_table():
     things and confusing them is a listed pitfall; the expense levels live in
     :func:`param_table`.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / charge_file, index_col=["charge_id", "item"])   # noqa: F821
+    frame = pd.read_csv(input_dir() / charge_file)                   # noqa: F821
+    frame["item"] = [ChargeItem[name] for name in frame["item"]]
+    return frame.set_index(["charge_id", "item"])
 
 
 def lapse_table():
@@ -221,8 +223,9 @@ def freq_load_table():
     loaded annual amount at the start of the year and does not model the instalments
     themselves.  Levels are **[std]**; no German carrier's loading was established.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / freq_load_file, index_col="prem_freq")         # noqa: F821
+    frame = pd.read_csv(input_dir() / freq_load_file)                # noqa: F821
+    frame["prem_freq"] = [PremFreq[name] for name in frame["prem_freq"]]
+    return frame.set_index("prem_freq")
 
 
 def param_table():
@@ -234,8 +237,9 @@ def param_table():
     They live in a file rather than in ``Projection`` References so that each one carries
     its own provenance tag, which a Reference cannot.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / param_file, index_col="item")                  # noqa: F821
+    frame = pd.read_csv(input_dir() / param_file)                    # noqa: F821
+    frame["item"] = [ParamItem[name] for name in frame["item"]]
+    return frame.set_index("item")
 
 
 # ---------------------------------------------------------------------------
@@ -258,3 +262,11 @@ freq_load_file = "freq_load_table.csv"
 param_file = "param_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+PremFreq = ("Pickle", 2)
+
+ParamItem = ("Pickle", 3)
+
+ChargeItem = ("Pickle", 4)

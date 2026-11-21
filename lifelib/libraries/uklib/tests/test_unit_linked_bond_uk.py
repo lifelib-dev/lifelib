@@ -29,6 +29,7 @@ import pytest
 from modelx.core.errors import FormulaError
 
 from uk_registry import MODELS, LIB
+from lifelib.libraries.uklib.products.unit_linked_bond.enums import AvTiming, Kind, PolTiming, WdPattern
 
 
 def model_files(folder):
@@ -89,7 +90,7 @@ def test_worked_example_row(uk_bond_anchor, t):
     assert p.amc_pp(t) == pytest.approx(amc, abs=PENNY)
     assert p.further_costs_pp(t) == pytest.approx(fc, abs=PENNY)
     assert p.wd_pp(t) == pytest.approx(wd, abs=PENNY)
-    assert p.av_pp_at(t, "AFT_WD") == pytest.approx(uf_end, abs=PENNY)
+    assert p.av_pp_at(t, AvTiming.AFT_WD) == pytest.approx(uf_end, abs=PENNY)
 
 
 def test_worked_example_month_one_trace(uk_bond_anchor):
@@ -98,12 +99,12 @@ def test_worked_example_month_one_trace(uk_bond_anchor):
     assert p.fund_return_mth() == pytest.approx(G_M, abs=5e-8)
     assert p.amc_rate_mth() == pytest.approx(C_M, abs=5e-8)
     assert p.further_costs_rate_mth() == pytest.approx(F_M, abs=5e-8)
-    assert p.av_pp_at(0, "AFT_GROWTH") == pytest.approx(100325.93, abs=PENNY)
-    assert p.av_pp_at(0, "AFT_CHARGE") == pytest.approx(100233.96, abs=PENNY)
+    assert p.av_pp_at(0, AvTiming.AFT_GROWTH) == pytest.approx(100325.93, abs=PENNY)
+    assert p.av_pp_at(0, AvTiming.AFT_CHARGE) == pytest.approx(100233.96, abs=PENNY)
     # The notes' trace subtracts the withdrawal as the rounded 416.67; the model carries
     # 5,000/12 at full precision, so the two agree at the pence the table displays.
     assert p.wd_pp(0) == pytest.approx(5000.0 / 12, rel=1e-14)
-    assert p.av_pp_at(0, "AFT_WD") == pytest.approx(99817.30, abs=PENNY)
+    assert p.av_pp_at(0, AvTiming.AFT_WD) == pytest.approx(99817.30, abs=PENNY)
 
 
 def test_worked_example_year_one_totals(uk_bond_anchor):
@@ -123,7 +124,7 @@ def test_worked_example_year_one_totals(uk_bond_anchor):
     # 100,000 + 4,839.44 - 967.89 - 993.10 - 99.31 - 5,000.00 = 97,779.14
     assert 100000.0 + growth - tax - amc - fc - wd == pytest.approx(
         YEAR_1["uf_end"], abs=PENNY)
-    assert p.av_pp_at(11, "AFT_WD") == pytest.approx(YEAR_1["uf_end"], abs=PENNY)
+    assert p.av_pp_at(11, AvTiming.AFT_WD) == pytest.approx(YEAR_1["uf_end"], abs=PENNY)
     assert p.av_pp(12) == pytest.approx(YEAR_1["uf_end"], abs=PENNY)   # UF(12)
 
 
@@ -162,10 +163,10 @@ def test_worked_example_death_benefit_at_month_twelve(uk_bond_anchor):
     """Per actual death in the twelfth month, t = 11, the benefit is 1.001 x 97,779.14
     = 97,876.92 and the strain 97.78."""
     p = uk_bond_anchor
-    uf = p.av_pp_at(11, "AFT_WD")
+    uf = p.av_pp_at(11, AvTiming.AFT_WD)
     assert 1.001 * uf == pytest.approx(97876.92, abs=PENNY)
     assert p.death_strain_pp(11) == pytest.approx(97.78, abs=PENNY)
-    assert p.claims(11, "DEATH") == pytest.approx(
+    assert p.claims(11, Kind.DEATH) == pytest.approx(
         97876.92 * p.pols_death(11), abs=PENNY)
 
 
@@ -193,15 +194,15 @@ def test_the_amc_is_levied_on_the_post_growth_pre_cancellation_fund(uk_bond_anch
     """
     p = uk_bond_anchor
     for t in (0, 59, 199):
-        uf_g = p.av_pp_at(t, "AFT_GROWTH")
+        uf_g = p.av_pp_at(t, AvTiming.AFT_GROWTH)
         assert p.amc_pp(t) == pytest.approx(p.amc_rate_mth() * uf_g, rel=1e-14)
         assert p.amc_pp(t) != pytest.approx(p.amc_rate_mth() * p.av_pp(t), rel=1e-9)
         assert p.amc_pp(t) != pytest.approx(
-            p.amc_rate_mth() * p.av_pp_at(t, "AFT_WD"), rel=1e-9)
+            p.amc_rate_mth() * p.av_pp_at(t, AvTiming.AFT_WD), rel=1e-9)
     # The four timing points are strictly ordered while the fund is being drawn down.
     t = 59
-    assert (p.av_pp_at(t, "AFT_GROWTH") > p.av_pp_at(t, "AFT_CHARGE")
-            > p.av_pp_at(t, "AFT_WD"))
+    assert (p.av_pp_at(t, AvTiming.AFT_GROWTH) > p.av_pp_at(t, AvTiming.AFT_CHARGE)
+            > p.av_pp_at(t, AvTiming.AFT_WD))
 
 
 def test_the_unit_fund_rollforward_closes(unit_linked_bond):
@@ -211,13 +212,13 @@ def test_the_unit_fund_rollforward_closes(unit_linked_bond):
     p = unit_linked_bond.Projection[1]
     assert p.av_pp(0) == p.av_init_pp() == p.premium()
     for t in (0, 11, 99):
-        assert p.av_pp_at(t, "AFT_WD") == pytest.approx(
+        assert p.av_pp_at(t, AvTiming.AFT_WD) == pytest.approx(
             p.av_pp(t) * (1 + p.fund_return_mth() * (1 - 0.20))
             * (1 - p.amc_rate_mth() - p.further_costs_rate_mth()) - p.wd_pp(t),
             abs=1e-8)
     # And the end-of-month fund is the next month's opening fund.
     for t in (0, 11, 99):
-        assert p.av_pp_at(t, "AFT_WD") == pytest.approx(p.av_pp(t + 1), rel=1e-14)
+        assert p.av_pp_at(t, AvTiming.AFT_WD) == pytest.approx(p.av_pp(t + 1), rel=1e-14)
 
 
 def test_the_timing_strings_validate(uk_bond_anchor):
@@ -272,7 +273,7 @@ def test_adviser_charges_are_a_pass_through(unit_linked_bond):
     p1, p3 = unit_linked_bond.Projection[1], unit_linked_bond.Projection[3]
     assert p3.oac_rate() == 0.005
     assert p3.adviser_charge_pp(0) == pytest.approx(
-        0.005 / 12 * p3.av_pp_at(0, "AFT_CHARGE"), rel=1e-14)
+        0.005 / 12 * p3.av_pp_at(0, AvTiming.AFT_CHARGE), rel=1e-14)
     # It draws the fund down faster, so the fund is exhausted sooner.
     assert p3.av_pp(59) < p1.av_pp(59)
     assert p3.proj_len() < p1.proj_len()
@@ -297,11 +298,11 @@ def test_benefits_are_funded_by_cancelling_units(unit_linked_bond):
         assert unit_linked_bond.Projection[point_id].check_unit_funding() is True
     p = unit_linked_bond.Projection[1]
     for t in (0, 59, 199):
-        assert p.claims(t) - p.unit_releases(t) == pytest.approx(
+        assert p.claims(t, Kind.ALL) - p.unit_releases(t) == pytest.approx(
             p.death_strain(t), abs=1e-9)
         # A surrender is funded entirely from the fund: no strain at all.
-        assert p.claims(t, "SURRENDER") == pytest.approx(
-            p.av_pp_at(t, "AFT_WD") * p.pols_surr(t), rel=1e-14)
+        assert p.claims(t, Kind.SURRENDER) == pytest.approx(
+            p.av_pp_at(t, AvTiming.AFT_WD) * p.pols_surr(t), rel=1e-14)
 
 
 def test_the_death_strain_is_the_uplift(uk_bond_anchor):
@@ -311,7 +312,7 @@ def test_the_death_strain_is_the_uplift(uk_bond_anchor):
     assert p.gmdb_flag() is False
     for t in (0, 59, 199):
         assert p.death_strain_pp(t) == pytest.approx(
-            0.001 * p.av_pp_at(t, "AFT_WD"), rel=1e-12)
+            0.001 * p.av_pp_at(t, AvTiming.AFT_WD), rel=1e-12)
 
 
 def test_the_uplift_is_a_parameter_never_a_literal(unit_linked_bond):
@@ -359,7 +360,7 @@ def test_the_guarantee_erodes_with_withdrawals(unit_linked_bond):
     # Out of the money throughout, so the charge is zero and the strain is the uplift.
     assert all(p.gmdb_charge_pp(t) == 0.0 for t in (0, 59, 119, 199))
     assert p.death_strain_pp(59) == pytest.approx(
-        0.001 * p.av_pp_at(59, "AFT_WD"), rel=1e-12)
+        0.001 * p.av_pp_at(59, AvTiming.AFT_WD), rel=1e-12)
 
 
 def test_the_guarantee_bites_when_the_fund_falls(unit_linked_bond):
@@ -374,13 +375,13 @@ def test_the_guarantee_bites_when_the_fund_falls(unit_linked_bond):
         model.Projection.fund_return = -0.06
         model.Projection.clear_all()
         p = model.Projection[4]
-        assert p.gmdb_guarantee_pp(59) > p.db_uplift() * p.av_pp_at(59, "AFT_CHARGE")
+        assert p.gmdb_guarantee_pp(59) > p.db_uplift() * p.av_pp_at(59, AvTiming.AFT_CHARGE)
         assert p.gmdb_charge_pp(59) > 0.0
-        assert p.death_strain_pp(59) > 0.001 * p.av_pp_at(59, "AFT_WD")
+        assert p.death_strain_pp(59) > 0.001 * p.av_pp_at(59, AvTiming.AFT_WD)
         assert p.gmdb_charges(59) > 0.0          # the charge is insurer income
         assert p.check_unit_funding() is True
         # The death benefit is the guarantee where it exceeds the uplifted fund.
-        assert p.claims(59, "DEATH") == pytest.approx(
+        assert p.claims(59, Kind.DEATH) == pytest.approx(
             p.gmdb_guarantee_pp(59) * p.pols_death(59), rel=1e-12)
     finally:
         model.close()
@@ -408,15 +409,15 @@ def test_the_guarantee_is_measured_before_the_months_cancellations(unit_linked_b
 def test_the_withdrawal_patterns(unit_linked_bond):
     """none, allowance_5pct and custom."""
     p1 = unit_linked_bond.Projection[1]
-    assert p1.wd_pattern() == "allowance_5pct" and p1.wd_rate() == 0.05
+    assert p1.wd_pattern() == WdPattern.allowance_5pct and p1.wd_rate() == 0.05
     assert p1.wd_pp(0) == pytest.approx(0.05 * 100000 / 12, rel=1e-14)
 
     p2 = unit_linked_bond.Projection[2]
-    assert p2.wd_pattern() == "none" and p2.wd_rate() == 0.0
+    assert p2.wd_pattern() == WdPattern.none and p2.wd_rate() == 0.0
     assert all(p2.wd_pp(t) == 0.0 for t in (0, 59, 399))
 
     p6 = unit_linked_bond.Projection[6]
-    assert p6.wd_pattern() == "custom" and p6.wd_rate() == 0.03
+    assert p6.wd_pattern() == WdPattern.custom and p6.wd_rate() == 0.03
     assert p6.wd_pp(0) == pytest.approx(0.03 * 250000 / 12, rel=1e-14)
 
 
@@ -427,10 +428,10 @@ def test_the_product_cap_is_the_seven_and_a_half_percent_one(uk_bond_anchor):
     """
     p = uk_bond_anchor
     assert p.wd_cap_pp(0) == pytest.approx(
-        0.075 * max(p.av_pp_at(0, "AFT_CHARGE"), 100000.0), abs=PENNY)
+        0.075 * max(p.av_pp_at(0, AvTiming.AFT_CHARGE), 100000.0), abs=PENNY)
     # The cap floors on the premium once the fund has fallen below it.
     late = 299
-    assert p.av_pp_at(late, "AFT_CHARGE") < 100000.0
+    assert p.av_pp_at(late, AvTiming.AFT_CHARGE) < 100000.0
     assert p.wd_cap_pp(late) == pytest.approx(0.075 * 100000.0, abs=PENNY)
     # The anchor's 5% pattern sits comfortably inside it.
     assert 12 * p.wd_pp(0) < p.wd_cap_pp(0)
@@ -444,9 +445,9 @@ def test_the_withdrawal_is_capped_at_what_the_fund_can_pay(uk_bond_anchor):
     p = uk_bond_anchor
     last = p.proj_len() - 1
     assert p.av_pp(last) > 0.0
-    assert p.av_pp_at(last, "AFT_WD") == pytest.approx(0.0, abs=1e-9)
+    assert p.av_pp_at(last, AvTiming.AFT_WD) == pytest.approx(0.0, abs=1e-9)
     assert p.av_pp(last + 1) == pytest.approx(0.0, abs=1e-9)
-    assert p.wd_pp(last) <= p.av_pp_at(last, "AFT_CHARGE") + 1e-9
+    assert p.wd_pp(last) <= p.av_pp_at(last, AvTiming.AFT_CHARGE) + 1e-9
     assert all(p.av_pp(t) >= 0.0 for t in range(p.proj_len()))
 
 
@@ -564,8 +565,8 @@ def test_a_surrender_costs_nothing_at_exit_but_truncates_the_margin(uk_bond_anch
     """The surrender value is the bid value of units, cancelled - no penalty, no strain."""
     p = uk_bond_anchor
     for t in (11, 99):
-        assert p.claims(t, "SURRENDER") == pytest.approx(
-            p.av_pp_at(t, "AFT_WD") * p.pols_surr(t), rel=1e-14)
+        assert p.claims(t, Kind.SURRENDER) == pytest.approx(
+            p.av_pp_at(t, AvTiming.AFT_WD) * p.pols_surr(t), rel=1e-14)
         # It contributes nothing to the non-unit stream at all.
         assert p.net_cf(t) == pytest.approx(
             p.amc_charges(t) + p.gmdb_charges(t) - p.expenses(t) - p.death_strain(t),
@@ -587,16 +588,16 @@ def test_the_inforce_rollforward_closes(unit_linked_bond):
         assert p.pols_if(t) - p.pols_if(t + 1) == pytest.approx(out, abs=1e-12)
     assert all(p.pols_maturity(t) == 0.0 for t in (0, 99, last - 1))
     assert p.pols_maturity(last) > 0.0
-    assert p.pols_if_at(last, "AFT_DECR") == 0.0 and p.pols_if(last + 1) == 0.0
+    assert p.pols_if_at(last, PolTiming.AFT_DECR) == 0.0 and p.pols_if(last + 1) == 0.0
 
 
 def test_deaths_come_before_surrenders(uk_bond_anchor):
     p = uk_bond_anchor
     for t in (0, 59):
-        assert p.pols_if_at(t, "BEF_SURR") == pytest.approx(
+        assert p.pols_if_at(t, PolTiming.BEF_SURR) == pytest.approx(
             p.pols_if(t) * (1 - p.mort_rate_mth(t)), rel=1e-14)
         assert p.pols_surr(t) == pytest.approx(
-            p.pols_if_at(t, "BEF_SURR") * p.surr_rate_mth(t), rel=1e-14)
+            p.pols_if_at(t, PolTiming.BEF_SURR) * p.surr_rate_mth(t), rel=1e-14)
 
 
 # ---------------------------------------------------------------------------
@@ -727,7 +728,7 @@ def test_round_trip_is_stable(tmp_path):
         p = reread.Projection[1]
         for t, row in WORKED_EXAMPLE.items():
             assert p.av_pp(t) == pytest.approx(row[0], abs=PENNY)
-            assert p.av_pp_at(t, "AFT_WD") == pytest.approx(row[6], abs=PENNY)
+            assert p.av_pp_at(t, AvTiming.AFT_WD) == pytest.approx(row[6], abs=PENNY)
         assert "Notes symbol" in reread.Projection.doc
     finally:
         reread.close()

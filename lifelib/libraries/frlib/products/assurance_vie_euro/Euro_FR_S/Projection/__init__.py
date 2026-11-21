@@ -437,10 +437,7 @@ def policy_id():
 
 def sex():
     """The sex (M / F) of the model point; the mortality table is sex-distinct."""
-    v = model_point()["sex"]
-    if v not in ("M", "F"):
-        raise ValueError("invalid sex")
-    return v
+    return Sex[model_point()["sex"]]
 
 
 def issue_age():
@@ -589,10 +586,7 @@ def guarantee_form():
     both designs run inside one insurer and even inside one notice, so the model carries
     the choice on the model point rather than fixing it.
     """
-    v = model_point()["guarantee_form"]
-    if v not in ("net", "gross"):
-        raise ValueError("invalid guarantee_form")
-    return v
+    return GuaranteeForm[model_point()["guarantee_form"]]
 
 
 def avance_on():
@@ -610,10 +604,7 @@ def avance_on():
 
 def scenario_id():
     """The financial scenario the model point runs on: ``base``, ``low`` or ``high``."""
-    v = str(model_point()["scenario_id"])
-    if v not in tuple(data.fin_rate_table().index.levels[0]):        # noqa: F821
-        raise ValueError("unknown scenario_id")
-    return v
+    return Scenario[model_point()["scenario_id"]]
 
 
 def proj_len():
@@ -705,6 +696,11 @@ def policy_year(t):
     return duration(t) + 1
 
 
+def scenario_rates():
+    """The policy's financial scenario: r_fin and ref_rate by projection year."""
+    return data.fin_rate_table().loc[scenario_id()]                  # noqa: F821
+
+
 def r_fin(y):
     """r(y): the fund's financial return rate in projection year y, from the scenario.
 
@@ -717,7 +713,7 @@ def r_fin(y):
     The scenario table is an **annual** path and stays one; the month reaches it through
     ``proj_year(t)``.
     """
-    tbl = data.fin_rate_table().loc[scenario_id()]                   # noqa: F821
+    tbl = scenario_rates()
     return float(tbl.loc[min(y, int(tbl.index.max())), "r_fin"])
 
 
@@ -728,7 +724,7 @@ def ref_rate(y):
     table rather than as a Reference because in a different financial scenario the rate
     available elsewhere is a different rate too.
     """
-    tbl = data.fin_rate_table().loc[scenario_id()]                   # noqa: F821
+    tbl = scenario_rates()
     return float(tbl.loc[min(y, int(tbl.index.max())), "ref_rate"])
 
 
@@ -1244,14 +1240,14 @@ def av_pp_at(t, timing):
     sense: it is a tax the insurer withholds and remits, and keeping it out of the timing
     ladder is what keeps it out of ``net_cf``.
     """
-    if timing == "BEF_PREM":
+    if timing == AvTiming.BEF_PREM:
         return av_pp(t)
-    if timing == "AFT_PREM":
+    if timing == AvTiming.AFT_PREM:
         return av_pp(t) + prem_to_av_mth_pp(t)
-    if timing == "AFT_WD":
-        return av_pp_at(t, "AFT_PREM") - withdrawals_mth_pp(t)
-    if timing == "AFT_INT":
-        return av_pp_at(t, "AFT_WD") + int_credited_mth_pp(t)
+    if timing == AvTiming.AFT_WD:
+        return av_pp_at(t, AvTiming.AFT_PREM) - withdrawals_mth_pp(t)
+    if timing == AvTiming.AFT_INT:
+        return av_pp_at(t, AvTiming.AFT_WD) + int_credited_mth_pp(t)
     raise ValueError("invalid timing")
 
 
@@ -1265,7 +1261,7 @@ def av_pp(t):
     """
     if t == 0:
         return av_pp_init()
-    return av_pp_at(t - 1, "AFT_INT") - soc_levy_mth_pp(t - 1)
+    return av_pp_at(t - 1, AvTiming.AFT_INT) - soc_levy_mth_pp(t - 1)
 
 
 def av_at(t, timing):
@@ -1301,9 +1297,14 @@ def guar_floor_pp(t):
         return av_pp_init()
     prev = (guar_floor_pp(t - 1) + prem_to_av_mth_pp(t - 1)
             - withdrawals_mth_pp(t - 1))
-    if guarantee_form() == "net" and is_anniv(t - 1):
+    if guarantee_form() == GuaranteeForm.net and is_anniv(t - 1):
         prev = prev - fee_pp(proj_year(t - 1))
     return prev
+
+
+def mort_schedule():
+    """The mortality rates at the policy's sex, by attained age."""
+    return data.mort_table().loc[sex()]                              # noqa: F821
 
 
 def mort_rate(t):
@@ -1323,8 +1324,8 @@ def mort_rate(t):
     released - far less than in any protection product.
     """
     x = min(age(t), omega_age)                                       # noqa: F821
-    return min(1.0, float(data.mort_table().loc[                     # noqa: F821
-        (sex(), x), "mort_rate"]) * mort_be_factor)                  # noqa: F821
+    return min(1.0, float(mort_schedule().loc[
+        x, "mort_rate"]) * mort_be_factor)                  # noqa: F821
 
 
 def mort_rate_mth(t):
@@ -1400,7 +1401,7 @@ def pols_if(t):
     """l(t): the number of policies in force at the **start** of month t."""
     if t == 0:
         return pols_if_init()
-    return pols_if_at(t - 1, "AFT_DECR")
+    return pols_if_at(t - 1, PolTiming.AFT_DECR)
 
 
 def pols_if_at(t, timing):
@@ -1422,12 +1423,12 @@ def pols_if_at(t, timing):
     month actually closes on: see the Space docstring on what a mid-year `dénouement` is
     paid.
     """
-    if timing == "BEF_DECR":
+    if timing == PolTiming.BEF_DECR:
         return pols_if(t)
-    if timing == "BEF_LAPSE":
+    if timing == PolTiming.BEF_LAPSE:
         return pols_if(t) * (1.0 - mort_rate_mth(t))
-    if timing == "AFT_DECR":
-        return pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate_mth(t))
+    if timing == PolTiming.AFT_DECR:
+        return pols_if_at(t, PolTiming.BEF_LAPSE) * (1.0 - lapse_rate_mth(t))
     raise ValueError("invalid timing")
 
 
@@ -1438,7 +1439,7 @@ def pols_death(t):
 
 def pols_lapse(t):
     """`Rachats totaux` at the end of month t, from the survivors of mortality."""
-    return pols_if_at(t, "BEF_LAPSE") * lapse_rate_mth(t)
+    return pols_if_at(t, PolTiming.BEF_LAPSE) * lapse_rate_mth(t)
 
 
 def db_pp(t):
@@ -1480,26 +1481,26 @@ def claim_pp(t, kind):
 
     There is no ``"MATURITY"``: the euro support has no term.
     """
-    if kind == "DEATH":
+    if kind == Kind.DEATH:
         return db_pp(t)
-    if kind == "LAPSE":
+    if kind == Kind.LAPSE:
         return cv_pp(t)
     raise ValueError("invalid kind")
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Benefit outgo in month t, by kind; the total when kind is omitted.
 
     ``"DEATH"`` and ``"LAPSE"`` weight :func:`claim_pp` by the corresponding decrement.
     `Rachats partiels` are **not** here: they are an owner election and live in
     :func:`withdrawals`.
     """
-    if kind is None:
-        return sum(claims(t, k) for k in ("DEATH", "LAPSE"))
-    if kind == "DEATH":
-        return claim_pp(t, "DEATH") * pols_death(t)
-    if kind == "LAPSE":
-        return claim_pp(t, "LAPSE") * pols_lapse(t)
+    if kind == Kind.ALL:
+        return sum(claims(t, k) for k in (Kind.DEATH, Kind.LAPSE))
+    if kind == Kind.DEATH:
+        return claim_pp(t, Kind.DEATH) * pols_death(t)
+    if kind == Kind.LAPSE:
+        return claim_pp(t, Kind.LAPSE) * pols_lapse(t)
     raise ValueError("invalid kind")
 
 
@@ -1551,7 +1552,7 @@ def liability_cf(t):
     revalorisation and the social levy are not in it: the first is a state movement and
     the second is a tax.
     """
-    return (claims(t, "DEATH") + claims(t, "LAPSE") + withdrawals(t)
+    return (claims(t, Kind.DEATH) + claims(t, Kind.LAPSE) + withdrawals(t)
             + expenses(t) - premiums(t))
 
 
@@ -1572,7 +1573,7 @@ def check_av_roll_fwd_resid(t):
     per-policy recursion.
     """
     return (av(t) + premiums(t) - withdrawals(t) + int_credited(t)
-            - soc_levy(t) - claims(t, "DEATH") - claims(t, "LAPSE")
+            - soc_levy(t) - claims(t, Kind.DEATH) - claims(t, Kind.LAPSE)
             - av(t + 1))
 
 
@@ -1810,8 +1811,8 @@ def result_cf():
             "pols_if": [pols_if(t) for t in ts],
             "premiums": [premiums(t) for t in ts],
             "withdrawals": [withdrawals(t) for t in ts],
-            "claims_death": [claims(t, "DEATH") for t in ts],
-            "claims_lapse": [claims(t, "LAPSE") for t in ts],
+            "claims_death": [claims(t, Kind.DEATH) for t in ts],
+            "claims_lapse": [claims(t, Kind.LAPSE) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "int_credited": [int_credited(t) for t in ts],
             "soc_levy": [soc_levy(t) for t in ts],
@@ -1911,3 +1912,15 @@ lapse_dyn_tol = 0.0025
 lapse_cap = 0.3
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+GuaranteeForm = ("Pickle", 3)
+
+Scenario = ("Pickle", 2)
+
+AvTiming = ("Pickle", 4)
+
+PolTiming = ("Pickle", 5)
+
+Kind = ("Pickle", 6)

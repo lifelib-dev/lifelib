@@ -56,6 +56,7 @@ import pytest
 from modelx.core.errors import FormulaError
 
 from jp_registry import model_path
+from lifelib.libraries.jplib.products.whole_life.enums import DividendType, Kind, PolTiming, Sex
 
 MODEL_DIR = model_path("WholeLife_JP_S")
 
@@ -216,8 +217,8 @@ def test_worked_example_row(jp_wl_anchor, t):
     assert a.mort_rate(t) == pytest.approx(q, rel=1e-12)
     assert a.pols_if(t) == pytest.approx(pols, abs=INFORCE)
     assert a.premiums(t) == pytest.approx(prem, abs=YEN)
-    assert a.claims(t, "DEATH") == pytest.approx(death, abs=YEN)
-    assert a.claims(t, "LAPSE") == pytest.approx(lapse, abs=YEN)
+    assert a.claims(t, Kind.DEATH) == pytest.approx(death, abs=YEN)
+    assert a.claims(t, Kind.LAPSE) == pytest.approx(lapse, abs=YEN)
     assert a.claim_expenses(t) == pytest.approx(claim_exp, abs=YEN)
     assert a.expenses(t) == pytest.approx(exp, abs=YEN)
     assert a.commissions(t) == pytest.approx(comm, abs=YEN)
@@ -304,7 +305,7 @@ def test_worked_example_first_month_trace(jp_wl_anchor):
     assert a.mort_rate(0) == pytest.approx(0.00068, rel=1e-12)
     assert a.mort_rate_mth(0) == pytest.approx(q_m, rel=1e-14)
     assert a.pols_death(0) == pytest.approx(q_m, rel=1e-12)
-    assert a.claims(0, "DEATH") == pytest.approx(5000000.0 * q_m, abs=YEN)
+    assert a.claims(0, Kind.DEATH) == pytest.approx(5000000.0 * q_m, abs=YEN)
     assert a.claim_expenses(0) == pytest.approx(20000.0 * q_m, abs=YEN)
     assert a.lapse_rate(0) == 0.04
     assert a.lapse_rate_mth(0) == pytest.approx(w_m, rel=1e-14)
@@ -410,8 +411,8 @@ def test_worked_example_cliff_trace(jp_wl_anchor):
     # the month before closes on the suppressed side
     assert a.cv_at_m(179) == pytest.approx(2037287.04, abs=YEN)
     assert a.cv_mult_at_m(179) == 0.70 and a.cv_mult_at_m(180) == 1.0
-    assert a.claims(180, "LAPSE") == pytest.approx(313122.87, abs=YEN)
-    assert a.claims(180, "LAPSE") == pytest.approx(
+    assert a.claims(180, Kind.LAPSE) == pytest.approx(313122.87, abs=YEN)
+    assert a.claims(180, Kind.LAPSE) == pytest.approx(
         a.cv_at_m(181) * a.pols_lapse(180), rel=1e-12)
     # One month either side: -4,504.50 before, -314,191.52 at the cliff.
     assert a.net_cf(179) == pytest.approx(-4504.50, abs=YEN)
@@ -562,12 +563,12 @@ def test_pitfall_off_by_one_at_the_boundary(jp_wl_anchor):
     # eleven of the twelve months of policy year m settle before the step
     for t in range(mm - 12, mm - 1):
         assert a.cv_mult_at_m(t + 1) == 0.70
-        assert a.claims(t, "LAPSE") == pytest.approx(
+        assert a.claims(t, Kind.LAPSE) == pytest.approx(
             a.cv_susp_at_m(t + 1) * a.pols_lapse(t), rel=1e-12)
     # the twelfth closes exactly on it, on the full value
     assert a.cv_mult_at_m(mm) == 1.0
     assert a.cv_at_m(mm) == pytest.approx(a.cv_pp(m), rel=1e-14)
-    assert a.claims(mm - 1, "LAPSE") == pytest.approx(
+    assert a.claims(mm - 1, Kind.LAPSE) == pytest.approx(
         a.cv_pp(m) * a.pols_lapse(mm - 1), rel=1e-12)
     # and the step is still worth 1/k, with both values published at the anniversary
     assert a.cv_pp(m) != pytest.approx(a.cv_pp_susp(m), rel=1e-6)
@@ -728,8 +729,8 @@ def test_pitfall_premiums_stop_at_m_and_nothing_else_does(jp_wl_anchor):
         assert a.premiums(t) == 0.0
         assert a.commissions(t) == 0.0
         assert a.expenses(t) > 0.0
-        assert a.claims(t, "DEATH") > 0.0
-    assert a.claims(12 * m, "LAPSE") > 0.0
+        assert a.claims(t, Kind.DEATH) > 0.0
+    assert a.claims(12 * m, Kind.LAPSE) > 0.0
     # The cash value keeps growing after the premiums stop.
     assert a.cv_pp(a.proj_years() - 1) > a.cv_pp(m)
     late = sum(a.pols_death(t) for t in range(480, a.proj_len()))
@@ -747,8 +748,8 @@ def test_pitfall_terminal_age_and_table_basis(whole_life):
     both to be stated wherever the basis is described.
     """
     male, female = whole_life.Projection[1], whole_life.Projection[4]
-    assert male.sex() == "M" and male.omega_age() == 109
-    assert female.sex() == "F" and female.omega_age() == 113
+    assert male.sex() == Sex.M and male.omega_age() == 109
+    assert female.sex() == Sex.F and female.omega_age() == 113
     assert male.proj_years() == 109 - 30 + 1 == 80
     assert female.proj_years() == 113 - 45 + 1 == 69
     # The frame stops in the FIRST month of the terminal policy year: the table's rate at
@@ -802,8 +803,8 @@ def test_pitfall_living_needs_accelerates_rather_than_adds(whole_life):
     death benefit and the surrender value.
     """
     a = whole_life.Projection[1]
-    assert a.claims(108) == pytest.approx(
-        a.claims(108, "DEATH") + a.claims(108, "LAPSE"), rel=1e-12)
+    assert a.claims(108, Kind.ALL) == pytest.approx(
+        a.claims(108, Kind.DEATH) + a.claims(108, Kind.LAPSE), rel=1e-12)
     with pytest.raises(FormulaError):
         a.claims(108, "LIVING_NEEDS")
     assert all(a.sum_assured_at(t) == a.sum_assured() for t in (0, 168, 468, 948))
@@ -828,11 +829,11 @@ def test_pitfall_everything_is_floored_at_zero(whole_life):
     assert fail == 52
     assert p.loan_fail_month() == 12 * fail == 624      # the month it takes effect in
     assert p.loan_pp(fail) > p.cv_pp(fail)              # the loan has outgrown the value
-    assert p.claims(12 * fail, "LAPSE") == 0.0          # and the benefit is exactly zero
+    assert p.claims(12 * fail, Kind.LAPSE) == 0.0          # and the benefit is exactly zero
     assert p.pols_loan_exit(12 * fail) > 0.0
     for t in range(p.proj_len()):
-        assert p.claims(t, "DEATH") >= 0.0
-        assert p.claims(t, "LAPSE") >= 0.0
+        assert p.claims(t, Kind.DEATH) >= 0.0
+        assert p.claims(t, Kind.LAPSE) >= 0.0
     # cv_pp is anniversary-indexed, d = 0 ... proj_years(), so its sweep is in years.
     for d in range(p.proj_years() + 1):
         assert p.cv_pp(d) >= 0.0
@@ -938,18 +939,18 @@ def test_death_is_decremented_before_lapse(jp_wl_anchor):
     """The notes' processing order: surrenders come from the survivors of mortality."""
     a = jp_wl_anchor
     for t in (0, 48, 168, 468):
-        assert a.pols_if_at(t, "BEF_DECR") == a.pols_if(t)
+        assert a.pols_if_at(t, PolTiming.BEF_DECR) == a.pols_if(t)
         # the MONTHLY rates, not the annual ones the tables are stated on
-        assert a.pols_if_at(t, "BEF_LAPSE") == pytest.approx(
+        assert a.pols_if_at(t, PolTiming.BEF_LAPSE) == pytest.approx(
             a.pols_if(t) * (1 - a.mort_rate_mth(t)), rel=1e-14)
         assert a.pols_lapse_base(t) == pytest.approx(
-            a.pols_if_at(t, "BEF_LAPSE") * a.lapse_rate_mth(t), rel=1e-14)
+            a.pols_if_at(t, PolTiming.BEF_LAPSE) * a.lapse_rate_mth(t), rel=1e-14)
         # and the cliff surge after ordinary surrender, in the one month it fires
-        assert a.pols_if_at(t, "BEF_SPIKE") == pytest.approx(
-            a.pols_if_at(t, "BEF_LAPSE") * (1 - a.lapse_rate_mth(t)), rel=1e-14)
-        assert a.pols_if_at(t, "AFT_DECR") == pytest.approx(a.pols_if(t + 1), abs=1e-14)
-    assert a.pols_if_at(180, "AFT_DECR") == pytest.approx(
-        a.pols_if_at(180, "BEF_SPIKE") * 0.85, rel=1e-14)
+        assert a.pols_if_at(t, PolTiming.BEF_SPIKE) == pytest.approx(
+            a.pols_if_at(t, PolTiming.BEF_LAPSE) * (1 - a.lapse_rate_mth(t)), rel=1e-14)
+        assert a.pols_if_at(t, PolTiming.AFT_DECR) == pytest.approx(a.pols_if(t + 1), abs=1e-14)
+    assert a.pols_if_at(180, PolTiming.AFT_DECR) == pytest.approx(
+        a.pols_if_at(180, PolTiming.BEF_SPIKE) * 0.85, rel=1e-14)
 
 
 def test_the_policy_value_rolls_forward_on_its_own_basis(jp_wl_anchor):
@@ -1170,19 +1171,19 @@ def test_the_five_year_dividend_is_off_in_the_base_run_and_declares_when_elected
     participating variant is a real product in the source set.
     """
     a = whole_life.Projection[1]
-    assert a.dividend_type() == "none"
+    assert a.dividend_type() == DividendType.none
     assert "dividends" in a.result_cf().columns
     assert (a.result_cf()["dividends"] == 0.0).all()
 
     p = whole_life.Projection[9]
-    assert p.dividend_type() == "five_year"
+    assert p.dividend_type() == DividendType.five_year
     # A declaration is an event on a date, so it falls in the LAST MONTH of every fifth
     # policy year - t = 59, 119, 179, ... - and is declared on the value at the
     # anniversary that closes it.
     assert p.dividends(58) == 0.0
     assert p.dividends(59) == pytest.approx(11934.01, abs=YEN)
     assert p.dividends(59) == pytest.approx(
-        0.0025 * 5 * p.pol_val_pp(5) * p.pols_if_at(59, "BEF_LAPSE"), rel=1e-12)
+        0.0025 * 5 * p.pol_val_pp(5) * p.pols_if_at(59, PolTiming.BEF_LAPSE), rel=1e-12)
     assert [t for t in range(540) if p.dividends(t) != 0.0] == list(range(59, 540, 60))
     assert p.result_cf()["dividends"].sum() == pytest.approx(79917.65, abs=YEN)
 
@@ -1226,7 +1227,7 @@ def test_there_is_no_maturity_benefit_and_no_tail_states(whole_life):
     for absent in ("pols_maturity", "claims_maturity", "policy_term", "maturity_age"):
         assert absent not in names, f"{absent}: this contract does not mature"
     t_end = a.proj_len() - 1
-    assert a.claims(t_end) == pytest.approx(a.claims(t_end, "DEATH"), rel=1e-12)
+    assert a.claims(t_end, Kind.ALL) == pytest.approx(a.claims(t_end, Kind.DEATH), rel=1e-12)
     assert a.pols_lapse(t_end) == 0.0        # nobody survives to surrender
     with pytest.raises(FormulaError):
         a.claims(0, "MATURITY")

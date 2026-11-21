@@ -423,10 +423,7 @@ def sex():
     prices every point on its own ``sex`` row only through the *decrements*, which is what
     model points 1 and 7 exist to make visible.
     """
-    v = model_point()["sex"]
-    if v not in ("M", "F"):
-        raise ValueError("invalid sex")
-    return v
+    return Sex[model_point()["sex"]]
 
 
 def smoker():
@@ -437,10 +434,7 @@ def smoker():
     through a formula: DAV 2008 T R / NR exist for smoker-differentiated pricing but are not
     public, and no German insurer publishes a loading scale.
     """
-    v = model_point()["smoker"]
-    if v not in ("N", "S"):
-        raise ValueError("invalid smoker")
-    return v
+    return Smoker[model_point()["smoker"]]
 
 
 def issue_year():
@@ -535,10 +529,7 @@ def prem_freq():
     ``annual``, ``half_yearly``, ``quarterly`` or ``monthly``.  The frequency buys a
     *Ratenzahlungszuschlag* only where :func:`unterjaehrig_form` is ``unecht``.
     """
-    v = model_point()["prem_freq"]
-    if v not in data.freq_loading_table().index:                     # noqa: F821
-        raise ValueError("no frequency loading for prem_freq " + str(v))
-    return v
+    return PremFreq[model_point()["prem_freq"]]
 
 
 def unterjaehrig_form():
@@ -550,10 +541,7 @@ def unterjaehrig_form():
     applies**.  Model points 4 and 5 are the same monthly contract under the two readings, and
     the distinction is entirely lost on a model that treats frequency as a single multiplier.
     """
-    v = model_point()["unterjaehrig_form"]
-    if v not in ("echt", "unecht"):
-        raise ValueError("invalid unterjaehrig_form")
-    return v
+    return UnterjaehrigForm[model_point()["unterjaehrig_form"]]
 
 
 def rechnungszins():
@@ -592,10 +580,7 @@ def surplus_use():
     ``ans_rate > rechnungszins``, the first pays more at maturity and the second more on an
     early death - the asymmetry the corpus records and pitfall 15 asserts.
     """
-    v = model_point()["surplus_use"]
-    if v not in ("ansammlung", "bonus", "beitragsverrechnung"):
-        raise ValueError("invalid surplus_use")
-    return v
+    return SurplusUse[model_point()["surplus_use"]]
 
 
 def scenario_id():
@@ -815,9 +800,9 @@ def mort_rate_at_age(x):
     see the ``Data`` docstring for what a replacement must preserve.
     """
     tbl = data.mort_table()                                          # noqa: F821
-    return (unisex_share * float(tbl.loc[("M", int(x)), "mort_rate_1st"])   # noqa: F821
+    return (unisex_share * float(tbl.loc[(Sex.M, int(x)), "mort_rate_1st"])   # noqa: F821
             + (1.0 - unisex_share)                                   # noqa: F821
-            * float(tbl.loc[("F", int(x)), "mort_rate_1st"]))
+            * float(tbl.loc[(Sex.F, int(x)), "mort_rate_1st"]))
 
 
 def mort_rate_base(t):
@@ -939,7 +924,7 @@ def prem_freq_load():
     annual one and carries no loading.  Model points 4 and 5 are the same monthly contract
     under the two readings.
     """
-    if unterjaehrig_form() == "echt":
+    if unterjaehrig_form() == UnterjaehrigForm.echt:
         return 1.0
     return float(data.freq_loading_table().loc[                      # noqa: F821
         prem_freq(), "prem_freq_load"])
@@ -1272,16 +1257,16 @@ def res_pp_at(k, timing):
         :func:`res_pp` computes the same quantity prospectively - which is what gives
         :func:`check_res_roll_fwd` its teeth.
     """
-    if timing == "BEF_PREM":
+    if timing == ResTiming.BEF_PREM:
         return res_pp(k)
-    if timing == "AFT_PREM":
+    if timing == ResTiming.AFT_PREM:
         prem = (prem_zill_pp()
                 if (k < prem_term() and not is_paid_up(k)) else 0.0)
         return res_pp(k) + prem + bfz_uplift_pp(k)
-    if timing == "AFT_INT":
+    if timing == ResTiming.AFT_INT:
         q = mort_rate_at_age(age_y(k))
         si = bfz_si_pp() if is_paid_up(k) else sum_assured()
-        return ((res_pp_at(k, "AFT_PREM") * (1.0 + rechnungszins())
+        return ((res_pp_at(k, ResTiming.AFT_PREM) * (1.0 + rechnungszins())
                  - rating_factor() * q * si * death_ratio()) / (1.0 - q))
     raise ValueError("invalid timing")
 
@@ -1363,6 +1348,11 @@ def res_guar_pp(k):
 
 # --- the Ueberschussbeteiligung --------------------------------------------
 
+def surplus_rates():
+    """The declared surplus rates of this policy's scenario, by policy year."""
+    return data.surplus_rate_table().loc[scenario_id()]              # noqa: F821
+
+
 def decl_rate(k):
     """d(k): the declared *laufende Verzinsung* in policy year k, from the scenario table.
 
@@ -1376,9 +1366,9 @@ def decl_rate(k):
     The table is keyed by the **contractual, 1-based** ``policy_year``, so the lookup goes
     through :func:`policy_year`, clamped at the table's last row.
     """
-    tbl = data.surplus_rate_table()                                  # noqa: F821
-    y = min(policy_year_y(k), int(tbl.loc[scenario_id()].index.max()))
-    return float(tbl.loc[(scenario_id(), y), "decl_rate"])
+    sub = surplus_rates()
+    y = min(policy_year_y(k), int(sub.index.max()))
+    return float(sub.loc[y, "decl_rate"])
 
 
 def zins_ueberschuss_rate(k):
@@ -1402,9 +1392,9 @@ def term_rate(k):
     surrender unless ``term_surr_share`` is raised.  Keyed by the contractual, 1-based
     ``policy_year``, so the lookup goes through :func:`policy_year`.
     """
-    tbl = data.surplus_rate_table()                                  # noqa: F821
-    y = min(policy_year_y(k), int(tbl.loc[scenario_id()].index.max()))
-    return float(tbl.loc[(scenario_id(), y), "term_rate"])
+    sub = surplus_rates()
+    y = min(policy_year_y(k), int(sub.index.max()))
+    return float(sub.loc[y, "term_rate"])
 
 
 def ans_rate(k):
@@ -1417,9 +1407,9 @@ def ans_rate(k):
     Keyed by the contractual, 1-based ``policy_year``, so the lookup goes through
     :func:`policy_year`.
     """
-    tbl = data.surplus_rate_table()                                  # noqa: F821
-    y = min(policy_year_y(k), int(tbl.loc[scenario_id()].index.max()))
-    return float(tbl.loc[(scenario_id(), y), "ans_rate"])
+    sub = surplus_rates()
+    y = min(policy_year_y(k), int(sub.index.max()))
+    return float(sub.loc[y, "ans_rate"])
 
 
 def surplus_base_pp(k):
@@ -1443,7 +1433,7 @@ def surplus_base_pp(k):
     inert at the pre-2015 40 ‰ ceiling, and it is the kind of guard whose absence is invisible
     until the parameter that needs it arrives.
     """
-    return max(res_pp_at(k, "AFT_INT"), 0.0)
+    return max(res_pp_at(k, ResTiming.AFT_INT), 0.0)
 
 
 def surplus_credit_pp(k):
@@ -1494,7 +1484,7 @@ def av_sur_pp(k):
     """
     if k <= k_start():
         return av_sur_pp_init()
-    return av_sur_pp_at(k - 1, "AFT_CREDIT")
+    return av_sur_pp_at(k - 1, SurTiming.AFT_CREDIT)
 
 
 def av_sur_pp_at(k, timing):
@@ -1513,14 +1503,14 @@ def av_sur_pp_at(k, timing):
         death, maturity or surrender at the end of year k is paid on top of the
         guaranteed benefit.
     """
-    if timing == "BEF_INT":
+    if timing == SurTiming.BEF_INT:
         return av_sur_pp(k)
-    if timing == "AFT_INT":
+    if timing == SurTiming.AFT_INT:
         return av_sur_pp(k) * (1.0 + ans_rate(k))
-    if timing == "AFT_CREDIT":
+    if timing == SurTiming.AFT_CREDIT:
         credit = (surplus_credit_pp(k)
-                  if surplus_use() == "ansammlung" else 0.0)
-        return av_sur_pp_at(k, "AFT_INT") + credit
+                  if surplus_use() == SurplusUse.ansammlung else 0.0)
+        return av_sur_pp_at(k, SurTiming.AFT_INT) + credit
     raise ValueError("invalid timing")
 
 
@@ -1558,7 +1548,7 @@ def bonus_si_pp(k):
     if k <= k_start():
         return bonus_si_init()
     add = (surplus_credit_pp(k - 1) / pu_single_prem(k)
-           if surplus_use() == "bonus" else 0.0)
+           if surplus_use() == SurplusUse.bonus else 0.0)
     return bonus_si_pp(k - 1) + add
 
 
@@ -1576,7 +1566,7 @@ def prem_offset_pp(k):
     § 163 VVG at all.  That is why the renewal commission is charged on
     :func:`prem_charged_pp` and not on :func:`prem_paid_pp`.
     """
-    if surplus_use() != "beitragsverrechnung":
+    if surplus_use() != SurplusUse.beitragsverrechnung:
         return 0.0
     if k <= k_start():
         return 0.0
@@ -1793,7 +1783,7 @@ def pols_if(t):
         return 0.0
     if t == t_start():
         return pols_if_init()
-    return pols_if_at(t - 1, "AFT_LAPSE")
+    return pols_if_at(t - 1, PolsTiming.AFT_LAPSE)
 
 
 def pols_if_at(t, timing):
@@ -1813,14 +1803,14 @@ def pols_if_at(t, timing):
         l(t+1), the end-of-month state.  Through the final policy year :func:`lapse_rate` is
         zero, so in the last month this equals :func:`pols_maturity`.
     """
-    if timing == "BEF_DECR":
+    if timing == PolsTiming.BEF_DECR:
         return pols_if(t)
-    if timing == "AFT_MORT":
+    if timing == PolsTiming.AFT_MORT:
         return pols_if(t) * (1.0 - mort_rate_mth(t))
-    if timing == "AFT_LAPSE":
+    if timing == PolsTiming.AFT_LAPSE:
         if t < t_start() or t > proj_len() - 1:
             return 0.0
-        return pols_if_at(t, "AFT_MORT") * (1.0 - lapse_rate_mth(t))
+        return pols_if_at(t, PolsTiming.AFT_MORT) * (1.0 - lapse_rate_mth(t))
     raise ValueError("invalid timing")
 
 
@@ -1843,7 +1833,7 @@ def pols_lapse(t):
     lapse pays nothing.  Zero through the final policy year, where the survivors leave as a
     maturity instead.
     """
-    return pols_if_at(t, "AFT_MORT") * lapse_rate_mth(t)
+    return pols_if_at(t, PolsTiming.AFT_MORT) * lapse_rate_mth(t)
 
 
 def pols_maturity(t):
@@ -1855,7 +1845,7 @@ def pols_maturity(t):
     """
     if t != proj_len() - 1:
         return 0.0
-    return pols_if_at(t, "AFT_MORT")
+    return pols_if_at(t, PolsTiming.AFT_MORT)
 
 
 # --- benefits --------------------------------------------------------------
@@ -2024,7 +2014,7 @@ def surr_value_pp(t):
             + term_surr_share * term_bonus_close_pp(t))               # noqa: F821
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Benefit outgo in month t, by kind; the total when kind is omitted.
 
     ``"DEATH"``
@@ -2043,18 +2033,23 @@ def claims(t, kind=None):
         often large outflow, and in the last month the distinction between it and a
         maturity decides a payment rather than only a label.
     """
-    if kind is None:
-        return sum(claims(t, k) for k in ("DEATH", "MATURITY", "LAPSE"))
-    if kind == "DEATH":
+    if kind == Kind.ALL:
+        return sum(claims(t, k) for k in (Kind.DEATH, Kind.MATURITY, Kind.LAPSE))
+    if kind == Kind.DEATH:
         return pols_death(t) * benefit_death_pp(t)
-    if kind == "MATURITY":
+    if kind == Kind.MATURITY:
         return pols_maturity(t) * benefit_maturity_pp(t)
-    if kind == "LAPSE":
+    if kind == Kind.LAPSE:
         return pols_lapse(t) * surr_value_pp(t)
     raise ValueError("invalid kind")
 
 
 # --- expenses and commission -----------------------------------------------
+
+def cost_row():
+    """The cost and commission assumptions of this policy's cost_id."""
+    return data.cost_table().loc[cost_id()]                          # noqa: F821
+
 
 def inflation_factor(k):
     """The expense inflation factor in policy year k: ``(1 + expense_infl)^k`` **[std]**.
@@ -2064,7 +2059,7 @@ def inflation_factor(k):
     year from issue, the exponent is ``k`` itself and is 1.0 in the first policy year.
     1,8 % p.a. is a placeholder.
     """
-    infl = float(data.cost_table().loc[cost_id(), "expense_infl"])   # noqa: F821
+    infl = float(cost_row()["expense_infl"])
     return (1.0 + infl) ** k
 
 
@@ -2075,7 +2070,7 @@ def claim_expenses(t):
     the only expense line that scales with **claims** rather than with policies, and it is
     inside :func:`expenses`.
     """
-    ce = float(data.cost_table().loc[cost_id(), "claim_expense"])    # noqa: F821
+    ce = float(cost_row()["claim_expense"])
     return ce * (pols_death(t) + pols_lapse(t) + pols_maturity(t))
 
 
@@ -2095,7 +2090,7 @@ def expenses_pp(t):
     modestly exceeds what the *Zillmerung* recovers, so that the anchor cell carries the
     new-business strain a real German endowment carries.
     """
-    cost = data.cost_table().loc[cost_id()]                          # noqa: F821
+    cost = cost_row()
     acq = (float(cost["acq_expense"])
            if (t == t_start() and duration_init() == 0) else 0.0)
     return (acq + float(cost["maint_expense"]) / 12.0
@@ -2136,7 +2131,7 @@ def commissions(t):
     :func:`prem_inst_pp`: under *Beitragsverrechnung* the intermediary is paid on the tariff
     premium, the surplus offset being a policyholder rebate rather than a price reduction.
     """
-    cost = data.cost_table().loc[cost_id()]                          # noqa: F821
+    cost = cost_row()
     init = (float(cost["comm_init_rate"]) * beitragssumme() * pols_if(t)
             if (t == t_start() and duration_init() == 0) else 0.0)
     renew = (float(cost["comm_renew_rate"]) * prem_charged_inst_pp(t) * pols_if(t)
@@ -2160,8 +2155,8 @@ def net_cf(t):
     *Ablauf*, -28 172,76 €.  The new-business strain of this product sits in the **reserve**,
     which opens at -1 252,53 €, and not in the cash flow.
     """
-    return (premiums(t) - claims(t, "DEATH") - claims(t, "MATURITY")
-            - claims(t, "LAPSE") - expenses(t) - commissions(t))
+    return (premiums(t) - claims(t, Kind.DEATH) - claims(t, Kind.MATURITY)
+            - claims(t, Kind.LAPSE) - expenses(t) - commissions(t))
 
 
 def liability_cf(t):
@@ -2219,7 +2214,7 @@ def check_pols_roll_fwd_resid(t):
     """
     r = (pols_if(t) - pols_if(t + 1) - pols_death(t) - pols_lapse(t))
     if t == proj_len() - 1:
-        r += pols_maturity(t) - pols_if_at(t, "AFT_MORT")
+        r += pols_maturity(t) - pols_if_at(t, PolsTiming.AFT_MORT)
     return r
 
 
@@ -2283,7 +2278,7 @@ def check_res_roll_fwd_resid(k):
     It is a **policy-year** identity and stays one on the monthly grid: an annual Fackler
     recursion at an annual *Rechnungszins*, which is what the tariff defines.
     """
-    return res_pp_at(k, "AFT_INT") - res_pp(k + 1)
+    return res_pp_at(k, ResTiming.AFT_INT) - res_pp(k + 1)
 
 
 def check_res_roll_fwd():
@@ -2309,10 +2304,10 @@ def check_surplus_roll_fwd_resid(k):
     paying it twice.  All three are **policy-year** ledgers and stay so: the declaration is an
     annual act and the finer grid does not subdivide it.
     """
-    if surplus_use() == "ansammlung":
+    if surplus_use() == SurplusUse.ansammlung:
         return (av_sur_pp(k + 1)
                 - (av_sur_pp(k) * (1.0 + ans_rate(k)) + surplus_credit_pp(k)))
-    if surplus_use() == "bonus":
+    if surplus_use() == SurplusUse.bonus:
         return (bonus_si_pp(k + 1)
                 - (bonus_si_pp(k)
                    + surplus_credit_pp(k) / pu_single_prem(k + 1)))
@@ -2493,9 +2488,9 @@ def result_cf():
         {
             "pols_if": [pols_if(t) for t in ts],
             "premiums": [premiums(t) for t in ts],
-            "claims_death": [claims(t, "DEATH") for t in ts],
-            "claims_maturity": [claims(t, "MATURITY") for t in ts],
-            "claims_lapse": [claims(t, "LAPSE") for t in ts],
+            "claims_death": [claims(t, Kind.DEATH) for t in ts],
+            "claims_maturity": [claims(t, Kind.MATURITY) for t in ts],
+            "claims_lapse": [claims(t, Kind.LAPSE) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "commissions": [commissions(t) for t in ts],
             "net_cf": [net_cf(t) for t in ts],
@@ -2595,3 +2590,21 @@ unisex_share = 0.5
 roll_fwd_tol = 1e-10
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+Smoker = ("Pickle", 3)
+
+PremFreq = ("Pickle", 2)
+
+UnterjaehrigForm = ("Pickle", 4)
+
+SurplusUse = ("Pickle", 5)
+
+ResTiming = ("Pickle", 6)
+
+SurTiming = ("Pickle", 7)
+
+PolsTiming = ("Pickle", 8)
+
+Kind = ("Pickle", 9)

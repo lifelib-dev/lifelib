@@ -42,6 +42,7 @@ import pytest
 from modelx.core.errors import FormulaError
 
 from jp_registry import model_path
+from lifelib.libraries.jplib.products.fx_whole_life.enums import AvTiming, ChargeItem, Currency, IdbBasis, Kind, PolTiming, Sex, Shape, TargetAction
 
 # The model folder, located through the registry rather than by walking the tree, so that
 # a copy made by ``lifelib.create()`` tests *that copy's* model.
@@ -106,17 +107,17 @@ POINT_IDS = list(
 def test_the_anchor_cell_is_the_worked_examples_model_point(jp_fxwl_anchor):
     """Model point 1 is the cell the notes' worked example projects."""
     p = jp_fxwl_anchor
-    assert p.shape() == "LEVEL"
-    assert p.sex() == "M"
+    assert p.shape() == Shape.LEVEL
+    assert p.sex() == Sex.M
     assert p.issue_age() == 40
-    assert p.currency() == "USD"
+    assert p.currency() == Currency.USD
     assert p.sum_assured() == 100_000.0
     assert p.premium_mth_pp() == 239.60          # sourced, not constructed [S2]
     assert p.prem_months() == 240                # 60歳払込満了
     assert p.credit_rate() == 0.0300
     assert p.guar_floor() == 0.0300              # the base run sits on the floor
     assert p.low_cv() is False
-    assert p.idb_basis() == "fund"
+    assert p.idb_basis() == IdbBasis.fund
     assert p.target_on() is False
     assert p.mort_be_factor() == 1.00
     assert p.fx_rate(0) == 159.43
@@ -204,14 +205,14 @@ def trace_actual(p, t):
     return {
         "premiums": p.premiums(t),
         "charge_init": p.charge_init(t),
-        "av_aft_prem": p.av_pp_at(t, "AFT_PREM"),
+        "av_aft_prem": p.av_pp_at(t, AvTiming.AFT_PREM),
         "charge_maint": p.charge_maint(t),
-        "av_aft_maint": p.av_pp_at(t, "AFT_CHARGE_MAINT"),
+        "av_aft_maint": p.av_pp_at(t, AvTiming.AFT_CHARGE_MAINT),
         "charge_coi": p.charge_coi(t),
         "av_next": p.av_pp(t + 1),
         "cv_next": p.cv_pp(t + 1),
-        "claims_death": p.claims(t, "DEATH"),
-        "claims_lapse": p.claims(t, "LAPSE"),
+        "claims_death": p.claims(t, Kind.DEATH),
+        "claims_lapse": p.claims(t, Kind.LAPSE),
         "claim_expenses": p.claim_expenses(t),
         "expenses": p.expenses(t),
         "commissions": p.commissions(t),
@@ -375,8 +376,8 @@ def test_most_death_claims_arrive_after_the_premiums_stop(fx_whole_life):
     understatement rather than a simplification.
     """
     p = fx_whole_life.Projection[1]
-    after = sum(p.claims(t, "DEATH") for t in range(240, p.proj_len()))
-    total = sum(p.claims(t, "DEATH") for t in range(p.proj_len()))
+    after = sum(p.claims(t, Kind.DEATH) for t in range(240, p.proj_len()))
+    total = sum(p.claims(t, Kind.DEATH) for t in range(p.proj_len()))
     assert after / total == pytest.approx(0.852, abs=5e-4)
 
 
@@ -521,7 +522,7 @@ def test_the_account_value_charges_are_not_cash_flows(jp_fxwl_anchor):
     assert p.premiums(0) == pytest.approx(239.60, abs=1e-9)
     assert p.prem_to_av_pp(0) == pytest.approx(148.5520, abs=5e-5)
     assert p.charge_init(0) + p.prem_to_av_pp(0) == pytest.approx(239.60, abs=1e-9)
-    rebuilt = (p.premiums(0) - p.claims(0) - p.conversions(0)
+    rebuilt = (p.premiums(0) - p.claims(0, Kind.ALL) - p.conversions(0)
                - p.claim_expenses(0) - p.expenses(0) - p.commissions(0))
     assert p.net_cf(0) == pytest.approx(rebuilt, abs=1e-9)
     assert p.check_net_cf() is True
@@ -535,7 +536,7 @@ def test_av_pp_is_not_cv_pp(jp_fxwl_anchor):
     p = jp_fxwl_anchor
     assert p.cv_pp(1) < p.av_pp(1)
     assert p.cv_pp(1) == pytest.approx(p.av_pp(1) * 0.93, abs=1e-9)
-    assert p.claims(0, "LAPSE") == pytest.approx(
+    assert p.claims(0, Kind.LAPSE) == pytest.approx(
         p.cv_pp(1) * p.pols_lapse(0), abs=1e-9)
     assert p.check_cv_ledger() is True
 
@@ -619,8 +620,8 @@ def test_the_special_reserve_shares_reproduce_the_published_amounts(
     the recursion does and what the fit assumed.
     """
     p = fx_whole_life.Projection[1]
-    assert p.charge_param("special_reserve_rate_10") == 0.24
-    assert p.charge_param("special_reserve_rate_20") == 0.16
+    assert p.charge_param(ChargeItem.special_reserve_rate_10) == 0.24
+    assert p.charge_param(ChargeItem.special_reserve_rate_20) == 0.16
 
     table = fx_whole_life.Data.model_point_table()
     saved = table.loc[1, "credit_rate"]
@@ -690,12 +691,12 @@ def test_the_uplift_benchmark_basis_is_a_switch_in_both_positions(fx_whole_life)
     while the fund benchmark is already below it.
     """
     base = fx_whole_life.Projection[1]
-    assert base.idb_basis() == "fund"
+    assert base.idb_basis() == IdbBasis.fund
     assert base.idb_pp(240) == pytest.approx(
         max(0.0, base.av_pp(240) - base.av0_pp(240)), abs=1e-9)
 
     pro = fx_whole_life.Projection[7]
-    assert pro.idb_basis() == "prospective"
+    assert pro.idb_basis() == IdbBasis.prospective
     for t in (120, 300, 600):
         assert pro.idb_pp(t) == pytest.approx(
             max(0.0, pro.av_pp(t) - pro.av0_pro_pp(t)), abs=1e-9)
@@ -849,7 +850,7 @@ def test_a_refused_claim_still_pays_the_fund(fx_whole_life):
         assert absent not in names, f"{absent}: a zero-payment exclusion decrement"
     p = fx_whole_life.Projection[1]
     for t in (0, 1, 120, 240, 600):
-        assert p.claims(t, "DEATH") == pytest.approx(
+        assert p.claims(t, Kind.DEATH) == pytest.approx(
             p.benefit_pp(t) * p.pols_death(t), abs=1e-9)
         assert p.av_pp(t + 1) > 0.0
         assert p.cv_pp(t + 1) > 0.0
@@ -900,9 +901,9 @@ def test_the_mva_reconstruction_at_month_36(fx_whole_life, delta):
     """
     p = fx_whole_life.Projection[3]
     assert p.mva_rem(36) == pytest.approx(12.0, abs=1e-12)
-    a = p.charge_param("mva_spread")
-    r0 = p.charge_param("mva_base_rate")
-    d = p.charge_param("mva_damping")
+    a = p.charge_param(ChargeItem.mva_spread)
+    r0 = p.charge_param(ChargeItem.mva_base_rate)
+    d = p.charge_param(ChargeItem.mva_damping)
     mva = 1 - (1 + (delta + a) / (1 + r0)) ** (-d * p.mva_rem(36))
     want_mva, want_cv = MVA_ROW[delta]
     assert mva == pytest.approx(want_mva, abs=5e-7)
@@ -981,7 +982,7 @@ def test_the_single_shape_carries_no_in_force_charge(fx_whole_life):
     assert p.maint_rate() == 0.0
     assert p.coi_charged() is False
     assert p.charge_init(0) == pytest.approx(0.045 * 100_000.0, abs=1e-9)
-    assert p.av_pp_at(0, "AFT_PREM") == pytest.approx(95_500.00, abs=5e-3)
+    assert p.av_pp_at(0, AvTiming.AFT_PREM) == pytest.approx(95_500.00, abs=5e-3)
     assert p.charge_maint(36) == 0.0
     assert p.charge_coi(36) == 0.0
     assert p.av_pp(36) == pytest.approx(95_500.0 * 1.0472 ** 3, abs=5e-3)
@@ -1062,8 +1063,8 @@ def test_the_two_target_elections_book_the_value_in_different_places(fx_whole_li
     """
     conv = fx_whole_life.Projection[3]
     surr = fx_whole_life.Projection[4]
-    assert conv.target_action() == "convert"
-    assert surr.target_action() == "surrender"
+    assert conv.target_action() == TargetAction.convert
+    assert surr.target_action() == TargetAction.surrender
 
     m = conv.target_month()
     assert conv.conversions(m - 1) > 0.0
@@ -1105,10 +1106,10 @@ def test_target_action_has_no_default(fx_whole_life):
     ``"none"`` is legal only where the rider is not elected, and the two elections are
     the only other values the cells accepts.
     """
-    assert fx_whole_life.Projection[3].target_action() == "convert"
-    assert fx_whole_life.Projection[4].target_action() == "surrender"
+    assert fx_whole_life.Projection[3].target_action() == TargetAction.convert
+    assert fx_whole_life.Projection[4].target_action() == TargetAction.surrender
     assert fx_whole_life.Projection[1].target_on() is False
-    assert fx_whole_life.Projection[1].target_action() == "none"
+    assert fx_whole_life.Projection[1].target_action() == TargetAction.none
 
 
 # ---------------------------------------------------------------------------
@@ -1257,11 +1258,11 @@ def test_the_horizon_is_the_tables_terminal_age_for_that_life(fx_whole_life):
     with it.  The two sexes therefore project different lengths from the same issue age.
     """
     male = fx_whole_life.Projection[1]
-    assert male.sex() == "M" and male.omega_age() == 109
+    assert male.sex() == Sex.M and male.omega_age() == 109
     assert male.proj_len() == 12 * (109 - 40 + 1) == 840
 
     female = fx_whole_life.Projection[5]
-    assert female.sex() == "F" and female.omega_age() == 113
+    assert female.sex() == Sex.F and female.omega_age() == 113
     assert female.proj_len() == 12 * (113 - 55 + 1) == 708
     assert female.mort_rate(female.proj_len() - 1) == 1.0
     assert female.pols_if(female.proj_len()) == pytest.approx(0.0, abs=1e-12)
@@ -1317,7 +1318,7 @@ def test_surrenders_are_taken_from_the_survivors_of_mortality(fx_whole_life):
     for t in (0, 1, 119, 400):
         expected = p.pols_if(t) * (1 - p.mort_rate_mth(t)) * p.lapse_rate_mth(t)
         assert p.pols_lapse(t) == pytest.approx(expected, abs=1e-12)
-        assert p.pols_if_at(t, "BEF_LAPSE") == pytest.approx(
+        assert p.pols_if_at(t, PolTiming.BEF_LAPSE) == pytest.approx(
             p.pols_if(t) * (1 - p.mort_rate_mth(t)), abs=1e-12)
         assert p.pols_lapse(t) < p.pols_if(t) * p.lapse_rate_mth(t)
 
@@ -1444,7 +1445,7 @@ def test_there_are_no_tail_states(fx_whole_life):
     assert p.mort_rate(p.proj_len() - 1) == 1.0
     assert p.pols_if(p.proj_len()) == 0.0
     assert "claims_maturity" not in p.result_cf().columns
-    assert p.claims(p.proj_len(), "DEATH") == 0.0
+    assert p.claims(p.proj_len(), Kind.DEATH) == 0.0
 
 
 def test_the_terminal_policy_year_empties_in_its_first_month(fx_whole_life):

@@ -139,9 +139,9 @@ def mort_table():
     notes quote and the real table's terminal ages.  See the Space docstring.  Read as
     the *valuation* rate; ``Projection.mort_be_factor`` turns it into a best estimate.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file,                               # noqa: F821
-        index_col=["sex", "age"])
+    frame = pd.read_csv(input_dir() / mort_table_file)               # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"]).sort_index()              # noqa: F821
 
 
 def lapse_table():
@@ -186,6 +186,12 @@ def los_table():
         index_col=["band_start", "stay_days"])
 
 
+def los_band_table():
+    """The length-of-stay bands of :func:`los_table`, one row per band, keyed by band_start."""
+    frame = los_table().reset_index()
+    return frame[["band_start", "band_end"]].drop_duplicates().set_index("band_start")             # noqa: F821
+
+
 # ---------------------------------------------------------------------------
 # References
 
@@ -200,3 +206,5 @@ incidence_table_file = "incidence_table.csv"
 los_table_file = "los_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)

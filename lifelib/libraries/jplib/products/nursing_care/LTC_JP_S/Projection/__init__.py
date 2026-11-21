@@ -110,7 +110,7 @@ n_W, n_L, n_N           pols_entry_w(t), and so on         Expected entrants of 
 (none)                  pols_death(t)                      Deaths of the month
 (none)                  pols_lapse(t)                      Lapses of the month
 term(t)                 pols_term(t)                       Lives extinguished by the cap
-S_C(s, t)               care_surv(s, t)                    Care-state survival, s to t
+S_C(t - 12j, t)         care_surv(t, j)                    Care-state survival, j years to t
 ann_count(t)            ann_count(t)                       Instalments due in month t
 (rider)                 pols_entry_dem(t)                  認知症一時金特約 first diagnoses
 P                       premium_mth_pp()                   Monthly office premium
@@ -332,10 +332,7 @@ def issue_age():
 
 def sex():
     """The sex (M / F) of the insured, a rating factor and a mortality table key."""
-    v = model_point()["sex"]
-    if v not in ("M", "F"):
-        raise ValueError("invalid sex")
-    return v
+    return Sex[model_point()["sex"]]
 
 
 def lump_amount():
@@ -357,7 +354,7 @@ def grade_lump():
     要介護2以上 on the composite, the modal single threshold across the seven carriers
     and the one whose public base rate is best evidenced **[std]**.
     """
-    return str(model_point()["grade_lump"])
+    return Grade[model_point()["grade_lump"]]
 
 
 def grade_annuity():
@@ -366,7 +363,7 @@ def grade_annuity():
     要介護3以上 on the composite, one grade above the lump sum, which is the tiering
     three carriers use **[std]**.
     """
-    return str(model_point()["grade_annuity"])
+    return Grade[model_point()["grade_annuity"]]
 
 
 def grade_waiver():
@@ -377,7 +374,7 @@ def grade_waiver():
     model has to get right: it creates a band of lives paying nothing and receiving
     nothing.
     """
-    return str(model_point()["grade_waiver"])
+    return Grade[model_point()["grade_waiver"]]
 
 
 def annuity_max():
@@ -404,10 +401,7 @@ def annuity_test():
         again from instalment 1 [S1] [S2].  This is the only consumer of
         :func:`rec_rate`.
     """
-    v = model_point()["annuity_test"]
-    if v not in ("survival", "state"):
-        raise ValueError("invalid annuity_test")
-    return v
+    return AnnuityTest[model_point()["annuity_test"]]
 
 
 def company_limb():
@@ -503,7 +497,7 @@ def rec_rate():
     [S1], so recovery has nothing to act on.  Returning zero on the survival test is
     what makes that explicit.
     """
-    return float(model_point()["rec_rate"]) if annuity_test() == "state" else 0.0
+    return float(model_point()["rec_rate"]) if annuity_test() == AnnuityTest.state else 0.0
 
 
 def rec_rate_mth():
@@ -525,7 +519,7 @@ def premium_mth_pp():
 
 def prem_mode():
     """The 払込回数: monthly on the composite, which is why the grid is monthly [S1]."""
-    return str(model_point()["prem_mode"])
+    return PremMode[model_point()["prem_mode"]]
 
 
 def prem_period_type():
@@ -536,10 +530,7 @@ def prem_period_type():
     such number — 終身払 runs to the terminal age of the table, which is what
     :func:`proj_len` computes.  The model point column keeps the name ``prem_period``.
     """
-    v = model_point()["prem_period"]
-    if v != "whole_life":
-        raise ValueError("only 終身払 is in scope")
-    return v
+    return PremPeriod[model_point()["prem_period"]]
 
 
 # --- the timeline ---
@@ -552,7 +543,7 @@ def omega_age():
     carries after that.  The table's last row for a sex has ``mort_rate = 1``.
     """
     tbl = data.mort_table()                                          # noqa: F821
-    return int(max(a for (s, a) in tbl.index if s == sex()))
+    return int(tbl.loc[sex()].index.max())
 
 
 def proj_len():
@@ -751,9 +742,9 @@ def prev_rate(t):
     a detail of the fit; ``technical-notes.md`` carries the sensitivity and the shipped
     tests pin both rates.
     """
-    ceil = prev_param("prev_ceil")
-    beta = prev_param("prev_beta")
-    x_mid = prev_param("prev_x_mid")
+    ceil = prev_param(PrevParam.prev_ceil)
+    beta = prev_param(PrevParam.prev_beta)
+    x_mid = prev_param(PrevParam.prev_x_mid)
     return ceil / (1.0 + math.exp(-beta * (age(t) - x_mid)))         # noqa: F821
 
 
@@ -765,8 +756,8 @@ def prev_slope(t):
     two terms of the incidence identity and a numerical derivative would put noise
     straight into the claim rate.
     """
-    ceil = prev_param("prev_ceil")
-    beta = prev_param("prev_beta")
+    ceil = prev_param(PrevParam.prev_ceil)
+    beta = prev_param(PrevParam.prev_beta)
     p = prev_rate(t)
     return beta * p * (1.0 - p / ceil)
 
@@ -979,12 +970,12 @@ def pols_if_at(t, timing):
         l(t+1), the end-of-month state, after lapse and after the benefit-driven
         termination.
     """
-    if timing == "BEF_DECR":
+    if timing == PolTiming.BEF_DECR:
         return pols_if(t)
-    if timing == "BEF_LAPSE":
+    if timing == PolTiming.BEF_LAPSE:
         return ((pols_act(t) - pols_entry_w(t)) * (1.0 - mort_rate_mth(t))
                 + (care_w(t) + pols_entry_w(t)) * (1.0 - mort_rate_care_mth(t)))
-    if timing == "AFT_DECR":
+    if timing == PolTiming.AFT_DECR:
         return pols_if(t + 1)
     raise ValueError("invalid timing")
 
@@ -1053,11 +1044,16 @@ def pols_term(t):
     s = t - 12 * (annuity_max() - 1)
     if s < 0:
         return 0.0
-    return pols_entry_n(s) * care_surv(s, t)
+    return pols_entry_n(s) * care_surv(t, annuity_max() - 1)
 
 
-def care_surv(s, t):
-    """S_C(s, t): survival in the care state from month s to month t.
+def care_surv(t, j):
+    """S_C(t - 12j, t): survival in the care state over the j years from month
+    s = t - 12j to month t.
+
+    Keyed by the payment month ``t`` and the number ``j`` of annual anniversaries since
+    entry: every caller reads it on the anniversary grid, so it is built a year at a time
+    from ``care_surv(t - 12, j - 1)``, with the monthly factors in the same order.
 
     The **partial product** of ``(1 - q_C(u))`` over ``u = s ... t-1``, times
     ``(1 - rec_rate_mth())`` per month under the ``state`` annuity test.  Computed as a
@@ -1065,11 +1061,12 @@ def care_surv(s, t):
     ``q_C`` reaches 1 at the terminal age, so a cumulative product underflows to zero
     and the ratio form divides by zero exactly where the tail of this liability lives.
     """
-    if t <= s:
+    if j <= 0:
         return 1.0
-    return (care_surv(s, t - 1)
-            * (1.0 - mort_rate_care_mth(t - 1))
-            * (1.0 - rec_rate_mth()))
+    v = care_surv(t - 12, j - 1)
+    for u in range(t - 12, t):
+        v = v * (1.0 - mort_rate_care_mth(u)) * (1.0 - rec_rate_mth())
+    return v
 
 
 def ann_count(t):
@@ -1090,7 +1087,7 @@ def ann_count(t):
         s = t - 12 * j
         if s < 0:
             continue
-        total += pols_entry_n(s) * care_surv(s, t)
+        total += pols_entry_n(s) * care_surv(t, j)
     return total
 
 
@@ -1150,7 +1147,7 @@ def premiums(t):
     return premium_mth_pp() * pols_act(t)
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Benefit outgo at the end of month t, by ``kind``.
 
     ``"LUMP"``
@@ -1180,16 +1177,16 @@ def claims(t, kind=None):
 
     With no ``kind`` the total of the three benefit limbs.
     """
-    if kind is None:
-        return (claims(t, "LUMP") + claims(t, "ANNUITY")
-                + claims(t, "DEMENTIA"))
-    if kind == "LUMP":
+    if kind == Kind.ALL:
+        return (claims(t, Kind.LUMP) + claims(t, Kind.ANNUITY)
+                + claims(t, Kind.DEMENTIA))
+    if kind == Kind.LUMP:
         return lump_amount() * pols_entry_l(t)
-    if kind == "ANNUITY":
+    if kind == Kind.ANNUITY:
         return annuity_amount() * ann_count(t)
-    if kind == "DEMENTIA":
+    if kind == Kind.DEMENTIA:
         return (1.0 + mci_fraction()) * dementia_amount() * pols_entry_dem(t)
-    if kind == "LAPSE":
+    if kind == Kind.LAPSE:
         return 0.0
     raise ValueError("invalid kind")
 
@@ -1274,7 +1271,7 @@ def net_cf(t):
     essentially does not arise until the block is old, which is what makes the **lapse
     assumption, not the incidence basis, the dominant lever**.
     """
-    return (premiums(t) - claims(t) - expenses(t) - claim_expenses(t)
+    return (premiums(t) - claims(t, Kind.ALL) - expenses(t) - claim_expenses(t)
             - commissions(t))
 
 
@@ -1347,7 +1344,7 @@ def check_ann_ledger_resid(t):
     built = 0.0
     for s in range(max(0, t - 12 * annuity_max() + 1), t + 1):
         if (t - s) % 12 == 0:
-            built += pols_entry_n(s) * care_surv(s, t)
+            built += pols_entry_n(s) * care_surv(t, (t - s) // 12)
     return ann_count(t) - built
 
 
@@ -1367,8 +1364,8 @@ def check_net_cf_resid(t):
     into ``expenses`` and then deducted twice.
     """
     return net_cf(t) - (premiums(t)
-                        - claims(t, "LUMP") - claims(t, "ANNUITY")
-                        - claims(t, "DEMENTIA") - claims(t, "LAPSE")
+                        - claims(t, Kind.LUMP) - claims(t, Kind.ANNUITY)
+                        - claims(t, Kind.DEMENTIA) - claims(t, Kind.LAPSE)
                         - expenses(t) - claim_expenses(t) - commissions(t))
 
 
@@ -1409,10 +1406,10 @@ def result_cf():
             "care_l": [care_l(t) for t in ts],
             "care_n": [care_n(t) for t in ts],
             "premiums": [premiums(t) for t in ts],
-            "claims_lump": [claims(t, "LUMP") for t in ts],
-            "claims_annuity": [claims(t, "ANNUITY") for t in ts],
-            "claims_dementia": [claims(t, "DEMENTIA") for t in ts],
-            "claims_lapse": [claims(t, "LAPSE") for t in ts],
+            "claims_lump": [claims(t, Kind.LUMP) for t in ts],
+            "claims_annuity": [claims(t, Kind.ANNUITY) for t in ts],
+            "claims_dementia": [claims(t, Kind.DEMENTIA) for t in ts],
+            "claims_lapse": [claims(t, Kind.LAPSE) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "claim_expenses": [claim_expenses(t) for t in ts],
             "commissions": [commissions(t) for t in ts],
@@ -1487,3 +1484,19 @@ roll_fwd_tol = 1e-12
 math = ("Module", "math")
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+Grade = ("Pickle", 2)
+
+AnnuityTest = ("Pickle", 4)
+
+PremMode = ("Pickle", 5)
+
+PremPeriod = ("Pickle", 6)
+
+PrevParam = ("Pickle", 3)
+
+PolTiming = ("Pickle", 7)
+
+Kind = ("Pickle", 8)

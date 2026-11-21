@@ -114,9 +114,9 @@ def mort_table():
     for both lives — the insured and, on the education cell, the policyholder whose
     death triggers the waiver.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file,                               # noqa: F821
-        index_col=["sex", "age"])
+    frame = pd.read_csv(input_dir() / mort_table_file)               # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"]).sort_index()              # noqa: F821
 
 
 def lapse_table():
@@ -155,7 +155,7 @@ def benefit_schedule_table():
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / benefit_schedule_file,                         # noqa: F821
-        index_col="schedule_id")
+        index_col=["schedule_id", "k"])
 
 
 # ---------------------------------------------------------------------------
@@ -170,3 +170,5 @@ lapse_table_file = "lapse_table.csv"
 benefit_schedule_file = "benefit_schedule_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)

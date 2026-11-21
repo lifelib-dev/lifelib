@@ -94,11 +94,11 @@ rho_m(z)                   rec_rate_mth(z)                 Monthly recovery rate
 q_S_a(z)                   mort_rate_sick(z)               Annual in-claim mortality
 q_S_m(z)                   mort_rate_sick_mth(z)           Monthly in-claim mortality
 s_S(z)                     claim_surv_step(z)              Monthly in-claim survival
-(the three vectors)        claim_rate_vectors()            rho_m, q_S_m and s_S as tuples
+(the three vectors)        claim_rate_vectors()            rho_m, q_S_m and s_S as lists
 l_H(t)                     pols_active(t)                  In state H at start of month t
 l_S(t, z)                  pols_sick_dur(t, z)             In claim at duration z
 l_S(t)                     pols_sick(t)                    Total in claim payment
-(the whole vector)         sick_cohorts(t)                 l_S(t, .) as a tuple
+(the whole vector)         sick_cohorts(t)                 l_S(t, .) as a list
 (none)                     pols_if(t)                      H + S: policies in force
 (none)                     pols_if_at(t, timing)           BEF_DECR / AFT_DECR
 n(t)                       pols_inception(t)               New claim inceptions
@@ -170,14 +170,13 @@ notes' first-listed pitfall — the duration gradient *is* the defining feature 
 protection terminations.
 
 :func:`sick_cohorts` holds the whole vector for one month and is the model's only
-vector-valued cells. The alternative — a two-argument ``pols_sick_dur(t, z)`` recursion —
+list-valued cells. The alternative — a two-argument ``pols_sick_dur(t, z)`` recursion —
 would be ``proj_len() x max_dur()`` separate cells, 130,000 of them on the anchor cell,
 each with its own cache entry. Keeping the vector in one cells per month makes it
 ``proj_len()`` cells with a loop inside, and :func:`pols_sick_dur` then reads an element
 out of it so that the notes' two-dimensional object is still addressable by name. The
-vector is a tuple, not a list: modelx hands every caller the cached object itself, so a
-list would let one caller's assignment rewrite the cache that later months are built
-from.
+list is rebuilt rather than mutated on each step, so a caller cannot corrupt the cache
+by holding one.
 
 The shipped termination basis suppresses the **age** dimension **[std]**. IP11 is
 two-dimensional in age and duration, with claimant mortality duration-dependent to five
@@ -308,7 +307,7 @@ def sex():
     Not a smoker split: the IP11 rate structure is sex, deferred period and occupation
     class, and any smoker differentiation sits in insurer pricing, which is not public.
     """
-    return model_point()["sex"]
+    return Sex[model_point()["sex"]]
 
 
 def occ_class():
@@ -353,10 +352,7 @@ def expiry_age():
 
 def escalation():
     """``RPI`` or ``none``: whether the escalation option is elected [S1][S2]."""
-    v = model_point()["escalation"]
-    if v not in ("RPI", "none"):
-        raise ValueError("invalid escalation")
-    return v
+    return Escalation[model_point()["escalation"]]
 
 
 def premium_mth():
@@ -377,10 +373,7 @@ def premium_basis():
     contractual cap - but the review formulas are insurer-discretionary and undisclosed,
     so any reviewable model would need a **[std]** review rule that no source supports.
     """
-    v = model_point()["premium_basis"]
-    if v != "guaranteed":
-        raise ValueError("invalid premium_basis")
-    return v
+    return PremiumBasis[model_point()["premium_basis"]]
 
 
 def status():
@@ -389,10 +382,7 @@ def status():
     An in-force portfolio needs both kinds of cell: active lives, and claims already in
     payment carrying their claim duration as an attribute.
     """
-    v = model_point()["status"]
-    if v not in ("active", "in_claim"):
-        raise ValueError("invalid status")
-    return v
+    return Status[model_point()["status"]]
 
 
 def recovery_basis():
@@ -413,10 +403,7 @@ def recovery_basis():
     full contract-boundary best estimate for the same policy carries the post-recovery
     active phase too.  See the Space docstring.
     """
-    v = model_point()["recovery_basis"]
-    if v not in ("return_to_h", "exit"):
-        raise ValueError("invalid recovery_basis")
-    return v
+    return RecoveryBasis[model_point()["recovery_basis"]]
 
 
 def claim_duration_months():
@@ -497,6 +484,12 @@ def claim_dur_year(z):
     return (z - 1) // 12 + 1
 
 
+def inception_schedule():
+    """The inception rates at the policy's sex, occupation class and deferred period, by age."""
+    return data.inception_table().loc[                               # noqa: F821
+        (sex(), occ_class(), deferred_weeks())]
+
+
 def inception_rate(t):
     """iota_a(a): the annual claim payment inception rate out of state H.
 
@@ -512,17 +505,15 @@ def inception_rate(t):
     understated through exposure errors, and licensees must apply the CMI's indicative
     adjustments.
     """
-    sub = data.inception_table().loc[                                # noqa: F821
-        (sex(), occ_class(), deferred_weeks())]
-    ages = sorted(int(a) for a in sub.index)
+    sub = inception_schedule()
     x = age(t)
-    if x <= ages[0]:
-        lo, hi = ages[0], ages[1]
-    elif x >= ages[-1]:
-        lo, hi = ages[-2], ages[-1]
+    if x <= sub.index[0]:
+        lo, hi = int(sub.index[0]), int(sub.index[1])
+    elif x >= sub.index[-1]:
+        lo, hi = int(sub.index[-2]), int(sub.index[-1])
     else:
-        lo = max(a for a in ages if a <= x)
-        hi = min(a for a in ages if a > x)
+        lo = int(sub.index.asof(x))
+        hi = int(sub.index[sub.index.searchsorted(x, side="right")])
     r_lo = float(sub.loc[lo, "inception_rate"])
     r_hi = float(sub.loc[hi, "inception_rate"])
     r = r_lo + (r_hi - r_lo) * (x - lo) / (hi - lo)
@@ -534,6 +525,11 @@ def inception_rate_mth(t):
     return 1.0 - (1.0 - inception_rate(t)) ** (1.0 / 12.0)
 
 
+def mort_schedule():
+    """The active-life mortality rates at the policy's sex, by age."""
+    return data.mort_table().loc[sex()]                              # noqa: F821
+
+
 def mort_rate(t):
     """q_H_a(a): the **active-life** annual mortality rate.
 
@@ -541,8 +537,7 @@ def mort_rate(t):
     national life tables scaled by ``mort_active_factor``.  Claimant mortality is a
     different rate on a different clock - see :func:`mort_rate_sick`.
     """
-    return float(data.mort_table().loc[                              # noqa: F821
-        (sex(), age(t)), "mort_rate"]) * mort_active_factor          # noqa: F821
+    return float(mort_schedule().loc[age(t), "mort_rate"]) * mort_active_factor          # noqa: F821
 
 
 def mort_rate_mth(t):
@@ -598,9 +593,8 @@ def claim_surv_step(z):
 def claim_rate_vectors():
     """The three per-duration rate vectors, ``(rho_m, q_S_m, s_S)``, built once.
 
-    Element ``z - 1`` of each tuple is the value at claim duration ``z``, for
-    ``z = 1 ... max_dur()``.  Tuples for the reason :func:`sick_cohorts` gives.
-    Purely a performance shape: :func:`pols_recovery`,
+    Element ``z - 1`` of each list is the value at claim duration ``z``, for
+    ``z = 1 ... max_dur()``.  Purely a performance shape: :func:`pols_recovery`,
     :func:`pols_death_sick` and :func:`pols_sick_surv` each walk the whole cohort vector
     in every projected month, and reading the rates out of a list rather than calling
     :func:`rec_rate_mth` and friends per element turns ``proj_len() x max_dur()``
@@ -610,9 +604,9 @@ def claim_rate_vectors():
     definition of each rate.
     """
     zs = range(1, max_dur() + 1)
-    rec = tuple(rec_rate_mth(z) for z in zs)
-    dth = tuple(mort_rate_sick_mth(z) for z in zs)
-    return rec, dth, tuple((1.0 - r) * (1.0 - d) for r, d in zip(rec, dth))
+    rec = [rec_rate_mth(z) for z in zs]
+    dth = [mort_rate_sick_mth(z) for z in zs]
+    return rec, dth, [(1.0 - r) * (1.0 - d) for r, d in zip(rec, dth)]
 
 
 def esc_rate():
@@ -623,7 +617,7 @@ def esc_rate():
     the premium 4.5%, the x1.5 multiplier.  The 10% cap is an embedded inflation option
     the insurer has written.
     """
-    if escalation() != "RPI":
+    if escalation() != Escalation.RPI:
         return 0.0
     return min(max(rpi_rate, 0.0), esc_cap)                          # noqa: F821
 
@@ -690,7 +684,7 @@ def esc_lapse_factor(t):
     refusals; declines are a portfolio-level phenomenon that a single-cell model cannot
     represent, so this multiplier is the aggregate proxy for them.
     """
-    if escalation() != "RPI" or policy_year(t) < 2:
+    if escalation() != Escalation.RPI or policy_year(t) < 2:
         return 1.0
     return 1.0 + esc_lapse_slope * max(                              # noqa: F821
         0.0, esc_prem_mult * esc_rate() - esc_lapse_threshold)       # noqa: F821
@@ -724,11 +718,11 @@ def lapse_rate_mth(t):
 
 
 def sick_cohorts(t):
-    """l_S(t, .): the in-claim population by claim duration, as a tuple.
+    """l_S(t, .): the in-claim population by claim duration, as a list.
 
     Element ``z - 1`` is the population in claim payment at the start of month t with
     claim duration ``z`` months, for ``z = 1 ... max_dur()`` (``z`` is 1-based; the
-    ``z - 1`` is tuple position, not a time offset).  The model's only vector-valued
+    ``z - 1`` is list position, not a time offset).  The model's only list-valued
     cells, and the reason is cost: a two-argument recursion would be
     ``proj_len() x max_dur()`` separate cells - 130,000 on the anchor cell - where this
     is ``proj_len()`` cells with a loop inside.  :func:`pols_sick_dur` reads an element
@@ -737,11 +731,8 @@ def sick_cohorts(t):
     At ``t = 0`` the vector is the seeded state: all zeros on an ``active`` cell, and
     ``pols_if_init()`` at cohort ``z0 + 1`` on an ``in_claim`` one.  Thereafter cohort 1
     is the previous month's inceptions and every other cohort is the previous cohort
-    survived one month.
-
-    The vector is a tuple, never a list.  modelx returns the cached object itself, not
-    a copy, so a list would let any caller rewrite the cache in place - and every later
-    month is built from it.  A tuple makes that assignment a ``TypeError`` instead.
+    survived one month.  A new list is built on each step rather than the previous one
+    mutated, so holding a returned list cannot corrupt the cache.
 
     From ``t = proj_len()`` on the vector is all zeros: every claim in payment
     terminates at the policy end date, the end of month ``proj_len() - 1``, without
@@ -749,15 +740,18 @@ def sick_cohorts(t):
     """
     n = max_dur()
     if t < 0 or t >= proj_len():
-        return (0.0,) * n
+        return [0.0] * n
     if t == 0:
-        seed = pols_if_init() if status() == "in_claim" else 0.0
+        seed = pols_if_init() if status() == Status.in_claim else 0.0
         z0 = claim_duration_months() + 1
-        return tuple(seed if z == z0 else 0.0 for z in range(1, n + 1))
+        return [seed if z == z0 else 0.0 for z in range(1, n + 1)]
     prev = sick_cohorts(t - 1)
     surv = claim_rate_vectors()[2]
-    return (pols_inception(t - 1),) + tuple(
-        prev[z - 1] * surv[z - 1] for z in range(1, n))
+    out = [0.0] * n
+    out[0] = pols_inception(t - 1)
+    for z in range(1, n):
+        out[z] = prev[z - 1] * surv[z - 1]
+    return out
 
 
 def pols_sick_dur(t, z):
@@ -816,7 +810,7 @@ def pols_exit(t):
     ``return_to_h``, where the same lives reappear in :func:`pols_active`.  It exists so
     that the population identity closes on both bases.
     """
-    return pols_recovery(t) if recovery_basis() == "exit" else 0.0
+    return pols_recovery(t) if recovery_basis() == RecoveryBasis.exit else 0.0
 
 
 def pols_active(t):
@@ -830,11 +824,11 @@ def pols_active(t):
     if t < 0 or t >= proj_len():
         return 0.0
     if t == 0:
-        return pols_if_init() if status() == "active" else 0.0
+        return pols_if_init() if status() == Status.active else 0.0
     prev = pols_active(t - 1)
     stay = (prev * (1.0 - mort_rate_mth(t - 1)) * (1.0 - lapse_rate_mth(t - 1))
             * (1.0 - inception_rate_mth(t - 1)))
-    back = 0.0 if recovery_basis() == "exit" else pols_recovery(t - 1)
+    back = 0.0 if recovery_basis() == RecoveryBasis.exit else pols_recovery(t - 1)
     return stay + back
 
 
@@ -894,9 +888,9 @@ def pols_if_at(t, timing):
     because two states are moving at once; :func:`pols_active` and :func:`pols_sick`
     expose them instead.
     """
-    if timing == "BEF_DECR":
+    if timing == PolTiming.BEF_DECR:
         return pols_if(t)
-    if timing == "AFT_DECR":
+    if timing == PolTiming.AFT_DECR:
         if t < 0 or t >= proj_len() - 1:
             return 0.0
         return pols_if(t + 1)
@@ -915,7 +909,7 @@ def pols_maturity(t):
         return 0.0
     stay = (pols_active(t) * (1.0 - mort_rate_mth(t))
             * (1.0 - lapse_rate_mth(t)) * (1.0 - inception_rate_mth(t)))
-    back = 0.0 if recovery_basis() == "exit" else pols_recovery(t)
+    back = 0.0 if recovery_basis() == RecoveryBasis.exit else pols_recovery(t)
     return stay + back + pols_inception(t) + pols_sick_surv(t)
 
 
@@ -964,7 +958,7 @@ def premiums(t):
     return premium_pp(t) * pols_active(t)
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Benefit outgo in month t, by kind; the total when kind is omitted.
 
     ``"BENEFIT"``
@@ -984,11 +978,11 @@ def claims(t, kind=None):
     The two zero kinds are published rather than omitted so that the product facts are
     stated instead of inferred from a missing column.
     """
-    if kind is None:
-        return sum(claims(t, k) for k in ("BENEFIT", "DEATH", "LAPSE"))
-    if kind == "BENEFIT":
+    if kind == Kind.ALL:
+        return sum(claims(t, k) for k in (Kind.BENEFIT, Kind.DEATH, Kind.LAPSE))
+    if kind == Kind.BENEFIT:
         return claim_severity * amount_payable_pp(t) * pols_sick_surv(t)  # noqa: F821
-    if kind in ("DEATH", "LAPSE"):
+    if kind in (Kind.DEATH, Kind.LAPSE):
         return 0.0
     raise ValueError("invalid kind")
 
@@ -1013,7 +1007,7 @@ def net_cf(t):
     ``liability_cf`` companion.  Death and lapse generate no payment at all on this
     product.
     """
-    return premiums(t) - claims(t) - expenses(t)
+    return premiums(t) - claims(t, Kind.ALL) - expenses(t)
 
 
 def disc_factor(t):
@@ -1040,7 +1034,7 @@ def pv_benefits():
     claims-in-payment liability the notes value.  See :func:`disc_factor` for why
     discounting appears in this model and nowhere else in the library.
     """
-    return sum(claims(t, "BENEFIT") * disc_factor(t)
+    return sum(claims(t, Kind.BENEFIT) * disc_factor(t)
                for t in range(proj_len()))
 
 
@@ -1134,9 +1128,9 @@ def result_cf():
             "pols_active": [pols_active(t) for t in ts],
             "pols_sick": [pols_sick(t) for t in ts],
             "premiums": [premiums(t) for t in ts],
-            "claims_benefit": [claims(t, "BENEFIT") for t in ts],
-            "claims_death": [claims(t, "DEATH") for t in ts],
-            "claims_lapse": [claims(t, "LAPSE") for t in ts],
+            "claims_benefit": [claims(t, Kind.BENEFIT) for t in ts],
+            "claims_death": [claims(t, Kind.DEATH) for t in ts],
+            "claims_lapse": [claims(t, Kind.LAPSE) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "net_cf": [net_cf(t) for t in ts],
         },
@@ -1210,3 +1204,17 @@ inflation_rate = 0.03
 disc_rate = 0.03
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+Escalation = ("Pickle", 2)
+
+PremiumBasis = ("Pickle", 3)
+
+Status = ("Pickle", 4)
+
+RecoveryBasis = ("Pickle", 5)
+
+PolTiming = ("Pickle", 6)
+
+Kind = ("Pickle", 7)

@@ -262,6 +262,33 @@ The tests ship inside the library and run against *your* copy:
 python -m pytest tests -q
 ```
 
+## Projection Cell signature changes
+
+Six IUL Cells now take `(t, segment_age)` where `segment_age = t - opening_month`.
+Update callers of `seg_share`, `seg_wd_pp`, `seg_ded_pp`, `seg_bal_pp`,
+`seg_ded_cum_pp`, and `seg_wd_cum_pp` that used `(t, m)`. For example, use
+`seg_bal_pp(23, 11)` for the closing balance of the segment opened in month 12.
+
+The following 16 Cells require the `kind` argument. Pass the listed enum member
+to request the total previously selected by omitting `kind` or passing `None`.
+
+| Model | Projection Cells | Total kind |
+| --- | --- | --- |
+| DIA_US_S | `claims(t, kind)`, `claims_ann(y, kind)` | `Claim.ALL` |
+| FIA_US_S | `claims(t, kind)`, `claims_over_av(t, kind)` | `Claim.ALL` |
+| IUL_US_S | `claims(t, kind)` | `Claim.ALL` |
+| MYGA_US_S | `claims(t, kind)`, `claims_over_av(t, kind)` | `Kind.ALL` |
+| RILA_US_S | `claims(t, kind)`, `claims_over_av(t, kind)` | `Claim.ALL` |
+| SPIA_US_S | `claims(t, kind)` | `Claim.ALL` |
+| UL_US_S | `claims(t, kind)` | `Claim.ALL` |
+| ULSG_US_S | `claims(t, kind)` | `Claim.ALL` |
+| VA_US_S | `claims(t, kind)`, `claims_over_av(t, kind)` | `Kind.ALL` |
+| VUL_US_S | `claims(t, kind)` | `Claim.ALL` |
+| WholeLife_US_S | `claims(t, kind)` | `Claim.ALL` |
+
+The RILA `market_state(k, name)` Cell now takes `market_state(k, field)`.
+Use `field=` when calling it by keyword.
+
 ## Library contents
 
 ```{list-table}

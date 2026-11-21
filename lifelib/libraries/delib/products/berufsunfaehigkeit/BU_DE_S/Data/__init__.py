@@ -174,8 +174,9 @@ def occupation_table():
     insurer's *Berufsgruppenverzeichnis* was retrievable and carrier classifications are
     not comparable with one another.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / occupation_file, index_col="berufsgruppe")     # noqa: F821
+    frame = pd.read_csv(input_dir() / occupation_file)               # noqa: F821
+    frame["berufsgruppe"] = [Berufsgruppe[name] for name in frame["berufsgruppe"]]
+    return frame.set_index("berufsgruppe")
 
 
 def lapse_table():
@@ -201,8 +202,9 @@ def freq_loading_table():
     so the quoted *Zahlbeitrag* ratio is untouched by it.  **[std]**: the ladder is the
     recalled German market convention and no retrieved document confirms it.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / freq_loading_file, index_col="prem_mode")      # noqa: F821
+    frame = pd.read_csv(input_dir() / freq_loading_file)             # noqa: F821
+    frame["prem_mode"] = [PremMode[name] for name in frame["prem_mode"]]
+    return frame.set_index("prem_mode")
 
 
 # ---------------------------------------------------------------------------
@@ -223,3 +225,7 @@ lapse_file = "lapse_table.csv"
 freq_loading_file = "freq_loading_table.csv"
 
 pd = ("Module", "pandas")
+
+Berufsgruppe = ("Pickle", 1)
+
+PremMode = ("Pickle", 2)

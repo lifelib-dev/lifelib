@@ -159,9 +159,9 @@ def mort_table():
     See the Space docstring for why the distinction is load-bearing.  Ages 15 to 100, the
     composite's issue-age range and its 100세 만기.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file,                               # noqa: F821
-        index_col=["sex", "age"])
+    frame = pd.read_csv(input_dir() / mort_table_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"])
 
 
 def incidence_table():
@@ -173,9 +173,9 @@ def incidence_table():
     extrapolations and their ``provenance`` says so.  These are sourced values reproduced
     with their attribution, in deliberate contrast to :func:`mort_table`.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / incidence_table_file,                          # noqa: F821
-        index_col=["sex", "age"])
+    frame = pd.read_csv(input_dir() / incidence_table_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"])
 
 
 def tier_share_table():
@@ -188,9 +188,9 @@ def tier_share_table():
     **additive** to it because the 유사암 tier is outside the base rate's own definition.
     Anchored at ages 20, 40, 60 and 80 and interpolated linearly in age.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / tier_share_file,                               # noqa: F821
-        index_col=["sex", "age"])
+    frame = pd.read_csv(input_dir() / tier_share_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"])
 
 
 def tier_table():
@@ -203,8 +203,9 @@ def tier_table():
     유사암, which is the product's two-start-date structure; ``waives_premium`` is 1 for
     일반암 and 고액암 alone [S3 제14조제1항] [S1 제9조제1항].
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / tier_table_file, index_col="tier")             # noqa: F821
+    frame = pd.read_csv(input_dir() / tier_table_file)                     # noqa: F821
+    frame["tier"] = [Tier[name] for name in frame["tier"]]
+    return frame.set_index("tier")
 
 
 def survival_table():
@@ -217,9 +218,10 @@ def survival_table():
     The 유사암 tier is absent from the file by design: 갑상선 relative survival is 100.2%
     and lifetime 갑상선 mortality risk 0.1% [R1], so a 유사암 diagnosis changes no state.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / survival_table_file,                           # noqa: F821
-        index_col=["sex", "tier", "dur_year"])
+    frame = pd.read_csv(input_dir() / survival_table_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    frame["tier"] = [Tier[name] for name in frame["tier"]]
+    return frame.set_index(["sex", "tier", "dur_year"])
 
 
 def care_table():
@@ -246,8 +248,9 @@ def lapse_table():
     ``Projection.lapse_rate`` interpolates log-linearly between the first two and steps to
     the third at 납입완료.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / lapse_table_file, index_col="segment")         # noqa: F821
+    frame = pd.read_csv(input_dir() / lapse_table_file)                     # noqa: F821
+    frame["segment"] = [Segment[name] for name in frame["segment"]]
+    return frame.set_index("segment")
 
 
 # ---------------------------------------------------------------------------
@@ -270,3 +273,9 @@ care_table_file = "care_table.csv"
 lapse_table_file = "lapse_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+Tier = ("Pickle", 2)
+
+Segment = ("Pickle", 3)

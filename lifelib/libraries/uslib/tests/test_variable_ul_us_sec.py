@@ -170,7 +170,8 @@ from sec_support import (
     build_sec_table, check_generated, codes, compiled_case, compiled_mismatches,
     exact_here, fingerprint_mismatches, frame_mismatches, run_compiled, shift_months,
     sweep, temp_inputs, twin_mismatches)
-from us_registry import model_path, point_keys, projection
+from released_twins import read_released_twin, sec_test_model_path as model_path
+from us_registry import point_keys, projection
 
 SEC, TWIN, TABLE = "VUL_US_SEC", "VUL_US_S", "model_point_table_sec.csv"
 SPEC = SEC_SPECS[SEC]
@@ -993,7 +994,7 @@ def s_model():
     (USLIB-SEC-PLAN.md §4, *Carried into Phase 1*), and the in-force tests read S's months
     off it, the cells its own sweep misses among them.  Frozen once swept (:func:`_freeze`).
     """
-    model = mx.read_model(model_path(TWIN), name=_name("s"))
+    model = read_released_twin(TWIN, model_name=_name("s"))
     for key in point_keys(model):
         _sweep_s(projection(model, key))
     _freeze()
