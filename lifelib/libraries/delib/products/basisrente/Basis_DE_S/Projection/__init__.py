@@ -619,6 +619,11 @@ def gtd_end_t():
     return max(0, ret_t()) + 12 * int(model_point()["guarantee_period_y"]) - 1
 
 
+def prem_form():
+    """The premium form of the policy (regular or single), converted once."""
+    return PremForm[model_point()["prem_form"]]
+
+
 def beitragssumme_pp():
     """S: the contract's *Beitragssumme* at inception, per policy.
 
@@ -640,10 +645,15 @@ def beitragssumme_pp():
     """
     dyn = float(model_point()["prem_dyn_rate"])
     base = float(model_point()["prem_base_pp"])
-    if model_point()["prem_form"] == "single":
+    if prem_form() == PremForm.single:
         return base
     m = int(model_point()["ret_age"]) - int(model_point()["entry_age"])
     return sum(base * (1.0 + dyn) ** u for u in range(max(m, 0)))
+
+
+def prem_mode():
+    """The premium payment mode of the policy, converted once."""
+    return PremMode[model_point()["prem_mode"]]
 
 
 def prem_freq_load():
@@ -656,10 +666,21 @@ def prem_freq_load():
     :func:`prem_freq_load` returns 1.0 for ``prem_form = "single"``.  Applying it twice, or
     to the *Zuzahlung*, is the eighth pitfall.
     """
-    if model_point()["prem_form"] == "single":
+    if prem_form() == PremForm.single:
         return 1.0
+    mode = prem_mode()
+    if mode == PremMode.annual:
+        key = "annual"
+    elif mode == PremMode.half_yearly:
+        key = "half_yearly"
+    elif mode == PremMode.quarterly:
+        key = "quarterly"
+    elif mode == PremMode.monthly:
+        key = "monthly"
+    else:
+        raise ValueError("invalid prem_mode")
     return float(data.option_table().loc[                            # noqa: F821
-        ("prem_mode", model_point()["prem_mode"]), "factor"])
+        (OptionId.prem_mode, key), "factor"])
 
 
 def prem_base_pp(k):
@@ -674,7 +695,7 @@ def prem_base_pp(k):
     This is the contractual amount.  What is actually charged is :func:`prem_pp`, which
     applies phi and stops at *Rentenbeginn*.
     """
-    if model_point()["prem_form"] == "single":
+    if prem_form() == PremForm.single:
         if k == 0 and int(model_point()["duration_init"]) == 0:
             return float(model_point()["prem_base_pp"])
         return 0.0
@@ -703,6 +724,11 @@ def prem_pp(k):
     return prem_base_pp(k) * prem_freq_load()
 
 
+def behaviour_schedule():
+    """The behaviour rates of the policy's behaviour table, by policy year."""
+    return data.behaviour_table().loc[model_point()["beh_table_id"]]   # noqa: F821
+
+
 def zuz_take_up(k):
     """The *Zuzahlung* utilisation rate in year k, from *behaviour_table.csv*.
 
@@ -714,10 +740,9 @@ def zuz_take_up(k):
     at all is behavioural; a model that treats the *Zuzahlung* as contractual has quietly
     set this to 1.0.  Nothing in the delib corpus supports any level.
     """
-    tab = data.behaviour_table()                                     # noqa: F821
-    key = model_point()["beh_table_id"]
-    d = min(duration_y(k) + 1, int(tab.loc[key].index.max()))
-    return float(tab.loc[(key, max(d, 1)), "zuz_take_up"])
+    sub = behaviour_schedule()
+    d = min(duration_y(k) + 1, int(sub.index.max()))
+    return float(sub.loc[max(d, 1), "zuz_take_up"])
 
 
 def zuz_pp(k):
@@ -1006,12 +1031,11 @@ def bf_rate(t):
     """
     if t < 0 or t >= ret_t() or t >= proj_len():
         return 0.0
-    if model_point()["prem_form"] == "single":
+    if prem_form() == PremForm.single:
         return 0.0
-    tab = data.behaviour_table()                                     # noqa: F821
-    key = model_point()["beh_table_id"]
-    d = min(policy_year(t), int(tab.loc[key].index.max()))
-    return float(tab.loc[(key, max(d, 1)), "bf_rate"])
+    sub = behaviour_schedule()
+    d = min(policy_year(t), int(sub.index.max()))
+    return float(sub.loc[max(d, 1), "bf_rate"])
 
 
 def pols_paying(t):
@@ -1096,12 +1120,12 @@ def pols_if_at(t, timing):
         processing order is readable in the code and so that the equality is a statement
         the model makes rather than one a reader has to reconstruct.
     """
-    if timing == "BEF_DECR":
+    if timing == PolTiming.BEF_DECR:
         return pols_if(t)
-    if timing == "AFT_DEATH":
+    if timing == PolTiming.AFT_DEATH:
         return pols_if(t) * (1.0 - mort_rate_mth(t))
-    if timing == "AFT_FREEZE":
-        return pols_if_at(t, "AFT_DEATH")
+    if timing == PolTiming.AFT_FREEZE:
+        return pols_if_at(t, PolTiming.AFT_DEATH)
     raise ValueError("invalid timing")
 
 
@@ -1191,6 +1215,11 @@ def pols_gtd(t):
     return pols_gtd(t - 1) + pols_death(t - 1) * elig_surv_prob      # noqa: F821
 
 
+def surplus_schedule():
+    """The declared rates of the policy's surplus scenario, by projection year."""
+    return data.surplus_table().loc[model_point()["surplus_scenario_id"]]   # noqa: F821
+
+
 def decl_rate(k):
     """The declared *laufende Verzinsung* in projection year k, from *surplus_table.csv*.
 
@@ -1203,10 +1232,9 @@ def decl_rate(k):
     was established anywhere in the delib corpus, and the path is set above the 1,00 %
     *Höchstrechnungszins* by a plausible surplus margin and graded down.
     """
-    tab = data.surplus_table()                                       # noqa: F821
-    key = model_point()["surplus_scenario_id"]
-    tt = min(max(k, 0), int(tab.loc[key].index.max()))
-    return float(tab.loc[(key, tt), "decl_rate"])
+    sub = surplus_schedule()
+    tt = min(max(k, 0), int(sub.index.max()))
+    return float(sub.loc[tt, "decl_rate"])
 
 
 def cred_rate(k):
@@ -1244,7 +1272,7 @@ def av_pp(k):
         if int(model_point()["paidup_at_init"]) == 1:
             return 0.0
         return float(model_point()["av_pp_init"])
-    return av_pp_at(k - 1, "AFT_INT")
+    return av_pp_at(k - 1, AvTiming.AFT_INT)
 
 
 def av_pp_at(k, timing):
@@ -1268,18 +1296,18 @@ def av_pp_at(k, timing):
     """
     if k < 0 or k >= proj_len_y():
         return 0.0
-    if timing == "BEF_PREM":
+    if timing == AvTiming.BEF_PREM:
         return av_pp(k)
     if k >= ret_y():
-        if timing in ("AFT_PREM", "AFT_INT"):
+        if timing in (AvTiming.AFT_PREM, AvTiming.AFT_INT):
             return 0.0
         raise ValueError("invalid timing")
-    if timing == "AFT_PREM":
-        return av_pp_at(k, "BEF_PREM") + prem_to_av_pp(k)
-    if timing == "AFT_INT":
+    if timing == AvTiming.AFT_PREM:
+        return av_pp_at(k, AvTiming.BEF_PREM) + prem_to_av_pp(k)
+    if timing == AvTiming.AFT_INT:
         gamma = float(data.charge_table().loc[                       # noqa: F821
             model_point()["tariff_id"], "gamma_av"])
-        return av_pp_at(k, "AFT_PREM") * (1.0 + cred_rate(k) - gamma)
+        return av_pp_at(k, AvTiming.AFT_PREM) * (1.0 + cred_rate(k) - gamma)
     raise ValueError("invalid timing")
 
 
@@ -1308,25 +1336,25 @@ def av_pu_at(k, timing):
     """
     if k < 0 or k >= proj_len_y():
         return 0.0
-    if timing == "BEF_PREM":
+    if timing == AvTiming.BEF_PREM:
         if k > ret_y():
             return 0.0
         if k == 0:
             if int(model_point()["paidup_at_init"]) == 1:
                 return float(model_point()["av_pp_init"]) * pols_if_init()
             return 0.0
-        return (av_pu_at(k - 1, "AFT_INT") * (1.0 - mort_rate(12 * (k - 1)))
-                + pols_freeze(12 * k - 1) * av_pp_at(k - 1, "AFT_INT"))
+        return (av_pu_at(k - 1, AvTiming.AFT_INT) * (1.0 - mort_rate(12 * (k - 1)))
+                + pols_freeze(12 * k - 1) * av_pp_at(k - 1, AvTiming.AFT_INT))
     if k >= ret_y():
-        if timing in ("AFT_PREM", "AFT_INT"):
+        if timing in (AvTiming.AFT_PREM, AvTiming.AFT_INT):
             return 0.0
         raise ValueError("invalid timing")
-    if timing == "AFT_PREM":
-        return av_pu_at(k, "BEF_PREM") - unit_cost_pp(k) * pols_paidup(12 * k)
-    if timing == "AFT_INT":
+    if timing == AvTiming.AFT_PREM:
+        return av_pu_at(k, AvTiming.BEF_PREM) - unit_cost_pp(k) * pols_paidup(12 * k)
+    if timing == AvTiming.AFT_INT:
         gamma = float(data.charge_table().loc[                       # noqa: F821
             model_point()["tariff_id"], "gamma_av"])
-        return av_pu_at(k, "AFT_PREM") * (1.0 + cred_rate(k) - gamma)
+        return av_pu_at(k, AvTiming.AFT_PREM) * (1.0 + cred_rate(k) - gamma)
     raise ValueError("invalid timing")
 
 
@@ -1362,7 +1390,7 @@ def av(k):
     worked example needs; :func:`fund_at_conv` grosses it up by the *Schlussüberschussanteil*
     and the account is empty from the next year onwards.
     """
-    return av_at(k, "BEF_PREM")
+    return av_at(k, AvTiming.BEF_PREM)
 
 
 def rentenfaktor_curr():
@@ -1399,8 +1427,8 @@ def rf_option_factor():
     tab = data.option_table()                                        # noqa: F821
     g = "%d" % int(model_point()["guarantee_period_y"])
     s = "%.2f" % float(model_point()["surv_annuity_rate"])
-    return (float(tab.loc[("guarantee_period", g), "factor"])
-            * float(tab.loc[("survivor", s), "factor"]))
+    return (float(tab.loc[(OptionId.guarantee_period, g), "factor"])
+            * float(tab.loc[(OptionId.survivor, s), "factor"]))
 
 
 def rentenfaktor_applied():
@@ -1443,7 +1471,7 @@ def fund_at_conv():
         return 0.0
     sigma = float(data.charge_table().loc[                           # noqa: F821
         model_point()["tariff_id"], "terminal_bonus_rate"])
-    return av_at(ret_y(), "BEF_PREM") * (1.0 + sigma)
+    return av_at(ret_y(), AvTiming.BEF_PREM) * (1.0 + sigma)
 
 
 def ann_bonus_rate(k):
@@ -1459,10 +1487,9 @@ def ann_bonus_rate(k):
     lever and ``mort_be_factor`` between them decide the payout phase's whole economics.
     Both are **[std]** independently.
     """
-    tab = data.surplus_table()                                       # noqa: F821
-    key = model_point()["surplus_scenario_id"]
-    tt = min(max(k, 0), int(tab.loc[key].index.max()))
-    return float(tab.loc[(key, tt), "ann_bonus_rate"])
+    sub = surplus_schedule()
+    tt = min(max(k, 0), int(sub.index.max()))
+    return float(sub.loc[tt, "ann_bonus_rate"])
 
 
 def ann_pp(k):
@@ -1540,7 +1567,7 @@ def db_pp(k):
     rider is on **and** an eligible survivor exists; otherwise the whole of it is a
     mortality profit and nothing is paid.  See :func:`claims`.
     """
-    return av_pp_at(k, "AFT_INT")
+    return av_pp_at(k, AvTiming.AFT_INT)
 
 
 def db_pu_pp(k):
@@ -1554,10 +1581,10 @@ def db_pu_pp(k):
     """
     if pols_paidup(12 * k) <= 0.0:
         return 0.0
-    return av_pu_at(k, "AFT_INT") / pols_paidup(12 * k)
+    return av_pu_at(k, AvTiming.AFT_INT) / pols_paidup(12 * k)
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Benefit outgo in projection month t, by kind; the total when kind is omitted.
 
     ``"DEATH"``
@@ -1591,9 +1618,9 @@ def claims(t, kind=None):
     no partial capital payment and no commutation exist on this product.
     :func:`check_no_capital` asserts that the total is exactly the sum of these three.
     """
-    if kind is None:
-        return sum(claims(t, k) for k in ("DEATH", "ANNUITY", "SURVIVOR"))
-    if kind == "DEATH":
+    if kind == Kind.ALL:
+        return sum(claims(t, k) for k in (Kind.DEATH, Kind.ANNUITY, Kind.SURVIVOR))
+    if kind == Kind.DEATH:
         if float(model_point()["surv_annuity_rate"]) <= 0.0:
             return 0.0
         if t < 0 or t >= ret_t() or t >= proj_len():
@@ -1601,15 +1628,20 @@ def claims(t, kind=None):
         k = proj_year(t)
         return elig_surv_prob * (                                    # noqa: F821
             db_pp(k) * pols_death_paying(t) + db_pu_pp(k) * pols_death_paidup(t))
-    if kind == "ANNUITY":
+    if kind == Kind.ANNUITY:
         if t < max(0, ret_t()) or t >= proj_len():
             return 0.0
         return ann_mth_pp(t) * pols_if(t)
-    if kind == "SURVIVOR":
+    if kind == Kind.SURVIVOR:
         if t < 0 or t >= proj_len():
             return 0.0
         return ann_mth_pp(t) * pols_gtd(t)
     raise ValueError("invalid kind")
+
+
+def tariff_charges():
+    """The charge and expense row of the policy's tariff."""
+    return data.charge_table().loc[model_point()["tariff_id"]]       # noqa: F821
 
 
 def expenses(t):
@@ -1640,7 +1672,7 @@ def expenses(t):
     """
     if t < 0 or t >= proj_len():
         return 0.0
-    row = data.charge_table().loc[model_point()["tariff_id"]]        # noqa: F821
+    row = tariff_charges()
     infl = (1.0 + float(row["expense_infl"])) ** proj_year(t)
     out = 0.0
     if t == 0 and int(model_point()["duration_init"]) == 0:
@@ -1674,7 +1706,7 @@ def commissions(t):
     """
     if t < 0 or t >= proj_len():
         return 0.0
-    row = data.charge_table().loc[model_point()["tariff_id"]]        # noqa: F821
+    row = tariff_charges()
     out = 0.0
     if t == 0 and int(model_point()["duration_init"]) == 0:
         out += float(row["comm_init_rate"]) * beitragssumme_pp() * pols_if_init()
@@ -1700,7 +1732,7 @@ def net_cf(t):
     the one quantity nothing checks.
     """
     return (premiums(t) + zuzahlungen(t)
-            - claims(t, "DEATH") - claims(t, "ANNUITY") - claims(t, "SURVIVOR")
+            - claims(t, Kind.DEATH) - claims(t, Kind.ANNUITY) - claims(t, Kind.SURVIVOR)
             - expenses(t) - commissions(t))
 
 
@@ -1772,8 +1804,8 @@ def check_pols_roll_fwd_resid(t):
     would fail in the first month of the projection.
     """
     return (abs(pols_paying(t) + pols_paidup(t) - pols_if(t))
-            + abs(pols_if(t + 1) - pols_if_at(t, "AFT_FREEZE"))
-            + abs(pols_if_at(t, "AFT_FREEZE") - pols_if(t) * (1.0 - mort_rate_mth(t))))
+            + abs(pols_if(t + 1) - pols_if_at(t, PolTiming.AFT_FREEZE))
+            + abs(pols_if_at(t, PolTiming.AFT_FREEZE) - pols_if(t) * (1.0 - mort_rate_mth(t))))
 
 
 def check_pols_roll_fwd():
@@ -1808,16 +1840,16 @@ def check_av_roll_fwd_resid(k):
     per-policy reserve fails at the first freeze.
     """
     if k < ret_y():
-        return av_at(k + 1, "BEF_PREM") - av_at(k, "AFT_INT") * (1.0 - mort_rate(12 * k))
+        return av_at(k + 1, AvTiming.BEF_PREM) - av_at(k, AvTiming.AFT_INT) * (1.0 - mort_rate(12 * k))
     if k == ret_y():
-        return av_at(k, "AFT_INT")
-    return av_at(k, "AFT_INT") + av(k)
+        return av_at(k, AvTiming.AFT_INT)
+    return av_at(k, AvTiming.AFT_INT) + av(k)
 
 
 def check_av_roll_fwd():
     """True when the *Deckungskapital* rolls forward and is emptied at *Rentenbeginn*."""
     return all(abs(check_av_roll_fwd_resid(k))
-               <= roll_fwd_tol * max(1.0, abs(av_at(k, "AFT_INT")),   # noqa: F821
+               <= roll_fwd_tol * max(1.0, abs(av_at(k, AvTiming.AFT_INT)),   # noqa: F821
                                      abs(av(k)))
                for k in range(proj_len_y()))
 
@@ -1883,16 +1915,16 @@ def check_no_capital_resid(t):
     is asserted in the product's own test module, because it is an absence and cannot be
     computed here.
     """
-    resid = abs(claims(t) - claims(t, "DEATH") - claims(t, "ANNUITY")
-                - claims(t, "SURVIVOR"))
+    resid = abs(claims(t, Kind.ALL) - claims(t, Kind.DEATH) - claims(t, Kind.ANNUITY)
+                - claims(t, Kind.SURVIVOR))
     if float(model_point()["surv_annuity_rate"]) <= 0.0 or t >= ret_t():
-        resid += abs(claims(t, "DEATH"))
+        resid += abs(claims(t, Kind.DEATH))
     return resid
 
 
 def check_no_capital():
     """True when no payment other than a permitted annuity or survivor benefit is made."""
-    scale = max([1.0] + [abs(claims(t)) for t in range(proj_len())])
+    scale = max([1.0] + [abs(claims(t, Kind.ALL)) for t in range(proj_len())])
     return all(check_no_capital_resid(t) <= roll_fwd_tol * scale      # noqa: F821
                for t in range(proj_len()))
 
@@ -1969,9 +2001,9 @@ def result_cf():
             "pols_paying": [pols_paying(t) for t in ts],
             "premiums": [premiums(t) for t in ts],
             "zuzahlungen": [zuzahlungen(t) for t in ts],
-            "claims_death": [claims(t, "DEATH") for t in ts],
-            "claims_annuity": [claims(t, "ANNUITY") for t in ts],
-            "claims_survivor": [claims(t, "SURVIVOR") for t in ts],
+            "claims_death": [claims(t, Kind.DEATH) for t in ts],
+            "claims_annuity": [claims(t, Kind.ANNUITY) for t in ts],
+            "claims_survivor": [claims(t, Kind.SURVIVOR) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "commissions": [commissions(t) for t in ts],
             "net_cf": [net_cf(t) for t in ts],
@@ -2082,3 +2114,15 @@ ann_freq = 12
 roll_fwd_tol = 1e-9
 
 pd = ("Module", "pandas")
+
+PremForm = ("Pickle", 2)
+
+PremMode = ("Pickle", 3)
+
+OptionId = ("Pickle", 1)
+
+PolTiming = ("Pickle", 4)
+
+AvTiming = ("Pickle", 5)
+
+Kind = ("Pickle", 6)

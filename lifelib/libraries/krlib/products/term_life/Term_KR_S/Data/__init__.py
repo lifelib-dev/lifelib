@@ -191,9 +191,9 @@ def mort_table():
     for the 재해사망 uplift variant.  See the Space docstring for why the two columns may
     come from different carriers.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file,                               # noqa: F821
-        index_col=["sex", "age"])
+    frame = pd.read_csv(input_dir() / mort_table_file)               # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"])
 
 
 def rate_class_table():
@@ -213,9 +213,10 @@ def rate_class_table():
     flat across ages **[std]**: the disclosures are at three ages and the ratios move
     little between them.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / rate_class_file,                               # noqa: F821
-        index_col=["rate_class", "sex"])
+    frame = pd.read_csv(input_dir() / rate_class_file)               # noqa: F821
+    frame["rate_class"] = [RateClass[name] for name in frame["rate_class"]]
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["rate_class", "sex"])
 
 
 def prem_rate_table():
@@ -228,9 +229,10 @@ def prem_rate_table():
     eight are the 갱신형 ladder of the carrier that publishes an 예상 갱신보험료 예시
     [S6] [S7].
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / prem_rate_file,                                # noqa: F821
-        index_col=["form", "sex", "issue_age", "term_y"])
+    frame = pd.read_csv(input_dir() / prem_rate_file)                # noqa: F821
+    frame["form"] = [MaturityForm[name] for name in frame["form"]]
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["form", "sex", "issue_age", "term_y"])
 
 
 def prem_anchor_table():
@@ -252,8 +254,9 @@ def lapse_table():
     endpoints are disclosed [S12] [S1] and the log-linear shape between them is
     prescribed [REG-R27]; ``Projection.lapse_rate`` builds the curve.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / lapse_table_file, index_col="segment")         # noqa: F821
+    frame = pd.read_csv(input_dir() / lapse_table_file)              # noqa: F821
+    frame["segment"] = [Segment[name] for name in frame["segment"]]
+    return frame.set_index("segment")
 
 
 # ---------------------------------------------------------------------------
@@ -270,3 +273,11 @@ prem_rate_file = "prem_rate_table.csv"
 lapse_table_file = "lapse_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+RateClass = ("Pickle", 2)
+
+MaturityForm = ("Pickle", 3)
+
+Segment = ("Pickle", 4)

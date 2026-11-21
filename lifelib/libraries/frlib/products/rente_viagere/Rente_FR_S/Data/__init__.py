@@ -95,9 +95,9 @@ def mort_table():
     *taux de rente* exactly; see ``Projection.taux_rente_tariff``.  Sorted on read,
     because ``Projection.mort_rate_at_age`` indexes into it.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file,
-        index_col=["sex", "birth_year", "age"]).sort_index()
+    frame = pd.read_csv(input_dir() / mort_table_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "birth_year", "age"]).sort_index()
 
 
 def reversion_coeff_table():
@@ -112,7 +112,7 @@ def reversion_coeff_table():
     Read without an index because the lookup is a band test, not a key lookup.
     """
     return pd.read_csv(                                              # noqa: F821
-        input_dir() / reversion_coeff_file)                          # noqa: F821
+        input_dir() / reversion_coeff_file).set_index(["reversion_pct", "gen_diff_lo"]).sort_index()                          # noqa: F821
 
 
 # ---------------------------------------------------------------------------
@@ -125,3 +125,5 @@ mort_table_file = "mort_table.csv"
 reversion_coeff_file = "reversion_coeff_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)

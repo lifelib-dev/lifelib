@@ -77,9 +77,11 @@ def premium_rates():
     0-based projection index; ``Projection.premium_pp_ann(t)`` looks it up at
     ``policy_year(t) = duration(t) + 1``, the policy year containing month ``t``.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / premium_rates_file,                            # noqa: F821
-        index_col=["plan", "sex", "rate_class", "band", "policy_year"])
+    frame = pd.read_csv(input_dir() / premium_rates_file)                     # noqa: F821
+    frame["plan"] = [Plan[name] for name in frame["plan"]]
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    frame["rate_class"] = [RateClass[name] for name in frame["rate_class"]]
+    return frame.set_index(["plan", "sex", "rate_class", "band", "policy_year"])
 
 
 def mort_table():
@@ -89,7 +91,9 @@ def mort_table():
 
 def class_factor_table():
     """The underwriting-class factors, read from *class_factor_table.csv*."""
-    return pd.read_csv(input_dir() / class_factor_file, index_col="rate_class")  # noqa: F821
+    frame = pd.read_csv(input_dir() / class_factor_file)             # noqa: F821
+    frame["rate_class"] = [RateClass[name] for name in frame["rate_class"]]
+    return frame.set_index("rate_class")
 
 
 def shock_lapse_table():
@@ -111,3 +115,9 @@ class_factor_file = "class_factor_table.csv"
 shock_lapse_file = "shock_lapse_table.csv"
 
 pd = ("Module", "pandas")
+
+Plan = ("Pickle", 1)
+
+Sex = ("Pickle", 2)
+
+RateClass = ("Pickle", 3)

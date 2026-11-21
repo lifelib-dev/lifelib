@@ -377,10 +377,7 @@ def sex():
     reports it and because a reserving basis may still be sex-specific even where the
     tariff may not be.
     """
-    v = model_point()["sex"]
-    if v not in ("M", "F"):
-        raise ValueError("invalid sex")
-    return v
+    return Sex[model_point()["sex"]]
 
 
 def entry_age():
@@ -433,10 +430,7 @@ def prem_form():
     acquisition charge is the *Zuzahlungskosten* rate levied once on receipt, which is
     what :func:`charge_acq_total` returns for it.
     """
-    v = model_point()["prem_form"]
-    if v not in ("laufend", "einmal"):
-        raise ValueError("invalid prem_form")
-    return v
+    return PremForm[model_point()["prem_form"]]
 
 
 def prem_pp_base():
@@ -508,10 +502,7 @@ def db_form():
     (the composite, and the only shape with any corroboration in this library's corpus), a
     percentage of the fund, and a fixed *garantierte Mindesttodesfallleistung*.
     """
-    v = model_point()["db_form"]
-    if v not in ("fund", "prem_return", "pct_fund", "sum_assured"):
-        raise ValueError("invalid db_form")
-    return v
+    return DbForm[model_point()["db_form"]]
 
 
 def db_pct():
@@ -810,7 +801,7 @@ def prem_pp(t):
     else: the stated instalment already contains any *Ratenzahlungszuschlag*, so loading
     it again would charge the fractionation twice.
     """
-    if prem_form() == "einmal":
+    if prem_form() == PremForm.einmal:
         return prem_pp_base() if t == proj_start() else 0.0
     if t >= 12 * prem_term_y():
         return 0.0
@@ -841,7 +832,7 @@ def beitragssumme():
     paid is a listed pitfall — it would make the acquisition charge a function of the
     lapse assumption, which is both wrong and circular.
     """
-    if prem_form() == "einmal":
+    if prem_form() == PremForm.einmal:
         return prem_pp_base()
     return prem_pp_base() * (12.0 / prem_mode_months()) * prem_term_y()
 
@@ -853,7 +844,7 @@ def acq_window_months():
     years: model point 12 pays for two years, so its window is 24 months and not 60.  Zero
     on a single-premium contract, whose acquisition charge is a one-off.
     """
-    if prem_form() == "einmal":
+    if prem_form() == PremForm.einmal:
         return 0
     return min(alpha_spread_months(), 12 * prem_term_y())
 
@@ -866,7 +857,7 @@ def acq_instalments():
     ``charge_acq_total() / acq_instalments()``, so spreading a shortened window over sixty
     months would understate every instalment and leave the ledger short at the end.
     """
-    if prem_form() == "einmal":
+    if prem_form() == PremForm.einmal:
         return 1
     return acq_window_months() // prem_mode_months()
 
@@ -879,7 +870,7 @@ def charge_acq_total():
     ``zuzahlung_charge_rate() x prem_pp_base()`` on a single-premium one, where there is
     no *Beitragssumme* to zillmer against and no five-year spread to obey.
     """
-    if prem_form() == "einmal":
+    if prem_form() == PremForm.einmal:
         return zuzahlung_charge_rate() * prem_pp_base()
     return alpha_rate() * beitragssumme()
 
@@ -898,7 +889,7 @@ def charge_acq_pp(t):
     which is correct: the charge and the commission it funded are both behind it.
     """
     reg = 0.0
-    if prem_form() == "einmal":
+    if prem_form() == PremForm.einmal:
         if t == proj_start():
             reg = charge_acq_total()
     elif t < acq_window_months() and prem_pp(t) > 0.0:
@@ -964,6 +955,11 @@ def cum_prem_pp(t):
 
 # ----------------------------------------  the fund
 
+def fund_scenario():
+    """The fund scenario rows of this policy's scenario, by policy year."""
+    return data.fund_scenario_table().loc[scenario_id()]             # noqa: F821
+
+
 def fund_return_gross_ann(t):
     """The assumed **gross** annual fund return in month t, before the TER.
 
@@ -976,8 +972,8 @@ def fund_return_gross_ann(t):
     ``glide_months`` months with a linear ramp down to ``mmkt_return_ann``, reaching the
     money-market rate exactly in the final month.
     """
-    base = data.fund_scenario_table().loc[                           # noqa: F821
-        (scenario_id(), policy_year(t)), "gross_return_ann"]
+    sub = fund_scenario()
+    base = sub.loc[policy_year(t), "gross_return_ann"]
     base = float(base)
     if not ablauf_flag():
         return base
@@ -997,8 +993,8 @@ def fund_ter_ann(t):
     explicitly double-counts the fund's costs; ignoring it overstates the policyholder's
     return.  0.45 % p.a. on the active composite fund, 0.15 % on the ETF.
     """
-    return float(data.fund_scenario_table().loc[                     # noqa: F821
-        (scenario_id(), policy_year(t)), "ter_ann"])
+    sub = fund_scenario()
+    return float(sub.loc[policy_year(t), "ter_ann"])
 
 
 def fund_return_net_ann(t):
@@ -1056,7 +1052,7 @@ def units_pp(t):
     """
     if t <= proj_start():
         return units_init()
-    return av_pp_at(t - 1, "BEF_DECR") / unit_price(t - 1)
+    return av_pp_at(t - 1, AvTiming.BEF_DECR) / unit_price(t - 1)
 
 
 def units_bought_pp(t):
@@ -1111,15 +1107,15 @@ def av_pp_at(t, timing):
     tariff terms; none of the thirteen shipped model points triggers one, and a contract
     that did would in practice have had its cover terminated.
     """
-    if timing == "BEF_CHARGE":
+    if timing == AvTiming.BEF_CHARGE:
         return (units_pp(t) + units_bought_pp(t)) * unit_price(t)
-    elif timing == "AFT_CHARGE":
-        return (av_pp_at(t, "BEF_CHARGE") - charge_admin_fund_pp(t)
+    elif timing == AvTiming.AFT_CHARGE:
+        return (av_pp_at(t, AvTiming.BEF_CHARGE) - charge_admin_fund_pp(t)
                 - charge_policy_fee_pp(t))
-    elif timing == "AFT_WD":
-        return av_pp_at(t, "AFT_CHARGE") - withdrawals_pp(t)
-    elif timing == "BEF_DECR":
-        return av_pp_at(t, "AFT_WD") - charge_risk_pp(t)
+    elif timing == AvTiming.AFT_WD:
+        return av_pp_at(t, AvTiming.AFT_CHARGE) - withdrawals_pp(t)
+    elif timing == AvTiming.BEF_DECR:
+        return av_pp_at(t, AvTiming.AFT_WD) - charge_risk_pp(t)
     else:
         raise ValueError("invalid timing")
 
@@ -1147,7 +1143,7 @@ def charge_admin_fund_pp(t):
     netted it out of the *Beitrag* instead would be right until ``t = 120`` on model
     point 7 and wrong from then on.
     """
-    return gamma_rate_mth() * av_pp_at(t, "BEF_CHARGE")
+    return gamma_rate_mth() * av_pp_at(t, AvTiming.BEF_CHARGE)
 
 
 def charge_policy_fee_pp(t):
@@ -1159,7 +1155,7 @@ def charge_policy_fee_pp(t):
     triggered by no shipped model point.
     """
     return min(policy_fee_mth(),
-               av_pp_at(t, "BEF_CHARGE") - charge_admin_fund_pp(t))
+               av_pp_at(t, AvTiming.BEF_CHARGE) - charge_admin_fund_pp(t))
 
 
 def charge_risk_pp(t):
@@ -1174,7 +1170,7 @@ def charge_risk_pp(t):
     move.  On the ``fund`` death-benefit shape it is identically zero, there being no net
     amount at risk to price.
     """
-    return min(mort_rate_tariff_mth(t) * nar_pp(t), av_pp_at(t, "AFT_WD"))
+    return min(mort_rate_tariff_mth(t) * nar_pp(t), av_pp_at(t, AvTiming.AFT_WD))
 
 
 def stornoabzug_pp(t):
@@ -1186,7 +1182,7 @@ def stornoabzug_pp(t):
     which is precisely what stops an insurer recovering through the deduction what the
     five-year spreading denies it.  Zero on every shipped tariff but ``std_high``.
     """
-    return stornoabzug_rate() * av_pp_at(t, "BEF_DECR")
+    return stornoabzug_rate() * av_pp_at(t, AvTiming.BEF_DECR)
 
 
 def withdrawals_pp(t):
@@ -1199,7 +1195,7 @@ def withdrawals_pp(t):
     contract and therefore the following months' *Risikobeitrag*.
     """
     if wd_month() > 0 and t == wd_month():
-        return min(wd_amount(), av_pp_at(t, "AFT_CHARGE"))
+        return min(wd_amount(), av_pp_at(t, AvTiming.AFT_CHARGE))
     return 0.0
 
 
@@ -1223,12 +1219,12 @@ def db_floor_pp(t):
         a fixed *garantierte Mindesttodesfallleistung*, independent of the fund.
     """
     form = db_form()
-    if form == "fund":
+    if form == DbForm.fund:
         return 0.0
-    elif form == "prem_return":
+    elif form == DbForm.prem_return:
         return cum_prem_pp(t)
-    elif form == "pct_fund":
-        return db_pct() * av_pp_at(t, "AFT_WD")
+    elif form == DbForm.pct_fund:
+        return db_pct() * av_pp_at(t, AvTiming.AFT_WD)
     return sum_assured()
 
 
@@ -1245,7 +1241,7 @@ def nar_pp(t):
     profit.  On the *Beitragsrückgewähr* shape this quantity is positive early, vanishes
     once the fund overtakes the premiums paid, and returns after a market fall.
     """
-    return max(db_floor_pp(t) - av_pp_at(t, "AFT_WD"), 0.0)
+    return max(db_floor_pp(t) - av_pp_at(t, AvTiming.AFT_WD), 0.0)
 
 
 def db_pp(t):
@@ -1256,7 +1252,7 @@ def db_pp(t):
     than writing ``max(floor, fund)`` is what keeps the unit and non-unit sides apart —
     the first term is the policyholder's own money and the second is the insurer's.
     """
-    return av_pp_at(t, "BEF_DECR") + nar_pp(t)
+    return av_pp_at(t, AvTiming.BEF_DECR) + nar_pp(t)
 
 
 # ----------------------------------------  decrements
@@ -1436,12 +1432,12 @@ def pols_if_at(t, timing):
         and so equals ``pols_maturity(proj_len() - 1)`` rather than ``pols_if(proj_len())``,
         which is zero.
     """
-    if timing == "BEF_DECR":
+    if timing == PolsTiming.BEF_DECR:
         return pols_if(t)
-    elif timing == "AFT_DEATH":
+    elif timing == PolsTiming.AFT_DEATH:
         return pols_if(t) * (1.0 - mort_rate_mth(t))
-    elif timing == "AFT_DECR":
-        return pols_if_at(t, "AFT_DEATH") * (1.0 - lapse_rate_mth(t))
+    elif timing == PolsTiming.AFT_DECR:
+        return pols_if_at(t, PolsTiming.AFT_DEATH) * (1.0 - lapse_rate_mth(t))
     else:
         raise ValueError("invalid timing")
 
@@ -1461,7 +1457,7 @@ def pols_lapse(t):
     Zero in the last month by construction, where the whole surviving cohort is booked as
     :func:`pols_maturity` instead.
     """
-    return pols_if_at(t, "AFT_DEATH") * lapse_rate_mth(t)
+    return pols_if_at(t, PolsTiming.AFT_DEATH) * lapse_rate_mth(t)
 
 
 def pols_maturity(t):
@@ -1475,7 +1471,7 @@ def pols_maturity(t):
     """
     if t < proj_len() - 1:
         return 0.0
-    return pols_if_at(t, "AFT_DECR")
+    return pols_if_at(t, PolsTiming.AFT_DECR)
 
 
 # ----------------------------------------  cash flows
@@ -1573,12 +1569,12 @@ def claims(t, kind):
     only the death benefit's net-amount-at-risk component, published separately as
     :func:`death_strain`, is an insurer cost.
     """
-    if kind == "DEATH":
+    if kind == Kind.DEATH:
         return pols_death(t) * db_pp(t)
-    elif kind == "LAPSE":
-        return pols_lapse(t) * av_pp_at(t, "BEF_DECR") * (1.0 - stornoabzug_rate())
-    elif kind == "MATURITY":
-        return pols_maturity(t) * av_pp_at(t, "BEF_DECR")
+    elif kind == Kind.LAPSE:
+        return pols_lapse(t) * av_pp_at(t, AvTiming.BEF_DECR) * (1.0 - stornoabzug_rate())
+    elif kind == Kind.MATURITY:
+        return pols_maturity(t) * av_pp_at(t, AvTiming.BEF_DECR)
     else:
         raise ValueError("invalid kind")
 
@@ -1592,7 +1588,7 @@ def av_releases(t):
     which it retains.
     """
     return ((pols_death(t) + pols_lapse(t) + pols_maturity(t))
-            * av_pp_at(t, "BEF_DECR") + withdrawals(t))
+            * av_pp_at(t, AvTiming.BEF_DECR) + withdrawals(t))
 
 
 def death_strain(t):
@@ -1776,7 +1772,7 @@ def av_maturity_pp():
     month, after that month's charges.  It is what the surviving cohort releases, and what
     the *Rentenfaktor* converts.
     """
-    return av_pp_at(proj_len() - 1, "BEF_DECR")
+    return av_pp_at(proj_len() - 1, AvTiming.BEF_DECR)
 
 
 def annuity_mth_pp():
@@ -1945,13 +1941,13 @@ def check_av_roll_fwd_resid(t):
     rolled = ((av_pp(t) + prem_to_av_pp(t)) * (1.0 + fund_return_net_mth(t))
               - charge_admin_fund_pp(t) - charge_policy_fee_pp(t)
               - withdrawals_pp(t) - charge_risk_pp(t))
-    return av_pp_at(t, "BEF_DECR") - rolled
+    return av_pp_at(t, AvTiming.BEF_DECR) - rolled
 
 
 def check_av_roll_fwd():
     """True when the *Fondsguthaben* rolls forward exactly in every projected month."""
     return all(abs(check_av_roll_fwd_resid(t))
-               <= val_tol * max(1.0, abs(av_pp_at(t, "BEF_DECR")))   # noqa: F821
+               <= val_tol * max(1.0, abs(av_pp_at(t, AvTiming.BEF_DECR)))   # noqa: F821
                for t in range(proj_start(), proj_len()))
 
 
@@ -1968,7 +1964,7 @@ def check_benefit_funding_resid(t):
     would leave every column in the frame looking reasonable and the liability overstated
     by the entire fund.
     """
-    return ((claims(t, "DEATH") + claims(t, "LAPSE") + claims(t, "MATURITY")
+    return ((claims(t, Kind.DEATH) + claims(t, Kind.LAPSE) + claims(t, Kind.MATURITY)
              + withdrawals(t) + stornoabzug(t))
             - (av_releases(t) + death_strain(t)))
 
@@ -2015,7 +2011,7 @@ def check_acq_charge_resid(t):
     charge has been collected and no more: ``alpha_rate x beitragssumme()`` exactly, which
     on the anchor is 1 800,00 EUR.
     """
-    if prem_form() == "einmal":
+    if prem_form() == PremForm.einmal:
         elapsed = 1 if t >= proj_start() else 0
     else:
         hi = min(t, acq_window_months() - 1)
@@ -2072,9 +2068,9 @@ def result_cf():
             "charge_risk": [charge_risk(t) for t in ts],
             "stornoabzug": [stornoabzug(t) for t in ts],
             "withdrawals": [withdrawals(t) for t in ts],
-            "claims_death": [claims(t, "DEATH") for t in ts],
-            "claims_lapse": [claims(t, "LAPSE") for t in ts],
-            "claims_maturity": [claims(t, "MATURITY") for t in ts],
+            "claims_death": [claims(t, Kind.DEATH) for t in ts],
+            "claims_lapse": [claims(t, Kind.LAPSE) for t in ts],
+            "claims_maturity": [claims(t, Kind.MATURITY) for t in ts],
             "av_releases": [av_releases(t) for t in ts],
             "death_strain": [death_strain(t) for t in ts],
             "expenses": [expenses(t) for t in ts],
@@ -2101,10 +2097,10 @@ def result_fund():
             "unit_price": [unit_price(t) for t in ts],
             "units_pp": [units_pp(t) for t in ts],
             "av_pp": [av_pp(t) for t in ts],
-            "av_pp_bef_charge": [av_pp_at(t, "BEF_CHARGE") for t in ts],
-            "av_pp_aft_charge": [av_pp_at(t, "AFT_CHARGE") for t in ts],
-            "av_pp_aft_wd": [av_pp_at(t, "AFT_WD") for t in ts],
-            "av_pp_bef_decr": [av_pp_at(t, "BEF_DECR") for t in ts],
+            "av_pp_bef_charge": [av_pp_at(t, AvTiming.BEF_CHARGE) for t in ts],
+            "av_pp_aft_charge": [av_pp_at(t, AvTiming.AFT_CHARGE) for t in ts],
+            "av_pp_aft_wd": [av_pp_at(t, AvTiming.AFT_WD) for t in ts],
+            "av_pp_bef_decr": [av_pp_at(t, AvTiming.BEF_DECR) for t in ts],
             "cum_prem_pp": [cum_prem_pp(t) for t in ts],
             "db_floor_pp": [db_floor_pp(t) for t in ts],
             "nar_pp": [nar_pp(t) for t in ts],
@@ -2154,3 +2150,15 @@ roll_fwd_tol = 1e-10
 val_tol = 1e-10
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+PremForm = ("Pickle", 2)
+
+DbForm = ("Pickle", 3)
+
+AvTiming = ("Pickle", 4)
+
+PolsTiming = ("Pickle", 5)
+
+Kind = ("Pickle", 6)

@@ -85,9 +85,9 @@ def inception_table():
     marks which cells are the notes' own pivots and which come from a factor.  Sorted
     on read, because ``Projection.inception_rate`` slices it.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / inception_file,                                # noqa: F821
-        index_col=["sex", "occ_class", "deferred_weeks", "age"]).sort_index()
+    frame = pd.read_csv(input_dir() / inception_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "occ_class", "deferred_weeks", "age"]).sort_index()
 
 
 def termination_table():
@@ -111,8 +111,9 @@ def mort_table():
     protection anyway, so the shipped rates are a placeholder to be replaced with
     portfolio experience.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file, index_col=["sex", "age"]).sort_index()
+    frame = pd.read_csv(input_dir() / mort_table_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"]).sort_index()
 
 
 def lapse_table():
@@ -135,3 +136,5 @@ mort_table_file = "mort_table.csv"
 lapse_table_file = "lapse_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)

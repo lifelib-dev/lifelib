@@ -175,9 +175,11 @@ def mort_table():
     the unisex blend and applying the *Sicherheitszuschlag*, so there is exactly one
     unsourced mortality level in the model rather than two stacked on each other.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file,                               # noqa: F821
-        index_col=["table_id", "sex", "smoker", "age"])
+    frame = pd.read_csv(                                             # noqa: F821
+        input_dir() / mort_table_file)                               # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    frame["smoker"] = [Smoker[name] for name in frame["smoker"]]
+    return frame.set_index(["table_id", "sex", "smoker", "age"])
 
 
 def benefit_schedule():
@@ -228,8 +230,9 @@ def freq_loading_table():
     billed amount, and ``instalments``, the number of payments a year, which is carried
     for reporting and enters no cash flow on an annual grid.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / freq_loading_file, index_col="prem_freq")      # noqa: F821
+    frame = pd.read_csv(input_dir() / freq_loading_file)             # noqa: F821
+    frame["prem_freq"] = [PremFreq[name] for name in frame["prem_freq"]]
+    return frame.set_index("prem_freq")
 
 
 # ---------------------------------------------------------------------------
@@ -248,3 +251,9 @@ lapse_file = "lapse_table.csv"
 freq_loading_file = "freq_loading_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+Smoker = ("Pickle", 2)
+
+PremFreq = ("Pickle", 3)

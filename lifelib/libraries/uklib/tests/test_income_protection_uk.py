@@ -28,6 +28,7 @@ import pytest
 from modelx.core.errors import FormulaError
 
 from uk_registry import MODELS, LIB
+from lifelib.libraries.uklib.products.income_protection.enums import Escalation, Kind, PolTiming, RecoveryBasis, Sex, Status
 
 
 def model_files(folder):
@@ -86,15 +87,15 @@ def test_worked_example_row(uk_ip_claim, t):
     assert p.pols_recovery(t) == pytest.approx(rec, abs=STATE)
     assert p.pols_death_sick(t) == pytest.approx(dth, abs=STATE)
     assert p.pols_sick_surv(t) == pytest.approx(end, abs=STATE)
-    assert p.claims(t, "BENEFIT") == pytest.approx(ben, abs=PENNY)
+    assert p.claims(t, Kind.BENEFIT) == pytest.approx(ben, abs=PENNY)
     assert p.disc_factor(t) == pytest.approx(v, abs=5e-7)
-    assert p.claims(t, "BENEFIT") * p.disc_factor(t) == pytest.approx(pv, abs=PENNY)
+    assert p.claims(t, Kind.BENEFIT) * p.disc_factor(t) == pytest.approx(pv, abs=PENNY)
 
 
 def test_worked_example_three_month_pv(uk_ip_claim):
     """The notes' headline: GBP 5,459.59 per claim in payment over three months."""
     p = uk_ip_claim
-    total = sum(p.claims(t, "BENEFIT") * p.disc_factor(t) for t in (0, 1, 2))
+    total = sum(p.claims(t, Kind.BENEFIT) * p.disc_factor(t) for t in (0, 1, 2))
     assert total == pytest.approx(WORKED_EXAMPLE_PV3, abs=PENNY)
 
 
@@ -224,7 +225,7 @@ def test_premiums_are_never_carried_on_lives_in_claim(income_protection):
 def test_a_claims_in_payment_cell_pays_no_premium_at_all(uk_ip_claim):
     """Everything is in S on the exit basis, so premium income is zero throughout."""
     p = uk_ip_claim
-    assert p.status() == "in_claim"
+    assert p.status() == Status.in_claim
     assert (p.result_cf()["premiums"] == 0.0).all()
     assert (p.result_cf()["pols_active"] == 0.0).all()
 
@@ -261,13 +262,13 @@ def test_a_new_inception_is_not_paid_in_the_month_it_incepts(income_protection):
     """
     p = income_protection.Projection[1]
     assert p.pols_sick(0) == 0.0                      # nobody in claim yet
-    assert p.claims(0, "BENEFIT") == 0.0              # so nothing is paid
+    assert p.claims(0, Kind.BENEFIT) == 0.0              # so nothing is paid
     assert p.pols_inception(0) > 0.0                  # even though claims incepted
     assert p.pols_sick_dur(1, 1) == pytest.approx(p.pols_inception(0), rel=1e-14)
-    assert p.claims(1, "BENEFIT") > 0.0
+    assert p.claims(1, Kind.BENEFIT) > 0.0
     # The benefit excludes the cohort seeded this month, in every month.
     for t in (4, 49, 199):
-        paid_on = p.claims(t, "BENEFIT") / p.amount_payable_pp(t)
+        paid_on = p.claims(t, Kind.BENEFIT) / p.amount_payable_pp(t)
         assert paid_on == pytest.approx(p.pols_sick_surv(t), rel=1e-12)
         assert paid_on < p.pols_sick(t) + p.pols_inception(t)
 
@@ -286,8 +287,8 @@ def test_everything_terminates_at_the_policy_end_date(uk_ip_claim):
     assert p.pols_sick(359) > 0.0
     assert p.pols_sick(360) == 0.0
     assert p.pols_if(360) == 0.0
-    assert p.pols_if_at(359, "AFT_DECR") == 0.0
-    assert p.pols_if_at(358, "AFT_DECR") == p.pols_if(359)
+    assert p.pols_if_at(359, PolTiming.AFT_DECR) == 0.0
+    assert p.pols_if_at(358, PolTiming.AFT_DECR) == p.pols_if(359)
     for t in (0, 99, 358):
         assert p.pols_maturity(t) == 0.0
     assert p.pols_maturity(359) > 0.0
@@ -317,7 +318,7 @@ def test_a_claim_near_expiry_is_truncated(income_protection):
 def test_the_exit_basis_is_a_pure_disabled_life_annuity(uk_ip_claim):
     """Recovered lives leave the model, so nothing returns to H and nothing re-incepts."""
     p = uk_ip_claim
-    assert p.recovery_basis() == "exit"
+    assert p.recovery_basis() == RecoveryBasis.exit
     assert all(p.pols_active(t) == 0.0 for t in (0, 1, 49, 359))
     assert all(p.pols_inception(t) == 0.0 for t in (0, 1, 49, 359))
     for t in (0, 49):
@@ -334,9 +335,9 @@ def test_the_return_to_h_basis_gives_a_bigger_liability(income_protection):
     best estimate carries the post-recovery active phase too.
     """
     p2, p7 = income_protection.Projection[2], income_protection.Projection[7]
-    assert p2.recovery_basis() == "exit"
-    assert p7.recovery_basis() == "return_to_h"
-    assert p2.status() == p7.status() == "in_claim"
+    assert p2.recovery_basis() == RecoveryBasis.exit
+    assert p7.recovery_basis() == RecoveryBasis.return_to_h
+    assert p2.status() == p7.status() == Status.in_claim
     assert p7.pv_benefits() > p2.pv_benefits()
     assert p7.pols_active(49) > 0.0               # recovered lives are back in H
     assert p7.pols_inception(49) > 0.0            # and exposed to inception again
@@ -348,8 +349,8 @@ def test_the_return_to_h_basis_gives_a_bigger_liability(income_protection):
 def test_the_two_bases_agree_in_the_first_month(income_protection):
     """Nothing has recovered yet, so the worked-example window cannot distinguish them."""
     p2, p7 = income_protection.Projection[2], income_protection.Projection[7]
-    assert p2.claims(0, "BENEFIT") == pytest.approx(p7.claims(0, "BENEFIT"), rel=1e-14)
-    assert p2.claims(1, "BENEFIT") == pytest.approx(p7.claims(1, "BENEFIT"), rel=1e-14)
+    assert p2.claims(0, Kind.BENEFIT) == pytest.approx(p7.claims(0, Kind.BENEFIT), rel=1e-14)
+    assert p2.claims(1, Kind.BENEFIT) == pytest.approx(p7.claims(1, Kind.BENEFIT), rel=1e-14)
 
 
 # ---------------------------------------------------------------------------
@@ -429,7 +430,7 @@ def test_the_deferred_period_enters_only_through_the_inception_rate(income_prote
     try:
         rates = {}
         for dp in (4, 13, 26, 52):
-            row = model.Data.inception_table().loc[("M", 1, dp, 35), "inception_rate"]
+            row = model.Data.inception_table().loc[(Sex.M, 1, dp, 35), "inception_rate"]
             rates[dp] = float(row)
         assert rates[4] > rates[13] > rates[26] > rates[52]
         assert rates[26] == pytest.approx(0.0013, rel=1e-12)
@@ -442,11 +443,11 @@ def test_occupation_class_and_sex_move_the_inception_rate(income_protection):
     model = mx.read_model(MODEL_DIR, name="IP_UK_S_occ")
     try:
         tbl = model.Data.inception_table()
-        base = float(tbl.loc[("M", 1, 26, 45), "inception_rate"])
-        assert float(tbl.loc[("M", 2, 26, 45), "inception_rate"]) > base
-        assert float(tbl.loc[("M", 4, 26, 45), "inception_rate"]) > float(
-            tbl.loc[("M", 3, 26, 45), "inception_rate"])
-        assert float(tbl.loc[("F", 1, 26, 45), "inception_rate"]) == pytest.approx(
+        base = float(tbl.loc[(Sex.M, 1, 26, 45), "inception_rate"])
+        assert float(tbl.loc[(Sex.M, 2, 26, 45), "inception_rate"]) > base
+        assert float(tbl.loc[(Sex.M, 4, 26, 45), "inception_rate"]) > float(
+            tbl.loc[(Sex.M, 3, 26, 45), "inception_rate"])
+        assert float(tbl.loc[(Sex.F, 1, 26, 45), "inception_rate"]) == pytest.approx(
             base * 1.25, rel=1e-9)
     finally:
         model.close()
@@ -542,7 +543,7 @@ def test_every_model_point_is_inside_its_benefit_maximum(income_protection):
 def test_escalation_compounds_benefit_and_premium(income_protection):
     """Flat 3% RPI: benefit x 1.03 and premium x 1.045 per policy anniversary."""
     p = income_protection.Projection[1]
-    assert p.escalation() == "RPI"
+    assert p.escalation() == Escalation.RPI
     assert p.esc_rate() == pytest.approx(0.03, rel=1e-12)
     for y, t in ((1, 0), (2, 12), (5, 48)):         # policy year y = t // 12 + 1
         assert p.policy_year(t) == y
@@ -597,7 +598,7 @@ def test_the_escalation_lapse_shock_is_off_at_a_three_percent_rpi(income_protect
 
 def test_a_level_cover_cell_does_not_escalate(income_protection):
     p = income_protection.Projection[3]
-    assert p.escalation() == "none"
+    assert p.escalation() == Escalation.none
     assert p.esc_rate() == 0.0
     assert all(p.benefit_pp(t) == 2000.0 for t in (0, 12, 359))
     assert all(p.premium_pp(t) == 35.0 for t in (0, 12, 359))
@@ -616,8 +617,8 @@ def test_amount_payable_never_exceeds_the_chosen_benefit(income_protection):
         proj = model.Projection[1]
         assert proj.amount_payable_pp(0) == pytest.approx(0.85 * 2000.0, rel=1e-12)
         assert proj.amount_payable_pp(0) < proj.benefit_pp(0)
-        assert proj.claims(49, "BENEFIT") < income_protection.Projection[1].claims(
-            49, "BENEFIT")
+        assert proj.claims(49, Kind.BENEFIT) < income_protection.Projection[1].claims(
+            49, Kind.BENEFIT)
     finally:
         model.close()
 
@@ -670,7 +671,7 @@ def test_the_disabled_life_annuity_factor(uk_ip_claim):
     assert p.annuity_dis() == pytest.approx(
         p.pv_benefits() / p.amount_payable_pp(0), rel=1e-12)
     assert p.pv_benefits() == pytest.approx(
-        sum(p.claims(t, "BENEFIT") * p.disc_factor(t)
+        sum(p.claims(t, Kind.BENEFIT) * p.disc_factor(t)
             for t in range(p.proj_len())), rel=1e-12)
     # A level-cover claim discounted at 3% is worth fewer months than it runs.
     assert 0 < p.annuity_dis() < p.proj_len()
@@ -687,7 +688,7 @@ def test_the_discount_rate_is_a_reference_not_a_valuation_basis(income_protectio
         assert proj.disc_factor(0) == 1.0 and proj.disc_factor(120) == 1.0
         assert proj.pv_benefits() > base          # undiscounted is the upper bound
         assert proj.pv_benefits() == pytest.approx(
-            sum(proj.claims(t, "BENEFIT") for t in range(proj.proj_len())),
+            sum(proj.claims(t, Kind.BENEFIT) for t in range(proj.proj_len())),
             rel=1e-12)
     finally:
         model.close()
@@ -828,7 +829,7 @@ def test_round_trip_is_stable(tmp_path):
         claim = reread.Projection[2]
         for t, row in WORKED_EXAMPLE.items():
             assert claim.pols_sick(t) == pytest.approx(row[0], abs=STATE)
-            assert claim.claims(t, "BENEFIT") == pytest.approx(row[4], abs=PENNY)
+            assert claim.claims(t, Kind.BENEFIT) == pytest.approx(row[4], abs=PENNY)
         assert "Notes symbol" in reread.Projection.doc
     finally:
         reread.close()

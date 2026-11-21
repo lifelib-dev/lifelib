@@ -106,8 +106,9 @@ def mort_table():
     standard-risk book and understates it for a book written without medical selection.
     The female rows are 0.60 x male, a pick; one sampled insurer is unisex instead.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file, index_col=["sex", "age"]).sort_index()
+    frame = pd.read_csv(input_dir() / mort_table_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"]).sort_index()
 
 
 def itt_inception_table():
@@ -120,9 +121,9 @@ def itt_inception_table():
     shipped rates are the *franchise* 90 days column; :func:`franchise_table` scales them
     to the other four.  Every value is **[std]**.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / itt_inception_file,                            # noqa: F821
-        index_col=["sex", "age"]).sort_index()
+    frame = pd.read_csv(input_dir() / itt_inception_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"]).sort_index()
 
 
 def itt_termination_table():
@@ -198,3 +199,5 @@ lapse_table_file = "lapse_table.csv"
 crd_rate_file = "crd_rate_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)

@@ -35,6 +35,7 @@ import pytest
 from modelx.core.errors import FormulaError
 
 from fr_registry import MODELS, LIB
+from lifelib.libraries.frlib.products.rente_viagere.enums import AnnuityKind, Kind, MortBasis, PalierScheme, PaymentTiming, Sex
 
 
 def model_files(folder):
@@ -85,7 +86,7 @@ def test_worked_example_row(fr_rente_anchor, t):
     revalo, gross, frais, net = WORKED_EXAMPLE[t]
     p = fr_rente_anchor
     assert p.revalo_factor(t) == pytest.approx(revalo, abs=SIX)
-    paid = p.annuity_payments(t) + p.claims(t, "PRORATA")
+    paid = p.annuity_payments(t) + p.claims(t, Kind.PRORATA)
     assert paid == pytest.approx(gross, abs=CENT)
     assert p.arrerage_charges(t) == pytest.approx(frais, abs=CENT)
     assert paid - p.arrerage_charges(t) == pytest.approx(net, abs=CENT)
@@ -107,7 +108,7 @@ def test_the_conversion_arithmetic(fr_rente_anchor):
 def test_the_instalment_schedule(fr_rente_anchor):
     """Monthly terme echu: every month pays, and survival is measured at the end of it."""
     p = fr_rente_anchor
-    assert p.payment_freq() == 12 and p.payment_timing() == "arrears"
+    assert p.payment_freq() == 12 and p.payment_timing() == PaymentTiming.arrears
     assert all(p.is_payment_mth(t) for t in (0, 8, 25, 399))
     # Arrears: the instalment of month t needs survival to time t + 1, its end.
     assert all(p.payment_surv_mth(t) == t + 1 for t in (0, 8, 25))
@@ -123,12 +124,12 @@ def test_the_cumulative_arrerages_and_the_total_charge(fr_rente_anchor):
     p = fr_rente_anchor
     total = 9 * 418.00 + 12 * 422.7025 + 5 * 429.043038
     assert total == pytest.approx(10979.65, abs=CENT)
-    assert p.cum_annuity_pp(25, "ALL") == pytest.approx(10979.65, abs=CENT)
+    assert p.cum_annuity_pp(25, AnnuityKind.ALL) == pytest.approx(10979.65, abs=CENT)
     retained = sum(p.arrerage_charges(t) for t in range(26))
     assert retained == pytest.approx(329.39, abs=CENT)
-    assert p.cum_annuity_pp(25, "ALL") - retained == pytest.approx(10650.26, abs=CENT)
+    assert p.cum_annuity_pp(25, AnnuityKind.ALL) - retained == pytest.approx(10650.26, abs=CENT)
     # Nothing more is paid to the annuitant or his heirs after month 25.
-    assert p.cum_annuity_pp(26, "ALL") - p.cum_annuity_pp(25, "ALL") == pytest.approx(
+    assert p.cum_annuity_pp(26, AnnuityKind.ALL) - p.cum_annuity_pp(25, AnnuityKind.ALL) == pytest.approx(
         257.4258, abs=1e-4)
 
 
@@ -146,7 +147,7 @@ def test_the_full_liability_cash_flow_at_two_months(fr_rente_anchor):
 def test_the_scenario_basis_is_a_step_function(fr_rente_anchor):
     """1{t <= death_mth}: the annuitant dies in month 25, the reversionary never."""
     p = fr_rente_anchor
-    assert p.mort_basis() == "scenario"
+    assert p.mort_basis() == MortBasis.scenario
     assert p.death_mth(1) == 25 and p.death_mth(2) == -1
     # lives_if is survival to *time* t, so the annuitant is alive at time 25 - the start
     # of the month he dies in - and gone from time 26, its end.  The index is a time
@@ -174,7 +175,7 @@ def test_no_improvement_scale_on_a_generational_table(rente_viagere):
         assert absent not in names
     p = rente_viagere.Projection[2]
     table = rente_viagere.Data.mort_table()
-    raw = float(table.loc[("M", 1961, 65), "mort_rate"])
+    raw = float(table.loc[(Sex.M, 1961, 65), "mort_rate"])
     assert p.mort_rate(0, 1) == raw          # no factor of any kind on top
     # And it is flat across the twelve months of a year of age: q moves with the attained
     # age and with nothing else, least of all the projection year.
@@ -228,32 +229,32 @@ def test_the_tariff_table_and_the_best_estimate_table_are_different_objects(
     for the revalorisation the contract shares.
     """
     p = rente_viagere.Projection[2]
-    assert rente_viagere.Projection.tariff_table_sex == "F"
-    assert p.sex(1) == "M"
+    assert rente_viagere.Projection.tariff_table_sex == Sex.F
+    assert p.sex(1) == Sex.M
     # The tariff factor is struck on the female table whatever the annuitant's sex, and
     # the shipped proxy is anchored so it reproduces the notes' placeholder rho exactly.
-    assert p.annuity_factor("F") == pytest.approx(29.630420, abs=1e-5)
+    assert p.annuity_factor(Sex.F) == pytest.approx(29.630420, abs=1e-5)
     assert p.taux_rente_tariff() == pytest.approx(0.0330, abs=1e-9)
     assert p.annuity_rate() == 0.0330
     # His own table would give 3.73% - spec footnote 7 - and 13.0% more income.
-    assert p.annuity_factor("M") == pytest.approx(26.214580, abs=1e-5)
+    assert p.annuity_factor(Sex.M) == pytest.approx(26.214580, abs=1e-5)
     assert p.taux_rente_own_table() == pytest.approx(0.0373, abs=1e-9)
     assert p.unisex_gap() == pytest.approx(0.1303, abs=5e-5)
     assert 200000 * p.taux_rente_own_table() * 0.76 == pytest.approx(5669.60, abs=CENT)
     assert 200000 * p.taux_rente_own_table() * 0.76 / 12 == pytest.approx(
         472.47, abs=CENT)
     # The projection decrements him on the male table, which is heavier than the tariff.
-    assert p.mort_rate(0, 1) > p.mort_rate_at_age("F", 1961, 65)
+    assert p.mort_rate(0, 1) > p.mort_rate_at_age(Sex.F, 1961, 65)
     # A female annuitant's own table *is* the tariff table, so there is no gap.
     f = rente_viagere.Projection[8]
-    assert f.sex(1) == "F"
+    assert f.sex(1) == Sex.F
     assert f.unisex_gap() == pytest.approx(0.0, abs=1e-9)
     # And a ``mix`` model point blends the two best-estimate tables at theta without
     # ever becoming a tariff basis: the tariff stays the female table.
     blend = rente_viagere.Projection[9]
     theta = rente_viagere.Projection.portfolio_male_share
-    assert blend.sex(1) == "mix" and theta == 0.45
-    male, female = blend.mort_rate_at_age("M", 1956, 70), blend.mort_rate_at_age("F", 1956, 70)
+    assert blend.sex(1) == Sex.mix and theta == 0.45
+    male, female = blend.mort_rate_at_age(Sex.M, 1956, 70), blend.mort_rate_at_age(Sex.F, 1956, 70)
     assert blend.mort_rate(0, 1) == pytest.approx(
         theta * male + (1 - theta) * female, rel=1e-14)
     assert female < blend.mort_rate(0, 1) < male
@@ -333,15 +334,15 @@ def test_the_arrerage_of_the_month_of_death_is_paid_in_full(fr_rente_anchor):
     assert p.mths_since_payment(25) == 0
     assert p.prorata_pp(25) == pytest.approx(429.043038, abs=1e-4)
     assert p.prorata_factor(25) == 1.0
-    assert p.claims(25, "PRORATA") == pytest.approx(429.04, abs=CENT)
+    assert p.claims(25, Kind.PRORATA) == pytest.approx(429.04, abs=CENT)
     # No scheduled instalment in the death month: survival at the end of it, l_a(26),
     # is 0, so the payment factor is 0.
     assert p.annuity_payments(25) == 0.0
     paid = [t for t in range(p.proj_len())
-            if p.annuity_payments(t) + p.claims(t, "PRORATA") > 0]
+            if p.annuity_payments(t) + p.claims(t, Kind.PRORATA) > 0]
     assert len([t for t in paid if t <= 25]) == 26
     # Losing it would understate the outgo by exactly one arrerage.
-    assert sum(p.claims(t, "PRORATA") for t in range(p.proj_len())) == (
+    assert sum(p.claims(t, Kind.PRORATA) for t in range(p.proj_len())) == (
         pytest.approx(429.04, abs=CENT))
 
 
@@ -358,7 +359,7 @@ def test_the_prorata_fraction_at_a_quarterly_frequency(rente_viagere):
     assert p.prorata_pp(26) == pytest.approx(quarter, rel=1e-12)
     # The scenario death falls in the second month of the quarter.
     assert p.death_mth(1) == 25
-    assert p.claims(25, "PRORATA") == pytest.approx(2 * quarter / 3, rel=1e-12)
+    assert p.claims(25, Kind.PRORATA) == pytest.approx(2 * quarter / 3, rel=1e-12)
     assert p.annuity_payments(26) == 0.0
 
 
@@ -376,7 +377,7 @@ def test_the_reversion_starts_the_month_after_death(fr_rente_anchor):
     # 60% of the rente atteinte at death, a different way.
     assert 0.60 * 429.043038 == pytest.approx(257.4258, abs=1e-4)
     # The month of death is paid exactly once, as a prorata and not as 1 + delta.
-    paid_death_mth = p.annuity_payments(25) + p.claims(25, "PRORATA")
+    paid_death_mth = p.annuity_payments(25) + p.claims(25, Kind.PRORATA)
     assert paid_death_mth == pytest.approx(p.annuity_pp(24), abs=1e-4)
     assert paid_death_mth < (1 + 0.60) * p.annuity_pp(24)
 
@@ -406,7 +407,7 @@ def test_the_guarantee_is_a_floor_not_a_second_stream(rente_viagere):
     # payable, so settling an accrued one on top double-pays the month of death.
     assert p.lives_death(25, 1) == 1.0 and p.certain_floor(25) == 1.0
     assert p.prorata_factor(25) == 0.0
-    assert all(p.claims(t, "PRORATA") == 0.0 for t in range(180))
+    assert all(p.claims(t, Kind.PRORATA) == 0.0 for t in range(180))
 
 
 def test_the_annuites_garanties_variant_reproduces_the_notes(rente_viagere):
@@ -425,7 +426,7 @@ def test_the_annuites_garanties_variant_reproduces_the_notes(rente_viagere):
     assert p.annuity_payments(26) == pytest.approx(554.37, abs=CENT)
     # In expectation the same flows come out of the table basis while the floor holds.
     expected = rente_viagere.Projection[4]
-    assert expected.mort_basis() == "table"
+    assert expected.mort_basis() == MortBasis.table
     for t in (0, 9, 21, 99, 179):
         assert expected.annuity_payments(t) == pytest.approx(
             p.annuity_payments(t), abs=CENT)
@@ -565,13 +566,13 @@ def test_the_frais_darrerages_are_charged_per_quittance(rente_viagere):
     assert p.arrerage_charge_rate() == 0.03
     for t in (0, 9, 25, 26):
         assert p.arrerage_charges(t) == pytest.approx(
-            0.03 * (p.annuity_payments(t) + p.claims(t, "PRORATA")), rel=1e-14)
+            0.03 * (p.annuity_payments(t) + p.claims(t, Kind.PRORATA)), rel=1e-14)
     assert p.arrerage_charges(25) == pytest.approx(0.03 * 429.043038, abs=1e-4)
     # At a flat percentage the frequency does not change the total charge over a year.
     q = rente_viagere.Projection[6]
     year = sum(q.arrerage_charges(t) for t in range(12))
     assert year == pytest.approx(
-        0.03 * sum(q.annuity_payments(t) + q.claims(t, "PRORATA")
+        0.03 * sum(q.annuity_payments(t) + q.claims(t, Kind.PRORATA)
                    for t in range(12)), rel=1e-14)
     # A carrier that charges nothing is a shipped configuration, not a special case.
     free = rente_viagere.Projection[5]
@@ -598,7 +599,7 @@ def test_the_taux_technique_reaches_no_cash_flow(rente_viagere):
     p = rente_viagere.Projection[11]
     assert p.technical_rate() == 0.01
     assert p.liability_cf(0) == pytest.approx(
-        p.annuity_payments(0) + p.claims(0) - p.arrerage_charges(0) + p.expenses(0),
+        p.annuity_payments(0) + p.claims(0, Kind.ALL) - p.arrerage_charges(0) + p.expenses(0),
         rel=1e-15)
     # A non-zero i raises the rate the tariff implies, and the model point carries it.
     assert p.taux_rente_tariff() > rente_viagere.Projection[7].taux_rente_tariff()
@@ -616,16 +617,16 @@ def test_a_palier_never_reaches_the_reversion_stream(rente_viagere):
     assert not (stepped & (table["reversion_pct"] > 0)).any()
     for point_id in table.index:
         p = rente_viagere.Projection[point_id]
-        if p.palier_scheme() != "none":
+        if p.palier_scheme() != PalierScheme.none:
             assert p.reversion_pct() == 0.0
             assert all(p.reversion_factor(t) == 0.0 for t in (0, 99, 299))
     # The four published schemes, as steps of duration rather than escalation: the first
     # step runs months 0..59 at S = 5, so month 60 is the first at the second level.
     inc2 = rente_viagere.Projection[7]
-    assert inc2.palier_scheme() == "inc2" and inc2.palier_step_years() == 5
+    assert inc2.palier_scheme() == PalierScheme.inc2 and inc2.palier_step_years() == 5
     assert [inc2.palier_factor(t) for t in (59, 60, 119, 120)] == [1.0, 1.25, 1.25, 1.5]
     dec1 = rente_viagere.Projection[8]
-    assert dec1.palier_scheme() == "dec1" and dec1.palier_step_years() == 10
+    assert dec1.palier_scheme() == PalierScheme.dec1 and dec1.palier_step_years() == 10
     assert [dec1.palier_factor(t) for t in (119, 120)] == [1.0, 0.5]
     dec2 = rente_viagere.Projection[5]
     assert [dec2.palier_factor(t) for t in (59, 60, 119, 120)] == [1.0, 0.75, 0.75, 0.5]
@@ -646,7 +647,7 @@ def test_a_palier_never_reaches_the_reversion_stream(rente_viagere):
 def test_advance_timing_measures_survival_at_the_start_of_the_month(rente_viagere):
     """Terme a echoir is unobserved in France and is retained as a model variant only."""
     p = rente_viagere.Projection[11]
-    assert p.payment_timing() == "advance"
+    assert p.payment_timing() == PaymentTiming.advance
     assert p.payment_surv_mth(0) == 0
     # Advance: survival is measured at the start of month t, which is time t.
     assert all(p.payment_surv_mth(t) == t for t in (0, 1, 59))
@@ -654,7 +655,7 @@ def test_advance_timing_measures_survival_at_the_start_of_the_month(rente_viager
     assert p.payment_factor(59) == pytest.approx(p.lives_if(59, 1), rel=1e-14)
     # Nothing has accrued unpaid at death, so there is no prorata to settle [std].
     assert all(p.prorata_pp(t) == 0.0 for t in (0, 25, 299))
-    assert all(p.claims(t, "PRORATA") == 0.0 for t in (0, 25, 299))
+    assert all(p.claims(t, Kind.PRORATA) == 0.0 for t in (0, 25, 299))
 
 
 def test_the_projection_stops_on_the_youngest_covered_life(rente_viagere):
@@ -681,7 +682,7 @@ def test_the_cumulative_schedule_closes(rente_viagere):
         p = rente_viagere.Projection[point_id]
         assert p.check_cum_annuity_roll_fwd() is True, point_id
     p = rente_viagere.Projection[1]
-    assert p.cum_annuity_pp(25, "ANNUITANT") == pytest.approx(10979.65, abs=CENT)
+    assert p.cum_annuity_pp(25, AnnuityKind.ANNUITANT) == pytest.approx(10979.65, abs=CENT)
     with pytest.raises(FormulaError):
         p.cum_annuity_pp(4, "REVERSION")
 
@@ -948,7 +949,7 @@ def test_round_trip_is_stable(tmp_path):
     try:
         p = reread.Projection[1]
         for t, row in WORKED_EXAMPLE.items():
-            paid = p.annuity_payments(t) + p.claims(t, "PRORATA")
+            paid = p.annuity_payments(t) + p.claims(t, Kind.PRORATA)
             assert paid == pytest.approx(row[1], abs=CENT)
             assert p.arrerage_charges(t) == pytest.approx(row[2], abs=CENT)
         assert "Notes symbol" in reread.Projection.doc

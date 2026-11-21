@@ -98,8 +98,9 @@ def model_point_table():
 
 def mort_table():
     """Annual mortality by attained age and sex, read from *mort_table.csv*."""
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file, index_col=["age", "sex"])     # noqa: F821
+    frame = pd.read_csv(input_dir() / mort_table_file)               # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["age", "sex"])
 
 
 def surr_charge_table():
@@ -130,7 +131,10 @@ def payout_rate_table():
     Banded rather than keyed: each row gives an inclusive attained-age band with the
     single-life and joint-life percentages [S3].
     """
-    return pd.read_csv(input_dir() / payout_rate_file)               # noqa: F821
+    frame = pd.read_csv(input_dir() / payout_rate_file, index_col="age_lo")  # noqa: F821
+    if not (frame.index.is_monotonic_increasing and frame.index.is_unique):
+        raise ValueError("payout_rate_table: age_lo must be strictly increasing in the file")
+    return frame
 
 
 def rate_scenario():
@@ -180,3 +184,5 @@ rate_scenario_file = "rate_scenario.csv"
 withdrawal_file = "withdrawal_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)

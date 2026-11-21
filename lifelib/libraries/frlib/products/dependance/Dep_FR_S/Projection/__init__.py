@@ -77,9 +77,9 @@ fr                         franchise_months()                Franchise, 3 months
 G(y)                       rente_total_pp(t)                 Guaranteed rente totale
 rho                        partial_ratio()                   Partial / total ratio, 0.50
 rho G(y)                   rente_partial_pp(t)               Guaranteed rente partielle
-G_pay(t, z)                rente_pay_pp(t, z)                Rente totale in payment for
-                                                             the cohort at duration z
-rho G_pay(t, z)            rente_pay_partial_pp(t, z)        The same, partial ledger
+G_pay(y, y_e)              rente_pay_pp(y, y_e)              Rente totale in payment in
+                                                             policy year y, recognised in y_e
+rho G_pay(y, y_e)          rente_pay_partial_pp(y, y_e)      The same, partial ledger
 CAP(y)                     capital_pp(t)                     Capital d'équipement
 P(y)                       premium_mth_pp(t)                 Monthly premium
 12 P(y)                    premium_pp(t)                     The same, annualised
@@ -397,10 +397,7 @@ def sex():
     2004 EU directive, so ``premium_mth`` is a model point column and not a rate looked
     up by sex.
     """
-    v = model_point()["sex"]
-    if v not in ("M", "F"):
-        raise ValueError("invalid sex")
-    return v
+    return Sex[model_point()["sex"]]
 
 
 def cover_type():
@@ -410,10 +407,7 @@ def cover_type():
     worked example runs.  See the Space docstring for what ``total_only`` changes and
     for the one **[std]** departure it forces on the duration clock.
     """
-    v = model_point()["cover_type"]
-    if v not in ("total_and_partial", "total_only"):
-        raise ValueError("invalid cover_type")
-    return v
+    return CoverType[model_point()["cover_type"]]
 
 
 def cover_partial():
@@ -423,7 +417,7 @@ def cover_partial():
     ``cover_type`` — the *rente*, the *capital*, the premium *exonération* and where the
     *carence* and the *franchise* attach — cannot drift apart.
     """
-    return cover_type() == "total_and_partial"
+    return cover_type() == CoverType.total_and_partial
 
 
 def trigger_grid():
@@ -434,10 +428,7 @@ def trigger_grid():
     data.  The grid enters through :func:`severity_share` and nowhere else: a stricter
     grid is a smaller share of public prevalence, not a different chain.
     """
-    v = model_point()["trigger_grid"]
-    if v not in ("avq5", "avq6", "aggir"):
-        raise ValueError("invalid trigger_grid")
-    return v
+    return TriggerGrid[model_point()["trigger_grid"]]
 
 
 def rente_total_mth():
@@ -505,15 +496,13 @@ def premium_mode():
     **[std]**: no retrieved document discloses one, so an annual payer pays exactly
     twelve monthly premiums at the start of the policy year.
     """
-    v = model_point()["premium_mode"]
-    if v not in ("monthly", "quarterly", "half_yearly", "annual"):
-        raise ValueError("invalid premium_mode")
-    return v
+    return PremiumMode[model_point()["premium_mode"]]
 
 
 def premium_months():
     """The number of months one premium instalment covers: 1, 3, 6 or 12."""
-    return {"monthly": 1, "quarterly": 3, "half_yearly": 6, "annual": 12}[
+    return {PremiumMode.monthly: 1, PremiumMode.quarterly: 3, PremiumMode.half_yearly: 6,
+            PremiumMode.annual: 12}[
         premium_mode()]
 
 
@@ -570,11 +559,11 @@ def carence_months(cause):
     inside its *carence* is **terminated and every premium refunded**; the benefit is
     not merely deferred.
     """
-    if cause == "accident":
+    if cause == Cause.accident:
         return carence_accident_months()
-    if cause == "illness":
+    if cause == Cause.illness:
         return carence_illness_months()
-    if cause == "neuro":
+    if cause == Cause.neuro:
         return carence_neuro_months()
     raise ValueError("invalid cause")
 
@@ -616,10 +605,7 @@ def status():
 
     An in-force portfolio needs all four kinds of cell.
     """
-    v = model_point()["status"]
-    if v not in ("autonomous", "partial", "total", "reduced"):
-        raise ValueError("invalid status")
-    return v
+    return Status[model_point()["status"]]
 
 
 def claim_duration_months():
@@ -707,7 +693,7 @@ def max_dur():
 
 def seed_dur():
     """The duration cohort the initial population occupies, or 0 if it is not seeded."""
-    return claim_duration_months() + 1 if status() in ("partial", "total") else 0
+    return claim_duration_months() + 1 if status() in (Status.partial, Status.total) else 0
 
 
 def cohort_len(t):
@@ -748,8 +734,8 @@ def capital_pp(t):
     return capital_amount() * (1.0 + reval_guarantee) ** duration(t)  # noqa: F821
 
 
-def rente_pay_pp(t, z):
-    """G_pay(t, z): the *rente totale* in payment at month t for the cohort at duration z.
+def rente_pay_pp(y, y_e):
+    """G_pay(y, y_e): the *rente totale* in payment in policy year y for the cohort recognised in y_e.
 
     A cohort recognised at the end of month ``t - z`` entered on the guarantee of its own
     policy year ``y_e`` and has been indexed at ``reval_rente`` at every anniversary
@@ -759,18 +745,20 @@ def rente_pay_pp(t, z):
     they are equal, and the base configuration sets them different so that a test can
     tell.
 
+    Keyed by the two policy years ``y = policy_year(t)`` and ``y_e = max(1, policy_year(t - z))``,
+    through which alone the amount depends on month ``t`` and duration ``z``.
+
     A cohort seeded at ``t = 0`` on an in-force claim cell reads as policy year 1, which
     is the same **[std]** restart of the policy-year clock that :func:`age_at_entry`
     describes.
     """
-    y_e = max(1, policy_year(t - z))
     return (rente_total_mth() * (1.0 + reval_guarantee) ** (y_e - 1)  # noqa: F821
-            * (1.0 + reval_rente) ** (policy_year(t) - y_e))          # noqa: F821
+            * (1.0 + reval_rente) ** (y - y_e))                       # noqa: F821
 
 
-def rente_pay_partial_pp(t, z):
-    """rho G_pay(t, z): the *rente partielle* in payment for the cohort at duration z."""
-    return partial_ratio_paid() * rente_pay_pp(t, z)
+def rente_pay_partial_pp(y, y_e):
+    """rho G_pay(y, y_e): the *rente partielle* in payment for the cohort recognised in y_e."""
+    return partial_ratio_paid() * rente_pay_pp(y, y_e)
 
 
 def revision_rate(t):
@@ -881,6 +869,11 @@ def inflation_factor(t):
 
 # --- the decrement basis ---
 
+def mort_schedule():
+    """The base mortality rates at the policy's sex, by attained age."""
+    return data.mort_table().loc[sex()]                              # noqa: F821
+
+
 def mort_rate(t):
     """The **healthy-life** annual mortality rate at the attained age in month t.
 
@@ -890,7 +883,7 @@ def mort_rate(t):
     :func:`mort_rate_partial` and :func:`mort_rate_total` — and reading a dependent's
     mortality out of this cells is the largest single error available on this product.
     """
-    return float(data.mort_table().loc[(sex(), age(t)), "mort_rate"])  # noqa: F821
+    return float(mort_schedule().loc[age(t), "mort_rate"])
 
 
 def mort_rate_mth(t):
@@ -945,6 +938,11 @@ def mort_rate_total_mth(t):
     return 1.0 - (1.0 - mort_rate(t)) ** (mort_total_mult / 12.0)    # noqa: F821
 
 
+def mort_top_age():
+    """The last attained age of the mortality rates at the policy's sex."""
+    return mort_schedule().index.max()
+
+
 def mort_force_at(x):
     """mu_H at an **exact**, possibly fractional, age x.
 
@@ -953,15 +951,13 @@ def mort_force_at(x):
     Only the two sojourn calibrations use it: the projection itself reads the force at
     integer attained ages through :func:`mort_force`.
     """
-    tbl = data.mort_table()                                          # noqa: F821
     lo = int(math.floor(x))                                          # noqa: F821
     hi = lo + 1
-    ages = [a for s, a in tbl.index if s == sex()]
-    top = max(ages)
+    top = mort_top_age()
     if lo >= top:
         return float("inf")
-    q_lo = float(tbl.loc[(sex(), lo), "mort_rate"])
-    q_hi = float(tbl.loc[(sex(), min(hi, top)), "mort_rate"])
+    q_lo = float(mort_schedule().loc[lo, "mort_rate"])
+    q_hi = float(mort_schedule().loc[min(hi, top), "mort_rate"])
     if q_lo >= 1.0 or q_hi >= 1.0:
         return float("inf")
     m_lo = -math.log(1.0 - q_lo)                                     # noqa: F821
@@ -1066,6 +1062,11 @@ def aggravation_carence(t):
 
 # --- prevalence and the incidence identity ---
 
+def prevalence_schedule():
+    """The prevalence-curve parameters at the policy's sex, by name."""
+    return data.prevalence_table().loc[sex()]                        # noqa: F821
+
+
 def prev_param(name):
     """One parameter of the APA-prevalence logistic for this model point's sex.
 
@@ -1073,7 +1074,7 @@ def prev_param(name):
     to sourced DREES rates; ``prev_ceil`` is **[std]**, unidentified by a two-anchor fit,
     and it governs the tail — where 65% of this product's lifetime claims fall.
     """
-    return float(data.prevalence_table().loc[(sex(), name), "value"])  # noqa: F821
+    return float(prevalence_schedule().loc[name, "value"])
 
 
 def prev_rate(t):
@@ -1088,9 +1089,9 @@ def prev_rate(t):
     APA is not available below age 60, so the curve has **no anchor at all** under 60 and
     every entry age below 60 runs on pure extrapolation.
     """
-    return prev_param("prev_ceil") / (
-        1.0 + math.exp(-prev_param("prev_beta")                      # noqa: F821
-                       * (age(t) - prev_param("prev_x_mid"))))
+    return prev_param(PrevParam.prev_ceil) / (
+        1.0 + math.exp(-prev_param(PrevParam.prev_beta)                      # noqa: F821
+                       * (age(t) - prev_param(PrevParam.prev_x_mid))))
 
 
 def prev_slope(t):
@@ -1101,7 +1102,7 @@ def prev_slope(t):
     that catches the product's dominant error.
     """
     p = prev_rate(t)
-    return prev_param("prev_beta") * p * (1.0 - p / prev_param("prev_ceil"))
+    return prev_param(PrevParam.prev_beta) * p * (1.0 - p / prev_param(PrevParam.prev_ceil))
 
 
 def severity_share(kind):
@@ -1118,20 +1119,24 @@ def severity_share(kind):
     of error: severity mix worsens with age, so the model **understates** *totale*
     prevalence at old ages and overstates it at young ones.
     """
-    if kind not in ("partial", "total"):
+    if kind == Severity.partial:
+        return float(data.severity_share_table().loc[                    # noqa: F821
+            trigger_grid(), "share_partial"])
+    elif kind == Severity.total:
+        return float(data.severity_share_table().loc[                    # noqa: F821
+            trigger_grid(), "share_total"])
+    else:
         raise ValueError("invalid kind")
-    return float(data.severity_share_table().loc[                    # noqa: F821
-        trigger_grid(), "share_" + kind])
 
 
 def prev_partial(t):
     """pi_P = s_P prev(x): the proportion of living lives in insured *partielle*."""
-    return severity_share("partial") * prev_rate(t)
+    return severity_share(Severity.partial) * prev_rate(t)
 
 
 def prev_total(t):
     """pi_T = s_T prev(x): the proportion of living lives in insured *totale*."""
-    return severity_share("total") * prev_rate(t)
+    return severity_share(Severity.total) * prev_rate(t)
 
 
 def mort_force_avg(t):
@@ -1166,7 +1171,7 @@ def inc_rate_partial(t):
     """
     pi_p, pi_t = prev_partial(t), prev_total(t)
     pi_h = 1.0 - pi_p - pi_t
-    num = (severity_share("partial") * prev_slope(t)
+    num = (severity_share(Severity.partial) * prev_slope(t)
            + (aggravation_rate + mort_partial_mult * mort_force(t))  # noqa: F821
            * pi_p - pi_p * mort_force_avg(t))
     return max(0.0, num / pi_h)
@@ -1197,7 +1202,7 @@ def inc_rate_total(t):
     """
     pi_p, pi_t = prev_partial(t), prev_total(t)
     pi_h = 1.0 - pi_p - pi_t
-    num = (severity_share("total") * prev_slope(t)
+    num = (severity_share(Severity.total) * prev_slope(t)
            - aggravation_rate * pi_p                                 # noqa: F821
            + mort_total_mult * mort_force(t) * pi_t                  # noqa: F821
            - pi_t * mort_force_avg(t))
@@ -1232,7 +1237,7 @@ def pols_auto(t):
     if t < 0 or t > proj_len():
         return 0.0
     if t == 0:
-        return pols_if_init() if status() == "autonomous" else 0.0
+        return pols_if_init() if status() == Status.autonomous else 0.0
     base = pols_base(t - 1)
     stay = base * (1.0 - inc_rate_partial_mth(t - 1)
                    - inc_rate_total_mth(t - 1))
@@ -1390,7 +1395,7 @@ def pols_red(t):
     if t < 0 or t > proj_len():
         return 0.0
     if t == 0:
-        return pols_if_init() if status() == "reduced" else 0.0
+        return pols_if_init() if status() == Status.reduced else 0.0
     prev = pols_red(t - 1)
     surv = prev * (1.0 - mort_rate_mth(t - 1))
     return (surv - pols_entry_total_red(t - 1) + pols_reduction(t - 1)
@@ -1417,7 +1422,7 @@ def red_rente_value(t):
     if t < 0 or t > proj_len():
         return 0.0
     if t == 0:
-        if status() != "reduced":
+        if status() != Status.reduced:
             return 0.0
         return (pols_if_init() * rente_total_mth()
                 * reduction_coeff(years_paid()))
@@ -1468,7 +1473,7 @@ def dep_cohorts(t):
     if t <= 0:
         z0 = seed_dur()
         if z0 and z0 <= n:
-            if status() == "partial":
+            if status() == Status.partial:
                 part[z0 - 1] = pols_if_init()
             else:
                 tot[z0 - 1] = pols_if_init()
@@ -1629,9 +1634,9 @@ def pols_if_at(t, timing):
     The intermediate points of the other models have no single-population meaning here,
     because five ledgers are moving at once; the ledgers themselves expose them.
     """
-    if timing == "BEF_DECR":
+    if timing == PolTiming.BEF_DECR:
         return pols_if(t)
-    if timing == "AFT_DECR":
+    if timing == PolTiming.AFT_DECR:
         if t < 0 or t >= proj_len():
             return 0.0
         return pols_if(t + 1)
@@ -1706,7 +1711,7 @@ def instalments(t):
     return out
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Benefit outgo at the end of month t, by kind; the total when kind is omitted.
 
     ``"RENTE"``
@@ -1729,29 +1734,29 @@ def claims(t, kind=None):
     There is deliberately **no** ``"DEATH"`` kind: this composite carries no death
     benefit at all, and the optional *capital décès* rider is out of scope.
     """
-    if kind is None:
-        return sum(claims(t, k) for k in ("RENTE", "CAPITAL", "LAPSE"))
-    if kind == "RENTE":
+    if kind == Kind.ALL:
+        return sum(claims(t, k) for k in (Kind.RENTE, Kind.CAPITAL, Kind.LAPSE))
+    if kind == Kind.RENTE:
         part, tot, totr, val = dep_cohorts(t)
         s_p = 1.0 - mort_rate_partial_mth(t)
         s_t = 1.0 - mort_rate_total_mth(t)
         rho = partial_ratio_paid()
-        amounts = {}
+        last_y = 0
+        a = 0.0
         out = 0.0
         for z in range(franchise_months() + 1, len(part) + 1):
             p, o, v = part[z - 1], tot[z - 1], val[z - 1]
             if p == 0.0 and o == 0.0 and v == 0.0:
                 continue
             y_e = max(1, policy_year(t - z))
-            a = amounts.get(y_e)
-            if a is None:
-                a = rente_pay_pp(t, z)
-                amounts[y_e] = a
+            if y_e != last_y:  # y_e is non-increasing in z: the last value is the memo
+                a = rente_pay_pp(policy_year(t), y_e)
+                last_y = y_e
             out += (rho * a * p * s_p + a * o * s_t + v * s_t)
         return out
-    if kind == "CAPITAL":
+    if kind == Kind.CAPITAL:
         return capital_pp(t) * pols_capital_claims(t)
-    if kind == "LAPSE":
+    if kind == Kind.LAPSE:
         return 0.0
     raise ValueError("invalid kind")
 
@@ -1812,7 +1817,7 @@ def net_cf(t):
     risk-free term structure to exactly this stream, and that is a layer above this
     model.
     """
-    return (premiums(t) - claims(t) - refunds_carence(t)
+    return (premiums(t) - claims(t, Kind.ALL) - refunds_carence(t)
             - expenses(t) - claim_expenses(t))
 
 
@@ -1983,7 +1988,7 @@ def check_model_point():
     sums to one — without which :func:`carence_factor` would silently scale every claim.
     """
     tbl = data.cause_mix_table()                                     # noqa: F821
-    if abs(float(tbl["share"].sum()) - 1.0) > 1e-9:
+    if abs(float(sum(tbl.loc[c, "share"] for c in tbl.index)) - 1.0) > 1e-9:
         return False
     if not 500.0 <= rente_total_mth() <= 3000.0:
         return False
@@ -1996,9 +2001,9 @@ def check_model_point():
     if not (carence_accident_months() <= carence_illness_months()
             <= carence_neuro_months()):
         return False
-    if status() == "autonomous" and not 40 <= age_at_entry() <= 75:
+    if status() == Status.autonomous and not 40 <= age_at_entry() <= 75:
         return False
-    if status() == "reduced" and years_paid() < reduction_qualifying_years():
+    if status() == Status.reduced and years_paid() < reduction_qualifying_years():
         return False
     return age_at_entry() < terminal_age                             # noqa: F821
 
@@ -2025,9 +2030,9 @@ def result_cf():
             "pols_tot": [pols_tot(t) for t in ts],
             "pols_totr": [pols_totr(t) for t in ts],
             "premiums": [premiums(t) for t in ts],
-            "claims_rente": [claims(t, "RENTE") for t in ts],
-            "claims_capital": [claims(t, "CAPITAL") for t in ts],
-            "claims_lapse": [claims(t, "LAPSE") for t in ts],
+            "claims_rente": [claims(t, Kind.RENTE) for t in ts],
+            "claims_capital": [claims(t, Kind.CAPITAL) for t in ts],
+            "claims_lapse": [claims(t, Kind.LAPSE) for t in ts],
             "refunds_carence": [refunds_carence(t) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "claim_expenses": [claim_expenses(t) for t in ts],
@@ -2107,3 +2112,23 @@ roll_fwd_tol = 1e-12
 math = ("Module", "math")
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+CoverType = ("Pickle", 5)
+
+TriggerGrid = ("Pickle", 3)
+
+PremiumMode = ("Pickle", 6)
+
+Cause = ("Pickle", 4)
+
+Status = ("Pickle", 7)
+
+PrevParam = ("Pickle", 2)
+
+Severity = ("Pickle", 8)
+
+PolTiming = ("Pickle", 9)
+
+Kind = ("Pickle", 10)

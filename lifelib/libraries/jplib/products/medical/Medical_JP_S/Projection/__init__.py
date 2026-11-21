@@ -299,10 +299,7 @@ def chassis():
     [S7][S9][S10].  The composite takes 終身 — the majority design, and the one that
     exercises the lifetime aggregate limit, which a ten-year term does not.
     """
-    v = model_point()["chassis"]
-    if v not in ("shushin", "teiki"):
-        raise ValueError("invalid chassis")
-    return v
+    return Chassis[model_point()["chassis"]]
 
 
 def issue_age():
@@ -321,10 +318,7 @@ def sex():
     at 20 and 30, below from 40 on [S3][S8] — which is a morbidity feature, not a
     pricing artefact, and is what the **[std]** sex factors on incidence reproduce.
     """
-    v = model_point()["sex"]
-    if v not in ("M", "F"):
-        raise ValueError("invalid sex")
-    return v
+    return Sex[model_point()["sex"]]
 
 
 def daily_amount():
@@ -368,10 +362,7 @@ def prem_period_type():
     no surrender value ever arises; the 短期払 variant is the only route by which this
     chassis acquires one at all.
     """
-    v = model_point()["prem_period"]
-    if v not in ("whole_life", "to_65"):
-        raise ValueError("invalid prem_period")
-    return v
+    return PremPeriod[model_point()["prem_period"]]
 
 
 def premium_mth_pp():
@@ -398,7 +389,7 @@ def prem_mode():
     company-set discount [S4] is an immaterial modal refinement and is not modelled
     **[std scope]**.
     """
-    return model_point()["prem_mode"]
+    return PremMode[model_point()["prem_mode"]]
 
 
 def surg_mult_ih():
@@ -502,7 +493,7 @@ def expiry_age():
     of 「renewable to age 80」 as *the last renewal whose term completes at or before 80*
     is **[std]**.  Meaningless on the 終身 chassis, which is why it raises there.
     """
-    if chassis() != "teiki":
+    if chassis() != Chassis.teiki:
         raise ValueError("expiry_age applies to the teiki chassis only")
     n = (teiki_expiry_age - issue_age()) // teiki_renewal_term       # noqa: F821
     if n < 1:
@@ -528,7 +519,7 @@ def proj_len():
     directions; ``jplib`` projects to final expiry and records the tension rather than
     resolving it.
     """
-    if chassis() == "teiki":
+    if chassis() == Chassis.teiki:
         return 12 * (expiry_age() - issue_age())
     return 12 * (omega_age() - issue_age() + 1)
 
@@ -559,7 +550,7 @@ def prem_end_month():
     ``proj_len()`` under 終身払, so a premium falls in every projected month; under the
     65歳払済 variant the month of the 契約応当日 at age 65.
     """
-    if prem_period_type() == "to_65":
+    if prem_period_type() == PremPeriod.to_65:
         m = 12 * (prem_period_end_age - issue_age())                 # noqa: F821
         if m <= 0:
             raise ValueError("prem_period to_65 needs an issue age below 65")
@@ -706,9 +697,9 @@ def sel_lapse_factor(t):
 
 def inc_band(t):
     """The five-year 入院受療率 band containing ``age(t)``, keyed by its lower edge."""
-    idx = data.incidence_table().index                               # noqa: F821
+    tbl = data.incidence_table()                               # noqa: F821
     a = age(t)
-    return int(max(b for b in idx if b <= a))
+    return int(tbl.index.asof(a))
 
 
 def inc_rate_base(t):
@@ -737,10 +728,14 @@ def inc_rate_base(t):
     not the age x sex cross-tabulation, which lives in an e-Stat table that was not
     downloaded [R6][R7][REG-R33].
     """
-    row = data.incidence_table().loc[inc_band(t)]                    # noqa: F821
-    f = float(row["inc_factor_m" if sex() == "M" else "inc_factor_f"])
-    return (float(row["juryoritsu_per_100k"]) / 100000.0
-            * 365.0 / float(row["alos_days"]) * f)
+    tbl = data.incidence_table()                                     # noqa: F821
+    b = inc_band(t)
+    if sex() == Sex.M:
+        f = float(tbl.loc[b, "inc_factor_m"])
+    else:
+        f = float(tbl.loc[b, "inc_factor_f"])
+    return (float(tbl.loc[b, "juryoritsu_per_100k"]) / 100000.0
+            * 365.0 / float(tbl.loc[b, "alos_days"]) * f)
 
 
 def inc_rate(t):
@@ -771,9 +766,9 @@ def los_band(t):
     against the five-year bands of 受療率 — the band mapping is itself **[std]**
     [REG-R26][REG-R27].
     """
-    idx = data.los_table().index                                     # noqa: F821
+    tbl = data.los_band_table()                                     # noqa: F821
     a = age(t)
-    return int(max(b for b, _ in idx if b <= a))
+    return int(tbl.index.asof(a))
 
 
 def los_days(band):
@@ -783,7 +778,8 @@ def los_days(band):
     mode and the 160-day band for the psychiatric and neurological tail that drives the
     sourced national mean [REG-R27].
     """
-    return tuple(int(d) for d in data.los_table().loc[band].index)   # noqa: F821
+    sub = data.los_table().loc[band]                                 # noqa: F821
+    return [int(d) for d in sub.index]
 
 
 def los_probs(band):
@@ -797,7 +793,8 @@ def los_probs(band):
     distribution with the same mean and a fatter tail changes the capped expectation
     without changing the calibration target at all.
     """
-    return tuple(float(p) for p in data.los_table().loc[band]["prob"])  # noqa: F821
+    sub = data.los_table().loc[band]                                 # noqa: F821
+    return [float(sub.loc[d, "prob"]) for d in sub.index]
 
 
 def min_days_floor():
@@ -1130,7 +1127,7 @@ def pols_if(t):
         return 0.0
     if t == 0:
         return pols_if_init()
-    return pols_if_at(t - 1, "AFT_DECR")
+    return pols_if_at(t - 1, PolTiming.AFT_DECR)
 
 
 def pols_if_at(t, timing):
@@ -1149,14 +1146,14 @@ def pols_if_at(t, timing):
         benefit-driven termination are taken, and zero in the final projected month
         because the cover ends there.
     """
-    if timing == "BEF_DECR":
+    if timing == PolTiming.BEF_DECR:
         return pols_if(t)
-    if timing == "BEF_LAPSE":
+    if timing == PolTiming.BEF_LAPSE:
         return pols_if(t) * (1.0 - mort_rate_mth(t))
-    if timing == "AFT_DECR":
+    if timing == PolTiming.AFT_DECR:
         if t < 0 or t >= proj_len() - 1:
             return 0.0
-        return (pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate_mth(t))
+        return (pols_if_at(t, PolTiming.BEF_LAPSE) * (1.0 - lapse_rate_mth(t))
                 * (1.0 - term_rate(t)))
     raise ValueError("invalid timing")
 
@@ -1177,7 +1174,7 @@ def pols_lapse(t):
     Pays nothing on the 終身払 anchor — see :func:`cv_pp` — so on that model point this
     moves :func:`pols_if` and nothing else.
     """
-    return pols_if_at(t, "BEF_LAPSE") * lapse_rate_mth(t)
+    return pols_if_at(t, PolTiming.BEF_LAPSE) * lapse_rate_mth(t)
 
 
 def pols_term(t):
@@ -1186,7 +1183,7 @@ def pols_term(t):
     Cover ceases when **both** 通算 limbs are exhausted [S9].  Zero on every shipped
     model point's expectation; see :func:`term_rate`.
     """
-    return (pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate_mth(t))
+    return (pols_if_at(t, PolTiming.BEF_LAPSE) * (1.0 - lapse_rate_mth(t))
             * term_rate(t))
 
 
@@ -1203,7 +1200,7 @@ def pols_maturity(t):
     """
     if t != proj_len() - 1:
         return 0.0
-    return (pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate_mth(t))
+    return (pols_if_at(t, PolTiming.BEF_LAPSE) * (1.0 - lapse_rate_mth(t))
             * (1.0 - term_rate(t)))
 
 
@@ -1245,7 +1242,7 @@ def cv_pp(t):
     - 1``, so the last one is paid a month earlier.  ``claims(t, "LAPSE")`` pays month
     ``t``'s end-of-month lapses at that start-of-month value.
     """
-    if prem_period_type() == "to_65" and t >= prem_end_month():
+    if prem_period_type() == PremPeriod.to_65 and t >= prem_end_month():
         return cv_mult_short_pay * daily_amount()                    # noqa: F821
     return 0.0
 
@@ -1274,7 +1271,7 @@ def surg_ih_eff(t):
     return surg_ih_per_hosp * d_pay_capped(t) / raw                  # noqa: F821
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Benefit outgo at the **end** of policy month t, by kind; the total when omitted.
 
     ``"HOSP"``
@@ -1302,21 +1299,21 @@ def claims(t, kind=None):
         rather than left to inference: it is the product fact, and a non-zero lapse row
         imported from a cash-value model is one of the notes' pitfalls.
     """
-    if kind is None:
+    if kind == Kind.ALL:
         return sum(claims(t, k)
-                   for k in ("HOSP", "SURGERY", "ADVANCED", "LUMP", "LAPSE"))
-    if kind == "HOSP":
+                   for k in (Kind.HOSP, Kind.SURGERY, Kind.ADVANCED, Kind.LUMP, Kind.LAPSE))
+    if kind == Kind.HOSP:
         return (pols_if(t) * daily_amount() * inc_rate_mth(t)
                 * (s_dis * d_ben_dis(t) + s_acc * d_ben_acc(t)))     # noqa: F821
-    if kind == "SURGERY":
+    if kind == Kind.SURGERY:
         return (pols_if(t) * inc_rate_mth(t) * daily_amount()
                 * (surg_ih_eff(t) * surg_mult_ih()
                    + surg_op_per_hosp * surg_mult_op()))             # noqa: F821
-    if kind == "ADVANCED":
+    if kind == Kind.ADVANCED:
         return pols_if(t) * adv_claim_pp(t)
-    if kind == "LUMP":
+    if kind == Kind.LUMP:
         return pols_if(t) * lump_amount * lump_claims_pp(t)          # noqa: F821
-    if kind == "LAPSE":
+    if kind == Kind.LAPSE:
         return pols_lapse(t) * cv_pp(t)
     raise ValueError("invalid kind")
 
@@ -1393,8 +1390,8 @@ def net_cf(t):
     claims on the anchor cell are 21.5% of year-1 premium.
     """
     return (premiums(t)
-            - claims(t, "HOSP") - claims(t, "SURGERY")
-            - claims(t, "ADVANCED") - claims(t, "LUMP") - claims(t, "LAPSE")
+            - claims(t, Kind.HOSP) - claims(t, Kind.SURGERY)
+            - claims(t, Kind.ADVANCED) - claims(t, Kind.LUMP) - claims(t, Kind.LAPSE)
             - expenses(t) - claim_expenses(t) - commissions(t))
 
 
@@ -1541,7 +1538,7 @@ def check_net_cf_resid(t):
     but missing from the printed statement, or counted twice, shows up here; so does a
     claim expense folded back into :func:`expenses` instead of standing on its own line.
     """
-    return net_cf(t) - (premiums(t) - claims(t) - expenses(t)
+    return net_cf(t) - (premiums(t) - claims(t, Kind.ALL) - expenses(t)
                         - claim_expenses(t) - commissions(t))
 
 
@@ -1573,11 +1570,11 @@ def result_cf():
         {
             "pols_if": [pols_if(t) for t in ts],
             "premiums": [premiums(t) for t in ts],
-            "claims_hosp": [claims(t, "HOSP") for t in ts],
-            "claims_surgery": [claims(t, "SURGERY") for t in ts],
-            "claims_advanced": [claims(t, "ADVANCED") for t in ts],
-            "claims_lump": [claims(t, "LUMP") for t in ts],
-            "claims_lapse": [claims(t, "LAPSE") for t in ts],
+            "claims_hosp": [claims(t, Kind.HOSP) for t in ts],
+            "claims_surgery": [claims(t, Kind.SURGERY) for t in ts],
+            "claims_advanced": [claims(t, Kind.ADVANCED) for t in ts],
+            "claims_lump": [claims(t, Kind.LUMP) for t in ts],
+            "claims_lapse": [claims(t, Kind.LAPSE) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "claim_expenses": [claim_expenses(t) for t in ts],
             "commissions": [commissions(t) for t in ts],
@@ -1702,3 +1699,15 @@ roll_fwd_tol = 1e-10
 cash_tol = 1e-06
 
 pd = ("Module", "pandas")
+
+Chassis = ("Pickle", 2)
+
+Sex = ("Pickle", 1)
+
+PremPeriod = ("Pickle", 3)
+
+PremMode = ("Pickle", 4)
+
+PolTiming = ("Pickle", 5)
+
+Kind = ("Pickle", 6)

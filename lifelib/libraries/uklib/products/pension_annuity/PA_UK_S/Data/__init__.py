@@ -86,8 +86,9 @@ def mort_table():
     that stands in for the difference, and it is a shape-level placeholder rather than a
     calibration.  Sorted on read, because ``Projection.mort_rate_base`` indexes into it.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file, index_col=["sex", "age"]).sort_index()
+    frame = pd.read_csv(input_dir() / mort_table_file)              # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"]).sort_index()
 
 
 # ---------------------------------------------------------------------------
@@ -98,3 +99,5 @@ model_point_file = "model_point_table.csv"
 mort_table_file = "mort_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)

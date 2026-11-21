@@ -340,10 +340,7 @@ def sex():
     *Rentenfaktor* may read this cells.  It is carried because the administration records
     it and because its *absence* from every formula is the assertion worth making.
     """
-    v = model_point()["sex"]
-    if v not in ("M", "F"):
-        raise ValueError("invalid sex")
-    return v
+    return Sex[model_point()["sex"]]
 
 
 def issue_age():
@@ -420,10 +417,7 @@ def contrib_form():
     *mittelbar* eligible spouse paying the 60 € *Sockelbeitrag* has, and what a saver
     contributing at the § 10a ceiling has.
     """
-    v = model_point()["contrib_form"]
-    if v not in ("mindest", "fixed"):
-        raise ValueError("invalid contrib_form")
-    return v
+    return ContribForm[model_point()["contrib_form"]]
 
 
 def contrib_fixed_pp():
@@ -498,10 +492,7 @@ def zulage_init_pp():
 
 def prem_freq():
     """The payment frequency: annual, half_yearly, quarterly or monthly."""
-    v = model_point()["prem_freq"]
-    if v not in ("annual", "half_yearly", "quarterly", "monthly"):
-        raise ValueError("invalid prem_freq")
-    return v
+    return PremFreq[model_point()["prem_freq"]]
 
 
 def prem_freq_load():
@@ -937,7 +928,7 @@ def pols_if(t):
         return 0.0
     if t == 0:
         return pols_if_init()
-    return pols_if_at(t - 1, "AFT_DECR")
+    return pols_if_at(t - 1, PolTiming.AFT_DECR)
 
 
 def pols_if_at(t, timing):
@@ -954,9 +945,9 @@ def pols_if_at(t, timing):
         year end.  In the conversion month of a **commuted** contract it is zero: the
         *Kleinbetragsrenten-Abfindung* discharges the contract outright.
     """
-    if timing == "BEF_DECR":
+    if timing == PolTiming.BEF_DECR:
         return pols_if(t)
-    if timing == "AFT_DECR":
+    if timing == PolTiming.AFT_DECR:
         if t < 0 or t >= proj_len():
             return 0.0
         if t == t_conv() and is_kleinbetrag():
@@ -1107,7 +1098,7 @@ def eigenbeitrag_pp(k):
         return 0.0
     if bfs_year() >= 0 and k >= bfs_year():
         return 0.0
-    if contrib_form() == "fixed":
+    if contrib_form() == ContribForm.fixed:
         return contrib_fixed_pp()
     return contrib_ratio() * mindesteigenbeitrag_pp(k)
 
@@ -1358,11 +1349,11 @@ def av_total_pp_at(k, timing):
         at the end of the year after crediting and an exiting policy takes the full year's
         interest.
     """
-    if timing == "BEF_PREM":
+    if timing == AvTiming.BEF_PREM:
         return av_total_pp(k)
-    if timing == "AFT_PREM":
+    if timing == AvTiming.AFT_PREM:
         return av_total_pp(k) + prem_to_av_pp(k)
-    if timing == "AFT_INT":
+    if timing == AvTiming.AFT_INT:
         return av_total_pp(k + 1)
     raise ValueError("invalid timing")
 
@@ -1679,7 +1670,7 @@ def db_pp(k):
     """
     if not is_accum_y(k):
         return 0.0
-    return av_total_pp_at(k, "AFT_INT")
+    return av_total_pp_at(k, AvTiming.AFT_INT)
 
 
 def cv_pp(k):
@@ -1692,7 +1683,7 @@ def cv_pp(k):
     """
     if not is_accum_y(k):
         return 0.0
-    return av_total_pp_at(k, "AFT_INT") * (1.0 - stornoabzug_rate)         # noqa: F821
+    return av_total_pp_at(k, AvTiming.AFT_INT) * (1.0 - stornoabzug_rate)         # noqa: F821
 
 
 def transfer_value_pp(k):
@@ -1707,7 +1698,7 @@ def transfer_value_pp(k):
     """
     if not is_accum_y(k):
         return 0.0
-    return max(0.0, av_total_pp_at(k, "AFT_INT") - transfer_charge)        # noqa: F821
+    return max(0.0, av_total_pp_at(k, AvTiming.AFT_INT) - transfer_charge)        # noqa: F821
 
 
 def exit_charge_pp(t):
@@ -1722,12 +1713,12 @@ def exit_charge_pp(t):
     """
     if not is_accum(t):
         return 0.0
-    a = av_total_pp_at(proj_year(t), "AFT_INT")
+    a = av_total_pp_at(proj_year(t), AvTiming.AFT_INT)
     return (stornoabzug_rate * a * pols_lapse(t)                     # noqa: F821
             + min(transfer_charge, a) * pols_transfer(t))            # noqa: F821
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Benefit outgo in month t, by kind; the total over all six kinds when kind is omitted.
 
     Every kind is paid in the **month** it falls; the per-policy amounts behind three of
@@ -1763,21 +1754,21 @@ def claims(t, kind=None):
         opening count, which paid a life that died in the first month of a year for the whole
         of it; that approximation is gone.
     """
-    if kind is None:
-        return sum(claims(t, k) for k in ("DEATH", "LAPSE", "TRANSFER",
-                                          "LUMPSUM", "COMMUTATION", "ANNUITY"))
+    if kind == Kind.ALL:
+        return sum(claims(t, k) for k in (Kind.DEATH, Kind.LAPSE, Kind.TRANSFER,
+                                          Kind.LUMPSUM, Kind.COMMUTATION, Kind.ANNUITY))
     k = proj_year(t)
-    if kind == "DEATH":
+    if kind == Kind.DEATH:
         return db_pp(k) * pols_death(t)
-    if kind == "LAPSE":
+    if kind == Kind.LAPSE:
         return cv_pp(k) * pols_lapse(t)
-    if kind == "TRANSFER":
+    if kind == Kind.TRANSFER:
         return transfer_value_pp(k) * pols_transfer(t)
-    if kind == "LUMPSUM":
+    if kind == Kind.LUMPSUM:
         return teilkapital_pp() * pols_conv() if t == t_conv() else 0.0
-    if kind == "COMMUTATION":
+    if kind == Kind.COMMUTATION:
         return commutation_pp() * pols_conv() if t == t_conv() else 0.0
-    if kind == "ANNUITY":
+    if kind == Kind.ANNUITY:
         return annuity_month_pp() * pols_annuity_pay(t)
     raise ValueError("invalid kind")
 
@@ -1906,9 +1897,9 @@ def net_cf(t):
     then a long thin negative tail of monthly annuity instalments.
     """
     return (premiums(t) + zulagen(t)
-            - claims(t, "DEATH") - claims(t, "LAPSE") - claims(t, "TRANSFER")
-            - claims(t, "LUMPSUM") - claims(t, "COMMUTATION")
-            - claims(t, "ANNUITY")
+            - claims(t, Kind.DEATH) - claims(t, Kind.LAPSE) - claims(t, Kind.TRANSFER)
+            - claims(t, Kind.LUMPSUM) - claims(t, Kind.COMMUTATION)
+            - claims(t, Kind.ANNUITY)
             - expenses(t) - commissions(t))
 
 
@@ -1990,10 +1981,10 @@ def check_av_roll_fwd_resid(k):
     if k >= k_conv():
         return av_total_pp(k + 1)
     months = range(12 * k, 12 * k + 12)
-    out = sum(claims(t, "DEATH") + claims(t, "LAPSE") + claims(t, "TRANSFER")
+    out = sum(claims(t, Kind.DEATH) + claims(t, Kind.LAPSE) + claims(t, Kind.TRANSFER)
               + exit_charge_pp(t) for t in months)
-    return (av_total_at(k + 1, "BEF_PREM")
-            - (av_total_at(k, "BEF_PREM") + prem_to_av_pp(k) * pols_if(12 * k)
+    return (av_total_at(k + 1, AvTiming.BEF_PREM)
+            - (av_total_at(k, AvTiming.BEF_PREM) + prem_to_av_pp(k) * pols_if(12 * k)
                + int_credited(k) - out))
 
 
@@ -2187,12 +2178,12 @@ def result_cf():
             "pols_annuity_pay": [pols_annuity_pay(t) for t in ts],
             "premiums": [premiums(t) for t in ts],
             "zulagen": [zulagen(t) for t in ts],
-            "claims_death": [claims(t, "DEATH") for t in ts],
-            "claims_lapse": [claims(t, "LAPSE") for t in ts],
-            "claims_transfer": [claims(t, "TRANSFER") for t in ts],
-            "claims_lumpsum": [claims(t, "LUMPSUM") for t in ts],
-            "claims_commutation": [claims(t, "COMMUTATION") for t in ts],
-            "claims_annuity": [claims(t, "ANNUITY") for t in ts],
+            "claims_death": [claims(t, Kind.DEATH) for t in ts],
+            "claims_lapse": [claims(t, Kind.LAPSE) for t in ts],
+            "claims_transfer": [claims(t, Kind.TRANSFER) for t in ts],
+            "claims_lumpsum": [claims(t, Kind.LUMPSUM) for t in ts],
+            "claims_commutation": [claims(t, Kind.COMMUTATION) for t in ts],
+            "claims_annuity": [claims(t, Kind.ANNUITY) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "commissions": [commissions(t) for t in ts],
             "net_cf": [net_cf(t) for t in ts],
@@ -2353,3 +2344,15 @@ comm_rate_renew = 0.015
 roll_fwd_tol = 1e-09
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 2)
+
+ContribForm = ("Pickle", 3)
+
+PremFreq = ("Pickle", 1)
+
+PolTiming = ("Pickle", 4)
+
+AvTiming = ("Pickle", 5)
+
+Kind = ("Pickle", 6)

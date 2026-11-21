@@ -154,8 +154,9 @@ def mort_table():
     a ``provenance`` column saying, row by row, whether the rate is an anchor, a fit, a
     ramp or the terminal age.  ω is the first age at which the rate reaches 1.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file, index_col=["sex", "age"])     # noqa: F821
+    frame = pd.read_csv(input_dir() / mort_table_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"])
 
 
 def ci_incidence_table():
@@ -173,9 +174,10 @@ def ci_incidence_table():
     site-specific incidences instead would be wrong in the direction the regulation
     specifically addresses.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / ci_incidence_file,                             # noqa: F821
-        index_col=["sex", "age", "cause"])
+    frame = pd.read_csv(input_dir() / ci_incidence_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    frame["cause"] = [Cause[name] for name in frame["cause"]]
+    return frame.set_index(["sex", "age", "cause"])
 
 
 def lapse_table():
@@ -205,3 +207,7 @@ ci_incidence_file = "ci_incidence_table.csv"
 lapse_table_file = "lapse_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+Cause = ("Pickle", 2)

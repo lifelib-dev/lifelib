@@ -355,10 +355,7 @@ def model_point():
 
 def sex():
     """The sex of the insured, M or F; the two are rated and tabulated separately."""
-    v = model_point()["sex"]
-    if v not in ("M", "F"):
-        raise ValueError("invalid sex")
-    return v
+    return Sex[model_point()["sex"]]
 
 
 def age_at_entry():
@@ -529,10 +526,7 @@ def dividend_type():
     contractual one.  ``five_year`` is the 5年ごと利差配当 variant, declared out of
     investment margin every fifth policy year; see :func:`dividends`.
     """
-    v = model_point()["dividend_type"]
-    if v not in ("none", "five_year"):
-        raise ValueError("invalid dividend_type")
-    return v
+    return DividendType[model_point()["dividend_type"]]
 
 
 def lapse_spike():
@@ -595,7 +589,7 @@ def omega_age():
     truncates the liability, and projecting to 120 invents one.
     """
     tbl = data.mort_table().loc[sex()]                               # noqa: F821
-    return int(tbl.index[tbl["mort_rate"] >= 1.0][0])
+    return int(min(a for a in tbl.index if tbl.loc[a, "mort_rate"] >= 1.0))
 
 
 def proj_years():
@@ -1435,8 +1429,8 @@ def apl_entry_years(t):
     over an entry list twelve times longer than the annual grid's.
     """
     if not apl_active():
-        return range(0)
-    return range(min(duration(t), prem_end() - 1) + 1)
+        return []
+    return [s for s in range(min(duration(t), prem_end() - 1) + 1)]
 
 
 def pols_apl_carried(t):
@@ -1502,14 +1496,14 @@ def pols_if_at(t, timing):
         l(t+1), the end-of-month state, and zero at ``proj_len() - 1`` because
         the table's terminal rate is 1 and nobody survives the final month.
     """
-    if timing == "BEF_DECR":
+    if timing == PolTiming.BEF_DECR:
         return pols_if(t)
-    if timing == "BEF_LAPSE":
+    if timing == PolTiming.BEF_LAPSE:
         return (pols_pay_bef_decr(t) + pols_apl(t)) * (1.0 - mort_rate_mth(t))
-    if timing == "BEF_SPIKE":
-        return pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate_mth(t))
-    if timing == "AFT_DECR":
-        return pols_if_at(t, "BEF_SPIKE") * (1.0 - lapse_spike_rate(t))
+    if timing == PolTiming.BEF_SPIKE:
+        return pols_if_at(t, PolTiming.BEF_LAPSE) * (1.0 - lapse_rate_mth(t))
+    if timing == PolTiming.AFT_DECR:
+        return pols_if_at(t, PolTiming.BEF_SPIKE) * (1.0 - lapse_spike_rate(t))
     raise ValueError("invalid timing")
 
 
@@ -1530,7 +1524,7 @@ def pols_lapse_base(t):
 
     Taken from the survivors of mortality — death before lapse **[std order]**.
     """
-    return pols_if_at(t, "BEF_LAPSE") * lapse_rate_mth(t)
+    return pols_if_at(t, PolTiming.BEF_LAPSE) * lapse_rate_mth(t)
 
 
 def pols_lapse_spike(t):
@@ -1541,7 +1535,7 @@ def pols_lapse_spike(t):
     because it is the thing the product is about, and on the annual grid it could not be
     seen apart from a year of ordinary surrender.
     """
-    return pols_if_at(t, "BEF_SPIKE") * lapse_spike_rate(t)
+    return pols_if_at(t, PolTiming.BEF_SPIKE) * lapse_spike_rate(t)
 
 
 def pols_lapse(t):
@@ -1577,7 +1571,7 @@ def premiums(t):
     return premium_pp() * pols_pay_bef_decr(t)
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Benefit outgo in period t, by kind; the total when kind is omitted.
 
     ``"DEATH"``
@@ -1599,17 +1593,17 @@ def claims(t, kind=None):
     and, given long enough, the sum assured, and none of them may produce a negative
     payment.
     """
-    if kind is None:
-        return sum(claims(t, k) for k in ("DEATH", "LAPSE"))
+    if kind == Kind.ALL:
+        return sum(claims(t, k) for k in (Kind.DEATH, Kind.LAPSE))
     d = duration(t)
-    if kind == "DEATH":
+    if kind == Kind.DEATH:
         pay = max(0.0, sum_assured_at(t) - loan_pp(d)) * (
             pols_pay_bef_decr(t) * mort_rate_mth(t))
         apl = sum(max(0.0, sum_assured_at(t) - loan_apl_pp(d, s))
                   * pols_if_apl(t, s) * mort_rate_mth(t)
                   for s in apl_entry_years(t) if pols_if_apl(t, s) != 0.0)
         return pay + apl
-    if kind == "LAPSE":
+    if kind == Kind.LAPSE:
         surv = 1.0 - mort_rate_mth(t)
         exit_rate = 1.0 - (1.0 - lapse_rate_mth(t)) * (1.0 - lapse_spike_rate(t))
         pay = max(0.0, cv_at_m(t + 1) - loan_pp(d)) * (
@@ -1703,11 +1697,11 @@ def dividends(t):
     timing are standardizations — the timing is the only part of it that is sourced, from
     the product name itself.
     """
-    if (dividend_type() != "five_year" or (t + 1) % 12 != 0
+    if (dividend_type() != DividendType.five_year or (t + 1) % 12 != 0
             or policy_year(t) % div_period != 0):                    # noqa: F821
         return 0.0
     return (div_spread * div_period * pol_val_pp(policy_year(t))     # noqa: F821
-            * pols_if_at(t, "BEF_LAPSE"))
+            * pols_if_at(t, PolTiming.BEF_LAPSE))
 
 
 def net_cf(t):
@@ -1728,7 +1722,7 @@ def net_cf(t):
     the annual grid could say the cliff cost a year and could not say what a month of it
     looked like.
     """
-    return (premiums(t) - claims(t) - claim_expenses(t) - expenses(t)
+    return (premiums(t) - claims(t, Kind.ALL) - claim_expenses(t) - expenses(t)
             - commissions(t) - dividends(t))
 
 
@@ -1891,7 +1885,7 @@ def check_net_cf_resid(t):
     third kind added to :func:`claims` and left out of its total shows up here rather
     than silently vanishing from the statement.
     """
-    return (net_cf(t) - premiums(t) + claims(t, "DEATH") + claims(t, "LAPSE")
+    return (net_cf(t) - premiums(t) + claims(t, Kind.DEATH) + claims(t, Kind.LAPSE)
             + claim_expenses(t) + expenses(t) + commissions(t) + dividends(t))
 
 
@@ -1919,8 +1913,8 @@ def result_cf():
         {
             "pols_if": [pols_if(t) for t in ts],
             "premiums": [premiums(t) for t in ts],
-            "claims_death": [claims(t, "DEATH") for t in ts],
-            "claims_lapse": [claims(t, "LAPSE") for t in ts],
+            "claims_death": [claims(t, Kind.DEATH) for t in ts],
+            "claims_lapse": [claims(t, Kind.LAPSE) for t in ts],
             "claim_expenses": [claim_expenses(t) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "commissions": [commissions(t) for t in ts],
@@ -2036,3 +2030,11 @@ roll_fwd_tol = 1e-10
 val_tol = 1e-8
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+DividendType = ("Pickle", 2)
+
+PolTiming = ("Pickle", 3)
+
+Kind = ("Pickle", 4)

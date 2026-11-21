@@ -29,6 +29,7 @@ import modelx as mx
 import pytest
 
 from us_registry import LIB
+from lifelib.libraries.uslib.products.fixed_indexed_annuity.enums import Claim, CreditMethod, GlwbBasis, MvaCollarBasis, Phase, PolTiming, Sex, Timing
 
 MODEL_PATH = LIB / "products/fixed_indexed_annuity/FIA_US_S"
 
@@ -109,17 +110,17 @@ WORKED_EXAMPLE = [
     (1, "index return R(8)", lambda p: p.index_return(A8), 0.090000, RATE),
     (2, "credit rate cr(8)", lambda p: p.credit_rate(A8), 0.052500, RATE),
     (3, "index credit IC(8)", lambda p: p.index_credit_pp(A8), 6720.00, CENT),
-    (4, "AV after credit", lambda p: p.av_pp_at(A8, "BEF_FEE"), 134720.00, CENT),
+    (4, "AV after credit", lambda p: p.av_pp_at(A8, Timing.BEF_FEE), 134720.00, CENT),
     (5, "rider charge Phi(8)", lambda p: p.rider_charge_pp(A8), 1710.00, CENT),
-    (6, "AV(2) after charge", lambda p: p.av_pp_at(A8, "BEF_WD"), 133010.00, CENT),
+    (6, "AV(2) after charge", lambda p: p.av_pp_at(A8, Timing.BEF_WD), 133010.00, CENT),
     (7, "guaranteed rollup", lambda p: p.rollup_pp(A8), 5000.00, CENT),
     (8, "stacking credit", lambda p: p.stack_pp(A8), 10080.00, CENT),
     (9, "BB(3) before step-up",
-     lambda p: p.benefit_base_pp_at(A8, "BEF_STEP_UP"), 195080.00, CENT),
+     lambda p: p.benefit_base_pp_at(A8, Timing.BEF_STEP_UP), 195080.00, CENT),
     (10, "BB(4) after step-up",
-     lambda p: p.benefit_base_pp_at(A8, "BEF_WD"), 195080.00, CENT),
+     lambda p: p.benefit_base_pp_at(A8, Timing.BEF_WD), 195080.00, CENT),
     (11, "lifetime withdrawal LW(8)",
-     lambda p: p.lw_pp_at(A8, "BEF_WD"), 10144.16, CENT),
+     lambda p: p.lw_pp_at(A8, Timing.BEF_WD), 10144.16, CENT),
     (12, "free withdrawal amount FW(8)", lambda p: p.free_wd_allow(A8), 12800.00, CENT),
     (13, "excess E(8)", lambda p: p.wd_excess_pp(A8), 0.00, CENT),
     (14, "account value AV(8)", lambda p: p.av_pp(A8), 122865.84, CENT),
@@ -148,16 +149,16 @@ def test_worked_example_opening_state(anchor):
     assert anchor.entry_mth() == 84
     assert opens(8) == anchor.entry_mth()
     assert anchor.av_pp_year_open(A8) == pytest.approx(128000.00, abs=CENT)
-    assert anchor.av_pp_at(opens(8), "BEF_INV") == pytest.approx(128000.00, abs=CENT)
-    assert anchor.benefit_base_pp_at(A8, "BEF_ROLLUP") == pytest.approx(180000.00,
+    assert anchor.av_pp_at(opens(8), Timing.BEF_INV) == pytest.approx(128000.00, abs=CENT)
+    assert anchor.benefit_base_pp_at(A8, Timing.BEF_ROLLUP) == pytest.approx(180000.00,
                                                                        abs=CENT)
     assert anchor.rollup_base_pp_init() == pytest.approx(100000.00, abs=CENT)
     assert anchor.mgsv_pp_init() == pytest.approx(93811.84, abs=CENT)
     # Nothing was withdrawn before entry, so the first contract year's own withdrawal is
     # the whole of Wcum at the end of it.
     assert anchor.wd_cum_pp(A8) == pytest.approx(10144.16, abs=CENT)
-    assert anchor.phase_init() == "ACCUM"
-    assert anchor.phase_open(A8) == "INCOME"      # promoted by the first exercise
+    assert anchor.phase_init() == Phase.ACCUM
+    assert anchor.phase_open(A8) == Phase.INCOME      # promoted by the first exercise
     # MGV(7) is 87,500 x 1.01^7, which the notes give as the derivation of 93,811.84.
     assert 0.875 * anchor.premium_pp() * 1.01 ** 7 == pytest.approx(93811.84, abs=CENT)
 
@@ -165,14 +166,14 @@ def test_worked_example_opening_state(anchor):
 def test_the_step_up_does_not_bind_on_the_blended_baseline(anchor):
     """Row 10: the stack dominates, so max(195,080.00, 133,010.00) is the base itself."""
     assert anchor.step_up_applies(A8) is True
-    assert (anchor.benefit_base_pp_at(A8, "BEF_WD")
-            == anchor.benefit_base_pp_at(A8, "BEF_STEP_UP"))
-    assert anchor.benefit_base_pp_at(A8, "BEF_WD") > anchor.av_pp_at(A8, "BEF_WD")
+    assert (anchor.benefit_base_pp_at(A8, Timing.BEF_WD)
+            == anchor.benefit_base_pp_at(A8, Timing.BEF_STEP_UP))
+    assert anchor.benefit_base_pp_at(A8, Timing.BEF_WD) > anchor.av_pp_at(A8, Timing.BEF_WD)
 
 
 def test_a_guaranteed_withdrawal_leaves_the_guarantee_untouched(anchor):
     """Row 13 and row 16: E(8) = 0, so rho = 0 and BB, LW and RB are unchanged [S9]."""
-    assert anchor.wd_pp(A8) == pytest.approx(anchor.lw_pp_at(A8, "BEF_WD"), abs=EXACT)
+    assert anchor.wd_pp(A8) == pytest.approx(anchor.lw_pp_at(A8, Timing.BEF_WD), abs=EXACT)
     assert anchor.wd_excess_pp(A8) == 0.0
     assert anchor.wd_reduction_rate(A8) == 0.0
     assert anchor.wd_charge_base_pp(A8) == 0.0
@@ -270,16 +271,16 @@ def test_surrender_trace_net_proceeds_is_a_cent_rounding_artefact(anchor):
 def test_step_up_binds_under_the_pure_rollup_variant(fixed_indexed_annuity):
     """Growth mechanism (a): the step-up matters when credits outrun the rollup."""
     p = fixed_indexed_annuity.Projection[3]
-    assert p.benefit_base_pp_at(A8, "BEF_ROLLUP") == pytest.approx(121000.00, abs=CENT)
+    assert p.benefit_base_pp_at(A8, Timing.BEF_ROLLUP) == pytest.approx(121000.00, abs=CENT)
     assert p.stack_factor() == 0.0
     assert p.rollup_rate(A8) == pytest.approx(0.03, abs=RATE)
     assert p.rider_charge_pp(A8) == pytest.approx(1149.50, abs=CENT)
-    assert p.av_pp_at(A8, "BEF_WD") == pytest.approx(133570.50, abs=CENT)
+    assert p.av_pp_at(A8, Timing.BEF_WD) == pytest.approx(133570.50, abs=CENT)
     assert p.rollup_pp(A8) == pytest.approx(3000.00, abs=CENT)
     assert p.stack_pp(A8) == 0.0
-    assert p.benefit_base_pp_at(A8, "BEF_STEP_UP") == pytest.approx(124000.00, abs=CENT)
-    assert p.benefit_base_pp_at(A8, "BEF_WD") == pytest.approx(133570.50, abs=CENT)
-    assert p.lw_pp_at(A8, "BEF_WD") == pytest.approx(6945.67, abs=CENT)
+    assert p.benefit_base_pp_at(A8, Timing.BEF_STEP_UP) == pytest.approx(124000.00, abs=CENT)
+    assert p.benefit_base_pp_at(A8, Timing.BEF_WD) == pytest.approx(133570.50, abs=CENT)
+    assert p.lw_pp_at(A8, Timing.BEF_WD) == pytest.approx(6945.67, abs=CENT)
 
 
 def test_step_up_binds_in_year_one_on_a_new_issue(fixed_indexed_annuity):
@@ -295,16 +296,16 @@ def test_step_up_binds_in_year_one_on_a_new_issue(fixed_indexed_annuity):
     assert p.entry_mth() == 0
     a1 = anniv(1)
     # The Initialisation block is the opening state of month 0, not a row of its own.
-    assert p.av_pp_at(0, "BEF_INV") == pytest.approx(107000.00, abs=CENT)   # P(1+b) [S5]
+    assert p.av_pp_at(0, Timing.BEF_INV) == pytest.approx(107000.00, abs=CENT)   # P(1+b) [S5]
     assert p.av_pp_year_open(a1) == pytest.approx(107000.00, abs=CENT)
-    assert p.benefit_base_pp_at(a1, "BEF_ROLLUP") == pytest.approx(
+    assert p.benefit_base_pp_at(a1, Timing.BEF_ROLLUP) == pytest.approx(
         100000.00, abs=CENT)                                    # bonus excluded
     assert p.rollup_base_pp_init() == pytest.approx(100000.00, abs=CENT)
     assert p.mgsv_pp_init() == pytest.approx(87500.00, abs=CENT)  # 0.875 x P, no bonus
     assert p.index_credit_pp(a1) == 0.0
     assert p.rider_charge_pp(a1) == pytest.approx(950.00, abs=CENT)
-    assert p.av_pp_at(a1, "BEF_WD") == pytest.approx(106050.00, abs=CENT)
-    assert p.benefit_base_pp_at(a1, "BEF_STEP_UP") == pytest.approx(105000.00, abs=CENT)
+    assert p.av_pp_at(a1, Timing.BEF_WD) == pytest.approx(106050.00, abs=CENT)
+    assert p.benefit_base_pp_at(a1, Timing.BEF_STEP_UP) == pytest.approx(105000.00, abs=CENT)
     assert p.benefit_base_pp(a1) == pytest.approx(106050.00, abs=CENT)   # the step-up
     # ... and the same cell rolled forward seven years reaches the notes' MGV(7), the
     # value closing contract year 7 and opening contract year 8.  The floor accrues
@@ -348,26 +349,26 @@ def test_the_account_value_is_exhausted_during_contract_year_19(anchor):
     assert anchor.av_pp(anniv(18)) == pytest.approx(2891.64, abs=CENT)
     assert anchor.av_pp(t) == 0.0
     assert anchor.exercise_age(t) == 81           # at the closing anniversary
-    assert anchor.phase(anniv(18)) == "INCOME"
-    assert anchor.phase(t) == "DEPLETED"
+    assert anchor.phase(anniv(18)) == Phase.INCOME
+    assert anchor.phase(t) == Phase.DEPLETED
     assert anchor.depletion_cause(t) is False
     # The insurer funds the shortfall in the depletion year itself.
     assert anchor.av_depletion_pp(t) == pytest.approx(
-        10144.16 - anchor.av_pp_at(t, "BEF_WD"), abs=CENT)
+        10144.16 - anchor.av_pp_at(t, Timing.BEF_WD), abs=CENT)
 
 
 def test_the_income_stream_survives_exhaustion(anchor):
     """The guarantee: LW a year for life, from the insurer's own funds [S1][S3][S9]."""
     for year in range(20, 31):
         t = anniv(year)
-        assert anchor.phase(t) == "DEPLETED"
+        assert anchor.phase(t) == Phase.DEPLETED
         assert anchor.av_pp(t) == 0.0
         assert anchor.wd_pp(t) == pytest.approx(10144.16, abs=CENT)
         assert anchor.rider_charge_pp(t) == 0.0        # nothing to deduct it from [S9]
         assert anchor.index_credit_pp(t) == 0.0        # steps 1-3 are skipped
         assert anchor.lapse_rate(t) == 0.0             # lapse is impossible [S1][S9]
         assert anchor.lapse_rate_mth(t) == 0.0         # ... in every month of the year
-        assert anchor.claim_pp(t, "DEATH") == 0.0      # no death benefit
+        assert anchor.claim_pp(t, Claim.DEATH) == 0.0      # no death benefit
         assert anchor.surr_benefit_pp(t) == 0.0        # no surrender value
         assert anchor.income_payments(t) == pytest.approx(
             10144.16 * anchor.pols_if(t), abs=CENT)    # weighted by who reaches it
@@ -383,7 +384,7 @@ def test_income_runs_to_the_end_of_the_projection(anchor):
     the first month of that year.  That is what an annual rate of one means once it is
     spread; the annual grid could only say "during the year".
     """
-    assert anchor.phase(anchor.proj_len() - 1) == "DEPLETED"
+    assert anchor.phase(anchor.proj_len() - 1) == Phase.DEPLETED
     last_year_opens = anchor.proj_len() - 12
     assert anchor.pols_if(last_year_opens) > 0.0
     assert anchor.mort_rate_mth(last_year_opens) == 1.0
@@ -406,7 +407,7 @@ def test_pitfall_the_floor_is_on_the_credit_not_the_account_value(fixed_indexed_
     p = fixed_indexed_annuity.Projection[2]
     a1 = anniv(1)
     assert p.credit_rate(a1) == 0.0                      # the credit is floored at zero
-    assert p.credit_rate_on(-0.30, "cap") == 0.0         # ... however bad the index year
+    assert p.credit_rate_on(-0.30, CreditMethod.cap) == 0.0         # ... however bad the index year
     assert p.av_pp(a1) < p.av_pp_year_open(a1)           # ... the account value is not
 
 
@@ -438,7 +439,7 @@ def test_pitfall_the_simple_rollup_is_a_flat_dollar_increment(anchor):
     assert p.rollup_base_pp_init() == pytest.approx(100000.00, abs=CENT)
     # Simple interest on the *grown* base would have been 0.05 x 180,000 = 9,000.
     assert p.rollup_pp(A8) != pytest.approx(
-        0.05 * p.benefit_base_pp_at(A8, "BEF_ROLLUP"), abs=1.0)
+        0.05 * p.benefit_base_pp_at(A8, Timing.BEF_ROLLUP), abs=1.0)
 
 
 def test_pitfall_attribution_at_depletion(fixed_indexed_annuity, anchor):
@@ -455,9 +456,9 @@ def test_pitfall_attribution_at_depletion(fixed_indexed_annuity, anchor):
     assert anchor.depletion_cause(A8) is False
 
     terminated = [t for t in range(p7.entry_mth(), p7.proj_len())
-                  if p7.phase(t) == "TERMINATED"]
+                  if p7.phase(t) == Phase.TERMINATED]
     depleted = [t for t in range(anchor.entry_mth(), anchor.proj_len())
-                if anchor.phase(t) == "DEPLETED"]
+                if anchor.phase(t) == Phase.DEPLETED]
     assert terminated and depleted
     # The phase turns only at an anniversary, so the first month carrying it is one.
     assert terminated[0] % 12 == 11
@@ -469,7 +470,7 @@ def test_pitfall_attribution_at_depletion(fixed_indexed_annuity, anchor):
     # the opening count of the month after it is zero.
     assert p7.pols_if(terminated[0]) > 0.0
     assert p7.pols_if(terminated[0] + 1) == 0.0
-    assert p7.pols_if_at(terminated[0], "AFT_DECR") == 0.0
+    assert p7.pols_if_at(terminated[0], PolTiming.AFT_DECR) == 0.0
     assert anchor.pols_if(depleted[0]) > 0.0
     assert all(p7.income_payments(t) == 0.0
                for t in range(p7.entry_mth(), p7.proj_len()))
@@ -492,13 +493,13 @@ def test_the_terminating_branch_pays_only_what_the_account_value_holds(
     """
     p7 = fixed_indexed_annuity.Projection[7]
     t = anniv(19)
-    assert p7.phase(anniv(18)) == "INCOME"
-    assert p7.phase(t) == "TERMINATED"
+    assert p7.phase(anniv(18)) == Phase.INCOME
+    assert p7.phase(t) == Phase.TERMINATED
 
     # What the contract could meet, against what was asked for.
-    assert p7.av_pp_at(t, "BEF_WD") == pytest.approx(765.92, abs=CENT)
+    assert p7.av_pp_at(t, Timing.BEF_WD) == pytest.approx(765.92, abs=CENT)
     assert p7.wd_pp(t) == pytest.approx(7856.61, abs=CENT)
-    assert p7.lw_pp_at(t, "BEF_WD") == pytest.approx(7482.49, abs=CENT)
+    assert p7.lw_pp_at(t, Timing.BEF_WD) == pytest.approx(7482.49, abs=CENT)
     assert p7.wd_excess_pp(t) == pytest.approx(374.12, abs=CENT)
     assert p7.av_depletion_pp(t) == pytest.approx(7090.69, abs=CENT)
 
@@ -520,8 +521,8 @@ def test_the_terminating_branch_pays_only_what_the_account_value_holds(
     assert p7.benefit_base_pp(t) == 0.0
 
     # The contrast, in the same contract year: on the DEPLETED branch it IS all paid.
-    assert anchor.phase(t) == "DEPLETED"
-    assert anchor.av_pp_at(t, "BEF_WD") == pytest.approx(1038.38, abs=CENT)
+    assert anchor.phase(t) == Phase.DEPLETED
+    assert anchor.av_pp_at(t, Timing.BEF_WD) == pytest.approx(1038.38, abs=CENT)
     assert anchor.av_depletion_pp(t) == pytest.approx(9105.78, abs=CENT)
     assert anchor.wd_unfunded_pp(t) == 0.0
     assert anchor.wd_payment_pp(t) == pytest.approx(10144.16, abs=CENT)
@@ -531,7 +532,7 @@ def test_pitfall_an_overdraw_permanently_reduces_the_guarantee(fixed_indexed_ann
                                                                anchor):
     """"a 5% overdraw permanently reduces the guarantee" - efficiency is not free [R1]."""
     p7 = fixed_indexed_annuity.Projection[7]
-    assert p7.lw_pp_at(A8, "BEF_WD") == pytest.approx(10144.16, abs=CENT)
+    assert p7.lw_pp_at(A8, Timing.BEF_WD) == pytest.approx(10144.16, abs=CENT)
     assert p7.wd_pp(A8) == pytest.approx(1.05 * 10144.16, abs=CENT)
     assert p7.wd_excess_pp(A8) == pytest.approx(0.05 * 10144.16, abs=CENT)
     rho = p7.wd_reduction_rate(A8)
@@ -549,7 +550,7 @@ def test_pitfall_no_lapse_in_depleted(anchor):
     depleted contract year loses a life to surrender.
     """
     depleted = [t for t in range(anchor.entry_mth(), anchor.proj_len() - 1)
-                if anchor.phase(t) == "DEPLETED"]
+                if anchor.phase(t) == Phase.DEPLETED]
     assert depleted
     for t in depleted:
         assert anchor.lapse_rate(t) == 0.0
@@ -559,7 +560,7 @@ def test_pitfall_no_lapse_in_depleted(anchor):
         # deaths
         assert anchor.pols_if(t + 1) == pytest.approx(
             anchor.pols_if(t) * (1 - anchor.mort_rate_mth(t)), rel=1e-12)
-        assert anchor.pols_if_at(t, "AFT_DECR") == pytest.approx(
+        assert anchor.pols_if_at(t, PolTiming.AFT_DECR) == pytest.approx(
             anchor.pols_if(t + 1), rel=1e-12)
 
 
@@ -573,15 +574,15 @@ def test_pitfall_rider_charge_base_and_ordering(anchor):
     assert anchor.rider_charge_pp(A8) == pytest.approx(0.0095 * 180000.00, abs=CENT)
     # ... on the OPENING base, because the base is updated after the charge.
     assert anchor.rider_charge_pp(A8) == pytest.approx(
-        0.0095 * anchor.benefit_base_pp_at(A8, "BEF_ROLLUP"), abs=CENT)
+        0.0095 * anchor.benefit_base_pp_at(A8, Timing.BEF_ROLLUP), abs=CENT)
     # ... and after the index credit: the charge lands on AV(1), not on the opening AV.
-    assert anchor.av_pp_at(A8, "BEF_WD") == pytest.approx(
-        anchor.av_pp_at(A8, "BEF_FEE") - anchor.rider_charge_pp(A8), abs=EXACT)
-    assert anchor.av_pp_at(A8, "BEF_FEE") > anchor.av_pp_year_open(A8)
+    assert anchor.av_pp_at(A8, Timing.BEF_WD) == pytest.approx(
+        anchor.av_pp_at(A8, Timing.BEF_FEE) - anchor.rider_charge_pp(A8), abs=EXACT)
+    assert anchor.av_pp_at(A8, Timing.BEF_FEE) > anchor.av_pp_year_open(A8)
     ratio = anchor.benefit_base_pp(A8) / anchor.av_pp(A8)
     assert ratio == pytest.approx(1.59, abs=0.005)
     # Charging on the account value would understate the deduction.
-    assert 0.0095 * anchor.av_pp_at(A8, "BEF_FEE") < anchor.rider_charge_pp(A8)
+    assert 0.0095 * anchor.av_pp_at(A8, Timing.BEF_FEE) < anchor.rider_charge_pp(A8)
 
 
 def test_pitfall_excess_withdrawal_denominator(anchor):
@@ -619,9 +620,9 @@ def test_pitfall_mva_sign_collar_and_scope(anchor, fixed_indexed_annuity):
     # Never on the death benefit: it is max(AV, MGV), with no charge and no adjustment,
     # and that holds in every month, not only at the anniversary.
     for t in (anniv(9), anniv(9) - 5):
-        assert anchor.claim_pp(t, "DEATH") == pytest.approx(
+        assert anchor.claim_pp(t, Claim.DEATH) == pytest.approx(
             max(anchor.av_pp(t), anchor.mgsv_pp(t)), abs=EXACT)
-        assert anchor.claim_pp(t, "DEATH") > anchor.claim_pp(t, "LAPSE")
+        assert anchor.claim_pp(t, Claim.DEATH) > anchor.claim_pp(t, Claim.LAPSE)
     # Never below the nonforfeiture minimum: the collar and then the floor.
     for year in range(8, 12):
         t = anniv(year)
@@ -668,7 +669,7 @@ def test_pitfall_the_mva_collar_on_a_partial_withdrawal_is_shipped_both_ways(
     assert anchor.mva_pp_on(A8, base, small) == 0.0                   # "gross", default
     model = mx.read_model(MODEL_PATH, name="FIA_collar")
     try:
-        model.Projection.mva_collar_basis = "surrender_value"
+        model.Projection.mva_collar_basis = MvaCollarBasis.surrender_value
         alt = model.Projection[1]
         assert alt.mva_pp_on(A8, base, small) == pytest.approx(-1158.64, abs=CENT)
         # ... but the worked example's surrender trace is invariant, because G = AV there.
@@ -686,7 +687,7 @@ def test_pitfall_monthly_sum_is_not_implemented(anchor):
     implemented method is reachable; the unimplemented one raises rather than silently
     returning something plausible.
     """
-    for method in ("cap", "par", "par_cap", "spread", "trigger"):
+    for method in (CreditMethod.cap, CreditMethod.par, CreditMethod.par_cap, CreditMethod.spread, CreditMethod.trigger):
         assert anchor.credit_rate_on(0.10, method) >= 0.0
     raises_value_error(lambda: anchor.credit_rate_on(0.10, "monthly_sum"),
                        "invalid credit_method")
@@ -706,19 +707,19 @@ def test_pitfall_index_costs_are_deducted_before_the_cap_and_participation_rate(
         model.Projection.index_cost_rate = 0.005
         p = model.Projection[1]
         # Off R before the cap: a 4% index year credits 3.5%, not 4%.
-        assert anchor.credit_rate_on(0.04, "cap") == pytest.approx(0.0400, abs=RATE)
-        assert p.credit_rate_on(0.04, "cap") == pytest.approx(0.0350, abs=RATE)
+        assert anchor.credit_rate_on(0.04, CreditMethod.cap) == pytest.approx(0.0400, abs=RATE)
+        assert p.credit_rate_on(0.04, CreditMethod.cap) == pytest.approx(0.0350, abs=RATE)
         # ... and before the participation rate: 0.8 x (10% - 0.5%), not 0.8 x 10% - 0.5%.
-        assert p.credit_rate_on(0.10, "par") == pytest.approx(0.8 * 0.095, abs=RATE)
-        assert p.credit_rate_on(0.10, "par") != pytest.approx(0.8 * 0.10 - 0.005,
+        assert p.credit_rate_on(0.10, CreditMethod.par) == pytest.approx(0.8 * 0.095, abs=RATE)
+        assert p.credit_rate_on(0.10, CreditMethod.par) != pytest.approx(0.8 * 0.10 - 0.005,
                                                               abs=RATE)
         # The cap still binds after the haircut, and the floor is still on the credit.
-        assert p.credit_rate_on(0.10, "cap") == pytest.approx(0.0525, abs=RATE)
-        assert p.credit_rate_on(0.004, "cap") == 0.0
+        assert p.credit_rate_on(0.10, CreditMethod.cap) == pytest.approx(0.0525, abs=RATE)
+        assert p.credit_rate_on(0.004, CreditMethod.cap) == 0.0
         # It reaches the projection, not just the engine: the worked example's 9.00% year
         # is capped either way, but a year inside the cap is not.
         assert p.credit_rate(A8) == pytest.approx(0.0525, abs=RATE)
-        assert p.credit_rate_on(anchor.index_return(A8) / 3.0, "cap") == pytest.approx(
+        assert p.credit_rate_on(anchor.index_return(A8) / 3.0, CreditMethod.cap) == pytest.approx(
             0.03 - 0.005, abs=RATE)
     finally:
         model.close()
@@ -744,9 +745,9 @@ def test_the_spread_and_trigger_levels_are_marked_std(anchor, fixed_indexed_annu
     assert anchor.cap_rate() == pytest.approx(0.0525, abs=RATE)
     assert "min(80% x 10%, 6%) = 6%" in doc and "[R1]" in doc
     # Both levels are live: they are what the two branches credit.
-    assert anchor.credit_rate_on(0.10, "spread") == pytest.approx(
+    assert anchor.credit_rate_on(0.10, CreditMethod.spread) == pytest.approx(
         0.80 * 0.10 - 0.0200, abs=RATE)
-    assert anchor.credit_rate_on(0.10, "trigger") == pytest.approx(0.0450, abs=RATE)
+    assert anchor.credit_rate_on(0.10, CreditMethod.trigger) == pytest.approx(0.0450, abs=RATE)
 
 
 # ---------------------------------------------------------------------------
@@ -758,12 +759,12 @@ def test_crediting_engine_reproduces_the_R1_worked_case(fixed_indexed_annuity):
     p = fixed_indexed_annuity.Projection[4]
     assert p.par_rate == 0.80
     assert p.cap_rate_in_force() == pytest.approx(0.06, abs=RATE)
-    assert p.credit_rate_on(0.10, "par_cap") == pytest.approx(0.06, abs=RATE)
-    assert p.credit_rate_on(0.05, "par_cap") == pytest.approx(0.04, abs=RATE)
-    assert p.credit_rate_on(0.10, "par") == pytest.approx(0.08, abs=RATE)
-    assert p.credit_rate_on(-0.10, "par") == 0.0
-    assert p.credit_rate_on(-0.10, "trigger") == 0.0
-    assert p.credit_rate_on(0.00, "trigger") == pytest.approx(p.trigger_rate, abs=RATE)
+    assert p.credit_rate_on(0.10, CreditMethod.par_cap) == pytest.approx(0.06, abs=RATE)
+    assert p.credit_rate_on(0.05, CreditMethod.par_cap) == pytest.approx(0.04, abs=RATE)
+    assert p.credit_rate_on(0.10, CreditMethod.par) == pytest.approx(0.08, abs=RATE)
+    assert p.credit_rate_on(-0.10, CreditMethod.par) == 0.0
+    assert p.credit_rate_on(-0.10, CreditMethod.trigger) == 0.0
+    assert p.credit_rate_on(0.00, CreditMethod.trigger) == pytest.approx(p.trigger_rate, abs=RATE)
 
 
 def test_the_declared_and_guaranteed_scales_are_kept_apart(anchor):
@@ -806,10 +807,10 @@ def test_the_payout_percentage_bands(anchor):
     for age, single in ((50, 0.037), (54, 0.037), (55, 0.042), (60, 0.047),
                         (69, 0.047), (70, 0.052), (79, 0.052), (80, 0.057),
                         (95, 0.057)):
-        assert anchor.payout_rate(age, "single") == pytest.approx(single, abs=RATE)
-        assert anchor.payout_rate(age, "joint") == pytest.approx(single - 0.005,
+        assert anchor.payout_rate(age, GlwbBasis.single) == pytest.approx(single, abs=RATE)
+        assert anchor.payout_rate(age, GlwbBasis.joint) == pytest.approx(single - 0.005,
                                                                 abs=RATE)
-    assert anchor.payout_rate(45, "single") == 0.0
+    assert anchor.payout_rate(45, GlwbBasis.single) == 0.0
     raises_value_error(lambda: anchor.payout_rate(70, "survivor"), "invalid glwb_basis")
 
 
@@ -824,14 +825,14 @@ def test_the_payout_percentage_is_locked_at_first_exercise(anchor):
         assert anchor.payout_rate_locked(t) == pytest.approx(0.052, abs=RATE)
     # The 80+ band is never re-read even though the annuitant passes 80 in year 18.
     assert anchor.exercise_age(anniv(18)) == 80
-    assert anchor.payout_rate(80, "single") == pytest.approx(0.057, abs=RATE)
+    assert anchor.payout_rate(80, GlwbBasis.single) == pytest.approx(0.057, abs=RATE)
     assert anchor.payout_rate_locked(anniv(18)) == pytest.approx(0.052, abs=RATE)
 
 
 def test_the_joint_basis_reads_the_younger_life(fixed_indexed_annuity):
     """joint = single - 0.50%, on the younger covered person [S1][S3]."""
     p = fixed_indexed_annuity.Projection[5]
-    assert p.glwb_basis() == "joint"
+    assert p.glwb_basis() == GlwbBasis.joint
     assert p.joint_age() == 60
     assert p.age_at_entry() == 62
     exercise = [y for y in range(1, 41) if p.is_exercise(anniv(y))]
@@ -848,9 +849,9 @@ def test_income_never_decreases_after_exercise(fixed_indexed_annuity):
     """"After exercise the ratchet still applies ... so income never decreases" [S3]."""
     p = fixed_indexed_annuity.Projection[5]
     years = [y for y in range(1, p.proj_len() // 12 + 1)
-             if p.phase(anniv(y)) == "INCOME"]
+             if p.phase(anniv(y)) == Phase.INCOME]
     for y in years[1:]:
-        assert p.lw_pp_at(anniv(y), "BEF_WD") >= p.lw_pp(anniv(y - 1)) - EXACT
+        assert p.lw_pp_at(anniv(y), Timing.BEF_WD) >= p.lw_pp(anniv(y - 1)) - EXACT
 
 
 def test_benefit_base_growth_stops_at_the_first_lifetime_withdrawal(anchor):
@@ -918,8 +919,8 @@ def test_the_payout_percentage_locks_in_the_80_plus_band(fixed_indexed_annuity):
     t = anniv(23)
     assert q.exercise_age(t) == 85
     assert q.payout_rate_locked(t) == pytest.approx(0.0570, abs=RATE)
-    assert q.lw_pp_at(t, "BEF_WD") == pytest.approx(
-        0.0570 * q.benefit_base_pp_at(t, "BEF_WD"), abs=CENT)
+    assert q.lw_pp_at(t, Timing.BEF_WD) == pytest.approx(
+        0.0570 * q.benefit_base_pp_at(t, Timing.BEF_WD), abs=CENT)
 
 
 def test_the_shock_lapse_is_suppressed_by_the_rider(fixed_indexed_annuity, anchor):
@@ -934,10 +935,10 @@ def test_the_shock_lapse_is_suppressed_by_the_rider(fixed_indexed_annuity, ancho
     idle = fixed_indexed_annuity.Projection[9]
     assert no_rider.glwb_elected() is False
     assert no_rider.shock_lapse_rate(shock_t) == pytest.approx(0.33, abs=RATE)
-    assert idle.phase_open(shock_t) == "ACCUM"          # rider in force, not activated
+    assert idle.phase_open(shock_t) == Phase.ACCUM          # rider in force, not activated
     assert idle.rider_in_force_open(shock_t) is True
     assert idle.shock_lapse_rate(shock_t) == pytest.approx(0.10, abs=RATE)
-    assert anchor.phase_open(shock_t) == "INCOME"       # activated
+    assert anchor.phase_open(shock_t) == Phase.INCOME       # activated
     assert anchor.shock_lapse_rate(shock_t) == pytest.approx(0.05, abs=RATE)
     assert no_rider.lapse_rate_base(shock_t) == pytest.approx(0.33, abs=RATE)
 
@@ -970,14 +971,14 @@ def test_the_deemed_full_surrender_at_termination_is_not_spread(fixed_indexed_an
     """
     p7 = fixed_indexed_annuity.Projection[7]
     t = anniv(19)
-    assert p7.phase(t) == "TERMINATED"
+    assert p7.phase(t) == Phase.TERMINATED
     assert p7.lapse_rate(t) == 1.0
     assert p7.lapse_rate_mth(t) == 1.0
     # ... and nothing of it falls in the eleven months before the anniversary.
     for u in range(opens(19), t):
         assert p7.lapse_rate_mth(u) == 0.0
         assert p7.pols_lapse(u) == 0.0
-    assert p7.pols_lapse(t) == pytest.approx(p7.pols_if_at(t, "BEF_LAPSE"), rel=1e-12)
+    assert p7.pols_lapse(t) == pytest.approx(p7.pols_if_at(t, PolTiming.BEF_LAPSE), rel=1e-12)
 
 
 def test_the_base_surrender_shape(fixed_indexed_annuity):
@@ -1047,8 +1048,8 @@ def test_a_pre_exercise_withdrawal_charges_on_the_gross_amount(fixed_indexed_ann
     t = anniv(3)
     assert p.policy_year(t) == 3            # the withdrawal is in contract year 3
     assert p.wd_pp(t) == pytest.approx(60000.00, abs=CENT)
-    assert p.phase_open(t) == "ACCUM"
-    assert p.lw_pp_at(t, "BEF_WD") == 0.0
+    assert p.phase_open(t) == Phase.ACCUM
+    assert p.lw_pp_at(t, Timing.BEF_WD) == 0.0
     assert p.wd_excess_pp(t) == pytest.approx(60000.00, abs=CENT)   # LW = 0, all excess
     assert p.free_wd_allow(t) == pytest.approx(0.10 * p.av_pp_year_open(t), abs=CENT)
     assert p.wd_charge_base_pp(t) == pytest.approx(
@@ -1059,9 +1060,9 @@ def test_a_pre_exercise_withdrawal_charges_on_the_gross_amount(fixed_indexed_ann
         0.80 * (0.07 / 1.07) * p.wd_charge_base_pp(t), abs=CENT)    # v = 20% in year 3
     assert p.wd_mva_pp(t) < 0.0                                     # the yield has risen
     assert p.wd_reduction_rate(t) == pytest.approx(
-        60000.00 / p.av_pp_at(t, "BEF_WD"), rel=1e-12)
+        60000.00 / p.av_pp_at(t, Timing.BEF_WD), rel=1e-12)
     assert p.benefit_base_pp(t) == pytest.approx(
-        p.benefit_base_pp_at(t, "BEF_WD") * (1 - p.wd_reduction_rate(t)), abs=CENT)
+        p.benefit_base_pp_at(t, Timing.BEF_WD) * (1 - p.wd_reduction_rate(t)), abs=CENT)
     assert p.rollup_base_pp(t) == pytest.approx(
         100000.00 * (1 - p.wd_reduction_rate(t)), abs=CENT)
     assert p.depletion_cause(t) is True                             # charge and MVA bit
@@ -1096,7 +1097,7 @@ def test_the_free_withdrawal_amount_does_not_carry_forward(fixed_indexed_annuity
     """10% of the account value opening each contract year, no carry-forward [S9][S10]."""
     p = fixed_indexed_annuity.Projection[8]
     assert p.free_wd_allow(anniv(1)) == pytest.approx(
-        0.10 * p.av_pp_at(0, "BEF_INV"), abs=CENT)
+        0.10 * p.av_pp_at(0, Timing.BEF_INV), abs=CENT)
     for year in range(2, 11):
         assert p.free_wd_allow(anniv(year)) == pytest.approx(
             0.10 * p.av_pp(anniv(year - 1)), abs=CENT)
@@ -1149,7 +1150,7 @@ def test_the_fixed_account_accrues_monthly_to_exactly_the_annual_rate(
     accrued = sum(p.fixed_interest_pp(t) for t in range(opens(1), a1 + 1))
     assert accrued == pytest.approx(p.fixed_interest_ann_pp(a1), abs=1e-8)
     # ... and the balance itself grows by exactly (1 + i_F) over the year.
-    assert p.av_fixed_pp_at(a1, "BEF_FEE") == pytest.approx(
+    assert p.av_fixed_pp_at(a1, Timing.BEF_FEE) == pytest.approx(
         p.av_fixed_pp_year_open(a1) * (1.0 + i_f), abs=1e-8)
     # The annual figure is zero away from the anniversary; the monthly one never is.
     assert p.fixed_interest_ann_pp(a1 - 1) == 0.0
@@ -1229,7 +1230,7 @@ def test_the_anniversary_state_is_what_an_annual_step_would_have_produced(anchor
     """
     for year in range(9, 20):
         a, prev = anniv(year), anniv(year - 1)
-        assert anchor.benefit_base_pp_at(a, "BEF_ROLLUP") == pytest.approx(
+        assert anchor.benefit_base_pp_at(a, Timing.BEF_ROLLUP) == pytest.approx(
             anchor.benefit_base_pp(prev), abs=EXACT)
         assert anchor.av_pp_year_open(a) == pytest.approx(anchor.av_pp(prev), abs=EXACT)
         for t in range(opens(year), a):
@@ -1275,9 +1276,9 @@ def test_the_two_accounts_sum_to_the_account_value(fixed_indexed_annuity):
     """AV = F + A at every timing, which is what makes av_indexed_pp a derived quantity."""
     p = fixed_indexed_annuity.Projection[4]        # 80/20 indexed/fixed
     assert p.alloc_fixed() == pytest.approx(0.20, abs=1e-12)
-    assert p.av_fixed_pp_at(0, "BEF_INV") == pytest.approx(0.20 * 107000.0, abs=CENT)
+    assert p.av_fixed_pp_at(0, Timing.BEF_INV) == pytest.approx(0.20 * 107000.0, abs=CENT)
     for t in range(0, p.proj_len()):
-        for timing in ("BEF_PREM", "BEF_INV", "BEF_FEE", "BEF_WD", "EOY"):
+        for timing in (Timing.BEF_PREM, Timing.BEF_INV, Timing.BEF_FEE, Timing.BEF_WD, Timing.EOY):
             assert (p.av_fixed_pp_at(t, timing) + p.av_indexed_pp_at(t, timing)
                     == pytest.approx(p.av_pp_at(t, timing), abs=1e-6)), (t, timing)
 
@@ -1324,7 +1325,7 @@ def test_internal_transfers_are_not_cash_flows(anchor):
     assert "index_credit" not in df.columns
     assert anchor.rider_charge_pp(A8) > 0.0   # it exists, it just is not a ledger line
     assert anchor.net_cf(A8) == pytest.approx(
-        anchor.premiums(A8) - anchor.withdrawals(A8) - anchor.claims(A8)
+        anchor.premiums(A8) - anchor.withdrawals(A8) - anchor.claims(A8, Claim.ALL)
         - anchor.commissions(A8) - anchor.expenses(A8) - anchor.premium_taxes(A8),
         abs=EXACT)
 
@@ -1422,9 +1423,9 @@ def test_the_pols_if_column_is_the_weight_on_its_own_row(fixed_indexed_annuity):
             assert df.loc[t, "expenses"] == pytest.approx(
                 0.06 * p.premiums(t) + 80.0 / 12.0 * 1.025 ** (t / 12) * w,
                 abs=1e-9), (point_id, t)
-            if p.phase_open(t) == "DEPLETED" and p.is_anniv(t):
+            if p.phase_open(t) == Phase.DEPLETED and p.is_anniv(t):
                 assert df.loc[t, "income_payments"] == pytest.approx(
-                    p.lw_pp_at(t, "BEF_WD") * w, abs=1e-9), (point_id, t)
+                    p.lw_pp_at(t, Timing.BEF_WD) * w, abs=1e-9), (point_id, t)
 
 
 def test_the_withdrawals_column_is_published_beside_its_three_part_split(anchor):
@@ -1489,10 +1490,10 @@ def test_invalid_timing_and_kind_arguments_raise(anchor):
 def test_the_timings_the_chassis_shares_still_coincide(anchor):
     """BEF_MORT equals BEF_DECR here: this product has no annuitization decrement."""
     t = anniv(9)
-    assert anchor.pols_if_at(t, "BEF_MORT") == anchor.pols_if_at(t, "BEF_DECR")
-    assert anchor.pols_if_at(t, "BEF_DECR") == anchor.pols_if(t)
+    assert anchor.pols_if_at(t, PolTiming.BEF_MORT) == anchor.pols_if_at(t, PolTiming.BEF_DECR)
+    assert anchor.pols_if_at(t, PolTiming.BEF_DECR) == anchor.pols_if(t)
     # ... and AFT_DECR is the closing count, which opens the next month.
-    assert anchor.pols_if_at(t, "AFT_DECR") == anchor.pols_if(t + 1)
+    assert anchor.pols_if_at(t, PolTiming.AFT_DECR) == anchor.pols_if(t + 1)
 
 
 def test_maturity_is_confined_to_the_horizon(anchor):
@@ -1500,7 +1501,7 @@ def test_maturity_is_confined_to_the_horizon(anchor):
         assert anchor.pols_maturity(t) == 0.0
     # pols_if opens the month, so nothing is left to open the one past the last.
     assert anchor.pols_if(anchor.proj_len()) == 0.0
-    assert anchor.pols_if_at(anchor.proj_len() - 1, "AFT_DECR") == 0.0
+    assert anchor.pols_if_at(anchor.proj_len() - 1, PolTiming.AFT_DECR) == 0.0
 
 
 def test_inforce_is_a_decreasing_probability(fixed_indexed_annuity):
@@ -1567,7 +1568,7 @@ def test_mortality_reads_the_age_entering_the_contract_year(anchor):
     assert anchor.age(A8) == 69                   # entering contract year 8
     assert anchor.exercise_age(A8) == 70          # ... and 70 at its anniversary
     assert anchor.mort_rate(A8) == pytest.approx(
-        float(table.loc[(69, "M"), "mort_rate"]), rel=1e-12)
+        float(table.loc[(69, Sex.M), "mort_rate"]), rel=1e-12)
     # The age is a property of the contract year, so it does not move inside one.
     assert all(anchor.age(t) == 69 for t in range(opens(8), A8 + 1))
     assert anchor.age(anchor.proj_len() - 1) == 120
@@ -1613,3 +1614,25 @@ def test_model_docstring_names_the_gaps(fixed_indexed_annuity):
         assert gap in doc
     for name in ("Data", "Projection"):
         assert name in doc
+
+
+def test_the_payout_rate_bands_must_be_in_age_order(fixed_indexed_annuity):
+    """W3.3 (D68): payout_rate scans the bands in key order, so the reader refuses a file
+    whose age_lo is not strictly increasing rather than answering differently."""
+    import pandas as pd
+    from modelx.core.errors import FormulaError
+    model = mx.read_model(MODEL_PATH, name="FIA_US_S_d68")
+    try:
+        src = model.Data.input_dir() / "payout_rate_table.csv"
+        broken = pd.read_csv(src).iloc[::-1]
+        alt = "payout_rate_table_d68_broken.csv"
+        broken.to_csv(model.Data.input_dir() / alt, index=False)
+        try:
+            model.Data.payout_rate_file = alt
+            model.Data.clear_all()
+            with pytest.raises(FormulaError, match="payout_rate_table"):
+                model.Data.payout_rate_table()
+        finally:
+            (model.Data.input_dir() / alt).unlink(missing_ok=True)
+    finally:
+        model.close()

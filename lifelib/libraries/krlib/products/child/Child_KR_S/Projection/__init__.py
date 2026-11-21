@@ -169,10 +169,7 @@ def sex():
     longer reliable: on the current published tables four carriers price the female above
     the male and seven below, the spread running 62% to 114% of the male rate [S11].
     """
-    v = str(model_point()["sex"])
-    if v not in ("M", "F"):
-        raise ValueError("invalid sex")
-    return v
+    return Sex[model_point()["sex"]]
 
 
 def issue_age():
@@ -346,10 +343,7 @@ def cv_form():
         the two years after 납입완료 rising in 5-point steps every two years to 50%
         eighteen years after it [S1].
     """
-    v = str(model_point()["cv_form"])
-    if v not in ("std", "susp", "graded"):
-        raise ValueError("invalid cv_form")
-    return v
+    return CvForm[model_point()["cv_form"]]
 
 
 def cv_floor_ratio():
@@ -414,10 +408,7 @@ def payer_sex():
     mid-projection; no retrieved wording states how the waiver responds, so the composite
     holds the 계약자 fixed and marks the point [unverified].
     """
-    v = str(model_point()["payer_sex"])
-    if v not in ("M", "F"):
-        raise ValueError("invalid payer_sex")
-    return v
+    return Sex[model_point()["payer_sex"]]
 
 
 def sum_assured(cover):
@@ -434,7 +425,30 @@ def sum_assured(cover):
     ``fracture`` ₩400,000, ``burn`` ₩200,000, ``liability`` ₩100,000,000 per occurrence and
     ``neonatal`` ₩10,000,000 as the 태아 module's own 가입금액.
     """
-    return float(model_point()["sa_" + cover])
+    if cover == Cover.disability:
+        return float(model_point()["sa_disability"])
+    elif cover == Cover.disease_disab:
+        return float(model_point()["sa_disease_disab"])
+    elif cover == Cover.cancer:
+        return float(model_point()["sa_cancer"])
+    elif cover == Cover.minor_cancer:
+        return float(model_point()["sa_minor_cancer"])
+    elif cover == Cover.cerebral:
+        return float(model_point()["sa_cerebral"])
+    elif cover == Cover.cardiac:
+        return float(model_point()["sa_cardiac"])
+    elif cover == Cover.surgery:
+        return float(model_point()["sa_surgery"])
+    elif cover == Cover.fracture:
+        return float(model_point()["sa_fracture"])
+    elif cover == Cover.burn:
+        return float(model_point()["sa_burn"])
+    elif cover == Cover.liability:
+        return float(model_point()["sa_liability"])
+    elif cover == Cover.neonatal:
+        return float(model_point()["sa_neonatal"])
+    else:
+        raise ValueError("invalid cover")
 
 
 def hosp_daily():
@@ -530,10 +544,7 @@ def lapse_basis():
     level comparison vector.  Shipping the first two side by side is exactly the comparison
     the guideline requires an insurer departing from the 원칙모형 to disclose.
     """
-    v = str(model_point()["lapse_basis"])
-    if v not in set(data.lapse_table().index):                       # noqa: F821
-        raise ValueError("invalid lapse_basis")
-    return v
+    return LapseBasis[model_point()["lapse_basis"]]
 
 
 def mort_be_factor():
@@ -658,7 +669,7 @@ def mort_series(s):
 
     Held as a cells so the frame is sliced once per sex rather than once per lookup.
     """
-    return data.mort_table().loc[s]["mort_rate"]                     # noqa: F821
+    return data.mort_table().loc[s]                                 # noqa: F821
 
 
 def mort_rate_at_age(x, s):
@@ -670,7 +681,7 @@ def mort_rate_at_age(x, s):
     infant peak, the trough at about age 10 and the adolescent turn — none of which a table
     graduated from age 20 upwards would carry.
     """
-    return float(mort_series(s).loc[min(max(x, 0), 120)])
+    return float(mort_series(s).loc[min(max(x, 0), 120), "mort_rate"])
 
 
 def mort_rate(t):
@@ -707,7 +718,14 @@ def mort_rate_payer(t):
 
 def lapse_param(name):
     """One parameter of the selected lapse basis, from *lapse_table.csv*."""
-    return float(data.lapse_table().loc[lapse_basis(), name])        # noqa: F821
+    if name == LapseColumn.first_year_rate:
+        return float(data.lapse_table().loc[lapse_basis(), "first_year_rate"])  # noqa: F821
+    elif name == LapseColumn.completion_rate:
+        return float(data.lapse_table().loc[lapse_basis(), "completion_rate"])  # noqa: F821
+    elif name == LapseColumn.ultimate_rate:
+        return float(data.lapse_table().loc[lapse_basis(), "ultimate_rate"])  # noqa: F821
+    else:
+        raise ValueError("invalid lapse column")
 
 
 def lapse_rate(t):
@@ -734,18 +752,18 @@ def lapse_rate(t):
     that lapsed.  The simplification is conservative on a protection product and is
     recorded as one **[std]**.
     """
-    first = lapse_param("first_year_rate")
-    completion = lapse_param("completion_rate")
-    ultimate = lapse_param("ultimate_rate")
+    first = lapse_param(LapseColumn.first_year_rate)
+    completion = lapse_param(LapseColumn.completion_rate)
+    ultimate = lapse_param(LapseColumn.ultimate_rate)
     if t >= prem_period_mths():
         return ultimate
-    if lapse_basis() == "disclosed":
+    if lapse_basis() == LapseBasis.disclosed:
         if t < 120:
             return first
         if t < 180:
             return 0.03
         return completion
-    if lapse_basis() == "flat":
+    if lapse_basis() == LapseBasis.flat:
         return first
     frac = t / prem_period_mths()
     import math
@@ -772,7 +790,7 @@ def void_rate_mth(t):
     """
     if not foetal() or t >= birth_month():
         return 0.0
-    return 1.0 - (1.0 - basis_param("void_rate_ann")) ** (1.0 / 12.0)
+    return 1.0 - (1.0 - basis_param(BasisParam.void_rate_ann)) ** (1.0 / 12.0)
 
 
 # --- morbidity incidence ---
@@ -783,8 +801,21 @@ def inc_pivots(cause):
     Held as a cells so *incidence_table.csv* is sliced once per cause rather than once per
     age.
     """
-    s = data.incidence_table().loc[(cause, sex())]["rate"]           # noqa: F821
-    return [(int(a), float(r)) for a, r in s.items()]
+    s = data.incidence_table().loc[(cause, sex())]                   # noqa: F821
+    return [(int(a), float(s.loc[a, "rate"])) for a in s.index]
+
+
+def inc_pivot_ages(cause):
+    """The pivot ages of ``cause`` for this model point's sex, as integers in age order (the keys
+    of :func:`inc_pivots`)."""
+    s = data.incidence_table().loc[(cause, sex())]                   # noqa: F821
+    return [int(s.index[i]) for i in range(len(s.index))]
+
+
+def inc_pivot_rates(cause):
+    """The pivot rates of ``cause`` for this model point's sex, at :func:`inc_pivot_ages`."""
+    s = data.incidence_table().loc[(cause, sex())]                   # noqa: F821
+    return [float(s.loc[s.index[i], "rate"]) for i in range(len(s.index))]
 
 
 def inc_rate_at(x, cause):
@@ -803,18 +834,21 @@ def inc_rate_at(x, cause):
     the one 적용위험률 published anywhere in this file [S1].  The provenance column of each
     row names the authority its shape rests on.
     """
-    pv = inc_pivots(cause)
-    if x <= pv[0][0]:
-        return pv[0][1]
-    if x >= pv[-1][0]:
-        return pv[-1][1]
-    for a, r in pv:
-        if a == x:
-            return r
+    xs = inc_pivot_ages(cause)
+    ys = inc_pivot_rates(cause)
+    if x <= xs[0]:
+        return ys[0]
+    if x >= xs[-1]:
+        return ys[-1]
+    for i in range(len(xs)):
+        if xs[i] == x:
+            return ys[i]
     import math
-    for i in range(len(pv) - 1):
-        x0, y0 = pv[i]
-        x1, y1 = pv[i + 1]
+    for i in range(len(xs) - 1):
+        x0 = xs[i]
+        y0 = ys[i]
+        x1 = xs[i + 1]
+        y1 = ys[i + 1]
         if x0 <= x <= x1:
             w = (x - x0) / (x1 - x0)
             return math.exp(math.log(y0) + w * (math.log(y1) - math.log(y0)))
@@ -833,8 +867,8 @@ def inc_rate(t, cause):
     if not born(t):
         return 0.0
     rate = inc_rate_at(min(age_man(t), 100), cause)
-    if broad_def() and cause in ("cerebral", "cardiac"):
-        rate = rate * basis_param("broad_def_factor")
+    if broad_def() and cause in (Cover.cerebral, Cover.cardiac):
+        rate = rate * basis_param(BasisParam.broad_def_factor)
     return rate
 
 
@@ -889,10 +923,10 @@ def waiver_rate_child(t):
         return 0.0
     if foetal() and t < foetal_cover_end():
         return 0.0
-    share = basis_param("waiver_disab_share")
-    return (inc_rate(t, "cancer") + inc_rate(t, "cerebral")
-            + inc_rate(t, "cardiac")
-            + share * (inc_rate(t, "disability") + inc_rate(t, "disease_disab")))
+    share = basis_param(BasisParam.waiver_disab_share)
+    return (inc_rate(t, Cover.cancer) + inc_rate(t, Cover.cerebral)
+            + inc_rate(t, Cover.cardiac)
+            + share * (inc_rate(t, Cover.disability) + inc_rate(t, Cover.disease_disab)))
 
 
 def waiver_rate_payer(t):
@@ -907,7 +941,7 @@ def waiver_rate_payer(t):
     """
     if not waiver_payer() or t > prem_end():
         return 0.0
-    return mort_rate_payer(t) * (1.0 + basis_param("payer_disab_ratio"))
+    return mort_rate_payer(t) * (1.0 + basis_param(BasisParam.payer_disab_ratio))
 
 
 def waiver_rate(t):
@@ -1017,11 +1051,11 @@ def pols_if_at(t, timing):
     ``"AFT_DECR"``
         l(t+1), the end-of-month state.
     """
-    if timing == "BEF_DECR":
+    if timing == PolTiming.BEF_DECR:
         return pols_if(t)
-    if timing == "BEF_LAPSE":
+    if timing == PolTiming.BEF_LAPSE:
         return (pols_if(t) - pols_void(t)) * (1.0 - mort_rate_mth(t))
-    if timing == "AFT_DECR":
+    if timing == PolTiming.AFT_DECR:
         return pols_if(t + 1)
     raise ValueError("invalid timing")
 
@@ -1096,7 +1130,7 @@ def cover_open(t, cover):
     """
     if not born(t) or t >= proj_len() - 1:
         return 0.0
-    if cover in ("cancer", "minor_cancer") and t < waiting_mths():
+    if cover in (Cover.cancer, Cover.minor_cancer) and t < waiting_mths():
         return 0.0
     return 1.0
 
@@ -1139,10 +1173,10 @@ def neonatal_cost_pp(timing):
     total = 0.0
     for item in tab.index:
         row = tab.loc[item]
-        if str(row["timing"]) != timing:
+        if row["timing"] != timing:
             continue
         amount = (float(row["amount"])
-                  + float(row["amount_ratio"]) * sum_assured("neonatal"))
+                  + float(row["amount_ratio"]) * sum_assured(Cover.neonatal))
         total += float(row["freq"]) * float(row["units"]) * amount
     return total
 
@@ -1198,46 +1232,54 @@ def benefit_pp(t, kind):
     ``"NEONATAL"``
         the 태아 module, on its two terms.
     """
-    if kind == "NEONATAL":
+    if kind == Kind.NEONATAL:
         if not foetal():
             return 0.0
         if t == birth_month():
-            return neonatal_cost_pp("birth") + neonatal_cost_pp("block") / 12.0
+            return neonatal_cost_pp(NeoTiming.birth) + neonatal_cost_pp(NeoTiming.block) / 12.0
         if birth_month() < t < foetal_cover_end():
-            return neonatal_cost_pp("block") / 12.0
+            return neonatal_cost_pp(NeoTiming.block) / 12.0
         return 0.0
     if not born(t) or t >= proj_len() - 1:
         return 0.0
-    if kind == "DISABILITY":
-        return (sum_assured("disability") * basis_param("disab_severity")
-                * inc_rate_mth(t, "disability")
-                + sum_assured("disease_disab")
-                * basis_param("disease_disab_severity")
-                * inc_rate_mth(t, "disease_disab"))
-    if kind == "DIAGNOSIS":
+    if kind == Kind.DISABILITY:
+        return (sum_assured(Cover.disability) * basis_param(BasisParam.disab_severity)
+                * inc_rate_mth(t, Cover.disability)
+                + sum_assured(Cover.disease_disab)
+                * basis_param(BasisParam.disease_disab_severity)
+                * inc_rate_mth(t, Cover.disease_disab))
+    if kind == Kind.DIAGNOSIS:
         total = 0.0
-        for cause in ("cancer", "minor_cancer", "cerebral", "cardiac"):
+        for cause in (Cover.cancer, Cover.minor_cancer, Cover.cerebral, Cover.cardiac):
             total += (sum_assured(cause) * inc_rate_mth(t, cause)
                       * frac_open(t, cause) * cover_open(t, cause))
         return total * reduction_factor(t)
-    if kind == "SURGERY":
+    if kind == Kind.SURGERY:
         total = 0.0
-        for cause in ("cancer", "cerebral", "cardiac"):
-            total += (basis_param("surgery_rate_" + cause)
+        for cause in (Cover.cancer, Cover.cerebral, Cover.cardiac):
+            if cause == Cover.cancer:
+                rate = basis_param(BasisParam.surgery_rate_cancer)
+            elif cause == Cover.cerebral:
+                rate = basis_param(BasisParam.surgery_rate_cerebral)
+            elif cause == Cover.cardiac:
+                rate = basis_param(BasisParam.surgery_rate_cardiac)
+            else:
+                raise ValueError("invalid cause")
+            total += (rate
                       * inc_rate_mth(t, cause) * frac_open(t, cause)
                       * cover_open(t, cause))
-        return sum_assured("surgery") * total
-    if kind == "HOSPITAL":
-        days = (inc_rate(t, "hosp_acc") + inc_rate(t, "hosp_dis")) / 12.0
-        return hosp_daily() * days * basis_param("hosp_cap_factor")
-    if kind == "EVENT":
-        return (sum_assured("fracture") * inc_rate_mth(t, "fracture")
-                + sum_assured("burn") * inc_rate_mth(t, "burn"))
-    if kind == "LIABILITY":
-        scale = sum_assured("liability") / 100000000.0
-        gate = (1.0 - basis_param("leak_share")
+        return sum_assured(Cover.surgery) * total
+    if kind == Kind.HOSPITAL:
+        days = (inc_rate(t, Cover.hosp_acc) + inc_rate(t, Cover.hosp_dis)) / 12.0
+        return hosp_daily() * days * basis_param(BasisParam.hosp_cap_factor)
+    if kind == Kind.EVENT:
+        return (sum_assured(Cover.fracture) * inc_rate_mth(t, Cover.fracture)
+                + sum_assured(Cover.burn) * inc_rate_mth(t, Cover.burn))
+    if kind == Kind.LIABILITY:
+        scale = sum_assured(Cover.liability) / 100000000.0
+        gate = (1.0 - basis_param(BasisParam.leak_share)
                 if t % liability_cycle_mths < 3 else 1.0)            # noqa: F821
-        return (inc_rate_mth(t, "liability") * basis_param("liability_severity")
+        return (inc_rate_mth(t, Cover.liability) * basis_param(BasisParam.liability_severity)
                 * scale * gate)
     raise ValueError("invalid kind")
 
@@ -1251,8 +1293,8 @@ def benefit_cost_pp(t):
     notional 보험가입금액 of 감독규정 [별표 15] 제9호 [REG-R21].
     """
     return sum(benefit_pp(t, k) for k in
-               ("DISABILITY", "DIAGNOSIS", "SURGERY", "HOSPITAL", "EVENT",
-                "LIABILITY", "NEONATAL"))
+               (Kind.DISABILITY, Kind.DIAGNOSIS, Kind.SURGERY, Kind.HOSPITAL, Kind.EVENT,
+                Kind.LIABILITY, Kind.NEONATAL))
 
 
 def claim_count_pp(t):
@@ -1264,11 +1306,11 @@ def claim_count_pp(t):
     """
     if not born(t) or t >= proj_len() - 1:
         return 0.0
-    n = inc_rate_mth(t, "disability") + inc_rate_mth(t, "disease_disab")
-    for cause in ("cancer", "minor_cancer", "cerebral", "cardiac"):
+    n = inc_rate_mth(t, Cover.disability) + inc_rate_mth(t, Cover.disease_disab)
+    for cause in (Cover.cancer, Cover.minor_cancer, Cover.cerebral, Cover.cardiac):
         n += inc_rate_mth(t, cause) * frac_open(t, cause) * cover_open(t, cause)
-    n += (inc_rate_mth(t, "fracture") + inc_rate_mth(t, "burn")
-          + inc_rate_mth(t, "liability"))
+    n += (inc_rate_mth(t, Cover.fracture) + inc_rate_mth(t, Cover.burn)
+          + inc_rate_mth(t, Cover.liability))
     return n
 
 
@@ -1292,6 +1334,18 @@ def cum_prem_pp(t):
     return premium_mth() * min(t, prem_period_mths())
 
 
+def av_build_keys():
+    """The ``build`` pivots of av_table: the durations in years, as floats, in key order."""
+    tab = av_build_curve()
+    return [float(tab.index[i]) for i in range(len(tab.index))]
+
+
+def av_build_values():
+    """The ``build`` pivots of av_table: the values at :func:`av_build_keys`, as floats."""
+    tab = av_build_curve()
+    return [float(tab.loc[tab.index[i], "value"]) for i in range(len(tab.index))]
+
+
 def refund_build(d):
     """The published 표준형 환급률 at duration ``d`` years, linearly interpolated.
 
@@ -1306,18 +1360,32 @@ def refund_build(d):
     공시이율 while the 보장부분 reserve is still building.  And only a hundred-year term
     can do it.
     """
-    tab = data.av_table().loc["build"]["value"]                      # noqa: F821
-    pv = [(float(k), float(v)) for k, v in tab.items()]
-    if d <= pv[0][0]:
-        return pv[0][1]
-    if d >= pv[-1][0]:
-        return pv[-1][1]
-    for i in range(len(pv) - 1):
-        x0, y0 = pv[i]
-        x1, y1 = pv[i + 1]
+    xs = av_build_keys()
+    ys = av_build_values()
+    if d <= xs[0]:
+        return ys[0]
+    if d >= xs[-1]:
+        return ys[-1]
+    for i in range(len(xs) - 1):
+        x0 = xs[i]
+        y0 = ys[i]
+        x1 = xs[i + 1]
+        y1 = ys[i + 1]
         if x0 <= d <= x1:
             return y0 + (d - x0) / (x1 - x0) * (y1 - y0)
     raise ValueError("duration out of range")
+
+
+def av_taper_keys():
+    """The ``taper`` pivots of av_table: the runoff fractions, as floats, in key order."""
+    tab = av_taper_curve()
+    return [float(tab.index[i]) for i in range(len(tab.index))]
+
+
+def av_taper_values():
+    """The ``taper`` pivots of av_table: the values at :func:`av_taper_keys`, as floats."""
+    tab = av_taper_curve()
+    return [float(tab.loc[tab.index[i], "value"]) for i in range(len(tab.index))]
 
 
 def refund_taper(r):
@@ -1330,15 +1398,17 @@ def refund_taper(r):
     16.0% on a 100세만기 contract; indexing on the fraction of the term rather than on a
     duration is what lets one shipped grid also serve the 30세만기 and 110세만기 points.
     """
-    tab = data.av_table().loc["taper"]["value"]                      # noqa: F821
-    pv = [(float(k), float(v)) for k, v in tab.items()]
-    if r <= pv[0][0]:
-        return pv[0][1]
-    if r >= pv[-1][0]:
-        return pv[-1][1]
-    for i in range(len(pv) - 1):
-        x0, y0 = pv[i]
-        x1, y1 = pv[i + 1]
+    xs = av_taper_keys()
+    ys = av_taper_values()
+    if r <= xs[0]:
+        return ys[0]
+    if r >= xs[-1]:
+        return ys[-1]
+    for i in range(len(xs) - 1):
+        x0 = xs[i]
+        y0 = ys[i]
+        x1 = xs[i + 1]
+        y1 = ys[i + 1]
         if x0 <= r <= x1:
             return y0 + (r - x0) / (x1 - x0) * (y1 - y0)
     raise ValueError("runoff out of range")
@@ -1404,9 +1474,9 @@ def cv_pp(t):
     anything is paid on it, and on the 미지급형 there is also no 보험계약대출 and no
     automatic premium loan to break the fall [REG-R28].
     """
-    if cv_form() == "std":
+    if cv_form() == CvForm.std:
         return max(0.0, cv_std_pp(t))
-    if cv_form() == "susp":
+    if cv_form() == CvForm.susp:
         if t < prem_period_mths():
             return 0.0
         return max(0.0, cv_floor_ratio() * cv_std_pp(t))
@@ -1447,7 +1517,7 @@ def prem_net_ann_pp():
     산출방법서 that holds it is an undisclosed 기초서류 [REG-R2] — so the 순보험료 share is
     a standardization.
     """
-    return 12.0 * premium_mth() * basis_param("net_prem_ratio")
+    return 12.0 * premium_mth() * basis_param(BasisParam.net_prem_ratio)
 
 
 def surr_chg_coef():
@@ -1538,7 +1608,7 @@ def av_pp(t):
     as it must, rather than at the surrender charge.
     """
     gross = cv_std_pp(t) + surr_chg_pp(t)
-    cap = max(cv_std_pp(t), basis_param("net_prem_ratio") * cum_prem_pp(t))
+    cap = max(cv_std_pp(t), basis_param(BasisParam.net_prem_ratio) * cum_prem_pp(t))
     return min(gross, cap)
 
 
@@ -1638,7 +1708,7 @@ def premiums(t):
     return premium_mth_pp(t) * prem_discount_factor(t) * pols_pay(t)
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Benefit outgo in policy month t, by kind; the total when kind is omitted.
 
     The seven morbidity kinds of :func:`benefit_pp`, weighted by :func:`pols_if`, and four
@@ -1673,18 +1743,18 @@ def claims(t, kind=None):
         so the cash flow is a refund of premiums already collected and belongs in a validity
         adjustment rather than in the lapse column.
     """
-    if kind is None:
+    if kind == Kind.ALL:
         return sum(claims(t, k) for k in
-                   ("DISABILITY", "DIAGNOSIS", "SURGERY", "HOSPITAL", "EVENT",
-                    "LIABILITY", "NEONATAL", "DEATH", "LAPSE", "MATURITY",
-                    "VOID"))
-    if kind == "DEATH":
+                   (Kind.DISABILITY, Kind.DIAGNOSIS, Kind.SURGERY, Kind.HOSPITAL, Kind.EVENT,
+                    Kind.LIABILITY, Kind.NEONATAL, Kind.DEATH, Kind.LAPSE, Kind.MATURITY,
+                    Kind.VOID))
+    if kind == Kind.DEATH:
         return (av_pp(t) + unearned_prem_pp(t)) * pols_death(t)
-    if kind == "LAPSE":
+    if kind == Kind.LAPSE:
         return (cv_pp(t) + unearned_prem_pp(t)) * pols_lapse(t)
-    if kind == "MATURITY":
+    if kind == Kind.MATURITY:
         return av_pp(t) * pols_maturity(t)
-    if kind == "VOID":
+    if kind == Kind.VOID:
         return (cum_prem_pp(t) + prem_foetal_paid_pp(t)) * pols_void(t)
     return benefit_pp(t, kind) * pols_if(t)
 
@@ -1782,7 +1852,7 @@ def net_cf(t):
     premium term looks like before discounting.  :func:`equiv_premium_mth_pp` is where the
     two sides are made to balance.
     """
-    return (premiums(t) - claims(t) - claim_expenses(t) - expenses(t)
+    return (premiums(t) - claims(t, Kind.ALL) - claim_expenses(t) - expenses(t)
             - commissions(t))
 
 
@@ -1811,7 +1881,7 @@ def epv_outgo_pp():
 
     Benefits, claim handling expense, acquisition and maintenance expense and commission.
     """
-    return sum(pv_factor(t) * (claims(t) + claim_expenses(t) + expenses(t)
+    return sum(pv_factor(t) * (claims(t, Kind.ALL) + claim_expenses(t) + expenses(t)
                                + commissions(t))
                for t in range(0, proj_len()))
 
@@ -1922,8 +1992,8 @@ def check_cover_at_birth_resid(t):
     if born(t):
         return 0.0
     return sum(claims(t, k) for k in
-               ("DISABILITY", "DIAGNOSIS", "SURGERY", "HOSPITAL", "EVENT",
-                "LIABILITY", "DEATH"))
+               (Kind.DISABILITY, Kind.DIAGNOSIS, Kind.SURGERY, Kind.HOSPITAL, Kind.EVENT,
+                Kind.LIABILITY, Kind.DEATH))
 
 
 def check_cover_at_birth():
@@ -1945,7 +2015,7 @@ def check_once_only_resid(t):
     across the four causes at that t.
     """
     worst = 0.0
-    for cause in ("cancer", "minor_cancer", "cerebral", "cardiac"):
+    for cause in (Cover.cancer, Cover.minor_cancer, Cover.cerebral, Cover.cardiac):
         f = frac_open(t, cause)
         worst = max(worst, -min(f, 0.0), max(f - 1.0, 0.0))
         if t > 0:
@@ -1968,7 +2038,7 @@ def check_neonatal_term_resid(t):
     """
     if foetal() and birth_month() <= t < foetal_cover_end():
         return 0.0
-    return claims(t, "NEONATAL")
+    return claims(t, Kind.NEONATAL)
 
 
 def check_neonatal_term():
@@ -1989,11 +2059,11 @@ def check_cv_floor_resid(t):
     """
     if cv_pp(t) < 0.0:
         return -cv_pp(t)
-    if cv_form() == "std":
+    if cv_form() == CvForm.std:
         return 0.0
     if t < prem_period_mths():
         return cv_pp(t)
-    floor = (cv_floor_ratio() if cv_form() == "susp"
+    floor = (cv_floor_ratio() if cv_form() == CvForm.susp
              else cv_grade_ratio(t)) * cv_std_pp(t)
     return max(0.0, floor - cv_pp(t))
 
@@ -2111,17 +2181,17 @@ def check_net_cf_resid(t):
     than silently vanishing from it.
     """
     return (net_cf(t) - premiums(t)
-            + claims(t, "DISABILITY") + claims(t, "DIAGNOSIS")
-            + claims(t, "SURGERY") + claims(t, "HOSPITAL")
-            + claims(t, "EVENT") + claims(t, "LIABILITY")
-            + claims(t, "NEONATAL") + claims(t, "DEATH")
-            + claims(t, "LAPSE") + claims(t, "MATURITY") + claims(t, "VOID")
+            + claims(t, Kind.DISABILITY) + claims(t, Kind.DIAGNOSIS)
+            + claims(t, Kind.SURGERY) + claims(t, Kind.HOSPITAL)
+            + claims(t, Kind.EVENT) + claims(t, Kind.LIABILITY)
+            + claims(t, Kind.NEONATAL) + claims(t, Kind.DEATH)
+            + claims(t, Kind.LAPSE) + claims(t, Kind.MATURITY) + claims(t, Kind.VOID)
             + claim_expenses(t) + expenses(t) + commissions(t))
 
 
 def check_net_cf():
     """True when the net cash flow equals the sum of its published columns, every month."""
-    tol = val_tol * max(sum_assured("disability"), 1.0)              # noqa: F821
+    tol = val_tol * max(sum_assured(Cover.disability), 1.0)              # noqa: F821
     return all(abs(check_net_cf_resid(t)) <= tol
                for t in range(0, proj_len()))
 
@@ -2146,17 +2216,17 @@ def result_cf():
         {
             "pols_if": [pols_if(t) for t in ts],
             "premiums": [premiums(t) for t in ts],
-            "claims_disability": [claims(t, "DISABILITY") for t in ts],
-            "claims_diagnosis": [claims(t, "DIAGNOSIS") for t in ts],
-            "claims_surgery": [claims(t, "SURGERY") for t in ts],
-            "claims_hospital": [claims(t, "HOSPITAL") for t in ts],
-            "claims_event": [claims(t, "EVENT") for t in ts],
-            "claims_liability": [claims(t, "LIABILITY") for t in ts],
-            "claims_neonatal": [claims(t, "NEONATAL") for t in ts],
-            "claims_death": [claims(t, "DEATH") for t in ts],
-            "claims_lapse": [claims(t, "LAPSE") for t in ts],
-            "claims_maturity": [claims(t, "MATURITY") for t in ts],
-            "claims_void": [claims(t, "VOID") for t in ts],
+            "claims_disability": [claims(t, Kind.DISABILITY) for t in ts],
+            "claims_diagnosis": [claims(t, Kind.DIAGNOSIS) for t in ts],
+            "claims_surgery": [claims(t, Kind.SURGERY) for t in ts],
+            "claims_hospital": [claims(t, Kind.HOSPITAL) for t in ts],
+            "claims_event": [claims(t, Kind.EVENT) for t in ts],
+            "claims_liability": [claims(t, Kind.LIABILITY) for t in ts],
+            "claims_neonatal": [claims(t, Kind.NEONATAL) for t in ts],
+            "claims_death": [claims(t, Kind.DEATH) for t in ts],
+            "claims_lapse": [claims(t, Kind.LAPSE) for t in ts],
+            "claims_maturity": [claims(t, Kind.MATURITY) for t in ts],
+            "claims_void": [claims(t, Kind.VOID) for t in ts],
             "claim_expenses": [claim_expenses(t) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "commissions": [commissions(t) for t in ts],
@@ -2217,6 +2287,16 @@ def result_val():
     )
 
 
+def av_build_curve():
+    """The ``build`` curve of av_table: the published 환급률 by duration in years."""
+    return data.av_table().loc[AvCurve.build]                        # noqa: F821
+
+
+def av_taper_curve():
+    """The ``taper`` curve of av_table: the terminal collapse factor by runoff fraction."""
+    return data.av_table().loc[AvCurve.taper]                        # noqa: F821
+
+
 # ---------------------------------------------------------------------------
 # References
 
@@ -2233,8 +2313,6 @@ min_guar_rate = 0.003
 avg_decl_rate = 0.025
 
 ref_age = 40
-
-ref_sex = "M"
 
 surr_chg_prem_rate = 0.05
 
@@ -2267,3 +2345,25 @@ roll_fwd_tol = 1e-10
 val_tol = 1e-07
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+CvForm = ("Pickle", 7)
+
+LapseBasis = ("Pickle", 3)
+
+LapseColumn = ("Pickle", 8)
+
+Cover = ("Pickle", 2)
+
+Kind = ("Pickle", 9)
+
+PolTiming = ("Pickle", 10)
+
+NeoTiming = ("Pickle", 4)
+
+BasisParam = ("Pickle", 5)
+
+AvCurve = ("Pickle", 6)
+
+ref_sex = ("Pickle", 11)

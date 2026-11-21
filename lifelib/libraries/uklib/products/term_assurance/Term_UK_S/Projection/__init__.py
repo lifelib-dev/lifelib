@@ -339,10 +339,7 @@ def model_point():
 
 def shape():
     """The benefit shape: ``level``, ``decreasing`` or ``fib`` [S1][S2][S6][S8]."""
-    v = model_point()["shape"]
-    if v not in ("level", "decreasing", "fib"):
-        raise ValueError("invalid shape")
-    return v
+    return Shape[model_point()["shape"]]
 
 
 def is_joint():
@@ -371,18 +368,18 @@ def age_at_entry(life=1):
 def sex(life=1):
     """The sex (M / F) of the first or second life."""
     if life == 1:
-        return model_point()["sex"]
+        return Sex[model_point()["sex"]]
     if life == 2 and is_joint():
-        return model_point()["joint_sex"]
+        return Sex[model_point()["joint_sex"]]
     raise ValueError("invalid life")
 
 
 def smoker(life=1):
     """The smoker status (N / S) of the first or second life."""
     if life == 1:
-        return model_point()["smoker"]
+        return Smoker[model_point()["smoker"]]
     if life == 2 and is_joint():
-        return model_point()["joint_smoker"]
+        return Smoker[model_point()["joint_smoker"]]
     raise ValueError("invalid life")
 
 
@@ -420,7 +417,7 @@ def indexation():
     either.
     """
     v = bool(model_point()["indexation"])
-    if v and shape() != "level":
+    if v and shape() != Shape.level:
         raise ValueError("indexation is modelled on the level shape only")
     return v
 
@@ -454,10 +451,7 @@ def premium_mode():
     discount for annual collection is modelled **[std]**; UK protection pricing is
     quote-driven and no published scale exists.
     """
-    v = model_point()["premium_mode"]
-    if v not in ("monthly", "annual"):
-        raise ValueError("invalid premium_mode")
-    return v
+    return PremiumMode[model_point()["premium_mode"]]
 
 
 def mort_basis():
@@ -469,10 +463,7 @@ def mort_basis():
     the unavailable subscriber tables.  See the Space docstring for why both are
     shipped.
     """
-    v = model_point()["mort_basis"]
-    if v not in ("applied", "select"):
-        raise ValueError("invalid mort_basis")
-    return v
+    return MortBasis[model_point()["mort_basis"]]
 
 
 def pols_if_init():
@@ -596,7 +587,7 @@ def mort_rate_life(t, life=1):
     proxy scaling, then the selective-lapsation loading.  Capped at 1.
     """
     q = mort_rate_base(t, life)
-    if mort_basis() == "select":
+    if mort_basis() == MortBasis.select:
         q = q * select_factor(t) * mort_scale                        # noqa: F821
     return min(1.0, q * sel_lapse_factor(t))
 
@@ -712,7 +703,7 @@ def pols_if(t):
         return 0.0
     if t == proj_start():
         return pols_if_init()
-    return pols_if_at(t - 1, "AFT_DECR")
+    return pols_if_at(t - 1, PolTiming.AFT_DECR)
 
 
 def pols_if_at(t, timing):
@@ -732,14 +723,14 @@ def pols_if_at(t, timing):
         and lapses are taken, and zero from the final month ``t = proj_len() - 1``
         on because the cover expires at its end.
     """
-    if timing == "BEF_DECR":
+    if timing == PolTiming.BEF_DECR:
         return pols_if(t)
-    if timing == "BEF_LAPSE":
+    if timing == PolTiming.BEF_LAPSE:
         return pols_if(t) * (1.0 - mort_rate_mth(t))
-    if timing == "AFT_DECR":
+    if timing == PolTiming.AFT_DECR:
         if t < proj_start() or t >= proj_len() - 1:
             return 0.0
-        return pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate_mth(t))
+        return pols_if_at(t, PolTiming.BEF_LAPSE) * (1.0 - lapse_rate_mth(t))
     raise ValueError("invalid timing")
 
 
@@ -758,7 +749,7 @@ def pols_lapse(t):
     Pays nothing - there is no surrender value [S6][R8] - so this moves
     :func:`pols_if` and nothing else.
     """
-    return pols_if_at(t, "BEF_LAPSE") * lapse_rate_mth(t)
+    return pols_if_at(t, PolTiming.BEF_LAPSE) * lapse_rate_mth(t)
 
 
 def pols_maturity(t):
@@ -771,7 +762,7 @@ def pols_maturity(t):
     """
     if t != proj_len() - 1:
         return 0.0
-    return pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate_mth(t))
+    return pols_if_at(t, PolTiming.BEF_LAPSE) * (1.0 - lapse_rate_mth(t))
 
 
 def wop_waived_frac(t):
@@ -878,7 +869,7 @@ def premium_pp(t):
     loaded by ``wop_prem_loading`` where the waiver rider is in force - a **[std]**
     placeholder, since the rider's extra premium is not published either.
     """
-    if premium_mode() == "annual":
+    if premium_mode() == PremiumMode.annual:
         p = 12.0 * premium_mth_pp() if t % 12 == 0 else 0.0
     else:
         p = premium_mth_pp()
@@ -943,7 +934,7 @@ def fib_commute_pp(t):
     runs out.  The annual grid had to place the death at mid-year, ``k = 12t + 6``; this
     grid knows the month.  Zero on the level and decreasing shapes.
     """
-    if shape() != "fib":
+    if shape() != Shape.fib:
         return 0.0
     return fib_income() * annuity_certain_factor(term_mths() - t)
 
@@ -958,9 +949,9 @@ def benefit_pp(t):
     FIB claim has no lump sum at all and goes through ``claims(t, "FIB")`` instead.
     """
     s = shape()
-    if s == "level":
+    if s == Shape.level:
         return sum_assured() * idx_factor(t)
-    if s == "decreasing":
+    if s == Shape.decreasing:
         return benefit_sched(duration_mth(t))
     return fib_commute_pp(t)
 
@@ -977,7 +968,7 @@ def fib_cum(t):
     return fib_cum(t - 1) + pols_death(t - 1)
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Benefit outgo in month t, by kind; the total when kind is omitted.
 
     ``"DEATH"``
@@ -997,18 +988,18 @@ def claims(t, kind=None):
         [S1][S6][S8][R8]; the kind exists so that the zero is stated rather
         than left to inference.  See the Space docstring.
     """
-    if kind is None:
-        return sum(claims(t, k) for k in ("DEATH", "FIB", "LAPSE"))
-    if kind == "DEATH":
-        if shape() == "fib":
+    if kind == Kind.ALL:
+        return sum(claims(t, k) for k in (Kind.DEATH, Kind.FIB, Kind.LAPSE))
+    if kind == Kind.DEATH:
+        if shape() == Shape.fib:
             return fib_commute_rate() * benefit_pp(t) * pols_death(t)
         return benefit_pp(t) * pols_death(t)
-    if kind == "FIB":
-        if shape() != "fib":
+    if kind == Kind.FIB:
+        if shape() != Shape.fib:
             return 0.0
         return ((1.0 - fib_commute_rate()) * fib_income()
                 * (pols_death(t) + fib_cum(t)))
-    if kind == "LAPSE":
+    if kind == Kind.LAPSE:
         return 0.0
     raise ValueError("invalid kind")
 
@@ -1106,7 +1097,7 @@ def net_cf(t):
     mortality cost, so early lapses forfeit margin to the insurer and late ones
     relieve it.
     """
-    return (premiums(t) - claims(t) - claim_expenses(t)
+    return (premiums(t) - claims(t, Kind.ALL) - claim_expenses(t)
             - expenses(t) - commissions(t))
 
 
@@ -1144,10 +1135,10 @@ def check_fib_ledger_resid(t):
     month-of-death instalment would show up here.  Zero by definition on the level and
     decreasing shapes, which have no ledger.
     """
-    if shape() != "fib":
+    if shape() != Shape.fib:
         return 0.0
     built = sum(pols_death(s) for s in range(proj_start(), t + 1))
-    return claims(t, "FIB") - (1.0 - fib_commute_rate()) * fib_income() * built
+    return claims(t, Kind.FIB) - (1.0 - fib_commute_rate()) * fib_income() * built
 
 
 def check_fib_ledger():
@@ -1175,9 +1166,9 @@ def result_cf():
         {
             "pols_if": [pols_if(t) for t in ts],
             "premiums": [premiums(t) for t in ts],
-            "claims_death": [claims(t, "DEATH") for t in ts],
-            "claims_fib": [claims(t, "FIB") for t in ts],
-            "claims_lapse": [claims(t, "LAPSE") for t in ts],
+            "claims_death": [claims(t, Kind.DEATH) for t in ts],
+            "claims_fib": [claims(t, Kind.FIB) for t in ts],
+            "claims_lapse": [claims(t, Kind.LAPSE) for t in ts],
             "claim_expenses": [claim_expenses(t) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "commissions": [commissions(t) for t in ts],
@@ -1264,3 +1255,17 @@ wop_defer_mths = 6
 wop_prem_loading = 0.05
 
 pd = ("Module", "pandas")
+
+Shape = ("Pickle", 3)
+
+Sex = ("Pickle", 1)
+
+Smoker = ("Pickle", 2)
+
+PremiumMode = ("Pickle", 4)
+
+MortBasis = ("Pickle", 5)
+
+PolTiming = ("Pickle", 6)
+
+Kind = ("Pickle", 7)

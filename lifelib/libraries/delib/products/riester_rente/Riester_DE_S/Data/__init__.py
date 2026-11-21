@@ -218,8 +218,10 @@ def freq_loading():
     loading enlarges the premium income and nothing else.  Crediting it to the account is
     a listed modeling pitfall.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / freq_loading_file, index_col="prem_freq")      # noqa: F821
+    frame = pd.read_csv(                                             # noqa: F821
+        input_dir() / freq_loading_file)                             # noqa: F821
+    frame["prem_freq"] = [PremFreq[name] for name in frame["prem_freq"]]
+    return frame.set_index("prem_freq")
 
 
 # ---------------------------------------------------------------------------
@@ -242,3 +244,5 @@ surplus_file = "surplus_scenario.csv"
 freq_loading_file = "freq_loading.csv"
 
 pd = ("Module", "pandas")
+
+PremFreq = ("Pickle", 1)

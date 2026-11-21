@@ -46,6 +46,7 @@ import pytest
 from modelx.core.errors import FormulaError
 
 from de_registry import MODELS, LIB
+from lifelib.libraries.delib.products.berufsunfaehigkeit.enums import Berufsgruppe, Kind, PremMode, PremiumForm, Sex, Status, Timing
 
 
 def model_files(folder):
@@ -165,12 +166,12 @@ def test_worked_example_row(de_bu_anchor, t):
     assert p.pols_runoff(t) == pytest.approx(pols_runoff, abs=SIX_DP)
     assert p.premiums(t) == pytest.approx(prem, abs=CENT)
     assert p.surplus_credit(t) == pytest.approx(credit, abs=CENT)
-    assert p.claims(t, "BU_RENTE") == pytest.approx(rente, abs=CENT)
-    assert p.claims(t, "REINTEGRATION") == pytest.approx(reint, abs=CENT)
+    assert p.claims(t, Kind.BU_RENTE) == pytest.approx(rente, abs=CENT)
+    assert p.claims(t, Kind.REINTEGRATION) == pytest.approx(reint, abs=CENT)
     assert p.expenses(t) == pytest.approx(exp, abs=CENT)
     assert p.claim_expenses(t) == pytest.approx(claim_exp, abs=CENT)
     assert p.net_cf(t) == pytest.approx(net, abs=CENT)
-    assert p.claims(t, "LAPSE") == 0.0
+    assert p.claims(t, Kind.LAPSE) == 0.0
     # The three ledgers decompose the in-force count on every printed row.
     assert p.pols_actv(t) == pytest.approx(
         p.pols_if(t) - p.pols_dis(t) - p.pols_runoff(t), abs=1e-12)
@@ -287,8 +288,8 @@ def test_the_first_inception_and_the_first_bu_rente_from_the_annual_rates(de_bu_
     # Incidence-first would be visibly different, which is why the order is a [std] choice.
     assert i_m / ordered - 1.0 == pytest.approx(0.00344, abs=5e-6)
     # The first BU-Rente and the first assessment cost follow directly.
-    assert p.claims(1, "BU_RENTE") == pytest.approx(1500.0 * ordered, rel=1e-12)
-    assert p.claims(1, "BU_RENTE") == pytest.approx(0.1096674758, abs=5e-9)
+    assert p.claims(1, Kind.BU_RENTE) == pytest.approx(1500.0 * ordered, rel=1e-12)
+    assert p.claims(1, Kind.BU_RENTE) == pytest.approx(0.1096674758, abs=5e-9)
 
 
 def test_the_run_off_is_three_months_wide_traced_through_one_cohort(de_bu_anchor):
@@ -307,13 +308,13 @@ def test_the_run_off_is_three_months_wide_traced_through_one_cohort(de_bu_anchor
     assert p.pols_recovery(1) == pytest.approx(rec, rel=1e-12)
     assert p.pols_runoff(2) == pytest.approx(rec, rel=1e-12)
     # It is still being paid while it is in run-off.
-    assert p.claims(2, "BU_RENTE") == pytest.approx(
+    assert p.claims(2, Kind.BU_RENTE) == pytest.approx(
         1500.0 * (p.pols_dis(2) + p.pols_runoff(2)), rel=1e-12)
-    assert p.claims(2, "BU_RENTE") == pytest.approx(0.2189128510, abs=5e-9)
+    assert p.claims(2, Kind.BU_RENTE) == pytest.approx(0.2189128510, abs=5e-9)
     # Three months later it completes the run-off and is reintegrated.
-    assert p.claims(3, "REINTEGRATION") == 0.0
-    assert p.claims(4, "REINTEGRATION") == pytest.approx(0.0155802686, abs=5e-9)
-    assert p.claims(4, "REINTEGRATION") == pytest.approx(
+    assert p.claims(3, Kind.REINTEGRATION) == 0.0
+    assert p.claims(4, Kind.REINTEGRATION) == pytest.approx(0.0155802686, abs=5e-9)
+    assert p.claims(4, Kind.REINTEGRATION) == pytest.approx(
         6 * p.runoff_val(4, 3) * (1.0 - p.mort_rate_mth(4)), rel=1e-12)
     assert p.pols_reactivation(4) > 0.0 and p.pols_reactivation(3) == 0.0
 
@@ -330,13 +331,13 @@ def test_the_decrements_close_three_ways(de_bu_anchor):
     n = p.proj_len()
     deaths = sum(p.pols_death(t) for t in range(0, n))
     lapses = sum(p.pols_lapse(t) for t in range(0, n))
-    survivors = p.pols_if_at(n - 1, "END")
+    survivors = p.pols_if_at(n - 1, Timing.END)
     assert deaths == pytest.approx(CLOSURE["deaths"], abs=5e-12)
     assert lapses == pytest.approx(CLOSURE["lapses"], abs=5e-12)
     assert survivors == pytest.approx(CLOSURE["survivors"], abs=5e-12)
     assert deaths + lapses + survivors == pytest.approx(1.0, abs=1e-11)
     # A claim in payment is paid to the horizon and then simply stops.
-    assert p.claims(n - 1, "BU_RENTE") > 0.0
+    assert p.claims(n - 1, Kind.BU_RENTE) > 0.0
 
 
 def test_the_brutto_zahl_ratio_survives_aggregation(de_bu_anchor):
@@ -388,15 +389,15 @@ def test_dynamik_variant_row(berufsunfaehigkeit, t):
     (prem_ann, rente, pols_if, prem, credit, bu_rente, reint,
      exp, claim_exp, net) = DYNAMIK[t]
     p = berufsunfaehigkeit.Projection[4]
-    assert p.premium_form() == "dynamik" and p.beitragsdyn_rate() == 0.03
-    assert p.prem_mode() == "annual" and p.prem_mode_months() == 12
+    assert p.premium_form() == PremiumForm.dynamik and p.beitragsdyn_rate() == 0.03
+    assert p.prem_mode() == PremMode.annual and p.prem_mode_months() == 12
     assert p.prem_gross_ann_pp(t) == pytest.approx(prem_ann, abs=CENT)
     assert p.bu_rente_pp(t) == pytest.approx(rente, abs=CENT)
     assert p.pols_if(t) == pytest.approx(pols_if, abs=SIX_DP)
     assert p.premiums(t) == pytest.approx(prem, abs=CENT)
     assert p.surplus_credit(t) == pytest.approx(credit, abs=CENT)
-    assert p.claims(t, "BU_RENTE") == pytest.approx(bu_rente, abs=CENT)
-    assert p.claims(t, "REINTEGRATION") == pytest.approx(reint, abs=CENT)
+    assert p.claims(t, Kind.BU_RENTE) == pytest.approx(bu_rente, abs=CENT)
+    assert p.claims(t, Kind.REINTEGRATION) == pytest.approx(reint, abs=CENT)
     assert p.expenses(t) == pytest.approx(exp, abs=CENT)
     assert p.claim_expenses(t) == pytest.approx(claim_exp, abs=CENT)
     assert p.net_cf(t) == pytest.approx(net, abs=CENT)
@@ -464,10 +465,10 @@ def test_pitfall_01_the_premium_is_weighted_by_the_premium_paying_count(
     assert wrong / df["premiums"].sum() - 1.0 == pytest.approx(0.026, abs=0.002)
     # An in-force claim pays no premium at all: model point 7 opens leistungspflichtig.
     in_claim = berufsunfaehigkeit.Projection[7]
-    assert in_claim.status() == "leistung"
+    assert in_claim.status() == Status.leistung
     assert in_claim.pols_actv(0) == 0.0 and in_claim.pols_dis(0) == 1.0
     assert in_claim.pols_prem(0) == 0.0 and in_claim.premiums(0) == 0.0
-    assert in_claim.claims(0, "BU_RENTE") == pytest.approx(1800.0, abs=CENT)
+    assert in_claim.claims(0, Kind.BU_RENTE) == pytest.approx(1800.0, abs=CENT)
 
 
 # Pitfall 2 -- one premium stream instead of two
@@ -574,10 +575,10 @@ def test_pitfall_07_the_karenzzeit_is_not_the_prognosis_period(de_bu_anchor):
     assert p.karenz_months() == 0
     first_claim = min(t for t in range(0, 20) if p.pols_dis(t) > 0.0)
     assert first_claim == 1
-    assert p.claims(first_claim, "BU_RENTE") > 0.0
-    assert p.claims(0, "BU_RENTE") == 0.0        # nobody is in claim in month 0
+    assert p.claims(first_claim, Kind.BU_RENTE) > 0.0
+    assert p.claims(0, Kind.BU_RENTE) == 0.0        # nobody is in claim in month 0
     # A model deferring six months would show zeros through month 6 -- it does not.
-    assert all(p.claims(t, "BU_RENTE") > 0.0 for t in range(1, 8))
+    assert all(p.claims(t, Kind.BU_RENTE) > 0.0 for t in range(1, 8))
 
 
 # Pitfall 8 -- waiving the premium during the Karenzzeit
@@ -590,7 +591,7 @@ def test_pitfall_08_the_premium_runs_through_the_karenzzeit(
     """
     karenz = berufsunfaehigkeit.Projection[5]
     assert karenz.karenz_months() == 6
-    assert karenz.prem_mode() == "quarterly" and karenz.prem_mode_months() == 3
+    assert karenz.prem_mode() == PremMode.quarterly and karenz.prem_mode_months() == 3
     for t in (1, 12, 100, 323):
         inside = sum(karenz.pols_dis_dur(t, z) for z in range(1, 7))
         assert karenz.pols_prem(t) == pytest.approx(
@@ -613,7 +614,7 @@ def test_pitfall_09_the_two_escalations_run_on_different_clocks(de_bu_anchor):
     amount **in payment** steps at every twelfth month of claim duration.
     """
     p = de_bu_anchor
-    assert p.premium_form() == "level" and p.beitragsdyn_rate() == 0.0
+    assert p.premium_form() == PremiumForm.level and p.beitragsdyn_rate() == 0.0
     assert p.leistungsdyn_rate() == 0.02
     assert all(p.bu_rente_pp(t) == 1500.0 for t in (0, 11, 12, 200, 443))
     for t in (200, 400):
@@ -708,9 +709,9 @@ def test_pitfall_12_sex_does_not_price(berufsunfaehigkeit, de_bu_anchor):
     identical -- not close, identical.
     """
     female, male = de_bu_anchor, berufsunfaehigkeit.Projection[2]
-    assert female.sex() == "F" and male.sex() == "M"
+    assert female.sex() == Sex.F and male.sex() == Sex.M
     assert male.entry_age() == female.entry_age() == 30
-    assert male.berufsgruppe() == female.berufsgruppe() == "BG1"
+    assert male.berufsgruppe() == female.berufsgruppe() == Berufsgruppe.BG1
     assert male.prem_gross_level_pp() == female.prem_gross_level_pp()
     diff = (male.result_cf() - female.result_cf()).abs().max().max()
     assert diff == 0.0
@@ -731,8 +732,8 @@ def test_pitfall_13_benefit_stops_at_the_leistungsendalter_and_premium_does_not(
     assert p.entry_age() == 45 and p.proj_len() == 12 * (67 - 45) == 264
     boundary = min(t for t in range(0, p.proj_len()) if p.age(t) >= 63)
     assert boundary == 216
-    assert p.claims(215, "BU_RENTE") > 0.0
-    assert all(p.claims(t, "BU_RENTE") == 0.0 for t in range(boundary, p.proj_len()))
+    assert p.claims(215, Kind.BU_RENTE) > 0.0
+    assert all(p.claims(t, Kind.BU_RENTE) == 0.0 for t in range(boundary, p.proj_len()))
     assert all(p.claim_expenses(t) == pytest.approx(800.0 * p.pols_inception(t), rel=1e-12)
                for t in (216, 240, 263))
     assert all(p.premiums(t) > 0.0 for t in range(boundary, p.proj_len()))
@@ -753,7 +754,7 @@ def test_pitfall_14_no_acquisition_charge_on_an_in_force_point(
     """
     in_force = berufsunfaehigkeit.Projection[6]
     assert in_force.duration_init_months() == 180
-    assert in_force.prem_mode() == "half_yearly"
+    assert in_force.prem_mode() == PremMode.half_yearly
     assert in_force.proj_len() == 12 * (67 - 30) - 180 == 264
     expected = (0.09 * in_force.prem_gross_pp(0) * in_force.pols_prem(0)
                 + 18.0 / 12.0 * in_force.pols_if(0))
@@ -811,7 +812,7 @@ def test_pitfall_16_the_reintegration_benefit_is_paid_on_a_completed_run_off(
     assert paid < naive
     # It is six monthly Renten of the amount the cohort was on, not of the insured amount.
     for t in (10, 200, 443):
-        assert p.claims(t, "REINTEGRATION") == pytest.approx(
+        assert p.claims(t, Kind.REINTEGRATION) == pytest.approx(
             6 * p.runoff_val(t, 3) * (1.0 - p.mort_rate_mth(t)), rel=1e-12)
 
 
@@ -823,7 +824,7 @@ def test_pitfall_17_a_lapse_pays_nothing_at_any_duration(
     column is the scope statement; the absent names are what a savings model would add.
     """
     p = de_bu_anchor
-    assert all(p.claims(t, "LAPSE") == 0.0 for t in (0, 1, 120, 443))
+    assert all(p.claims(t, Kind.LAPSE) == 0.0 for t in (0, 1, 120, 443))
     assert (p.result_cf()["claims_lapse"] == 0.0).all()
     names = set(berufsunfaehigkeit.Projection.cells) | set(
         berufsunfaehigkeit.Projection.refs)
@@ -846,7 +847,7 @@ def test_pitfall_18_the_beitragsdynamik_escalates_both_sides_by_the_same_factor(
     proportional cover.  The direction is recorded; the construction is what is asserted.
     """
     p = berufsunfaehigkeit.Projection[4]
-    assert p.premium_form() == "dynamik" and p.beitragsdyn_rate() == 0.03
+    assert p.premium_form() == PremiumForm.dynamik and p.beitragsdyn_rate() == 0.03
     assert p.bu_rente_pp(12) / p.bu_rente_pp(0) == pytest.approx(1.03, rel=1e-14)
     assert p.prem_gross_ann_pp(12) / p.prem_gross_ann_pp(0) == pytest.approx(
         1.03, rel=1e-14)
@@ -855,7 +856,7 @@ def test_pitfall_18_the_beitragsdynamik_escalates_both_sides_by_the_same_factor(
     assert p.dyn_factor(12) == pytest.approx(1.03, rel=1e-15)
     # On the level form the factor is one throughout, and beitragsdyn_rate is forced to 0.
     level = berufsunfaehigkeit.Projection[1]
-    assert level.premium_form() == "level" and level.beitragsdyn_rate() == 0.0
+    assert level.premium_form() == PremiumForm.level and level.beitragsdyn_rate() == 0.0
     assert all(level.dyn_factor(t) == 1.0 for t in (0, 12, 443))
 
 
@@ -885,13 +886,13 @@ def test_check_net_cf_crosses_the_brutto_zahl_split(de_bu_anchor):
     assert p.check_net_cf() is True
     for t in (0, 1, 60, 443):
         rebuilt = (p.prem_zahl_pp(t) * p.pols_prem(t)
-                   - p.claims(t, "BU_RENTE") - p.claims(t, "REINTEGRATION")
-                   - p.claims(t, "LAPSE") - p.expenses(t) - p.claim_expenses(t))
+                   - p.claims(t, Kind.BU_RENTE) - p.claims(t, Kind.REINTEGRATION)
+                   - p.claims(t, Kind.LAPSE) - p.expenses(t) - p.claim_expenses(t))
         assert p.net_cf(t) == pytest.approx(rebuilt, abs=1e-9)
         assert p.check_net_cf_resid(t) == pytest.approx(0.0, abs=1e-9)
     # A pols_if-weighted premium leg would not reconcile anywhere a claim is running.
     bad = (p.prem_zahl_pp(240) * p.pols_if(240)
-           - p.claims(240, "BU_RENTE") - p.claims(240, "REINTEGRATION")
+           - p.claims(240, Kind.BU_RENTE) - p.claims(240, Kind.REINTEGRATION)
            - p.expenses(240) - p.claim_expenses(240))
     assert abs(p.net_cf(240) - bad) > 0.5
 
@@ -1091,7 +1092,7 @@ def test_round_trip_is_stable(tmp_path):
         assert p.prem_gross_level_pp() == pytest.approx(PREM_GROSS_ANN, abs=5e-8)
         for t, row in WORKED_EXAMPLE.items():
             assert p.premiums(t) == pytest.approx(row[4], abs=CENT)
-            assert p.claims(t, "BU_RENTE") == pytest.approx(row[6], abs=CENT)
+            assert p.claims(t, Kind.BU_RENTE) == pytest.approx(row[6], abs=CENT)
             assert p.net_cf(t) == pytest.approx(row[10], abs=CENT)
         assert "Notes symbol" in reread.Projection.doc
         assert p.check_net_cf() is True

@@ -23,6 +23,7 @@ import modelx as mx
 import pytest
 
 from us_registry import LIB
+from lifelib.libraries.uslib.products.deferred_income_annuity.enums import Claim, DbForm, FactorBasis, IncomeForm, MarketType, MortBasis, PaymentTiming, Phase, ReductionTrigger
 
 MODEL_PATH = LIB / "products/deferred_income_annuity/DIA_US_S"
 
@@ -83,9 +84,9 @@ def test_worked_example_row(anchor, y):
     assert anchor.annual_income(12 * y - 1) == pytest.approx(income, abs=CENT)
     assert anchor.lives_if_ann(y) == pytest.approx(surv, abs=SURV)
     if db is None:
-        assert anchor.claims_ann(y, "DEATH") == 0.0
+        assert anchor.claims_ann(y, Claim.DEATH) == 0.0
     else:
-        assert anchor.claims_ann(y, "DEATH") == pytest.approx(db, abs=CENT)
+        assert anchor.claims_ann(y, Claim.DEATH) == pytest.approx(db, abs=CENT)
     if inc is None:
         assert anchor.annuity_payments_ann(y) == 0.0
     else:
@@ -153,15 +154,15 @@ def test_death_benefit_fork(deferred_income_annuity, anchor):
     ROP form pays $150,000 and the no-death-benefit form pays nothing.
     """
     fork = deferred_income_annuity.Projection[4]
-    assert fork.db_form() == "NONE"
+    assert fork.db_form() == DbForm.NONE
     assert fork.purchase_rate(0) == 0.386727
     assert fork.purchase_rate(60) == 0.298977
     assert fork.annual_income(60) == pytest.approx(53621.55, abs=CENT)
     uplift = fork.annual_income(60) / anchor.annual_income(60) - 1.0
     assert round(100 * uplift, 1) == 21.2
     assert fork.rop_factor(0) == 0.0
-    assert fork.claims_ann(10, "DEATH") == 0.0
-    assert anchor.claims_ann(10, "DEATH") == pytest.approx(1611.90, abs=CENT)
+    assert fork.claims_ann(10, Claim.DEATH) == 0.0
+    assert anchor.claims_ann(10, Claim.DEATH) == pytest.approx(1611.90, abs=CENT)
 
 
 def test_policy_year_6_trace(anchor):
@@ -177,7 +178,7 @@ def test_policy_year_6_trace(anchor):
     assert (anchor.lives_if_ann(5) - anchor.lives_if_ann(6)
             == pytest.approx(0.0112569, abs=SURV))
     assert anchor.cum_premium_pp(60) == 150000.0
-    assert anchor.claims_ann(6, "DEATH") == pytest.approx(1688.54, abs=CENT)
+    assert anchor.claims_ann(6, Claim.DEATH) == pytest.approx(1688.54, abs=CENT)
 
 
 def test_survival_anchors(anchor):
@@ -225,8 +226,8 @@ def test_rop_factor_divergence(deferred_income_annuity, anchor):
     point 3 is otherwise identical and computes them.  Both are shipped.
     """
     calc = deferred_income_annuity.Projection[3]
-    assert anchor.factor_basis() == "table"
-    assert calc.factor_basis() == "formula"
+    assert anchor.factor_basis() == FactorBasis.table
+    assert calc.factor_basis() == FactorBasis.formula
     assert anchor.rop_factor(0) == 0.157900
     assert anchor.rop_factor(60) == 0.180200
     assert calc.rop_factor(0) == pytest.approx(0.161605, abs=5e-7)
@@ -262,11 +263,11 @@ def test_the_first_instalment_falls_at_the_end_of_month_T(anchor):
     assert anchor.is_payment_mth(239) is False
     assert anchor.is_payment_mth(240) is True
     assert sum(anchor.is_payment_mth(t) for t in range(240, 252)) == 12
-    assert anchor.phase(239) == "DEFERRAL"
-    assert anchor.phase(240) == "PAYOUT"
+    assert anchor.phase(239) == Phase.DEFERRAL
+    assert anchor.phase(240) == Phase.PAYOUT
     assert anchor.payment_surv_mth(240) == 241
-    assert anchor.claims(239, "DEATH") > 0.0
-    assert anchor.claims(240, "DEATH") == 0.0
+    assert anchor.claims(239, Claim.DEATH) > 0.0
+    assert anchor.claims(240, Claim.DEATH) == 0.0
     assert anchor.annuity_payments(239) == 0.0
     assert anchor.annuity_payments(240) > 0.0
 
@@ -275,8 +276,8 @@ def test_a_death_in_the_first_payment_month_refunds_the_whole_of_cp(anchor):
     """"Under arrears, a death between T and T + 1/m yields a cash refund of the full
     CP(T), no payment having been made."
     """
-    assert anchor.claim_pp(240, "REFUND") == 150000.0
-    assert anchor.claim_pp(241, "REFUND") == pytest.approx(150000.0 - 3688.3042, abs=CENT)
+    assert anchor.claim_pp(240, Claim.REFUND) == 150000.0
+    assert anchor.claim_pp(241, Claim.REFUND) == pytest.approx(150000.0 - 3688.3042, abs=CENT)
     assert anchor.refund_balance(240) == 150000.0
 
 
@@ -286,8 +287,8 @@ def test_the_refund_base_is_cumulative_premiums(anchor):
     """
     assert anchor.premium_pp(0) == 100000.0
     assert anchor.cum_premium_pp(anchor.income_start_mth()) == 150000.0
-    assert anchor.claim_pp(240, "REFUND") == anchor.cum_premium_pp(240)
-    assert anchor.claim_pp(240, "REFUND") != anchor.premium_pp(0)
+    assert anchor.claim_pp(240, Claim.REFUND) == anchor.cum_premium_pp(240)
+    assert anchor.claim_pp(240, Claim.REFUND) != anchor.premium_pp(0)
 
 
 def test_the_refund_runs_out_during_the_fourth_payment_year(anchor):
@@ -299,7 +300,7 @@ def test_the_refund_runs_out_during_the_fourth_payment_year(anchor):
     assert anchor.refund_balance(279) > 0.0            # 40th payment still pending
     assert anchor.refund_balance(280) == pytest.approx(2467.83, abs=CENT)
     assert anchor.refund_balance(281) == 0.0
-    assert anchor.claims(281, "REFUND") == 0.0
+    assert anchor.claims(281, Claim.REFUND) == 0.0
 
 
 def test_advance_timing_moves_the_refund_balance_by_one_instalment(
@@ -308,11 +309,11 @@ def test_advance_timing_moves_the_refund_balance_by_one_instalment(
     G(t) there or the cash refund is overstated by one instalment."
     """
     adv = deferred_income_annuity.Projection[17]
-    assert adv.payment_timing() == "advance"
+    assert adv.payment_timing() == PaymentTiming.advance
     assert adv.payment_surv_mth(240) == 240
-    assert adv.claim_pp(240, "REFUND") == pytest.approx(
+    assert adv.claim_pp(240, Claim.REFUND) == pytest.approx(
         150000.0 - adv.annuity_pp_sched(240), abs=CENT)
-    assert anchor.claim_pp(240, "REFUND") == 150000.0
+    assert anchor.claim_pp(240, Claim.REFUND) == 150000.0
 
 
 # ---------------------------------------------------- the payout chassis, DIA-adjusted
@@ -325,7 +326,7 @@ def test_cash_refund_carries_no_certain_floor(anchor):
     n_g = CP(T)/B; the projected stream is life-contingent with a lump sum at death.
     Carrying the pricing guarantee into the projection would pay it twice.
     """
-    assert anchor.payout_form() == "CR"
+    assert anchor.payout_form() == IncomeForm.CR
     assert anchor.guarantee_mths_pricing() == pytest.approx(40.6691, abs=5e-4)
     assert anchor.certain_mths_eff() == 0
     assert anchor.certain_floor(250) == 0.0
@@ -337,7 +338,7 @@ def test_installment_refund_derives_its_certain_period(deferred_income_annuity):
     purchase payments", so the guarantee is 41 monthly instalments on this cell.
     """
     ir = deferred_income_annuity.Projection[5]
-    assert ir.payout_form() == "IR"
+    assert ir.payout_form() == IncomeForm.IR
     assert ir.certain_mths_refund() == 41
     assert ir.certain_mths_eff() == 41
     assert ir.certain_floor(240) == 1.0
@@ -345,7 +346,7 @@ def test_installment_refund_derives_its_certain_period(deferred_income_annuity):
     assert ir.certain_floor(281) == 0.0
     assert ir.cum_annuity_pp(280) >= ir.cum_premium_pp(240)
     assert ir.cum_annuity_pp(279) < ir.cum_premium_pp(240)
-    assert ir.claim_pp(250, "REFUND") == 0.0      # delivered as payments, not a lump sum
+    assert ir.claim_pp(250, Claim.REFUND) == 0.0      # delivered as payments, not a lump sum
 
 
 def test_the_certain_floor_is_conditional_on_reaching_the_income_phase(
@@ -401,8 +402,8 @@ def test_joint_triggers_differ_and_the_primary_trigger_costs_more(
     either = deferred_income_annuity.Projection[8]
     primary = deferred_income_annuity.Projection[9]
     assert either.is_joint() and primary.is_joint()
-    assert either.reduction_trigger() == "either"
-    assert primary.reduction_trigger() == "primary"
+    assert either.reduction_trigger() == ReductionTrigger.either
+    assert primary.reduction_trigger() == ReductionTrigger.primary
     assert primary.payment_factor(300) > either.payment_factor(300)
     assert primary.annual_income(240) < either.annual_income(240)
     # with the primary dead the two formulas coincide: L = delta * l_2 either way
@@ -426,7 +427,7 @@ def test_the_joint_rop_factor_prices_the_benefit_the_projection_pays(
     """
     j = deferred_income_annuity.Projection[8]
     assert j.is_joint()
-    assert j.factor_basis() == "formula"
+    assert j.factor_basis() == FactorBasis.formula
     # the exposure priced is the exposure projected, not the primary life's
     assert 1.0 - j.lives_if(240, 1) == pytest.approx(0.285000, abs=SURV)
     assert 1.0 - j.lives_if_last(240) == pytest.approx(0.128767, abs=SURV)
@@ -436,7 +437,7 @@ def test_the_joint_rop_factor_prices_the_benefit_the_projection_pays(
     assert j.annual_income(240) == pytest.approx(47711.31, abs=CENT)
     # PV of the projected death claims reconciles to sum_k P_k v^t_k l_last(t_k) A_rop,
     # to the accuracy of the notes' five-year mid-band death-timing approximation
-    pv_claims = sum(j.claims(t, "DEATH") * j.pricing_disc_factor((t + 1) / 12.0)
+    pv_claims = sum(j.claims(t, Claim.DEATH) * j.pricing_disc_factor((t + 1) / 12.0)
                     for t in range(0, j.income_start_mth()))
     priced = sum(j.premium_pp(tk) * j.pricing_disc_factor(tk / 12.0)
                  * j.lives_if_last(tk) * j.rop_factor(tk)
@@ -632,7 +633,7 @@ def test_qlac_overlay_flags_but_generates_no_cash_flows(deferred_income_annuity)
 
 
 def test_a_nonqualified_contract_raises_no_qlac_flags(anchor):
-    assert anchor.market_type() == "NQ"
+    assert anchor.market_type() == MarketType.NQ
     assert anchor.is_qlac() is False
     assert anchor.qlac_flags() == []
 
@@ -646,8 +647,8 @@ def test_generational_construction(deferred_income_annuity, anchor):
     the issue-age rate is the table rate times 0.99^14.
     """
     gen = deferred_income_annuity.Projection[16]
-    assert gen.mort_basis() == "generational"
-    assert anchor.mort_basis() == "anchor"
+    assert gen.mort_basis() == MortBasis.generational
+    assert anchor.mort_basis() == MortBasis.anchor
     assert gen.calendar_year(0) - gen.mort_table_year == 14
     assert gen.improvement_rate(0, 1) == 0.01
     assert gen.mort_rate(0, 1) == pytest.approx(
@@ -751,12 +752,12 @@ def test_result_cf_shape(anchor):
     assert len(df) == anchor.proj_len()
     assert df.index[0] == 0
     assert df.index[-1] == anchor.proj_len() - 1
-    assert anchor.phase(anchor.proj_len() - 1) == "PAYOUT"
-    assert anchor.phase(anchor.proj_len()) == "TERMINATED"
+    assert anchor.phase(anchor.proj_len() - 1) == Phase.PAYOUT
+    assert anchor.phase(anchor.proj_len()) == Phase.TERMINATED
     assert df.loc[0, "premiums"] == 100000.0
     assert df.loc[60, "premiums"] == pytest.approx(48750.0, abs=CENT)
     assert df.loc[0, "net_cf"] == pytest.approx(
-        100000.0 - anchor.claims(0) - anchor.expenses(0), abs=CENT)
+        100000.0 - anchor.claims(0, Claim.ALL) - anchor.expenses(0), abs=CENT)
 
 
 def test_result_annual_shape(anchor):

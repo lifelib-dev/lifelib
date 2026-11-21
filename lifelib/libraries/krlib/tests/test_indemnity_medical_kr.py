@@ -63,10 +63,12 @@ the one limit that binds anywhere in the shipped table, 9 for 개인실손 중�
 import pathlib
 
 import modelx as mx
+from modelx.core.errors import FormulaError
 import pandas as pd
 import pytest
 
 from kr_registry import LIB, MODELS
+from lifelib.libraries.krlib.products.indemnity_medical.enums import Kind, PolTiming, Sex, Stream
 
 WON = 5e-5           # cash displayed to 0.0001 won
 INFORCE = 5e-11      # in-force and exit counts, displayed to 10 d.p.
@@ -142,20 +144,20 @@ UTILISATION_RATIO = (1.2499293, 1.100000, 1.1800000, 1.1799961,
 # payment per event at trend 1.0 — which is what policy year 1 uses.  The right-hand
 # figure is not any simple function of the mean, and that is the point of the table.
 SEVERITY = {
-    "ge_in":   ([(250000, .40), (700000, .32), (1800000, .20), (5000000, .07),
+    Stream.ge_in:   ([(250000, .40), (700000, .32), (1800000, .20), (5000000, .07),
                  (15000000, .01)], 1184000.0, 947200.0),
-    "ge_out":  ([(8000, .30), (18000, .30), (40000, .25), (90000, .12),
+    Stream.ge_out:  ([(8000, .30), (18000, .30), (40000, .25), (90000, .12),
                  (250000, .03)], 36100.0, 22638.20),
-    "np_in":   ([(400000, .40), (1200000, .33), (3000000, .20), (8000000, .07)],
+    Stream.np_in:   ([(400000, .40), (1200000, .33), (3000000, .20), (8000000, .07)],
                 1716000.0, 1201200.0),
-    "np_room": ([(0, .55), (300000, .30), (1200000, .15)], 270000.0, 135000.0),
-    "np_out":  ([(45000, .35), (90000, .30), (180000, .22), (400000, .10),
+    Stream.np_room: ([(0, .55), (300000, .30), (1200000, .15)], 270000.0, 135000.0),
+    Stream.np_out:  ([(45000, .35), (90000, .30), (180000, .22), (400000, .10),
                  (900000, .03)], 149350.0, 76970.0),
-    "physio":  ([(80000, .35), (120000, .35), (180000, .22), (400000, .08)],
+    Stream.physio:  ([(80000, .35), (120000, .35), (180000, .22), (400000, .08)],
                 141600.0, 97020.0),
-    "inject":  ([(60000, .40), (120000, .30), (250000, .20), (700000, .10)],
+    Stream.inject:  ([(60000, .40), (120000, .30), (250000, .20), (700000, .10)],
                 180000.0, 121200.0),
-    "mri":     ([(450000, .45), (700000, .35), (1100000, .20)], 667500.0, 467250.0),
+    Stream.mri:     ([(450000, .45), (700000, .35), (1100000, .20)], 667500.0, 467250.0),
 }
 GE_OUT_CLINIC = 24540.0        # the ₩10,000-tier expected payment per visit
 GE_OUT_HOSPITAL = 19400.0      # the ₩20,000-tier expected payment per visit
@@ -393,11 +395,11 @@ def test_worked_example_cash_flow_row(kr_medical_anchor, t):
     a = kr_medical_anchor
     assert a.pols_if(t) == pytest.approx(pols, abs=INFORCE)
     assert a.premiums(t) == pytest.approx(prem, abs=WON)
-    assert a.claims(t, "GE_IN") == pytest.approx(ge_in, abs=WON)
-    assert a.claims(t, "GE_OUT") == pytest.approx(ge_out, abs=WON)
-    assert a.claims(t, "NP_IN") == pytest.approx(np_in, abs=WON)
-    assert a.claims(t, "NP_OUT") == pytest.approx(np_out, abs=WON)
-    assert a.claims(t, "NP_THREE") == pytest.approx(np_three, abs=WON)
+    assert a.claims(t, Kind.GE_IN) == pytest.approx(ge_in, abs=WON)
+    assert a.claims(t, Kind.GE_OUT) == pytest.approx(ge_out, abs=WON)
+    assert a.claims(t, Kind.NP_IN) == pytest.approx(np_in, abs=WON)
+    assert a.claims(t, Kind.NP_OUT) == pytest.approx(np_out, abs=WON)
+    assert a.claims(t, Kind.NP_THREE) == pytest.approx(np_three, abs=WON)
     assert a.expenses(t) == pytest.approx(exp, abs=WON)
     assert a.claim_expenses(t) == pytest.approx(cexp, abs=WON)
     assert a.commissions(t) == pytest.approx(comm, abs=WON)
@@ -432,7 +434,7 @@ def test_worked_example_anchor_cell_attributes(kr_medical_anchor):
     the supervisor is then prescribing.
     """
     a = kr_medical_anchor
-    assert a.sex() == "M" and a.issue_age() == 40
+    assert a.sex() == Sex.M and a.issue_age() == 40
     assert a.premium_mth_pp() == 11982.0
     assert a.np_share() == 0.60
     assert a.np_rider() is True and a.three_np() is True
@@ -482,20 +484,20 @@ def test_worked_example_severity_points_and_expected_payment(kr_medical_anchor, 
     points, mean, payment = SEVERITY[stream]
     assert a.sev_points(stream) == [(float(c), p) for c, p in points]
     assert a.sev_mean(stream) == pytest.approx(mean, rel=1e-12)
-    if stream == "ge_in":
+    if stream == Stream.ge_in:
         got = mean * (1.0 - a.retain_rate_ge())
-    elif stream == "ge_out":
-        clinic = a.paid_out_per_visit("ge_out", 10000.0, 0.20, 1.0)
-        hospital = a.paid_out_per_visit("ge_out", 20000.0, 0.20, 1.0)
+    elif stream == Stream.ge_out:
+        clinic = a.paid_out_per_visit(Stream.ge_out, 10000.0, 0.20, 1.0)
+        hospital = a.paid_out_per_visit(Stream.ge_out, 20000.0, 0.20, 1.0)
         assert clinic == pytest.approx(GE_OUT_CLINIC, abs=WON)
         assert hospital == pytest.approx(GE_OUT_HOSPITAL, abs=WON)
         got = 0.63 * clinic + 0.37 * hospital
-    elif stream == "np_in":
+    elif stream == Stream.np_in:
         got = mean * (1.0 - a.retain_rate_np())
-    elif stream == "np_room":
+    elif stream == Stream.np_room:
         got = sum(p * min(0.50 * c, 100000.0 * a.los_days(1)) for c, p in points)
-    elif stream == "np_out":
-        got = a.paid_out_per_visit("np_out", 30000.0, 0.30, 1.0)
+    elif stream == Stream.np_out:
+        got = a.paid_out_per_visit(Stream.np_out, 30000.0, 0.30, 1.0)
     else:
         got = a.paid_per_act(stream, 1.0)
     assert got == pytest.approx(payment, abs=WON)
@@ -591,7 +593,7 @@ def test_worked_example_annual_claim_row(kr_medical_anchor, y):
     assert a.claims_np_in_pp(y) == pytest.approx(np_in, abs=WON)
     assert a.claims_np_out_pp(y) == pytest.approx(np_out, abs=WON)
     assert a.claims_np_three_pp(y) == pytest.approx(np_three, abs=WON)
-    assert a.claims_ann_pp(y) == pytest.approx(total, abs=WON)
+    assert a.claims_ann_pp(y, Kind.ALL) == pytest.approx(total, abs=WON)
     assert a.loss_incurred_pp(y) == pytest.approx(loss, abs=WON)
     assert a.claims_np_rated_pp(y) == pytest.approx(rated, abs=WON)
 
@@ -682,7 +684,7 @@ def test_worked_example_calibration_closing(kr_medical_anchor):
         0.9750080, abs=5e-8)
     assert a.claims_np_pp(1) / (a.prem_np_base(1) * 12.0) == pytest.approx(
         0.7300099, abs=5e-8)
-    assert a.claims_ann_pp(1) / (a.prem_gross_mth(1) * 12.0) == pytest.approx(
+    assert a.claims_ann_pp(1, Kind.ALL) / (a.prem_gross_mth(1) * 12.0) == pytest.approx(
         0.8280091, abs=5e-8)
     assert a.claims_ge_pp(1) == pytest.approx(56076.22, abs=0.005)
     assert a.claims_np_pp(1) == pytest.approx(62978.2477, abs=WON)
@@ -705,20 +707,20 @@ def test_hand_trace_t0_the_annual_claim_built_from_nothing(kr_medical_anchor):
     # Step 0: the year's basis.
     assert a.trend_ge(1) == 1.0 and a.trend_np(1) == 1.0
     # Step 1: the public ceiling.
-    assert a.adm_rate(1) * a.sev_mean("ge_in") == pytest.approx(16741.76, abs=WON)
-    assert a.visit_rate_ge(1) * a.sev_mean("ge_out") == pytest.approx(
+    assert a.adm_rate(1) * a.sev_mean(Stream.ge_in) == pytest.approx(16741.76, abs=WON)
+    assert a.visit_rate_ge(1) * a.sev_mean(Stream.ge_out) == pytest.approx(
         68064.1313, abs=WON)
     assert a.oop_incurred_ge(1) == pytest.approx(84805.8913, abs=WON)
     assert a.oop_trunc(1) == 1.0
     # Steps 2 and 3: 급여 입원 — a flat percentage, with the cap slack.
-    cost = a.adm_rate(1) * a.sev_mean("ge_in") * a.trend_ge(1) * a.oop_trunc(1)
+    cost = a.adm_rate(1) * a.sev_mean(Stream.ge_in) * a.trend_ge(1) * a.oop_trunc(1)
     assert cost * a.retain_rate_ge() == pytest.approx(3348.3520, abs=WON)
     assert cost * a.retain_rate_ge() < 2000000.0            # no top-up
     assert a.claims_ge_in_pp(1) == pytest.approx(0.80 * cost, rel=1e-14)
     assert a.claims_ge_in_pp(1) == pytest.approx(13393.4080, abs=WON)
     # Steps 2 and 3: 급여 통원 — the kink, per tier, blended.
-    clinic = a.paid_out_per_visit("ge_out", 10000.0, 0.20, 1.0)
-    hospital = a.paid_out_per_visit("ge_out", 20000.0, 0.20, 1.0)
+    clinic = a.paid_out_per_visit(Stream.ge_out, 10000.0, 0.20, 1.0)
+    hospital = a.paid_out_per_visit(Stream.ge_out, 20000.0, 0.20, 1.0)
     assert clinic == pytest.approx(24540.0, abs=WON)
     assert hospital == pytest.approx(19400.0, abs=WON)
     blend = 0.63 * clinic + 0.37 * hospital
@@ -727,14 +729,14 @@ def test_hand_trace_t0_the_annual_claim_built_from_nothing(kr_medical_anchor):
     assert a.claims_ge_out_pp(1) == pytest.approx(42682.8093, abs=WON)
     # 비급여 입원: the base and the 상급병실료 daily-average cap.
     room = sum(p * min(0.50 * c, 100000.0 * a.los_days(1))
-               for c, p in a.sev_points("np_room"))
+               for c, p in a.sev_points(Stream.np_room))
     assert room == pytest.approx(135000.0, abs=WON)
     assert a.claims_np_in_pp(1) == pytest.approx(
         0.014140 * (1201200.0 + 135000.0), abs=WON)
     assert a.claims_np_in_pp(1) == pytest.approx(18893.8680, abs=WON)
     # 비급여 통원: the flat ₩30,000 floor, the ₩200,000 per-visit cap and the 100-visit cap.
     assert a.visits_np_eff(1) == pytest.approx(0.236694, rel=1e-12)
-    per_visit = a.paid_out_per_visit("np_out", 30000.0, 0.30, 1.0)
+    per_visit = a.paid_out_per_visit(Stream.np_out, 30000.0, 0.30, 1.0)
     assert per_visit == pytest.approx(76970.0, abs=WON)
     assert 0.236694 * per_visit == pytest.approx(18218.3372, abs=WON)
     # Step 4: the three named classes and the carve-out.
@@ -755,22 +757,22 @@ def test_hand_trace_t0_the_annual_claim_built_from_nothing(kr_medical_anchor):
         39502.8146, abs=WON)
     assert a.ge_limit_factor(1) == pytest.approx(1.0, abs=1e-12)
     assert a.np_limit_factor(1) == pytest.approx(1.0, abs=1e-12)
-    assert a.claims_ann_pp(1) == pytest.approx(119054.4651, abs=WON)
+    assert a.claims_ann_pp(1, Kind.ALL) == pytest.approx(119054.4651, abs=WON)
     assert a.loss_incurred_pp(1) == pytest.approx(186006.8254, abs=WON)
-    assert a.claims_ann_pp(1) / a.loss_incurred_pp(1) == pytest.approx(
+    assert a.claims_ann_pp(1, Kind.ALL) / a.loss_incurred_pp(1) == pytest.approx(
         0.64005, abs=5e-6)
     # Month 0 itself, and the two-term cross-check.
-    assert a.claims(0) == pytest.approx(119054.4651 / 12.0, abs=WON)
-    assert a.claims(0) == pytest.approx(9921.2054, abs=WON)
+    assert a.claims(0, Kind.ALL) == pytest.approx(119054.4651 / 12.0, abs=WON)
+    assert a.claims(0, Kind.ALL) == pytest.approx(9921.2054, abs=WON)
     assert a.expenses(0) == pytest.approx(0.07 * 11982.0, rel=1e-14)
-    assert a.claim_expenses(0) == pytest.approx(0.03 * a.claims(0), rel=1e-14)
+    assert a.claim_expenses(0) == pytest.approx(0.03 * a.claims(0, Kind.ALL), rel=1e-14)
     assert a.commissions(0) == pytest.approx(0.06 * 11982.0, rel=1e-14)
     assert a.net_cf(0) == pytest.approx(
-        0.87 * a.premiums(0) - 1.03 * a.claims(0), abs=1e-9)
+        0.87 * a.premiums(0) - 1.03 * a.claims(0, Kind.ALL), abs=1e-9)
     assert a.net_cf(0) == pytest.approx(205.4984, abs=WON)
     # Decrements at the end of month 0: no renewal decline, (0+1) mod 12 != 0.
     assert a.pols_death(0) == pytest.approx(MORT_MTH_0, abs=INFORCE)
-    assert a.pols_if_at(0, "BEF_LAPSE") == pytest.approx(0.9998899175, abs=INFORCE)
+    assert a.pols_if_at(0, PolTiming.BEF_LAPSE) == pytest.approx(0.9998899175, abs=INFORCE)
     assert a.pols_lapse(0) == pytest.approx(0.0087406487, abs=INFORCE)
     assert a.pols_renewal_decline(0) == 0.0
     assert a.pols_if(1) == pytest.approx(0.9911492689, abs=INFORCE)
@@ -789,7 +791,7 @@ def test_hand_trace_t1_is_t0_scaled_and_the_year_is_one_set_of_rates(kr_medical_
     for t in range(1, 12):
         scale = a.pols_if(t)
         assert a.premiums(t) == pytest.approx(a.premiums(0) * scale, rel=1e-13)
-        for kind in ("GE_IN", "GE_OUT", "NP_IN", "NP_OUT", "NP_THREE"):
+        for kind in (Kind.GE_IN, Kind.GE_OUT, Kind.NP_IN, Kind.NP_OUT, Kind.NP_THREE):
             assert a.claims(t, kind) == pytest.approx(
                 a.claims(0, kind) * scale, rel=1e-13), (t, kind)
         assert a.expenses(t) == pytest.approx(a.expenses(0) * scale, rel=1e-13)
@@ -816,11 +818,11 @@ def test_hand_trace_t11_to_t12_the_renewal(kr_medical_anchor):
     a = kr_medical_anchor
     assert a.pols_if(11) == pytest.approx(0.9068380084, abs=INFORCE)
     assert a.pols_death(11) == pytest.approx(0.0000998270, abs=INFORCE)
-    assert a.pols_if_at(11, "BEF_LAPSE") == pytest.approx(0.9067381814, abs=INFORCE)
+    assert a.pols_if_at(11, PolTiming.BEF_LAPSE) == pytest.approx(0.9067381814, abs=INFORCE)
     assert a.pols_lapse(11) == pytest.approx(0.0079263524, abs=INFORCE)
-    assert a.pols_if_at(11, "BEF_SUSPEND") == pytest.approx(0.8988118290, abs=INFORCE)
+    assert a.pols_if_at(11, PolTiming.BEF_SUSPEND) == pytest.approx(0.8988118290, abs=INFORCE)
     assert a.pols_suspend(11) == 0.0
-    assert a.pols_if_at(11, "BEF_RENEWAL") == pytest.approx(0.8988118290, abs=INFORCE)
+    assert a.pols_if_at(11, PolTiming.BEF_RENEWAL) == pytest.approx(0.8988118290, abs=INFORCE)
     assert a.pols_renewal_decline(11) == pytest.approx(0.0089881183, abs=INFORCE)
     assert a.pols_if(12) == pytest.approx(0.8898237107, abs=INFORCE)
     assert a.check_pols_roll_fwd_resid(11) == pytest.approx(0.0, abs=1e-14)
@@ -839,10 +841,10 @@ def test_hand_trace_t11_to_t12_the_renewal(kr_medical_anchor):
         0.05040, abs=5e-7)
     assert a.prem_np_base(2) / a.prem_np_base(1) - 1.0 == pytest.approx(
         0.12424, abs=5e-7)
-    assert a.claims(12) == pytest.approx(
+    assert a.claims(12, Kind.ALL) == pytest.approx(
         124750.6482 / 12.0 * 0.8898237107, abs=WON)
     assert a.net_cf(12) == pytest.approx(
-        0.87 * a.premiums(12) - 1.03 * a.claims(12), abs=1e-9)
+        0.87 * a.premiums(12) - 1.03 * a.claims(12, Kind.ALL), abs=1e-9)
     # The premium falls month by month inside a year and rises at the boundary.
     assert all(a.premiums(t + 1) < a.premiums(t) for t in range(0, 11))
     assert a.premiums(12) > a.premiums(11)
@@ -874,18 +876,18 @@ def test_hand_trace_t59_to_t60_the_reentry_that_does_nothing_and_the_band_step(
     assert a.claims_physio_pp(6) == pytest.approx(16430.9164, abs=WON)
     assert a.claims_inject_pp(6) == pytest.approx(13328.1121, abs=WON)
     assert a.claims_mri_pp(6) == pytest.approx(13931.1237, abs=WON)
-    assert a.claims_ann_pp(6) == pytest.approx(183428.5019, abs=WON)
+    assert a.claims_ann_pp(6, Kind.ALL) == pytest.approx(183428.5019, abs=WON)
     assert a.prem_gross_mth(6) == pytest.approx(
         (6128.6225 + 12911.4712 * 1.0025494) * (1.0 - 0.10 * 0.5314584961), abs=0.001)
     assert a.premiums(60) == pytest.approx(12896.5596, abs=WON)
-    assert a.claims(60) == pytest.approx(183428.5019 / 12.0 * 0.7141205641, abs=WON)
+    assert a.claims(60, Kind.ALL) == pytest.approx(183428.5019 / 12.0 * 0.7141205641, abs=WON)
     assert a.net_cf(60) == pytest.approx(-23.3071, abs=WON)
     # The step, decomposed: claims x 1.2758 against premium x 1.0994.
-    assert a.claims_ann_pp(6) / a.claims_ann_pp(5) == pytest.approx(1.27575, abs=5e-6)
+    assert a.claims_ann_pp(6, Kind.ALL) / a.claims_ann_pp(5, Kind.ALL) == pytest.approx(1.27575, abs=5e-6)
     assert a.prem_gross_mth(6) / a.prem_gross_mth(5) == pytest.approx(
         1.09941, abs=5e-6)
-    lr5 = a.claims_ann_pp(5) / (a.prem_gross_mth(5) * 12.0)
-    lr6 = a.claims_ann_pp(6) / (a.prem_gross_mth(6) * 12.0)
+    lr5 = a.claims_ann_pp(5, Kind.ALL) / (a.prem_gross_mth(5) * 12.0)
+    lr6 = a.claims_ann_pp(6, Kind.ALL) / (a.prem_gross_mth(6) * 12.0)
     assert lr5 == pytest.approx(0.7294, abs=5e-5)
     assert lr6 == pytest.approx(0.8464, abs=5e-5)
     assert lr5 < BREAK_EVEN_LR < lr6, "the band step crosses the break-even loss ratio"
@@ -1045,19 +1047,19 @@ def test_the_decrements_are_taken_in_the_notes_processing_order(indemnity_medica
     for point_id in (1, 9):
         p = indemnity_medical.Projection[point_id]
         for t in (0, 5, 11, 23, 60, 119):
-            assert p.pols_if_at(t, "BEF_DECR") == p.pols_if(t)
-            assert p.pols_if_at(t, "BEF_LAPSE") == pytest.approx(
+            assert p.pols_if_at(t, PolTiming.BEF_DECR) == p.pols_if(t)
+            assert p.pols_if_at(t, PolTiming.BEF_LAPSE) == pytest.approx(
                 p.pols_if(t) * (1 - p.mort_rate_mth(t)), rel=1e-14)
-            assert p.pols_if_at(t, "BEF_SUSPEND") == pytest.approx(
-                p.pols_if_at(t, "BEF_LAPSE") * (1 - p.lapse_rate_mth(t)), rel=1e-14)
-            assert p.pols_if_at(t, "BEF_RENEWAL") == pytest.approx(
-                p.pols_if_at(t, "BEF_SUSPEND") * (1 - p.suspend_rate_mth(t)),
+            assert p.pols_if_at(t, PolTiming.BEF_SUSPEND) == pytest.approx(
+                p.pols_if_at(t, PolTiming.BEF_LAPSE) * (1 - p.lapse_rate_mth(t)), rel=1e-14)
+            assert p.pols_if_at(t, PolTiming.BEF_RENEWAL) == pytest.approx(
+                p.pols_if_at(t, PolTiming.BEF_SUSPEND) * (1 - p.suspend_rate_mth(t)),
                 rel=1e-14)
         for t in (0, 5, 58):
-            assert p.pols_if_at(t, "BEF_RENEWAL") == p.pols_if_at(t, "AFT_DECR")
+            assert p.pols_if_at(t, PolTiming.BEF_RENEWAL) == p.pols_if_at(t, PolTiming.AFT_DECR)
     p9 = indemnity_medical.Projection[9]
     assert p9.suspend_rate() == 0.03
-    assert p9.pols_if_at(11, "BEF_SUSPEND") > p9.pols_if_at(11, "BEF_RENEWAL")
+    assert p9.pols_if_at(11, PolTiming.BEF_SUSPEND) > p9.pols_if_at(11, PolTiming.BEF_RENEWAL)
     assert p9.pols_suspend(11) > 0.0
     with pytest.raises(Exception):
         p9.pols_if_at(11, "NOT_A_TIMING")
@@ -1079,7 +1081,7 @@ def test_the_published_statement_adds_up(indemnity_medical):
         assert (df["premiums"] - outgo - df["net_cf"]).abs().max() == pytest.approx(
             0.0, abs=1e-9)
         for t in (0, 11, 60, p.proj_len() - 1):
-            assert df.loc[t, claim_cols].sum() == pytest.approx(p.claims(t), abs=1e-9)
+            assert df.loc[t, claim_cols].sum() == pytest.approx(p.claims(t, Kind.ALL), abs=1e-9)
         assert df.index.name == "t" and list(df.columns)[0] == "pols_if"
         assert "net_cf" in df.columns and not df.isna().any().any()
         assert len(df) == p.proj_len()
@@ -1175,10 +1177,10 @@ def test_the_limits_are_wired_and_none_of_them_binds_on_a_deterministic_cell(
             assert p.acts_inject_eff(y) < p.act_limit_three
     p7 = indemnity_medical.Projection[7]
     assert p7.visit_cap() == 100000.0
-    assert p7.paid_out_per_visit("ge_out", 10000.0, 0.20, 1.0) == pytest.approx(
+    assert p7.paid_out_per_visit(Stream.ge_out, 10000.0, 0.20, 1.0) == pytest.approx(
         21540.0, abs=WON)
-    assert p7.paid_out_per_visit("ge_out", 10000.0, 0.20, 1.0) < GE_OUT_CLINIC
-    assert p7.paid_out_per_visit("np_out", 30000.0, 0.30, 1.0) == pytest.approx(
+    assert p7.paid_out_per_visit(Stream.ge_out, 10000.0, 0.20, 1.0) < GE_OUT_CLINIC
+    assert p7.paid_out_per_visit(Stream.np_out, 30000.0, 0.30, 1.0) == pytest.approx(
         58250.0, abs=WON)
 
 
@@ -1195,10 +1197,10 @@ def test_the_indemnity_ceiling_is_this_products_defining_constraint(indemnity_me
         p = indemnity_medical.Projection[point_id]
         assert p.check_indemnity() is True
         for y in range(1, 11):
-            assert p.claims_ann_pp(y) <= p.loss_incurred_pp(y) + 1e-6, (point_id, y)
+            assert p.claims_ann_pp(y, Kind.ALL) <= p.loss_incurred_pp(y) + 1e-6, (point_id, y)
             assert p.check_indemnity_resid(y) == 0.0
     a = indemnity_medical.Projection[1]
-    assert a.claims_ann_pp(1) == pytest.approx(119054.4651, abs=WON)
+    assert a.claims_ann_pp(1, Kind.ALL) == pytest.approx(119054.4651, abs=WON)
     assert a.loss_incurred_pp(1) == pytest.approx(186006.8254, abs=WON)
 
 
@@ -1254,7 +1256,7 @@ def test_pitfall_do_not_multiply_a_rate_by_the_boheom_gaipgeumaek(indemnity_medi
                    "daily_benefit", "hosp_benefit"):
         assert absent not in names, f"{absent} would make this a fixed-benefit product"
 
-    base = indemnity_medical.Projection[1].claims_ann_pp(1)
+    base = indemnity_medical.Projection[1].claims_ann_pp(1, Kind.ALL)
     table = indemnity_medical.Data.model_point_table()
     tenfold = table.copy()
     tenfold.loc[1, "annual_limit"] = 500000000.0
@@ -1262,7 +1264,7 @@ def test_pitfall_do_not_multiply_a_rate_by_the_boheom_gaipgeumaek(indemnity_medi
                   "model_point_table_lim10.csv") as model:
         p = model.Projection[1]
         assert p.annual_limit() == 500000000.0
-        assert p.claims_ann_pp(1) == pytest.approx(base, rel=1e-12), \
+        assert p.claims_ann_pp(1, Kind.ALL) == pytest.approx(base, rel=1e-12), \
             "a slack limit moved the claim, so it is not inside a min"
     tiny = table.copy()
     tiny.loc[1, "annual_limit"] = 20000.0
@@ -1271,8 +1273,8 @@ def test_pitfall_do_not_multiply_a_rate_by_the_boheom_gaipgeumaek(indemnity_medi
         p = model.Projection[1]
         assert p.ge_limit_factor(1) == pytest.approx(0.5066574378, abs=5e-10)
         assert p.np_limit_factor(1) == pytest.approx(0.6562930379, abs=5e-10)
-        assert p.claims_ann_pp(1) == pytest.approx(77812.2879, abs=WON)
-        assert p.claims_ann_pp(1) < base
+        assert p.claims_ann_pp(1, Kind.ALL) == pytest.approx(77812.2879, abs=WON)
+        assert p.claims_ann_pp(1, Kind.ALL) < base
         assert p.check_annual_limits() is True and p.check_indemnity() is True
         # and the 3대비급여 limbs are untouched: their sub-limits replace the aggregate.
         assert p.claims_np_three_pp(1) == pytest.approx(23475.4331, abs=WON)
@@ -1295,23 +1297,23 @@ def test_pitfall_apply_the_deductible_to_the_distribution_not_to_the_mean(
         mu = a.sev_mean(stream)
         return max(0.0, mu - max(floor, retain * mu))
 
-    np_out = a.paid_out_per_visit("np_out", 30000.0, 0.30, 1.0)
-    assert naive("np_out", 30000.0, 0.30) == pytest.approx(104545.0, abs=WON)
-    assert naive("np_out", 30000.0, 0.30) / np_out - 1.0 == pytest.approx(
+    np_out = a.paid_out_per_visit(Stream.np_out, 30000.0, 0.30, 1.0)
+    assert naive(Stream.np_out, 30000.0, 0.30) == pytest.approx(104545.0, abs=WON)
+    assert naive(Stream.np_out, 30000.0, 0.30) / np_out - 1.0 == pytest.approx(
         0.3583, abs=5e-5)
-    clinic = a.paid_out_per_visit("ge_out", 10000.0, 0.20, 1.0)
-    hospital = a.paid_out_per_visit("ge_out", 20000.0, 0.20, 1.0)
-    assert naive("ge_out", 10000.0, 0.20) / clinic - 1.0 == pytest.approx(
+    clinic = a.paid_out_per_visit(Stream.ge_out, 10000.0, 0.20, 1.0)
+    hospital = a.paid_out_per_visit(Stream.ge_out, 20000.0, 0.20, 1.0)
+    assert naive(Stream.ge_out, 10000.0, 0.20) / clinic - 1.0 == pytest.approx(
         0.0636, abs=5e-5)
-    assert naive("ge_out", 20000.0, 0.20) / hospital - 1.0 == pytest.approx(
+    assert naive(Stream.ge_out, 20000.0, 0.20) / hospital - 1.0 == pytest.approx(
         -0.1701, abs=5e-5)
     blend = 0.63 * clinic + 0.37 * hospital
-    naive_blend = 0.63 * naive("ge_out", 10000.0, 0.20) \
-        + 0.37 * naive("ge_out", 20000.0, 0.20)
+    naive_blend = 0.63 * naive(Stream.ge_out, 10000.0, 0.20) \
+        + 0.37 * naive(Stream.ge_out, 20000.0, 0.20)
     assert naive_blend / blend - 1.0 == pytest.approx(-0.0105, abs=5e-5)
     # MRI is the control: every point sits above its crossing, so the mean is exact there.
-    assert a.paid_per_act("mri", 1.0) == pytest.approx(
-        naive("mri", 30000.0, 0.30), rel=1e-14)
+    assert a.paid_per_act(Stream.mri, 1.0) == pytest.approx(
+        naive(Stream.mri, 30000.0, 0.30), rel=1e-14)
 
 
 def test_pitfall_the_public_ceiling_is_an_exclusion_from_covered_loss_not_a_benefit_cap(
@@ -1336,8 +1338,8 @@ def test_pitfall_the_public_ceiling_is_an_exclusion_from_covered_loss_not_a_bene
     for y, ratio in ((1, 0.0726), (10, 0.1662)):
         tr = p.trend_ge(y)
         r = p.retain_rate_ge()
-        blend = p.clinic_share() * p.paid_out_per_visit("ge_out", 10000.0, r, tr) \
-            + (1.0 - p.clinic_share()) * p.paid_out_per_visit("ge_out", 20000.0, r, tr)
+        blend = p.clinic_share() * p.paid_out_per_visit(Stream.ge_out, 10000.0, r, tr) \
+            + (1.0 - p.clinic_share()) * p.paid_out_per_visit(Stream.ge_out, 20000.0, r, tr)
         after = p.visit_rate_ge(y) * blend * p.oop_trunc(y)   # the wrong order
         assert after / p.claims_ge_out_pp(y) - 1.0 == pytest.approx(ratio, abs=5e-5)
     # On every other shipped point the truncation is inert, and says so.
@@ -1367,7 +1369,7 @@ def test_pitfall_the_two_million_won_cap_sits_on_the_retention_that_survives_the
     for point_id in indemnity_medical.Data.model_point_table().index:
         p = indemnity_medical.Projection[point_id]
         for y in range(1, 11):
-            cost = p.adm_rate(y) * p.sev_mean("ge_in") * p.trend_ge(y) * p.oop_trunc(y)
+            cost = p.adm_rate(y) * p.sev_mean(Stream.ge_in) * p.trend_ge(y) * p.oop_trunc(y)
             top_up = max(0.0, cost * p.retain_rate_ge() - p.cap_inpatient_retain)
             assert p.claims_ge_in_pp(y) == pytest.approx(
                 cost * (1.0 - p.retain_rate_ge()) + top_up, rel=1e-14), (point_id, y)
@@ -1379,7 +1381,7 @@ def test_pitfall_the_two_million_won_cap_sits_on_the_retention_that_survives_the
     with _swapped("cap", "model_point_file", heavy,
                   "model_point_table_cap.csv") as model:
         p = model.Projection[8]
-        cost_untruncated = p.adm_rate(1) * p.sev_mean("ge_in") * p.trend_ge(1)
+        cost_untruncated = p.adm_rate(1) * p.sev_mean(Stream.ge_in) * p.trend_ge(1)
         cost = cost_untruncated * p.oop_trunc(1)
         r = p.retain_rate_ge()
         assert cost_untruncated * r > p.cap_inpatient_retain    # the cap would bind
@@ -1543,13 +1545,13 @@ def test_pitfall_the_injection_carve_out_is_counted_once(kr_medical_anchor):
     a = kr_medical_anchor
     assert a.inject_carve_share == 0.25
     assert a.acts_inject_eff(1) == pytest.approx(0.75 * a.act_rate_inject(1), rel=1e-14)
-    carve = a.act_rate_inject(1) * 0.25 * a.paid_per_act("inject", 1.0)
+    carve = a.act_rate_inject(1) * 0.25 * a.paid_per_act(Stream.inject, 1.0)
     assert carve == pytest.approx(2390.6094, abs=WON)
-    visits = a.visits_np_eff(1) * a.paid_out_per_visit("np_out", 30000.0, 0.30, 1.0)
+    visits = a.visits_np_eff(1) * a.paid_out_per_visit(Stream.np_out, 30000.0, 0.30, 1.0)
     assert a.claims_np_out_pp(1) == pytest.approx(visits + carve, rel=1e-14)
     assert a.claims_inject_pp(1) == pytest.approx(
-        a.acts_inject_eff(1) * a.paid_per_act("inject", 1.0), rel=1e-14)
-    assert carve / a.claims_ann_pp(1) == pytest.approx(0.0201, abs=5e-5)
+        a.acts_inject_eff(1) * a.paid_per_act(Stream.inject, 1.0), rel=1e-14)
+    assert carve / a.claims_ann_pp(1, Kind.ALL) == pytest.approx(0.0201, abs=5e-5)
     # The whole injection frequency is accounted for exactly once, across the two limbs.
     assert a.acts_inject_eff(1) + a.act_rate_inject(1) * 0.25 == pytest.approx(
         a.act_rate_inject(1), rel=1e-14)
@@ -1566,24 +1568,25 @@ def test_pitfall_read_the_utilisation_table_at_the_attained_age(indemnity_medica
     do not arrive at the same time, and that is what makes the loss ratio saw-tooth.
     """
     a = indemnity_medical.Projection[1]
-    assert a.claims_ann_pp(6) == pytest.approx(183428.5019, abs=WON)
+    assert a.claims_ann_pp(6, Kind.ALL) == pytest.approx(183428.5019, abs=WON)
     table = indemnity_medical.Data.utilisation_table().reset_index()
     frozen = table.copy()
-    row40 = frozen[(frozen["sex"] == "M") & (frozen["age_start"] == 40)].iloc[0]
-    mask = (frozen["sex"] == "M") & (frozen["age_start"] == 45)
+    is_male = frozen["sex"] == Sex.M
+    row40 = frozen[is_male & (frozen["age_start"] == 40)].iloc[0]
+    mask = is_male & (frozen["age_start"] == 45)
     for column in ("adm_rate", "los_days", "visit_rate_ge", "visit_rate_np",
                    "act_rate_physio", "act_rate_inject", "act_rate_mri"):
         frozen.loc[mask, column] = row40[column]
     with _swapped("frozen", "utilisation_table_file", frozen,
                   "utilisation_table_frozen.csv", index=False) as model:
         p = model.Projection[1]
-        assert p.claims_ann_pp(6) == pytest.approx(150937.0485, abs=WON)
-        assert p.claims_ann_pp(6) / a.claims_ann_pp(6) - 1.0 == pytest.approx(
+        assert p.claims_ann_pp(6, Kind.ALL) == pytest.approx(150937.0485, abs=WON)
+        assert p.claims_ann_pp(6, Kind.ALL) / a.claims_ann_pp(6, Kind.ALL) - 1.0 == pytest.approx(
             -0.1771, abs=5e-5)
         year6 = sum(p.net_cf(t) for t in range(60, 72))
         assert year6 > 0.0, "the frozen band hides the projection's only negative year"
     assert sum(a.net_cf(t) for t in range(60, 72)) == pytest.approx(-276.1354, abs=WON)
-    step = a.claims_ann_pp(6) / 150937.0485
+    step = a.claims_ann_pp(6, Kind.ALL) / 150937.0485
     assert step == pytest.approx(1.215265, abs=5e-7)
     assert step ** (1.0 / 5.0) == pytest.approx(1.0398, abs=5e-5)
     assert 1.04 ** 5 / step - 1.0 == pytest.approx(0.0011, abs=5e-4)
@@ -1654,8 +1657,8 @@ def test_pitfall_the_three_named_classes_never_pass_through_the_annual_limit_fac
     """
     a = kr_medical_anchor
     for y in (1, 6, 10):
-        assert a.claims_ann_pp(y, "NP_THREE") == a.claims_np_three_pp(y)
-        assert a.claims_ann_pp(y, "NP_IN") == pytest.approx(
+        assert a.claims_ann_pp(y, Kind.NP_THREE) == a.claims_np_three_pp(y)
+        assert a.claims_ann_pp(y, Kind.NP_IN) == pytest.approx(
             a.claims_np_in_pp(y) * a.np_limit_factor(y), rel=1e-14)
         assert a.claims_np_pp(y) == pytest.approx(
             a.claims_np_main_pp(y) + a.claims_np_three_pp(y), rel=1e-14)
@@ -1673,7 +1676,7 @@ def test_pitfall_the_three_named_classes_never_pass_through_the_annual_limit_fac
         # Uncovered, not reassigned: the main limb carries no carve-out either.
         assert p6.claims_np_out_pp(y) == pytest.approx(
             p6.visits_np_eff(y) * p6.paid_out_per_visit(
-                "np_out", 30000.0, p6.retain_rate_np(), p6.trend_np(y)), rel=1e-14)
+                Stream.np_out, 30000.0, p6.retain_rate_np(), p6.trend_np(y)), rel=1e-14)
     df6 = p6.result_cf()
     assert (df6["claims_np_three"] == 0.0).all()
     assert (df6["claims_np_out"] > 0.0).all()
@@ -1697,8 +1700,8 @@ def test_pitfall_the_rating_exemption_reduces_the_rating_count_never_the_benefit
     assert a.claims_np_rated_pp(1) == pytest.approx(53531.5106, abs=WON)
     # The benefit the cash flow statement pays is the unrated figure, on every year.
     for y in range(1, 11):
-        paid = a.claims_ann_pp(y, "NP_IN") + a.claims_ann_pp(y, "NP_OUT") \
-            + a.claims_ann_pp(y, "NP_THREE")
+        paid = a.claims_ann_pp(y, Kind.NP_IN) + a.claims_ann_pp(y, Kind.NP_OUT) \
+            + a.claims_ann_pp(y, Kind.NP_THREE)
         assert paid == pytest.approx(a.claims_np_pp(y), rel=1e-12), y
         assert a.claims_np_rated_pp(y) < paid
 
@@ -1718,15 +1721,15 @@ def test_pitfall_the_room_cap_is_a_daily_average_not_a_nightly_cap(kr_medical_an
     assert a.los_days(1) == 7.5
     stay_cap = a.room_cap_day * a.los_days(1)
     assert stay_cap == 750000.0
-    room = sum(p * min(0.50 * c, stay_cap) for c, p in a.sev_points("np_room"))
+    room = sum(p * min(0.50 * c, stay_cap) for c, p in a.sev_points(Stream.np_room))
     assert room == pytest.approx(135000.0, abs=WON)
-    assert room == pytest.approx(0.50 * a.sev_mean("np_room"), rel=1e-14)   # nothing capped
-    assert max(0.50 * c for c, _ in a.sev_points("np_room")) == 600000.0 < stay_cap
+    assert room == pytest.approx(0.50 * a.sev_mean(Stream.np_room), rel=1e-14)   # nothing capped
+    assert max(0.50 * c for c, _ in a.sev_points(Stream.np_room)) == 600000.0 < stay_cap
     assert room / a.los_days(1) == pytest.approx(18000.0, abs=WON)
     assert a.room_cap_day / (room / a.los_days(1)) == pytest.approx(5.56, abs=0.01)
     # The length of stay enters the model here and only here.
     assert a.claims_np_in_pp(1) == pytest.approx(
-        a.adm_rate(1) * (a.sev_mean("np_in") * 0.70 + room), rel=1e-14)
+        a.adm_rate(1) * (a.sev_mean(Stream.np_in) * 0.70 + room), rel=1e-14)
 
 
 def test_pitfall_do_not_delete_a_limit_because_it_reads_slack(indemnity_medical):
@@ -1774,9 +1777,9 @@ def test_pitfall_no_claims_subtotal_column_beside_the_splits(indemnity_medical):
             "claims_np_three"]
         assert "claim_expenses" in df.columns
         for t in (0, 60, p.proj_len() - 1):
-            assert p.claims(t) == pytest.approx(
-                sum(p.claims(t, k) for k in ("GE_IN", "GE_OUT", "NP_IN", "NP_OUT",
-                                             "NP_THREE")), rel=1e-14)
+            assert p.claims(t, Kind.ALL) == pytest.approx(
+                sum(p.claims(t, k) for k in (Kind.GE_IN, Kind.GE_OUT, Kind.NP_IN, Kind.NP_OUT,
+                                             Kind.NP_THREE)), rel=1e-14)
     with pytest.raises(Exception):
         indemnity_medical.Projection[1].claims(0, "DEATH")
 
@@ -1802,9 +1805,9 @@ def test_pitfall_expenses_is_maintenance_only_and_claim_expenses_is_claim_driven
     for t in (0, 11, 60, 119):
         assert a.expenses(t) == pytest.approx(0.07 * a.premiums(t), rel=1e-14)
         assert a.commissions(t) == pytest.approx(0.06 * a.premiums(t), rel=1e-14)
-        assert a.claim_expenses(t) == pytest.approx(0.03 * a.claims(t), rel=1e-14)
+        assert a.claim_expenses(t) == pytest.approx(0.03 * a.claims(t, Kind.ALL), rel=1e-14)
         assert a.net_cf(t) == pytest.approx(
-            0.87 * a.premiums(t) - 1.03 * a.claims(t), abs=1e-9)
+            0.87 * a.premiums(t) - 1.03 * a.claims(t, Kind.ALL), abs=1e-9)
     assert BREAK_EVEN_LR == pytest.approx(0.8446601942, abs=5e-11)
     # The claim expense does not track the premium: policy year 6 is where they part.
     df = a.result_cf()
@@ -1988,9 +1991,10 @@ def test_the_shipped_mortality_runs_the_wrong_way_and_the_table_says_so(
     names = set(indemnity_medical.Projection.cells)
     assert "claims_death" not in names and "claims_lapse" not in names
     assert "cv_pp" not in names and "av_pp" not in names
-    doubled = indemnity_medical.Data.mort_table().copy()
-    doubled["mort_rate"] = doubled["mort_rate"] * 5.0
-    with _swapped("mort", "mort_table_file", doubled,
+    # Keep the loaded table's integer sex codes in the replacement CSV.
+    stressed_mortality = indemnity_medical.Data.mort_table().copy()
+    stressed_mortality["mort_rate"] *= 5.0
+    with _swapped("mort", "mort_table_file", stressed_mortality,
                   "mort_table_x5.csv") as model:
         p = model.Projection[1]
         assert p.mort_rate(0) == pytest.approx(5.0 * MORT_Q[40], rel=1e-12)
@@ -2076,9 +2080,9 @@ def test_the_elections_do_what_the_notes_say_they_do(indemnity_medical):
     claim_cols = [c for c in df10.columns if c.startswith("claims_")]
     ten_year_lr = df10[claim_cols].sum().sum() / df10["premiums"].sum()
     assert ten_year_lr == pytest.approx(0.5756, abs=5e-4)
-    assert p10.claims_ann_pp(1) / (p10.prem_gross_mth(1) * 12.0) == pytest.approx(
+    assert p10.claims_ann_pp(1, Kind.ALL) / (p10.prem_gross_mth(1) * 12.0) == pytest.approx(
         0.5333, abs=5e-4)
-    assert p10.claims_ann_pp(10) / (p10.prem_gross_mth(10) * 12.0) == pytest.approx(
+    assert p10.claims_ann_pp(10, Kind.ALL) / (p10.prem_gross_mth(10) * 12.0) == pytest.approx(
         0.5913, abs=5e-4)
 
 
@@ -2092,16 +2096,47 @@ def test_an_input_can_be_swapped_without_touching_formulas(indemnity_medical):
     """
     base = indemnity_medical.Projection[1].claims_ge_out_pp(1)
     severity = indemnity_medical.Data.severity_table().reset_index()
-    doubled = severity["stream"] == "ge_out"
+    doubled = severity["stream"] == Stream.ge_out
     severity.loc[doubled, "cost"] = severity.loc[doubled, "cost"] * 2.0
     with _swapped("sev", "severity_table_file", severity,
                   "severity_table_alt.csv", index=False) as model:
         p = model.Projection[1]
-        assert p.sev_mean("ge_out") == pytest.approx(2 * 36100.0, rel=1e-12)
+        assert p.sev_mean(Stream.ge_out) == pytest.approx(2 * 36100.0, rel=1e-12)
         assert p.claims_ge_out_pp(1) > base
         assert p.check_indemnity() is True
     assert indemnity_medical.Projection[1].claims_ge_out_pp(1) == pytest.approx(
         base, rel=1e-14)
+
+
+@pytest.mark.parametrize(
+    ("table", "file_ref", "category"),
+    [
+        ("mort_table", "mort_table_file", "sex"),
+        ("utilisation_table", "utilisation_table_file", "sex"),
+        ("severity_table", "severity_table_file", "stream"),
+    ],
+)
+def test_enum_table_csv_round_trip(indemnity_medical, table, file_ref, category):
+    """A replacement CSV accepts the shipped labels and the saved enum codes."""
+    data = indemnity_medical.Data
+    loaded = getattr(data, table)()
+    assert pd.api.types.is_integer_dtype(loaded.index.get_level_values(category).dtype)
+    labels = pd.read_csv(CSV_DIR / getattr(data, file_ref))
+
+    for encoding, frame, index in (("labels", labels, False), ("codes", loaded, True)):
+        with _swapped(encoding, file_ref, frame, f"{table}_{encoding}.csv", index=index) as model:
+            pd.testing.assert_frame_equal(
+                getattr(model.Data, table)(), loaded, check_exact=False, rtol=1e-12, atol=1e-12
+            )
+
+    invalid = loaded.reset_index()
+    invalid.loc[0, category] = 999
+    with _swapped("invalid", file_ref, invalid, f"{table}_invalid.csv", index=False) as model:
+        with pytest.raises(FormulaError):
+            getattr(model.Data, table)()
+        error = mx.get_error()
+        assert isinstance(error, ValueError)
+        assert "999 is not a valid" in str(error)
 
 
 def test_the_docstrings_carry_this_products_own_reference_material(indemnity_medical):

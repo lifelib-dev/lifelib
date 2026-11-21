@@ -210,8 +210,9 @@ import pytest
 from sec_support import (
     GENERATED_COLUMNS, SEC_SPECS, TWIN_EXEMPT_DEFAULT, build_sec_table, check_generated,
     codes, compiled_case, compiled_mismatches, exact_here, fingerprint_mismatches,
-    frame_mismatches, run_compiled, sweep, temp_inputs, twin_mismatches)
-from us_registry import model_path, point_keys, projection
+    frame_mismatches, point_index_scalars, run_compiled, sweep, temp_inputs, twin_mismatches)
+from released_twins import read_released_twin, sec_test_model_path as model_path
+from us_registry import point_keys, projection
 
 SEC, TWIN = "IUL_US_SEC", "IUL_US_S"
 TABLE, LADDER = "model_point_table_sec.csv", "inforce_segments_sec.csv"
@@ -1392,7 +1393,7 @@ def s_model():
     the committed rows read S's months off it, the cells its own sweep misses among them.
     Frozen once swept (:func:`_freeze`).
     """
-    model = mx.read_model(model_path(TWIN), name=_name("s"))
+    model = read_released_twin(TWIN, model_name=_name("s"))
     for key in point_keys(model):
         _sweep_s(projection(model, key))
     _freeze()
@@ -4620,7 +4621,8 @@ UNDECODABLE = [
      "point_id 2: coi_rates.csv has no rates for its sex, rate_class and age_at_entry 45",
      "KeyError"),
     ("surr_charge_id IUL99", "surr_charge_id", "IUL99",
-     "surr_charge_table.csv has no schedule for the surr_charge_id of point_id [2], each "
+     "surr_charge_table.csv has no schedule for the surr_charge_id of point_id "
+     f"{point_index_scalars(2)}, each "
      "of which has_surr_charge", "KeyError"),
     # Each key the point's joins find, in a case and a whitespace variant, which S's
     # lookups, exact, find no row for (USLIB-SEC-PLAN.md §7.3, *For M17 and later*, item
@@ -4633,7 +4635,8 @@ UNDECODABLE = [
           ("sex", "M", "point_id 2: coi_rates.csv has no rates for its sex, rate_class "
                        "and age_at_entry 45"),
           ("surr_charge_id", "IUL10",
-           "surr_charge_table.csv has no schedule for the surr_charge_id of point_id [2], "
+           "surr_charge_table.csv has no schedule for the surr_charge_id of point_id "
+           f"{point_index_scalars(2)}, "
            "each of which has_surr_charge"))
       for value in (key.lower(), key + " ")],
 ]
@@ -6395,9 +6398,10 @@ def test_a_point_the_contract_does_not_issue_is_refused_by_proj_len(tmp_path, ca
 # first month.
 _CHARGED = (4, 6)
 _NO_SCHEDULE = ("surr_charge_table.csv has no schedule for the surr_charge_id of point_id "
-                "[6], each of which has_surr_charge")
+                f"{point_index_scalars(6)}, each of which has_surr_charge")
 _RUNOFF_HUGE = ("surr_charge_table.csv: runoff_years must be below 2**53 years in size on "
-                "the schedule of point_id [4, 6], each of which has_surr_charge")
+                f"the schedule of point_id {point_index_scalars(4, 6)}, each of which "
+                "has_surr_charge")
 
 
 def _charged_only(points, edit=None):

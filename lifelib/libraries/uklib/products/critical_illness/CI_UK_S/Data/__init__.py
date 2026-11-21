@@ -85,9 +85,10 @@ def ci_rate_table():
     Sorted on read: ``Projection.pivot_interp`` slices the frame by (sex, smoker), and
     pandas warns about indexing past the lexsort depth of an unsorted MultiIndex.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / ci_rate_file,                                  # noqa: F821
-        index_col=["sex", "smoker", "age"]).sort_index()
+    frame = pd.read_csv(input_dir() / ci_rate_file)                 # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    frame["smoker"] = [Smoker[name] for name in frame["smoker"]]
+    return frame.set_index(["sex", "smoker", "age"]).sort_index()
 
 
 def lapse_table():
@@ -106,3 +107,7 @@ ci_rate_file = "ci_rate_table.csv"
 lapse_table_file = "lapse_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+Smoker = ("Pickle", 2)

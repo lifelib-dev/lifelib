@@ -36,6 +36,7 @@ import pytest
 from modelx.core.errors import FormulaError
 
 from fr_registry import MODELS, LIB
+from lifelib.libraries.frlib.products.assurance_emprunteur.enums import IndemnityBasis, IptBenefitBasis, Kind, PremiumBasis, Sex, Status
 
 
 def model_files(folder):
@@ -83,10 +84,10 @@ WORKED_EXAMPLE = {
 # The notes' column sums over t = 0..14.
 WORKED_EXAMPLE_SUMS = {
     "premiums": 2032.99,
-    "DEATH": 965.23,
-    "PTIA": 94.16,
-    "ITT": 72.95,
-    "IPT": 0.71,
+    Kind.DEATH: 965.23,
+    Kind.PTIA: 94.16,
+    Kind.ITT: 72.95,
+    Kind.IPT: 0.71,
     "expenses": 38.10,
 }
 
@@ -122,7 +123,7 @@ ITT_BENEFIT_PER_INCEPTION = 16328.72
 # The notes' aggregates over the full 240 months, discounted at a flat 2.5 %.
 PV_PREMIUMS = 12602.19
 PV_PREMIUMS_CRD_BASIS = 12588.82
-PV = {"DEATH": 7170.56, "PTIA": 635.87, "ITT": 1932.71, "IPT": 1293.18}
+PV = {Kind.DEATH: 7170.56, Kind.PTIA: 635.87, Kind.ITT: 1932.71, Kind.IPT: 1293.18}
 PV_EXPENSES = 334.17
 PV_OUTGO = 11366.49
 
@@ -141,10 +142,10 @@ def test_worked_example_row(fr_ade_anchor, t):
     assert p.pols_itt_close(t) == pytest.approx(l_itt, abs=STATE)
     assert p.pols_ipt_close(t) == pytest.approx(l_ipt, abs=STATE)
     assert p.premiums(t) == pytest.approx(prem, abs=CENT)
-    assert p.claims(t, "DEATH") == pytest.approx(dec, abs=CENT)
-    assert p.claims(t, "PTIA") == pytest.approx(ptia, abs=CENT)
-    assert p.claims(t, "ITT") == pytest.approx(itt, abs=CENT)
-    assert p.claims(t, "IPT") == pytest.approx(ipt, abs=CENT)
+    assert p.claims(t, Kind.DEATH) == pytest.approx(dec, abs=CENT)
+    assert p.claims(t, Kind.PTIA) == pytest.approx(ptia, abs=CENT)
+    assert p.claims(t, Kind.ITT) == pytest.approx(itt, abs=CENT)
+    assert p.claims(t, Kind.IPT) == pytest.approx(ipt, abs=CENT)
 
 
 def test_worked_example_column_sums(fr_ade_anchor):
@@ -153,7 +154,7 @@ def test_worked_example_column_sums(fr_ade_anchor):
     ts = range(15)
     assert sum(p.premiums(t) for t in ts) == pytest.approx(
         WORKED_EXAMPLE_SUMS["premiums"], abs=CENT)
-    for kind in ("DEATH", "PTIA", "ITT", "IPT"):
+    for kind in (Kind.DEATH, Kind.PTIA, Kind.ITT, Kind.IPT):
         assert sum(p.claims(t, kind) for t in ts) == pytest.approx(
             WORKED_EXAMPLE_SUMS[kind], abs=CENT)
     assert sum(p.expenses(t) for t in ts) == pytest.approx(
@@ -216,9 +217,9 @@ def test_the_ordering_is_visible_in_the_ptia_to_death_ratio(fr_ade_anchor):
     taking the two decrements in parallel would print 0.1000.
     """
     p = fr_ade_anchor
-    assert p.claims(0, "DEATH") == pytest.approx(65.251648, abs=CENT)
-    assert p.claims(0, "PTIA") == pytest.approx(6.512472, abs=CENT)
-    ratio = p.claims(0, "PTIA") / p.claims(0, "DEATH")
+    assert p.claims(0, Kind.DEATH) == pytest.approx(65.251648, abs=CENT)
+    assert p.claims(0, Kind.PTIA) == pytest.approx(6.512472, abs=CENT)
+    ratio = p.claims(0, Kind.PTIA) / p.claims(0, Kind.DEATH)
     assert ratio == pytest.approx(0.0998, abs=5e-5)
     assert ratio < p.ptia_ratio
 
@@ -303,7 +304,7 @@ def test_the_two_crd_conventions_differ_by_the_month_repayment(fr_ade_anchor):
     p = fr_ade_anchor
     assert p.crd(0) - p.crd(1) == pytest.approx(609.20, abs=CENT)
     expected = p.crd(1) * p.quotite() * p.pols_death_healthy(0)
-    assert p.claims(0, "DEATH") == pytest.approx(expected, rel=1e-14)
+    assert p.claims(0, Kind.DEATH) == pytest.approx(expected, rel=1e-14)
     assert p.benefit_deces_pp(0) == pytest.approx(p.crd(1) * p.quotite(), rel=1e-14)
 
 
@@ -421,7 +422,7 @@ def test_the_cohort_vector_is_rebuilt_not_mutated(fr_ade_anchor):
 def test_a_seeded_claim_starts_at_its_stated_duration(assurance_emprunteur):
     """Model point 9 is an ITT claim already 18 months old, so it enters cohort 19."""
     p = assurance_emprunteur.Projection[9]
-    assert p.status() == "itt"
+    assert p.status() == Status.itt
     assert p.claim_duration_months() == 18
     assert p.pols_itt_dur(0, 19) == 1.0
     assert p.pols_itt_dur(0, 1) == 0.0
@@ -429,7 +430,7 @@ def test_a_seeded_claim_starts_at_its_stated_duration(assurance_emprunteur):
     assert p.claim_dur_year(19) == 2              # duration year 2, recovery down to 0.30
     assert p.itt_recovery_rate(19) == 0.30
     # It is paid from the first month, being already in payment.
-    assert p.claims(0, "ITT") > 0.0
+    assert p.claims(0, Kind.ITT) > 0.0
     # And it reaches the cap eighteen months later, not thirty-six.
     assert p.pols_itt_cap(17) > 0.0
     assert p.pols_itt_cap(16) == 0.0
@@ -438,10 +439,10 @@ def test_a_seeded_claim_starts_at_its_stated_duration(assurance_emprunteur):
 def test_an_ipt_cell_is_an_annuity_with_no_recovery(assurance_emprunteur):
     """Model point 10 starts in IPT: the only exits are death and the age limit."""
     p = assurance_emprunteur.Projection[10]
-    assert p.status() == "ipt"
+    assert p.status() == Status.ipt
     assert p.pols_ipt(0) == 1.0
     assert p.pols_itt(0) == 0.0 and p.pols_healthy(0) == 0.0
-    assert p.claims(0, "IPT") == pytest.approx(p.benefit_itt_pp() * p.pols_ipt_stay(0),
+    assert p.claims(0, Kind.IPT) == pytest.approx(p.benefit_itt_pp() * p.pols_ipt_stay(0),
                                                rel=1e-14)
     # No recovery from IPT: the population only ever falls, until the cover ends.
     assert all(p.pols_ipt(t + 1) < p.pols_ipt(t) for t in (0, 49, 99, 199))
@@ -466,8 +467,8 @@ def test_deces_and_ptia_are_separate_decrements(fr_ade_anchor):
     assert p.cover_ptia(215) == 1 and p.cover_ptia(216) == 0
     assert all(p.cover_deces(t) == 1 for t in (0, 215, 216, 239))
     assert p.pols_ptia(215) > 0.0 and p.pols_ptia(216) == 0.0
-    assert p.claims(216, "PTIA") == 0.0
-    assert p.claims(216, "DEATH") > 0.0
+    assert p.claims(216, Kind.PTIA) == 0.0
+    assert p.claims(216, Kind.DEATH) > 0.0
     assert p.pols_death_healthy(239) > 0.0
 
 
@@ -485,8 +486,8 @@ def test_the_premium_does_not_fall_when_the_cover_ceases(fr_ade_anchor):
     assert all(p.premiums(t) > 0.0 for t in (216, 239))
     assert p.check_cover_end() is True
     for t in (216, 227, 239):
-        assert p.claims(t, "ITT") == 0.0
-        assert p.claims(t, "IPT") == 0.0
+        assert p.claims(t, Kind.ITT) == 0.0
+        assert p.claims(t, Kind.IPT) == 0.0
         assert p.pols_itt(t) == 0.0 and p.pols_ipt(t) == 0.0
 
 
@@ -520,8 +521,8 @@ def test_a_cover_can_end_long_before_the_loan(assurance_emprunteur):
     assert p.proj_len() == 264
     assert p.cover_itt(83) == 1 and p.cover_itt(84) == 0
     assert p.crd(84) > 90000.0                    # most of the loan still outstanding
-    assert p.claims(83, "ITT") > 0.0
-    assert all(p.claims(t, "ITT") == 0.0 for t in (84, 179, 263))
+    assert p.claims(83, Kind.ITT) > 0.0
+    assert all(p.claims(t, Kind.ITT) == 0.0 for t in (84, 179, 263))
     assert p.premiums(263) > 0.0                  # still paying, 180 months later
     assert p.cover_deces(263) == 1                # and still death covered
     assert p.check_cover_end() is True
@@ -535,14 +536,14 @@ def test_a_new_inception_is_not_paid_in_the_month_it_incepts(fr_ade_anchor):
     """Monthly in arrears: a claim incepting at the end of month t is paid at t + 1."""
     p = fr_ade_anchor
     assert p.pols_itt(0) == 0.0
-    assert p.claims(0, "ITT") == 0.0
+    assert p.claims(0, Kind.ITT) == 0.0
     assert p.pols_itt_inception(0) > 0.0
-    assert p.claims(1, "ITT") == pytest.approx(
+    assert p.claims(1, Kind.ITT) == pytest.approx(
         p.echeance() * S_ITT_1 * p.pols_itt_inception(0), rel=1e-9)
-    assert p.claims(1, "ITT") == pytest.approx(0.93, abs=CENT)
+    assert p.claims(1, Kind.ITT) == pytest.approx(0.93, abs=CENT)
     # The benefit excludes the cohort seeded this month, in every month.
     for t in (4, 59, 199):
-        paid_on = p.claims(t, "ITT") / p.benefit_itt_pp()
+        paid_on = p.claims(t, Kind.ITT) / p.benefit_itt_pp()
         assert paid_on == pytest.approx(p.pols_itt_stay(t), rel=1e-12)
         assert paid_on < p.pols_itt(t) + p.pols_itt_inception(t)
 
@@ -564,7 +565,7 @@ def test_the_itt_to_ipt_movers_are_paid_exactly_once(fr_ade_anchor):
     assert worst > 0.10
     # And an identity without it is wrong by exactly that much in the worst month.
     def naive(t):
-        return (p.claims(t, "ITT") + p.claims(t, "IPT")
+        return (p.claims(t, Kind.ITT) + p.claims(t, Kind.IPT)
                 - scale * (p.pols_itt_close(t) - p.pols_itt_inception(t)
                            + p.pols_ipt_close(t)))
     assert max(abs(naive(t)) for t in range(216)) == pytest.approx(worst, rel=1e-9)
@@ -575,9 +576,9 @@ def test_the_ipt_annuity_includes_the_month_of_the_transition(fr_ade_anchor):
     p = fr_ade_anchor
     t = 59
     assert p.pols_itt_to_ipt(t) > 0.0
-    assert p.claims(t, "IPT") == pytest.approx(
+    assert p.claims(t, Kind.IPT) == pytest.approx(
         p.benefit_itt_pp() * (p.pols_ipt_stay(t) + p.pols_itt_to_ipt(t)), rel=1e-14)
-    assert p.claims(t, "IPT") > p.benefit_itt_pp() * p.pols_ipt_stay(t)
+    assert p.claims(t, Kind.IPT) > p.benefit_itt_pp() * p.pols_ipt_stay(t)
 
 
 # ---------------------------------------------------------------------------
@@ -633,7 +634,7 @@ def test_quotite_scales_each_leg_exactly_once(assurance_emprunteur):
     assert p3.quotite() == 0.60
     assert p3.crd(50) == pytest.approx(p1.crd(50), rel=1e-14)   # the loan is unscaled
     for t in (0, 12, 99, 239):
-        for kind in ("DEATH", "PTIA", "ITT", "IPT"):
+        for kind in (Kind.DEATH, Kind.PTIA, Kind.ITT, Kind.IPT):
             assert p3.claims(t, kind) == pytest.approx(
                 0.60 * p1.claims(t, kind), rel=1e-12)
         assert p3.premiums(t) == pytest.approx(0.60 * p1.premiums(t), rel=1e-12)
@@ -648,7 +649,7 @@ def test_the_decreasing_premium_rises_first(assurance_emprunteur):
     attained-age rate climbs faster than the CRD falls.
     """
     p = assurance_emprunteur.Projection[2]
-    assert p.premium_basis() == "capital_restant_du"
+    assert p.premium_basis() == PremiumBasis.capital_restant_du
     assert p.prem_pp(0) == pytest.approx(125.33, abs=CENT)
     assert p.prem_pp(108) == pytest.approx(164.03, abs=CENT)
     assert p.prem_pp(228) == pytest.approx(31.65, abs=CENT)
@@ -670,35 +671,35 @@ def test_the_two_premium_bases_are_pv_equivalent_on_this_cell(assurance_emprunte
     assert p2.pv_premiums() == pytest.approx(PV_PREMIUMS_CRD_BASIS, abs=CENT)
     assert p1.pv_premiums() / p2.pv_premiums() == pytest.approx(1.001062, abs=5e-7)
     # The cover is identical, so every benefit is too.
-    assert p2.pv_claims("DEATH") == pytest.approx(p1.pv_claims("DEATH"), rel=1e-12)
+    assert p2.pv_claims(Kind.DEATH) == pytest.approx(p1.pv_claims(Kind.DEATH), rel=1e-12)
 
 
 def test_indemnitaire_is_the_same_formula_with_a_ratio(assurance_emprunteur):
     """Model point 4 pays 0.55 of the *échéance*, and nothing else changes."""
     p1 = assurance_emprunteur.Projection[1]
     p4 = assurance_emprunteur.Projection[4]
-    assert p4.indemnity_basis() == "indemnitaire"
+    assert p4.indemnity_basis() == IndemnityBasis.indemnitaire
     assert p4.income_loss_ratio() == 0.55
     assert p4.indemnity_ratio() == 0.55
     assert p1.indemnity_ratio() == 1.0
     for t in (59, 119, 199):
-        for kind in ("ITT", "IPT"):
+        for kind in (Kind.ITT, Kind.IPT):
             assert p4.claims(t, kind) == pytest.approx(
                 0.55 * p1.claims(t, kind), rel=1e-12)
         # The death and PTIA legs are untouched.
-        assert p4.claims(t, "DEATH") == pytest.approx(p1.claims(t, "DEATH"), rel=1e-12)
+        assert p4.claims(t, Kind.DEATH) == pytest.approx(p1.claims(t, Kind.DEATH), rel=1e-12)
 
 
 def test_the_crd_ipt_basis_pays_a_capital_and_removes_the_life(assurance_emprunteur):
     """Model point 5 pays ``crd(t+1) x quotité`` once on consolidation, then the life goes."""
     p5 = assurance_emprunteur.Projection[5]
-    assert p5.ipt_benefit_basis() == "crd"
+    assert p5.ipt_benefit_basis() == IptBenefitBasis.crd
     assert all(p5.pols_ipt(t) == 0.0 for t in (0, 59, 119, 215, 239))
     assert all(p5.pols_ipt_close(t) == 0.0 for t in (0, 59, 215))
     t = 59
     assert p5.pols_ipt_entry(t) > 0.0
     assert p5.pols_ipt_capital(t) == pytest.approx(p5.pols_ipt_entry(t), rel=1e-14)
-    assert p5.claims(t, "IPT") == pytest.approx(
+    assert p5.claims(t, Kind.IPT) == pytest.approx(
         p5.crd(t + 1) * p5.quotite() * p5.pols_ipt_entry(t), rel=1e-12)
     # They leave the model, exactly as a death does, so the identity still closes.
     assert p5.check_states() is True
@@ -724,11 +725,11 @@ def test_the_franchise_enters_only_through_the_inception_rate(assurance_emprunte
         "franchise_days", "franchise_factor"}
     # The female inception loading is in the table, not in a cells.
     tbl = assurance_emprunteur.Data.itt_inception_table()
-    assert float(tbl.loc[("F", 50), "itt_inception_rate"]) == pytest.approx(
-        1.30 * float(tbl.loc[("M", 50), "itt_inception_rate"]), rel=1e-9)
+    assert float(tbl.loc[(Sex.F, 50), "itt_inception_rate"]) == pytest.approx(
+        1.30 * float(tbl.loc[(Sex.M, 50), "itt_inception_rate"]), rel=1e-9)
     mort = assurance_emprunteur.Data.mort_table()
-    assert float(mort.loc[("F", 50), "mort_rate"]) == pytest.approx(
-        0.60 * float(mort.loc[("M", 50), "mort_rate"]), rel=1e-9)
+    assert float(mort.loc[(Sex.F, 50), "mort_rate"]) == pytest.approx(
+        0.60 * float(mort.loc[(Sex.M, 50), "mort_rate"]), rel=1e-9)
 
 
 # ---------------------------------------------------------------------------
@@ -748,7 +749,7 @@ def test_the_present_values_over_the_full_240_months(fr_ade_anchor):
     assert p.pv_outgo() == pytest.approx(PV_OUTGO, abs=CENT)
     assert 1 - p.pv_outgo() / p.pv_premiums() == pytest.approx(0.0981, abs=5e-5)
     benefits = p.pv_outgo() - p.pv_expenses()
-    death_side = (p.pv_claims("DEATH") + p.pv_claims("PTIA")) / benefits
+    death_side = (p.pv_claims(Kind.DEATH) + p.pv_claims(Kind.PTIA)) / benefits
     assert death_side == pytest.approx(0.708, abs=5e-4)
     assert 1 - death_side == pytest.approx(0.292, abs=5e-4)
 
@@ -997,7 +998,7 @@ def test_round_trip_is_stable(tmp_path):
         proj = reread.Projection[1]
         for t, row in WORKED_EXAMPLE.items():
             assert proj.pols_healthy_close(t) == pytest.approx(row[1], abs=STATE)
-            assert proj.claims(t, "DEATH") == pytest.approx(row[5], abs=CENT)
+            assert proj.claims(t, Kind.DEATH) == pytest.approx(row[5], abs=CENT)
         assert proj.check_crd() is True
         assert "Notes symbol" in reread.Projection.doc
     finally:

@@ -332,10 +332,7 @@ def sex():
     female issue-age ceiling is 3 to 8 years higher at the same payment term everywhere it
     is stated.
     """
-    v = model_point()["sex"]
-    if v not in ("M", "F"):
-        raise ValueError("invalid sex")
-    return v
+    return Sex[model_point()["sex"]]
 
 
 def age_at_entry():
@@ -483,10 +480,7 @@ def int_basis():
     complete cash values are 금리확정형 [S8], and the one full 약관 retrieved is a 유니버셜
     contract whose account mechanics belong to ``Pension_KR_S`` and ``VA_KR_S`` [S5].
     """
-    v = model_point()["int_basis"]
-    if v not in ("fixed", "linked"):
-        raise ValueError("invalid int_basis")
-    return v
+    return IntBasis[model_point()["int_basis"]]
 
 
 def decl_rate():
@@ -513,17 +507,14 @@ def acc_int_rate():
     fixed at issue: only the accrual moves, which is what makes the linked account
     path-dependent.
     """
-    if int_basis() == "linked":
+    if int_basis() == IntBasis.linked:
         return max(decl_rate(), min_guar_rate)                       # noqa: F821
     return prem_int_rate                                             # noqa: F821
 
 
 def lapse_basis():
     """The lapse basis in force: ``loglinear`` (the FSS 원칙모형) or ``flat``."""
-    v = model_point()["lapse_basis"]
-    if v not in tuple(data.lapse_table().index):                     # noqa: F821
-        raise ValueError("invalid lapse_basis")
-    return v
+    return LapseBasis[model_point()["lapse_basis"]]
 
 
 def mort_be_factor():
@@ -680,7 +671,7 @@ def omega_age():
     it to 120 invents one.  The 제10회 경험생명표's own terminal age is not public.
     """
     tbl = data.mort_table().loc[sex()]                               # noqa: F821
-    return int(tbl.index[tbl["mort_rate"] >= 1.0][0])
+    return int([a for a in tbl.index if tbl.loc[a, "mort_rate"] >= 1.0][0])
 
 
 def proj_years():
@@ -886,17 +877,18 @@ def epv_death_mth(u):
         q + (1.0 - q) * epv_death_mth(u + 1))
 
 
-def annuity_due_mth(u, n):
-    """a-due^m(u, n): the n-month annuity-due of 1 per month from month u, pricing rate.
+def annuity_due_mth(u):
+    """a-due^m(u): the annuity-due of 1 per month from month u to the end of the 납입기간, pricing rate.
 
-    ``1 + v_m p^m(u) a(u + 1, n - 1)``, zero for ``n <= 0``.  Measured in months of premium,
+    ``1 + v_m p^m(u) a(u + 1)``, zero from ``u = prem_period_mths()``: the n-month annuity with
+    ``n = prem_period_mths() - u``, the only term the model reads.  Measured in months of premium,
     so ``SA A^m(0) / a^m(0, 12m)`` is an amount **per month** — the 월납순보험료 by monthly
     equivalence, which is what the account recursion consumes.
     """
-    if n <= 0 or u >= proj_len():
+    if u >= prem_period_mths() or u >= proj_len():
         return 0.0
     return 1.0 + (1.0 / (1.0 + prem_int_rate_mth())) * (
-        1.0 - mort_rate_mth_at(u)) * annuity_due_mth(u + 1, n - 1)
+        1.0 - mort_rate_mth_at(u)) * annuity_due_mth(u + 1)
 
 
 def epv_death_acc_mth(u):
@@ -913,12 +905,12 @@ def epv_death_acc_mth(u):
         q + (1.0 - q) * epv_death_acc_mth(u + 1))
 
 
-def annuity_due_acc_mth(u, n):
-    """a-due^m(u, n) on the **accrual** rate; see :func:`epv_death_acc_mth`."""
-    if n <= 0 or u >= proj_len():
+def annuity_due_acc_mth(u):
+    """a-due^m(u) on the **accrual** rate; see :func:`epv_death_acc_mth`."""
+    if u >= prem_period_mths() or u >= proj_len():
         return 0.0
     return 1.0 + (1.0 / (1.0 + acc_int_rate_mth())) * (
-        1.0 - mort_rate_mth_at(u)) * annuity_due_acc_mth(u + 1, n - 1)
+        1.0 - mort_rate_mth_at(u)) * annuity_due_acc_mth(u + 1)
 
 
 def prem_net_level_pp():
@@ -950,8 +942,7 @@ def prem_net_level_mth_pp():
     quantity 별표 14 names and the one :func:`prem_gross_calc_pp` loads; that is a statutory
     and pricing figure rather than a cash flow, and it stays on its annual footing.
     """
-    return sum_assured() * epv_death_mth(0) / annuity_due_mth(
-        0, prem_period_mths())
+    return sum_assured() * epv_death_mth(0) / annuity_due_mth(0)
 
 
 def prem_net_20yr_pp():
@@ -1177,8 +1168,7 @@ def prosp_val_pp(d):
     rather than asserted, and this cells is a diagnostic.
     """
     return (sum_assured() * epv_death_acc_mth(d)
-            - prem_net_level_mth_pp() * annuity_due_acc_mth(
-                d, max(prem_period_mths() - d, 0)))
+            - prem_net_level_mth_pp() * annuity_due_acc_mth(d))
 
 
 def cv_std_pp(d):
@@ -1278,6 +1268,11 @@ def refund_ratio(d):
     return cv_pp(d) / cp if cp > 0.0 else 0.0
 
 
+def lapse_basis_row():
+    """The lapse table row of the policy's lapse basis."""
+    return data.lapse_table().loc[lapse_basis()]                     # noqa: F821
+
+
 def lapse_rate_base(t):
     """The base annual 해지율 in period t, before any bonus-date spike.
 
@@ -1295,7 +1290,7 @@ def lapse_rate_base(t):
     [S8], while the *valuation* basis above is much lower.  This is the single largest
     assumption gap on this product.
     """
-    row = data.lapse_table().loc[lapse_basis()]                      # noqa: F821
+    row = lapse_basis_row()
     w1 = float(row["first_year_rate"])
     wm = float(row["completion_rate"])
     wu = float(row["ultimate_rate"])
@@ -1503,12 +1498,12 @@ def pols_if_at(t, timing):
         l(t+1) before any 부활, and zero in the last period ``proj_len() - 1`` because the
         table's terminal rate is 1 and nobody survives it.
     """
-    if timing == "BEF_DECR":
+    if timing == PolTiming.BEF_DECR:
         return pols_if(t)
-    if timing == "BEF_LAPSE":
+    if timing == PolTiming.BEF_LAPSE:
         return pols_if(t) * (1.0 - mort_rate_mth(t))
-    if timing == "AFT_DECR":
-        return pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate_mth(t))
+    if timing == PolTiming.AFT_DECR:
+        return pols_if_at(t, PolTiming.BEF_LAPSE) * (1.0 - lapse_rate_mth(t))
     raise ValueError("invalid timing")
 
 
@@ -1528,7 +1523,7 @@ def pols_lapse(t):
     The gross count.  Those that return under 부활 a year later are :func:`pols_reinstate`
     and are **not** paid a surrender value; the rest are :func:`pols_surr`.
     """
-    return pols_if_at(t, "BEF_LAPSE") * lapse_rate_mth(t)
+    return pols_if_at(t, PolTiming.BEF_LAPSE) * lapse_rate_mth(t)
 
 
 def pols_reinstate(t):
@@ -1569,7 +1564,7 @@ def premiums(t):
     return premium_mth_at_pp(t) * pols_pay_exp(t)
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Benefit outgo in period t, by kind; the total when kind is omitted.
 
     Every kind is settled net of the 보험계약대출 balance opening the period, ``loan_pp(t)``,
@@ -1601,17 +1596,17 @@ def claims(t, kind=None):
     Every one of these is floored at zero: a loan can outgrow both the surrender value and,
     given long enough, the sum assured, and none of them may produce a negative payment.
     """
-    if kind is None:
-        return sum(claims(t, k) for k in ("DEATH", "LAPSE", "REDUCTION"))
-    if kind == "DEATH":
+    if kind == Kind.ALL:
+        return sum(claims(t, k) for k in (Kind.DEATH, Kind.LAPSE, Kind.REDUCTION))
+    if kind == Kind.DEATH:
         return max(0.0, sum_assured_at(t) - loan_pp(t)) * pols_death(t)
-    if kind == "LAPSE":
+    if kind == Kind.LAPSE:
         return max(0.0, cv_pp(t + 1) - loan_pp(t)) * pols_surr(t)
-    if kind == "REDUCTION":
+    if kind == Kind.REDUCTION:
         if reduce_year() <= 0 or t != 12 * reduce_year() - 1:
             return 0.0
         return (reduce_frac() * max(0.0, cv_pp(t + 1) - loan_pp(t))
-                * pols_if_at(t, "AFT_DECR"))
+                * pols_if_at(t, PolTiming.AFT_DECR))
     raise ValueError("invalid kind")
 
 
@@ -1695,7 +1690,7 @@ def net_cf(t):
     basis and the cliff produces a visible one-year hole instead — which is the whole
     reason the two bases are shipped side by side [REG-R27].
     """
-    return (premiums(t) - claims(t) - claim_expenses(t) - expenses(t)
+    return (premiums(t) - claims(t, Kind.ALL) - claim_expenses(t) - expenses(t)
             - commissions(t))
 
 
@@ -1919,8 +1914,8 @@ def check_net_cf_resid(t):
     fourth kind added to :func:`claims` and left out of the statement shows up here rather
     than silently vanishing from it.
     """
-    return (net_cf(t) - premiums(t) + claims(t, "DEATH") + claims(t, "LAPSE")
-            + claims(t, "REDUCTION") + claim_expenses(t) + expenses(t)
+    return (net_cf(t) - premiums(t) + claims(t, Kind.DEATH) + claims(t, Kind.LAPSE)
+            + claims(t, Kind.REDUCTION) + claim_expenses(t) + expenses(t)
             + commissions(t))
 
 
@@ -1949,9 +1944,9 @@ def result_cf():
         {
             "pols_if": [pols_if(t) for t in ts],
             "premiums": [premiums(t) for t in ts],
-            "claims_death": [claims(t, "DEATH") for t in ts],
-            "claims_lapse": [claims(t, "LAPSE") for t in ts],
-            "claims_reduction": [claims(t, "REDUCTION") for t in ts],
+            "claims_death": [claims(t, Kind.DEATH) for t in ts],
+            "claims_lapse": [claims(t, Kind.LAPSE) for t in ts],
+            "claims_reduction": [claims(t, Kind.REDUCTION) for t in ts],
             "claim_expenses": [claim_expenses(t) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "commissions": [commissions(t) for t in ts],
@@ -2064,3 +2059,13 @@ roll_fwd_tol = 1e-10
 val_tol = 1e-07
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+IntBasis = ("Pickle", 3)
+
+LapseBasis = ("Pickle", 2)
+
+PolTiming = ("Pickle", 4)
+
+Kind = ("Pickle", 5)

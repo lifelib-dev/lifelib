@@ -100,9 +100,9 @@ def mort_table():
     rate — the worked example's entry age — gives exactly 0.5000% p.a.  Sorted on read,
     because ``Projection.mort_rate`` indexes into it.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file,                               # noqa: F821
-        index_col=["sex", "age"]).sort_index()
+    frame = pd.read_csv(input_dir() / mort_table_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"]).sort_index()
 
 
 def lapse_table():
@@ -146,9 +146,11 @@ def scenario_table():
     convex in the asset shock, so a deterministic run understates it and the *mémoire*
     duly runs 1 000 risk-neutral scenarios.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / scenario_table_file,                           # noqa: F821
-        index_col=["scenario", "year"]).sort_index()
+    frame = pd.read_csv(input_dir() / scenario_table_file)                     # noqa: F821
+    frame["scenario"] = [Scenario[name] for name in frame["scenario"]]
+    if (frame.groupby("scenario")["year"].max() != frame["year"].max()).any():
+        raise ValueError("scenario_table: every scenario must run to the same last year")
+    return frame.set_index(["scenario", "year"]).sort_index()
 
 
 def tec_curve():
@@ -174,9 +176,11 @@ def tec_curve():
     nothing more precise was retrieved.  Sorted on read, because the interpolation walks
     the maturity index in order.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / tec_curve_file,                                # noqa: F821
-        index_col=["scenario", "year", "maturity"]).sort_index()
+    frame = pd.read_csv(input_dir() / tec_curve_file)                     # noqa: F821
+    frame["scenario"] = [Scenario[name] for name in frame["scenario"]]
+    if (frame.groupby("scenario")["year"].max() != frame["year"].max()).any():
+        raise ValueError("tec_curve: every scenario must run to the same last year")
+    return frame.set_index(["scenario", "year", "maturity"]).sort_index()
 
 
 # ---------------------------------------------------------------------------
@@ -193,3 +197,7 @@ scenario_table_file = "scenario_table.csv"
 tec_curve_file = "tec_curve.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+Scenario = ("Pickle", 2)

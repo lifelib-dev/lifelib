@@ -292,10 +292,7 @@ def model_point():
 
 def sex():
     """The sex of the insured, ``M`` or ``F``; a rating factor and a table key."""
-    v = model_point()["sex"]
-    if v not in ("M", "F"):
-        raise ValueError("invalid sex")
-    return v
+    return Sex[model_point()["sex"]]
 
 
 def issue_age():
@@ -370,10 +367,7 @@ def rate_class():
     at issue and cannot be changed later, which is what gives the selective-lapsation
     module its mechanism.
     """
-    v = model_point()["rate_class"]
-    if v not in data.rate_class_table().index:                       # noqa: F821
-        raise ValueError("unknown rate_class " + str(v))
-    return v
+    return RateClass[model_point()["rate_class"]]
 
 
 def class_factor():
@@ -412,15 +406,12 @@ def premium_mode():
     payment period.  No 前納 or frequency discount is applied, because the discount is
     insurer-set and unpublished **[std scope]**.
     """
-    v = model_point()["premium_mode"]
-    if v not in ("monthly", "semiannual", "annual"):
-        raise ValueError("invalid premium_mode")
-    return v
+    return PremMode[model_point()["premium_mode"]]
 
 
 def prem_mode_months():
     """The number of months in one premium payment period: 1, 6 or 12."""
-    return {"monthly": 1, "semiannual": 6, "annual": 12}[premium_mode()]
+    return {PremMode.monthly: 1, PremMode.semiannual: 6, PremMode.annual: 12}[premium_mode()]
 
 
 def commutation():
@@ -620,7 +611,7 @@ def pols_if(t):
         return 0.0
     if t == 0:
         return pols_if_init()
-    return pols_if_at(t - 1, "AFT_DECR") + pols_reinst(t)
+    return pols_if_at(t - 1, PolTiming.AFT_DECR) + pols_reinst(t)
 
 
 def pols_if_at(t, timing):
@@ -640,14 +631,14 @@ def pols_if_at(t, timing):
         ``t = term_m() - 1`` on, because its survivors leave with nothing rather
         than rolling forward.
     """
-    if timing == "BEF_DECR":
+    if timing == PolTiming.BEF_DECR:
         return pols_if(t)
-    if timing == "BEF_LAPSE":
+    if timing == PolTiming.BEF_LAPSE:
         return pols_if(t) * (1.0 - mort_rate_mth(t))
-    if timing == "AFT_DECR":
+    if timing == PolTiming.AFT_DECR:
         if t < 0 or t >= term_m() - 1:
             return 0.0
-        return pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate_mth(t))
+        return pols_if_at(t, PolTiming.BEF_LAPSE) * (1.0 - lapse_rate_mth(t))
     raise ValueError("invalid timing")
 
 
@@ -670,7 +661,7 @@ def pols_lapse(t):
     no cash value there is no 自動振替貸付 to carry the policy through an unpaid premium
     either.
     """
-    return pols_if_at(t, "BEF_LAPSE") * lapse_rate_mth(t)
+    return pols_if_at(t, PolTiming.BEF_LAPSE) * lapse_rate_mth(t)
 
 
 def pols_maturity(t):
@@ -682,7 +673,7 @@ def pols_maturity(t):
     """
     if t != term_m() - 1:
         return 0.0
-    return pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate_mth(t))
+    return pols_if_at(t, PolTiming.BEF_LAPSE) * (1.0 - lapse_rate_mth(t))
 
 
 def pols_reinst(t):
@@ -938,7 +929,7 @@ def premiums(t):
             + prem_arrears_pp() * pols_reinst(t))
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Benefit outgo at the end of month t; every kind here is paid on **death**.
 
     The contingency is stated rather than left to the column names, because
@@ -973,16 +964,16 @@ def claims(t, kind=None):
         zero, always.  There is no 解約返戻金 at any duration on the composite;
         the kind exists so the zero is stated rather than left to inference.
     """
-    if kind is None:
+    if kind == Kind.ALL:
         return sum(claims(t, k) for k in
-                   ("ANNUITY", "COMMUTATION", "LIVING_NEEDS", "LAPSE"))
-    if kind == "ANNUITY":
+                   (Kind.ANNUITY, Kind.COMMUTATION, Kind.LIVING_NEEDS, Kind.LAPSE))
+    if kind == Kind.ANNUITY:
         return annuity_mth() * annuities_if(t)
-    if kind == "COMMUTATION":
+    if kind == Kind.COMMUTATION:
         return commute_pp(t) * pols_commute(t)
-    if kind == "LIVING_NEEDS":
+    if kind == Kind.LIVING_NEEDS:
         return ln_benefit_pp(t) * pols_living_needs(t)
-    if kind == "LAPSE":
+    if kind == Kind.LAPSE:
         return 0.0
     raise ValueError("invalid kind")
 
@@ -1077,7 +1068,7 @@ def net_cf(t):
     all — it acts only through ``pols_if``, and ``claims(t, "LAPSE")`` is identically
     zero.
     """
-    return (premiums(t) - claims(t) - claim_expenses(t)
+    return (premiums(t) - claims(t, Kind.ALL) - claim_expenses(t)
             - annuity_expenses(t) - expenses(t) - commissions(t))
 
 
@@ -1202,8 +1193,8 @@ def check_class_factor_norm_resid(t):
     with the other ``check_*_resid`` cells.
     """
     tbl = data.rate_class_table()                                    # noqa: F821
-    return float((tbl["class_factor"] * tbl["mix_weight"]).sum()
-                 / tbl["mix_weight"].sum() - 1.0)
+    return float(sum(tbl.loc[c, "class_factor"] * tbl.loc[c, "mix_weight"] for c in tbl.index)
+                 / sum(tbl.loc[c, "mix_weight"] for c in tbl.index) - 1.0)
 
 
 def check_class_factor_norm():
@@ -1225,8 +1216,8 @@ def check_net_cf_resid(t):
     without knowing which of them to skip.
     """
     return (net_cf(t) - premiums(t)
-            + claims(t, "ANNUITY") + claims(t, "COMMUTATION")
-            + claims(t, "LIVING_NEEDS") + claims(t, "LAPSE")
+            + claims(t, Kind.ANNUITY) + claims(t, Kind.COMMUTATION)
+            + claims(t, Kind.LIVING_NEEDS) + claims(t, Kind.LAPSE)
             + claim_expenses(t) + annuity_expenses(t)
             + expenses(t) + commissions(t))
 
@@ -1275,10 +1266,10 @@ def result_cf():
             "pols_if": [pols_if(t) for t in ts],
             "annuities_if": [annuities_if(t) for t in ts],
             "premiums": [premiums(t) for t in ts],
-            "claims_annuity": [claims(t, "ANNUITY") for t in ts],
-            "claims_commutation": [claims(t, "COMMUTATION") for t in ts],
-            "claims_living_needs": [claims(t, "LIVING_NEEDS") for t in ts],
-            "claims_lapse": [claims(t, "LAPSE") for t in ts],
+            "claims_annuity": [claims(t, Kind.ANNUITY) for t in ts],
+            "claims_commutation": [claims(t, Kind.COMMUTATION) for t in ts],
+            "claims_living_needs": [claims(t, Kind.LIVING_NEEDS) for t in ts],
+            "claims_lapse": [claims(t, Kind.LAPSE) for t in ts],
             "claim_expenses": [claim_expenses(t) for t in ts],
             "annuity_expenses": [annuity_expenses(t) for t in ts],
             "expenses": [expenses(t) for t in ts],
@@ -1367,3 +1358,13 @@ roll_fwd_tol = 1e-10
 cash_tol = 1e-06
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+RateClass = ("Pickle", 2)
+
+PremMode = ("Pickle", 3)
+
+PolTiming = ("Pickle", 4)
+
+Kind = ("Pickle", 5)

@@ -52,6 +52,7 @@ import pytest
 from modelx.core.errors import FormulaError
 
 from jp_registry import LIB, MODELS
+from lifelib.libraries.jplib.products.income_guarantee.enums import Kind, PolTiming, PremMode, RateClass
 
 
 MODEL_DIR = LIB / MODELS["IncomeTerm_JP_S"][0]
@@ -166,7 +167,7 @@ def test_worked_example_row(jp_income_anchor, t):
     assert a.premiums(t) == pytest.approx(prem, abs=YEN)
     assert a.pols_death(t) == pytest.approx(deaths, abs=LEDGER)
     assert a.annuities_if(t) == pytest.approx(ledger, abs=LEDGER)
-    assert a.claims(t, "ANNUITY") == pytest.approx(annuity, abs=YEN)
+    assert a.claims(t, Kind.ANNUITY) == pytest.approx(annuity, abs=YEN)
     assert a.claim_expenses(t) + a.annuity_expenses(t) == pytest.approx(
         claim_exp, abs=YEN)
     notes_maint_acq, notes_comm = notes_columns(a, t)
@@ -235,7 +236,7 @@ def test_worked_example_month_one_trace(jp_income_anchor):
     assert a.pols_death(0) == pytest.approx(0.000031738873, abs=RATE)
     assert a.annuities_open(0) == pytest.approx(a.pols_death(0), rel=1e-14)
     assert a.annuities_if(0) == pytest.approx(a.pols_death(0), rel=1e-14)
-    assert a.claims(0, "ANNUITY") == pytest.approx(4.76083098, abs=1e-6)
+    assert a.claims(0, Kind.ANNUITY) == pytest.approx(4.76083098, abs=1e-6)
     assert a.annuity_expenses(0) == pytest.approx(0.00634777, abs=1e-6)
     assert a.claim_expenses(0) == pytest.approx(0.95216620, abs=1e-6)
     assert a.expenses(0) == pytest.approx(15000.0 + 4000.0 / 12.0, abs=1e-8)
@@ -250,11 +251,11 @@ def test_worked_example_inforce_update(jp_income_anchor):
         1.0 * (1 - 0.000031738873) * (1 - 0.007828420342), rel=1e-12)
     assert a.pols_if(2) == pytest.approx(0.9843419567, abs=1e-10)
     for t in (0, 199, 418):
-        assert a.pols_if_at(t, "BEF_DECR") == a.pols_if(t)
-        assert a.pols_if_at(t, "BEF_LAPSE") == pytest.approx(
+        assert a.pols_if_at(t, PolTiming.BEF_DECR) == a.pols_if(t)
+        assert a.pols_if_at(t, PolTiming.BEF_LAPSE) == pytest.approx(
             a.pols_if(t) * (1 - a.mort_rate_mth(t)), rel=1e-14)
         assert a.pols_lapse(t) == pytest.approx(
-            a.pols_if_at(t, "BEF_LAPSE") * a.lapse_rate_mth(t), rel=1e-14)
+            a.pols_if_at(t, PolTiming.BEF_LAPSE) * a.lapse_rate_mth(t), rel=1e-14)
 
 
 def test_worked_example_month_thirteen_changes_three_things_at_once(jp_income_anchor):
@@ -339,7 +340,7 @@ def test_the_present_value_diagnostics_need_the_notes_own_split_timing(jp_income
         pv = 0.0
         for t in range(horizon):
             start = a.premiums(t) - a.expenses(t) - a.commissions(t)
-            end = -a.claims(t) - a.claim_expenses(t) - a.annuity_expenses(t)
+            end = -a.claims(t, Kind.ALL) - a.claim_expenses(t) - a.annuity_expenses(t)
             pv += (start * (1.0 + rate) ** (-t / 12.0)
                    + end * (1.0 + rate) ** (-(t + 1) / 12.0))
         assert pv == pytest.approx(expected, abs=YEN), f"at {rate:.3%}"
@@ -385,8 +386,8 @@ def test_pitfall_the_projection_horizon_is_not_the_policy_term(income_guarantee)
 
     a = income_guarantee.Projection[1]
     n, horizon = a.term_m(), a.proj_len()
-    tail = sum(a.claims(t, "ANNUITY") for t in range(n, horizon))
-    total = sum(a.claims(t, "ANNUITY") for t in range(horizon))
+    tail = sum(a.claims(t, Kind.ANNUITY) for t in range(n, horizon))
+    total = sum(a.claims(t, Kind.ANNUITY) for t in range(horizon))
     assert tail == pytest.approx(TAIL_CLAIMS, abs=YEN)
     assert 100.0 * tail / total == pytest.approx(TAIL_SHARE_PCT, abs=5e-5)
 
@@ -414,10 +415,10 @@ def test_pitfall_the_guarantee_is_a_term_extension_not_a_benefit_floor(
     assert (a.pay_count(9), a.pay_count(242)) == (411, 178)
     # The tail is not empty, and it is instalments only.
     for t in range(n, horizon):
-        assert a.claims(t, "ANNUITY") > 0.0
+        assert a.claims(t, Kind.ANNUITY) > 0.0
         assert a.annuity_expenses(t) > 0.0
         assert a.net_cf(t) == pytest.approx(
-            -a.claims(t, "ANNUITY") - a.annuity_expenses(t), abs=1e-9)
+            -a.claims(t, Kind.ANNUITY) - a.annuity_expenses(t), abs=1e-9)
     assert a.pay_end(418) == 441        # twenty-two months past the expiry date
 
 
@@ -588,7 +589,7 @@ def test_pitfall_lapse_pays_nothing_and_there_is_no_surrender_value_cliff(
         proj = income_guarantee.Projection[point_id]
         df = proj.result_cf()
         assert (df["claims_lapse"] == 0.0).all()
-        assert all(proj.claims(t, "LAPSE") == 0.0
+        assert all(proj.claims(t, Kind.LAPSE) == 0.0
                    for t in range(proj.proj_len()))
         # Premium ceases with cover, not before it: 保険料払込期間 equals 保険期間, so there is
         # no 払込満了 step for a suppressed surrender value to step up at.
@@ -616,7 +617,7 @@ def test_pitfall_there_is_no_automatic_premium_loan(income_guarantee):
         assert absent not in names
     a = income_guarantee.Projection[1]
     # A lapse leaves the projection outright; nothing carries it forward.
-    assert a.pols_if(1) == pytest.approx(a.pols_if_at(0, "AFT_DECR"), rel=1e-14)
+    assert a.pols_if(1) == pytest.approx(a.pols_if_at(0, PolTiming.AFT_DECR), rel=1e-14)
     assert a.pols_reinst(1) == 0.0        # 復活 is off, and it is not an APL either
 
 
@@ -633,11 +634,11 @@ def test_pitfall_a_full_commutation_settles_the_claim_and_opens_no_stream(
     horizon = p4.proj_len()
     assert all(p4.annuities_open(t) == 0.0 for t in range(horizon))
     assert all(p4.annuities_if(t) == 0.0 for t in range(horizon))
-    assert all(p4.claims(t, "ANNUITY") == 0.0 for t in range(horizon))
-    assert any(p4.claims(t, "COMMUTATION") > 0.0 for t in range(horizon))
+    assert all(p4.claims(t, Kind.ANNUITY) == 0.0 for t in range(horizon))
+    assert any(p4.claims(t, Kind.COMMUTATION) > 0.0 for t in range(horizon))
     for t in (0, 99, 359):
         assert p4.pols_commute(t) == pytest.approx(p4.pols_death(t), rel=1e-14)
-        assert p4.claims(t, "COMMUTATION") == pytest.approx(
+        assert p4.claims(t, Kind.COMMUTATION) == pytest.approx(
             p4.commute_pp(t) * p4.pols_death(t), rel=1e-14)
         # The administration expense collapses with the benefit: one payment, one
         # charge, instead of one charge per instalment for up to 420 months.
@@ -753,10 +754,10 @@ def test_maturity_is_an_expiry_and_pays_nothing(income_guarantee):
     a = income_guarantee.Projection[1]
     n = a.term_m()
     assert "claims_maturity" not in a.result_cf().columns
-    assert a.claims(n - 1) == pytest.approx(a.claims(n - 1, "ANNUITY"), rel=1e-14)
+    assert a.claims(n - 1, Kind.ALL) == pytest.approx(a.claims(n - 1, Kind.ANNUITY), rel=1e-14)
     assert a.pols_maturity(n - 1) == pytest.approx(
-        a.pols_if_at(n - 1, "BEF_LAPSE") * (1 - a.lapse_rate_mth(n - 1)), rel=1e-14)
-    assert a.pols_if_at(n - 1, "AFT_DECR") == 0.0
+        a.pols_if_at(n - 1, PolTiming.BEF_LAPSE) * (1 - a.lapse_rate_mth(n - 1)), rel=1e-14)
+    assert a.pols_if_at(n - 1, PolTiming.AFT_DECR) == 0.0
     assert a.pols_if(n) == 0.0
 
 
@@ -784,7 +785,7 @@ def test_nothing_is_charged_to_the_in_force_population_after_expiry(income_guara
     # of the administration expense that goes with them, after everything else is zero.
     a = income_guarantee.Projection[1]
     for t in range(a.term_m(), a.proj_len()):
-        assert a.claims(t, "ANNUITY") > 0.0
+        assert a.claims(t, Kind.ANNUITY) > 0.0
         assert a.annuity_expenses(t) > 0.0
 
 
@@ -799,8 +800,8 @@ def test_the_rate_class_factors_normalize_to_the_all_lives_table(income_guarante
     assert a.check_class_factor_norm() is True
     assert a.check_class_factor_norm_resid(0) == pytest.approx(0.0, abs=1e-12)
     table = income_guarantee.Data.rate_class_table()
-    assert sorted(table.index) == ["nonsmoker_preferred", "nonsmoker_standard",
-                                   "smoker_preferred", "smoker_standard"]
+    assert sorted(table.index) == sorted([RateClass.nonsmoker_preferred, RateClass.nonsmoker_standard,
+                                          RateClass.smoker_preferred, RateClass.smoker_standard])
     assert table["provenance"].notna().all()
     weighted = (table["class_factor"] * table["mix_weight"]).sum()
     assert weighted / table["mix_weight"].sum() == pytest.approx(1.0, abs=1e-12)
@@ -822,7 +823,7 @@ def test_commutation_is_off_in_the_base_run_and_on_at_point_4(income_guarantee):
     horizon = a.proj_len()
     assert a.commutation() is False
     assert all(a.pols_commute(t) == 0.0 for t in range(horizon))
-    assert all(a.claims(t, "COMMUTATION") == 0.0 for t in range(horizon))
+    assert all(a.claims(t, Kind.COMMUTATION) == 0.0 for t in range(horizon))
     assert (a.result_cf()["claims_commutation"] == 0.0).all()
 
     v = (1 + 0.0065) ** (-1 / 12)
@@ -836,7 +837,7 @@ def test_commutation_is_off_in_the_base_run_and_on_at_point_4(income_guarantee):
     assert a.commute_pp(0) / (150000.0 * 420) == pytest.approx(0.894482, abs=5e-7)
 
     assert p4.commutation() is True
-    total = sum(p4.claims(t) for t in range(p4.proj_len()))
+    total = sum(p4.claims(t, Kind.ALL) for t in range(p4.proj_len()))
     assert total > 0.0
     # Commuting at 0.65% is worth less than paying the instalments out undiscounted.
     uncommuted = sum(p4.annuity_mth() * p4.pols_death(s) * p4.pay_count(s)
@@ -872,7 +873,7 @@ def test_living_needs_is_off_in_the_base_run_and_on_at_point_5(income_guarantee)
         # Carved out, not added: the three settlement routes partition the claims.
         assert (p5.annuities_open(t) + p5.pols_commute(t) + p5.pols_living_needs(t)
                 == pytest.approx(p5.pols_death(t), rel=1e-14))
-    assert any(p5.claims(t, "LIVING_NEEDS") > 0.0 for t in range(p5.proj_len()))
+    assert any(p5.claims(t, Kind.LIVING_NEEDS) > 0.0 for t in range(p5.proj_len()))
     # An accelerated claim is one payment, so it carries one administration charge
     # alongside the instalments still running on the ledger.
     for t in (0, 99, 199):
@@ -933,7 +934,7 @@ def test_reinstatement_is_off_in_the_base_run_and_on_at_point_8(income_guarantee
         p8.prem_due_pp(lag) * p8.pols_payer(lag)
         + p8.prem_arrears_pp() * p8.pols_reinst(lag), rel=1e-14)
     # Reinstatement adds lives back, so the in-force is above the no-復活 roll-forward.
-    assert p8.pols_if(lag) > p8.pols_if_at(lag - 1, "AFT_DECR")
+    assert p8.pols_if(lag) > p8.pols_if_at(lag - 1, PolTiming.AFT_DECR)
     assert p8.check_pols_roll_fwd() is True
 
 
@@ -951,7 +952,7 @@ def test_selective_lapsation_is_off_in_the_base_run_and_works_when_switched_on(
         base = model.Projection[1]
         assert model.Projection.sel_lapse_lambda == 0.0
         assert all(base.sel_lapse_factor(t) == 1.0 for t in (0, 119, 419))
-        base_outgo = sum(base.claims(t, "ANNUITY")
+        base_outgo = sum(base.claims(t, Kind.ANNUITY)
                          for t in range(base.proj_len()))
         assert base_outgo == pytest.approx(TOTALS["claims_annuity"], abs=YEN)
 
@@ -963,7 +964,7 @@ def test_selective_lapsation_is_off_in_the_base_run_and_works_when_switched_on(
             1.0 + 0.25 * (1.0 - proj.pols_if(119) / 1.0), rel=1e-12)
         assert proj.sel_lapse_factor(419) > proj.sel_lapse_factor(119) > 1.0
         assert proj.mort_rate(119) > 0.000604800
-        assert sum(proj.claims(t, "ANNUITY")
+        assert sum(proj.claims(t, Kind.ANNUITY)
                    for t in range(proj.proj_len())) > base_outgo
         assert proj.check_pols_roll_fwd() is True
         assert proj.check_annuity_ledger() is True
@@ -1048,7 +1049,7 @@ def test_premium_mode_is_a_timing_feature_not_an_inert_flag(income_guarantee):
                              income_guarantee.Projection[3],
                              income_guarantee.Projection[6])
     assert (monthly.premium_mode(), annual.premium_mode(), semi.premium_mode()) == (
-        "monthly", "annual", "semiannual")
+        PremMode.monthly, PremMode.annual, PremMode.semiannual)
     assert (monthly.prem_mode_months(), annual.prem_mode_months(),
             semi.prem_mode_months()) == (1, 12, 6)
     assert all(monthly.prem_due_pp(t) == monthly.premium_mth_pp() for t in range(12))
@@ -1107,14 +1108,14 @@ def test_the_mortality_basis_is_the_largest_lever_in_the_file(tmp_path):
         model.Projection.mort_be_factor = 1.0
         model.Projection.clear_all()
         proj = model.Projection[1]
-        assert sum(proj.claims(t, "ANNUITY")
+        assert sum(proj.claims(t, Kind.ANNUITY)
                    for t in range(proj.proj_len())) == pytest.approx(
                        552708.11, abs=YEN)
         # class_factor 0.90 in place of 0.70, applied through the same product.
         model.Projection.mort_be_factor = 0.8 * 0.90 / 0.70
         model.Projection.clear_all()
         proj = model.Projection[1]
-        assert sum(proj.claims(t, "ANNUITY")
+        assert sum(proj.claims(t, Kind.ANNUITY)
                    for t in range(proj.proj_len())) == pytest.approx(
                        568289.70, abs=YEN)
     finally:
@@ -1194,7 +1195,7 @@ def test_net_cf_carries_the_notes_own_income_positive_sign(income_guarantee):
     assert a.net_cf(1) > 0.0
     assert a.net_cf(0) < 0.0
     assert a.net_cf(0) == pytest.approx(
-        a.premiums(0) - a.claims(0) - a.claim_expenses(0) - a.annuity_expenses(0)
+        a.premiums(0) - a.claims(0, Kind.ALL) - a.claim_expenses(0) - a.annuity_expenses(0)
         - a.expenses(0) - a.commissions(0), abs=1e-9)
 
 

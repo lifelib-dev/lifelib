@@ -100,19 +100,21 @@ def premium_schedule_table():
     indexed, so that selecting a contract's rows returns a DataFrame whether it has one
     slice or many.
     """
-    return pd.read_csv(input_dir() / premium_schedule_file)           # noqa: F821
+    return pd.read_csv(input_dir() / premium_schedule_file).set_index(["point_id", "premium_mth"]).sort_index()           # noqa: F821
 
 
 def mort_table():
     """The base annuitant mortality table by age and sex, read from *mort_table.csv*."""
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file, index_col=["age", "sex"])     # noqa: F821
+    frame = pd.read_csv(input_dir() / mort_table_file)                    # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["age", "sex"])
 
 
 def improvement_scale():
     """The generational improvement scale by age and sex, from *improvement_scale.csv*."""
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / improvement_scale_file, index_col=["age", "sex"])  # noqa: F821
+    frame = pd.read_csv(input_dir() / improvement_scale_file)                    # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["age", "sex"])
 
 
 def payout_factor_table():
@@ -122,9 +124,10 @@ def payout_factor_table():
     ``a^(m)_y(f; i_p)``, the APV at the income start age of $1 per annum of income.
     **[std]** - no insurer publishes payout factors for this product.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / payout_factor_file,                            # noqa: F821
-        index_col=["income_start_age", "sex", "payout_form"])
+    frame = pd.read_csv(input_dir() / payout_factor_file)                    # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    frame["payout_form"] = [IncomeForm[name] for name in frame["payout_form"]]
+    return frame.set_index(["income_start_age", "sex", "payout_form"])
 
 
 def rop_factor_table():
@@ -134,9 +137,9 @@ def rop_factor_table():
     the APV at the premium date of $1 payable at the end of the month of death within a
     ``d``-year deferral.  **[std]**.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / rop_factor_file,                               # noqa: F821
-        index_col=["issue_age", "sex", "deferral_years"])
+    frame = pd.read_csv(input_dir() / rop_factor_file)                    # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["issue_age", "sex", "deferral_years"])
 
 
 # ---------------------------------------------------------------------------
@@ -155,3 +158,7 @@ payout_factor_file = "payout_factor_table.csv"
 rop_factor_file = "rop_factor_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+IncomeForm = ("Pickle", 2)

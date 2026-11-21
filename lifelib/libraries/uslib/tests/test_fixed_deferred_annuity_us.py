@@ -26,6 +26,7 @@ import modelx as mx
 import pytest
 
 from us_registry import LIB
+from lifelib.libraries.uslib.products.fixed_deferred_annuity.enums import AvTiming, Cap, FreeRule, Kind, MgsvWithdrawal, MvaFamily, PolTiming, Renewal, Schedule
 
 MODEL_PATH = LIB / "products/fixed_deferred_annuity/MYGA_US_S"
 
@@ -116,9 +117,9 @@ def stress(fixed_deferred_annuity):
 def test_worked_example_row(anchor, t):
     """Every cell of the notes' seven-row account value table, to the cent."""
     av_bef, wd, av_bef_inv, av, mgsv = WORKED_EXAMPLE[t]
-    assert anchor.av_pp_at(t, "BEF_WD") == pytest.approx(av_bef, abs=CENT)
+    assert anchor.av_pp_at(t, AvTiming.BEF_WD) == pytest.approx(av_bef, abs=CENT)
     assert anchor.wd_pp(t) == pytest.approx(wd, abs=CENT)
-    assert anchor.av_pp_at(t, "BEF_INV") == pytest.approx(av_bef_inv, abs=CENT)
+    assert anchor.av_pp_at(t, AvTiming.BEF_INV) == pytest.approx(av_bef_inv, abs=CENT)
     assert anchor.av_pp(t) == pytest.approx(av, abs=CENT)
     assert anchor.mgsv_pp(t) == pytest.approx(mgsv, abs=CENT)
 
@@ -294,7 +295,7 @@ def test_geometric_branch_expense_adder_alone(anchor):
 def test_geometric_family_is_selectable(fixed_deferred_annuity):
     """Model point 4 runs the geometric family end to end, uncapped [S3][S4]."""
     p4 = fixed_deferred_annuity.Projection[4]
-    assert p4.mva_family() == "geometric"
+    assert p4.mva_family() == MvaFamily.geometric
     expected = p4.mva_factor_geometric(
         p4.mva_ref_yield_locked(29), p4.mva_ref_yield(29), p4.mva_term(29)) - 1.0
     assert p4.mva_rate(29) == pytest.approx(expected, rel=1e-12)
@@ -358,11 +359,11 @@ def test_pitfall_free_amount_mva_interaction(fixed_deferred_annuity):
 
 def test_pitfall_withdrawals_are_gross(anchor):
     """W(t) is the gross amount removed from the account value, not the check written."""
-    assert anchor.av_pp_at(12, "BEF_INV") == pytest.approx(
+    assert anchor.av_pp_at(12, AvTiming.BEF_INV) == pytest.approx(
         anchor.av_pp(11) - 4000.0, rel=1e-12)
     assert anchor.wd_pp(12) == 4000.0
     assert anchor.wd_from_av(12) == pytest.approx(
-        4000.0 * anchor.pols_if_at(12, "BEF_DECR"), rel=1e-12)
+        4000.0 * anchor.pols_if_at(12, PolTiming.BEF_DECR), rel=1e-12)
 
 
 def test_pitfall_model_805_withdrawal_convention(fixed_deferred_annuity):
@@ -374,9 +375,9 @@ def test_pitfall_model_805_withdrawal_convention(fixed_deferred_annuity):
     """
     anchor = fixed_deferred_annuity.Projection[1]
     p5 = fixed_deferred_annuity.Projection[5]
-    assert anchor.mgsv_wd_convention() == "gross"
+    assert anchor.mgsv_wd_convention() == MgsvWithdrawal.gross
     assert anchor.mgsv_wd_deduct_pp(12) == pytest.approx(anchor.wd_pp(12), rel=1e-12)
-    assert p5.mgsv_wd_convention() == "net_of_charges"
+    assert p5.mgsv_wd_convention() == MgsvWithdrawal.net_of_charges
     assert p5.mgsv_wd_deduct_pp(29) == pytest.approx(p5.wd_payment_pp(29), rel=1e-12)
     assert p5.wd_payment_pp(29) < p5.wd_pp(29)          # charged and adjusted downwards
     assert p5.mgsv_wd_deduct_pp(29) != pytest.approx(p5.wd_pp(29), abs=1.0)
@@ -412,9 +413,9 @@ def test_pitfall_surrender_charge_clock_resets_on_renewal(anchor):
 
     Getting this wrong relocates the shock lapse by years.
     """
-    assert anchor.renewal_architecture() == "rollover"
-    assert anchor.surr_charge_id(59) == "initial"           # last month of the initial term
-    assert anchor.surr_charge_id(61) == "renewal"
+    assert anchor.renewal_architecture() == Renewal.rollover
+    assert anchor.surr_charge_id(59) == Schedule.initial           # last month of the initial term
+    assert anchor.surr_charge_id(61) == Schedule.renewal
     assert anchor.surr_charge_year(59) == 5
     assert anchor.surr_charge_year(61) == 1
     assert anchor.surr_charge_year(121) == 1                # and again a period later
@@ -431,9 +432,9 @@ def test_pitfall_mortality_is_second_order_and_the_table_is_not_published(
     Scale G2 / Table 6.7 basis may not be redistributed here.
     """
     for t in (0, 29, 60, 199):
-        assert anchor.claim_pp(t, "DEATH") == pytest.approx(
+        assert anchor.claim_pp(t, Kind.DEATH) == pytest.approx(
             max(anchor.av_pp(t), anchor.surr_benefit_pp(t)), rel=1e-12)
-    assert anchor.claim_pp(29, "DEATH") > anchor.claim_pp(29, "LAPSE")
+    assert anchor.claim_pp(29, Kind.DEATH) > anchor.claim_pp(29, Kind.LAPSE)
     table = fixed_deferred_annuity.Data.mort_table()
     assert (table["provenance"].str.contains(r"\[std\]")).all()
     assert (table["provenance"].str.contains("not a published table")).all()
@@ -472,7 +473,7 @@ def test_guarantee_period_end_window(anchor):
     assert anchor.mva_in_force(60) is False
     assert anchor.surr_benefit_pp(60) == pytest.approx(anchor.av_pp(60), rel=1e-12)
     assert anchor.annuitization_pp(60) == pytest.approx(
-        anchor.av_pp_at(60, "BEF_INV"), rel=1e-12)
+        anchor.av_pp_at(60, AvTiming.BEF_INV), rel=1e-12)
 
 
 def test_mva_expires_with_the_guarantee_period(anchor):
@@ -521,10 +522,10 @@ def test_attained_age_cap_on_the_renewal_charge(anchor):
 def test_camp_b_drops_the_charge_and_the_mva(fixed_deferred_annuity):
     """annual_redeclare: no new surrender charge and mu = 0 permanently [S13]."""
     p3 = fixed_deferred_annuity.Projection[3]
-    assert p3.renewal_architecture() == "annual_redeclare"
+    assert p3.renewal_architecture() == Renewal.annual_redeclare
     assert p3.surr_charge_rate(29) == 0.07                       # initial term unchanged
     for t in (61, 89, 129, 199):
-        assert p3.surr_charge_id(t) == "none"
+        assert p3.surr_charge_id(t) == Schedule.none
         assert p3.surr_charge_rate(t) == 0.0
         assert p3.mva_term(t) == 0.0
         assert p3.mva_rate(t) == 0.0
@@ -624,7 +625,7 @@ def test_account_value_rollforward_closes(anchor):
     assert anchor.check_av_roll_fwd() is True
     for t in range(anchor.proj_len()):
         assert anchor.check_av_roll_fwd_resid(t) == pytest.approx(0.0, abs=1e-6)
-    assert anchor.av_change(0) == pytest.approx(anchor.av_at(0, "EOM"), rel=1e-12)
+    assert anchor.av_change(0) == pytest.approx(anchor.av_at(0, AvTiming.EOM), rel=1e-12)
     assert anchor.prem_to_av(0) == pytest.approx(100000.0, rel=1e-12)
 
 
@@ -635,13 +636,13 @@ def test_pols_if_is_the_start_of_month_count_and_weights_its_own_row(anchor):
     The notes' end-of-month ``l(t)`` is ``pols_if_at(t, "AFT_DECR")`` and is unchanged.
     """
     assert anchor.pols_if(0) == anchor.pols_if_init()
-    assert anchor.pols_if_at(0, "BEF_DECR") == anchor.pols_if_init()
+    assert anchor.pols_if_at(0, PolTiming.BEF_DECR) == anchor.pols_if_init()
     assert anchor.pols_if(1) < anchor.pols_if_init()             # month 0 decrements
     for t in (0, 12, 29, 60, 119):
         assert anchor.pols_if(t) == pytest.approx(
-            anchor.pols_if_at(t, "BEF_DECR"), rel=1e-15)
+            anchor.pols_if_at(t, PolTiming.BEF_DECR), rel=1e-15)
         assert anchor.pols_if(t + 1) == pytest.approx(
-            anchor.pols_if_at(t, "AFT_DECR"), rel=1e-15)
+            anchor.pols_if_at(t, PolTiming.AFT_DECR), rel=1e-15)
 
     # The reconciliation the convention buys: the printed in-force divides the printed
     # flows on the same row.
@@ -684,7 +685,7 @@ def test_internal_transfers_are_not_cash_flows(anchor):
         assert internal not in columns
     for t in (0, 1, 29, 60):
         assert anchor.net_cf(t) == pytest.approx(
-            anchor.premiums(t) - anchor.withdrawals(t) - anchor.claims(t)
+            anchor.premiums(t) - anchor.withdrawals(t) - anchor.claims(t, Kind.ALL)
             - anchor.commissions(t) - anchor.expenses(t) - anchor.premium_taxes(t),
             rel=1e-12)
 
@@ -697,23 +698,23 @@ def test_a_binding_floor_is_not_a_separate_cash_flow(stress):
     """
     top_up = stress.surr_benefit_pp(5) - stress.surr_value_pp(5)
     assert top_up == pytest.approx(SURRENDER_5["floor_top_up"], abs=CENT)
-    assert stress.claims(5, "LAPSE") == pytest.approx(
+    assert stress.claims(5, Kind.LAPSE) == pytest.approx(
         stress.surr_benefit_pp(5) * stress.pols_lapse(5), rel=1e-12)
-    assert stress.claims(5, "LAPSE") == pytest.approx(
-        stress.claims_from_av(5, "LAPSE") + stress.claims_over_av(5, "LAPSE"), rel=1e-12)
+    assert stress.claims(5, Kind.LAPSE) == pytest.approx(
+        stress.claims_from_av(5, Kind.LAPSE) + stress.claims_over_av(5, Kind.LAPSE), rel=1e-12)
     # Signed, and negative here: the surrender pays out less than the account value it
     # releases even with the floor binding, because the charge is larger than the top-up.
-    assert stress.claims_over_av(5, "LAPSE") == pytest.approx(
+    assert stress.claims_over_av(5, Kind.LAPSE) == pytest.approx(
         (stress.surr_benefit_pp(5) - stress.av_pp(5)) * stress.pols_lapse(5), rel=1e-12)
-    assert stress.claims_over_av(5, "LAPSE") < 0.0
+    assert stress.claims_over_av(5, Kind.LAPSE) < 0.0
     assert "claims_over_av" not in set(stress.result_cf().columns)
 
 
 def test_claims_split_by_kind_sums_to_the_total(anchor):
     for t in (0, 29, 60, anchor.proj_len() - 1):
-        assert anchor.claims(t) == pytest.approx(
-            anchor.claims(t, "DEATH") + anchor.claims(t, "LAPSE")
-            + anchor.claims(t, "ANNUITIZATION") + anchor.claims(t, "MATURITY"),
+        assert anchor.claims(t, Kind.ALL) == pytest.approx(
+            anchor.claims(t, Kind.DEATH) + anchor.claims(t, Kind.LAPSE)
+            + anchor.claims(t, Kind.ANNUITIZATION) + anchor.claims(t, Kind.MATURITY),
             rel=1e-12)
 
 
@@ -729,8 +730,8 @@ def test_premium_and_acquisition_costs_fall_at_t_zero(anchor):
     assert anchor.premium_taxes(0) == 0.0
     assert anchor.withdrawals(0) == 0.0
     assert anchor.net_cf(0) == pytest.approx(
-        98000.0 - anchor.claims(0) - anchor.expenses(0), abs=CENT)
-    assert 0.0 < anchor.claims(0) + anchor.expenses(0) < 1000.0
+        98000.0 - anchor.claims(0, Kind.ALL) - anchor.expenses(0), abs=CENT)
+    assert 0.0 < anchor.claims(0, Kind.ALL) + anchor.expenses(0) < 1000.0
     assert all(anchor.premiums(t) == 0.0 for t in range(1, 25))
     assert all(anchor.commissions(t) == 0.0 for t in range(1, 25))
 
@@ -738,7 +739,7 @@ def test_premium_and_acquisition_costs_fall_at_t_zero(anchor):
 def test_maintenance_expense_inflates_by_contract_year(anchor):
     """(50 / 12) x 1.025^(y-1) per contract per month **[std]**, from month 0."""
     assert anchor.expenses(0) == pytest.approx(
-        (50.0 / 12.0) * anchor.pols_if_at(0, "BEF_DECR"), rel=1e-12)
+        (50.0 / 12.0) * anchor.pols_if_at(0, PolTiming.BEF_DECR), rel=1e-12)
     assert anchor.inflation_factor(0) == 1.0
     assert anchor.inflation_factor(11) == 1.0
     assert anchor.inflation_factor(12) == pytest.approx(1.025, rel=1e-12)
@@ -749,7 +750,7 @@ def test_tax_basis_is_income_first_and_generates_no_cash_flow(anchor):
     """IRC 72(e)(3)(A): the $4,000 at t = 12 is all gain, so the basis is untouched."""
     assert anchor.tax_basis_pp_init() == 100000.0
     assert anchor.tax_basis_pp(0) == 100000.0                    # no withdrawal in month 0
-    assert anchor.av_pp_at(12, "BEF_WD") > anchor.tax_basis_pp(11)
+    assert anchor.av_pp_at(12, AvTiming.BEF_WD) > anchor.tax_basis_pp(11)
     assert anchor.taxable_wd_pp(12) == pytest.approx(4000.0, rel=1e-12)
     assert anchor.tax_basis_pp(12) == pytest.approx(100000.0, rel=1e-12)
     assert "taxable_wd_pp" not in set(anchor.result_cf().columns)
@@ -827,7 +828,7 @@ def test_declared_differential_family(fixed_deferred_annuity):
     1.80 + 0.5 (2.60 - 1.80) = 2.20 years of modified duration.
     """
     p7 = fixed_deferred_annuity.Projection[7]
-    assert p7.mva_family() == "declared_differential"
+    assert p7.mva_family() == MvaFamily.declared_differential
     assert p7.credit_rate(29) == 0.0445 and p7.market_rate(29) == 0.0600
     assert p7.mva_duration_factor(29) == pytest.approx(2.20, rel=1e-12)
     assert p7.mva_rate(29) == pytest.approx((0.0445 - 0.0600) * 2.20, rel=1e-12)
@@ -875,7 +876,7 @@ def test_dynamic_lapse_is_live_when_the_credited_rate_trails_the_market(
 def test_asymmetric_cap_limits_only_the_upside(fixed_deferred_annuity):
     """asym_sc_snfl: M <= +C, no downside cap; only SB >= MGSV binds below [S12]."""
     p6 = fixed_deferred_annuity.Projection[6]
-    assert p6.mva_cap_rule() == "asym_sc_snfl"
+    assert p6.mva_cap_rule() == Cap.asym_sc_snfl
     raw = p6.mva_rate(5) * p6.surr_excess_pp(5)
     assert raw < -p6.surr_charge_pp(5)
     assert p6.mva_pp(5) == pytest.approx(raw, rel=1e-12)      # uncapped downwards
@@ -890,7 +891,7 @@ def test_gmir_floor_cap_holds_av_plus_mva_above_the_accumulated_premium(
     premium at t = 0, a full year of it at t = 11.
     """
     p3 = fixed_deferred_annuity.Projection[3]
-    assert p3.mva_cap_rule() == "gmir_floor"
+    assert p3.mva_cap_rule() == Cap.gmir_floor
     assert p3.av_pp(5) + p3.mva_pp(5) == pytest.approx(p3.prem_accum_gmir_pp(5), rel=1e-9)
     assert p3.prem_accum_gmir_pp(0) == pytest.approx(
         100000.0 * 1.0025 ** (1 / 12), rel=1e-12)
@@ -900,8 +901,8 @@ def test_gmir_floor_cap_holds_av_plus_mva_above_the_accumulated_premium(
 def test_min_sc_interest_cap_and_interest_only_allowance(fixed_deferred_annuity):
     """Model point 5: K = min(C, interest to date) [S8][S9]; allowance = prior interest."""
     p5 = fixed_deferred_annuity.Projection[5]
-    assert p5.mva_cap_rule() == "min_sc_interest"
-    assert p5.free_wd_rule() == "interest_only"
+    assert p5.mva_cap_rule() == Cap.min_sc_interest
+    assert p5.free_wd_rule() == FreeRule.interest_only
     assert p5.free_wd_allow(1) == 0.0                            # no prior year
     assert p5.free_wd_allow(2) == pytest.approx(4450.0, abs=CENT)   # 100,000 x 4.45%
     assert p5.free_wd_allow(2) == pytest.approx(p5.interest_credited_pp(11), rel=1e-12)
@@ -945,12 +946,12 @@ def test_annuitization_outside_the_window_is_valued_before_crediting(anchor):
     assert anchor.in_gp_window(t) is False
     assert anchor.free_wd_mva_exempt() is True
 
-    bom = anchor.av_pp_at(t, "BEF_INV")
+    bom = anchor.av_pp_at(t, AvTiming.BEF_INV)
     charge = anchor.surr_charge_rate(t) * max(0.0, bom - anchor.free_wd_remain(t))
     assert anchor.annuitization_pp(t) == pytest.approx(bom - charge, rel=1e-12)
 
     # The release basis agrees with the payment basis: annuitizers exit at BOM.
-    assert anchor.claim_from_av_pp(t, "ANNUITIZATION") == pytest.approx(bom, rel=1e-12)
+    assert anchor.claim_from_av_pp(t, Kind.ANNUITIZATION) == pytest.approx(bom, rel=1e-12)
 
     # The literal EOM reading is a different number, larger by one month's interest net
     # of the charge on it -- and it is not what this cells returns.
@@ -963,11 +964,11 @@ def test_annuitization_outside_the_window_is_valued_before_crediting(anchor):
     # In the window it is the full pre-crediting account value, no charge and no MVA.
     assert anchor.in_gp_window(60) is True
     assert anchor.annuitization_pp(60) == pytest.approx(
-        anchor.av_pp_at(60, "BEF_INV"), rel=1e-12)
+        anchor.av_pp_at(60, AvTiming.BEF_INV), rel=1e-12)
 
     # Inert as shipped: a(t) is zero outside the window on every model point.
     assert anchor.annuitization_rate(t) == 0.0
-    assert anchor.claims(t, "ANNUITIZATION") == 0.0
+    assert anchor.claims(t, Kind.ANNUITIZATION) == 0.0
 
 
 def test_horizon_is_the_last_age_in_the_sourced_cap_band(fixed_deferred_annuity, anchor):

@@ -107,35 +107,41 @@ def model_point_table():
 
 def cv_table():
     """The guaranteed cash value schedule per $1,000 of face, from *cv_table.csv*."""
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / cv_file,                                       # noqa: F821
-        index_col=["premium_period", "sex", "issue_age", "policy_year"])
+    frame = pd.read_csv(input_dir() / cv_file)                    # noqa: F821
+    frame["premium_period"] = [PremiumPeriod[name] for name in frame["premium_period"]]
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["premium_period", "sex", "issue_age", "policy_year"])
 
 
 def nsp_table():
     """The endowment-at-100 net single premiums by attained age, from *nsp_table.csv*."""
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / nsp_file, index_col=["sex", "age"])            # noqa: F821
+    frame = pd.read_csv(input_dir() / nsp_file)                    # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"])
 
 
 def np_guar_table():
     """The nonforfeiture net level premiums per $1,000, from *np_guar_table.csv*."""
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / np_guar_file,                                  # noqa: F821
-        index_col=["premium_period", "sex", "issue_age"])
+    frame = pd.read_csv(input_dir() / np_guar_file)                    # noqa: F821
+    frame["premium_period"] = [PremiumPeriod[name] for name in frame["premium_period"]]
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["premium_period", "sex", "issue_age"])
 
 
 def mort_table():
     """The guaranteed mortality table by sex and age, read from *mort_table.csv*."""
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file, index_col=["sex", "age"])     # noqa: F821
+    frame = pd.read_csv(input_dir() / mort_table_file)                    # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"])
 
 
 def premium_rates():
     """The final-expense premium rates per $1,000, read from *premium_rates.csv*."""
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / premium_rates_file,                            # noqa: F821
-        index_col=["product", "sex", "risk_class", "issue_age"])
+    frame = pd.read_csv(input_dir() / premium_rates_file)                    # noqa: F821
+    frame["product"] = [Product[name] for name in frame["product"]]
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    frame["risk_class"] = [RiskClass[name] for name in frame["risk_class"]]
+    return frame.set_index(["product", "sex", "risk_class", "issue_age"])
 
 
 # ---------------------------------------------------------------------------
@@ -154,3 +160,11 @@ mort_table_file = "mort_table.csv"
 premium_rates_file = "premium_rates.csv"
 
 pd = ("Module", "pandas")
+
+Product = ("Pickle", 1)
+
+PremiumPeriod = ("Pickle", 2)
+
+Sex = ("Pickle", 3)
+
+RiskClass = ("Pickle", 4)

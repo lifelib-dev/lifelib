@@ -40,6 +40,7 @@ import pytest
 from modelx.core.errors import FormulaError
 
 from de_registry import MODELS, LIB
+from lifelib.libraries.delib.products.sofortrente.enums import AnnuityKind, Basis, ClaimKind, PaymentTiming, RefundForm, Sex, SurplusForm
 
 
 CENT = 0.005          # money displayed to 2 d.p.
@@ -228,9 +229,9 @@ def test_worked_example_row(de_sofort_anchor, t):
     p = de_sofort_anchor
     assert p.pols_if(t) == pytest.approx(pols_if, abs=SIX_DP)
     assert p.premiums(t) == pytest.approx(prem, abs=CENT)
-    assert p.annuity_payments(t) == pytest.approx(ann, abs=CENT)
-    assert p.claims(t, "GUARANTEE") == pytest.approx(guar, abs=CENT)
-    assert p.claims(t, "REFUND") == pytest.approx(refund, abs=CENT)
+    assert p.annuity_payments(t, AnnuityKind.ALL) == pytest.approx(ann, abs=CENT)
+    assert p.claims(t, ClaimKind.GUARANTEE) == pytest.approx(guar, abs=CENT)
+    assert p.claims(t, ClaimKind.REFUND) == pytest.approx(refund, abs=CENT)
     assert p.expenses(t) == pytest.approx(exp, abs=CENT)
     assert p.liability_cf(t) == pytest.approx(liab, abs=CENT)
     assert p.net_cf(t) == pytest.approx(net, abs=CENT)
@@ -315,24 +316,24 @@ def test_month_one_rebuilt_from_the_mortality_table(de_sofort_anchor):
     into this model.
     """
     p = de_sofort_anchor
-    assert p.mort_rate_at_age(65, "M", "FIRST") == MORT["first_m_65"]
-    assert p.mort_rate_at_age(65, "F", "FIRST") == MORT["first_f_65"]
-    assert p.mort_rate_at_age(65, "M", "SECOND") == pytest.approx(
+    assert p.mort_rate_at_age(65, Sex.M, Basis.FIRST) == MORT["first_m_65"]
+    assert p.mort_rate_at_age(65, Sex.F, Basis.FIRST) == MORT["first_f_65"]
+    assert p.mort_rate_at_age(65, Sex.M, Basis.SECOND) == pytest.approx(
         1.20 * MORT["first_m_65"], rel=1e-12)
     assert p.mort_rate(0, 1) == pytest.approx(MORT["second_m_65"], rel=1e-12)
     assert p.mort_rate_mth(0, 1) == pytest.approx(MORT["mort_rate_mth_0"], abs=5e-13)
     assert (1 - p.mort_rate_mth(0, 1)) ** 12 == pytest.approx(
         1 - p.mort_rate(0, 1), rel=1e-12)
     assert p.lives_if(1, 1) == pytest.approx(MORT["lives_if_1"], abs=5e-13)
-    assert p.annuity_payments(1) == pytest.approx(
+    assert p.annuity_payments(1, AnnuityKind.ALL) == pytest.approx(
         DERIVED["annuity_pp_0"] * MORT["lives_if_1"], abs=5e-9)
-    assert p.claims(1, "GUARANTEE") == pytest.approx(
+    assert p.claims(1, ClaimKind.GUARANTEE) == pytest.approx(
         DERIVED["annuity_pp_0"] * MORT["mort_rate_mth_0"], abs=5e-9)
-    assert p.annuity_payments(1) + p.claims(1, "GUARANTEE") == pytest.approx(
+    assert p.annuity_payments(1, AnnuityKind.ALL) + p.claims(1, ClaimKind.GUARANTEE) == pytest.approx(
         p.annuity_pp(1), abs=1e-9)
     blend = 0.45 * MORT["first_m_65"] + 0.55 * MORT["first_f_65"]
     assert blend == pytest.approx(MORT["unisex_first_65"], abs=5e-13)
-    assert p.mort_rate_at_age(65, "U", "FIRST") == pytest.approx(blend, rel=1e-12)
+    assert p.mort_rate_at_age(65, Sex.U, Basis.FIRST) == pytest.approx(blend, rel=1e-12)
     assert blend / MORT["q_base_65"] - 1 == pytest.approx(2.5e-7, rel=0.05)
     # The notes' third check: month 0, from the parameter list, with no survival in
     # either line -- and the *Kostenüberschuss* visible in them, 2 500,00 EUR of loading
@@ -383,7 +384,7 @@ def test_the_decrements_close(de_sofort_anchor):
     assert p.check_lives_roll_fwd() is True
     zero_at = min(t for t in range(0, n + 1) if p.lives_if(t, 1) == 0.0)
     assert zero_at <= p.horizon_mths(1)
-    assert p.mort_rate_at_age(120, "M", "SECOND") == 1.0
+    assert p.mort_rate_at_age(120, Sex.M, Basis.SECOND) == 1.0
 
 
 def test_the_guarantee_period_computed_in_closed_form(de_sofort_anchor):
@@ -403,9 +404,9 @@ def test_the_guarantee_period_computed_in_closed_form(de_sofort_anchor):
     assert surplus == pytest.approx(GUARANTEE["surplus_part"], abs=5e-9)
     assert guaranteed + surplus == pytest.approx(GUARANTEE["total"], abs=5e-9)
 
-    paid = sum(p.annuity_payments(t) + p.claims(t, "GUARANTEE") for t in range(0, 120))
+    paid = sum(p.annuity_payments(t, AnnuityKind.ALL) + p.claims(t, ClaimKind.GUARANTEE) for t in range(0, 120))
     assert paid == pytest.approx(GUARANTEE["total"], abs=1e-8)
-    annuitant_only = sum(p.annuity_payments(t) for t in range(0, 120))
+    annuitant_only = sum(p.annuity_payments(t, AnnuityKind.ALL) for t in range(0, 120))
     assert annuitant_only == pytest.approx(GUARANTEE["annuitant_leg_only"], abs=CENT)
     assert annuitant_only / paid - 1 == pytest.approx(-0.0713, abs=5e-5)
     additive = sum(p.pols_if_init() * p.annuity_pp(t)
@@ -420,11 +421,11 @@ def test_the_nachschuessig_variant_row(sofortrente, t):
     """Model point 9 is model point 1 with payment_timing = arrears, nothing else."""
     pols_if, prem, ann, guar, exp, net = ARREARS[t]
     p = sofortrente.Projection[9]
-    assert p.payment_timing() == "arrears"
+    assert p.payment_timing() == PaymentTiming.arrears
     assert p.pols_if(t) == pytest.approx(pols_if, abs=SIX_DP)
     assert p.premiums(t) == pytest.approx(prem, abs=CENT)
-    assert p.annuity_payments(t) == pytest.approx(ann, abs=CENT)
-    assert p.claims(t, "GUARANTEE") == pytest.approx(guar, abs=CENT)
+    assert p.annuity_payments(t, AnnuityKind.ALL) == pytest.approx(ann, abs=CENT)
+    assert p.claims(t, ClaimKind.GUARANTEE) == pytest.approx(guar, abs=CENT)
     assert p.expenses(t) == pytest.approx(exp, abs=CENT)
     assert p.net_cf(t) == pytest.approx(net, abs=CENT)
 
@@ -474,8 +475,8 @@ def test_the_in_force_variant_row(sofortrente, t):
     p = sofortrente.Projection[10]
     assert p.pols_if(t) == pytest.approx(pols_if, abs=SIX_DP)
     assert p.premiums(t) == prem
-    assert p.annuity_payments(t) == pytest.approx(ann, abs=CENT)
-    assert p.claims(t, "GUARANTEE") == pytest.approx(guar, abs=CENT)
+    assert p.annuity_payments(t, AnnuityKind.ALL) == pytest.approx(ann, abs=CENT)
+    assert p.claims(t, ClaimKind.GUARANTEE) == pytest.approx(guar, abs=CENT)
     assert p.expenses(t) == pytest.approx(exp, abs=CENT)
     assert p.net_cf(t) == pytest.approx(net, abs=CENT)
 
@@ -488,7 +489,7 @@ def test_the_cell_with_the_ueberschussrente_switched_off(sofortrente, de_sofort_
     undiscounted total.
     """
     off, on = sofortrente.Projection[14], de_sofort_anchor
-    assert off.surplus_form() == "none"
+    assert off.surplus_form() == SurplusForm.none
     assert off.surplus_init_pct() == 0.0 and off.surplus_growth() == 0.0
     assert off.annuity_factor() == pytest.approx(on.annuity_factor(), rel=1e-15)
     assert off.annuity_pp_derived() == pytest.approx(on.annuity_pp_derived(), rel=1e-15)
@@ -551,11 +552,11 @@ def test_check_net_cf_rebuilds_the_statement_a_different_way(de_sofort_anchor):
     for t in (0, 1, 60, 119, 120, 121, 240, 360, 480, 671):
         rebuilt = (p.premiums(t)
                    - p.pols_if_init() * p.annuity_pp(t) * p.payment_factor(t)
-                   - p.claims(t, "REFUND") - p.expenses(t))
+                   - p.claims(t, ClaimKind.REFUND) - p.expenses(t))
         assert p.net_cf(t) == pytest.approx(rebuilt, abs=1e-9), t
         assert p.check_net_cf_resid(t) == pytest.approx(0.0, abs=1e-9), t
     for t in (0, 60, 119, 120, 240):
-        assert p.annuity_payments(t) + p.claims(t, "GUARANTEE") == pytest.approx(
+        assert p.annuity_payments(t, AnnuityKind.ALL) + p.claims(t, ClaimKind.GUARANTEE) == pytest.approx(
             p.pols_if_init() * p.annuity_pp(t) * p.payment_factor(t), abs=1e-9)
 
 
@@ -591,7 +592,7 @@ def test_pitfall_1_the_ueberschussrente_is_a_projected_cash_flow(
     """Not guaranteed, but projected: publishing only the *garantierte Rente* models less
     than the payment.  Model point 14 switches the surplus off and is the equality case."""
     p = de_sofort_anchor
-    assert p.surplus_form() == "teildynamisch"
+    assert p.surplus_form() == SurplusForm.teildynamisch
     for t in (0, 1, 11, 12, 119, 240, 671):
         assert p.annuity_pp(t) > p.annuity_guar_pp(t), t
         assert p.annuity_pp(t) == pytest.approx(
@@ -609,11 +610,11 @@ def test_pitfall_2_the_guaranteed_instalments_are_not_decremented(de_sofort_anch
     p = de_sofort_anchor
     for t in range(0, p.guar_end_mth()):
         assert p.is_payment_mth(t)
-        assert p.annuity_payments(t) + p.claims(t, "GUARANTEE") == pytest.approx(
+        assert p.annuity_payments(t, AnnuityKind.ALL) + p.claims(t, ClaimKind.GUARANTEE) == pytest.approx(
             p.pols_if_init() * p.annuity_pp(t), abs=1e-9), t
         assert p.pols_if(t) == 1.0, t
-    assert p.claims(120, "GUARANTEE") == 0.0
-    assert p.annuity_payments(120) == pytest.approx(
+    assert p.claims(120, ClaimKind.GUARANTEE) == 0.0
+    assert p.annuity_payments(120, AnnuityKind.ALL) == pytest.approx(
         p.annuity_pp(120) * p.lives_if(120, 1), abs=1e-9)
     assert p.pols_if(120) < 1.0
 
@@ -653,13 +654,13 @@ def test_pitfall_4_the_survivor_leg_is_gated_inside_the_guarantee(sofortrente):
     p = sofortrente.Projection[5]
     assert p.guar_end_mth() == 240 and p.surv_pct() == 1.0
     for t in range(0, 240):
-        assert p.annuity_payments(t, "SURVIVOR") == 0.0, t
-    assert p.annuity_payments(240, "SURVIVOR") == pytest.approx(88.7902217357, abs=CENT)
-    assert any(p.annuity_payments(t, "SURVIVOR") > 0.0 for t in range(240, 400))
+        assert p.annuity_payments(t, AnnuityKind.SURVIVOR) == 0.0, t
+    assert p.annuity_payments(240, AnnuityKind.SURVIVOR) == pytest.approx(88.7902217357, abs=CENT)
+    assert any(p.annuity_payments(t, AnnuityKind.SURVIVOR) > 0.0 for t in range(240, 400))
     assert p.certain_floor(239) == 1.0 and p.certain_floor(240) == 0.0
     assert p.check_payment_factor() is True
     single = sofortrente.Projection[1]
-    assert all(single.annuity_payments(t, "SURVIVOR") == 0.0
+    assert all(single.annuity_payments(t, AnnuityKind.SURVIVOR) == 0.0
                for t in (0, 60, 120, 240, 671))
 
 
@@ -673,7 +674,7 @@ def test_pitfall_5_the_refund_is_solved_not_evaluated(sofortrente):
     smaller annuity runs the refund off more slowly.
     """
     p = sofortrente.Projection[3]
-    assert p.refund_form() == "full"
+    assert p.refund_form() == RefundForm.full
     assert p.annuity_factor() == pytest.approx(REFUND["annuity_factor"], abs=5e-10)
     assert p.annuity_pp_derived() == pytest.approx(
         REFUND["annuity_pp_derived"], abs=5e-9)
@@ -720,7 +721,7 @@ def test_the_refund_runs_off_one_instalment_at_a_time(sofortrente):
     assert p.refund_pp(t_zero) == 0.0 and p.refund_pp(t_zero - 1) > 0.0
     assert p.check_refund_run_off() is True
     plain = sofortrente.Projection[1]
-    assert plain.refund_form() == "none"
+    assert plain.refund_form() == RefundForm.none
     assert all(plain.refund_pp(t) == 0.0 for t in (0, 120, 240, 671))
     assert plain.check_refund_run_off() is True
     # Model point 6 pairs the refund with a five-year *Aufschubzeit*: no instalment has
@@ -730,10 +731,10 @@ def test_the_refund_runs_off_one_instalment_at_a_time(sofortrente):
     assert p.defer_mths() == 60 and p.first_pay_mth() == 60
     assert all(p.cum_annuity_guar_pp(t) == 0.0 for t in (0, 30, 59))
     assert all(p.refund_pp(t) == p.single_prem() for t in (0, 30, 59))
-    assert all(p.annuity_payments(t) == 0.0 for t in (0, 30, 59))
-    assert p.annuity_payments(60) > 0.0
+    assert all(p.annuity_payments(t, AnnuityKind.ALL) == 0.0 for t in (0, 30, 59))
+    assert p.annuity_payments(60, AnnuityKind.ALL) > 0.0
     assert p.refund_pp(60) < p.single_prem()
-    assert p.claims(0, "REFUND") > 0.0        # deaths inside the deferment are settled
+    assert p.claims(0, ClaimKind.REFUND) > 0.0        # deaths inside the deferment are settled
     assert p.check_refund_run_off() is True
 
 
@@ -750,7 +751,7 @@ def test_pitfall_6_the_refund_is_netted_against_the_guaranteed_annuity(
     alt = alt_model(tmp_path, "Sofort_DE_S_nosurp", {3: {"surplus_form": "none"}})
     try:
         off = alt.Projection[3]
-        assert off.surplus_form() == "none" and base.surplus_form() == "teildynamisch"
+        assert off.surplus_form() == SurplusForm.none and base.surplus_form() == SurplusForm.teildynamisch
         assert off.annuity_pp_derived() == pytest.approx(
             base.annuity_pp_derived(), rel=1e-15)
         for t in (0, 1, 12, 120, 240, 334):
@@ -782,10 +783,10 @@ def test_pitfall_7_the_surface_is_indexed_by_birth_year_not_projection_year(
     assert old.mort_rate(0, 1) != young.mort_rate(0, 1)
     assert old.mort_rate(0, 1) > young.mort_rate(0, 1)
     assert young.mort_rate(0, 1) == pytest.approx(
-        young.mort_rate_at_age(65, "M", "SECOND"), rel=1e-12)   # exponent zero
-    lam = young.improve_rate_at_age(65, "SECOND")
+        young.mort_rate_at_age(65, Sex.M, Basis.SECOND), rel=1e-12)   # exponent zero
+    lam = young.improve_rate_at_age(65, Basis.SECOND)
     assert old.mort_rate(0, 1) == pytest.approx(
-        old.mort_rate_at_age(65, "M", "SECOND") * (1 - lam) ** (1947 + 65 - 2025),
+        old.mort_rate_at_age(65, Sex.M, Basis.SECOND) * (1 - lam) ** (1947 + 65 - 2025),
         rel=1e-12)
     assert 1947 + 65 - 2025 == -13
 
@@ -799,16 +800,16 @@ def test_pitfall_8_a_period_proxy_would_be_a_different_model(de_sofort_anchor):
     """
     p = de_sofort_anchor
     assert p.mort_base_year == 2025
-    assert p.improve_rate_at_age(70, "FIRST") > 0.0
-    assert p.mort_rate_gen(70, "U", 1960, "FIRST") != p.mort_rate_at_age(70, "U", "FIRST")
-    assert p.mort_rate_gen(70, "U", 1960, "FIRST") < p.mort_rate_at_age(70, "U", "FIRST")
-    assert p.mort_rate_gen(65, "M", 1960, "SECOND") == pytest.approx(
-        p.mort_rate_at_age(65, "M", "SECOND"), rel=1e-15)     # 1960 + 65 == 2025
+    assert p.improve_rate_at_age(70, Basis.FIRST) > 0.0
+    assert p.mort_rate_gen(70, Sex.U, 1960, Basis.FIRST) != p.mort_rate_at_age(70, Sex.U, Basis.FIRST)
+    assert p.mort_rate_gen(70, Sex.U, 1960, Basis.FIRST) < p.mort_rate_at_age(70, Sex.U, Basis.FIRST)
+    assert p.mort_rate_gen(65, Sex.M, 1960, Basis.SECOND) == pytest.approx(
+        p.mort_rate_at_age(65, Sex.M, Basis.SECOND), rel=1e-15)     # 1960 + 65 == 2025
     v, lives, factor = 1.0 / 1.01, 1.0, 0.0
     for k in range(0, p.proj_len()):
         if p.is_payment_mth(k):
             factor += v ** (k / 12.0) * max(p.certain_floor(k), lives)
-        q = min(p.mort_rate_at_age(p.age(k, 1), "U", "FIRST"), 1.0)
+        q = min(p.mort_rate_at_age(p.age(k, 1), Sex.U, Basis.FIRST), 1.0)
         lives *= (1.0 - q) ** (1.0 / 12.0)
     assert factor == pytest.approx(250.6754599050, abs=5e-9)
     assert factor < p.annuity_factor()
@@ -825,13 +826,13 @@ def test_pitfall_9_the_first_order_margin_reaches_the_trend(de_sofort_anchor):
     """
     p = de_sofort_anchor
     assert all(p.mort_rate_tariff(t, 1) < p.mort_rate(t, 1) for t in range(0, 400))
-    assert p.improve_rate_at_age(65, "FIRST") == pytest.approx(
-        1.25 * p.improve_rate_at_age(65, "SECOND"), rel=1e-12)
+    assert p.improve_rate_at_age(65, Basis.FIRST) == pytest.approx(
+        1.25 * p.improve_rate_at_age(65, Basis.SECOND), rel=1e-12)
     ratios = [p.mort_rate_tariff(t, 1) / p.mort_rate(t, 1) for t in range(0, 241, 12)]
     assert ratios[0] == pytest.approx(0.6666668334, abs=5e-9)
     assert ratios[-1] == pytest.approx(0.6384325119, abs=5e-9)
     assert all(b < a for a, b in zip(ratios, ratios[1:])), "the ratio does not fall"
-    assert p.improve_rate_at_age(105, "SECOND") == 0.0
+    assert p.improve_rate_at_age(105, Basis.SECOND) == 0.0
     assert p.age(480, 1) == 105
     assert p.mort_rate_tariff(480, 1) / p.mort_rate(480, 1) == pytest.approx(
         2.0 / 3.0, abs=1e-6)
@@ -850,7 +851,7 @@ def test_pitfall_10_the_tariff_is_unisex_and_the_decrement_is_not(
     alt = alt_model(tmp_path, "Sofort_DE_S_female", {1: {"sex": "F"}})
     try:
         female = alt.Projection[1]
-        assert female.sex(1) == "F" and male.sex(1) == "M"
+        assert female.sex(1) == Sex.F and male.sex(1) == Sex.M
         assert female.annuity_factor() == pytest.approx(male.annuity_factor(), rel=1e-15)
         assert female.annuity_pp_derived() == pytest.approx(
             male.annuity_pp_derived(), rel=1e-15)
@@ -863,11 +864,11 @@ def test_pitfall_10_the_tariff_is_unisex_and_the_decrement_is_not(
     finally:
         alt.close()
     # The blend itself is computed, not a row of the CSV.
-    assert set(male.data.mort_table().index.get_level_values("sex")) == {"M", "F"}
+    assert set(male.data.mort_table().index.get_level_values("sex")) == {Sex.M, Sex.F}
     assert male.mix_male == 0.45
-    assert male.mort_rate_at_age(70, "U", "FIRST") == pytest.approx(
-        0.45 * male.mort_rate_at_age(70, "M", "FIRST")
-        + 0.55 * male.mort_rate_at_age(70, "F", "FIRST"), rel=1e-12)
+    assert male.mort_rate_at_age(70, Sex.U, Basis.FIRST) == pytest.approx(
+        0.45 * male.mort_rate_at_age(70, Sex.M, Basis.FIRST)
+        + 0.55 * male.mort_rate_at_age(70, Sex.F, Basis.FIRST), rel=1e-12)
 
 
 # Pitfalls 11 and 12 -- the in-force model point
@@ -917,8 +918,8 @@ def test_pitfall_13_the_arrears_offset_and_the_instalment_count(sofortrente,
     arr = sofortrente.Projection[9]
     assert arr.first_pay_mth() == 1
     assert not arr.is_payment_mth(0) and arr.is_payment_mth(1)
-    assert arr.annuity_payments(0) == 0.0 and arr.claims(0, "GUARANTEE") == 0.0
-    assert arr.annuity_payments(1) > 0.0
+    assert arr.annuity_payments(0, AnnuityKind.ALL) == 0.0 and arr.claims(0, ClaimKind.GUARANTEE) == 0.0
+    assert arr.annuity_payments(1, AnnuityKind.ALL) > 0.0
     counted = [sum(1 for t in range(0, q.proj_len())
                    if q.is_payment_mth(t) and q.certain_floor(t) == 1.0)
                for q in (de_sofort_anchor, arr)]
@@ -963,7 +964,7 @@ def test_pitfall_15_the_total_annuity_ratchets(sofortrente, de_sofort_anchor):
     assert p.annuity_pp(n - 1) > p.annuity_pp(0)
     assert p.check_annuity_roll_fwd() is True
     konstant = sofortrente.Projection[10]
-    assert konstant.surplus_form() == "konstant"
+    assert konstant.surplus_form() == SurplusForm.konstant
     assert all(konstant.annuity_pp(t) == konstant.annuity_pp(t - 1)
                for t in range(157, 300))
     assert konstant.check_annuity_roll_fwd() is True
@@ -1036,10 +1037,10 @@ def test_pitfall_18_proj_len_takes_the_second_lifes_horizon(sofortrente):
     assert p.proj_len() == 12 * (p.omega_age - p.entry_age(2)) == 708
     assert p.proj_len() > p.horizon_mths(1)
     assert len(p.result_cf()) == 708 and p.result_cf().index[-1] == 707
-    assert math.isfinite(p.annuity_payments(p.proj_len() - 1))
-    assert p.annuity_payments(p.proj_len() - 1) >= 0.0
+    assert math.isfinite(p.annuity_payments(p.proj_len() - 1, AnnuityKind.ALL))
+    assert p.annuity_payments(p.proj_len() - 1, AnnuityKind.ALL) >= 0.0
     assert p.lives_if(672, 1) == 0.0 and p.lives_if(672, 2) > 0.0
-    assert any(p.annuity_payments(t, "SURVIVOR") > 0.0 for t in range(600, 700))
+    assert any(p.annuity_payments(t, AnnuityKind.SURVIVOR) > 0.0 for t in range(600, 700))
     long_guar = sofortrente.Projection[12]
     assert long_guar.guar_years() == 30 and long_guar.guar_end_mth() == 360
     assert long_guar.proj_len() == max(long_guar.horizon_mths(1),
@@ -1165,3 +1166,26 @@ def test_the_shipped_tables_mark_their_own_provenance():
     assert "provenance" not in points.columns    # a configuration, not an assumption
     assert len(points) == 14 and str(points.loc[1, "policy_id"]) == "SOF-000001"
     assert float(points.loc[1, "single_prem"]) == 100000.00
+
+
+def test_the_mortality_groups_must_span_the_same_ages():
+    """W3.3 (D68): the age clamp reads one (basis, sex) group, so the reader refuses a table
+    whose groups span different ages rather than clamping differently."""
+    import pandas as pd
+    model = mx.read_model(MODEL_DIR, name="Sofort_DE_S_d68")
+    try:
+        src = model.Data.input_dir() / "mort_table.csv"
+        broken = pd.read_csv(src)
+        broken = broken[~((broken["basis"] == "SECOND") & (broken["sex"] == "F")
+                          & (broken["age"] == broken["age"].max()))]
+        alt = "mort_table_d68_broken.csv"
+        broken.to_csv(model.Data.input_dir() / alt, index=False)
+        try:
+            model.Data.mort_table_file = alt
+            model.Data.clear_all()
+            with pytest.raises(FormulaError, match="mort_table"):
+                model.Data.mort_table()
+        finally:
+            (model.Data.input_dir() / alt).unlink(missing_ok=True)
+    finally:
+        model.close()

@@ -410,10 +410,7 @@ def model_point():
 
 def sex():
     """The sex (M / F) of the 피보험자, a rating factor of every Korean rate card [S4]."""
-    v = model_point()["sex"]
-    if v not in ("M", "F"):
-        raise ValueError("invalid sex")
-    return v
+    return Sex[model_point()["sex"]]
 
 
 def age_at_entry():
@@ -438,10 +435,7 @@ def renewal_type():
     비갱신형 is the base because it is the market: only three of the 45 disclosed
     products renew and only two carriers sell a renewable term at all [S4].
     """
-    v = model_point()["renewal_type"]
-    if v not in ("gaengsin", "bi_gaengsin"):
-        raise ValueError("invalid renewal_type: expected gaengsin or bi_gaengsin")
-    return v
+    return RenewalType[model_point()["renewal_type"]]
 
 
 def rate_class():
@@ -458,10 +452,7 @@ def rate_class():
     smoking status for the life of the policy and moves in both directions [S2
     건강체서비스특약Ⅱ 제4조].  This model does not carry the transition.
     """
-    v = model_point()["rate_class"]
-    if v not in ("standard", "nonsmoker", "preferred", "super_preferred"):
-        raise ValueError("invalid rate_class")
-    return v
+    return RateClass[model_point()["rate_class"]]
 
 
 def maturity_form():
@@ -475,10 +466,7 @@ def maturity_form():
     10.90x at female 40 [S12], which is what a savings contract with a small amount of
     insurance stapled to it looks like.
     """
-    v = model_point()["maturity_form"]
-    if v not in ("pure", "rop"):
-        raise ValueError("invalid maturity_form: expected pure or rop")
-    return v
+    return MaturityForm[model_point()["maturity_form"]]
 
 
 def policy_term():
@@ -542,7 +530,7 @@ def premium_mode():
     ``prem_mode_months`` schedule and is not shipped, every retrieved rate card being
     quoted monthly.
     """
-    return model_point()["premium_mode"]
+    return PremiumMode[model_point()["premium_mode"]]
 
 
 def contract_boundary():
@@ -558,10 +546,7 @@ def contract_boundary():
     projects to the ceiling in the base run **[std]** and carries the truncation as a
     switch.  Naming the convention is part of reporting the number.
     """
-    v = model_point()["contract_boundary"]
-    if v not in ("ceiling", "current_term"):
-        raise ValueError("invalid contract_boundary")
-    return v
+    return ContractBoundary[model_point()["contract_boundary"]]
 
 
 def acc_death():
@@ -630,7 +615,7 @@ def horizon_ceiling():
     until it gets there [S6]; the term itself on a 비갱신형 point, which never renews
     [S1] [S12].
     """
-    if renewal_type() == "gaengsin":
+    if renewal_type() == RenewalType.gaengsin:
         return renew_ceiling() - age_at_entry()
     return policy_term()
 
@@ -649,7 +634,7 @@ def proj_years():
     projection steps in months.  Everything that reads a contractual term in years reads
     this; everything that indexes the grid reads :func:`proj_len`.
     """
-    if contract_boundary() == "current_term":
+    if contract_boundary() == ContractBoundary.current_term:
         return min(horizon_ceiling(), policy_term())
     return horizon_ceiling()
 
@@ -701,7 +686,7 @@ def term_index(t):
     across a renewal boundary silently converts a 갱신형 into a 비갱신형 at the wrong
     price.
     """
-    if renewal_type() != "gaengsin":
+    if renewal_type() != RenewalType.gaengsin:
         return 1
     return 1 + (t // 12) // policy_term()
 
@@ -712,7 +697,7 @@ def term_start_age(k):
     ``k`` is the contractual 1-based cycle label, not the 0-based time index: cycle 1 is
     the original 보험기간 and starts at ``t = 0``, cycle ``k`` starts at ``t = (k - 1) n``.
     """
-    if renewal_type() != "gaengsin":
+    if renewal_type() != RenewalType.gaengsin:
         return age_at_entry()
     return age_at_entry() + (k - 1) * policy_term()
 
@@ -725,7 +710,7 @@ def term_len(k):
     보험기간으로 합니다」 [S6].  The truncated cycle is priced over its own shorter
     length, which is why this feeds :func:`prem_rate_mth`.
     """
-    if renewal_type() != "gaengsin":
+    if renewal_type() != RenewalType.gaengsin:
         return policy_term()
     return min(policy_term(), renew_ceiling() - term_start_age(k))
 
@@ -738,7 +723,7 @@ def term_pay_years(k):
     납입기간 has run out, which cannot happen on the shipped points but is defined so the
     premium formula stays total.
     """
-    start = (k - 1) * policy_term() if renewal_type() == "gaengsin" else 0
+    start = (k - 1) * policy_term() if renewal_type() == RenewalType.gaengsin else 0
     return max(0, min(start + term_len(k), pay_term()) - start)
 
 
@@ -875,6 +860,21 @@ def acc_mort_share(t):
     return min(1.0, acc_mort_rate_at_age(age(t)) / mort_rate_at_age(age(t)))
 
 
+def lapse_in_payment_end():
+    """The lapse rate the grade converges to at the end of the payment term."""
+    return float(data.lapse_table().loc[Segment.in_payment_end, "lapse_rate"])  # noqa: F821
+
+
+def lapse_in_payment_start():
+    """The lapse rate at the start of the payment term (the start of the log-linear grade)."""
+    return float(data.lapse_table().loc[Segment.in_payment_start, "lapse_rate"])  # noqa: F821
+
+
+def lapse_post_payment():
+    """The lapse rate after the payment term."""
+    return float(data.lapse_table().loc[Segment.post_payment, "lapse_rate"])  # noqa: F821
+
+
 def lapse_rate(t):
     """w(t): the ordinary lapse rate applied at the end of period t.
 
@@ -910,10 +910,9 @@ def lapse_rate(t):
     A lapse pays nothing on this form: there is no 해약환급금 at any duration
     [S1] [S2 제33조제2항] [S12].
     """
-    tbl = data.lapse_table()                                         # noqa: F821
-    start = float(tbl.loc["in_payment_start", "lapse_rate"])
-    end = float(tbl.loc["in_payment_end", "lapse_rate"])
-    post = float(tbl.loc["post_payment", "lapse_rate"])
+    start = lapse_in_payment_start()
+    end = lapse_in_payment_end()
+    post = lapse_post_payment()
     n_p = pay_term()
     y = policy_year(t) - 1
     if y >= n_p:
@@ -970,7 +969,7 @@ def renewal_decline_rate(t):
     elasticity ``d = min(d_max, d_0 (P_a(k+1)/P_a(k))^beta)`` responds to the premium
     jump; ``renewal_decline_beta = 0`` in the base run gives the flat rate.
     """
-    if renewal_type() != "gaengsin":
+    if renewal_type() != RenewalType.gaengsin:
         return 0.0
     if (t + 1) % (12 * policy_term()) != 0 or t >= proj_len() - 1:
         return 0.0
@@ -1001,6 +1000,12 @@ def pay_factor(k):
     return ((1.0 - v ** m) / (1.0 - v ** m_p))
 
 
+def prem_anchor_key():
+    """The (issue_age, term_y) key of the is_anchor row of this policy's form and sex in prem_rate_table."""
+    sub = data.prem_rate_table().loc[(maturity_form(), sex())]       # noqa: F821
+    return min(k for k in sub.index if sub.loc[k, "is_anchor"] == 1)
+
+
 def prem_rate_mth(t):
     """r(form, sex, x_k, m_k): the monthly 표준체 rate per 100,000,000 won of cover.
 
@@ -1027,11 +1032,11 @@ def prem_rate_mth(t):
     key = (maturity_form(), sex(), int(x_k), int(m_k))
     if key in tbl.index:
         return float(tbl.loc[key, "prem_mth_per_100m"])
-    anchor = data.prem_anchor_table().loc[                           # noqa: F821
-        (maturity_form(), sex())]
-    return (float(anchor["prem_mth_per_100m"])
+    sub = tbl.loc[(maturity_form(), sex())]
+    a = prem_anchor_key()
+    return (float(sub.loc[a, "prem_mth_per_100m"])
             * mort_table_mean(x_k, m_k)
-            / mort_table_mean(int(anchor["issue_age"]), int(anchor["term_y"])))
+            / mort_table_mean(int(a[0]), int(a[1])))
 
 
 def premium_mth_pp(t):
@@ -1125,7 +1130,7 @@ def pols_if(t):
         return 0.0
     if t == 0:
         return pols_if_init()
-    return (pols_if_at(t - 1, "AFT_DECR") + pols_reinstate(t - 1)
+    return (pols_if_at(t - 1, PolTiming.AFT_DECR) + pols_reinstate(t - 1)
             - pols_maturity(t - 1))
 
 
@@ -1159,14 +1164,14 @@ def pols_if_at(t, timing):
     """
     if t < 0 or t >= proj_len():
         return 0.0
-    if timing == "BEF_DECR":
+    if timing == PolTiming.BEF_DECR:
         return pols_if(t)
-    if timing == "BEF_LAPSE":
+    if timing == PolTiming.BEF_LAPSE:
         return pols_if(t) * (1.0 - mort_rate_mth(t))
-    if timing == "BEF_DECLINE":
-        return pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate_mth(t))
-    if timing == "AFT_DECR":
-        return pols_if_at(t, "BEF_DECLINE") * (1.0 - renewal_decline_rate(t))
+    if timing == PolTiming.BEF_DECLINE:
+        return pols_if_at(t, PolTiming.BEF_LAPSE) * (1.0 - lapse_rate_mth(t))
+    if timing == PolTiming.AFT_DECR:
+        return pols_if_at(t, PolTiming.BEF_DECLINE) * (1.0 - renewal_decline_rate(t))
     raise ValueError("invalid timing")
 
 
@@ -1181,7 +1186,7 @@ def pols_death(t):
     Korean document publishes their incidence, and gross negligence is **not** an
     exclusion, 상법 제732조의2 preserving the benefit [REG-R50] [R4].
     """
-    return pols_if_at(t, "BEF_DECR") * mort_rate_mth(t)
+    return pols_if_at(t, PolTiming.BEF_DECR) * mort_rate_mth(t)
 
 
 def pols_lapse(t):
@@ -1194,7 +1199,7 @@ def pols_lapse(t):
     recorded-telephone or electronic demand, termination the day after it ends, and a
     claim arising before termination still paid [S2 제27조] [REG-R25 제26조].
     """
-    return pols_if_at(t, "BEF_LAPSE") * lapse_rate_mth(t)
+    return pols_if_at(t, PolTiming.BEF_LAPSE) * lapse_rate_mth(t)
 
 
 def pols_decline(t):
@@ -1205,7 +1210,7 @@ def pols_decline(t):
     the reserve has already unwound to zero within the cycle — 흥국생명's ten-year
     renewable shows 환급률 0.0% at 10년 [S6].
     """
-    return pols_if_at(t, "BEF_DECLINE") * renewal_decline_rate(t)
+    return pols_if_at(t, PolTiming.BEF_DECLINE) * renewal_decline_rate(t)
 
 
 def pols_maturity(t):
@@ -1220,7 +1225,7 @@ def pols_maturity(t):
     """
     if t != proj_len() - 1:
         return 0.0
-    return pols_if_at(t, "AFT_DECR") + pols_reinstate(t)
+    return pols_if_at(t, PolTiming.AFT_DECR) + pols_reinstate(t)
 
 
 def reinstate_rate_eff():
@@ -1351,7 +1356,7 @@ def pols_waived(t):
     disability product: the waiver is a *premium* mechanic on a contract whose only
     benefit is death, so the waived lives are still the same lives on the same cover.
     """
-    return pols_if_at(t, "BEF_DECR") * wop_waived_frac(t) * prem_payable(t)
+    return pols_if_at(t, PolTiming.BEF_DECR) * wop_waived_frac(t) * prem_payable(t)
 
 
 def pols_payer(t):
@@ -1360,7 +1365,7 @@ def pols_payer(t):
     ``l(t)`` inside the 납입기간, less the waived fraction; zero after 납입완료.  Equal to
     :func:`pols_if` while premiums are payable unless the 납입면제 module is on.
     """
-    return pols_if_at(t, "BEF_DECR") * prem_payable(t) - pols_waived(t)
+    return pols_if_at(t, PolTiming.BEF_DECR) * prem_payable(t) - pols_waived(t)
 
 
 def accel_cap_binds():
@@ -1470,7 +1475,7 @@ def premiums(t):
     return premium_mth_pp(t) * pols_payer(t)
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Benefit outgo in period t, by kind; the total when kind is omitted.
 
     ``"DEATH"``
@@ -1504,23 +1509,23 @@ def claims(t, kind=None):
         this chassis deliberately does not compute, the 계약자적립액 belonging to
         ``WholeLife_KR_S``.
     """
-    if kind is None:
+    if kind == Kind.ALL:
         return sum(claims(t, k) for k in
-                   ("DEATH", "ACC_DEATH", "ACCEL", "MATURITY", "LAPSE"))
-    if kind == "DEATH":
+                   (Kind.DEATH, Kind.ACC_DEATH, Kind.ACCEL, Kind.MATURITY, Kind.LAPSE))
+    if kind == Kind.DEATH:
         return sum_assured() * (1.0 - accel_share(t)) * pols_death(t)
-    if kind == "ACC_DEATH":
+    if kind == Kind.ACC_DEATH:
         if not acc_death():
             return 0.0
         return (sum_assured() * acc_mort_share(t)
                 * (1.0 - accel_share(t)) * pols_death(t))
-    if kind == "ACCEL":
+    if kind == Kind.ACCEL:
         return accel_payout_pp(t) * accel_share(t) * pols_death(t)
-    if kind == "MATURITY":
-        if maturity_form() != "rop":
+    if kind == Kind.MATURITY:
+        if maturity_form() != MaturityForm.rop:
             return 0.0
         return cum_prem_pp(t) * pols_maturity(t)
-    if kind == "LAPSE":
+    if kind == Kind.LAPSE:
         return 0.0
     raise ValueError("invalid kind")
 
@@ -1579,9 +1584,9 @@ def expenses(t):
     a Korean renewal is issued on a new product code [S9] [S15], which is an argument the
     other way, and ``comm_new_term_rate`` is the switch that carries it.
     """
-    acq = expense_acq * pols_if_at(t, "BEF_DECR") if t == 0 else 0.0  # noqa: F821
+    acq = expense_acq * pols_if_at(t, PolTiming.BEF_DECR) if t == 0 else 0.0  # noqa: F821
     return acq + (expense_maint * inflation_factor(t)                # noqa: F821
-                  * pols_if_at(t, "BEF_DECR"))
+                  * pols_if_at(t, PolTiming.BEF_DECR))
 
 
 def comm_init_pp():
@@ -1619,7 +1624,7 @@ def comm_new_term(t):
     if t != (term_index(t) - 1) * 12 * policy_term():
         return 0.0
     return comm_new_term_rate * prem_pp(t) * pols_if_at(              # noqa: F821
-        t, "BEF_DECR")
+        t, PolTiming.BEF_DECR)
 
 
 def commissions(t):
@@ -1634,7 +1639,7 @@ def commissions(t):
     set, so a clawback would be an invention rather than a standardization of something
     observed.
     """
-    init = comm_init_pp() * pols_if_at(0, "BEF_DECR") if t == 0 else 0.0
+    init = comm_init_pp() * pols_if_at(0, PolTiming.BEF_DECR) if t == 0 else 0.0
     renew = comm_renewal_rate * premiums(t) if t >= 12 else 0.0      # noqa: F821
     return init + renew + comm_new_term(t)
 
@@ -1653,7 +1658,7 @@ def net_cf(t):
     point a saw-tooth: a negative period immediately before each renewal and a jump back
     into surplus the period after, as the premium resets to attained age.
     """
-    return (premiums(t) - claims(t) - claim_expenses(t)
+    return (premiums(t) - claims(t, Kind.ALL) - claim_expenses(t)
             - expenses(t) - commissions(t))
 
 
@@ -1711,7 +1716,7 @@ def check_pols_payer_resid(t):
     at all.  The ``prem_payable`` factor is what makes the identity survive 납입완료 on a
     shortened-pay point, where nobody owes a premium and both parts are zero.
     """
-    return (pols_if_at(t, "BEF_DECR") * prem_payable(t)
+    return (pols_if_at(t, PolTiming.BEF_DECR) * prem_payable(t)
             - pols_payer(t) - pols_waived(t))
 
 
@@ -1755,7 +1760,7 @@ def check_decline_timing():
     a renewal decline whatever it is called.
     """
     for t in range(proj_len()):
-        boundary = (renewal_type() == "gaengsin"
+        boundary = (renewal_type() == RenewalType.gaengsin
                     and (t + 1) % (12 * policy_term()) == 0 and t < proj_len() - 1)
         if boundary != (renewal_decline_rate(t) > 0.0):
             return False
@@ -1827,11 +1832,11 @@ def result_cf():
         {
             "pols_if": [pols_if(t) for t in ts],
             "premiums": [premiums(t) for t in ts],
-            "claims_death": [claims(t, "DEATH") for t in ts],
-            "claims_acc_death": [claims(t, "ACC_DEATH") for t in ts],
-            "claims_accel": [claims(t, "ACCEL") for t in ts],
-            "claims_maturity": [claims(t, "MATURITY") for t in ts],
-            "claims_lapse": [claims(t, "LAPSE") for t in ts],
+            "claims_death": [claims(t, Kind.DEATH) for t in ts],
+            "claims_acc_death": [claims(t, Kind.ACC_DEATH) for t in ts],
+            "claims_accel": [claims(t, Kind.ACCEL) for t in ts],
+            "claims_maturity": [claims(t, Kind.MATURITY) for t in ts],
+            "claims_lapse": [claims(t, Kind.LAPSE) for t in ts],
             "claim_expenses": [claim_expenses(t) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "commissions": [commissions(t) for t in ts],
@@ -1936,3 +1941,21 @@ roll_fwd_tol = 1e-12
 cash_tol = 1e-06
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+RenewalType = ("Pickle", 5)
+
+RateClass = ("Pickle", 2)
+
+MaturityForm = ("Pickle", 3)
+
+PremiumMode = ("Pickle", 6)
+
+ContractBoundary = ("Pickle", 7)
+
+Segment = ("Pickle", 4)
+
+PolTiming = ("Pickle", 8)
+
+Kind = ("Pickle", 9)

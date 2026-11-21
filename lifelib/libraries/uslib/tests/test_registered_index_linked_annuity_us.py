@@ -32,9 +32,11 @@ import math
 import re
 
 import modelx as mx
+from modelx.core.errors import FormulaError
 import pytest
 
 from us_registry import LIB
+from lifelib.libraries.uslib.products.registered_index_linked_annuity.enums import Amortization, Bucket, Claim, CreditType, InterimValueFamily, MarketQuote, OptionLeg, Timing
 
 MODEL_PATH = LIB / "products/registered_index_linked_annuity/RILA_US_S"
 
@@ -58,15 +60,15 @@ RATE = 5e-7             # rates the notes display to six decimals
 # value is undefined at term start and term end [R6]; the parenthesised Strategy Value
 # there is what the model returns, and that is what is asserted.
 WORKED_EXAMPLE = {
-    "A1": (1, 35, "BEF_ROLL", 120.0,  0.20,  92280.78, 29145.94, -2182.94,  -2726.33,
+    "A1": (1, 35, Timing.BEF_ROLL, 120.0,  0.20,  92280.78, 29145.94, -2182.94,  -2726.33,
            24236.66, 34.06, 116483.39, 100000.00),
-    "B1": (2, 35, "BEF_ROLL",  80.0, -0.20,  92280.78,  5778.47,   -85.24, -13151.88,
+    "B1": (2, 35, Timing.BEF_ROLL,  80.0, -0.20,  92280.78,  5778.47,   -85.24, -13151.88,
            -7458.66, 19.02,  84803.11, 100000.00),
-    "B2": (2, 35, "AFT_WD",    80.0, -0.20,  83575.37,  5233.35,   -77.20, -11911.19,
+    "B2": (2, 35, Timing.AFT_WD,    80.0, -0.20,  83575.37,  5233.35,   -77.20, -11911.19,
            -6755.04, 17.22,  76803.11,  90566.38),
-    "A2": (1, 71, "BEF_ROLL", 140.0,  0.40, 100000.00, 40000.00,     0.00,      0.00,
+    "A2": (1, 71, Timing.BEF_ROLL, 140.0,  0.40, 100000.00, 40000.00,     0.00,      0.00,
            40000.00,  0.00, 140000.00, 140000.00),
-    "B3": (2, 71, "BEF_ROLL",  75.0, -0.25,  90566.38,     0.00,     0.00, -13584.96,
+    "B3": (2, 71, Timing.BEF_ROLL,  75.0, -0.25,  90566.38,     0.00,     0.00, -13584.96,
            -13584.96, 0.00,  76981.42,  76981.42),
 }
 
@@ -77,9 +79,9 @@ TERM_START = {
     "index": 100.0,
     "notional": 100000.00,
     "fixed_proxy": 89936.81,
-    "ATM_CALL": 21567.95,
-    "OTM_CALL": -3344.55,
-    "OTM_PUT": -8160.20,
+    OptionLeg.ATM_CALL: 21567.95,
+    OptionLeg.OTM_CALL: -3344.55,
+    OptionLeg.OTM_PUT: -8160.20,
     "deriv_proxy": 10063.19,
     "trading_cost": 33.07,
     "strategy_value": 100000.00,
@@ -159,9 +161,9 @@ def test_worked_example_row(rila, label):
     assert p.index_level(t) == pytest.approx(index, abs=1e-9)
     assert p.index_perf(t) == pytest.approx(perf, abs=RATE)
     assert p.fixed_proxy_pp(t, timing) == pytest.approx(fixed, abs=CENT)
-    assert p.opt_component_pp(t, "ATM_CALL", timing) == pytest.approx(atm, abs=CENT)
-    assert p.opt_component_pp(t, "OTM_CALL", timing) == pytest.approx(otmc, abs=CENT)
-    assert p.opt_component_pp(t, "OTM_PUT", timing) == pytest.approx(otmp, abs=CENT)
+    assert p.opt_component_pp(t, OptionLeg.ATM_CALL, timing) == pytest.approx(atm, abs=CENT)
+    assert p.opt_component_pp(t, OptionLeg.OTM_CALL, timing) == pytest.approx(otmc, abs=CENT)
+    assert p.opt_component_pp(t, OptionLeg.OTM_PUT, timing) == pytest.approx(otmp, abs=CENT)
     assert p.deriv_proxy_pp(t, timing) == pytest.approx(deriv, abs=CENT)
     assert p.trading_cost_pp(t, timing) == pytest.approx(tcost, abs=CENT)
     assert p.interim_value_pp_at(t, timing) == pytest.approx(value, abs=ROUNDED)
@@ -191,11 +193,11 @@ def test_option_budget_and_fixed_leg(anchor):
 
 def test_option_budget_decomposes_as_the_notes_print_it(anchor):
     """Pi(100, 6) = 0.215679 - 0.033445 - 0.081602 = 0.100632."""
-    legs = {leg: anchor.opt_component(0, leg, 100.0, 6.0, "TERM_START")
+    legs = {leg: anchor.opt_component(0, leg, 100.0, 6.0, MarketQuote.TERM_START)
             for leg in anchor.opt_legs()}
-    assert legs["ATM_CALL"] == pytest.approx(0.215679, abs=5e-7)
-    assert legs["OTM_CALL"] == pytest.approx(-0.033445, abs=5e-7)
-    assert legs["OTM_PUT"] == pytest.approx(-0.081602, abs=5e-7)
+    assert legs[OptionLeg.ATM_CALL] == pytest.approx(0.215679, abs=5e-7)
+    assert legs[OptionLeg.OTM_CALL] == pytest.approx(-0.033445, abs=5e-7)
+    assert legs[OptionLeg.OTM_PUT] == pytest.approx(-0.081602, abs=5e-7)
     assert sum(legs.values()) == pytest.approx(BETA, abs=5e-7)
 
 
@@ -226,7 +228,7 @@ def test_worked_example_row_0_at_the_term_start_instant(anchor):
     assert i_s == TERM_START["index"]
 
     for leg in anchor.opt_legs():
-        value = ia * anchor.opt_component(0, leg, i_s, term, "TERM_START")
+        value = ia * anchor.opt_component(0, leg, i_s, term, MarketQuote.TERM_START)
         assert value == pytest.approx(TERM_START[leg], abs=CENT)
 
     deriv = ia * anchor.opt_budget(0)               # D = beta x IA at tau = T
@@ -236,7 +238,7 @@ def test_worked_example_row_0_at_the_term_start_instant(anchor):
     assert fixed + deriv == pytest.approx(TERM_START["strategy_value"], abs=1e-9)
 
     tcost = ia * anchor.trading_cost_rate * anchor.opt_portfolio_abs(
-        0, i_s, term, "TERM_START")
+        0, i_s, term, MarketQuote.TERM_START)
     assert tcost == pytest.approx(TERM_START["trading_cost"], abs=CENT)
 
 
@@ -247,22 +249,22 @@ def test_midterm_amortization_and_the_mva_factor(anchor, scenario_b):
     figure derived from it requires (1.04/1.05)^3 = 0.9716998.  The model reproduces the
     dollars, and this test pins the factor that actually produces them.
     """
-    assert anchor.budget_amort_pp(35) == pytest.approx(BUDGET_AT_MIDTERM, abs=CENT)
-    unadjusted = anchor.inv_amt_basis_pp(35) - anchor.budget_amort_pp(35)
+    assert anchor.budget_amort_pp(35, Timing.BEF_ROLL) == pytest.approx(BUDGET_AT_MIDTERM, abs=CENT)
+    unadjusted = anchor.inv_amt_basis_pp(35) - anchor.budget_amort_pp(35, Timing.BEF_ROLL)
     assert unadjusted == pytest.approx(FIXED_LEG_UNADJUSTED, abs=CENT)
     assert anchor.mva_factor(35) == pytest.approx((1.04 / 1.05) ** 3, rel=1e-12)
     assert anchor.mva_factor(35) == pytest.approx(0.9716998, abs=5e-8)
-    assert unadjusted - anchor.fixed_proxy_pp(35) == pytest.approx(MVA_COST, abs=CENT)
+    assert unadjusted - anchor.fixed_proxy_pp(35, Timing.BEF_ROLL) == pytest.approx(MVA_COST, abs=CENT)
     # The same fixed leg serves both scenarios: it does not depend on the index.
-    assert scenario_b.fixed_proxy_pp(35) == pytest.approx(
-        anchor.fixed_proxy_pp(35), abs=1e-9)
+    assert scenario_b.fixed_proxy_pp(35, Timing.BEF_ROLL) == pytest.approx(
+        anchor.fixed_proxy_pp(35, Timing.BEF_ROLL), abs=1e-9)
 
 
 def test_interim_values_without_the_rate_move(anchor, scenario_b):
     """Without the 100 bp rise the interim values would be 119,171.01 and 87,490.73."""
     for p, expected in ((anchor, IV_A1_NO_RATE_MOVE), (scenario_b, IV_B1_NO_RATE_MOVE)):
-        no_move = (p.inv_amt_basis_pp(35) - p.budget_amort_pp(35)
-                   + p.deriv_proxy_pp(35) - p.trading_cost_pp(35))
+        no_move = (p.inv_amt_basis_pp(35) - p.budget_amort_pp(35, Timing.BEF_ROLL)
+                   + p.deriv_proxy_pp(35, Timing.BEF_ROLL) - p.trading_cost_pp(35, Timing.BEF_ROLL))
         assert no_move == pytest.approx(expected, abs=CENT)
 
 
@@ -274,7 +276,7 @@ def test_the_short_put_subtracts_even_when_the_index_is_up(anchor):
     the Term Start Date" [S2].
     """
     assert anchor.index_perf(35) > 0.0
-    assert anchor.opt_component_pp(35, "OTM_PUT") == pytest.approx(-2726.33, abs=CENT)
+    assert anchor.opt_component_pp(35, OptionLeg.OTM_PUT, Timing.BEF_ROLL) == pytest.approx(-2726.33, abs=CENT)
 
 
 def test_the_proportional_withdrawal_rule(scenario_b):
@@ -284,8 +286,8 @@ def test_the_proportional_withdrawal_rule(scenario_b):
     is exactly ``G (IA/V - 1)``, and it is positive whenever the interim value is below
     the notional - the asymmetry the prospectus states directly [S2].
     """
-    v_before = scenario_b.interim_value_pp_at(35, "BEF_WD")
-    ia_before = scenario_b.inv_amt_pp_at(35, "BEF_WD")
+    v_before = scenario_b.interim_value_pp_at(35, Timing.BEF_WD)
+    ia_before = scenario_b.inv_amt_pp_at(35, Timing.BEF_WD)
     wd = scenario_b.wd_pp(35)
     assert wd == 8000.00
     assert v_before == pytest.approx(84803.11, abs=CENT)
@@ -306,31 +308,31 @@ def test_homogeneity_the_interim_value_falls_by_exactly_the_cash(scenario_b):
     term-start notional rather than scaled with the current ``IA_k(t)``, the contract
     would silently gain or lose value on every withdrawal.
     """
-    v_before = scenario_b.interim_value_pp_at(35, "BEF_WD")
-    v_after = scenario_b.interim_value_pp_at(35, "AFT_WD")
+    v_before = scenario_b.interim_value_pp_at(35, Timing.BEF_WD)
+    v_after = scenario_b.interim_value_pp_at(35, Timing.AFT_WD)
     assert v_before - v_after == pytest.approx(8000.00, rel=1e-12)
 
-    scale = scenario_b.inv_amt_pp(35) / scenario_b.inv_amt_pp_at(35, "BEF_WD")
+    scale = scenario_b.inv_amt_pp(35) / scenario_b.inv_amt_pp_at(35, Timing.BEF_WD)
     for leg in scenario_b.opt_legs():
-        assert scenario_b.opt_component_pp(35, leg, "AFT_WD") == pytest.approx(
-            scenario_b.opt_component_pp(35, leg, "BEF_ROLL") * scale, rel=1e-12)
+        assert scenario_b.opt_component_pp(35, leg, Timing.AFT_WD) == pytest.approx(
+            scenario_b.opt_component_pp(35, leg, Timing.BEF_ROLL) * scale, rel=1e-12)
     for cells in ("fixed_proxy_pp", "deriv_proxy_pp", "trading_cost_pp",
                   "budget_amort_pp"):
-        before = getattr(scenario_b, cells)(35, "BEF_ROLL")
-        after = getattr(scenario_b, cells)(35, "AFT_WD")
+        before = getattr(scenario_b, cells)(35, Timing.BEF_ROLL)
+        after = getattr(scenario_b, cells)(35, Timing.AFT_WD)
         assert after == pytest.approx(before * scale, rel=1e-12)
 
 
 def test_the_withdrawal_bite_persists_to_term_end(scenario_b):
     """Row B3: 90,566.38 x 0.85 = 76,981.42 - the proportional reduction does not heal."""
     assert scenario_b.credit_rate_term(71) == pytest.approx(-0.15, abs=RATE)
-    assert scenario_b.inv_amt_pp_at(71, "BEF_ROLL") == pytest.approx(
+    assert scenario_b.inv_amt_pp_at(71, Timing.BEF_ROLL) == pytest.approx(
         76981.42, abs=ROUNDED)
 
 
 def test_rop_falls_in_the_same_proportion_as_the_account_value(scenario_b):
     """The return-of-premium base is reduced proportionally on withdrawal [S1][S2]."""
-    av_before = scenario_b.av_pp_at(35, "BEF_WD")
+    av_before = scenario_b.av_pp_at(35, Timing.BEF_WD)
     ratio = 1.0 - scenario_b.wd_pp(35) / av_before
     assert scenario_b.rop_pp(35) == pytest.approx(
         scenario_b.rop_pp(34) * ratio, rel=1e-12)
@@ -356,7 +358,7 @@ def test_term_end_identity_holds_for_every_crediting_type(rila, point_id):
     assert ends
     for t in ends:
         assert p.check_term_end_identity_resid(t) == pytest.approx(0.0, abs=1e-9)
-        assert p.trading_cost_pp(t) == 0.0
+        assert p.trading_cost_pp(t, Timing.BEF_ROLL) == 0.0
         assert p.iv_ratio(t) == 1.0
     # the same check with no argument, which is how the library calls it
     assert p.check_term_end_identity() is True
@@ -367,7 +369,7 @@ def test_the_term_end_identity_is_the_crediting_formula(rila):
     for point_id in (1, 4, 5, 6, 12):
         p = _point(rila, point_id)
         t = next(t for t in range(p.proj_len()) if p.is_term_end(t))
-        pi = p.opt_portfolio(t, p.index_level(t), 0.0, "CURRENT")
+        pi = p.opt_portfolio(t, p.index_level(t), 0.0, MarketQuote.CURRENT)
         assert pi == pytest.approx(p.credit_rate_term(t), abs=1e-12)
 
 
@@ -416,11 +418,11 @@ def test_step_and_edge_discontinuities_are_not_smoothed(rila):
 def test_floor_needs_four_options_not_three(rila):
     """The floor design buys back an out-of-the-money put so the short exposure stops [S5]."""
     p = _point(rila, 6)
-    assert p.opt_legs() == ("ATM_CALL", "OTM_CALL", "ATM_PUT", "FLOOR_PUT")
+    assert p.opt_legs() == (OptionLeg.ATM_CALL, OptionLeg.OTM_CALL, OptionLeg.ATM_PUT, OptionLeg.FLOOR_PUT)
     assert p.credit_rate_term(35) == pytest.approx(-0.10, abs=RATE)   # R = -20%, f = 10%
     # the bought-back put is the only positive-signed put in the set
-    assert p.opt_component(35, "FLOOR_PUT", 80.0, 0.5, "CURRENT") > 0.0
-    assert p.opt_component(35, "ATM_PUT", 80.0, 0.5, "CURRENT") < 0.0
+    assert p.opt_component(35, OptionLeg.FLOOR_PUT, 80.0, 0.5, MarketQuote.CURRENT) > 0.0
+    assert p.opt_component(35, OptionLeg.ATM_PUT, 80.0, 0.5, MarketQuote.CURRENT) < 0.0
 
 
 def test_an_uncapped_option_values_the_otm_call_at_zero(rila, anchor):
@@ -429,10 +431,10 @@ def test_an_uncapped_option_values_the_otm_call_at_zero(rila, anchor):
     p = _point(rila, 12)
     assert p.is_uncapped() is True
     assert math.isinf(p.cap_rate(0))
-    assert p.opt_component(35, "OTM_CALL", 120.0, 3.0, "CURRENT") == 0.0
+    assert p.opt_component(35, OptionLeg.OTM_CALL, 120.0, 3.0, MarketQuote.CURRENT) == 0.0
     # at expiry the uncapped design credits the whole index return; the capped one stops
-    assert p.opt_portfolio(35, 300.0, 0.0, "CURRENT") == pytest.approx(2.00, abs=1e-12)
-    assert anchor.opt_portfolio(35, 300.0, 0.0, "CURRENT") == pytest.approx(
+    assert p.opt_portfolio(35, 300.0, 0.0, MarketQuote.CURRENT) == pytest.approx(2.00, abs=1e-12)
+    assert anchor.opt_portfolio(35, 300.0, 0.0, MarketQuote.CURRENT) == pytest.approx(
         1.00, abs=1e-12)
     # the buffer branch is unaffected by the absence of a cap
     assert p.credit_rate_term(71) == pytest.approx(-0.15, abs=RATE)
@@ -449,8 +451,8 @@ def test_participation_above_100_percent_restrikes_the_short_call(rila):
     expected = -1.10 * p.bs_call(
         p.index_level(35), i_s * (1 + 0.60 / 1.10), tau_,
         p.risk_free(35), p.div_yield(35), p.impl_vol(35)) / i_s
-    assert p.opt_component(35, "OTM_CALL", p.index_level(35), tau_,
-                           "CURRENT") == pytest.approx(expected, rel=1e-12)
+    assert p.opt_component(35, OptionLeg.OTM_CALL, p.index_level(35), tau_,
+                           MarketQuote.CURRENT) == pytest.approx(expected, rel=1e-12)
 
 
 def test_participation_of_one_recovers_the_plain_cap_portfolio(anchor):
@@ -460,7 +462,7 @@ def test_participation_of_one_recovers_the_plain_cap_portfolio(anchor):
     plain = (anchor.bs_call(120.0, i_s, tau_, 0.04, 0.02, 0.20)
              - anchor.bs_call(120.0, i_s * 2.0, tau_, 0.04, 0.02, 0.20)
              - anchor.bs_put(120.0, i_s * 0.9, tau_, 0.04, 0.02, 0.20)) / i_s
-    assert anchor.opt_portfolio(35, 120.0, 3.0, "CURRENT") == pytest.approx(
+    assert anchor.opt_portfolio(35, 120.0, 3.0, MarketQuote.CURRENT) == pytest.approx(
         plain, rel=1e-12)
 
 
@@ -477,16 +479,16 @@ def test_the_pre_ag54_engine_reproduces_its_own_worked_example(rila):
     in-force blocks.
     """
     p = _point(rila, 9)
-    assert p.iv_family() == "legacy"
+    assert p.iv_family() == InterimValueFamily.legacy
     assert p.premium_pp() == 50000.0
     assert p.index_at_term_start(0) == 500.0
     assert p.index_level(5) == 600.0
     assert p.index_perf(5) == pytest.approx(0.20, abs=RATE)
     assert p.credit_rate_accrued(5) == pytest.approx(0.05, abs=RATE)
-    assert p.interim_value_pp_at(5, "BEF_ROLL") == pytest.approx(52500.00, abs=CENT)
+    assert p.interim_value_pp_at(5, Timing.BEF_ROLL) == pytest.approx(52500.00, abs=CENT)
     # and it carries no derivative proxy or trading cost at all
-    assert p.deriv_proxy_pp(5) == 0.0
-    assert p.trading_cost_pp(5) == 0.0
+    assert p.deriv_proxy_pp(5, Timing.BEF_ROLL) == 0.0
+    assert p.trading_cost_pp(5, Timing.BEF_ROLL) == 0.0
 
 
 def test_family_c_is_family_a_with_the_mva_factor_set_to_one(rila):
@@ -497,7 +499,7 @@ def test_family_c_is_family_a_with_the_mva_factor_set_to_one(rila):
     cost either [S5].
     """
     delta = _point(rila, 8)
-    assert delta.iv_family() == "delta"
+    assert delta.iv_family() == InterimValueFamily.delta
     assert delta.trading_cost_factor(35) == 0.0
     expected = (1.0 - delta.budget_amort_factor(35)) + delta.deriv_proxy_factor(35)
     assert delta.iv_factor(35) == pytest.approx(expected, rel=1e-12)
@@ -511,7 +513,7 @@ def test_family_b_discounts_the_full_notional_and_rebates_expenses(rila):
     """Equitable discounts the **whole** Segment Investment and adds the always-positive
     Cap Calculation Factor, which declines linearly to zero at term end [S4][S6]."""
     p = _point(rila, 7)
-    assert p.iv_family() == "notional"
+    assert p.iv_family() == InterimValueFamily.notional
     assert p.fixed_proxy_factor(35) == pytest.approx(
         (1 + p.risk_free(35) + p.iv_credit_spread) ** (-p.tau(35)), rel=1e-12)
     assert p.cap_calc_factor(35) > 0.0
@@ -524,13 +526,13 @@ def test_family_b_discounts_the_full_notional_and_rebates_expenses(rila):
 def test_the_amortization_switch_changes_the_middle_and_not_the_ends(rila):
     """Straight-line [S2] against updated time to expiry [S3] - one insurer needs both."""
     straight, updated = _point(rila, 1), _point(rila, 10)
-    assert straight.amort_rule() == "straight_line"
-    assert updated.amort_rule() == "updated_expiry"
+    assert straight.amort_rule() == Amortization.straight_line
+    assert updated.amort_rule() == Amortization.updated_expiry
     # identical at both boundaries: at the term-start instant both reduce to beta, and at
     # term end both are zero. The term-start instant is not a row after the merge, so the
     # updated-expiry rule is evaluated there directly, at tau = T.
     i_s, term = updated.index_at_term_start(0), float(updated.term_years())
-    assert updated.opt_portfolio(0, i_s, term, "TERM_START") == pytest.approx(
+    assert updated.opt_portfolio(0, i_s, term, MarketQuote.TERM_START) == pytest.approx(
         straight.opt_budget(0), rel=1e-12)
     assert straight.budget_amort_factor(71) == updated.budget_amort_factor(71) == 0.0
     # and different in between
@@ -546,7 +548,7 @@ def test_the_nge_cap_solve_hits_its_target(rila):
     solved = p.cap_rate(72)                            # the first renewal term
     assert 0.0 < solved < 1.00
     assert p.opt_budget(72) == pytest.approx(p.opt_budget_target(), abs=1e-9)
-    assert solved >= p.guar_min_rate("CAP")
+    assert solved >= p.guar_min_rate(CreditType.CAP)
     # the base run holds the snapshot instead
     assert _point(rila, 1).cap_rate(72) == 1.00
 
@@ -589,7 +591,7 @@ def test_the_two_readings_of_the_contract_year(anchor):
     assert anchor.surr_charge_rate(59) == 0.03         # wc(5), the [S2] example's rate
     # the anniversary at time 12 closes month 11, so that is where the base is snapshotted
     assert anchor.free_wd_base(11) == pytest.approx(
-        anchor.av_pp_at(11, "BEF_WD"), rel=1e-12)
+        anchor.av_pp_at(11, Timing.BEF_WD), rel=1e-12)
     assert anchor.policy_year(71) == 7 and anchor.lapse_rate_sc_mult(71) == 3.0
 
 
@@ -608,7 +610,7 @@ def test_the_free_withdrawal_amount(scenario_b):
     assert scenario_b.free_wd_allow(0) == 0.0
     assert scenario_b.free_wd_allow(5) == 0.0          # still contract year 1
     assert scenario_b.free_wd_avail(35) == pytest.approx(
-        0.10 * scenario_b.av_pp_at(35, "BEF_WD"), rel=1e-12)
+        0.10 * scenario_b.av_pp_at(35, Timing.BEF_WD), rel=1e-12)
     # the notes' worked $8,000 sits inside it, so no charge is incurred
     assert scenario_b.wd_pp(35) == 8000.0
     assert scenario_b.free_wd_avail(35) > 8000.0
@@ -643,7 +645,7 @@ def test_the_charge_is_not_grossed_up(rila):
     # the gross amount leaves the contract; only the net is a cash flow
     assert p.wd_payment_pp(t) < p.wd_pp(t)
     assert p.rop_pp(t) == pytest.approx(
-        p.rop_pp(t - 1) * (1 - p.wd_pp(t) / p.av_pp_at(t, "BEF_WD")), rel=1e-12)
+        p.rop_pp(t - 1) * (1 - p.wd_pp(t) / p.av_pp_at(t, Timing.BEF_WD)), rel=1e-12)
 
 
 def test_the_surrender_value_composition(anchor):
@@ -689,16 +691,16 @@ def test_the_prospectus_withdrawal_charge_example(rila):
     assert p.surr_value_pp(t) == pytest.approx(S2_CHARGE["cash_value"], abs=CENT)
     # and that is what a surrender in that month actually pays: the charge is retained,
     # not grossed up, so the benefit is the Account Value less exactly the charge
-    assert p.claim_pp(t, "LAPSE") == pytest.approx(S2_CHARGE["cash_value"], abs=CENT)
-    assert p.av_pp(t) - p.claim_pp(t, "LAPSE") == pytest.approx(
+    assert p.claim_pp(t, Claim.LAPSE) == pytest.approx(S2_CHARGE["cash_value"], abs=CENT)
+    assert p.av_pp(t) - p.claim_pp(t, Claim.LAPSE) == pytest.approx(
         S2_CHARGE["charge"], abs=CENT)
 
 
 def test_the_transfer_period_sets_the_value_equal_to_the_investment_amount(anchor):
     """"V = IA during it" [S1][S2] - which is why surrenders concentrate there."""
     assert anchor.iv_ratio(71) == 1.0
-    assert anchor.interim_value_pp_at(71, "BEF_ROLL") == pytest.approx(
-        anchor.inv_amt_pp_at(71, "BEF_ROLL"), rel=1e-12)
+    assert anchor.interim_value_pp_at(71, Timing.BEF_ROLL) == pytest.approx(
+        anchor.inv_amt_pp_at(71, Timing.BEF_ROLL), rel=1e-12)
     assert anchor.lapse_iv_mult(71) == 1.0             # no moneyness suppression there
     assert anchor.term_end_lapse_rate(71) == 0.10      # the withdrawal charge is zero
     assert anchor.term_end_lapse_rate(35) == 0.0       # not a Term End Date
@@ -706,13 +708,13 @@ def test_the_transfer_period_sets_the_value_equal_to_the_investment_amount(ancho
 
 def test_the_term_end_roll_split(anchor):
     """80% renew into the same option, 5% into another, 15% to the Fixed Account **[std]**."""
-    assert anchor.roll_share("OPTION") == pytest.approx(0.85, rel=1e-12)
-    assert anchor.roll_share("FIXED") == pytest.approx(0.15, rel=1e-12)
-    assert anchor.roll_share("HOLDING") == 0.0
-    credited = anchor.inv_amt_pp_at(71, "BEF_ROLL")
-    assert anchor.inv_amt_pp_at(71, "BEF_WD") == pytest.approx(
+    assert anchor.roll_share(Bucket.OPTION) == pytest.approx(0.85, rel=1e-12)
+    assert anchor.roll_share(Bucket.FIXED) == pytest.approx(0.15, rel=1e-12)
+    assert anchor.roll_share(Bucket.HOLDING) == 0.0
+    credited = anchor.inv_amt_pp_at(71, Timing.BEF_ROLL)
+    assert anchor.inv_amt_pp_at(71, Timing.BEF_WD) == pytest.approx(
         credited * 0.85, rel=1e-12)
-    assert anchor.roll_to_acct_pp(71, "FIXED") == pytest.approx(
+    assert anchor.roll_to_acct_pp(71, Bucket.FIXED) == pytest.approx(
         credited * 0.15, rel=1e-12)
     # the Fixed Account is empty until the first Term End Date and non-empty after it
     assert anchor.fixed_acct_pp(70) == 0.0
@@ -720,7 +722,7 @@ def test_the_term_end_roll_split(anchor):
     assert anchor.holding_acct_pp(71) == 0.0
     # and the Account Value is the sum of the three buckets
     assert anchor.av_pp(71) == pytest.approx(
-        anchor.interim_value_pp_at(71, "AFT_WD") + anchor.fixed_acct_pp(71)
+        anchor.interim_value_pp_at(71, Timing.AFT_WD) + anchor.fixed_acct_pp(71)
         + anchor.holding_acct_pp(71), rel=1e-12)
 
 
@@ -790,8 +792,8 @@ def test_the_total_surrender_rate_is_capped_at_fifty_percent(anchor):
         assert anchor.lapse_rate_mth(t) == pytest.approx(
             1 - (1 - anchor.lapse_rate(t)) ** (1 / 12), rel=1e-12)
     # the monthly rate is the one the decrement chain reads
-    assert anchor.pols_if_at(71, "BEF_TERM_SURR") == pytest.approx(
-        anchor.pols_if_at(71, "BEF_LAPSE") * (1 - anchor.lapse_rate_mth(71)), rel=1e-12)
+    assert anchor.pols_if_at(71, Timing.BEF_TERM_SURR) == pytest.approx(
+        anchor.pols_if_at(71, Timing.BEF_LAPSE) * (1 - anchor.lapse_rate_mth(71)), rel=1e-12)
 
 
 def test_the_worked_example_and_the_behavioural_withdrawal_rule_disagree(rila):
@@ -810,7 +812,7 @@ def test_the_worked_example_and_the_behavioural_withdrawal_rule_disagree(rila):
     assert pinned.wd_pp(11) == 0.0
     assert pinned.inv_amt_pp(34) == 100000.0
     assert behavioural.wd_pp(11) == pytest.approx(
-        0.02 * behavioural.av_pp_at(11, "BEF_WD"), rel=1e-12)
+        0.02 * behavioural.av_pp_at(11, Timing.BEF_WD), rel=1e-12)
     assert behavioural.wd_pp(11) > 0.0
     assert behavioural.inv_amt_pp(34) < 100000.0
     # and the behavioural rule never incurs a charge: it is capped at the free amount.
@@ -844,12 +846,12 @@ def test_pols_if_is_the_start_of_period_count_and_weights_its_own_row(anchor):
     weighted by the opening one.
     """
     assert anchor.pols_if(0) == anchor.pols_if_init()
-    assert anchor.pols_if_at(0, "BEF_DECR") == anchor.pols_if(0)
+    assert anchor.pols_if_at(0, Timing.BEF_DECR) == anchor.pols_if(0)
     # month 0 is excluded from the expense identity only because it also carries the
     # acquisition charge, which is not a per-month maintenance amount
     for t in (1, 11, 35, 71, 199):
         # the end-of-month count is one step ahead of the start-of-month one
-        assert anchor.pols_if_at(t, "AFT_DECR") == pytest.approx(
+        assert anchor.pols_if_at(t, Timing.AFT_DECR) == pytest.approx(
             anchor.pols_if(t + 1), rel=1e-15)
         # and the row's own cash flows divide by the row's own in-force
         assert anchor.expenses(t) / (
@@ -901,7 +903,7 @@ def test_the_maturity_date_rule(rila):
     assert p.age(last) == 89
     assert p.age(last - 12) == 88
     assert p.age_at_entry() + p.policy_term() == 90
-    assert p.claim_pp(last, "MATURITY") == pytest.approx(p.av_pp(last), rel=1e-12)
+    assert p.claim_pp(last, Claim.MATURITY) == pytest.approx(p.av_pp(last), rel=1e-12)
 
 
 def test_result_cf_shape(anchor):
@@ -975,9 +977,9 @@ def test_the_trading_cost_is_a_free_parameter_on_a_stated_base(anchor):
     """kappa x IA x sum of |per-unit option values| **[std]**, zero at term end."""
     assert anchor.trading_cost_rate == 0.001
     gross = sum(abs(anchor.opt_component(
-        0, leg, anchor.index_level(0), anchor.tau(0), "CURRENT"))
+        0, leg, anchor.index_level(0), anchor.tau(0), MarketQuote.CURRENT))
         for leg in anchor.opt_legs())
-    assert anchor.trading_cost_pp(0) == pytest.approx(
+    assert anchor.trading_cost_pp(0, Timing.BEF_ROLL) == pytest.approx(
         0.001 * 100000.0 * gross, rel=1e-12)
     # the $33.07 the notes' opening row shows is the term-start instant, pinned by
     # test_worked_example_row_0_at_the_term_start_instant
@@ -987,9 +989,9 @@ def test_the_trading_cost_is_a_free_parameter_on_a_stated_base(anchor):
 def test_the_interim_value_is_not_floored(scenario_b):
     """"Flooring the interim value at zero, or at the notional, is not implementing the
     contract" [S2]."""
-    assert scenario_b.interim_value_pp_at(35, "BEF_ROLL") < scenario_b.inv_amt_pp_at(
-        35, "BEF_ROLL")
-    assert scenario_b.deriv_proxy_pp(35) < 0.0        # the derivative proxy is negative
+    assert scenario_b.interim_value_pp_at(35, Timing.BEF_ROLL) < scenario_b.inv_amt_pp_at(
+        35, Timing.BEF_ROLL)
+    assert scenario_b.deriv_proxy_pp(35, Timing.BEF_ROLL) < 0.0        # the derivative proxy is negative
     assert scenario_b.iv_ratio(35) < 1.0
     # and the Account Value follows it down rather than being held at the notional
     assert scenario_b.av_pp(35) < scenario_b.premium_pp()
@@ -1064,11 +1066,10 @@ def test_the_symbol_table_maps_every_notes_symbol_the_model_implements(rila):
 
 
 def test_the_documented_timing_arguments_are_the_ones_the_cells_accept(rila, anchor):
-    """The symbol table, the timing rubric and the code must name the same literals.
+    """The symbol table, timing rubric and cells agree on the Timing members.
 
     The table row for ``pols_if_at`` once read ``BEF_TERM`` where the code and the rubric
-    below it read ``BEF_TERM_SURR``, so a reader copying the literal out of the table got
-    a ``ValueError``.
+    below it read ``BEF_TERM_SURR``, so the listed name did not resolve.
     """
     doc = rila.Projection.doc
     for cells, arg_of in (("pols_if_at", anchor.pols_if_at),
@@ -1078,8 +1079,10 @@ def test_the_documented_timing_arguments_are_the_ones_the_cells_accept(rila, anc
         timings = row.split()[-1].split("/")
         assert len(timings) == 4
         for timing in timings:
-            assert f'``"{timing}"``' in doc, f"{timing} is not in the timing rubric"
-            arg_of(24, timing)                      # must not raise
+            assert f"``Timing.{timing}``" in doc, f"{timing} is not in the timing rubric"
+            arg_of(24, Timing[timing])
+        with pytest.raises(FormulaError, match="invalid timing"):
+            arg_of(24, timings[0])
     assert "BEF_TERM_SURR" in doc and "BEF_TERM/" not in doc
 
 
@@ -1092,7 +1095,7 @@ def test_the_family_b_free_parameters_are_disclosed_as_std(rila):
     unmarked - BUILD_SPEC's rule that every number not from a source carries **[std]**.
     """
     p = _point(rila, 7)
-    assert p.iv_family() == "notional"
+    assert p.iv_family() == InterimValueFamily.notional
     assert p.iv_credit_spread == 0.01
     assert p.iv_expense_rate == 0.001
     assert p.fixed_proxy_factor(35) < 1.0              # the spread is live in the factor
@@ -1121,8 +1124,8 @@ def test_invalid_arguments_raise(anchor):
                  lambda: anchor.roll_share("NOPE"),
                  lambda: anchor.guar_min_rate("NOPE"),
                  lambda: anchor.iv_notional_pp(1, "NOPE"),
-                 lambda: anchor.opt_component(1, "NOPE", 100.0, 1.0, "CURRENT"),
-                 lambda: anchor.opt_component(1, "ATM_CALL", 100.0, 1.0, "NOPE"),
+                 lambda: anchor.opt_component(1, "NOPE", 100.0, 1.0, MarketQuote.CURRENT),
+                 lambda: anchor.opt_component(1, OptionLeg.ATM_CALL, 100.0, 1.0, "NOPE"),
                  lambda: anchor.wd_bucket_value_pp(1, "NOPE")):
         with pytest.raises(Exception):
             call()

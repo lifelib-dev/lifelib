@@ -128,6 +128,11 @@ import pandas as pd
 from us_registry import MODELS, model_path
 
 
+def point_index_scalars(*point_ids):
+    """Return the expected policy IDs as pandas signed-integer index scalars."""
+    return list(np.asarray(point_ids, dtype=np.int64))
+
+
 # ---------------------------------------------------------------------------
 # T1 -- the twin identity
 

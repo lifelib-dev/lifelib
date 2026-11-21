@@ -106,9 +106,9 @@ def mort_table():
     ``provenance`` column says which row is the anchor and which are constructions.
     Sorted on read, because ``Projection.mort_rate_base`` indexes into it.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file,                               # noqa: F821
-        index_col=["sex", "age"]).sort_index()
+    frame = pd.read_csv(input_dir() / mort_table_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"]).sort_index()
 
 
 def select_table():
@@ -166,9 +166,9 @@ def surr_scale_table():
     **[std]**, since a *prime unique* contract surrendered at once returns a provision
     rather than nothing.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / surr_scale_file,                               # noqa: F821
-        index_col=["scale", "month"]).sort_index()
+    frame = pd.read_csv(input_dir() / surr_scale_file)                     # noqa: F821
+    frame["scale"] = [SurrScale[name] for name in frame["scale"]]
+    return frame.set_index(["scale", "month"]).sort_index()
 
 
 def single_prem_table():
@@ -202,3 +202,7 @@ surr_scale_file = "surr_scale_table.csv"
 single_prem_file = "single_prem_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+SurrScale = ("Pickle", 2)

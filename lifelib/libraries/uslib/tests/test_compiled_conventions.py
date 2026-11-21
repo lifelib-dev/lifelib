@@ -66,6 +66,7 @@ from sec_support import engine_faults
 from sec_support import (
     block_sum_faults, labels_refusing_non_text, object_cells, object_return_faults,
     pxd_declarations, runner_add, sample_engine_faults)
+from released_twins import sec_test_model_path
 from us_registry import LIB, MODELS, is_sec, meta, model_path, point_keys, projection
 
 SEC_MODELS = sorted(n for n in MODELS if is_sec(n))
@@ -361,7 +362,7 @@ def test_every_projection_cell_compiles_to_a_c_type(name, model, sec_build):
     engine.
     """
     build = sec_build(name)
-    twin = mx.read_model(model_path(meta(name)["twin"]), name=f"{name}_ec_twin_"
+    twin = mx.read_model(sec_test_model_path(meta(name)["twin"]), name=f"{name}_ec_twin_"
                          f"{next(_names)}")
     try:
         new_data = set(model.Data.cells) - set(twin.Data.cells)

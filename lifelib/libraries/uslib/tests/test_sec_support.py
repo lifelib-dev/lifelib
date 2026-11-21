@@ -59,7 +59,7 @@ from sec_support import (
     fingerprint,
     fingerprint_mismatches, fingerprint_months, fingerprint_text, frame_mismatches,
     shift_months, sweep, temp_inputs, twin_mismatches, write_generated)
-from us_registry import model_path
+from released_twins import sec_test_model_path as model_path
 
 TERM = "Term_US_S"
 

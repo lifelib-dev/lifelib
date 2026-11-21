@@ -125,9 +125,9 @@ def mort_table():
     anchors and which are interpolated.  Read as the *table* rate: the best-estimate
     factor and the rate class factor are applied in ``Projection.mort_rate``.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file,                               # noqa: F821
-        index_col=["sex", "age"])
+    frame = pd.read_csv(input_dir() / mort_table_file)               # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"]).sort_index()              # noqa: F821
 
 
 def lapse_table():
@@ -151,8 +151,9 @@ def rate_class_table():
     publishes, so every factor here is **[std]**.  The ``mix_weight`` column is the
     illustrative mix that normalizes the four factors to a mean of 1.000.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / rate_class_file, index_col="rate_class")       # noqa: F821
+    frame = pd.read_csv(input_dir() / rate_class_file)               # noqa: F821
+    frame["rate_class"] = [RateClass[name] for name in frame["rate_class"]]
+    return frame.set_index("rate_class")                             # noqa: F821
 
 
 # ---------------------------------------------------------------------------
@@ -167,3 +168,7 @@ lapse_table_file = "lapse_table.csv"
 rate_class_file = "rate_class_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+RateClass = ("Pickle", 2)

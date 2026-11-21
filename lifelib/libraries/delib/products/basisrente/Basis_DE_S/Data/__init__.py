@@ -219,9 +219,9 @@ def option_table():
     ``guarantee_period`` and ``survivor`` give the reduction in the *Rentenfaktor* that
     pays for a *Rentengarantiezeit* and a *Hinterbliebenenrente*.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / option_file,                                   # noqa: F821
-        index_col=["option_id", "option_key"])
+    frame = pd.read_csv(input_dir() / option_file)                   # noqa: F821
+    frame["option_id"] = [OptionId[name] for name in frame["option_id"]]
+    return frame.set_index(["option_id", "option_key"])
 
 
 # ---------------------------------------------------------------------------
@@ -242,3 +242,5 @@ behaviour_file = "behaviour_table.csv"
 option_file = "option_table.csv"
 
 pd = ("Module", "pandas")
+
+OptionId = ("Pickle", 1)

@@ -77,14 +77,16 @@ def model_point_table():
 
 def mort_table():
     """The base annuitant mortality table by age and sex, read from *mort_table.csv*."""
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file, index_col=["age", "sex"])     # noqa: F821
+    frame = pd.read_csv(input_dir() / mort_table_file)                    # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["age", "sex"])
 
 
 def improvement_scale():
     """The generational improvement scale by age and sex, from *improvement_scale.csv*."""
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / improvement_scale_file, index_col=["age", "sex"])  # noqa: F821
+    frame = pd.read_csv(input_dir() / improvement_scale_file)                    # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["age", "sex"])
 
 
 def surr_charge_table():
@@ -105,3 +107,5 @@ improvement_scale_file = "improvement_scale.csv"
 surr_charge_file = "surr_charge_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)

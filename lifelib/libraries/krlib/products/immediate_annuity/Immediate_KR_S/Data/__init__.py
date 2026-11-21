@@ -102,9 +102,9 @@ def mort_table():
     what the residual at 보험나이 50 is.  Sorted on read, because ``Projection.mort_rate``
     indexes into it.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file,
-        index_col=["sex", "age"]).sort_index()
+    frame = pd.read_csv(input_dir() / mort_table_file)               # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"]).sort_index()
 
 
 def charge_table():
@@ -118,8 +118,9 @@ def charge_table():
     policyholder's payment.  ``acq_expense_rate`` is the load less the commission, so that
     the charge taken from the fund at inception exactly meets the outgo at inception.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / charge_table_file, index_col="shape")          # noqa: F821
+    frame = pd.read_csv(input_dir() / charge_table_file)             # noqa: F821
+    frame["shape"] = [Shape[name] for name in frame["shape"]]
+    return frame.set_index("shape")
 
 
 def crediting_table():
@@ -133,8 +134,9 @@ def crediting_table():
     Max[공시이율, 최저보증이율] resolves to the floor at every duration and the stepping is
     exercised by a shipped model point.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / crediting_table_file)                          # noqa: F821
+    frame = pd.read_csv(input_dir() / crediting_table_file)          # noqa: F821
+    frame["basis_id"] = [CreditingBasis[name] for name in frame["basis_id"]]
+    return frame.set_index(["basis_id", "dur_from"])
 
 
 # ---------------------------------------------------------------------------
@@ -149,3 +151,9 @@ charge_table_file = "charge_table.csv"
 crediting_table_file = "crediting_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+Shape = ("Pickle", 2)
+
+CreditingBasis = ("Pickle", 3)

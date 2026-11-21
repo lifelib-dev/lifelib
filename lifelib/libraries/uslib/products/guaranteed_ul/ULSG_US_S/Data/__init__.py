@@ -92,9 +92,10 @@ def coi_rates():
     requires the guaranteed maxima to be stated in the policy, and [REG-R17] names the
     2017 CSO family the notes point at.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / coi_rates_file,                                # noqa: F821
-        index_col=["sex", "rate_class", "age"])
+    frame = pd.read_csv(input_dir() / coi_rates_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    frame["rate_class"] = [RateClass[name] for name in frame["rate_class"]]
+    return frame.set_index(["sex", "rate_class", "age"])
 
 
 def corridor_factors():
@@ -109,7 +110,9 @@ def mort_table():
 
 def class_factor_table():
     """The underwriting-class factors, read from *class_factor_table.csv*."""
-    return pd.read_csv(input_dir() / class_factor_file, index_col="rate_class")  # noqa: F821
+    frame = pd.read_csv(input_dir() / class_factor_file)             # noqa: F821
+    frame["rate_class"] = [RateClass[name] for name in frame["rate_class"]]
+    return frame.set_index("rate_class")
 
 
 def lapse_table():
@@ -155,3 +158,7 @@ surr_charge_file = "surr_charge_table.csv"
 rop_file = "rop_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+RateClass = ("Pickle", 2)

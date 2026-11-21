@@ -69,6 +69,7 @@ import pytest
 from modelx.core.errors import FormulaError
 
 from de_registry import MODELS, LIB
+from lifelib.libraries.delib.products.risikolebensversicherung.enums import ClaimKind, PolsTiming, PremFreq, PremiumForm, ResTiming, Sex, Smoker, SurplusForm
 
 AP = pytest.approx        # used throughout, so an assertion fits on one line
 CENT = 0.005              # money displayed to 2 d.p.
@@ -255,11 +256,11 @@ def test_the_twelve_months_of_policy_year_one(de_rlv_anchor, t):
     assert p.prem_gross(t) == AP(gross, abs=CENT)
     assert p.premiums(t) == AP(prem, abs=CENT)
     assert p.prem_rebate(t) == AP(rebate, abs=CENT)
-    assert p.claims(t, "DEATH") == AP(cd, abs=CENT)
+    assert p.claims(t, ClaimKind.DEATH) == AP(cd, abs=CENT)
     assert p.expenses(t) == AP(exp, abs=CENT)
     assert p.commissions(t) == AP(comm, abs=CENT)
     assert p.net_cf(t) == AP(net, abs=CENT)
-    assert p.claims(t, "LAPSE") == 0.0 and p.claims(t, "MATURITY") == 0.0
+    assert p.claims(t, ClaimKind.LAPSE) == 0.0 and p.claims(t, ClaimKind.MATURITY) == 0.0
     assert p.liability_cf(t) == AP(-p.net_cf(t), rel=1e-15)
     # The annual amount is flat across the year; only the collection is not.
     assert p.prem_paid_pp(t) == AP(733.011403, abs=5e-7)
@@ -308,11 +309,11 @@ def test_the_anchor_cell_is_the_configuration_the_notes_describe(de_rlv_anchor):
     ``cover_end_age`` and ``proj_len`` among them, so the two cannot disagree.
     """
     p = de_rlv_anchor
-    assert (p.policy_id(), p.issue_age(), p.sex(), p.smoker()) == ("RLV-000001", 35, "M", "N")
+    assert (p.policy_id(), p.issue_age(), p.sex(), p.smoker()) == ("RLV-000001", 35, Sex.M, Smoker.N)
     assert (p.sum_assured(), p.policy_term(), p.prem_term()) == (300000.0, 25, 25)
-    assert (p.premium_form(), p.prem_freq()) == ("laufend", "jaehrlich")
+    assert (p.premium_form(), p.prem_freq()) == (PremiumForm.laufend, PremFreq.jaehrlich)
     assert (p.benefit_schedule_id(), p.nvg_schedule_id()) == ("konstant", "keine")
-    assert (p.surplus_form(), p.mort_table_id()) == ("beitragsverrechnung", "dav2008t_proxy")
+    assert (p.surplus_form(), p.mort_table_id()) == (SurplusForm.beitragsverrechnung, "dav2008t_proxy")
     assert (p.lives(), p.issue_age2(), p.smoker2()) == (1, 0, "-")
     assert (p.rating_factor(), p.duration_y(), p.issue_date()) == (1.0, 0, "2026-01-01")
     assert (p.proj_start(), p.proj_len_y(), p.proj_len()) == (0, 25, 300)
@@ -386,7 +387,7 @@ def test_the_first_month_rebuilt_from_the_table_rate_up(de_rlv_anchor):
     assert 1.0 - (1.0 - q2m) ** 12 == AP(q2, rel=1e-14)
     assert p.benefit_pp(0) == 300000.0
     assert p.benefit_paid_pp(0) == AP(0.97 * 300000.0, rel=1e-15)
-    assert p.claims(0, "DEATH") == AP(291000.0 * q2m, abs=5e-6)   # = 15,274525
+    assert p.claims(0, ClaimKind.DEATH) == AP(291000.0 * q2m, abs=5e-6)   # = 15,274525
     g = p.prem_gross_level_pp()
     acq_net = (0.025 - 0.020) * 25 * g
     admin = 0.00030 * 300000.0 / 12.0
@@ -459,7 +460,7 @@ def test_closure_one_the_decrements_account_for_the_whole_policy(de_rlv_anchor):
     assert deaths + lapses + expiries == AP(1.0, abs=1e-12)
     assert p.pols_maturity(n - 1) == AP(expiries, rel=1e-15)
     assert p.pols_maturity(0) == p.pols_maturity(n - 2) == 0.0
-    assert p.pols_if(n) == 0.0 and p.pols_if_at(n - 1, "AFT_DECR") == 0.0
+    assert p.pols_if(n) == 0.0 and p.pols_if_at(n - 1, PolsTiming.AFT_DECR) == 0.0
     # Lapse is zero through the whole of the final policy year, not merely its last month.
     assert all(p.lapse_rate(t) == 0.0 and p.lapse_rate_mth(t) == 0.0
                for t in range(n - 12, n))
@@ -482,7 +483,7 @@ def test_closure_two_the_suicide_wedge_is_the_only_gap_between_events_and_amount
     p = de_rlv_anchor
     n = p.proj_len()
     events = sum(p.pols_death(t) for t in range(n))
-    paid = sum(p.claims(t, "DEATH") for t in range(n))
+    paid = sum(p.claims(t, ClaimKind.DEATH) for t in range(n))
     assert 300000.0 * events == AP(9785.291238, abs=5e-6)
     assert paid == AP(9768.048760, abs=5e-6)
     wedge = 300000.0 * events - paid
@@ -522,20 +523,20 @@ def test_the_first_order_deckungskapital_opens_and_closes_at_zero(de_rlv_anchor)
     """
     p = de_rlv_anchor
     n, k = p.proj_len_y(), RESERVE["peak_y"]
-    assert p.res_pp_at(0, "BEF_PREM") == AP(0.0, abs=1e-9)
-    assert p.res_pp_at(n, "BEF_PREM") == 0.0
-    assert p.res_pp_at(k, "BEF_PREM") == AP(RESERVE["peak"], abs=5e-6)
-    assert p.res_pp_at(k, "BEF_PREM") / p.sum_assured() == AP(0.0252, abs=5e-5)
+    assert p.res_pp_at(0, ResTiming.BEF_PREM) == AP(0.0, abs=1e-9)
+    assert p.res_pp_at(n, ResTiming.BEF_PREM) == 0.0
+    assert p.res_pp_at(k, ResTiming.BEF_PREM) == AP(RESERVE["peak"], abs=5e-6)
+    assert p.res_pp_at(k, ResTiming.BEF_PREM) / p.sum_assured() == AP(0.0252, abs=5e-5)
     gn = p.prem_net_level_pp()
     assert gn == AP(PRICING["prem_net_level_pp"], abs=5e-7)
-    assert p.res_pp_at(k, "AFT_PREM") == AP(p.res_pp_at(k, "BEF_PREM") + gn, rel=1e-12)
+    assert p.res_pp_at(k, ResTiming.AFT_PREM) == AP(p.res_pp_at(k, ResTiming.BEF_PREM) + gn, rel=1e-12)
     q1 = p.mort_rate_tar(12 * k)
     assert q1 == AP(RESERVE["q1_at_peak"], abs=5e-12)
-    lhs = (p.res_pp_at(k, "BEF_PREM") + gn) * 1.01
-    rhs = q1 * 300000.0 + (1.0 - q1) * p.res_pp_at(k + 1, "BEF_PREM")
+    lhs = (p.res_pp_at(k, ResTiming.BEF_PREM) + gn) * 1.01
+    rhs = q1 * 300000.0 + (1.0 - q1) * p.res_pp_at(k + 1, ResTiming.BEF_PREM)
     assert lhs == AP(8724.472569, abs=5e-6) and rhs == AP(lhs, abs=1e-6)
-    assert p.res_pp_at(k + 1, "BEF_PREM") == AP(RESERVE["next"], abs=5e-6)
-    zill = p.res_zill_pp_at(0, "BEF_PREM")
+    assert p.res_pp_at(k + 1, ResTiming.BEF_PREM) == AP(RESERVE["next"], abs=5e-6)
+    zill = p.res_zill_pp_at(0, ResTiming.BEF_PREM)
     assert zill == AP(RESERVE["zillmer_at_0"], abs=5e-6) and zill < 0.0
     assert zill == AP(-0.025 * 25 * p.prem_gross_level_pp(), abs=1e-9)
 
@@ -577,7 +578,7 @@ def test_the_einmalbeitrag_variant_row(risikolebensversicherung, y):
     age, pols, gross, prem, rebate, cd, exp, comm, net = EINMAL[y]
     p = risikolebensversicherung.Projection[7]
     row = p.result_cf_annual().loc[y]
-    assert p.premium_form() == "einmal" and p.prem_term() == 1
+    assert p.premium_form() == PremiumForm.einmal and p.prem_term() == 1
     assert p.age(12 * (y - 1)) == age
     assert row["pols_if"] == AP(pols, abs=SIX_DP) and row["net_cf"] == AP(net, abs=CENT)
     assert row["prem_gross"] == AP(gross, abs=CENT)
@@ -653,7 +654,7 @@ def test_pitfall_2_the_model_carries_two_premium_streams(
     assert all(p.prem_gross(t) > p.premiums(t) > 0.0 and p.prem_rebate(t) > 0.0
                for t in due)
     none = risikolebensversicherung.Projection[12]
-    assert none.surplus_form() == "keine" and none.beitragsverrechnung_rate() == 0.0
+    assert none.surplus_form() == SurplusForm.keine and none.beitragsverrechnung_rate() == 0.0
     assert all(none.prem_gross(t) == none.premiums(t) for t in range(300))
     df = none.result_cf()
     assert (df["prem_rebate"] == 0.0).all()
@@ -702,7 +703,7 @@ def test_pitfall_4_a_lapse_pays_nothing_at_any_duration(
     """
     p = de_rlv_anchor
     n = p.proj_len()
-    assert all(p.claims(t, "LAPSE") == p.claims(t, "MATURITY") == 0.0
+    assert all(p.claims(t, ClaimKind.LAPSE) == p.claims(t, ClaimKind.MATURITY) == 0.0
                for t in range(n))
     df = p.result_cf()
     assert (df["claims_lapse"] == 0.0).all() and (df["claims_maturity"] == 0.0).all()
@@ -726,14 +727,14 @@ def test_pitfall_5_a_level_premium_against_a_rising_rate_builds_a_reserve(de_rlv
     """
     p = de_rlv_anchor
     n = p.proj_len_y()
-    assert p.res_pp_at(0, "BEF_PREM") == AP(0.0, abs=1e-9)
-    assert p.res_pp_at(n, "BEF_PREM") == 0.0
-    interior = [p.res_pp_at(y, "BEF_PREM") for y in range(1, n)]
+    assert p.res_pp_at(0, ResTiming.BEF_PREM) == AP(0.0, abs=1e-9)
+    assert p.res_pp_at(n, ResTiming.BEF_PREM) == 0.0
+    interior = [p.res_pp_at(y, ResTiming.BEF_PREM) for y in range(1, n)]
     assert all(v > 0.0 for v in interior) and max(interior) / p.sum_assured() < 0.03
     assert max(interior) == AP(RESERVE["peak"], abs=5e-6)
-    assert p.res_zill_pp_at(0, "BEF_PREM") == AP(
+    assert p.res_zill_pp_at(0, ResTiming.BEF_PREM) == AP(
         -0.025 * 25 * p.prem_gross_level_pp(), abs=1e-9)
-    assert p.res_zill_pp_at(n, "BEF_PREM") == AP(0.0, abs=1e-9)
+    assert p.res_zill_pp_at(n, ResTiming.BEF_PREM) == AP(0.0, abs=1e-9)
     assert p.check_res_roll_fwd() is True
     assert all(p.check_res_roll_fwd_resid(y) == AP(0.0, abs=1e-6)
                for y in (0, 7, 15, n - 1))
@@ -743,7 +744,7 @@ def test_pitfall_5_a_level_premium_against_a_rising_rate_builds_a_reserve(de_rlv
     # It is published against the policy year of each month, and so is flat across one.
     pols = p.result_pols()
     assert pols.loc[12, "res_pp"] == AP(pols.loc[23, "res_pp"], rel=1e-15)
-    assert pols.loc[12, "res_pp"] == AP(p.res_pp_at(1, "BEF_PREM"), rel=1e-15)
+    assert pols.loc[12, "res_pp"] == AP(p.res_pp_at(1, ResTiming.BEF_PREM), rel=1e-15)
 
 
 # Pitfall 6 -- letting sex into the price
@@ -754,7 +755,7 @@ def test_pitfall_6_sex_never_reaches_the_premium(risikolebensversicherung):
     """
     male = risikolebensversicherung.Projection[1]
     female = risikolebensversicherung.Projection[2]
-    assert male.sex() == "M" and female.sex() == "F"
+    assert male.sex() == Sex.M and female.sex() == Sex.F
     assert male.issue_age() == female.issue_age() == 35
     assert female.prem_gross_level_pp() == AP(male.prem_gross_level_pp(), rel=1e-12)
     assert female.beitragsverrechnung_rate() == AP(
@@ -784,7 +785,7 @@ def test_pitfall_7_q1_prices_and_q2_projects(risikolebensversicherung):
         assert male.mort_rate_tar(t) / male.mort_rate(t) == AP(1.6875, rel=1e-9)
         assert female.mort_rate_tar(t) / female.mort_rate(t) == AP(3.375, rel=1e-9)
     blend = male.mort_rate_blend(0)
-    assert blend == AP(0.75 * male.mort_rate_at_age("M", "N", 35), rel=1e-12)
+    assert blend == AP(0.75 * male.mort_rate_at_age(Sex.M, Smoker.N, 35), rel=1e-12)
     assert male.mort_rate_tar(0) == AP(2.25 * blend, rel=1e-12)
     base_claims = male.result_cf()["claims_death"].sum()
     seen = {}
@@ -820,7 +821,7 @@ def test_pitfall_8_the_suicide_switch_runs_three_years_and_touches_death_alone(
     assert all(p.suicide_factor(t) == 1.0 for t in range(36, n))
     assert p.benefit_paid_pp(35) == AP(0.97 * p.benefit_pp(35), rel=1e-15)
     # It never reaches a lapse or an expiry, both of which pay nothing in any event.
-    assert p.claims(1, "LAPSE") == 0.0 and p.claims(n - 1, "MATURITY") == 0.0
+    assert p.claims(1, ClaimKind.LAPSE) == 0.0 and p.claims(n - 1, ClaimKind.MATURITY) == 0.0
     assert p.pols_lapse(1) > 0.0
     inforce = risikolebensversicherung.Projection[8]
     assert inforce.duration_y() == 12 and inforce.proj_start() == 144
@@ -875,7 +876,7 @@ def test_pitfall_10_the_frequency_loading_is_applied_once(risikolebensversicheru
     collection cycle, so the surcharge is at last charging for a service the model renders.
     """
     monthly = risikolebensversicherung.Projection[4]
-    assert monthly.prem_freq() == "monatlich"
+    assert monthly.prem_freq() == PremFreq.monatlich
     assert monthly.prem_freq_load() == 1.05 and monthly.instalments() == 12
     assert monthly.prem_cycle() == 1 and all(monthly.prem_due(t) for t in range(12))
     g, v_d = monthly.prem_gross_level_pp(), monthly.beitragsverrechnung_rate()
@@ -948,11 +949,11 @@ def test_pitfall_12_the_premium_stops_at_the_beitragszahlungsdauer(
     for t in range(144, 240):
         assert p.prem_gross_pp(t) == p.prem_rebate_pp(t) == p.prem_paid_pp(t) == 0.0
         assert p.premiums(t) == p.prem_gross(t) == p.commissions(t) == 0.0
-        assert p.claims(t, "DEATH") > 0.0
+        assert p.claims(t, ClaimKind.DEATH) > 0.0
     assert p.check_prem_split() is True
-    reserve = [p.res_pp_at(y, "BEF_PREM") for y in range(12, 20)]
+    reserve = [p.res_pp_at(y, ResTiming.BEF_PREM) for y in range(12, 20)]
     assert all(a > b for a, b in zip(reserve, reserve[1:]))
-    assert p.res_pp_at(20, "BEF_PREM") == 0.0
+    assert p.res_pp_at(20, ResTiming.BEF_PREM) == 0.0
 
 
 # Pitfall 13 -- hard-coding a constant sum insured
@@ -996,12 +997,12 @@ def test_pitfall_14_two_lives_are_combined_before_the_loading(risikolebensversic
     """
     p = risikolebensversicherung.Projection[10]
     assert p.lives() == 2 and p.issue_age() == 38 and p.issue_age2() == 36
-    assert p.smoker() == "N" and p.smoker2() == "N"
-    q_a, q_b = p.mort_rate_at_age("M", "N", 38), p.mort_rate_at_age("M", "N", 36)
+    assert p.smoker() == Smoker.N and p.smoker2() == Smoker.N
+    q_a, q_b = p.mort_rate_at_age(Sex.M, Smoker.N, 38), p.mort_rate_at_age(Sex.M, Smoker.N, 36)
     assert p.mort_rate_base(0) == AP(q_a + q_b - q_a * q_b, rel=1e-15)
     assert max(q_a, q_b) < p.mort_rate_base(0) < q_a + q_b
-    blend_a = 0.5 * q_a + 0.5 * p.mort_rate_at_age("F", "N", 38)
-    blend_b = 0.5 * q_b + 0.5 * p.mort_rate_at_age("F", "N", 36)
+    blend_a = 0.5 * q_a + 0.5 * p.mort_rate_at_age(Sex.F, Smoker.N, 38)
+    blend_b = 0.5 * q_b + 0.5 * p.mort_rate_at_age(Sex.F, Smoker.N, 36)
     combined = blend_a + blend_b - blend_a * blend_b
     assert p.mort_rate_blend(0) == AP(combined, rel=1e-15)
     assert p.mort_rate_tar(0) == AP(2.25 * combined, rel=1e-12)
@@ -1075,7 +1076,7 @@ def test_pitfall_17_a_risikozuschlag_loads_the_mortality_and_never_the_benefit()
     model = mx.read_model(MODEL_DIR, name="RLV_DE_S_rating")
     try:
         rated = model.Projection[11]
-        assert rated.rating_factor() == 1.75 and rated.smoker() == "R"
+        assert rated.rating_factor() == 1.75 and rated.smoker() == Smoker.R
         rated_ratio = rated.prem_paid_pp(0) / rated.prem_gross_pp(0)
         rated_g = rated.prem_gross_level_pp()
         rated_benefit = [rated.benefit_pp(t) for t in (0, 96, 204)]
@@ -1143,8 +1144,8 @@ def test_all_five_checks_hold_on_the_anchor_with_zero_residuals(de_rlv_anchor):
         assert p.check_res_roll_fwd_resid(y) == AP(0.0, abs=1e-6)
     for t in (0, 6, n - 1):
         assert p.net_cf(t) == AP(
-            p.premiums(t) - p.claims(t) - p.expenses(t) - p.commissions(t), rel=1e-12)
-        assert p.claims(t) == AP(p.claims(t, "DEATH"), rel=1e-15)
+            p.premiums(t) - p.claims(t, ClaimKind.ALL) - p.expenses(t) - p.commissions(t), rel=1e-12)
+        assert p.claims(t, ClaimKind.ALL) == AP(p.claims(t, ClaimKind.DEATH), rel=1e-15)
 
 
 def test_the_scalar_equivalences_live_here_and_not_in_a_check_cells(de_rlv_anchor):

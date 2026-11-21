@@ -65,6 +65,7 @@ import pytest
 from modelx.core.errors import FormulaError
 
 from fr_registry import LIB, MODELS
+from lifelib.libraries.frlib.products.per_assurance.enums import AllocationProfile, AvTiming, Compartment, ExitForm, Kind, MortBasis, PolTiming, Sex
 
 
 CENT = 0.005          # money displayed to 2 d.p.
@@ -180,7 +181,7 @@ def test_worked_example_row(fr_per_anchor, y):
     assert p.av_euro_pp(anniv(y)) == pytest.approx(euro, abs=CENT)
     assert p.av_uc_pp(anniv(y)) == pytest.approx(uc, abs=CENT)
     assert p.av_pp(anniv(y)) == pytest.approx(av, abs=CENT)
-    assert p.pols_if_at(anniv(y), "AFT_DECR") == pytest.approx(l_y, abs=POLS)
+    assert p.pols_if_at(anniv(y), PolTiming.AFT_DECR) == pytest.approx(l_y, abs=POLS)
     # result_state_annual() is exactly that pairing, published as the notes' table.
     row = p.result_state_annual().loc[y]
     assert row["years_to_horizon"] == k
@@ -207,14 +208,14 @@ def test_the_worked_example_settlement(fr_per_anchor):
     assert p.is_commuted() is True
     last = p.proj_len() - 1
     assert last == anniv(11) == 143
-    assert p.claim_pp(last, "MATURITY") == pytest.approx(69773.00, abs=CENT)
-    assert p.claims(last, "MATURITY") == pytest.approx(47987.47, abs=CENT)
+    assert p.claim_pp(last, Kind.MATURITY) == pytest.approx(69773.00, abs=CENT)
+    assert p.claims(last, Kind.MATURITY) == pytest.approx(47987.47, abs=CENT)
     # The whole maturity claim is the account value less the arrerage charge on the
     # converted part, and nothing else: there is no exit charge on a PER.
-    assert p.claim_pp(last, "MATURITY") == pytest.approx(
+    assert p.claim_pp(last, Kind.MATURITY) == pytest.approx(
         p.av_pp(last) - 0.015 * p.annuity_cap_pp(), abs=CENT)
     # The settlement is not spread: it falls whole in the horizon-anniversary month.
-    assert p.claims(last - 1, "MATURITY") == 0.0
+    assert p.claims(last - 1, Kind.MATURITY) == 0.0
     assert p.pols_maturity(last - 1) == 0.0
 
 
@@ -270,7 +271,7 @@ def test_the_maintenance_expense_scale(fr_per_anchor):
     # that is exactly the pols_if the same row of result_cf publishes.
     assert p.expenses(143) == pytest.approx(
         30.0 / 12 * 1.018 ** (143 / 12) * p.pols_if(143), rel=1e-12)
-    assert p.pols_if(12) == pytest.approx(p.pols_if_at(11, "AFT_DECR"), rel=1e-14)
+    assert p.pols_if(12) == pytest.approx(p.pols_if_at(11, PolTiming.AFT_DECR), rel=1e-14)
     assert p.expenses(143) == pytest.approx(
         30.0 / 12 * 1.018 ** (143 / 12) * p.result_cf().loc[143, "pols_if"], rel=1e-12)
 
@@ -303,10 +304,10 @@ def test_the_four_profiles_are_read_from_the_file(per_assurance):
     """The grid is an input table: four ladders, and dynamique equals offensif."""
     grid = per_assurance.Data.allocation_grid()
     expected = {
-        "prudent":   (0.30, 0.60, 0.80, 0.90),
-        "equilibre": (0.00, 0.20, 0.50, 0.70),
-        "dynamique": (0.00, 0.00, 0.30, 0.50),
-        "offensif":  (0.00, 0.00, 0.30, 0.50),
+        AllocationProfile.prudent:   (0.30, 0.60, 0.80, 0.90),
+        AllocationProfile.equilibre: (0.00, 0.20, 0.50, 0.70),
+        AllocationProfile.dynamique: (0.00, 0.00, 0.30, 0.50),
+        AllocationProfile.offensif:  (0.00, 0.00, 0.30, 0.50),
     }
     for profile, (far, mid, near, close) in expected.items():
         for k, share in ((20, far), (10, mid), (5, near), (2, close)):
@@ -320,7 +321,7 @@ def test_the_four_profiles_are_read_from_the_file(per_assurance):
 def test_a_prudent_cell_holds_euro_from_the_first_year(per_assurance):
     """Moving the grid is the product's dominant lever, and it needs no code change."""
     p = per_assurance.Projection[3]
-    assert p.allocation_profile() == "prudent"
+    assert p.allocation_profile() == AllocationProfile.prudent
     assert p.years_to_horizon(0) == 19
     assert p.alloc_euro(0) == pytest.approx(0.30, abs=1e-9)
     assert p.av_euro_pp(0) > 0.0
@@ -365,14 +366,14 @@ def test_the_arbitrage_charge_comes_off_the_source_support(fr_per_anchor):
     assert p.switch_pp(t) == pytest.approx(13878.95, abs=CENT)
     assert p.arbitrage_charge_pp(t) == pytest.approx(41.64, abs=CENT)
     # The euro destination gets the whole switch plus its share of the versement.
-    assert p.av_euro_pp_at(t, "BOM") == pytest.approx(24404.82, abs=CENT)
-    assert p.av_euro_pp_at(t, "BOM") == pytest.approx(
-        p.av_euro_pp_at(t, "BEF_REBAL") + p.switch_pp(t) + 0.50 * 2925.0, abs=CENT)
-    assert p.av_euro_pp_at(t, "BEF_REBAL") == pytest.approx(
+    assert p.av_euro_pp_at(t, AvTiming.BOM) == pytest.approx(24404.82, abs=CENT)
+    assert p.av_euro_pp_at(t, AvTiming.BOM) == pytest.approx(
+        p.av_euro_pp_at(t, AvTiming.BEF_REBAL) + p.switch_pp(t) + 0.50 * 2925.0, abs=CENT)
+    assert p.av_euro_pp_at(t, AvTiming.BEF_REBAL) == pytest.approx(
         p.av_euro_pp(anniv(6)), rel=1e-14)
     # The UC source pays for it.
-    assert p.av_uc_pp_at(t, "BOM") == pytest.approx(
-        p.av_uc_pp_at(t, "BEF_REBAL") - p.switch_pp(t)
+    assert p.av_uc_pp_at(t, AvTiming.BOM) == pytest.approx(
+        p.av_uc_pp_at(t, AvTiming.BEF_REBAL) - p.switch_pp(t)
         - p.arbitrage_charge_pp(t) + 0.50 * 2925.0, abs=CENT)
 
 
@@ -384,7 +385,7 @@ def test_the_post_rebalancing_euro_share_meets_the_minimum(fr_per_anchor):
     """
     p = fr_per_anchor
     t = bom(7)
-    share = p.av_euro_pp_at(t, "BOM") / p.av_pp_at(t, "BOM")
+    share = p.av_euro_pp_at(t, AvTiming.BOM) / p.av_pp_at(t, AvTiming.BOM)
     assert share == pytest.approx(0.500427, abs=1e-6)
     assert share >= p.alloc_euro(t)
     assert p.check_euro_share_min() is True
@@ -432,7 +433,7 @@ def test_the_minimum_binds_at_the_rebalancing_date_not_continuously(fr_per_ancho
     """
     p = fr_per_anchor
     assert p.alloc_euro(bom(11)) == pytest.approx(0.70, abs=1e-9)
-    opening = p.av_euro_pp_at(bom(11), "BOM") / p.av_pp_at(bom(11), "BOM")
+    opening = p.av_euro_pp_at(bom(11), AvTiming.BOM) / p.av_pp_at(bom(11), AvTiming.BOM)
     closing = p.av_euro_pp(anniv(11)) / p.av_pp(anniv(11))
     assert bom(11) == 132 and anniv(11) == 143
     assert opening == pytest.approx(0.700006, abs=1e-6)
@@ -460,8 +461,8 @@ def test_the_floor_is_not_a_floor_at_gross_premiums(fr_per_anchor):
     """
     p = fr_per_anchor
     # The opening state is the BEF_REBAL timing of the first row, not a row of its own.
-    assert p.death_floor_pp_at(0, "BEF_REBAL") == 16000.00
-    assert p.av_pp_at(0, "BEF_REBAL") == 16600.00
+    assert p.death_floor_pp_at(0, AvTiming.BEF_REBAL) == 16000.00
+    assert p.av_pp_at(0, AvTiming.BEF_REBAL) == 16600.00
     gap = p.av_pp(anniv(11)) - p.death_floor_pp(anniv(11))
     assert gap == pytest.approx(22821.04, abs=CENT)
     credited = sum(p.inv_income_pp(t) for t in range(PROJ_LEN))
@@ -569,10 +570,10 @@ def test_an_early_release_pays_the_whole_account_value(fr_per_anchor):
     """
     p = fr_per_anchor
     for t in (0, 60, 143):
-        assert p.claim_pp(t, "EARLY_RELEASE") == p.av_pp(t)
-        assert p.claims(t, "EARLY_RELEASE") == pytest.approx(
+        assert p.claim_pp(t, Kind.EARLY_RELEASE) == p.av_pp(t)
+        assert p.claims(t, Kind.EARLY_RELEASE) == pytest.approx(
             p.pols_release(t) * p.av_pp(t), rel=1e-14)
-    assert p.claim_pp(0, "TRANSFER") == pytest.approx(0.99 * p.av_pp(0), rel=1e-14)
+    assert p.claim_pp(0, Kind.TRANSFER) == pytest.approx(0.99 * p.av_pp(0), rel=1e-14)
     assert p.early_release_rate(0) == 0.016
     assert p.transfer_out_rate(0) == 0.010
 
@@ -601,11 +602,11 @@ def test_the_transfer_indemnity_window_runs_from_the_first_versement(fr_per_anch
     assert window == 48
     for t in (0, 11, 12, 23):
         assert p.transfer_indemnity_rate(t) == 0.01
-        assert p.claims(t, "TRANSFER") / (p.pols_transfer(t) * p.av_pp(t)) == (
+        assert p.claims(t, Kind.TRANSFER) / (p.pols_transfer(t) * p.av_pp(t)) == (
             pytest.approx(0.99, rel=1e-12))
     for t in (24, 84, 143):
         assert p.transfer_indemnity_rate(t) == 0.0
-        assert p.claims(t, "TRANSFER") / (p.pols_transfer(t) * p.av_pp(t)) == (
+        assert p.claims(t, Kind.TRANSFER) / (p.pols_transfer(t) * p.av_pp(t)) == (
             pytest.approx(1.00, rel=1e-12))
 
 
@@ -624,7 +625,7 @@ def test_compartment_three_carries_a_reduced_release_rate(per_assurance):
     """The main-residence case is the only discretionary limb, and c3 is excluded."""
     c1 = per_assurance.Projection[1]
     c3 = per_assurance.Projection[2]
-    assert c3.compartment() == "c3"
+    assert c3.compartment() == Compartment.c3
     assert c3.early_release_rate(0) < c1.early_release_rate(0)
     # The transfer rate does not vary by compartment: a transfer moves the rights
     # without changing them.
@@ -654,11 +655,11 @@ def test_the_decrement_order_is_death_then_release_then_transfer(fr_per_anchor):
     q = p.mort_rate_mth(0)
     we = p.early_release_rate_mth(0)
     wr = p.transfer_out_rate_mth(0)
-    assert p.pols_if_at(0, "BEF_DECR") == 1.0
-    assert p.pols_if_at(0, "BEF_RELEASE") == pytest.approx(1 - q, rel=1e-14)
-    assert p.pols_if_at(0, "BEF_TRANSFER") == pytest.approx(
+    assert p.pols_if_at(0, PolTiming.BEF_DECR) == 1.0
+    assert p.pols_if_at(0, PolTiming.BEF_RELEASE) == pytest.approx(1 - q, rel=1e-14)
+    assert p.pols_if_at(0, PolTiming.BEF_TRANSFER) == pytest.approx(
         (1 - q) * (1 - we), rel=1e-14)
-    assert p.pols_if_at(0, "AFT_DECR") == pytest.approx(
+    assert p.pols_if_at(0, PolTiming.AFT_DECR) == pytest.approx(
         (1 - q) * (1 - we) * (1 - wr), rel=1e-14)
     assert p.pols_release(0) == pytest.approx((1 - q) * we, rel=1e-14)
     assert p.pols_transfer(0) == pytest.approx((1 - q) * (1 - we) * wr, rel=1e-14)
@@ -830,13 +831,13 @@ def test_the_two_annuity_legs_are_mutually_exclusive(per_assurance):
 def test_a_capital_only_exit_has_no_annuity_at_all(per_assurance):
     """Model point 7 elects capital in one payment: theta = 0 and nothing to commute."""
     p = per_assurance.Projection[7]
-    assert p.exit_form() == "capital_single"
+    assert p.exit_form() == ExitForm.capital_single
     assert p.annuity_share() == 0.0
     assert p.annuity_cap_pp() == 0.0
     assert p.is_commuted() is False
     assert p.annuity_conversion_pp() == 0.0
     t_last = p.proj_len() - 1
-    assert p.claim_pp(t_last, "MATURITY") == pytest.approx(
+    assert p.claim_pp(t_last, Kind.MATURITY) == pytest.approx(
         p.av_pp(t_last), rel=1e-14)
 
 
@@ -844,22 +845,22 @@ def test_staged_capital_publishes_its_instalment_and_settles_at_the_horizon(
         per_assurance):
     """A documented simplification: the fractionne option changes when, not how much."""
     p = per_assurance.Projection[8]
-    assert p.exit_form() == "capital_staged"
+    assert p.exit_form() == ExitForm.capital_staged
     assert p.capital_instalments() == 5
     assert p.capital_instalment_pp() == pytest.approx(
         p.capital_leg_pp() / 5, rel=1e-14)
     assert p.proj_years() == p.retirement_age() - p.age_init()
     assert p.proj_len() == 12 * (p.retirement_age() - p.age_init())
     t_last = p.proj_len() - 1
-    assert p.claims(t_last, "MATURITY") == pytest.approx(
+    assert p.claims(t_last, Kind.MATURITY) == pytest.approx(
         p.capital_leg_pp() * p.pols_maturity(t_last), rel=1e-12)
 
 
 def test_a_compartment_three_cell_must_elect_the_annuity(per_assurance):
     """Those rights may be delivered no other way, so the model refuses the alternative."""
     p = per_assurance.Projection[2]
-    assert p.compartment() == "c3"
-    assert p.exit_form() == "annuity"
+    assert p.compartment() == Compartment.c3
+    assert p.exit_form() == ExitForm.annuity
     assert p.annuity_share() == 1.0
     assert p.capital_leg_pp() == 0.0
 
@@ -876,10 +877,10 @@ def test_the_account_value_column_is_per_policy_and_the_claims_are_not(fr_per_an
     assert df.loc[143, "av_pp"] > df.loc[143, "claims_maturity"]
     # av_at is the weighted quantity where one is wanted, and it is not in result_cf.
     # At EOM the weight is the END-of-month count, which is pols_if_at(t, "AFT_DECR").
-    assert p.av_at(143, "EOM") == pytest.approx(
-        p.av_pp(143) * p.pols_if_at(143, "AFT_DECR"), rel=1e-14)
-    assert p.av_at(143, "BOM") == pytest.approx(
-        p.av_pp_at(143, "BOM") * p.pols_if(143), rel=1e-14)
+    assert p.av_at(143, AvTiming.EOM) == pytest.approx(
+        p.av_pp(143) * p.pols_if_at(143, PolTiming.AFT_DECR), rel=1e-14)
+    assert p.av_at(143, AvTiming.BOM) == pytest.approx(
+        p.av_pp_at(143, AvTiming.BOM) * p.pols_if(143), rel=1e-14)
     assert "av_at" not in df.columns
     # Every claims column is already a decrement times a per-policy amount.
     assert df.loc[65, "claims_death"] == pytest.approx(
@@ -1008,18 +1009,18 @@ def test_invalid_enum_values_raise(fr_per_anchor):
 def test_the_two_mortality_bases_agree_in_the_anchor_cell_first_year(per_assurance):
     """The table's level is anchored so that mort_be_factor x q(M, 52) is 0.00500."""
     flat = per_assurance.Projection[1]
-    assert flat.mort_basis() == "flat"
+    assert flat.mort_basis() == MortBasis.flat
     assert flat.mort_rate(0) == 0.005
     assert all(flat.mort_rate(t) == 0.005 for t in range(144))
     table = per_assurance.Data.mort_table()
-    anchored = float(table.loc[("M", 52), "mort_rate"]) * (
+    anchored = float(table.loc[(Sex.M, 52), "mort_rate"]) * (
         per_assurance.Projection.mort_be_factor)
     assert anchored == pytest.approx(0.00500, rel=1e-12)
     # A table cell reads the age at the START of the plan year.
     tabled = per_assurance.Projection[3]
-    assert tabled.mort_basis() == "table"
+    assert tabled.mort_basis() == MortBasis.table
     assert tabled.mort_rate(0) == pytest.approx(
-        float(table.loc[("M", tabled.age_init()), "mort_rate"]) * 0.85, rel=1e-12)
+        float(table.loc[(Sex.M, tabled.age_init()), "mort_rate"]) * 0.85, rel=1e-12)
     # It steps at the anniversary and not monthly: constant through a plan year, higher
     # in the next one.
     assert tabled.mort_rate(1) == tabled.mort_rate(0)
@@ -1184,8 +1185,8 @@ def test_the_management_charge_is_not_spread(fr_per_anchor):
     assert p.mgmt_charge_pp(anniv(0)) == pytest.approx(143.50875, rel=1e-12)
     assert p.mgmt_charge_pp(anniv(11)) == pytest.approx(494.07733045, rel=1e-10)
     assert p.mgmt_charge_pp(anniv(0)) == pytest.approx(
-        p.av_euro_pp_at(anniv(0), "BEF_CHARGE") * 0.007
-        + p.av_uc_pp_at(anniv(0), "BEF_CHARGE") * 0.007, rel=1e-14)
+        p.av_euro_pp_at(anniv(0), AvTiming.BEF_CHARGE) * 0.007
+        + p.av_uc_pp_at(anniv(0), AvTiming.BEF_CHARGE) * 0.007, rel=1e-14)
     # The price of the decision, stated: a mid-year exit is valued GROSS of the plan
     # year's charge, which in the last plan year is 0.387% above the anniversary value.
     assert p.av_pp(142) / p.av_pp(143) - 1 == pytest.approx(0.00387, abs=1e-5)
@@ -1259,14 +1260,14 @@ def test_pols_if_is_the_start_of_period_count(per_assurance):
         for t in range(p.proj_len()):
             assert df.loc[t, "pols_if"] == pytest.approx(p.pols_if(t), rel=1e-14)
             # ... and one period behind the notes' l(t).
-            assert p.pols_if_at(t, "AFT_DECR") == pytest.approx(
+            assert p.pols_if_at(t, PolTiming.AFT_DECR) == pytest.approx(
                 p.pols_if(t + 1), rel=1e-14), (point_id, t)
 
     p = per_assurance.Projection[1]
     assert p.pols_if(0) == 1.0
-    assert p.pols_if_at(0, "BEF_DECR") == 1.0
+    assert p.pols_if_at(0, PolTiming.BEF_DECR) == 1.0
     # The notes' l(0) is the count the first PLAN YEAR ends with, month 11.
-    assert p.pols_if_at(anniv(0), "AFT_DECR") == pytest.approx(0.969289, abs=POLS)
+    assert p.pols_if_at(anniv(0), PolTiming.AFT_DECR) == pytest.approx(0.969289, abs=POLS)
     assert p.pols_if(12) == pytest.approx(0.969289, abs=POLS)
     # The flows on a row are weighted by that row's own pols_if, and the versement falls
     # only in the month that opens a plan year.
@@ -1280,7 +1281,7 @@ def test_pols_if_is_the_start_of_period_count(per_assurance):
     # survivors settle after the final year's own decrements.
     t_last = p.proj_len() - 1
     assert p.pols_maturity(t_last) == pytest.approx(
-        p.pols_if_at(t_last, "AFT_DECR"), rel=1e-14)
+        p.pols_if_at(t_last, PolTiming.AFT_DECR), rel=1e-14)
     assert p.pols_maturity(t_last) < p.result_cf().loc[t_last, "pols_if"]
 
 
@@ -1289,7 +1290,7 @@ def test_inputs_live_beside_the_model():
     expected = {"model_point_table.csv", "allocation_grid.csv", "mort_table.csv",
                 "exit_table.csv", "annuity_factor.csv"}
     assert expected == {p.name for p in PRODUCT_DIR.iterdir() if p.suffix == ".csv"}
-    assert model_files(MODEL_DIR) == {"__init__.py", "_system.json"}
+    assert model_files(MODEL_DIR) == {"__init__.py", "_system.json", "data.pickle"}
 
 
 def test_the_glide_path_can_be_swapped_without_touching_formulas():
@@ -1398,7 +1399,7 @@ def test_round_trip_is_stable(tmp_path):
         p = reread.Projection[1]
         for y, row in WORKED_EXAMPLE.items():
             assert p.av_pp(anniv(y)) == pytest.approx(row[5], abs=CENT)
-            assert p.pols_if_at(anniv(y), "AFT_DECR") == pytest.approx(
+            assert p.pols_if_at(anniv(y), PolTiming.AFT_DECR) == pytest.approx(
                 row[6], abs=POLS)
         assert p.commuted_pp() == pytest.approx(20711.12, abs=CENT)
         assert "Notes symbol" in reread.Projection.doc

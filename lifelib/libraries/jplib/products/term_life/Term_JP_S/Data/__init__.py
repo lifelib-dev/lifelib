@@ -130,9 +130,9 @@ def mort_table():
     rates include 高度障害 [REG-R20] and carry the table's own valuation margin, which
     ``Projection.mort_be_factor`` removes.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file,                               # noqa: F821
-        index_col=["sex", "age"])
+    frame = pd.read_csv(input_dir() / mort_table_file)               # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"]).sort_index()              # noqa: F821
 
 
 def lapse_table():
@@ -160,9 +160,9 @@ def prem_rate_table():
     decomposed out of published rate cards [S2].  ``is_anchor`` marks the one row per
     sex from which :mod:`~.Term_JP_S.Projection` extends the scale to unpublished ages.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / prem_rate_file,                                # noqa: F821
-        index_col=["sex", "issue_age", "term_y"])
+    frame = pd.read_csv(input_dir() / prem_rate_file)                # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "issue_age", "term_y"])             # noqa: F821
 
 
 def prem_anchor_table():
@@ -189,3 +189,5 @@ lapse_table_file = "lapse_table.csv"
 prem_rate_file = "prem_rate_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)

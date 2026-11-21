@@ -130,9 +130,10 @@ def mort_table():
     constructions on the Makeham law recorded in :func:`mort_anchor_table`.  See the Space
     docstring.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file,                               # noqa: F821
-        index_col=["table", "sex", "age"]).sort_index()
+    frame = pd.read_csv(input_dir() / mort_table_file)                     # noqa: F821
+    frame["table"] = [MortTable[name] for name in frame["table"]]
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["table", "sex", "age"]).sort_index()
 
 
 def mort_anchor_table():
@@ -145,9 +146,11 @@ def mort_anchor_table():
     in their statutory product summaries — the only Korean annuitant mortality figures in
     this library's input set, quoted rather than transcribed from a table nobody may read.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_anchor_file,                              # noqa: F821
-        index_col=["table", "sex", "item"]).sort_index()
+    frame = pd.read_csv(input_dir() / mort_anchor_file)                     # noqa: F821
+    frame["table"] = [MortTable[name] for name in frame["table"]]
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    frame["item"] = [AnchorItem[name] for name in frame["item"]]
+    return frame.set_index(["table", "sex", "item"]).sort_index()
 
 
 def lapse_table():
@@ -161,9 +164,10 @@ def lapse_table():
     rate applying between 납입완료 and 연금개시, and ``in_payment`` the zero that must apply
     once the annuity has started.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / lapse_table_file,                              # noqa: F821
-        index_col=["basis", "segment", "from_year"]).sort_index()
+    frame = pd.read_csv(input_dir() / lapse_table_file)                     # noqa: F821
+    frame["basis"] = [LapseBasis[name] for name in frame["basis"]]
+    frame["segment"] = [Segment[name] for name in frame["segment"]]
+    return frame.set_index(["basis", "segment", "from_year"]).sort_index()
 
 
 def decl_rate_table():
@@ -176,9 +180,9 @@ def decl_rate_table():
     of a published illustration shows; ``hybrid`` is the one retrieved design that pays a
     fixed 3.5% for five years before reverting.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / decl_rate_file,                                # noqa: F821
-        index_col=["scenario", "from_year"]).sort_index()
+    frame = pd.read_csv(input_dir() / decl_rate_file)                     # noqa: F821
+    frame["scenario"] = [RateScenario[name] for name in frame["scenario"]]
+    return frame.set_index(["scenario", "from_year"]).sort_index()
 
 
 def guar_rate_table():
@@ -205,8 +209,9 @@ def pricing_table():
     dividend parameters.  Every row carries its source tag or its **[std]** rationale in the
     ``provenance`` column.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / pricing_table_file, index_col="item")          # noqa: F821
+    frame = pd.read_csv(input_dir() / pricing_table_file)                     # noqa: F821
+    frame["item"] = [PricingItem[name] for name in frame["item"]]
+    return frame.set_index("item")
 
 
 def expense_table():
@@ -218,8 +223,9 @@ def expense_table():
     fund calibration in the other.  The commission rows are zero because the composite
     follows a direct-channel product whose published 모집수수료율 is 0.00% in every year.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / expense_table_file, index_col="item")          # noqa: F821
+    frame = pd.read_csv(input_dir() / expense_table_file)                     # noqa: F821
+    frame["item"] = [ExpenseItem[name] for name in frame["item"]]
+    return frame.set_index("item")
 
 
 def tax_table():
@@ -232,8 +238,9 @@ def tax_table():
     and none of them enters :func:`~.Pension_KR_S.Projection.net_cf`; they are carried
     because they are what drives the lapse and annuitisation-election assumptions.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / tax_table_file, index_col="item")              # noqa: F821
+    frame = pd.read_csv(input_dir() / tax_table_file)                     # noqa: F821
+    frame["item"] = [TaxItem[name] for name in frame["item"]]
+    return frame.set_index("item")
 
 
 # ---------------------------------------------------------------------------
@@ -258,3 +265,21 @@ expense_table_file = "expense_table.csv"
 tax_table_file = "tax_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+MortTable = ("Pickle", 2)
+
+AnchorItem = ("Pickle", 3)
+
+LapseBasis = ("Pickle", 4)
+
+Segment = ("Pickle", 5)
+
+RateScenario = ("Pickle", 6)
+
+PricingItem = ("Pickle", 7)
+
+ExpenseItem = ("Pickle", 8)
+
+TaxItem = ("Pickle", 9)

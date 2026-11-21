@@ -160,7 +160,8 @@ from sec_support import (
     GENERATED_COLUMNS, SEC_SPECS, TWIN_EXEMPT_DEFAULT, build_sec_table, check_generated,
     codes, compiled_case, compiled_mismatches, exact_here, fingerprint_mismatches,
     frame_mismatches, run_compiled, shift_months, sweep, temp_inputs, twin_mismatches)
-from us_registry import meta, model_path, point_keys, projection
+from released_twins import read_released_twin, sec_test_model_path as model_path
+from us_registry import meta, point_keys, projection
 
 SEC, TWIN = "RILA_US_SEC", "RILA_US_S"
 TABLE, SCENARIOS = "model_point_table_sec.csv", "market_scenario_sec.csv"
@@ -1093,7 +1094,7 @@ def s_model():
     tests read S's months off it, the cells its own sweep misses among them.  The swept
     model is then frozen out of the collector (:func:`_freeze`).
     """
-    model = _read(model_path(TWIN), "s")
+    model = read_released_twin(TWIN, model_name=_name("s"))
     for key in point_keys(model):
         _sweep(projection(model, key))
     _freeze()

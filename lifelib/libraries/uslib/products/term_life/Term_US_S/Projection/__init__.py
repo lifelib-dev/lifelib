@@ -201,17 +201,17 @@ def age_at_entry():
 
 def sex():
     """The sex of the selected model point."""
-    return model_point()["sex"]
+    return Sex[model_point()["sex"]]
 
 
 def rate_class():
     """The underwriting class of the selected model point."""
-    return model_point()["rate_class"]
+    return RateClass[model_point()["rate_class"]]
 
 
 def plan():
     """The plan code of the selected model point (T10 / T20 / T30)."""
-    return model_point()["plan"]
+    return Plan[model_point()["plan"]]
 
 
 def sum_assured():
@@ -226,7 +226,7 @@ def pols_if_init():
 
 def premium_mode():
     """The premium mode of the selected model point: A, SA, Q or M [S6]."""
-    return model_point()["premium_mode"]
+    return PremiumMode[model_point()["premium_mode"]]
 
 
 def band():
@@ -236,9 +236,21 @@ def band():
     return 1 if f < 250000 else 2 if f < 500000 else 3 if f < 1000000 else 4
 
 
+def plan_term_years():
+    """The level premium period in years of the policy's plan code (D31: one branch per member)."""
+    if plan() == Plan.T10:
+        return 10
+    elif plan() == Plan.T20:
+        return 20
+    elif plan() == Plan.T30:
+        return 30
+    else:
+        raise ValueError("invalid plan")
+
+
 def policy_term():
     """The level premium period in years, from the plan code."""
-    return int(plan()[1:])
+    return plan_term_years()
 
 
 def proj_len():
@@ -296,13 +308,13 @@ def modal_factor():
     carrier's own scale drops in without a formula change.
     """
     m = premium_mode()
-    if m == "A":
+    if m == PremiumMode.A:
         return modal_factor_a                                        # noqa: F821
-    elif m == "SA":
+    elif m == PremiumMode.SA:
         return modal_factor_sa                                       # noqa: F821
-    elif m == "Q":
+    elif m == PremiumMode.Q:
         return modal_factor_q                                        # noqa: F821
-    elif m == "M":
+    elif m == PremiumMode.M:
         return modal_factor_m                                        # noqa: F821
     else:
         raise ValueError("invalid premium mode")
@@ -314,7 +326,7 @@ def prem_cycle():
     Arithmetic of the mode rather than an assumption, so it is written here rather than
     held in a Reference.
     """
-    return {"A": 12, "SA": 6, "Q": 3, "M": 1}[premium_mode()]
+    return {PremiumMode.A: 12, PremiumMode.SA: 6, PremiumMode.Q: 3, PremiumMode.M: 1}[premium_mode()]
 
 
 def prem_due(t):
@@ -327,6 +339,11 @@ def prem_due(t):
     return duration_mth(t) % prem_cycle() == 0
 
 
+def premium_schedule():
+    """The premium rates of this policy's plan, sex, class and band, by policy year."""
+    return data.premium_rates().loc[(plan(), sex(), rate_class(), band())]   # noqa: F821
+
+
 def premium_pp_ann(t):
     """AP(t): the guaranteed **annualized** gross premium per policy, fee included.
 
@@ -336,8 +353,8 @@ def premium_pp_ann(t):
     and it is that instalment — not ``AP`` — that :func:`commissions` and
     :func:`premium_taxes` are charged on.
     """
-    key = (plan(), sex(), rate_class(), band(), policy_year(t))
-    return float(data.premium_rates().loc[key, "premium_pp"])               # noqa: F821
+    sub = premium_schedule()
+    return float(sub.loc[policy_year(t), "premium_pp"])
 
 
 def premium_pp(t):
@@ -420,10 +437,11 @@ def mort_rate_mth(t):
 def shock_lapse_rate():
     """Shock lapse at the end of the level period, by jump-ratio bucket **[std]**."""
     j = jump_ratio()
-    for _, r in data.shock_lapse_table().iterrows():                        # noqa: F821
-        if r["jump_lo"] < j <= r["jump_hi"]:
-            return float(r["shock_lapse_rate"])
-    return float(data.shock_lapse_table().iloc[-1]["shock_lapse_rate"])     # noqa: F821
+    tbl = data.shock_lapse_table()                                          # noqa: F821
+    for k in tbl.index:
+        if tbl.loc[k, "jump_lo"] < j <= tbl.loc[k, "jump_hi"]:
+            return float(tbl.loc[k, "shock_lapse_rate"])
+    return float(tbl.loc[tbl.index.max(), "shock_lapse_rate"])
 
 
 def lapse_rate(t):
@@ -689,3 +707,11 @@ conv_rate_base = 0.0
 conv_rate_final = 0.0
 
 pd = ("Module", "pandas")
+
+Plan = ("Pickle", 1)
+
+Sex = ("Pickle", 2)
+
+RateClass = ("Pickle", 3)
+
+PremiumMode = ("Pickle", 4)

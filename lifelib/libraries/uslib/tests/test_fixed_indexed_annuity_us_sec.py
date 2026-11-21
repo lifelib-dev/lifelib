@@ -181,7 +181,8 @@ from sec_support import (
     check_generated, codes, compiled_case, compiled_mismatches, exact_here,
     fingerprint_mismatches, frame_mismatches, run_compiled, sweep, temp_inputs,
     twin_mismatches)
-from us_registry import model_path, point_keys, projection
+from released_twins import read_released_twin, sec_test_model_path as model_path
+from us_registry import point_keys, projection
 
 SEC, TWIN, TABLE = "FIA_US_SEC", "FIA_US_S", "model_point_table_sec.csv"
 COMPANION = "rate_scenario_sec.csv"
@@ -1254,7 +1255,7 @@ def s_model():
     off it, the cells its own sweep misses among them.  The swept model is then frozen out
     of the collector (:func:`_freeze`).
     """
-    model = _read(model_path(TWIN), "s")
+    model = read_released_twin(TWIN, model_name=_name("s"))
     for key in point_keys(model):
         _sweep_s(projection(model, key))
     _freeze()
@@ -5187,7 +5188,7 @@ def test_an_in_force_extract_needs_none_of_the_generator_columns(sec_model, tmp_
     assert out[1:] == base[1:]
     refused = _run_sec(runner, "1", check=False)
     assert refused.returncode == 1 and refused.stdout == b""
-    labels = [100 + p for p in reversed(committed.index)]
+    labels = [100 + int(p) for p in reversed(committed.index)]
     assert refused.stderr.decode(errors="replace").strip() == (
         f"no model point 1 in the table: {labels}")
 

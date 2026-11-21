@@ -67,6 +67,7 @@ import pytest
 from modelx.core.errors import FormulaError
 
 from kr_registry import LIB, MODELS
+from lifelib.libraries.krlib.products.pension_savings.enums import AnchorItem, AvTiming, ExpenseItem, Kind, LapseBasis, MortTable, MortVintage, PayoutForm, PolTiming, PricingItem, RateScenario, Segment, Sex, TaxItem
 
 WON = 0.005          # money displayed to 2 d.p.
 INFORCE = 5e-11      # counts and probabilities, displayed to 10 d.p.
@@ -227,23 +228,23 @@ WORKED_EXAMPLE_TOTALS = {
 # how the contract states them; ``n`` is the annuitisation **month** and ``proj_len`` the
 # number of projected policy months, so the frame runs t = 0 .. proj_len - 1.
 MODEL_POINTS = {
-    1: ("M", 40, 20,  5, 300, 65,  6000000.0, 972, 160294805.59, 23.58192,  6763374.59,
+    1: (Sex.M, 40, 20,  5, 300, 65,  6000000.0, 972, 160294805.59, 23.58192,  6763374.59,
         -66447581.54),
-    2: ("F", 40, 20,  5, 300, 65,  6000000.0, 972, 160294805.59, 25.26673,  6312383.96,
+    2: (Sex.F, 40, 20,  5, 300, 65,  6000000.0, 972, 160294805.59, 25.26673,  6312383.96,
         -71826694.41),
-    3: ("M", 45, 20,  0, 240, 65,  3600000.0, 912,  86587174.54, 24.08957,  3576412.79,
+    3: (Sex.M, 45, 20,  0, 240, 65,  3600000.0, 912,  86587174.54, 24.08957,  3576412.79,
         -33616128.95),
-    4: ("F", 25, 20, 15, 420, 60,  1200000.0, 660,  39568543.38, 16.30428,  2414746.68,
+    4: (Sex.F, 25, 20, 15, 420, 60,  1200000.0, 660,  39568543.38, 16.30428,  2414746.68,
         -16529681.76),
-    5: ("M", 30, 10, 20, 360, 60, 12000000.0, 480, 194438355.78,  9.01595, 21458209.25,
+    5: (Sex.M, 30, 10, 20, 360, 60, 12000000.0, 480, 194438355.78,  9.01595, 21458209.25,
         -45254564.01),
-    6: ("F", 50,  5,  0,  60, 55,  6000000.0, 240,  30030000.00, 13.94004,  2143455.00,
+    6: (Sex.F, 50,  5,  0,  60, 55,  6000000.0, 240,  30030000.00, 13.94004,  2143455.00,
         -2445274.40),
-    7: ("M", 40, 20,  5, 300, 65,  6000000.0, 972, 160294805.59, 24.30417,  6562384.22,
+    7: (Sex.M, 40, 20,  5, 300, 65,  6000000.0, 972, 160294805.59, 24.30417,  6562384.22,
         -68821479.83),
-    8: ("M", 40, 20,  5, 300, 65,  6000000.0, 972, 326721162.46, 23.58192, 13785459.86,
+    8: (Sex.M, 40, 20,  5, 300, 65,  6000000.0, 972, 326721162.46, 23.58192, 13785459.86,
         -137316414.94),
-    9: ("M", 40, 20,  5, 324, 65,  6000000.0, 972, 162892867.42, 22.70113,  4273340.12,
+    9: (Sex.M, 40, 20,  5, 324, 65,  6000000.0, 972, 162892867.42, 22.70113,  4273340.12,
         -36971445.78),
 }
 
@@ -288,59 +289,59 @@ CHECKS = {
 # The scalar assumptions the notes mark [std] — a modeller's choice with no contractual
 # counterpart — read off the model so a silent change fails a test.
 STD_SCALARS = {
-    "mort_be_factor": 1.15,
-    "loan_rate": 0.04,
-    "loan_draw_frac": 0.50,
-    "loan_draw_year": 15,
-    "holiday_start_year": 8,
+    PricingItem.mort_be_factor: 1.15,
+    PricingItem.loan_rate: 0.04,
+    PricingItem.loan_draw_frac: 0.50,
+    PricingItem.loan_draw_year: 15,
+    PricingItem.holiday_start_year: 8,
 }
 STD_EXPENSES = {
-    "expense_acq": 200000.0,
-    "expense_maint_defer": 30000.0,
-    "expense_maint_payout": 20000.0,
-    "expense_claim": 30000.0,
-    "inflation_rate": 0.02,
+    ExpenseItem.expense_acq: 200000.0,
+    ExpenseItem.expense_maint_defer: 30000.0,
+    ExpenseItem.expense_maint_payout: 20000.0,
+    ExpenseItem.expense_claim: 30000.0,
+    ExpenseItem.inflation_rate: 0.02,
 }
 
 # The scalar parameters the notes cite to a document rather than standardize.  A [std] tag
 # on any of these would be a claim that the sources do not say what they say.
 SOURCED_SCALARS = {
-    "prem_freq": 12,
-    "annuity_freq": 12,
-    "prem_int_rate": 0.0250,
-    "avg_decl_rate": 0.0250,
-    "acq_charge_rate": 0.0150,
-    "acq_charge_years": 7,
-    "maint_charge_rate": 0.0300,
-    "maint_charge_rate_paid_up": 0.0067,
-    "addl_charge_rate": 0.0200,
-    "addl_prem_cap_ratio": 2.00,
-    "annuity_charge_rate": 0.0050,
-    "min_fund_ratio": 1.001,
-    "surr_chg_years": 5,
-    "surr_chg_cap_rate": 0.03,
-    "surr_chg_cap_rate_par": 0.04,
-    "surr_chg_cap_term_cap": 12,
-    "surr_chg_cap_level_years": 10,
-    "holiday_max_years": 3,
-    "div_int_rate": 0.0215,
+    PricingItem.prem_freq: 12,
+    PricingItem.annuity_freq: 12,
+    PricingItem.prem_int_rate: 0.0250,
+    PricingItem.avg_decl_rate: 0.0250,
+    PricingItem.acq_charge_rate: 0.0150,
+    PricingItem.acq_charge_years: 7,
+    PricingItem.maint_charge_rate: 0.0300,
+    PricingItem.maint_charge_rate_paid_up: 0.0067,
+    PricingItem.addl_charge_rate: 0.0200,
+    PricingItem.addl_prem_cap_ratio: 2.00,
+    PricingItem.annuity_charge_rate: 0.0050,
+    PricingItem.min_fund_ratio: 1.001,
+    PricingItem.surr_chg_years: 5,
+    PricingItem.surr_chg_cap_rate: 0.03,
+    PricingItem.surr_chg_cap_rate_par: 0.04,
+    PricingItem.surr_chg_cap_term_cap: 12,
+    PricingItem.surr_chg_cap_level_years: 10,
+    PricingItem.holiday_max_years: 3,
+    PricingItem.div_int_rate: 0.0215,
 }
 
 # The tax basis of class (a) and the statutory tests, none of which is an insurer cash flow.
 TAX_SCALARS = {
-    "credit_rate_low_income": 0.165,
-    "credit_rate_high_income": 0.132,
-    "credit_cap": 6000000.0,
-    "contribution_ceiling": 18000000.0,
-    "other_income_tax_rate": 0.165,
-    "pension_tax_rate_under70": 0.055,
-    "pension_tax_rate_70to79": 0.044,
-    "pension_tax_rate_80plus": 0.033,
-    "pension_tax_rate_life": 0.033,
-    "min_annuity_age": 55,
-    "min_account_years": 5,
-    "limit_denominator_base": 11,
-    "limit_uplift": 1.20,
+    TaxItem.credit_rate_low_income: 0.165,
+    TaxItem.credit_rate_high_income: 0.132,
+    TaxItem.credit_cap: 6000000.0,
+    TaxItem.contribution_ceiling: 18000000.0,
+    TaxItem.other_income_tax_rate: 0.165,
+    TaxItem.pension_tax_rate_under70: 0.055,
+    TaxItem.pension_tax_rate_70to79: 0.044,
+    TaxItem.pension_tax_rate_80plus: 0.033,
+    TaxItem.pension_tax_rate_life: 0.033,
+    TaxItem.min_annuity_age: 55,
+    TaxItem.min_account_years: 5,
+    TaxItem.limit_denominator_base: 11,
+    TaxItem.limit_uplift: 1.20,
 }
 
 # The 표준해약공제액, computed in full by 별표 14 at the anchor cell.
@@ -477,13 +478,13 @@ def test_worked_example_deferral_row(kr_pension_anchor, t):
     a = kr_pension_anchor
     assert a.pols_if(t) == pytest.approx(pols_if, abs=INFORCE)
     assert a.premiums(t) == pytest.approx(premiums, abs=WON)
-    assert a.claims(t, "DEATH") == pytest.approx(death, abs=WON)
-    assert a.claims(t, "LAPSE") == pytest.approx(lapse, abs=WON)
+    assert a.claims(t, Kind.DEATH) == pytest.approx(death, abs=WON)
+    assert a.claims(t, Kind.LAPSE) == pytest.approx(lapse, abs=WON)
     assert a.expenses(t) == pytest.approx(expenses, abs=WON)
     assert a.claim_expenses(t) == pytest.approx(claim_exp, abs=WON)
     assert a.net_cf(t) == pytest.approx(net, abs=WON)
     # The deferral phase carries no annuity, no commission and no loan.
-    assert a.claims(t, "ANNUITY") == 0.0
+    assert a.claims(t, Kind.ANNUITY) == 0.0
     assert a.commissions(t) == 0.0
     assert a.policy_loans(t) == 0.0
 
@@ -508,9 +509,9 @@ def test_worked_example_event_row(kr_pension_anchor, t):
     a = kr_pension_anchor
     assert a.pols_if(t) == pytest.approx(pols_if, abs=INFORCE)
     assert a.premiums(t) == pytest.approx(premiums, abs=WON)
-    assert a.claims(t, "ANNUITY") == pytest.approx(annuity, abs=WON)
-    assert a.claims(t, "DEATH") == pytest.approx(death, abs=WON)
-    assert a.claims(t, "LAPSE") == pytest.approx(lapse, abs=WON)
+    assert a.claims(t, Kind.ANNUITY) == pytest.approx(annuity, abs=WON)
+    assert a.claims(t, Kind.DEATH) == pytest.approx(death, abs=WON)
+    assert a.claims(t, Kind.LAPSE) == pytest.approx(lapse, abs=WON)
     assert a.expenses(t) == pytest.approx(expenses, abs=WON)
     assert a.net_cf(t) == pytest.approx(net, abs=WON)
     assert a.result_cf().loc[t, "net_cf"] == pytest.approx(net, abs=WON)
@@ -752,7 +753,7 @@ def test_worked_example_the_tax_hand_off_that_argues_the_lapse_curve(kr_pension_
     that is flat rather than steeply front-loaded.
     """
     a = kr_pension_anchor
-    rate = a.tax_basis("other_income_tax_rate")
+    rate = a.tax_basis(TaxItem.other_income_tax_rate)
     net_at_1y = rate * (a.cv_pp(12) - a.cum_prem_pp(12))
     net_at_5y = rate * (a.cv_pp(60) - a.cum_prem_pp(60))
     assert net_at_1y == pytest.approx(-33575.23, abs=WON)
@@ -793,10 +794,10 @@ def test_worked_example_month_zero_trace(kr_pension_anchor):
     assert a.av_pp(1) == pytest.approx(478347.2044045981, rel=SAME_DOUBLE)
     assert a.cv_pp(1) == a.av_pp(1) == a.db_pp(1)
     assert a.pols_death(0) == pytest.approx(0.0000672347, abs=INFORCE)
-    assert a.claims(0, "DEATH") == pytest.approx(32.16, abs=WON)
+    assert a.claims(0, Kind.DEATH) == pytest.approx(32.16, abs=WON)
     assert a.claim_expenses(0) == pytest.approx(2.02, abs=WON)
     assert a.pols_lapse(0) == pytest.approx(0.0033958249, abs=INFORCE)
-    assert a.claims(0, "LAPSE") == pytest.approx(1624.38, abs=WON)
+    assert a.claims(0, Kind.LAPSE) == pytest.approx(1624.38, abs=WON)
     # The whole 계약체결비용 falls in the first month, plus one month's maintenance.
     assert a.expenses(0) == pytest.approx(200000.0 + 30000.0 / 12.0, abs=WON)
     assert a.expenses(0) == pytest.approx(202500.00, abs=WON)
@@ -822,14 +823,14 @@ def test_worked_example_month_one_trace(kr_pension_anchor):
     assert a.mort_rate(1) == pytest.approx(0.0008065180, abs=RATE)
     assert a.lapse_rate(1) == pytest.approx(0.040, abs=RATE)
     assert a.premiums(1) == pytest.approx(498268.47, abs=WON)
-    assert a.av_pp_at(1, "AFT_PREM") == pytest.approx(
+    assert a.av_pp_at(1, AvTiming.AFT_PREM) == pytest.approx(
         955847.2044045981, rel=SAME_DOUBLE)
     assert a.av_pp(2) == pytest.approx(957543.1163662616, rel=SAME_DOUBLE)
     assert a.pols_death(1) == pytest.approx(0.0000670019, abs=INFORCE)
-    assert a.claims(1, "DEATH") == pytest.approx(64.16, abs=WON)
+    assert a.claims(1, Kind.DEATH) == pytest.approx(64.16, abs=WON)
     assert a.claim_expenses(1) == pytest.approx(2.01, abs=WON)
     assert a.pols_lapse(1) == pytest.approx(0.0033840649, abs=INFORCE)
-    assert a.claims(1, "LAPSE") == pytest.approx(3240.39, abs=WON)
+    assert a.claims(1, Kind.LAPSE) == pytest.approx(3240.39, abs=WON)
     assert a.expenses(1) == pytest.approx(30000 / 12.0 * a.pols_if(1), abs=WON)
     assert a.expenses(1) == pytest.approx(2491.34, abs=WON)
     assert a.net_cf(1) == pytest.approx(492470.57, abs=WON)
@@ -863,8 +864,8 @@ def test_worked_example_month_eightyfour_trace_the_acquisition_charge_stops(
     assert a.pols_death(84) == pytest.approx(
         a.pols_if(84) * a.mort_rate_mth(84), rel=SAME_DOUBLE)
     assert a.mort_rate(84) == pytest.approx(0.0009844575, abs=RATE)
-    assert a.claims(84, "DEATH") == pytest.approx(2934.75, abs=WON)
-    assert a.claims(84, "LAPSE") == pytest.approx(60143.29, abs=WON)
+    assert a.claims(84, Kind.DEATH) == pytest.approx(2934.75, abs=WON)
+    assert a.claims(84, Kind.LAPSE) == pytest.approx(60143.29, abs=WON)
     assert a.expenses(84) == pytest.approx(
         30000 / 12.0 * 1.02 ** 7 * a.pols_if(84), abs=WON)
     assert a.expenses(84) == pytest.approx(2341.64, abs=WON)
@@ -889,7 +890,7 @@ def test_worked_example_month_twoforty_trace_the_row_that_decides_the_shape(
     assert a.charge_from_av_pp(240) == pytest.approx(
         500000 * 0.0067, rel=SAME_DOUBLE)
     assert a.charge_from_av_pp(240) == pytest.approx(CHARGE_PAID_UP, rel=SAME_DOUBLE)
-    assert a.av_pp_at(240, "AFT_PREM") == pytest.approx(
+    assert a.av_pp_at(240, AvTiming.AFT_PREM) == pytest.approx(
         144308607.5668497980, rel=SAME_DOUBLE)
     assert a.av_pp(241) == pytest.approx(144564647.1227703094, rel=SAME_DOUBLE)
     # The fund still grows: a month of 2.15% on ₩144m is many times a ₩3,350 charge.
@@ -897,10 +898,10 @@ def test_worked_example_month_twoforty_trace_the_row_that_decides_the_shape(
     assert a.mort_rate(240) == pytest.approx(1.15 * 0.00170745, abs=RATE)
     assert a.lapse_rate(240) == pytest.approx(0.01, abs=RATE)
     assert a.pols_death(240) == pytest.approx(0.0001062081, abs=INFORCE)
-    assert a.claims(240, "DEATH") == pytest.approx(15353.93, abs=WON)
+    assert a.claims(240, Kind.DEATH) == pytest.approx(15353.93, abs=WON)
     assert a.claim_expenses(240) == pytest.approx(3.19, abs=WON)
     assert a.pols_lapse(240) == pytest.approx(0.0005428104, abs=INFORCE)
-    assert a.claims(240, "LAPSE") == pytest.approx(78471.19, abs=WON)
+    assert a.claims(240, Kind.LAPSE) == pytest.approx(78471.19, abs=WON)
     assert a.expenses(240) == pytest.approx(
         30000 / 12.0 * 1.02 ** 20 * a.pols_if(240), abs=WON)
     assert a.expenses(240) == pytest.approx(2409.05, abs=WON)
@@ -920,14 +921,14 @@ def test_worked_example_month_three_hundred_trace_the_annuitisation_transition(
     """
     a = kr_pension_anchor
     # 1. Fund fixed.
-    assert a.av_pp_at(299, "AFT_PREM") == pytest.approx(
+    assert a.av_pp_at(299, AvTiming.AFT_PREM) == pytest.approx(
         160010906.2306696773, rel=SAME_DOUBLE)
     assert a.av_pp(300) == pytest.approx(AV_AT_COMMENCEMENT, rel=SAME_DOUBLE)
     # 2. Floor tested and not binding.
     assert a.min_fund_pp() == pytest.approx(1.001 * 120000000.0, rel=SAME_DOUBLE)
     assert a.annuity_fund_pp() == pytest.approx(a.av_pp(300), rel=SAME_DOUBLE)
     # 3. Factor struck on the issue vintage at the credited rate, monthly.
-    assert a.mort_table_name() == "annuitant_issue"
+    assert a.mort_table_name() == MortTable.annuitant_issue
     assert a.credit_rate(300) == pytest.approx(0.0215, abs=RATE)
     assert a.annuity_due_factor() == pytest.approx(ANNUITY_FACTOR, rel=SAME_DOUBLE)
     # 4. Annuity struck, once, net of the 0.5% 연금수령기간 관리비용.
@@ -939,12 +940,12 @@ def test_worked_example_month_three_hundred_trace_the_annuitisation_transition(
     assert a.annuity_pp(299) == 0.0
     assert a.annuity_pp(300) == pytest.approx(ANNUITY_MONTH, rel=SAME_DOUBLE)
     assert a.annuity_pp(300) == pytest.approx(ANNUITY_AMOUNT / 12.0, rel=SAME_DOUBLE)
-    assert a.claims(300, "ANNUITY") == pytest.approx(343630.80, abs=WON)
+    assert a.claims(300, Kind.ANNUITY) == pytest.approx(343630.80, abs=WON)
     # 6. Decrements off, and the fund gone from the following month.
     assert a.lapse_rate(300) == 0.0
     assert a.pols_death(300) == 0.0
-    assert a.claims(300, "DEATH") == 0.0
-    assert a.claims(300, "LAPSE") == 0.0
+    assert a.claims(300, Kind.DEATH) == 0.0
+    assert a.claims(300, Kind.LAPSE) == 0.0
     assert a.av_pp(301) == a.cv_pp(301) == a.db_pp(301) == 0.0
     # 7. The maintenance level drops from ₩30,000 to ₩20,000 a year at annuitisation.
     assert a.expenses(300) == pytest.approx(
@@ -968,7 +969,7 @@ def test_worked_example_month_four_twenty_trace_the_guarantee_ends(kr_pension_an
     assert a.pols_if(419) == pytest.approx(a.pols_if(300), abs=INFORCE)
     assert a.lives_if(420) / a.lives_if(300) == pytest.approx(0.9575206553, abs=INFORCE)
     assert a.pols_if(420) == pytest.approx(0.5837918602, abs=INFORCE)
-    assert a.claims(420, "ANNUITY") == pytest.approx(329033.59, abs=WON)
+    assert a.claims(420, Kind.ANNUITY) == pytest.approx(329033.59, abs=WON)
     assert a.expenses(420) == pytest.approx(
         20000 / 12.0 * 1.02 ** 35 * a.pols_if(420), abs=WON)
     assert a.expenses(420) == pytest.approx(1945.87, abs=WON)
@@ -1007,7 +1008,7 @@ def test_worked_example_the_assumption_values_the_notes_list(kr_pension_anchor):
         expected, abs=RATE)
     assert all(a.lapse_rate(t) == pytest.approx(a.lapse_rate(12 * (t // 12)), abs=RATE)
                for t in range(0, 972))
-    assert a.lapse_basis() == "pension"
+    assert a.lapse_basis() == LapseBasis.pension
 
 
 # ---------------------------------------------------------------------------
@@ -1139,7 +1140,7 @@ def test_the_hundred_and_one_tenths_floor_binds_exactly_at_model_point_six(
     that it is not decorative.
     """
     p = pension_savings.Projection[6]
-    assert p.rate_scenario() == "floor"
+    assert p.rate_scenario() == RateScenario.floor
     assert p.min_fund_on() is True
     assert p.premium_term_y() == 5           # the statutory minimum
     assert p.annuity_start_age() == 55       # drawn from 만 55세
@@ -1169,16 +1170,16 @@ def test_the_vintage_switch_is_worth_three_per_cent_and_the_ratchet_is_out_of_th
     anchor = pension_savings.Projection[1]
     commencement = pension_savings.Projection[7]
     ratchet = pension_savings.Projection[9]
-    assert anchor.mort_vintage() == "issue"
-    assert anchor.mort_table_name() == "annuitant_issue"
-    assert commencement.mort_vintage() == "commencement"
-    assert commencement.mort_table_name() == "annuitant_revised"
+    assert anchor.mort_vintage() == MortVintage.issue
+    assert anchor.mort_table_name() == MortTable.annuitant_issue
+    assert commencement.mort_vintage() == MortVintage.commencement
+    assert commencement.mort_table_name() == MortTable.annuitant_revised
     change = anchor.annuity_amount_pp() - commencement.annuity_amount_pp()
     assert change / anchor.annuity_amount_pp() == pytest.approx(0.0297, abs=5e-5)
-    assert ratchet.mort_vintage() == "ratchet"
-    assert ratchet.mort_table_name() == "annuitant_issue"
-    issue_factor = ratchet.annuity_due_factor_on("annuitant_issue")
-    revised_factor = ratchet.annuity_due_factor_on("annuitant_revised")
+    assert ratchet.mort_vintage() == MortVintage.ratchet
+    assert ratchet.mort_table_name() == MortTable.annuitant_issue
+    issue_factor = ratchet.annuity_due_factor_on(MortTable.annuitant_issue)
+    revised_factor = ratchet.annuity_due_factor_on(MortTable.annuitant_revised)
     assert issue_factor == pytest.approx(22.70113, abs=5e-6)
     assert revised_factor == pytest.approx(23.43728, abs=5e-6)
     assert issue_factor < revised_factor     # the smaller factor is the larger annuity
@@ -1235,7 +1236,7 @@ def test_the_certain_form_ends_by_counting_and_publishes_a_maturity(pension_savi
     """
     p = pension_savings.Projection[4]
     n, k = p.annuitisation_t(), 12 * p.payout_term_y()
-    assert p.payout_form() == "certain"
+    assert p.payout_form() == PayoutForm.certain
     assert (n, k) == (420, 240)
     assert p.proj_len() == n + k == 660
     assert all(p.pols_if(t) == pytest.approx(p.pols_if(n), abs=INFORCE)
@@ -1377,17 +1378,17 @@ def test_the_decrements_are_taken_in_the_notes_processing_order(kr_pension_ancho
     """
     a = kr_pension_anchor
     for t in (0, 1, 12, 84, 239, 240, 299):
-        assert a.pols_if_at(t, "BEF_DECR") == a.pols_if(t)
-        assert a.pols_if_at(t, "BEF_LAPSE") == pytest.approx(
+        assert a.pols_if_at(t, PolTiming.BEF_DECR) == a.pols_if(t)
+        assert a.pols_if_at(t, PolTiming.BEF_LAPSE) == pytest.approx(
             a.pols_if(t) - a.pols_death(t), rel=SAME_DOUBLE)
-        assert a.pols_if_at(t, "AFT_DECR") == pytest.approx(
-            a.pols_if_at(t, "BEF_LAPSE") * (1 - a.lapse_rate_mth(t)), rel=SAME_DOUBLE)
-        assert a.pols_if_at(t, "AFT_DECR") == pytest.approx(
+        assert a.pols_if_at(t, PolTiming.AFT_DECR) == pytest.approx(
+            a.pols_if_at(t, PolTiming.BEF_LAPSE) * (1 - a.lapse_rate_mth(t)), rel=SAME_DOUBLE)
+        assert a.pols_if_at(t, PolTiming.AFT_DECR) == pytest.approx(
             a.pols_if(t + 1), rel=SAME_DOUBLE)
         assert a.pols_death(t) == pytest.approx(
             a.pols_if(t) * a.mort_rate_mth(t), rel=SAME_DOUBLE)
         assert a.pols_lapse(t) == pytest.approx(
-            a.pols_if_at(t, "BEF_LAPSE") * a.lapse_rate_mth(t), rel=SAME_DOUBLE)
+            a.pols_if_at(t, PolTiming.BEF_LAPSE) * a.lapse_rate_mth(t), rel=SAME_DOUBLE)
         # The order is not cosmetic: taking lapse off the whole cohort would be larger.
         assert a.pols_lapse(t) < a.pols_if(t) * a.lapse_rate_mth(t)
     assert a.pols_lapse(0) == pytest.approx(0.0033958249, abs=INFORCE)
@@ -1406,12 +1407,12 @@ def test_the_fund_timings_are_premium_then_charge_then_interest(kr_pension_ancho
     """
     a = kr_pension_anchor
     for t in (0, 1, 84, 239, 240, 299):
-        assert a.av_pp_at(t, "BEF_PREM") == a.av_pp(t)
-        assert a.av_pp_at(t, "AFT_PREM") == pytest.approx(
+        assert a.av_pp_at(t, AvTiming.BEF_PREM) == a.av_pp(t)
+        assert a.av_pp_at(t, AvTiming.AFT_PREM) == pytest.approx(
             a.av_pp(t) + a.prem_to_av_pp(t) - a.charge_from_av_pp(t), rel=SAME_DOUBLE)
-        assert a.av_pp_at(t, "AFT_INT") == pytest.approx(
-            a.av_pp_at(t, "AFT_PREM") * (1 + a.credit_rate_mth(t)), rel=SAME_DOUBLE)
-        assert a.av_pp_at(t, "AFT_INT") == pytest.approx(a.av_pp(t + 1), rel=SAME_DOUBLE)
+        assert a.av_pp_at(t, AvTiming.AFT_INT) == pytest.approx(
+            a.av_pp_at(t, AvTiming.AFT_PREM) * (1 + a.credit_rate_mth(t)), rel=SAME_DOUBLE)
+        assert a.av_pp_at(t, AvTiming.AFT_INT) == pytest.approx(a.av_pp(t + 1), rel=SAME_DOUBLE)
     with pytest.raises(FormulaError):
         a.av_pp_at(1, "AFT_NOTHING")
 
@@ -1536,9 +1537,9 @@ def test_pitfall_no_survivorship_release_in_the_fund(pension_savings, kr_pension
     a = kr_pension_anchor
     # What a survivorship release would have produced, one month in.
     j = 1.0 + a.credit_rate_mth(0)
-    released = a.av_pp_at(0, "AFT_PREM") * j / (1 - a.mort_rate_mth(0))
+    released = a.av_pp_at(0, AvTiming.AFT_PREM) * j / (1 - a.mort_rate_mth(0))
     assert released > a.av_pp(1)
-    assert a.av_pp(1) == pytest.approx(a.av_pp_at(0, "AFT_PREM") * j, rel=SAME_DOUBLE)
+    assert a.av_pp(1) == pytest.approx(a.av_pp_at(0, AvTiming.AFT_PREM) * j, rel=SAME_DOUBLE)
     assert a.check_av_roll_fwd() is True
 
 
@@ -1563,8 +1564,8 @@ def test_pitfall_the_deferral_mortality_strain_is_exactly_zero(kr_pension_anchor
     assert "sum_assured" not in a.model_point().index
     # The two decrements differ in their rate, never in their payment.
     for t in (0, 60, 239, 299):
-        per_policy_death = a.claims(t, "DEATH") / a.pols_death(t)
-        per_policy_lapse = a.claims(t, "LAPSE") / a.pols_lapse(t)
+        per_policy_death = a.claims(t, Kind.DEATH) / a.pols_death(t)
+        per_policy_lapse = a.claims(t, Kind.LAPSE) / a.pols_lapse(t)
         assert per_policy_death == pytest.approx(per_policy_lapse, rel=SAME_DOUBLE)
 
 
@@ -1591,11 +1592,11 @@ def test_pitfall_the_best_estimate_factor_runs_the_other_way(kr_pension_anchor):
     assert a.mort_rate(960) == 1.0                # the min(1, ...) cap at the terminal age
     # The annuity factor is struck on the table, not on the best-estimate decrement: a
     # factor built on the loaded rates would be materially smaller.
-    assert a.annuity_due_factor_on("annuitant_issue") == pytest.approx(
+    assert a.annuity_due_factor_on(MortTable.annuitant_issue) == pytest.approx(
         a.annuity_due_factor(), rel=SAME_DOUBLE)
-    assert a.mort_rate_at_age("annuitant_issue", 65) == pytest.approx(
+    assert a.mort_rate_at_age(MortTable.annuitant_issue, 65) == pytest.approx(
         a.mort_rate_base(300), rel=SAME_DOUBLE)
-    assert a.mort_rate_at_age("annuitant_issue", 65) < a.mort_rate(300)
+    assert a.mort_rate_at_age(MortTable.annuitant_issue, 65) < a.mort_rate(300)
 
 
 # ---------------------------------------------------------------------------
@@ -1620,9 +1621,9 @@ def test_pitfall_the_lapse_decrement_runs_through_the_year_before_annuitisation(
     assert a.lapse_rate_mth(n) == 0.0
     assert a.pols_lapse(n - 1) > 0.0
     assert a.pols_lapse(n) == 0.0
-    assert a.claims(n - 1, "LAPSE") == pytest.approx(81886.17, abs=WON)
+    assert a.claims(n - 1, Kind.LAPSE) == pytest.approx(81886.17, abs=WON)
     # The contracts leaving in month n - 1 are paid CV(n), the full fund.
-    assert a.claims(n - 1, "LAPSE") == pytest.approx(
+    assert a.claims(n - 1, Kind.LAPSE) == pytest.approx(
         a.cv_pp_net(n) * a.pols_lapse(n - 1), rel=SAME_DOUBLE)
     assert a.cv_pp(n) == pytest.approx(AV_AT_COMMENCEMENT, rel=SAME_DOUBLE)
     # And the lapse curve steps *down* at 납입완료, not up: the commonest trigger is gone.
@@ -1677,7 +1678,7 @@ def test_pitfall_the_two_payout_forms_do_not_share_a_factor(kr_pension_anchor):
     the error depends on which way round the sharing goes.
     """
     a = kr_pension_anchor
-    assert a.payout_form() == "life_guar"
+    assert a.payout_form() == PayoutForm.life_guar
     assert a.annuity_due_certain_factor() == pytest.approx(
         CERTAIN_FACTOR_10, rel=SAME_DOUBLE)
     assert a.annuity_due_factor() == pytest.approx(ANNUITY_FACTOR, rel=SAME_DOUBLE)
@@ -1713,7 +1714,7 @@ def test_pitfall_the_guarantee_is_unconditional_and_its_runoff_is_not_a_claim(
     assert a.pols_death(420) == pytest.approx(0.0003354854, abs=INFORCE)
     for t in range(300, 480):
         assert a.db_pp(t + 1) == 0.0
-        assert a.claims(t, "DEATH") == 0.0
+        assert a.claims(t, Kind.DEATH) == 0.0
         assert a.claim_expenses(t) == 0.0
     # The guaranteed instalments are level and total gB, which is what check_annuity_total
     # asserts and what a model that decremented them would fail.
@@ -1873,9 +1874,9 @@ def test_pitfall_the_yejeong_iyul_is_not_a_crediting_rate(kr_pension_anchor):
     # companion, which is the same rate expressed on the grid the fund actually rolls on.
     for t in (0, 120, 299):
         assert a.av_pp(t + 1) == pytest.approx(
-            a.av_pp_at(t, "AFT_PREM") * (1 + a.credit_rate_mth(t)), rel=SAME_DOUBLE)
+            a.av_pp_at(t, AvTiming.AFT_PREM) * (1 + a.credit_rate_mth(t)), rel=SAME_DOUBLE)
         assert a.av_pp(t + 1) != pytest.approx(
-            a.av_pp_at(t, "AFT_PREM") * (1 + a.prem_int_rate() / 12.0), rel=1e-9)
+            a.av_pp_at(t, AvTiming.AFT_PREM) * (1 + a.prem_int_rate() / 12.0), rel=1e-9)
     # The 평균공시이율 is the discount rate inside 별표 14's 주6 and nowhere else.
     deduction = sum(6000000 * 0.015 / 1.025 ** s for s in range(7))
     assert deduction == pytest.approx(SURR_CAP_WORKINGS["note_6_deduction"], abs=WON)
@@ -1896,21 +1897,21 @@ def test_pitfall_the_tax_layer_never_enters_the_cash_flow(kr_pension_anchor):
     """
     a = kr_pension_anchor
     assert a.net_cf(0) == pytest.approx(
-        a.premiums(0) - a.claims(0) - a.expenses(0) - a.claim_expenses(0)
+        a.premiums(0) - a.claims(0, Kind.ALL) - a.expenses(0) - a.claim_expenses(0)
         - a.commissions(0) - a.policy_loans(0), rel=SAME_DOUBLE)
     assert a.tax_credit_pp(0) > 0.0
     assert a.net_cf(0) + a.tax_credit_pp(0) != pytest.approx(a.net_cf(0), abs=1.0)
     # The surrender payment is the whole surrender value: the withholding is taken from
     # the policyholder's proceeds, not from the insurer's payment.
-    assert a.claims(119, "LAPSE") == pytest.approx(
+    assert a.claims(119, Kind.LAPSE) == pytest.approx(
         a.cv_pp_net(120) * a.pols_lapse(119), rel=SAME_DOUBLE)
     assert a.surr_tax_pp(120) > 0.0
-    assert a.claims(119, "LAPSE") != pytest.approx(
+    assert a.claims(119, Kind.LAPSE) != pytest.approx(
         (a.cv_pp_net(120) - a.surr_tax_pp(120)) * a.pols_lapse(119), rel=1e-6)
     # And the annuity instalment is paid gross of the 연금소득세 withholding.
     assert a.annuity_tax_pp(300) == pytest.approx(
         a.annuity_pp(300) * 0.033, rel=SAME_DOUBLE)
-    assert a.claims(300, "ANNUITY") == pytest.approx(
+    assert a.claims(300, Kind.ANNUITY) == pytest.approx(
         a.annuity_pp(300) * a.pols_if(300), rel=SAME_DOUBLE)
     assert a.check_net_cf() is True
 
@@ -2048,7 +2049,7 @@ def test_pitfall_proj_len_is_a_count_not_the_last_index(pension_savings):
         assert len(p.result_cf()) == p.proj_len()
         assert list(p.result_cf().index) == list(range(p.proj_len()))
     a = pension_savings.Projection[1]
-    assert a.proj_years() == a.omega_age("annuitant_issue") - a.issue_age() + 1 == 81
+    assert a.proj_years() == a.omega_age(MortTable.annuitant_issue) - a.issue_age() + 1 == 81
     assert a.proj_len() == 12 * a.proj_years() == 972
     assert a.age(a.proj_len() - 1) == 120
     assert a.mort_rate(960) == 1.0
@@ -2056,7 +2057,7 @@ def test_pitfall_proj_len_is_a_count_not_the_last_index(pension_savings):
     assert a.mort_rate_mth(971) == pytest.approx(1.0, rel=1e-13)
     assert a.pols_death(971) == pytest.approx(a.pols_if(971), rel=SAME_DOUBLE)
     assert a.pols_if(972) == 0.0
-    assert a.claims(971, "ANNUITY") == pytest.approx(58.79, abs=WON)
+    assert a.claims(971, Kind.ANNUITY) == pytest.approx(58.79, abs=WON)
     # The certain form's horizon is the last instalment, not a mortality terminal age.
     c = pension_savings.Projection[4]
     assert c.proj_len() == c.annuitisation_t() + 12 * c.payout_term_y()
@@ -2112,7 +2113,7 @@ def test_the_additional_premium_bears_the_management_charge_only(pension_savings
     # Inside the 200% relativity cap and the ₩18,000,000 statutory ceiling, both of which
     # are stated on the **annual** contribution.
     assert p.addl_prem_pp() <= 2.0 * p.prem_pp()
-    assert p.addl_prem_pp() + p.prem_pp() <= p.tax_basis("contribution_ceiling")
+    assert p.addl_prem_pp() + p.prem_pp() <= p.tax_basis(TaxItem.contribution_ceiling)
     # And the premium income column carries both.
     assert p.premiums(0) == pytest.approx(1000000.0, abs=WON)
 
@@ -2142,9 +2143,9 @@ def test_the_std_scalar_assumptions_the_notes_state(pension_savings):
     for item in STD_EXPENSES:
         assert "[std]" in expenses.loc[item, "provenance"], item
     # The commission rows are zero because a source says so, not because a modeller chose.
-    assert p.expense_basis("comm_init_rate") == 0.0
-    assert p.expense_basis("comm_renewal_rate") == 0.0
-    assert "[std]" not in expenses.loc["comm_init_rate", "provenance"]
+    assert p.expense_basis(ExpenseItem.comm_init_rate) == 0.0
+    assert p.expense_basis(ExpenseItem.comm_renewal_rate) == 0.0
+    assert "[std]" not in expenses.loc[ExpenseItem.comm_init_rate, "provenance"]
     assert all(p.commissions(t) == 0.0 for t in range(0, 972))
 
 
@@ -2179,12 +2180,12 @@ def test_the_tax_basis_the_notes_state(pension_savings):
     for item, value in TAX_SCALARS.items():
         assert p.tax_basis(item) == pytest.approx(value, rel=1e-12), item
     assert p.tax_credit_rate() == pytest.approx(0.165, abs=RATE)
-    assert p.tax_basis("credit_rate_high_income") < p.tax_credit_rate()
+    assert p.tax_basis(TaxItem.credit_rate_high_income) < p.tax_credit_rate()
     # The life form draws the flat 3.3% at every age; a certain form is banded on age.
     assert p.pension_tax_rate(300) == pytest.approx(0.033, abs=RATE)
     assert p.pension_tax_rate(660) == pytest.approx(0.033, abs=RATE)
     certain = pension_savings.Projection[4]
-    assert certain.payout_form() == "certain"
+    assert certain.payout_form() == PayoutForm.certain
     assert certain.pension_tax_rate(420) == pytest.approx(0.055, abs=RATE)  # 만 60
     assert certain.pension_tax_rate(540) == pytest.approx(0.044, abs=RATE)  # 만 70
     assert p.pension_tax_rate(299) == 0.0       # nothing is withheld before the payout
@@ -2221,7 +2222,7 @@ def test_the_declared_rate_and_the_floor_ladder_are_step_functions(pension_savin
     assert list(ladder["min_guar_rate"]) == pytest.approx([0.0125, 0.0100, 0.0050],
                                                           abs=RATE)
     hybrid = pension_savings.Projection[8]
-    assert hybrid.rate_scenario() == "hybrid"
+    assert hybrid.rate_scenario() == RateScenario.hybrid
     assert all(hybrid.decl_rate(t) == pytest.approx(0.035, abs=RATE)
                for t in range(0, 60))
     assert all(hybrid.decl_rate(t) == pytest.approx(0.0215, abs=RATE)
@@ -2243,13 +2244,13 @@ def test_the_lapse_table_ships_two_argued_vectors_and_not_a_fitted_one(pension_s
     be run side by side rather than asserted against each other in prose.
     """
     table = pension_savings.Data.lapse_table()
-    assert set(table.index.get_level_values(0)) == {"pension", "savings"}
-    assert set(table.index.get_level_values(1)) == {"premium_paying", "paid_up",
-                                                    "in_payment"}
+    assert set(table.index.get_level_values(0)) == {LapseBasis.pension, LapseBasis.savings}
+    assert set(table.index.get_level_values(1)) == {Segment.premium_paying, Segment.paid_up,
+                                                    Segment.in_payment}
     assert all("[std]" in v or "[S" in v for v in table["provenance"])
     pension = pension_savings.Projection[1]
     savings = pension_savings.Projection[5]
-    assert pension.lapse_basis() == "pension" and savings.lapse_basis() == "savings"
+    assert pension.lapse_basis() == LapseBasis.pension and savings.lapse_basis() == LapseBasis.savings
     assert [pension.lapse_rate(12 * y) for y in (0, 1, 2, 3, 5, 10)] == pytest.approx(
         [0.040, 0.035, 0.030, 0.025, 0.020, 0.015], abs=RATE)
     assert [savings.lapse_rate(12 * y) for y in (0, 1, 2, 3, 5)] == pytest.approx(
@@ -2276,20 +2277,20 @@ def test_the_mortality_table_is_a_construction_that_ships_its_own_recipe(
     a = kr_pension_anchor
     assert a.check_mort_law() is True
     for x in (40, 65, 90):
-        assert a.mort_rate_at_age("annuitant_issue", x) == pytest.approx(
-            a.mort_rate_law("annuitant_issue", x), abs=1e-15)
-    assert a.mort_anchor("annuitant_issue", "age_setback") == 0
-    assert a.mort_anchor("annuitant_issue", "improve_factor") == 1.0
-    assert a.mort_anchor("annuitant_revised", "improve_factor") == pytest.approx(
+        assert a.mort_rate_at_age(MortTable.annuitant_issue, x) == pytest.approx(
+            a.mort_rate_law(MortTable.annuitant_issue, x), abs=1e-15)
+    assert a.mort_anchor(MortTable.annuitant_issue, AnchorItem.age_setback) == 0
+    assert a.mort_anchor(MortTable.annuitant_issue, AnchorItem.improve_factor) == 1.0
+    assert a.mort_anchor(MortTable.annuitant_revised, AnchorItem.improve_factor) == pytest.approx(
         0.85, abs=1e-12)
-    assert a.omega_age("annuitant_issue") == 120
+    assert a.omega_age(MortTable.annuitant_issue) == 120
     female = pension_savings.Projection[2]
-    assert female.mort_anchor("annuitant_issue", "age_setback") == 4
-    assert female.mort_rate_at_age("annuitant_issue", 65) == pytest.approx(
-        a.mort_rate_at_age("annuitant_issue", 61), abs=1e-12)
+    assert female.mort_anchor(MortTable.annuitant_issue, AnchorItem.age_setback) == 4
+    assert female.mort_rate_at_age(MortTable.annuitant_issue, 65) == pytest.approx(
+        a.mort_rate_at_age(MortTable.annuitant_issue, 61), abs=1e-12)
     table = pension_savings.Data.mort_table()
-    assert set(table.index.get_level_values(0)) == {"annuitant_issue",
-                                                    "annuitant_revised"}
+    assert set(table.index.get_level_values(0)) == {MortTable.annuitant_issue,
+                                                    MortTable.annuitant_revised}
     assert all("[std]" in v for v in table["provenance"])
 
 
@@ -2314,16 +2315,16 @@ def test_the_construction_reproduces_the_longevity_the_illustration_implies(
             total += survivors
         return total
 
-    male = curtate(kr_pension_anchor, "annuitant_issue", 65)
-    female = curtate(pension_savings.Projection[2], "annuitant_issue", 65)
+    male = curtate(kr_pension_anchor, MortTable.annuitant_issue, 65)
+    female = curtate(pension_savings.Projection[2], MortTable.annuitant_issue, 65)
     assert male == pytest.approx(33.31, abs=0.005)
     assert female == pytest.approx(36.97, abs=0.005)
     assert female - male == pytest.approx(3.66, abs=0.005)
     assert male > 23.7          # the published 제10회 65세 기대여명, and not this table
     # The fitted law is honest about missing the published rates it was fitted to.
-    assert kr_pension_anchor.mort_rate_at_age("annuitant_issue", 70) / 0.00291 == (
+    assert kr_pension_anchor.mort_rate_at_age(MortTable.annuitant_issue, 70) / 0.00291 == (
         pytest.approx(1.30, abs=0.005))
-    assert kr_pension_anchor.mort_rate_at_age("annuitant_issue", 80) / 0.01346 == (
+    assert kr_pension_anchor.mort_rate_at_age(MortTable.annuitant_issue, 80) / 0.01346 == (
         pytest.approx(0.72, abs=0.005))
 
 

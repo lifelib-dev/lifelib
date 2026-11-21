@@ -109,8 +109,9 @@ def mort_table():
     27.060 — and the insurance basis is that curve at ``mu / 0.80``.  The 경험생명표 qx
     table is **not published** [REG-R34]; this file must never be presented as it.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file, index_col=["sex", "age"])     # noqa: F821
+    frame = pd.read_csv(input_dir() / mort_table_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"])
 
 
 def lapse_table():
@@ -122,7 +123,7 @@ def lapse_table():
     figure for this product — 「변액보험의 7년 평균 유지율은 30% 미만」, itself
     second-hand inside [R1].
     """
-    return pd.read_csv(input_dir() / lapse_table_file)               # noqa: F821
+    return pd.read_csv(input_dir() / lapse_table_file, index_col="dur_from")             # noqa: F821
 
 
 def fund_table():
@@ -134,8 +135,11 @@ def fund_table():
     shipped sit exactly on the three rungs of the mandatory 채권형 ladder [S1] [R1],
     ``asset_class`` naming which fund the floor is measured on.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / fund_file, index_col=["fund_set", "fund_id"])  # noqa: F821
+    frame = pd.read_csv(input_dir() / fund_file)                     # noqa: F821
+    frame["fund_set"] = [FundSet[name] for name in frame["fund_set"]]
+    frame["asset_class"] = pd.Series([AssetClass[name] for name in frame["asset_class"]], index=frame.index,
+                                     dtype=object)
+    return frame.set_index(["fund_set", "fund_id"])
 
 
 def charge_table():
@@ -147,8 +151,9 @@ def charge_table():
     expenses live here too, so that every parameter with a provenance is in a file that
     carries one.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / charge_file, index_col="line")                 # noqa: F821
+    frame = pd.read_csv(input_dir() / charge_file)                     # noqa: F821
+    frame["line"] = [ChargeLine[name] for name in frame["line"]]
+    return frame.set_index("line")
 
 
 def risk_prem_table():
@@ -159,7 +164,7 @@ def risk_prem_table():
     or below the attained age.  The published band is 0.004%–0.011% (₩12–₩32 a month on
     the anchor cell) [S2] [S4]; the grading across it by age is **[std]**.
     """
-    return pd.read_csv(input_dir() / risk_prem_file)                 # noqa: F821
+    return pd.read_csv(input_dir() / risk_prem_file, index_col="age_from")             # noqa: F821
 
 
 def return_scenario():
@@ -172,9 +177,9 @@ def return_scenario():
     scenarios are shipped, the base one and the two other returns a Korean variable
     illustration must show [R2] [REG-R48].
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / return_scenario_file,                          # noqa: F821
-        index_col=["scenario_id", "fund_id"])
+    frame = pd.read_csv(input_dir() / return_scenario_file)                     # noqa: F821
+    frame["scenario_id"] = [Scenario[name] for name in frame["scenario_id"]]
+    return frame.set_index(["scenario_id", "fund_id"])
 
 
 def crediting_table():
@@ -187,7 +192,9 @@ def crediting_table():
     ``Max[공시이율, 최저보증이율]`` resolves to the floor and the ladder is exercised by a
     shipped model point.
     """
-    return pd.read_csv(input_dir() / crediting_file)                 # noqa: F821
+    frame = pd.read_csv(input_dir() / crediting_file)                     # noqa: F821
+    frame["basis"] = [CreditingBasis[name] for name in frame["basis"]]
+    return frame.set_index(["basis", "dur_from"])
 
 
 # ---------------------------------------------------------------------------
@@ -210,3 +217,15 @@ return_scenario_file = "return_scenario.csv"
 crediting_file = "crediting_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+FundSet = ("Pickle", 2)
+
+Scenario = ("Pickle", 3)
+
+CreditingBasis = ("Pickle", 4)
+
+AssetClass = ("Pickle", 5)
+
+ChargeLine = ("Pickle", 6)

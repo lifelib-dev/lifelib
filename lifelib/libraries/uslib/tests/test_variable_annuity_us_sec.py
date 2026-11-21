@@ -220,7 +220,8 @@ from sec_support import (
     GENERATED_COLUMNS, SEC_SPECS, TWIN_EXEMPT_DEFAULT, build_sec_table, check_generated,
     codes, compiled_case, compiled_mismatches, exact_here, fingerprint_mismatches,
     frame_mismatches, reporting_cells, run_compiled, sweep, temp_inputs, twin_mismatches)
-from us_registry import model_path, point_keys, projection
+from released_twins import read_released_twin, sec_test_model_path as model_path
+from us_registry import point_keys, projection
 
 SEC, TWIN, TABLE = "VA_US_SEC", "VA_US_S", "model_point_table_sec.csv"
 RETURNS, RATES = "return_scenario_sec.csv", "rate_scenario_sec.csv"
@@ -1618,7 +1619,7 @@ def s_model():
     compared with S frame by frame and in every cell the reports read.  The swept model is
     then frozen out of the collector (:func:`_freeze`).
     """
-    model = _read(model_path(TWIN), "s")
+    model = read_released_twin(TWIN, model_name=_name("s"))
     for key in point_keys(model):
         sweep(projection(model, key))
     _freeze()
@@ -6842,7 +6843,7 @@ def test_an_in_force_extract_needs_none_of_the_generator_columns(sec_model, tmp_
     out, base = _run_sec(runner, "101").splitlines(), committed_runs().splitlines()
     assert out[0] == "model point 101: VA-000001 - M60 NQ single life, premium 100,000"
     assert out[1:] == base[1:]
-    labels = [100 + p for p in reversed(committed.index)]
+    labels = [100 + int(p) for p in reversed(committed.index)]
     for label in ("1", "x"):
         refused = _run_sec(runner, label, check=False)
         assert refused.returncode == 1 and refused.stdout == b"", label

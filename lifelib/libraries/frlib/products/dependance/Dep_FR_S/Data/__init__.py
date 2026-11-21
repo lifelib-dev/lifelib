@@ -104,9 +104,9 @@ def mort_table():
     TH 00-02 / TF 00-02 or of TGH05 / TGF05, which are cited by name and arrêté in the
     technical notes and are not reproduced by this library.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file,                               # noqa: F821
-        index_col=["sex", "age"]).sort_index()
+    frame = pd.read_csv(input_dir() / mort_table_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"]).sort_index()
 
 
 def prevalence_table():
@@ -125,9 +125,10 @@ def prevalence_table():
     elsewhere — :func:`severity_share_table` for the first and
     ``Projection.inc_rate_partial`` for the second.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / prevalence_file,                               # noqa: F821
-        index_col=["sex", "param"]).sort_index()
+    frame = pd.read_csv(input_dir() / prevalence_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    frame["param"] = [PrevParam[name] for name in frame["param"]]
+    return frame.set_index(["sex", "param"]).sort_index()
 
 
 def severity_share_table():
@@ -141,9 +142,9 @@ def severity_share_table():
     and the ``avq6`` and ``aggir`` rows are flat factors on it that **no retrieved
     document supports at all**.  The ``provenance`` column says which is which.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / severity_share_file,                           # noqa: F821
-        index_col="trigger_grid")
+    frame = pd.read_csv(input_dir() / severity_share_file)                     # noqa: F821
+    frame["trigger_grid"] = [TriggerGrid[name] for name in frame["trigger_grid"]]
+    return frame.set_index("trigger_grid")
 
 
 def lapse_table():
@@ -169,8 +170,9 @@ def cause_mix_table():
     model point's own three *carence* lengths, so a contract with a different menu
     changes the model point and not this file.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / cause_mix_file, index_col="cause")             # noqa: F821
+    frame = pd.read_csv(input_dir() / cause_mix_file)                     # noqa: F821
+    frame["cause"] = [Cause[name] for name in frame["cause"]]
+    return frame.set_index("cause")
 
 
 def reduction_table():
@@ -222,3 +224,11 @@ reduction_file = "reduction_table.csv"
 revision_file = "revision_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+PrevParam = ("Pickle", 2)
+
+TriggerGrid = ("Pickle", 3)
+
+Cause = ("Pickle", 4)

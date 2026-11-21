@@ -70,6 +70,7 @@ import pytest
 from modelx.core.errors import FormulaError
 
 from kr_registry import LIB, MODELS
+from lifelib.libraries.krlib.products.child.enums import BasisParam, Cover, CvForm, Kind, LapseBasis, NeoTiming, PolTiming, Sex
 
 MODEL_DIR = LIB / MODELS["Child_KR_S"][0]
 CSV_DIR = MODEL_DIR.parent
@@ -394,17 +395,17 @@ NEONATAL_BLOCK = 63450.0
 # The incidence assumptions the notes tabulate for the first eighteen months, at 만나이 0
 # and 1, male.  Every one of them is [std] save the 만나이 5 disability anchor.
 INCIDENCE_AT_0_AND_1 = {
-    "disability": (0.000100265, 0.00012761),
-    "disease_disab": (0.0026, 0.0009),
-    "cancer": (0.00018, 0.00015),
-    "minor_cancer": (0.00003, 0.000025),
-    "cerebral": (0.00004, 0.000012),
-    "cardiac": (0.000002, 0.000001),
-    "fracture": (0.004, 0.009),
-    "burn": (0.006, 0.005),
-    "hosp_acc": (0.10, 0.13),
-    "hosp_dis": (2.40, 1.10),
-    "liability": (0.004, 0.006),
+    Cover.disability: (0.000100265, 0.00012761),
+    Cover.disease_disab: (0.0026, 0.0009),
+    Cover.cancer: (0.00018, 0.00015),
+    Cover.minor_cancer: (0.00003, 0.000025),
+    Cover.cerebral: (0.00004, 0.000012),
+    Cover.cardiac: (0.000002, 0.000001),
+    Cover.fracture: (0.004, 0.009),
+    Cover.burn: (0.006, 0.005),
+    Cover.hosp_acc: (0.10, 0.13),
+    Cover.hosp_dis: (2.40, 1.10),
+    Cover.liability: (0.004, 0.006),
 }
 
 # 일반상해 후유장해 발생률(3~100%), 기본계약, 5세, 상해 1급 [S1] — the only 적용위험률
@@ -426,8 +427,8 @@ CAUSES = ("disability", "disease_disab", "cancer", "minor_cancer", "cerebral",
 BENEFIT_KINDS = ("DISABILITY", "DIAGNOSIS", "SURGERY", "HOSPITAL", "EVENT",
                  "LIABILITY", "NEONATAL")
 
-CHILD_LIFE_KINDS = ("DISABILITY", "DIAGNOSIS", "SURGERY", "HOSPITAL", "EVENT",
-                    "LIABILITY", "DEATH")
+CHILD_LIFE_KINDS = (Kind.DISABILITY, Kind.DIAGNOSIS, Kind.SURGERY, Kind.HOSPITAL, Kind.EVENT,
+                    Kind.LIABILITY, Kind.DEATH)
 
 INPUT_CSVS = {"model_point_table.csv", "mort_table.csv", "incidence_table.csv",
               "basis_table.csv", "neonatal_table.csv", "lapse_table.csv",
@@ -448,7 +449,7 @@ def test_the_anchor_cell_is_the_one_the_notes_describe(kr_child_anchor):
     """
     a = kr_child_anchor
     assert a.policy_id() == "CH-KR-0001"
-    assert a.sex() == "M" and a.payer_sex() == "M"
+    assert a.sex() == Sex.M and a.payer_sex() == Sex.M
     assert a.foetal() is True and a.birth_month() == 5
     assert a.issue_age() == 0 and a.issue_age_man() == 0
     assert a.term_age() == 100 and a.proj_len() == 1201
@@ -456,21 +457,21 @@ def test_the_anchor_cell_is_the_one_the_notes_describe(kr_child_anchor):
     assert a.prem_end() == 239
     assert a.premium_mth() == 28000.0 and a.premium_foetal_mth() == 3000.0
     assert a.foetal_cover_end() == 17 and a.foetal_prem_end() == 16
-    assert a.cv_form() == "std" and a.cv_floor_ratio() == 1.0
+    assert a.cv_form() == CvForm.std and a.cv_floor_ratio() == 1.0
     assert a.waiver_child() is True and a.waiver_payer() is True
     assert a.payer_age() == 33
     assert a.waiting_mths() == 0 and a.reduction_mths() == 0
     assert a.broad_def() is False
     assert a.prem_discount_rate() == 0.0 and a.prem_discount_mths() == 0
-    assert a.lapse_basis() == "loglinear" and a.mort_be_factor() == 1.0
+    assert a.lapse_basis() == LapseBasis.loglinear and a.mort_be_factor() == 1.0
     assert a.pols_if_init() == 1.0
     assert a.hosp_daily() == 40000.0
-    for cover, amount in (("disability", 100000000.0), ("disease_disab", 10000000.0),
-                          ("cancer", 10000000.0), ("minor_cancer", 2000000.0),
-                          ("cerebral", 10000000.0), ("cardiac", 10000000.0),
-                          ("surgery", 5000000.0), ("fracture", 400000.0),
-                          ("burn", 200000.0), ("liability", 100000000.0),
-                          ("neonatal", 10000000.0)):
+    for cover, amount in ((Cover.disability, 100000000.0), (Cover.disease_disab, 10000000.0),
+                          (Cover.cancer, 10000000.0), (Cover.minor_cancer, 2000000.0),
+                          (Cover.cerebral, 10000000.0), (Cover.cardiac, 10000000.0),
+                          (Cover.surgery, 5000000.0), (Cover.fracture, 400000.0),
+                          (Cover.burn, 200000.0), (Cover.liability, 100000000.0),
+                          (Cover.neonatal, 10000000.0)):
         assert a.sum_assured(cover) == amount, cover
 
 
@@ -561,7 +562,7 @@ def test_the_assumption_table_the_first_eighteen_months_use(kr_child_anchor):
     row of the worked example and being explained away as a rounding difference.
     """
     a = kr_child_anchor
-    assert a.basis_param("void_rate_ann") == 0.012
+    assert a.basis_param(BasisParam.void_rate_ann) == 0.012
     assert a.void_rate_mth(0) == pytest.approx(0.0010055425391276573, rel=TRACE)
     assert a.void_rate_mth(5) == 0.0                       # from birth, there is no void
     assert a.mort_rate(4) == 0.0                           # a 태아 has no mortality [R3]
@@ -571,7 +572,7 @@ def test_the_assumption_table_the_first_eighteen_months_use(kr_child_anchor):
     assert a.mort_rate_mth(17) == pytest.approx(0.00002083572086741814, rel=TRACE)
     assert a.mort_rate_payer(0) == pytest.approx(0.00067713, rel=TRACE)
     assert a.mort_rate_payer(12) == pytest.approx(0.00072573, rel=TRACE)
-    assert a.basis_param("payer_disab_ratio") == 0.25
+    assert a.basis_param(BasisParam.payer_disab_ratio) == 0.25
     assert a.waiver_rate_payer(0) == pytest.approx(0.00067713 * 1.25, rel=TRACE)
     assert a.waiver_rate_mth(0) == pytest.approx(0.00007056175284536614, rel=TRACE)
     assert a.waiver_rate_child(16) == 0.0                  # the P코드 carve-out [S2]
@@ -581,16 +582,16 @@ def test_the_assumption_table_the_first_eighteen_months_use(kr_child_anchor):
     for cause, (at_zero, at_one) in INCIDENCE_AT_0_AND_1.items():
         assert a.inc_rate(5, cause) == pytest.approx(at_zero, rel=1e-12), cause
         assert a.inc_rate(17, cause) == pytest.approx(at_one, rel=1e-12), cause
-    assert a.basis_param("disab_severity") == 0.12
-    assert a.basis_param("disease_disab_severity") == 0.15
-    assert a.basis_param("surgery_rate_cancer") == 0.85
-    assert a.basis_param("surgery_rate_cerebral") == 0.50
-    assert a.basis_param("surgery_rate_cardiac") == 0.70
-    assert a.basis_param("hosp_cap_factor") == 0.92
-    assert a.basis_param("liability_severity") == 600000.0
-    assert a.basis_param("leak_share") == 0.40
-    assert a.neonatal_cost_pp("birth") == NEONATAL_BIRTH
-    assert a.neonatal_cost_pp("block") == NEONATAL_BLOCK
+    assert a.basis_param(BasisParam.disab_severity) == 0.12
+    assert a.basis_param(BasisParam.disease_disab_severity) == 0.15
+    assert a.basis_param(BasisParam.surgery_rate_cancer) == 0.85
+    assert a.basis_param(BasisParam.surgery_rate_cerebral) == 0.50
+    assert a.basis_param(BasisParam.surgery_rate_cardiac) == 0.70
+    assert a.basis_param(BasisParam.hosp_cap_factor) == 0.92
+    assert a.basis_param(BasisParam.liability_severity) == 600000.0
+    assert a.basis_param(BasisParam.leak_share) == 0.40
+    assert a.neonatal_cost_pp(NeoTiming.birth) == NEONATAL_BIRTH
+    assert a.neonatal_cost_pp(NeoTiming.block) == NEONATAL_BLOCK
     assert a.acq_cost_pp() == pytest.approx(ACQ_COST, rel=TRACE)
     assert a.comm_init_pp() == pytest.approx(COMM_INIT, rel=TRACE)
 
@@ -604,16 +605,16 @@ def test_the_one_published_korean_child_morbidity_rate_reproduces_exactly(
     a reader can look up.  It must come back to its last digit — which it does only
     because the graduation short-circuits at a pivot rather than interpolating through it.
     """
-    assert kr_child_anchor.inc_rate_at(5, "disability") == \
+    assert kr_child_anchor.inc_rate_at(5, Cover.disability) == \
         PUBLISHED_DISABILITY_RATE["M"]
     female = child.Projection[3]
-    assert female.sex() == "F"
-    assert female.inc_rate_at(5, "disability") == PUBLISHED_DISABILITY_RATE["F"]
+    assert female.sex() == Sex.F
+    assert female.inc_rate_at(5, Cover.disability) == PUBLISHED_DISABILITY_RATE["F"]
     # And it reaches the projection unaltered: model point 2 is a male 보험나이 5 issue,
     # so the rate at t = 0 is the published one and nothing has been applied to it.
     male_five = child.Projection[2]
     assert male_five.issue_age() == 5 and male_five.age_man(0) == 5
-    assert male_five.inc_rate(0, "disability") == PUBLISHED_DISABILITY_RATE["M"]
+    assert male_five.inc_rate(0, Cover.disability) == PUBLISHED_DISABILITY_RATE["M"]
 
 
 def test_worked_example_month_zero_trace(kr_child_anchor):
@@ -632,12 +633,12 @@ def test_worked_example_month_zero_trace(kr_child_anchor):
         assert a.claims(0, kind) == 0.0, kind
     assert a.cum_prem_pp(0) == 0.0 and a.prem_foetal_paid_pp(0) == 0.0
     assert a.pols_void(0) == pytest.approx(0.0010055425391276573, rel=TRACE)
-    assert a.claims(0, "VOID") == 0.0
+    assert a.claims(0, Kind.VOID) == 0.0
     assert a.unearned_prem_pp(0) == 0.5 * 31000.0
     assert a.cv_pp(0) == 0.0
-    assert a.claims(0, "LAPSE") == pytest.approx(
+    assert a.claims(0, Kind.LAPSE) == pytest.approx(
         15500.0 * 0.004260729152353977, rel=TRACE)
-    assert a.claims(0, "LAPSE") == pytest.approx(66.0413018615, abs=CASH)
+    assert a.claims(0, Kind.LAPSE) == pytest.approx(66.0413018615, abs=CASH)
     assert a.claim_expenses(0) == pytest.approx(
         30000.0 * (0.0 + 0.0 + 0.0010055425391276573), rel=TRACE)
     assert a.expenses(0) == pytest.approx(
@@ -689,46 +690,46 @@ def test_worked_example_month_five_trace(kr_child_anchor):
     assert a.premiums(5) == pytest.approx(31000.0 * a.pols_pay(5), rel=TRACE)
     assert a.premiums(5) == pytest.approx(30202.6241744982, abs=CASH)
 
-    assert a.benefit_pp(5, "DISABILITY") == pytest.approx(
+    assert a.benefit_pp(5, Kind.DISABILITY) == pytest.approx(
         100000000.0 * 0.12 * 0.000008355800662718238
         + 10000000.0 * 0.15 * 0.00021692529081551726, rel=TRACE)
-    assert a.benefit_pp(5, "DISABILITY") == pytest.approx(425.6575441759, abs=CASH)
-    assert a.benefit_pp(5, "DIAGNOSIS") == pytest.approx(190.0130578292, abs=CASH)
-    assert a.benefit_pp(5, "SURGERY") == pytest.approx(
+    assert a.benefit_pp(5, Kind.DISABILITY) == pytest.approx(425.6575441759, abs=CASH)
+    assert a.benefit_pp(5, Kind.DIAGNOSIS) == pytest.approx(190.0130578292, abs=CASH)
+    assert a.benefit_pp(5, Kind.SURGERY) == pytest.approx(
         5000000.0 * (0.85 * 0.000015001237642309206
                      + 0.50 * 0.0000033333944460256504
                      + 0.70 * 0.00000016666681945665118), rel=TRACE)
-    assert a.benefit_pp(5, "SURGERY") == pytest.approx(72.6720799630, abs=CASH)
-    assert a.benefit_pp(5, "HOSPITAL") == pytest.approx(
+    assert a.benefit_pp(5, Kind.SURGERY) == pytest.approx(72.6720799630, abs=CASH)
+    assert a.benefit_pp(5, Kind.HOSPITAL) == pytest.approx(
         40000.0 * (0.10 + 2.40) / 12.0 * 0.92, rel=TRACE)
-    assert a.benefit_pp(5, "HOSPITAL") == pytest.approx(7666.6666666667, abs=CASH)
-    assert a.benefit_pp(5, "EVENT") == pytest.approx(
+    assert a.benefit_pp(5, Kind.HOSPITAL) == pytest.approx(7666.6666666667, abs=CASH)
+    assert a.benefit_pp(5, Kind.EVENT) == pytest.approx(
         400000.0 * 0.0003339460107422143
         + 200000.0 * 0.0005013802940021517, rel=TRACE)
-    assert a.benefit_pp(5, "LIABILITY") == pytest.approx(
+    assert a.benefit_pp(5, Kind.LIABILITY) == pytest.approx(
         0.0003339460107422143 * 600000.0, rel=TRACE)
-    assert a.benefit_pp(5, "NEONATAL") == pytest.approx(
+    assert a.benefit_pp(5, Kind.NEONATAL) == pytest.approx(
         NEONATAL_BIRTH + NEONATAL_BLOCK / 12.0, rel=TRACE)
-    assert a.benefit_pp(5, "NEONATAL") == 52287.5
+    assert a.benefit_pp(5, Kind.NEONATAL) == 52287.5
 
     # and the weighting by l(5) is what produces the row of the table
-    for kind, weighted in (("DISABILITY", 414.8570184264),
-                           ("DIAGNOSIS", 185.1917150575),
-                           ("SURGERY", 70.8281171773),
-                           ("HOSPITAL", 7472.1346258759),
-                           ("EVENT", 227.9206997120),
-                           ("LIABILITY", 195.2835300031),
-                           ("NEONATAL", 50960.7703370201)):
+    for kind, weighted in ((Kind.DISABILITY, 414.8570184264),
+                           (Kind.DIAGNOSIS, 185.1917150575),
+                           (Kind.SURGERY, 70.8281171773),
+                           (Kind.HOSPITAL, 7472.1346258759),
+                           (Kind.EVENT, 227.9206997120),
+                           (Kind.LIABILITY, 195.2835300031),
+                           (Kind.NEONATAL, 50960.7703370201)):
         assert a.claims(5, kind) == pytest.approx(
             a.benefit_pp(5, kind) * a.pols_if(5), rel=TRACE), kind
         assert a.claims(5, kind) == pytest.approx(weighted, abs=CASH), kind
 
     assert a.av_pp(5) == 105000.0 and a.unearned_prem_pp(5) == 15500.0
-    assert a.claims(5, "DEATH") == pytest.approx(
+    assert a.claims(5, Kind.DEATH) == pytest.approx(
         120500.0 * 0.00020328016703563597, rel=TRACE)
-    assert a.claims(5, "LAPSE") == pytest.approx(
+    assert a.claims(5, Kind.LAPSE) == pytest.approx(
         15500.0 * 0.003822143851874877, rel=TRACE)
-    assert a.claims(5, "VOID") == 0.0
+    assert a.claims(5, Kind.VOID) == 0.0
     assert a.claim_expenses(5) == pytest.approx(
         30000.0 * (0.0014155547402482371 * a.pols_if(5)
                    + 0.00020328016703563597), rel=TRACE)
@@ -747,9 +748,10 @@ def test_the_neonatal_module_is_most_of_the_month_of_birth(kr_child_anchor):
     strain and leave the rest of the table looking right.
     """
     a = kr_child_anchor
-    morbidity = sum(a.claims(5, k) for k in BENEFIT_KINDS)
+    morbidity = sum(a.claims(5, k) for k in (Kind.DISABILITY, Kind.DIAGNOSIS, Kind.SURGERY, Kind.HOSPITAL,
+                                             Kind.EVENT, Kind.LIABILITY, Kind.NEONATAL))
     assert morbidity == pytest.approx(59526.9860432723, abs=CASH)
-    assert a.claims(5, "NEONATAL") / morbidity == pytest.approx(0.8561, abs=5e-5)
+    assert a.claims(5, Kind.NEONATAL) / morbidity == pytest.approx(0.8561, abs=5e-5)
 
 
 def test_worked_example_month_seventeen_trace(kr_child_anchor):
@@ -766,22 +768,22 @@ def test_worked_example_month_seventeen_trace(kr_child_anchor):
     assert a.premium_mth_pp(17) == 28000.0
     assert a.premiums(17) == pytest.approx(28000.0 * a.pols_pay(17), rel=TRACE)
     assert a.premiums(17) == pytest.approx(26040.4215845963, abs=CASH)
-    assert a.benefit_pp(17, "HOSPITAL") == pytest.approx(
+    assert a.benefit_pp(17, Kind.HOSPITAL) == pytest.approx(
         40000.0 * (0.13 + 1.10) / 12.0 * 0.92, rel=TRACE)
-    assert a.benefit_pp(17, "HOSPITAL") == pytest.approx(3772.0, abs=CASH)
-    assert a.benefit_pp(17, "HOSPITAL") < 0.5 * a.benefit_pp(16, "HOSPITAL") * 1.02
-    assert a.benefit_pp(17, "EVENT") == pytest.approx(384.7695804916, abs=CASH)
-    assert a.benefit_pp(17, "EVENT") > a.benefit_pp(16, "EVENT")
-    assert a.benefit_pp(17, "LIABILITY") == pytest.approx(300.8281764013, abs=CASH)
-    assert a.benefit_pp(17, "LIABILITY") > a.benefit_pp(16, "LIABILITY")
-    assert a.benefit_pp(17, "NEONATAL") == 0.0
+    assert a.benefit_pp(17, Kind.HOSPITAL) == pytest.approx(3772.0, abs=CASH)
+    assert a.benefit_pp(17, Kind.HOSPITAL) < 0.5 * a.benefit_pp(16, Kind.HOSPITAL) * 1.02
+    assert a.benefit_pp(17, Kind.EVENT) == pytest.approx(384.7695804916, abs=CASH)
+    assert a.benefit_pp(17, Kind.EVENT) > a.benefit_pp(16, Kind.EVENT)
+    assert a.benefit_pp(17, Kind.LIABILITY) == pytest.approx(300.8281764013, abs=CASH)
+    assert a.benefit_pp(17, Kind.LIABILITY) > a.benefit_pp(16, Kind.LIABILITY)
+    assert a.benefit_pp(17, Kind.NEONATAL) == 0.0
     assert a.unearned_prem_pp(17) == 14000.0
     assert a.av_pp(17) == pytest.approx(335553.3333333334, rel=TRACE)
-    assert a.claims(17, "DEATH") == pytest.approx(
+    assert a.claims(17, Kind.DEATH) == pytest.approx(
         349553.3333333334 * 0.000019402056913845515, rel=TRACE)
-    assert a.claims(17, "DEATH") == pytest.approx(6.7820536678, abs=CASH)
+    assert a.claims(17, Kind.DEATH) == pytest.approx(6.7820536678, abs=CASH)
     assert a.cv_pp(17) == pytest.approx(45220.0, abs=CASH)
-    assert a.claims(17, "LAPSE") == pytest.approx(
+    assert a.claims(17, Kind.LAPSE) == pytest.approx(
         59220.0 * 0.002989151566722004, rel=TRACE)
     assert a.expenses(17) == pytest.approx(
         400.0 * 1.028450933381417 * a.pols_if(17) + 0.05 * a.premiums(17), rel=TRACE)
@@ -812,9 +814,9 @@ def test_worked_example_month_two_hundred_and_forty_trace(kr_child_anchor):
     assert a.expenses(240) == pytest.approx(
         400.0 * 1.485947395978355 * a.pols_if(240), rel=TRACE)
     assert a.cv_pp(240) == 5550720.0
-    assert a.claims(240, "LAPSE") == pytest.approx(
+    assert a.claims(240, Kind.LAPSE) == pytest.approx(
         5550720.0 * 0.0004911440743415418, rel=TRACE)
-    assert a.claims(240, "DEATH") == pytest.approx(
+    assert a.claims(240, Kind.DEATH) == pytest.approx(
         5550720.0 * 0.000019143942790725917, rel=TRACE)
     assert a.net_cf(240) == pytest.approx(-6391.6508213043, abs=CASH)
 
@@ -823,7 +825,7 @@ def test_worked_example_month_two_hundred_and_forty_trace(kr_child_anchor):
     assert a.premiums(239) == pytest.approx(20562.2638448677, abs=CASH)
     assert a.commissions(239) == pytest.approx(616.8679153460, abs=CASH)
     assert a.expenses(239) - a.expenses(240) == pytest.approx(1027.41, abs=0.005)
-    assert a.claims(240, "LAPSE") - a.claims(239, "LAPSE") == pytest.approx(
+    assert a.claims(240, Kind.LAPSE) - a.claims(239, Kind.LAPSE) == pytest.approx(
         2381.77, abs=0.005)
 
 
@@ -1061,7 +1063,7 @@ def test_pitfall_cover_attaches_at_birth_and_not_at_the_contract_date(kr_child_a
         assert a.mort_rate(t) == 0.0 and a.mort_rate_mth(t) == 0.0
         for cause in CAUSES:
             assert a.inc_rate(t, cause) == 0.0, (t, cause)
-        for cover in ("cancer", "minor_cancer", "disability", "fracture"):
+        for cover in (Cover.cancer, Cover.minor_cancer, Cover.disability, Cover.fracture):
             assert a.cover_open(t, cover) == 0.0, (t, cover)
         for kind in CHILD_LIFE_KINDS:
             assert a.claims(t, kind) == 0.0, (t, kind)
@@ -1069,8 +1071,8 @@ def test_pitfall_cover_attaches_at_birth_and_not_at_the_contract_date(kr_child_a
         assert a.check_cover_at_birth_resid(t) == 0.0
     assert a.check_cover_at_birth() is True
     # and the rate that would have been used is the highest in the childhood range
-    assert a.inc_rate_at(0, "hosp_dis") == 2.40
-    assert all(a.inc_rate_at(x, "hosp_dis") < 2.40 for x in range(1, 56))
+    assert a.inc_rate_at(0, Cover.hosp_dis) == 2.40
+    assert all(a.inc_rate_at(x, Cover.hosp_dis) < 2.40 for x in range(1, 56))
 
 
 def test_pitfall_the_pre_birth_void_is_not_a_lapse(child, kr_child_anchor):
@@ -1084,10 +1086,10 @@ def test_pitfall_the_pre_birth_void_is_not_a_lapse(child, kr_child_anchor):
     a = kr_child_anchor
     assert a.cum_prem_pp(4) == 4 * 28000.0
     assert a.prem_foetal_paid_pp(4) == 4 * 3000.0
-    assert a.claims(4, "VOID") == pytest.approx(124000.0 * a.pols_void(4), rel=TRACE)
-    assert a.claims(4, "VOID") == pytest.approx(122.1329581771, abs=CASH)
+    assert a.claims(4, Kind.VOID) == pytest.approx(124000.0 * a.pols_void(4), rel=TRACE)
+    assert a.claims(4, Kind.VOID) == pytest.approx(122.1329581771, abs=CASH)
     assert a.cv_pp(4) == 0.0                      # nothing is retained and nothing paid
-    assert a.claims(4, "LAPSE") == pytest.approx(
+    assert a.claims(4, Kind.LAPSE) == pytest.approx(
         a.unearned_prem_pp(4) * a.pols_lapse(4), rel=TRACE)
     # the void is its own term of the roll-forward: drop it and the identity opens up
     residual = (a.pols_if(4) - a.pols_if(5) - a.pols_death(4) - a.pols_lapse(4)
@@ -1096,12 +1098,12 @@ def test_pitfall_the_pre_birth_void_is_not_a_lapse(child, kr_child_anchor):
     assert a.pols_void(4) > 0.0
     # and on a 무해지 point the refund is unchanged although the surrender value is nil
     susp = child.Projection[4]
-    assert susp.cv_form() == "susp" and susp.foetal() is True
+    assert susp.cv_form() == CvForm.susp and susp.foetal() is True
     assert susp.cv_pp(4) == 0.0 and susp.cv_pp(239) == 0.0
-    assert susp.claims(4, "VOID") == pytest.approx(
+    assert susp.claims(4, Kind.VOID) == pytest.approx(
         (susp.cum_prem_pp(4) + susp.prem_foetal_paid_pp(4)) * susp.pols_void(4),
         rel=TRACE)
-    assert susp.claims(4, "VOID") > 0.0
+    assert susp.claims(4, Kind.VOID) > 0.0
 
 
 def test_pitfall_the_two_ages_are_not_one_age(kr_child_anchor):
@@ -1125,9 +1127,9 @@ def test_pitfall_the_two_ages_are_not_one_age(kr_child_anchor):
             assert a.age_man(t) == (t - 5) // 12
             assert a.age(t) - a.age_man(t) in (0, 1)
     # the decrement tables are read at 만나이, never at 보험나이
-    assert a.mort_rate(12) == a.mort_rate_at_age(0, "M")   # 보험나이 1, 만나이 0
-    assert a.mort_rate(17) == a.mort_rate_at_age(1, "M")
-    assert a.mort_rate_at_age(0, "M") != a.mort_rate_at_age(1, "M")
+    assert a.mort_rate(12) == a.mort_rate_at_age(0, Sex.M)   # 보험나이 1, 만나이 0
+    assert a.mort_rate(17) == a.mort_rate_at_age(1, Sex.M)
+    assert a.mort_rate_at_age(0, Sex.M) != a.mort_rate_at_age(1, Sex.M)
 
 
 def test_pitfall_a_day_count_is_not_a_probability(kr_child_anchor):
@@ -1139,17 +1141,17 @@ def test_pitfall_a_day_count_is_not_a_probability(kr_child_anchor):
     of the infant day count is not even a real number.
     """
     a = kr_child_anchor
-    assert isinstance(a.inc_rate_mth(5, "hosp_dis"), complex)
-    assert a.inc_rate(5, "hosp_dis") == 2.40 > 1.0
+    assert isinstance(a.inc_rate_mth(5, Cover.hosp_dis), complex)
+    assert a.inc_rate(5, Cover.hosp_dis) == 2.40 > 1.0
     for t in (5, 17, 240, 1199):
-        days = (a.inc_rate(t, "hosp_acc") + a.inc_rate(t, "hosp_dis")) / 12.0
-        assert a.benefit_pp(t, "HOSPITAL") == pytest.approx(
-            a.hosp_daily() * days * a.basis_param("hosp_cap_factor"), rel=1e-14), t
+        days = (a.inc_rate(t, Cover.hosp_acc) + a.inc_rate(t, Cover.hosp_dis)) / 12.0
+        assert a.benefit_pp(t, Kind.HOSPITAL) == pytest.approx(
+            a.hosp_daily() * days * a.basis_param(BasisParam.hosp_cap_factor), rel=1e-14), t
     # the U-shape the notes describe: an infant peak, a childhood trough, old age
-    assert a.inc_rate_at(0, "hosp_dis") == 2.40
-    assert a.inc_rate_at(5, "hosp_dis") == 0.55
-    assert a.inc_rate_at(10, "hosp_dis") == 0.35
-    assert a.inc_rate_at(100, "hosp_dis") == 20.0
+    assert a.inc_rate_at(0, Cover.hosp_dis) == 2.40
+    assert a.inc_rate_at(5, Cover.hosp_dis) == 0.55
+    assert a.inc_rate_at(10, Cover.hosp_dis) == 0.35
+    assert a.inc_rate_at(100, Cover.hosp_dis) == 20.0
     assert 20.0 / 0.35 == pytest.approx(57.14, abs=0.01)
 
 
@@ -1167,22 +1169,22 @@ def test_pitfall_the_waiting_period_is_tested_at_the_contract_date(child,
     assert a.waiting_mths() == 0
     assert a.age(180) == 15                        # the anniversary a naive model uses
     for t in (5, 6, 179, 180, 181, 600, 1199):
-        assert a.cover_open(t, "cancer") == 1.0, t
-        assert a.cover_open(t, "minor_cancer") == 1.0, t
-    assert a.cover_open(1200, "cancer") == 0.0     # nothing is on risk at the 만기
+        assert a.cover_open(t, Cover.cancer) == 1.0, t
+        assert a.cover_open(t, Cover.minor_cancer) == 1.0, t
+    assert a.cover_open(1200, Cover.cancer) == 0.0     # nothing is on risk at the 만기
 
     older = child.Projection[7]
     assert older.issue_age() == 15 and older.waiting_mths() == 3
-    assert older.cover_open(0, "cancer") == 0.0
-    assert older.cover_open(2, "cancer") == 0.0
-    assert older.cover_open(3, "cancer") == 1.0
-    assert older.cover_open(2, "fracture") == 1.0  # only the cancer limbs are waiting
+    assert older.cover_open(0, Cover.cancer) == 0.0
+    assert older.cover_open(2, Cover.cancer) == 0.0
+    assert older.cover_open(3, Cover.cancer) == 1.0
+    assert older.cover_open(2, Cover.fracture) == 1.0  # only the cancer limbs are waiting
     assert older.reduction_factor(2) == 0.5
-    assert older.claims(2, "DIAGNOSIS") == pytest.approx(
-        (older.sum_assured("cerebral") * older.inc_rate_mth(2, "cerebral")
-         * older.frac_open(2, "cerebral")
-         + older.sum_assured("cardiac") * older.inc_rate_mth(2, "cardiac")
-         * older.frac_open(2, "cardiac"))
+    assert older.claims(2, Kind.DIAGNOSIS) == pytest.approx(
+        (older.sum_assured(Cover.cerebral) * older.inc_rate_mth(2, Cover.cerebral)
+         * older.frac_open(2, Cover.cerebral)
+         + older.sum_assured(Cover.cardiac) * older.inc_rate_mth(2, Cover.cardiac)
+         * older.frac_open(2, Cover.cardiac))
         * older.reduction_factor(2) * older.pols_if(2), rel=1e-12)
 
 
@@ -1203,7 +1205,7 @@ def test_pitfall_a_foetal_contract_carries_no_reduction_period(child, tmp_path):
         assert int(a.model_point()["reduction_mths"]) == 12
         assert a.reduction_mths() == 0
         assert a.reduction_factor(0) == 1.0 and a.reduction_factor(11) == 1.0
-        assert a.claims(5, "DIAGNOSIS") == pytest.approx(185.1917150575, abs=CASH)
+        assert a.claims(5, Kind.DIAGNOSIS) == pytest.approx(185.1917150575, abs=CASH)
     finally:
         edited.close()
 
@@ -1251,8 +1253,8 @@ def test_pitfall_the_policyholder_is_a_decrement_and_not_a_benefit(child,
     assert a.waiver_payer() is True
     assert a.waiver_rate_payer(0) == pytest.approx(
         a.mort_rate_payer(0) * 1.25, rel=TRACE)
-    assert a.mort_rate_payer(0) == a.mort_rate_at_age(33, "M")
-    assert a.mort_rate_payer(240) == a.mort_rate_at_age(53, "M")
+    assert a.mort_rate_payer(0) == a.mort_rate_at_age(33, Sex.M)
+    assert a.mort_rate_payer(240) == a.mort_rate_at_age(53, Sex.M)
     with pytest.raises(FormulaError):
         a.claims(100, "PAYER")
     with pytest.raises(FormulaError):
@@ -1310,7 +1312,7 @@ def test_pitfall_the_waived_compartment_is_not_exposed_to_lapse(kr_child_anchor)
                 - a.pols_waiver_entry(t)) * (1.0 - a.mort_rate_mth(t))
         assert a.pols_lapse(t) == pytest.approx(
             base * a.lapse_rate_mth(t), rel=1e-14), t
-        whole_block = a.pols_if_at(t, "BEF_LAPSE") * a.lapse_rate_mth(t)
+        whole_block = a.pols_if_at(t, PolTiming.BEF_LAPSE) * a.lapse_rate_mth(t)
         assert a.pols_lapse(t) < whole_block, t
         assert a.pols_waived(t) > 0.0
     assert a.check_waiver_split() is True
@@ -1327,20 +1329,20 @@ def test_pitfall_the_basic_cover_is_a_percentage_scale_not_a_lump_sum(kr_child_a
     """
     a = kr_child_anchor
     n = a.proj_len() - 1        # the terminal row carries no benefit; sum the term itself
-    sev = a.basis_param("disab_severity")
+    sev = a.basis_param(BasisParam.disab_severity)
     assert sev == 0.12
-    accident = sum(a.sum_assured("disability") * sev * a.inc_rate_mth(t, "disability")
+    accident = sum(a.sum_assured(Cover.disability) * sev * a.inc_rate_mth(t, Cover.disability)
                    * a.pols_if(t) for t in range(0, n))
-    lump = sum(a.sum_assured("disability") * 1.0 * a.inc_rate_mth(t, "disability")
+    lump = sum(a.sum_assured(Cover.disability) * 1.0 * a.inc_rate_mth(t, Cover.disability)
                * a.pols_if(t) for t in range(0, n))
     assert accident == pytest.approx(555177.98, abs=WON)
     assert lump == pytest.approx(4626483.18, abs=WON)
     assert lump / accident == pytest.approx(8.33, abs=0.005)
     # the disease twin sits beside it on its own severity
-    assert a.benefit_pp(100, "DISABILITY") == pytest.approx(
-        a.sum_assured("disability") * sev * a.inc_rate_mth(100, "disability")
-        + a.sum_assured("disease_disab") * a.basis_param("disease_disab_severity")
-        * a.inc_rate_mth(100, "disease_disab"), rel=1e-14)
+    assert a.benefit_pp(100, Kind.DISABILITY) == pytest.approx(
+        a.sum_assured(Cover.disability) * sev * a.inc_rate_mth(100, Cover.disability)
+        + a.sum_assured(Cover.disease_disab) * a.basis_param(BasisParam.disease_disab_severity)
+        * a.inc_rate_mth(100, Cover.disease_disab), rel=1e-14)
 
 
 def test_pitfall_the_once_only_ledgers_are_per_policy(kr_child_anchor):
@@ -1352,16 +1354,16 @@ def test_pitfall_the_once_only_ledgers_are_per_policy(kr_child_anchor):
     has been used by the time the contract ends.
     """
     a = kr_child_anchor
-    for cause in ("cancer", "minor_cancer", "cerebral", "cardiac"):
+    for cause in (Cover.cancer, Cover.minor_cancer, Cover.cerebral, Cover.cardiac):
         assert a.frac_open(0, cause) == 1.0, cause
         for t in (1, 100, 600, 1200):
             assert a.frac_open(t, cause) == pytest.approx(
                 a.frac_open(t - 1, cause) * (1.0 - a.inc_rate_mth(t - 1, cause)),
                 rel=1e-14), (cause, t)
-    assert a.frac_open(1200, "cancer") == pytest.approx(0.4023261296, abs=5e-11)
-    assert a.frac_open(1200, "cancer") < 0.5
+    assert a.frac_open(1200, Cover.cancer) == pytest.approx(0.4023261296, abs=5e-11)
+    assert a.frac_open(1200, Cover.cancer) < 0.5
     # the ledger is untouched for decades and then drains
-    assert a.frac_open(360, "cancer") > 0.99
+    assert a.frac_open(360, Cover.cancer) > 0.99
     assert a.check_once_only() is True
     assert all(a.check_once_only_resid(t) == 0.0 for t in (0, 1, 360, 720, 1200))
 
@@ -1422,7 +1424,7 @@ def test_pitfall_the_account_does_not_start_at_the_surrender_charge(kr_child_anc
     a = kr_child_anchor
     assert a.cv_std_pp(0) + a.surr_chg_pp(0) == pytest.approx(SURR_CHG_CAP, rel=TRACE)
     assert a.av_pp(0) == 0.0
-    assert a.basis_param("net_prem_ratio") == 0.75
+    assert a.basis_param(BasisParam.net_prem_ratio) == 0.75
     assert a.av_pp(12) == pytest.approx(0.75 * a.cum_prem_pp(12), rel=1e-14)
     assert a.av_pp(12) == 252000.0
     for t in (0, 12, 36, 60, 84, 240, 720, 1200):
@@ -1446,16 +1448,16 @@ def test_pitfall_the_notional_face_amount_is_read_at_the_reference_age(
     """
     a = kr_child_anchor
     refs = child.Projection.refs
-    assert refs["ref_age"] == 40 and refs["ref_sex"] == "M"
-    assert a.mort_rate_at_age(40, "M") == 0.0011
+    assert refs["ref_age"] == 40 and refs["ref_sex"] == Sex.M
+    assert a.mort_rate_at_age(40, Sex.M) == 0.0011
     assert a.sa_notional_pp() == pytest.approx(
         a.risk_prem_ann_pp() / 0.0011, rel=TRACE)
     assert a.surr_chg_cap_pp() / a.premium_mth() == pytest.approx(13.00, abs=0.005)
     assert a.acq_cost_months() == pytest.approx(11.70, abs=0.005)
     # the counterfactual the notes quantify, on the [별표 14] formula limb
-    at_five = a.risk_prem_ann_pp() / a.mort_rate_at_age(5, "M")
+    at_five = a.risk_prem_ann_pp() / a.mort_rate_at_age(5, Sex.M)
     cap_at_five = 0.05 * a.prem_net_ann_pp() * a.surr_chg_coef() + 0.01 * at_five
-    assert a.mort_rate_at_age(5, "M") == 0.00012
+    assert a.mort_rate_at_age(5, Sex.M) == 0.00012
     assert cap_at_five == pytest.approx(12380087.45, abs=WON)
     assert cap_at_five / a.premium_mth() == pytest.approx(442.15, abs=0.005)
     assert cap_at_five > 3.0 * SURR_CHG_FORMULA
@@ -1492,20 +1494,20 @@ def test_pitfall_the_incidence_grid_is_graduated_log_linearly(kr_child_anchor):
     """
     a = kr_child_anchor
     for age in (0, 1, 5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100):
-        rate = a.inc_rate_at(age, "cancer")
+        rate = a.inc_rate_at(age, Cover.cancer)
         assert rate > 0.0
-    assert a.inc_rate_at(20, "cancer") == 0.00025
-    assert a.inc_rate_at(30, "cancer") == 0.00055
-    assert a.inc_rate_at(25, "cancer") == pytest.approx(
+    assert a.inc_rate_at(20, Cover.cancer) == 0.00025
+    assert a.inc_rate_at(30, Cover.cancer) == 0.00055
+    assert a.inc_rate_at(25, Cover.cancer) == pytest.approx(
         math.sqrt(0.00025 * 0.00055), rel=1e-14)
-    assert a.inc_rate_at(25, "cancer") != pytest.approx(
+    assert a.inc_rate_at(25, Cover.cancer) != pytest.approx(
         0.5 * (0.00025 + 0.00055), rel=1e-3)
     # held flat outside the pivots, and the terminal pivot caps the projection
-    assert a.inc_rate_at(-3, "cancer") == a.inc_rate_at(0, "cancer")
-    assert a.inc_rate_at(120, "cancer") == a.inc_rate_at(100, "cancer")
+    assert a.inc_rate_at(-3, Cover.cancer) == a.inc_rate_at(0, Cover.cancer)
+    assert a.inc_rate_at(120, Cover.cancer) == a.inc_rate_at(100, Cover.cancer)
     # the projection reads the grid at 만나이, which on this cell reaches 99 and not 100
     assert a.age_man(1199) == 99
-    assert a.inc_rate(1199, "cancer") == a.inc_rate_at(99, "cancer")
+    assert a.inc_rate(1199, Cover.cancer) == a.inc_rate_at(99, Cover.cancer)
     with pytest.raises(FormulaError):
         a.inc_rate_at(5, "not_a_cause")
 
@@ -1542,11 +1544,11 @@ def test_pitfall_the_true_up_on_a_foetal_contract_is_not_modelled(child,
     for absent in ("true_up", "trueup", "sex_at_birth", "sex_true_up",
                    "premium_refund", "sex_adjust"):
         assert absent not in names, f"{absent} would model a true-up the notes disclaim"
-    assert a.foetal() is True and a.sex() == "M"
+    assert a.foetal() is True and a.sex() == Sex.M
     for t in (5, 17, 240, 1199):
-        assert a.mort_rate(t) == a.mort_rate_at_age(a.age_man(t), "M"), t
-        assert a.inc_rate(t, "cancer") == a.inc_rate_at(
-            min(a.age_man(t), 100), "cancer"), t
+        assert a.mort_rate(t) == a.mort_rate_at_age(a.age_man(t), Sex.M), t
+        assert a.inc_rate(t, Cover.cancer) == a.inc_rate_at(
+            min(a.age_man(t), 100), Cover.cancer), t
     assert "male-rate convention" in flat(child.Projection.cells["sex"].doc)
 
 
@@ -1648,10 +1650,10 @@ def test_the_decrements_are_taken_in_the_notes_processing_order(kr_child_anchor)
     """
     a = kr_child_anchor
     for t in (0, 5, 12, 100, 239):
-        assert a.pols_if_at(t, "BEF_DECR") == a.pols_if(t)
-        assert a.pols_if_at(t, "BEF_LAPSE") == pytest.approx(
+        assert a.pols_if_at(t, PolTiming.BEF_DECR) == a.pols_if(t)
+        assert a.pols_if_at(t, PolTiming.BEF_LAPSE) == pytest.approx(
             (a.pols_if(t) - a.pols_void(t)) * (1.0 - a.mort_rate_mth(t)), rel=1e-15)
-        assert a.pols_if_at(t, "AFT_DECR") == a.pols_if(t + 1)
+        assert a.pols_if_at(t, PolTiming.AFT_DECR) == a.pols_if(t + 1)
         # the waiver is drawn after the void and before mortality
         assert a.pols_waiver_entry(t) == pytest.approx(
             a.pols_pay(t) * (1.0 - a.void_rate_mth(t)) * a.waiver_rate_mth(t),
@@ -1676,19 +1678,19 @@ def test_the_neonatal_module_pays_inside_its_own_two_terms_and_nowhere_else(
     """
     a = kr_child_anchor
     assert a.check_neonatal_term() is True
-    assert all(a.claims(t, "NEONATAL") == 0.0 for t in range(0, 5))
-    assert a.claims(5, "NEONATAL") > 0.0
-    assert all(a.claims(t, "NEONATAL") > 0.0 for t in range(5, 17))
-    assert all(a.claims(t, "NEONATAL") == 0.0 for t in (17, 18, 240, 1200))
-    assert a.benefit_pp(5, "NEONATAL") == pytest.approx(
+    assert all(a.claims(t, Kind.NEONATAL) == 0.0 for t in range(0, 5))
+    assert a.claims(5, Kind.NEONATAL) > 0.0
+    assert all(a.claims(t, Kind.NEONATAL) > 0.0 for t in range(5, 17))
+    assert all(a.claims(t, Kind.NEONATAL) == 0.0 for t in (17, 18, 240, 1200))
+    assert a.benefit_pp(5, Kind.NEONATAL) == pytest.approx(
         NEONATAL_BIRTH + NEONATAL_BLOCK / 12.0, rel=1e-14)
     for t in range(6, 17):
-        assert a.benefit_pp(t, "NEONATAL") == pytest.approx(
+        assert a.benefit_pp(t, Kind.NEONATAL) == pytest.approx(
             NEONATAL_BLOCK / 12.0, rel=1e-14), t
     ordinary = child.Projection[2]
     assert ordinary.foetal() is False
-    assert ordinary.neonatal_cost_pp("birth") == 0.0
-    assert ordinary.neonatal_cost_pp("block") == 0.0
+    assert ordinary.neonatal_cost_pp(NeoTiming.birth) == 0.0
+    assert ordinary.neonatal_cost_pp(NeoTiming.block) == 0.0
     assert ordinary.check_neonatal_term() is True
     assert ordinary.result_cf()["claims_neonatal"].sum() == 0.0
 
@@ -1703,18 +1705,18 @@ def test_the_liability_leak_limb_is_off_for_three_months_of_every_renewal_cycle(
     a signature no smooth implementation produces.
     """
     a = kr_child_anchor
-    assert a.basis_param("leak_share") == 0.40
+    assert a.basis_param(BasisParam.leak_share) == 0.40
     assert child.Projection.refs["liability_cycle_mths"] == 36
-    severity = a.basis_param("liability_severity")
-    scale = a.sum_assured("liability") / 100000000.0
+    severity = a.basis_param(BasisParam.liability_severity)
+    scale = a.sum_assured(Cover.liability) / 100000000.0
     for t in (36, 37, 38, 72, 73, 74):
-        assert a.benefit_pp(t, "LIABILITY") == pytest.approx(
-            0.60 * a.inc_rate_mth(t, "liability") * severity * scale, rel=1e-14), t
+        assert a.benefit_pp(t, Kind.LIABILITY) == pytest.approx(
+            0.60 * a.inc_rate_mth(t, Cover.liability) * severity * scale, rel=1e-14), t
     for t in (17, 35, 39, 40, 71, 75):
-        assert a.benefit_pp(t, "LIABILITY") == pytest.approx(
-            a.inc_rate_mth(t, "liability") * severity * scale, rel=1e-14), t
-    assert a.benefit_pp(35, "LIABILITY") > a.benefit_pp(36, "LIABILITY")
-    assert a.benefit_pp(39, "LIABILITY") > a.benefit_pp(38, "LIABILITY")
+        assert a.benefit_pp(t, Kind.LIABILITY) == pytest.approx(
+            a.inc_rate_mth(t, Cover.liability) * severity * scale, rel=1e-14), t
+    assert a.benefit_pp(35, Kind.LIABILITY) > a.benefit_pp(36, Kind.LIABILITY)
+    assert a.benefit_pp(39, Kind.LIABILITY) > a.benefit_pp(38, Kind.LIABILITY)
 
 
 def test_the_published_cash_flow_statement_closes(kr_child_anchor):
@@ -1737,7 +1739,7 @@ def test_the_published_cash_flow_statement_closes(kr_child_anchor):
     # the eleven kinds are the whole of claims(t), with no subtotal column beside them
     assert "claims" not in df.columns
     for t in (0, 5, 240, 1200):
-        assert a.claims(t) == pytest.approx(
+        assert a.claims(t, Kind.ALL) == pytest.approx(
             sum(df.loc[t, c] for c in df.columns if c.startswith("claims_")),
             rel=1e-14), t
 
@@ -1755,16 +1757,16 @@ def test_the_surrender_value_forms_and_their_floors(child, kr_child_anchor):
     assert kr_child_anchor.cv_pp(120) == kr_child_anchor.cv_std_pp(120)
 
     susp = child.Projection[4]
-    assert susp.cv_form() == "susp" and susp.cv_floor_ratio() == 0.50
+    assert susp.cv_form() == CvForm.susp and susp.cv_floor_ratio() == 0.50
     assert all(susp.cv_pp(t) == 0.0 for t in (0, 12, 120, 238, 239))
     assert susp.cv_pp(240) == pytest.approx(0.50 * susp.cv_std_pp(240), rel=1e-14)
     assert susp.cv_pp(240) > 0.0
     assert susp.check_cv_floor() is True
-    assert susp.claims(120, "LAPSE") == pytest.approx(
+    assert susp.claims(120, Kind.LAPSE) == pytest.approx(
         susp.unearned_prem_pp(120) * susp.pols_lapse(120), rel=1e-14)
 
     graded = child.Projection[5]
-    assert graded.cv_form() == "graded" and graded.cv_floor_ratio() == 0.50
+    assert graded.cv_form() == CvForm.graded and graded.cv_floor_ratio() == 0.50
     assert graded.cv_grade_ratio(239) == 0.0
     for step, t in enumerate(range(240, 240 + 24 * 10, 24)):
         assert graded.cv_grade_ratio(t) == pytest.approx(
@@ -1840,19 +1842,19 @@ def test_the_broad_definition_switch_multiplies_the_two_adult_limbs(child,
     """
     a = kr_child_anchor
     assert a.broad_def() is False
-    assert a.basis_param("broad_def_factor") == 4.0
+    assert a.basis_param(BasisParam.broad_def_factor) == 4.0
     for t in (100, 600):
-        assert a.inc_rate(t, "cerebral") == a.inc_rate_at(a.age_man(t), "cerebral")
+        assert a.inc_rate(t, Cover.cerebral) == a.inc_rate_at(a.age_man(t), Cover.cerebral)
 
     broad = child.Projection[8]
     assert broad.broad_def() is True and broad.age_man(0) == 30
-    assert broad.inc_rate(0, "cerebral") == pytest.approx(
-        4.0 * broad.inc_rate_at(30, "cerebral"), rel=1e-14)
-    assert broad.inc_rate(0, "cardiac") == pytest.approx(
-        4.0 * broad.inc_rate_at(30, "cardiac"), rel=1e-14)
+    assert broad.inc_rate(0, Cover.cerebral) == pytest.approx(
+        4.0 * broad.inc_rate_at(30, Cover.cerebral), rel=1e-14)
+    assert broad.inc_rate(0, Cover.cardiac) == pytest.approx(
+        4.0 * broad.inc_rate_at(30, Cover.cardiac), rel=1e-14)
     # and only those two limbs move
-    assert broad.inc_rate(0, "cancer") == broad.inc_rate_at(30, "cancer")
-    assert broad.inc_rate(0, "fracture") == broad.inc_rate_at(30, "fracture")
+    assert broad.inc_rate(0, Cover.cancer) == broad.inc_rate_at(30, Cover.cancer)
+    assert broad.inc_rate(0, Cover.fracture) == broad.inc_rate_at(30, Cover.fracture)
 
 
 def test_the_2026_low_birthrate_discount_runs_for_twelve_months(child, kr_child_anchor):
@@ -1893,12 +1895,12 @@ def test_the_best_estimate_mortality_lever_is_one_in_the_base_run(child,
     """
     a = kr_child_anchor
     assert a.mort_be_factor() == 1.0
-    assert a.mort_rate(100) == a.mort_rate_at_age(a.age_man(100), "M")
+    assert a.mort_rate(100) == a.mort_rate_at_age(a.age_man(100), Sex.M)
 
     stressed = child.Projection[10]
     assert stressed.mort_be_factor() == 1.1
     assert stressed.mort_rate(100) == pytest.approx(
-        1.1 * stressed.mort_rate_at_age(stressed.age_man(100), "M"), rel=1e-14)
+        1.1 * stressed.mort_rate_at_age(stressed.age_man(100), Sex.M), rel=1e-14)
     assert stressed.mort_rate_payer(0) == stressed.mort_rate_at_age(
         stressed.payer_age(), stressed.payer_sex())
     assert stressed.mort_rate(0) == 0.0            # still nothing before birth
@@ -1913,7 +1915,7 @@ def test_the_three_lapse_bases_run_side_by_side(child, kr_child_anchor):
     model point 5 against −₩13,085,435 on the anchor.
     """
     a = kr_child_anchor
-    assert a.lapse_basis() == "loglinear"
+    assert a.lapse_basis() == LapseBasis.loglinear
     assert a.lapse_rate(0) == pytest.approx(0.05, rel=1e-14)
     assert a.lapse_rate(240) == 0.008
     assert a.lapse_rate(239) == pytest.approx(
@@ -1922,7 +1924,7 @@ def test_the_three_lapse_bases_run_side_by_side(child, kr_child_anchor):
     assert a.lapse_rate(239) < 0.0011           # converging on the guideline's 0.1%
 
     disclosed = child.Projection[5]
-    assert disclosed.lapse_basis() == "disclosed"
+    assert disclosed.lapse_basis() == LapseBasis.disclosed
     assert disclosed.lapse_rate(0) == 0.05 and disclosed.lapse_rate(119) == 0.05
     assert disclosed.lapse_rate(120) == 0.03 and disclosed.lapse_rate(179) == 0.03
     assert disclosed.lapse_rate(180) == 0.01 and disclosed.lapse_rate(239) == 0.01
@@ -1930,7 +1932,7 @@ def test_the_three_lapse_bases_run_side_by_side(child, kr_child_anchor):
     assert disclosed.result_cf()["net_cf"].sum() == pytest.approx(-8061541.17, abs=WON)
 
     level = child.Projection[8]
-    assert level.lapse_basis() == "flat"
+    assert level.lapse_basis() == LapseBasis.flat
     assert all(level.lapse_rate(t) == 0.03 for t in (0, 100, 239, 240, 800))
 
 
@@ -2030,7 +2032,7 @@ def test_the_std_scalar_references_are_the_ones_the_notes_state(child):
     assert refs["min_guar_rate"] == 0.003         # 최저보증이율 [S2]
     assert refs["avg_decl_rate"] == 0.025         # 평균공시이율 [S2]
     assert refs["ref_age"] == 40                  # 기준연령 요건, 남자 만 40세 [REG-R9]
-    assert refs["ref_sex"] == "M"
+    assert refs["ref_sex"] == Sex.M
     assert refs["surr_chg_prem_rate"] == 0.05     # [별표 14]'s 5%
     assert refs["surr_chg_sa_rate"] == 0.01       # 10/1000 of the 보험가입금액
     assert refs["surr_chg_cap_months"] == 13.0    # the FSC's 보장성보험 13배 [REG-R29]
@@ -2058,12 +2060,12 @@ def test_the_std_basis_table_is_the_one_the_notes_state(child):
     """
     table = child.Data.basis_table()
     expected = {
-        "disab_severity": 0.12, "disease_disab_severity": 0.15,
-        "surgery_rate_cancer": 0.85, "surgery_rate_cerebral": 0.50,
-        "surgery_rate_cardiac": 0.70, "liability_severity": 600000.0,
-        "hosp_cap_factor": 0.92, "waiver_disab_share": 0.08,
-        "payer_disab_ratio": 0.25, "leak_share": 0.40, "void_rate_ann": 0.012,
-        "broad_def_factor": 4.0, "net_prem_ratio": 0.75,
+        BasisParam.disab_severity: 0.12, BasisParam.disease_disab_severity: 0.15,
+        BasisParam.surgery_rate_cancer: 0.85, BasisParam.surgery_rate_cerebral: 0.50,
+        BasisParam.surgery_rate_cardiac: 0.70, BasisParam.liability_severity: 600000.0,
+        BasisParam.hosp_cap_factor: 0.92, BasisParam.waiver_disab_share: 0.08,
+        BasisParam.payer_disab_ratio: 0.25, BasisParam.leak_share: 0.40, BasisParam.void_rate_ann: 0.012,
+        BasisParam.broad_def_factor: 4.0, BasisParam.net_prem_ratio: 0.75,
     }
     assert set(table.index) == set(expected)
     for name, value in expected.items():
@@ -2082,10 +2084,10 @@ def test_the_neonatal_module_limbs_are_the_ones_the_notes_state(child):
     """
     table = child.Data.neonatal_table()
     assert len(table) == 9
-    assert set(table["timing"]) == {"birth", "block"}
-    assert set(table.index[table["timing"] == "birth"]) == {
+    assert set(table["timing"]) == {NeoTiming.birth, NeoTiming.block}
+    assert set(table.index[table["timing"] == NeoTiming.birth]) == {
         "birth_risk_low", "birth_risk_disab", "birth_risk_severe", "preterm"}
-    assert set(table.index[table["timing"] == "block"]) == {
+    assert set(table.index[table["timing"] == NeoTiming.block]) == {
         "incubator", "perinatal_cash", "congenital_diag", "congenital_surg",
         "neonatal_haem"}
     assert float(table.loc["incubator", "amount"]) == 50000.0
@@ -2096,8 +2098,8 @@ def test_the_neonatal_module_limbs_are_the_ones_the_notes_state(child):
     assert table["provenance"].str.startswith("[std]").all()
 
     a = child.Projection[1]
-    sa = a.sum_assured("neonatal")
-    for timing, total in (("birth", NEONATAL_BIRTH), ("block", NEONATAL_BLOCK)):
+    sa = a.sum_assured(Cover.neonatal)
+    for timing, total in ((NeoTiming.birth, NEONATAL_BIRTH), (NeoTiming.block, NEONATAL_BLOCK)):
         rows = table[table["timing"] == timing]
         built = sum(float(r["freq"]) * float(r["units"])
                     * (float(r["amount"]) + float(r["amount_ratio"]) * sa)
@@ -2146,11 +2148,11 @@ def test_the_claim_expense_is_its_own_column_and_is_charged_on_events(
                        + a.pols_void(t)), rel=1e-14), t
     # hospital days are not events
     assert a.claim_count_pp(5) == pytest.approx(
-        a.inc_rate_mth(5, "disability") + a.inc_rate_mth(5, "disease_disab")
+        a.inc_rate_mth(5, Cover.disability) + a.inc_rate_mth(5, Cover.disease_disab)
         + sum(a.inc_rate_mth(5, c) * a.frac_open(5, c) * a.cover_open(5, c)
-              for c in ("cancer", "minor_cancer", "cerebral", "cardiac"))
-        + a.inc_rate_mth(5, "fracture") + a.inc_rate_mth(5, "burn")
-        + a.inc_rate_mth(5, "liability"), rel=1e-14)
+              for c in (Cover.cancer, Cover.minor_cancer, Cover.cerebral, Cover.cardiac))
+        + a.inc_rate_mth(5, Cover.fracture) + a.inc_rate_mth(5, Cover.burn)
+        + a.inc_rate_mth(5, Cover.liability), rel=1e-14)
     df = a.result_cf()
     assert "claim_expenses" in df.columns and "expenses" in df.columns
     assert df["claim_expenses"].sum() == pytest.approx(TOTALS["claim_expenses"],
@@ -2307,15 +2309,15 @@ def test_an_input_can_be_swapped_without_touching_a_formula(tmp_path):
 
     model = mx.read_model(dest, name="Child_KR_S_swap")
     try:
-        before = model.Projection[1].inc_rate(240, "fracture")
-        before_benefit = model.Projection[1].benefit_pp(240, "EVENT")
+        before = model.Projection[1].inc_rate(240, Cover.fracture)
+        before_benefit = model.Projection[1].benefit_pp(240, Kind.EVENT)
         model.Data.incidence_file = "half_incidence.csv"
         model.Data.clear_all()
         model.Projection.clear_all()
-        after = model.Projection[1].inc_rate(240, "fracture")
+        after = model.Projection[1].inc_rate(240, Cover.fracture)
         assert after == pytest.approx(0.5 * before, rel=1e-14)
         # the benefit follows it, to within the convexity of the monthly conversion
-        assert model.Projection[1].benefit_pp(240, "EVENT") == pytest.approx(
+        assert model.Projection[1].benefit_pp(240, Kind.EVENT) == pytest.approx(
             0.5 * before_benefit, rel=0.01)
         assert model.Data.incidence_table()["rate"].max() == pytest.approx(10.0)
     finally:
@@ -2381,7 +2383,7 @@ def test_net_cf_carries_the_notes_own_sign(child, kr_child_anchor):
     """
     a = kr_child_anchor
     assert a.net_cf(100) == pytest.approx(
-        a.premiums(100) - a.claims(100) - a.claim_expenses(100) - a.expenses(100)
+        a.premiums(100) - a.claims(100, Kind.ALL) - a.claim_expenses(100) - a.expenses(100)
         - a.commissions(100), rel=1e-14)
     assert a.net_cf(100) > 0.0                     # a premium-paying month is income
     assert a.net_cf(600) < 0.0                     # a paid-up month is outgo

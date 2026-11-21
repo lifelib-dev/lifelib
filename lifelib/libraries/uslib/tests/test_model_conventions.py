@@ -44,10 +44,16 @@ registers them one product at a time, Term first.
 import math
 import re
 from collections import Counter
+from contextlib import closing
+from enum import Enum, EnumMeta
+import pickle
 
 import modelx as mx
+import numpy as np
+import pandas as pd
 import pytest
 
+from released_twins import sec_test_model_path
 from us_registry import (
     INPUT_FILES, MODELS, is_sec, meta, model_path, point_keys, projection)
 
@@ -203,16 +209,21 @@ def test_the_name_carries_the_country_tag(name):
     assert "_US_" in name, f"{name} does not carry the _US country tag"
 
 
-def test_model_folder_holds_formulas_only(name):
-    """Inputs are external: the model folder carries no data of any kind.
+def test_model_folder_keeps_inputs_external(name):
+    """Saved models can carry code References. Input data lives beside the model.
 
-    No IOSpec (``_data/``), no embedded CSVs, no pickles — only the serialized formulas.
-    This is the ``annuallife/TradLife_A`` layout, as opposed to ``basiclife/BasicTerm_S``,
-    which stores its inputs inside the model.
+    The serializer records the enum classes (and enum members) the model holds.
     """
     folder = model_path(name)
-    assert not (folder / "_data").exists()
-    for pattern in ("*.pickle", "*.csv", "*.xlsx", "*.xls"):
+    enum_file = folder / "_data/data.pickle"
+    if enum_file.exists():
+        with enum_file.open("rb") as stream:
+            refs = pickle.load(stream)
+        # D30, D31(b): enum classes, or the enum member a model parameter holds
+        assert refs and all(isinstance(value, (EnumMeta, Enum)) for value in refs.values())
+    assert list(folder.rglob("*.pickle")) == ([enum_file] if enum_file.exists() else [])
+    assert not (folder / "_data").exists() or list((folder / "_data").iterdir()) == [enum_file]
+    for pattern in ("*.csv", "*.xlsx", "*.xls"):
         assert not list(folder.rglob(pattern)), f"{name}: data inside the model folder"
     assert {p.name for p in folder.iterdir() if p.is_file()} == {
         "__init__.py", "_system.json"}
@@ -1013,28 +1024,54 @@ def test_the_sec_table_carries_the_in_force_columns(name, model):
 
 
 @pytest.fixture(scope="module")
-def twin_model(name, tmp_path_factory):
-    """The S twin of SEC model ``name``, read out of a copy of their product directory.
+def twin_model(name):
+    """The released S twin, with inputs outside the SEC model's read log."""
+    twin = meta(name)["twin"]
+    with closing(mx.read_model(sec_test_model_path(twin), name=twin + "_twin")) as model:
+        yield model
 
-    Out of a copy, because the twin reads the same CSVs from the same directory as the SEC
-    model, and ``read_log`` attributes a read to a model by its directory alone. Read in
-    place, the twin's reads would count against the SEC model, whose read-once assertion
-    would then see ``model_point_table.csv``, which the SEC model never opens, and every
-    shared table twice. Read out of ``tmp_path`` they are not counted at all, as
-    ``test_round_trip_is_stable``'s are not. The copy holds the same formulas and the same
-    CSVs, so it projects the same numbers; only its ``input_dir()`` differs.
-    """
-    import shutil
+
+@sec_family
+def test_converted_s_cash_flows_match_the_released_twins(name, model, twin_model, tmp_path):
+    """On the SEC new-business twins, preserve the released S cash flows."""
+    from sec_support import temp_inputs
 
     twin = meta(name)["twin"]
-    src = model_path(twin)
-    dest = tmp_path_factory.mktemp(twin)
-    shutil.copytree(src, dest / src.name, ignore=shutil.ignore_patterns("__pycache__"))
-    for csv in src.parent.glob("*.csv"):
-        shutil.copy(csv, dest / csv.name)
-    m = mx.read_model(dest / src.name, name=twin + "_twin")
-    yield m
-    m.close()
+    sec_points = model.Data.model_point_table()
+    twins = sec_points.loc[(sec_points["row_kind"] == "twin")
+                           & (sec_points["duration_mth"] == 0)]
+    assert not twins.empty
+
+    converted_path = temp_inputs(tmp_path, model_path(twin))
+    with closing(mx.read_model(converted_path, name=twin + "_converted")) as converted:
+        released_points = twin_model.Data.model_point_table()
+        converted_points = converted.Data.model_point_table()
+        pd.testing.assert_frame_equal(released_points, converted_points)
+        released_totals = []
+        converted_totals = []
+        released_magnitudes = []
+        for point_id, row in twins.iterrows():
+            assert released_points.at[point_id, "policy_id"] == row["policy_id"]
+            expected = projection(twin_model, point_id).result_cf()
+            actual = projection(converted, point_id).result_cf()
+            pd.testing.assert_index_equal(actual.index, expected.index)
+            pd.testing.assert_index_equal(actual.columns, expected.columns)
+            assert np.isfinite(expected.to_numpy()).all(), f"{twin} point {point_id}"
+            assert np.isfinite(actual.to_numpy()).all(), f"{twin} point {point_id}"
+            np.testing.assert_allclose(
+                actual.to_numpy(), expected.to_numpy(), rtol=1e-10, atol=1e-7,
+                err_msg=f"{twin} point {point_id}")
+            expected_total = math.fsum(expected["net_cf"])
+            actual_total = math.fsum(actual["net_cf"])
+            magnitude = math.fsum(abs(value) for value in expected["net_cf"])
+            assert abs(actual_total - expected_total) <= 1e-10 * magnitude + 1e-7
+            released_totals.append(expected_total)
+            converted_totals.append(actual_total)
+            released_magnitudes.append(magnitude)
+            del converted.Projection[point_id]
+
+    total_difference = abs(math.fsum(converted_totals) - math.fsum(released_totals))
+    assert total_difference <= 1e-10 * math.fsum(released_magnitudes) + 1e-7
 
 
 # The cells T1 compares at an absolute floor, by SEC model, each with its reason.  Every

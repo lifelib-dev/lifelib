@@ -32,6 +32,7 @@ import modelx as mx
 import pytest
 
 from us_registry import LIB
+from lifelib.libraries.uslib.products.universal_life.enums import Claim, DeathBenefitOption, PolTiming, Timing
 
 MODEL_PATH = LIB / "products/universal_life/UL_US_S"
 
@@ -77,7 +78,7 @@ def _wd_ten_percent_monthly(t):
     the pattern that exposes a monthly rather than annual free-withdrawal allowance.
     The first anniversary is the start of policy month ``t = 12``.
     """
-    return 0.10 * av_pp_at(t, "BEF_WD") if t >= 12 else 0.0          # noqa: F821
+    return 0.10 * av_pp_at(t, Timing.BEF_WD) if t >= 12 else 0.0          # noqa: F821
 
 
 def _premium_far_above_the_seven_pay_limit():
@@ -140,14 +141,14 @@ def over_funded():
 def test_worked_example_row(anchor, t):
     """Every cell of the notes' three-row table, to the displayed precision."""
     av_prev, np_, av_dash, db, naar, coi, md, av_bef_inv, interest, av = WORKED_EXAMPLE[t]
-    assert anchor.av_pp_at(t, "BEF_PREM") == pytest.approx(av_prev, abs=CENT)
+    assert anchor.av_pp_at(t, Timing.BEF_PREM) == pytest.approx(av_prev, abs=CENT)
     assert anchor.prem_to_av_pp(t) == pytest.approx(np_, abs=CENT)
-    assert anchor.av_pp_at(t, "BEF_FEE") == pytest.approx(av_dash, abs=CENT)
+    assert anchor.av_pp_at(t, Timing.BEF_FEE) == pytest.approx(av_dash, abs=CENT)
     assert anchor.db_pp(t) == pytest.approx(db, abs=CENT)
     assert anchor.net_amt_at_risk(t) == pytest.approx(naar, abs=CENT)
     assert anchor.coi_pp(t) == pytest.approx(coi, abs=CENT)
     assert anchor.mth_deduction_pp(t) == pytest.approx(md, abs=CENT)
-    assert anchor.av_pp_at(t, "BEF_INV") == pytest.approx(av_bef_inv, abs=CENT)
+    assert anchor.av_pp_at(t, Timing.BEF_INV) == pytest.approx(av_bef_inv, abs=CENT)
     assert anchor.inv_income_pp(t) == pytest.approx(interest, abs=CENT)
     assert anchor.av_pp(t) == pytest.approx(av, abs=CENT)
 
@@ -164,7 +165,7 @@ def test_worked_example_trace(anchor):
     assert anchor.mth_deduction_pp(0) == pytest.approx(
         TRACE["mth_deduction_pp_0"], abs=5e-5)
     # The corridor minimum in the issue month is 2.50 x AV', far below the $100,000 face.
-    assert (anchor.corridor_factor(0) * anchor.av_pp_at(0, "BEF_FEE")
+    assert (anchor.corridor_factor(0) * anchor.av_pp_at(0, Timing.BEF_FEE)
             == pytest.approx(TRACE["corridor_min_0"], abs=CENT))
     assert anchor.db_pp(0) == 100000.0
 
@@ -188,8 +189,8 @@ def test_policy_date_rule(anchor):
     read through the ``"BEF_PREM"`` timing; ``av_pp(0)`` is the *closing* balance of
     the issue month and is not zero.
     """
-    assert anchor.av_pp_at(0, "BEF_PREM") == 0.0
-    assert anchor.av_pp_at(0, "BEF_INV") == pytest.approx(
+    assert anchor.av_pp_at(0, Timing.BEF_PREM) == 0.0
+    assert anchor.av_pp_at(0, Timing.BEF_INV) == pytest.approx(
         anchor.prem_to_av_pp(0) - anchor.mth_deduction_pp(0), rel=1e-12)
     assert anchor.av_pp(0) > 0.0
 
@@ -197,7 +198,7 @@ def test_policy_date_rule(anchor):
 def test_no_grace_in_the_issue_month(anchor):
     """The notes' issue-month shortfall test: AV' (141.00) >= MD (39.54), no grace."""
     assert anchor.is_shortfall(0) is False
-    assert anchor.av_pp_at(0, "BEF_FEE") == pytest.approx(141.00, abs=CENT)
+    assert anchor.av_pp_at(0, Timing.BEF_FEE) == pytest.approx(141.00, abs=CENT)
     assert anchor.mth_deduction_pp(0) == pytest.approx(39.54, abs=CENT)
 
 
@@ -211,10 +212,10 @@ def test_pitfall_deduction_before_interest(anchor):
     the deduction every month and compounds over decades.
     """
     for t in (0, 1, 2, 59, 239):
-        correct = (anchor.av_pp_at(t, "BEF_FEE") - anchor.mth_deduction_pp(t)) * (
+        correct = (anchor.av_pp_at(t, Timing.BEF_FEE) - anchor.mth_deduction_pp(t)) * (
             1 + anchor.inv_return_mth(t))
         assert anchor.av_pp(t) == pytest.approx(correct, rel=1e-12)
-        reversed_order = (anchor.av_pp_at(t, "BEF_FEE") * (1 + anchor.inv_return_mth(t))
+        reversed_order = (anchor.av_pp_at(t, Timing.BEF_FEE) * (1 + anchor.inv_return_mth(t))
                           - anchor.mth_deduction_pp(t))
         assert reversed_order > anchor.av_pp(t)
 
@@ -224,24 +225,24 @@ def test_pitfall_naar_uses_guaranteed_rate_and_pre_deduction_av(anchor):
     t = 0
     assert anchor.naar_factor() == pytest.approx(1.02 ** (1 / 12), rel=1e-14)
     assert anchor.net_amt_at_risk(t) == pytest.approx(
-        anchor.db_pp(t) / anchor.naar_factor() - anchor.av_pp_at(t, "BEF_FEE"),
+        anchor.db_pp(t) / anchor.naar_factor() - anchor.av_pp_at(t, Timing.BEF_FEE),
         rel=1e-12)
     # Using the credited rate in the discount, or the post-deduction account value,
     # both move the answer - which is exactly the systematic COI error the notes warn
     # about.
     with_credited = (anchor.db_pp(t) / (1 + anchor.inv_return_mth(t))
-                     - anchor.av_pp_at(t, "BEF_FEE"))
+                     - anchor.av_pp_at(t, Timing.BEF_FEE))
     with_post_deduction = (anchor.db_pp(t) / anchor.naar_factor()
-                           - anchor.av_pp_at(t, "BEF_INV"))
+                           - anchor.av_pp_at(t, Timing.BEF_INV))
     assert abs(with_credited - anchor.net_amt_at_risk(t)) > 1.0
     assert abs(with_post_deduction - anchor.net_amt_at_risk(t)) > 1.0
 
 
 def test_pitfall_option_b_corridor_has_no_simultaneity(option_b):
     """Under Option B, DB and NAAR both key off AV', so nothing is circular."""
-    assert option_b.db_option() == "B"
+    assert option_b.db_option() == DeathBenefitOption.B
     t = 0
-    av_dash = option_b.av_pp_at(t, "BEF_FEE")
+    av_dash = option_b.av_pp_at(t, Timing.BEF_FEE)
     assert option_b.db_pp(t) == pytest.approx(
         max(option_b.sum_assured_at(t) + av_dash,
             option_b.corridor_factor(t) * av_dash), rel=1e-12)
@@ -257,7 +258,7 @@ def test_pitfall_corridor_binds_when_the_policy_is_well_funded(anchor):
     assert binding, "the GPT corridor never binds - check corridor_factors.csv"
     t = binding[0]
     assert anchor.db_pp(t) == pytest.approx(
-        anchor.corridor_factor(t) * anchor.av_pp_at(t, "BEF_FEE"), rel=1e-12)
+        anchor.corridor_factor(t) * anchor.av_pp_at(t, Timing.BEF_FEE), rel=1e-12)
 
 
 def test_pitfall_monthly_not_daily_compounding(anchor):
@@ -322,7 +323,7 @@ def test_pitfall_mec_and_gpt_are_flags_not_cash_flows(anchor):
     assert not any(anchor.is_mec(t) for t in range(199))
     for t in (0, 11, 99):
         assert anchor.net_cf(t) == pytest.approx(
-            anchor.premiums(t) - anchor.claims(t) - anchor.withdrawals(t)
+            anchor.premiums(t) - anchor.claims(t, Claim.ALL) - anchor.withdrawals(t)
             - anchor.expenses(t) - anchor.premium_taxes(t), rel=1e-12)
 
 
@@ -467,7 +468,7 @@ def test_loan_rolls_forward_at_the_charged_rate(in_force):
         in_force.csv_pp(0) - in_force.loan_bal_pp(0), abs=CENT)
     # the loaned slice of the account value earns the guaranteed rate, not the current
     for t in (0, 1):
-        unloaned = in_force.av_pp_at(t, "BEF_INV") - in_force.loan_bal_pp_bom(t)
+        unloaned = in_force.av_pp_at(t, Timing.BEF_INV) - in_force.loan_bal_pp_bom(t)
         assert in_force.inv_income_pp(t) == pytest.approx(
             unloaned * in_force.inv_return_mth(t)
             + in_force.loan_bal_pp_bom(t) * in_force.guar_rate_mth(), rel=1e-12)
@@ -487,7 +488,7 @@ def test_in_force_model_point_starts_at_its_duration(in_force):
     assert in_force.proj_len() == 12 * (120 - 35 + 1) - 120
     assert list(in_force.result_cf().index) == list(range(in_force.proj_len()))
     assert in_force.surr_charge_pp(0) == 0.0
-    assert in_force.av_pp_at(0, "BEF_PREM") == 15000.0
+    assert in_force.av_pp_at(0, Timing.BEF_PREM) == 15000.0
     assert in_force.av_pp(0) > 15000.0
     assert in_force.wd_used_year(0) == 0.0
 
@@ -497,7 +498,7 @@ def test_csv_floor_binds_while_the_surrender_charge_exceeds_the_account_value(an
     assert anchor.surr_charge_pp(0) > anchor.av_pp(0)
     assert anchor.csv_pp(0) == 0.0
     assert anchor.ncsv_pp(0) == 0.0
-    assert anchor.claims(0, "LAPSE") == 0.0
+    assert anchor.claims(0, Claim.LAPSE) == 0.0
     # the charge actually collected is capped by the account value
     assert anchor.surr_charge(0) == pytest.approx(
         anchor.av_pp(0) * anchor.pols_lapse(0), rel=1e-12)
@@ -520,23 +521,23 @@ def test_death_benefit_never_falls_below_the_face_amount(universal_life):
         proj = universal_life.Projection[point_id]
         for t in range(proj.proj_len()):
             assert proj.db_pp(t) >= proj.sum_assured_at(t) - 1e-9, (point_id, t)
-            assert proj.claim_pp(t, "DEATH") >= 0.0, (point_id, t)
+            assert proj.claim_pp(t, Claim.DEATH) >= 0.0, (point_id, t)
         assert (proj.result_cf()["claims_death"] >= 0.0).all(), point_id
 
     # The floor is load-bearing, not decoration: point 2's AV' really does go negative,
     # and it is the floor alone that holds the death benefit at the face amount there.
     option_b = universal_life.Projection[2]
     t = 699
-    assert option_b.av_pp_at(t, "BEF_FEE") < 0.0
+    assert option_b.av_pp_at(t, Timing.BEF_FEE) < 0.0
     assert option_b.av_pp_db_basis(t) == 0.0
     assert option_b.db_pp(t) == pytest.approx(option_b.sum_assured_at(t), rel=1e-12)
     assert option_b.net_amt_at_risk(t) == pytest.approx(
         option_b.db_pp(t) / option_b.naar_factor(), rel=1e-12)
     # and where AV' is positive the floor changes nothing, so the worked example stands
-    assert option_b.av_pp_at(0, "BEF_FEE") > 0.0
-    assert option_b.av_pp_db_basis(0) == option_b.av_pp_at(0, "BEF_FEE")
+    assert option_b.av_pp_at(0, Timing.BEF_FEE) > 0.0
+    assert option_b.av_pp_db_basis(0) == option_b.av_pp_at(0, Timing.BEF_FEE)
     assert option_b.db_pp(0) == pytest.approx(
-        100000.0 + option_b.av_pp_at(0, "BEF_FEE"), rel=1e-12)
+        100000.0 + option_b.av_pp_at(0, Timing.BEF_FEE), rel=1e-12)
 
 
 def test_shortfall_trigger_is_live_on_point_2_and_inert_on_1_and_3(universal_life):
@@ -559,7 +560,7 @@ def test_shortfall_trigger_is_live_on_point_2_and_inert_on_1_and_3(universal_lif
             assert months == list(range(first, length)), point_id
             assert proj.policy_year(first) == 57
             assert proj.age(first) == 91
-            assert (proj.av_pp_at(first, "BEF_FEE") - proj.loan_bal_pp_bom(first)
+            assert (proj.av_pp_at(first, Timing.BEF_FEE) - proj.loan_bal_pp_bom(first)
                     < proj.mth_deduction_pp(first))
 
     # No policy is terminated for insufficiency: point 2's in force keeps running off on
@@ -585,7 +586,7 @@ def test_free_withdrawal_allowance_is_annual_not_monthly(withdrawing):
     assert proj.wd_pp(11) == 0.0
     assert proj.wd_used_year(12) == 0.0
     assert proj.wd_free_pp(12) == pytest.approx(
-        0.10 * proj.av_pp_at(12, "BEF_WD"), rel=1e-12)
+        0.10 * proj.av_pp_at(12, Timing.BEF_WD), rel=1e-12)
     assert proj.wd_pp(12) == pytest.approx(proj.wd_free_pp(12), rel=1e-12)
     assert proj.face_reduction_pp(12) == 0.0
     assert proj.sum_assured_at(12) == 100000.0
@@ -603,7 +604,7 @@ def test_free_withdrawal_allowance_is_annual_not_monthly(withdrawing):
     # And it resets on the policy anniversary, t = 24.
     assert proj.wd_used_year(24) == 0.0
     assert proj.wd_free_pp(24) == pytest.approx(
-        0.10 * proj.av_pp_at(24, "BEF_WD"), rel=1e-12)
+        0.10 * proj.av_pp_at(24, Timing.BEF_WD), rel=1e-12)
     assert proj.face_reduction_pp(24) == 0.0
     assert proj.face_reduction_pp(25) > 0.0
 
@@ -631,7 +632,7 @@ def test_mec_flag_latches_once_the_seven_pay_test_fails(over_funded, anchor):
     assert all(proj.is_mec(t) for t in (84, 95, 299, proj.proj_len() - 1))
     # The flag is still a flag: it moves no cash flow.
     assert proj.net_cf(95) == pytest.approx(
-        proj.premiums(95) - proj.claims(95) - proj.withdrawals(95)
+        proj.premiums(95) - proj.claims(95, Claim.ALL) - proj.withdrawals(95)
         - proj.expenses(95) - proj.premium_taxes(95), rel=1e-12)
     # And a contract inside the limit never trips it.
     assert not any(anchor.is_mec(t) for t in range(0, anchor.proj_len(), 29))
@@ -647,7 +648,7 @@ def test_withdrawals_are_off_but_the_mechanics_are_wired(anchor):
     assert anchor.wd_pp(5) == 0.0            # before the first anniversary anyway
     assert anchor.wd_used_year(12) == 0.0     # nothing withdrawn, nothing used
     assert anchor.wd_free_pp(12) == pytest.approx(
-        0.10 * anchor.av_pp_at(12, "BEF_WD"), rel=1e-12)
+        0.10 * anchor.av_pp_at(12, Timing.BEF_WD), rel=1e-12)
 
 
 def test_a_withdrawal_is_not_a_claim(withdrawing):
@@ -670,11 +671,11 @@ def test_a_withdrawal_is_not_a_claim(withdrawing):
         with pytest.raises(Exception) as excinfo:
             call()
         assert "invalid kind" in str(excinfo.value)
-    assert proj.claims(t) == pytest.approx(
-        proj.claims(t, "DEATH") + proj.claims(t, "LAPSE"), rel=1e-12)
+    assert proj.claims(t, Claim.ALL) == pytest.approx(
+        proj.claims(t, Claim.DEATH) + proj.claims(t, Claim.LAPSE), rel=1e-12)
     # and net_cf still nets it, so the ruling moved no money
     assert proj.net_cf(t) == pytest.approx(
-        proj.premiums(t) - proj.claims(t) - proj.withdrawals(t)
+        proj.premiums(t) - proj.claims(t, Claim.ALL) - proj.withdrawals(t)
         - proj.expenses(t) - proj.premium_taxes(t), rel=1e-12)
 
 
@@ -705,7 +706,7 @@ def test_pols_if_is_the_start_of_month_weight(anchor, in_force):
         assert proj.pols_if(0) == proj.pols_if_init()
         assert df.loc[0, "pols_if"] == proj.pols_if_init()
         assert all(proj.pols_if_at(0, timing) == proj.pols_if(0)
-                   for timing in ("BEF_MAT", "BEF_NB", "BEF_DECR"))
+                   for timing in (PolTiming.BEF_MAT, PolTiming.BEF_NB, PolTiming.BEF_DECR))
 
 
 # ---------------------------------------------------------------------------

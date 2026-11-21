@@ -111,9 +111,9 @@ def allocation_grid():
     so ``k = 10`` reads 20% and not 0%.  Sorted on read, because
     ``Projection.alloc_euro`` indexes into it.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / allocation_grid_file,                          # noqa: F821
-        index_col=["allocation_profile", "years_to_horizon"]).sort_index()
+    frame = pd.read_csv(input_dir() / allocation_grid_file)                     # noqa: F821
+    frame["allocation_profile"] = [AllocationProfile[name] for name in frame["allocation_profile"]]
+    return frame.set_index(["allocation_profile", "years_to_horizon"]).sort_index()
 
 
 def mort_table():
@@ -131,9 +131,9 @@ def mort_table():
     because the placeholder is above it.  Sorted on read, because
     ``Projection.mort_rate`` indexes into it.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file,                               # noqa: F821
-        index_col=["sex", "age"]).sort_index()
+    frame = pd.read_csv(input_dir() / mort_table_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"]).sort_index()
 
 
 def exit_table():
@@ -162,9 +162,9 @@ def exit_table():
     compartment, because a transfer moves the rights without changing them.  Sorted on
     read, because ``Projection.early_release_rate`` indexes into it.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / exit_table_file,                               # noqa: F821
-        index_col=["compartment", "duration"]).sort_index()
+    frame = pd.read_csv(input_dir() / exit_table_file)                     # noqa: F821
+    frame["compartment"] = [Compartment[name] for name in frame["compartment"]]
+    return frame.set_index(["compartment", "duration"]).sort_index()
 
 
 def annuity_factor_table():
@@ -182,9 +182,9 @@ def annuity_factor_table():
     unauthorised technical rate.  Sorted on read, because
     ``Projection.annuity_factor`` indexes into it.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / annuity_factor_file,                           # noqa: F821
-        index_col=["sex", "age"]).sort_index()
+    frame = pd.read_csv(input_dir() / annuity_factor_file)                     # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"]).sort_index()
 
 
 # ---------------------------------------------------------------------------
@@ -201,3 +201,9 @@ exit_table_file = "exit_table.csv"
 annuity_factor_file = "annuity_factor.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+Compartment = ("Pickle", 2)
+
+AllocationProfile = ("Pickle", 3)

@@ -295,13 +295,11 @@ def sex(life=1):
     portfolio sits above the population share.
     """
     if life == 1:
-        v = str(model_point()["sex"])
+        v = Sex[model_point()["sex"]]
     elif life == 2:
-        v = str(model_point()["surv_sex"])
+        v = Sex[model_point()["surv_sex"]]
     else:
         raise ValueError("invalid life")
-    if v not in ("M", "F"):
-        raise ValueError("invalid sex")
     return v
 
 
@@ -352,10 +350,7 @@ def refund_form():
     cannot be defined by reference to a discretionary quantity; which reading a German
     carrier uses was not established, and the two diverge materially over twenty years.
     """
-    v = str(model_point()["refund_form"])
-    if v not in ("none", "full"):
-        raise ValueError("invalid refund_form")
-    return v
+    return RefundForm[model_point()["refund_form"]]
 
 
 def surv_pct():
@@ -393,10 +388,7 @@ def payment_timing():
     assumption changes anyone would argue about, so model point 9 is the anchor cell in
     arrears and exists to make the difference measurable rather than assumed.
     """
-    v = str(model_point()["payment_timing"])
-    if v not in ("advance", "arrears"):
-        raise ValueError("invalid payment_timing")
-    return v
+    return PaymentTiming[model_point()["payment_timing"]]
 
 
 def tariff_int_rate():
@@ -426,10 +418,7 @@ def surplus_form():
     intermediate on both axes.  All four distribute the same expected surplus and differ
     only in *when*.
     """
-    v = str(model_point()["surplus_form"])
-    if v not in ("none", "konstant", "teildynamisch", "volldynamisch"):
-        raise ValueError("invalid surplus_form")
-    return v
+    return SurplusForm[model_point()["surplus_form"]]
 
 
 def annuity_pp_init():
@@ -568,6 +557,16 @@ def calendar_year(t):
     return entry_year() + t // 12
 
 
+def mort_age_max():
+    """The last age of the mortality table (every (basis, sex) group spans the same ages, checked at load)."""
+    return int(data.mort_table().index.max()[2])                     # noqa: F821
+
+
+def mort_age_min():
+    """The first age of the mortality table (every (basis, sex) group spans the same ages, checked at load)."""
+    return int(data.mort_table().index.min()[2])                     # noqa: F821
+
+
 def mort_rate_at_age(x, table_sex, basis):
     """The table's annual death rate at attained age ``x``.
 
@@ -580,13 +579,22 @@ def mort_rate_at_age(x, table_sex, basis):
     matters: on a joint-life point the frame runs to the *second* life's horizon, so the
     annuitant's attained age passes the closing row while their survival is already zero.
     """
-    if table_sex == "U":
-        return (mix_male * mort_rate_at_age(x, "M", basis)           # noqa: F821
-                + (1.0 - mix_male) * mort_rate_at_age(x, "F", basis))   # noqa: F821
+    if table_sex == Sex.U:
+        return (mix_male * mort_rate_at_age(x, Sex.M, basis)           # noqa: F821
+                + (1.0 - mix_male) * mort_rate_at_age(x, Sex.F, basis))   # noqa: F821
     tab = data.mort_table()                                          # noqa: F821
-    ages = tab.index.get_level_values("age")
-    xx = min(max(int(x), int(ages.min())), int(ages.max()))
+    xx = min(max(int(x), mort_age_min()), mort_age_max())
     return float(tab.loc[(basis, table_sex, xx), "mort_rate"])
+
+
+def improve_age_max():
+    """The last age of the improvement table (every basis spans the same ages, checked at load)."""
+    return int(data.improvement_table().index.max()[1])              # noqa: F821
+
+
+def improve_age_min():
+    """The first age of the improvement table (every basis spans the same ages, checked at load)."""
+    return int(data.improvement_table().index.min()[1])              # noqa: F821
 
 
 def improve_rate_at_age(x, basis):
@@ -599,8 +607,7 @@ def improve_rate_at_age(x, basis):
     forty-year stream, and a proxy reproducing only the level is not a proxy for the table.
     """
     tab = data.improvement_table()                                   # noqa: F821
-    ages = tab.index.get_level_values("age")
-    xx = min(max(int(x), int(ages.min())), int(ages.max()))
+    xx = min(max(int(x), improve_age_min()), improve_age_max())
     return float(tab.loc[(basis, xx), "improve_rate"])
 
 
@@ -639,7 +646,7 @@ def mort_rate(t, life=1):
     """
     if life == 2 and surv_pct() == 0.0:
         return 0.0
-    return mort_rate_gen(age(t, life), sex(life), birth_year(life), "SECOND")
+    return mort_rate_gen(age(t, life), sex(life), birth_year(life), Basis.SECOND)
 
 
 def mort_rate_mth(t, life=1):
@@ -665,7 +672,7 @@ def mort_rate_tariff(t, life=1):
     """
     if life == 2 and surv_pct() == 0.0:
         return 0.0
-    return mort_rate_gen(age(t, life), "U", birth_year(life), "FIRST")
+    return mort_rate_gen(age(t, life), Sex.U, birth_year(life), Basis.FIRST)
 
 
 def mort_rate_tariff_mth(t, life=1):
@@ -740,7 +747,7 @@ def first_pay_mth():
     require the payee to be alive then.  The two conventions therefore differ only in
     *which months carry an instalment*.
     """
-    if payment_timing() == "advance":
+    if payment_timing() == PaymentTiming.advance:
         return defer_mths()
     return defer_mths() + pay_period_mths()
 
@@ -826,29 +833,31 @@ def annuity_pp_derived():
     a = annuity_factor()
     load = 1.0 + expense_load_beta                                   # noqa: F821
     r_max = net_single_prem() / (a * load)
-    if refund_form() == "none":
+    if refund_form() == RefundForm.none:
         return r_max
     v = 1.0 / (1.0 + tariff_int_rate())
     p = pay_period_mths()
     fp = first_pay_mth()
     sp = single_prem()
     target = net_single_prem()
-    disc = []
-    dens = []
+    disc = [0.0] * proj_len()
+    dens = [0.0] * proj_len()
     paid = []
+    m = 0
     for t in range(0, proj_len()):
         d = tariff_lives(t, 1) - tariff_lives(t + 1, 1)
         if d <= 0.0:
             continue
-        disc.append(v ** (t / 12.0))
-        dens.append(d)
+        disc[m] = v ** (t / 12.0)
+        dens[m] = d
         paid.append(0 if t < fp else (t - fp) // p + 1)
+        m += 1
     lo = 0.0
     hi = r_max
     for it in range(solve_max_iter):                                 # noqa: F821
         mid = 0.5 * (lo + hi)
         g = mid * a * load
-        for j in range(len(dens)):
+        for j in range(m):
             g += disc[j] * dens[j] * max(sp - paid[j] * mid, 0.0)
         if g > target:
             hi = mid
@@ -868,7 +877,7 @@ def refund_pv():
     ``R ä (1 + beta) + refund_pv()``, and on model point 3 the refund leg is a fifth of the
     *Nettoeinmalbeitrag*.
     """
-    if refund_form() == "none":
+    if refund_form() == RefundForm.none:
         return 0.0
     v = 1.0 / (1.0 + tariff_int_rate())
     p = pay_period_mths()
@@ -1007,7 +1016,7 @@ def refund_pp(t):
     whole *Einmalbeitrag*: the *Beitragsrückgewähr* on death before *Rentenbeginn* falls
     out of the same machinery without a second mechanic.
     """
-    if refund_form() == "none":
+    if refund_form() == RefundForm.none:
         return 0.0
     return max(single_prem() - cum_annuity_guar_pp(t), 0.0)
 
@@ -1078,7 +1087,7 @@ def premiums(t):
     return 0.0
 
 
-def annuity_payments(t, kind=None):
+def annuity_payments(t, kind):
     """Instalments paid to a living payee in month ``t``, by kind; the total when omitted.
 
     ``"ANNUITANT"``
@@ -1097,20 +1106,20 @@ def annuity_payments(t, kind=None):
     additive certain floor and the survivor paid on top of the guarantee — in a column
     rather than in a total.
     """
-    if kind is None:
-        return sum(annuity_payments(t, k) for k in ("ANNUITANT", "SURVIVOR"))
+    if kind == AnnuityKind.ALL:
+        return sum(annuity_payments(t, k) for k in (AnnuityKind.ANNUITANT, AnnuityKind.SURVIVOR))
     if not is_payment_mth(t):
         return 0.0
-    if kind == "ANNUITANT":
+    if kind == AnnuityKind.ANNUITANT:
         return pols_if_init() * annuity_pp(t) * lives_if(t, 1)
-    if kind == "SURVIVOR":
+    if kind == AnnuityKind.SURVIVOR:
         return (pols_if_init() * annuity_pp(t) * surv_pct()
                 * (1.0 - lives_if(t, 1)) * lives_if(t, 2)
                 * (1.0 - certain_floor(t)))
     raise ValueError("invalid kind")
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Death outgo in month ``t``, by kind; the total when ``kind`` is omitted.
 
     ``"GUARANTEE"``
@@ -1128,14 +1137,14 @@ def claims(t, kind=None):
     surrender-value cells anywhere in this model: once the *Rentenbezug* has begun the
     contract cannot be terminated, so § 169 VVG is displaced and there is nothing to pay.
     """
-    if kind is None:
-        return sum(claims(t, k) for k in ("GUARANTEE", "REFUND"))
-    if kind == "GUARANTEE":
+    if kind == ClaimKind.ALL:
+        return sum(claims(t, k) for k in (ClaimKind.GUARANTEE, ClaimKind.REFUND))
+    if kind == ClaimKind.GUARANTEE:
         if not is_payment_mth(t):
             return 0.0
         return (pols_if_init() * annuity_pp(t) * certain_floor(t)
                 * (1.0 - lives_if(t, 1)))
-    if kind == "REFUND":
+    if kind == ClaimKind.REFUND:
         return pols_if_init() * refund_pp(t) * lives_death(t, 1)
     raise ValueError("invalid kind")
 
@@ -1190,7 +1199,7 @@ def liability_cf(t):
     beside :func:`net_cf` so the sign convention is verifiable in the frame rather than
     only in prose.
     """
-    return annuity_payments(t) + claims(t) + expenses(t) - premiums(t)
+    return annuity_payments(t, AnnuityKind.ALL) + claims(t, ClaimKind.ALL) + expenses(t) - premiums(t)
 
 
 def net_cf(t):
@@ -1223,7 +1232,7 @@ def check_net_cf_resid(t):
         paid = pols_if_init() * annuity_pp(t) * payment_factor(t)
     else:
         paid = 0.0
-    return net_cf(t) - (premiums(t) - paid - claims(t, "REFUND") - expenses(t))
+    return net_cf(t) - (premiums(t) - paid - claims(t, ClaimKind.REFUND) - expenses(t))
 
 
 def check_net_cf():
@@ -1341,7 +1350,7 @@ def check_refund_run_off():
     *Überschussrente* would retire the capital sooner and the count would not match.
     """
     tol = roll_fwd_tol * max(single_prem() * pols_if_init(), 1.0)    # noqa: F821
-    if refund_form() == "none":
+    if refund_form() == RefundForm.none:
         return bool(all(refund_pp(t) == 0.0
                         for t in range(t_start(), proj_len())))
     if not all(abs(check_refund_run_off_resid(t)) <= tol
@@ -1376,7 +1385,7 @@ def check_payment_factor_resid(t):
     guarantee beneficiary — partition the instalment exactly, with nothing double-counted
     and nothing dropped.
     """
-    lhs = annuity_payments(t) + claims(t, "GUARANTEE")
+    lhs = annuity_payments(t, AnnuityKind.ALL) + claims(t, ClaimKind.GUARANTEE)
     if is_payment_mth(t):
         rhs = pols_if_init() * annuity_pp(t) * payment_factor(t)
     else:
@@ -1464,7 +1473,7 @@ def check_death_option_xor():
     against a plain annuity leg, and a model point combining the two would price a
     guarantee the solve does not see.
     """
-    return bool(refund_form() == "none"
+    return bool(refund_form() == RefundForm.none
                 or (guar_years() == 0 and surv_pct() == 0.0))
 
 
@@ -1500,9 +1509,9 @@ def result_cf():
         {
             "pols_if": [pols_if(t) for t in ts],
             "premiums": [premiums(t) for t in ts],
-            "annuity_payments": [annuity_payments(t) for t in ts],
-            "claims_guarantee": [claims(t, "GUARANTEE") for t in ts],
-            "claims_refund": [claims(t, "REFUND") for t in ts],
+            "annuity_payments": [annuity_payments(t, AnnuityKind.ALL) for t in ts],
+            "claims_guarantee": [claims(t, ClaimKind.GUARANTEE) for t in ts],
+            "claims_refund": [claims(t, ClaimKind.REFUND) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "liability_cf": [liability_cf(t) for t in ts],
             "net_cf": [net_cf(t) for t in ts],
@@ -1571,3 +1580,17 @@ solve_tol = 1e-10
 solve_max_iter = 200
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+Basis = ("Pickle", 2)
+
+RefundForm = ("Pickle", 4)
+
+PaymentTiming = ("Pickle", 5)
+
+SurplusForm = ("Pickle", 3)
+
+AnnuityKind = ("Pickle", 6)
+
+ClaimKind = ("Pickle", 7)

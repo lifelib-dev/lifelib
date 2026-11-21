@@ -336,18 +336,12 @@ def shape():
     to US dollars each month, is a different cash-flow object and is out of scope; a
     model point naming it is rejected here.
     """
-    v = model_point()["shape"]
-    if v not in ("LEVEL", "SINGLE"):
-        raise ValueError("invalid shape: " + str(v))
-    return v
+    return Shape[model_point()["shape"]]
 
 
 def sex():
     """The sex (M / F) of the insured; the two are rated separately [S2]."""
-    v = model_point()["sex"]
-    if v not in ("M", "F"):
-        raise ValueError("invalid sex: " + str(v))
-    return v
+    return Sex[model_point()["sex"]]
 
 
 def issue_age():
@@ -368,10 +362,7 @@ def currency():
     the composite is built on are USD tables, so the reference implementation writes
     USD and rejects anything else by name rather than silently pricing it.
     """
-    v = model_point()["currency"]
-    if v != "USD":
-        raise ValueError("only USD is in scope: " + str(v))
-    return v
+    return Currency[model_point()["currency"]]
 
 
 def sum_assured():
@@ -461,7 +452,7 @@ def low_cv():
     rather than given an arbitrary release date.
     """
     v = bool(model_point()["low_cv"])
-    if v and shape() == "LEVEL" and prem_months() == 0:
+    if v and shape() == Shape.LEVEL and prem_months() == 0:
         raise ValueError("低解約返戻金特則 has no 払込満了 to release at on a 終身払 contract")
     return v
 
@@ -490,10 +481,7 @@ def idb_basis():
         premiums, on the same charge basis: :func:`av0_pro_pp`.  See the Space
         docstring for why this is the switch and not the base.
     """
-    v = model_point()["idb_basis"]
-    if v not in ("fund", "prospective"):
-        raise ValueError("invalid idb_basis: " + str(v))
-    return v
+    return IdbBasis[model_point()["idb_basis"]]
 
 
 def target_on():
@@ -510,7 +498,7 @@ def target_on():
     only the name is not.
     """
     v = bool(model_point()["target_on"])
-    if v and shape() != "SINGLE":
+    if v and shape() != Shape.SINGLE:
         raise ValueError("the target-value rider is a SINGLE-shape option")
     return v
 
@@ -533,10 +521,8 @@ def target_action():
     the hit and the same product immediately re-sold to the same customer.  The
     contract and the evidence disagree and the choice is the user's.
     """
-    v = model_point()["target_action"]
-    if v not in ("convert", "surrender", "none"):
-        raise ValueError("invalid target_action: " + str(v))
-    if target_on() and v == "none":
+    v = TargetAction[model_point()["target_action"]]
+    if target_on() and v == TargetAction.none:
         raise ValueError("target_action must be chosen where the rider is elected")
     return v
 
@@ -548,7 +534,7 @@ def dyn_lapse():
     premium actually paid at a known rate.
     """
     v = bool(model_point()["dyn_lapse"])
-    if v and shape() != "SINGLE":
+    if v and shape() != Shape.SINGLE:
         raise ValueError("dynamic surrender is specified on the SINGLE shape only")
     return v
 
@@ -562,7 +548,7 @@ def apl_on():
     not exist, and is rejected here.
     """
     v = bool(model_point()["apl_on"])
-    if v and shape() == "SINGLE":
+    if v and shape() == Shape.SINGLE:
         raise ValueError("the APL is structurally absent on the SINGLE shape")
     return v
 
@@ -619,8 +605,8 @@ def omega_age():
     109 male and 113 female on 生保標準生命表2018（死亡保険用）.  It is read off the table
     rather than hard-coded, so replacing the table moves the horizon with it.
     """
-    tbl = data.mort_table().xs(sex(), level="sex")                   # noqa: F821
-    return int(tbl.index[tbl["mort_rate"] >= 1.0].min())
+    tbl = data.mort_table().loc[sex()]                               # noqa: F821
+    return int(min(a for a in tbl.index if tbl.loc[a, "mort_rate"] >= 1.0))
 
 
 def proj_len():
@@ -642,7 +628,7 @@ def prem_months_eff():
     One month on the SINGLE shape; the whole horizon where ``prem_months`` is 0, which
     denotes 終身払; otherwise the model point's own value.
     """
-    if shape() == "SINGLE":
+    if shape() == Shape.SINGLE:
         return 1
     n = prem_months()
     return proj_len() if n == 0 else n
@@ -703,6 +689,11 @@ def mort_rate_mth(t):
     return 1.0 - (1.0 - mort_rate(t)) ** (1.0 / 12.0)
 
 
+def lapse_schedule():
+    """The lapse rates of this policy's shape, by policy year."""
+    return data.lapse_table().loc[shape()]                           # noqa: F821
+
+
 def lapse_rate_base(t):
     """The table annual surrender rate for this shape in month t, before any module.
 
@@ -712,7 +703,7 @@ def lapse_rate_base(t):
     4 / 3%, rests on no public evidence at all and is a **[std]** judgement.  Policy
     years beyond the table take its last row.
     """
-    tbl = data.lapse_table().xs(shape(), level="shape")              # noqa: F821
+    tbl = lapse_schedule()
     y = min(policy_year(t), int(tbl.index.max()))
     return float(tbl.loc[y, "lapse_rate"])
 
@@ -786,9 +777,9 @@ def prem_charge_rate(t):
     unpublished 基礎書類.  One front-end rate on the SINGLE shape, 4.50% of the single
     premium at issue, which *is* published.
     """
-    if t < int(charge_param("prem_charge_early_months")):
-        return charge_param("prem_charge_early")
-    return charge_param("prem_charge_late")
+    if t < int(charge_param(ChargeItem.prem_charge_early_months)):
+        return charge_param(ChargeItem.prem_charge_early)
+    return charge_param(ChargeItem.prem_charge_late)
 
 
 def maint_rate():
@@ -799,7 +790,7 @@ def maint_rate():
     reproducing its published surrender values requires the fund to grow at the
     declared rate exactly.
     """
-    return charge_param("maint_rate")
+    return charge_param(ChargeItem.maint_rate)
 
 
 def coi_charged():
@@ -810,7 +801,7 @@ def coi_charged():
     the 積立金 — which is why a negative 市場価格調整 can raise the death benefit above the
     account value without creating a charge.
     """
-    return charge_param("coi_charged") > 0.0
+    return charge_param(ChargeItem.coi_charged) > 0.0
 
 
 def prem_due_pp(t):
@@ -821,7 +812,7 @@ def prem_due_pp(t):
     """
     if t >= prem_months_eff():
         return 0.0
-    return single_premium() if shape() == "SINGLE" else premium_mth_pp()
+    return single_premium() if shape() == Shape.SINGLE else premium_mth_pp()
 
 
 def charge_init(t):
@@ -847,7 +838,7 @@ def charge_maint(t):
     Charged on the fund **after** the premium and the 契約初期費用 and **before** the
     cost of insurance, which is what fixes the order of the recursion.  Not a cash flow.
     """
-    return (maint_rate() / 12.0) * av_pp_at(t, "AFT_PREM")
+    return (maint_rate() / 12.0) * av_pp_at(t, AvTiming.AFT_PREM)
 
 
 def charge_coi(t):
@@ -869,7 +860,7 @@ def charge_coi(t):
     """
     if not coi_charged():
         return 0.0
-    fund = av_pp_at(t, "AFT_CHARGE_MAINT")
+    fund = av_pp_at(t, AvTiming.AFT_CHARGE_MAINT)
     raw = coi_rate_mth(t) * max(0.0, benefit_pp(t) - fund)
     return min(raw, max(0.0, fund))
 
@@ -895,15 +886,15 @@ def av_pp_at(t, timing):
     ``"AFT_INT"``
         ``AV(t+1)``, the end-of-month state including any 特別積立金.
     """
-    if timing == "BEF_PREM":
+    if timing == AvTiming.BEF_PREM:
         return av_pp(t)
-    if timing == "AFT_PREM":
+    if timing == AvTiming.AFT_PREM:
         return av_pp(t) + prem_to_av_pp(t)
-    if timing == "AFT_CHARGE_MAINT":
-        return av_pp_at(t, "AFT_PREM") - charge_maint(t)
-    if timing == "AFT_CHARGE":
-        return av_pp_at(t, "AFT_CHARGE_MAINT") - charge_coi(t)
-    if timing == "AFT_INT":
+    if timing == AvTiming.AFT_CHARGE_MAINT:
+        return av_pp_at(t, AvTiming.AFT_PREM) - charge_maint(t)
+    if timing == AvTiming.AFT_CHARGE:
+        return av_pp_at(t, AvTiming.AFT_CHARGE_MAINT) - charge_coi(t)
+    if timing == AvTiming.AFT_INT:
         return av_pp(t + 1)
     raise ValueError("invalid timing: " + str(timing))
 
@@ -916,7 +907,7 @@ def av_pp_bef_sr(t):
     """
     if t <= 0:
         return 0.0
-    return av_pp_at(t - 1, "AFT_CHARGE") * (1.0 + credit_rate_mth())
+    return av_pp_at(t - 1, AvTiming.AFT_CHARGE) * (1.0 + credit_rate_mth())
 
 
 def special_reserve_pp(t):
@@ -935,9 +926,9 @@ def special_reserve_pp(t):
     non-zero top-up on the base run is a bug.
     """
     if t == 120:
-        rate = charge_param("special_reserve_rate_10")
+        rate = charge_param(ChargeItem.special_reserve_rate_10)
     elif t == 240:
-        rate = charge_param("special_reserve_rate_20")
+        rate = charge_param(ChargeItem.special_reserve_rate_20)
     else:
         return 0.0
     if rate == 0.0:
@@ -1015,9 +1006,9 @@ def idb_pp(t):
 
     **Identically zero on the guaranteed run**, by construction of :func:`av0_pp`.
     """
-    if shape() != "LEVEL" or t <= 0:
+    if shape() != Shape.LEVEL or t <= 0:
         return 0.0
-    bench = av0_pro_pp(t) if idb_basis() == "prospective" else av0_pp(t)
+    bench = av0_pro_pp(t) if idb_basis() == IdbBasis.prospective else av0_pp(t)
     raw = max(0.0, av_pp(t) - bench)
     if not idb_ratchet():
         return raw
@@ -1032,7 +1023,7 @@ def benefit_pp(t):
     the 市場価格調整 is strongly negative the surrender value exceeds the account value and
     the death benefit follows the higher.
     """
-    if shape() == "SINGLE":
+    if shape() == Shape.SINGLE:
         return max(av_pp(t), cv_pp(t))
     return sum_assured() + idb_pp(t)
 
@@ -1047,10 +1038,10 @@ def surr_charge_rate(t):
     On the 0-based month index the scale runs over months ``0 ... 119`` and is zero from
     month 120, and the step is ``t // 12`` — policy year 1 is ``t // 12 == 0``.
     """
-    if t >= int(charge_param("surr_charge_months")):
+    if t >= int(charge_param(ChargeItem.surr_charge_months)):
         return 0.0
-    return max(0.0, charge_param("surr_charge_start")
-               - charge_param("surr_charge_step") * (t // 12))
+    return max(0.0, charge_param(ChargeItem.surr_charge_start)
+               - charge_param(ChargeItem.surr_charge_step) * (t // 12))
 
 
 def mva_rem(t):
@@ -1059,7 +1050,7 @@ def mva_rem(t):
     Each period restarts at its 積立利率計算基準日 **[std]**, so ``rem`` saws from the full
     period down to zero and back.  ``rem(36) = 12`` on the worked example's cell.
     """
-    if shape() != "SINGLE" or rate_period_y() <= 0:
+    if shape() != Shape.SINGLE or rate_period_y() <= 0:
         return 0.0
     return rate_period_y() - (t % (12 * rate_period_y())) / 12.0
 
@@ -1076,13 +1067,13 @@ def mva_rate(t):
     value and a fall **increases** it.  Implementing this as a deduction floored at zero
     models a different product.
     """
-    if shape() != "SINGLE" or rate_period_y() <= 1:
+    if shape() != Shape.SINGLE or rate_period_y() <= 1:
         return 0.0
     if t % (12 * rate_period_y()) == 0:
         return 0.0
-    a = charge_param("mva_spread")
-    r0 = charge_param("mva_base_rate")
-    d = charge_param("mva_damping")
+    a = charge_param(ChargeItem.mva_spread)
+    r0 = charge_param(ChargeItem.mva_base_rate)
+    d = charge_param(ChargeItem.mva_damping)
     return 1.0 - (1.0 + (mva_delta(t) + a) / (1.0 + r0)) ** (-d * mva_rem(t))
 
 
@@ -1102,8 +1093,14 @@ def low_cv_rate(t):
         return 1.0
     years = -(-left // 12)
     if years >= 4:
-        return charge_param("low_cv_ge4")
-    return charge_param("low_cv_%d" % years)
+        return charge_param(ChargeItem.low_cv_ge4)
+    if years == 3:
+        return charge_param(ChargeItem.low_cv_3)
+    if years == 2:
+        return charge_param(ChargeItem.low_cv_2)
+    if years == 1:
+        return charge_param(ChargeItem.low_cv_1)
+    raise KeyError("low_cv_%d" % years)
 
 
 def cv_pp(t):
@@ -1299,11 +1296,11 @@ def pols_if_at(t, timing):
     ``"AFT_DECR"``
         l(t+1), the end-of-month state.
     """
-    if timing == "BEF_DECR":
+    if timing == PolTiming.BEF_DECR:
         return pols_if(t)
-    if timing == "BEF_LAPSE":
+    if timing == PolTiming.BEF_LAPSE:
         return pols_if(t) * (1.0 - mort_rate_mth(t))
-    if timing == "AFT_DECR":
+    if timing == PolTiming.AFT_DECR:
         return pols_if(t + 1)
     raise ValueError("invalid timing: " + str(timing))
 
@@ -1357,7 +1354,7 @@ def premiums(t):
     return prem_due_pp(t) * pols_payer(t)
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Benefit outgo at the end of month t, by kind; the total when kind is omitted.
 
     ``"DEATH"``
@@ -1370,23 +1367,23 @@ def claims(t, kind=None):
         Where the target election is ``"surrender"`` the policies leaving on
         the hit are paid here as well.
     """
-    if kind is None:
-        return claims(t, "DEATH") + claims(t, "LAPSE")
+    if kind == Kind.ALL:
+        return claims(t, Kind.DEATH) + claims(t, Kind.LAPSE)
     if t >= proj_len():
         return 0.0
     qm = mort_rate_mth(t)
-    if kind == "DEATH":
+    if kind == Kind.DEATH:
         gross = benefit_pp(t) * pols_payer(t) * qm
         net = max(0.0, benefit_pp(t) - loan_pp(t)) * pols_if_apl(t) * qm
         return gross + net
-    if kind == "LAPSE":
+    if kind == Kind.LAPSE:
         w = lapse_rate_mth(t)
         keep = apl_nonpay_share if apl_intercept(t) else 0.0         # noqa: F821
         payer = pols_payer(t) * (1.0 - qm) * w * (1.0 - keep)
         apl = (pols_if_apl(t) * (1.0 - qm) * w
                * (1.0 - apl_nonpay_share))                           # noqa: F821
         out = cv_pp(t + 1) * payer + max(0.0, cv_pp(t + 1) - loan_pp(t)) * apl
-        if target_action() == "surrender":
+        if target_action() == TargetAction.surrender:
             out = out + cv_pp(t + 1) * pols_target(t)
         return out
     raise ValueError("invalid kind: " + str(kind))
@@ -1402,7 +1399,7 @@ def conversions(t):
     boundary is **[std]** and is why the two target elections differ in where the money
     is booked rather than in how much of it there is.
     """
-    if target_action() != "convert" or t >= proj_len():
+    if target_action() != TargetAction.convert or t >= proj_len():
         return 0.0
     return cv_pp(t + 1) * pols_target(t)
 
@@ -1458,7 +1455,7 @@ def commissions(t):
     """
     if t >= proj_len():
         return 0.0
-    if shape() == "SINGLE":
+    if shape() == Shape.SINGLE:
         init = (comm_init_single_rate * single_premium()             # noqa: F821
                 * pols_if(t) if t == 0 else 0.0)
         trail = 0.0
@@ -1490,7 +1487,7 @@ def net_cf(t):
     margins that thin further as the surrender benefit grows, and a long negative tail
     after 払込満了 where claims and maintenance run on with no premium behind them.
     """
-    return (premiums(t) - claims(t) - conversions(t) - claim_expenses(t)
+    return (premiums(t) - claims(t, Kind.ALL) - conversions(t) - claim_expenses(t)
             - expenses(t) - commissions(t))
 
 
@@ -1499,7 +1496,7 @@ def benefits_usd(t):
 
     The quantity that crosses the currency boundary outbound, at ``e - s``.
     """
-    return claims(t) + conversions(t)
+    return claims(t, Kind.ALL) + conversions(t)
 
 
 def premiums_jpy(t):
@@ -1593,7 +1590,7 @@ def check_av_roll_fwd_resid(t):
     ``AV(t+1) - [(AV(t) + P - C_init - C_maint - C_coi)(1 + j) + 特別積立金(t+1)]``,
     rebuilt from the charge cells rather than from the recursion that produced it.
     """
-    built = (av_pp_at(t, "AFT_PREM") - charge_maint(t) - charge_coi(t)) \
+    built = (av_pp_at(t, AvTiming.AFT_PREM) - charge_maint(t) - charge_coi(t)) \
         * (1.0 + credit_rate_mth()) + special_reserve_pp(t + 1)
     return av_pp(t + 1) - built
 
@@ -1625,9 +1622,9 @@ def check_cv_ledger_resid(t):
     apl_exit = (pols_if_apl(t) * (1.0 - mort_rate_mth(t)) * lapse_rate_mth(t)
                 * (1.0 - apl_nonpay_share))                          # noqa: F821
     built = cv * pols_lapse(t) - min(loan_pp(t), cv) * apl_exit
-    if target_action() == "surrender":
+    if target_action() == TargetAction.surrender:
         built = built + cv * pols_target(t)
-    return claims(t, "LAPSE") - built
+    return claims(t, Kind.LAPSE) - built
 
 
 def check_cv_ledger():
@@ -1651,7 +1648,7 @@ def check_net_cf_resid(t):
     one as revenue alongside the premium that funded it would break this identity.
     """
     gross = (prem_to_av_pp(t) + charge_init(t)) * pols_payer(t)
-    built = (gross - claims(t, "DEATH") - claims(t, "LAPSE")
+    built = (gross - claims(t, Kind.DEATH) - claims(t, Kind.LAPSE)
              - conversions(t) - claim_expenses(t) - expenses(t)
              - commissions(t))
     return net_cf(t) - built
@@ -1698,8 +1695,8 @@ def result_cf():
         {
             "pols_if": [pols_if(t) for t in ts],
             "premiums": [premiums(t) for t in ts],
-            "claims_death": [claims(t, "DEATH") for t in ts],
-            "claims_lapse": [claims(t, "LAPSE") for t in ts],
+            "claims_death": [claims(t, Kind.DEATH) for t in ts],
+            "claims_lapse": [claims(t, Kind.LAPSE) for t in ts],
             "conversions": [conversions(t) for t in ts],
             "claim_expenses": [claim_expenses(t) for t in ts],
             "expenses": [expenses(t) for t in ts],
@@ -1803,3 +1800,21 @@ comm_trail_rate = 0.0075
 comm_trail_years = 7
 
 pd = ("Module", "pandas")
+
+Shape = ("Pickle", 2)
+
+Sex = ("Pickle", 1)
+
+Currency = ("Pickle", 4)
+
+IdbBasis = ("Pickle", 5)
+
+TargetAction = ("Pickle", 6)
+
+ChargeItem = ("Pickle", 3)
+
+AvTiming = ("Pickle", 7)
+
+PolTiming = ("Pickle", 8)
+
+Kind = ("Pickle", 9)

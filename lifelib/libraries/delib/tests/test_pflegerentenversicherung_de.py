@@ -50,6 +50,7 @@ import pytest
 from modelx.core.errors import FormulaError
 
 from de_registry import MODELS, LIB
+from lifelib.libraries.delib.products.pflegerentenversicherung.enums import Kind, PremMode, Sex, Status, Timing
 
 
 def model_files(folder):
@@ -195,9 +196,9 @@ UNISEX_CROSS_SUBSIDY = 5969.98         # net_cf(male) - net_cf(female), undiscou
 # The rates that drive the two cells apart: male active mortality is higher at every age,
 # male incidence lower, and incidence wins.
 SEX_RATES = {
-    ("M", 45, "mort"): 0.0016636521, ("F", 45, "mort"): 0.0007795609,
-    ("M", 85, "mort"): 0.1049833018, ("F", 85, "mort"): 0.0699052076,
-    ("M", 85, "inc"): 0.1342986651, ("F", 85, "inc"): 0.1808911145,
+    (Sex.M, 45, "mort"): 0.0016636521, (Sex.F, 45, "mort"): 0.0007795609,
+    (Sex.M, 85, "mort"): 0.1049833018, (Sex.F, 85, "mort"): 0.0699052076,
+    (Sex.M, 85, "inc"): 0.1342986651, (Sex.F, 85, "inc"): 0.1808911145,
 }
 
 # The notes' switchable-variant table: four cells on the same tables, differing only in
@@ -262,9 +263,9 @@ def test_worked_example_row(de_pflege_anchor, t):
     assert p.pols_care(t) == pytest.approx(care, abs=SIX_DP)
     assert p.pols_prem(t) == pytest.approx(prem_pols, abs=SIX_DP)
     assert p.premiums(t) == pytest.approx(prem, abs=CENT)
-    assert p.claims(t, "ANNUITY") == pytest.approx(ann, abs=CENT)
-    assert p.claims(t, "LAPSE") == pytest.approx(lapse, abs=CENT)
-    assert p.claims(t, "DEATH") == 0.0
+    assert p.claims(t, Kind.ANNUITY) == pytest.approx(ann, abs=CENT)
+    assert p.claims(t, Kind.LAPSE) == pytest.approx(lapse, abs=CENT)
+    assert p.claims(t, Kind.DEATH) == 0.0
     assert p.expenses(t) == pytest.approx(exp, abs=CENT)
     assert p.claim_expenses(t) == pytest.approx(cexp, abs=CENT)
     assert p.net_cf(t) == pytest.approx(net, abs=CENT)
@@ -369,7 +370,7 @@ def test_month_zero_rebuilt_with_a_calculator(de_pflege_anchor):
         770.380907 + 2.000000 + 1.925952, abs=CENT)
     assert 0.03 * p.premiums(0) == pytest.approx(1.925952, abs=5e-6)
     assert p.claim_expenses(0) == 0.0
-    assert p.claims(0) == 0.0
+    assert p.claims(0, Kind.ALL) == 0.0
     assert p.net_cf(0) == pytest.approx(-710.108450, abs=CENT)
     assert p.net_cf(0) == pytest.approx(p.premiums(0) - p.expenses(0), rel=1e-12)
 
@@ -431,7 +432,7 @@ def test_the_first_annuity_payment_grade_by_grade(de_pflege_anchor):
             contribution, abs=5e-8)
         total += contribution
     assert total == pytest.approx(FIRST_ANNUITY_TOTAL, abs=5e-9)
-    assert p.claims(1, "ANNUITY") == pytest.approx(FIRST_ANNUITY_TOTAL, abs=5e-8)
+    assert p.claims(1, Kind.ANNUITY) == pytest.approx(FIRST_ANNUITY_TOTAL, abs=5e-8)
     assert sum(p.pols_entry(0, g) for g in range(1, 6)) == pytest.approx(
         p.pols_care(1), rel=1e-12)
 
@@ -496,14 +497,14 @@ def test_male_twin_row(pflegerentenversicherung, t):
     """Model point 2 is model point 1 with ``sex = M`` and nothing else changed."""
     age, pols_if, care, prem_pols, prem, ann, lapse, exp, cexp, net = MALE_TWIN[t]
     p = pflegerentenversicherung.Projection[2]
-    assert p.sex() == "M"
+    assert p.sex() == Sex.M
     assert p.age(t) == age
     assert p.pols_if(t) == pytest.approx(pols_if, abs=SIX_DP)
     assert p.pols_care(t) == pytest.approx(care, abs=SIX_DP)
     assert p.pols_prem(t) == pytest.approx(prem_pols, abs=SIX_DP)
     assert p.premiums(t) == pytest.approx(prem, abs=CENT)
-    assert p.claims(t, "ANNUITY") == pytest.approx(ann, abs=CENT)
-    assert p.claims(t, "LAPSE") == pytest.approx(lapse, abs=CENT)
+    assert p.claims(t, Kind.ANNUITY) == pytest.approx(ann, abs=CENT)
+    assert p.claims(t, Kind.LAPSE) == pytest.approx(lapse, abs=CENT)
     assert p.expenses(t) == pytest.approx(exp, abs=CENT)
     assert p.claim_expenses(t) == pytest.approx(cexp, abs=CENT)
     assert p.net_cf(t) == pytest.approx(net, abs=CENT)
@@ -536,9 +537,9 @@ def test_the_male_twin_totals_and_the_unisex_cross_subsidy(
         table = mort if kind == "mort" else inc
         column = "mort_rate" if kind == "mort" else "inc_rate"
         assert float(table.at[(sex, age), column]) == pytest.approx(value, abs=5e-11)
-    assert SEX_RATES[("M", 45, "mort")] > SEX_RATES[("F", 45, "mort")]
-    assert SEX_RATES[("M", 85, "mort")] > SEX_RATES[("F", 85, "mort")]
-    assert SEX_RATES[("M", 85, "inc")] < SEX_RATES[("F", 85, "inc")]
+    assert SEX_RATES[(Sex.M, 45, "mort")] > SEX_RATES[(Sex.F, 45, "mort")]
+    assert SEX_RATES[(Sex.M, 85, "mort")] > SEX_RATES[(Sex.F, 85, "mort")]
+    assert SEX_RATES[(Sex.M, 85, "inc")] < SEX_RATES[(Sex.F, 85, "inc")]
 
 
 # The switchable variants beside the anchor
@@ -602,12 +603,12 @@ def test_pitfall_01_the_annuity_is_a_grade_by_grade_sum(de_pflege_anchor):
     for t in (1, 120, 360, 480):
         rebuilt = p.rente_mth() * sum(
             p.benefit_pct(g) * p.esc_pg(t, g) for g in range(1, 6))
-        assert p.claims(t, "ANNUITY") == pytest.approx(rebuilt, rel=1e-12)
+        assert p.claims(t, Kind.ANNUITY) == pytest.approx(rebuilt, rel=1e-12)
     entry_mean = sum(p.benefit_pct(g) * p.inc_share(g) for g in range(1, 6))
     assert entry_mean == pytest.approx(ENTRY_MIX_MEAN_PCT, abs=5e-7)
     # Exact at t = 1, because the stock there is the entry mix.
     assert entry_mean * p.rente_mth() * p.pols_care(1) == pytest.approx(
-        p.claims(1, "ANNUITY"), rel=1e-12)
+        p.claims(1, Kind.ANNUITY), rel=1e-12)
     exposure = sum(p.pols_care(t) for t in range(n))
     assert exposure == pytest.approx(TOTALS["pols_care"], abs=SIX_DP)
     naive = entry_mean * p.rente_mth() * exposure
@@ -724,7 +725,7 @@ def test_pitfall_04_grade_one_pays_nothing_on_the_delib_std_grid(de_pflege_ancho
         assert p.pols_pg(t, 1) > 0.0
         without_grade_one = p.rente_mth() * sum(
             p.benefit_pct(g) * p.esc_pg(t, g) for g in range(2, 6))
-        assert p.claims(t, "ANNUITY") == pytest.approx(without_grade_one, rel=1e-12)
+        assert p.claims(t, Kind.ANNUITY) == pytest.approx(without_grade_one, rel=1e-12)
         assert p.claim_expenses(t) == pytest.approx(
             1.5 * p.expense_infl_factor(t)
             * sum(p.pols_pg(t, g) for g in range(2, 6)), rel=1e-12)
@@ -950,7 +951,7 @@ def test_pitfall_11_the_beitragsrueckgewaehr_is_paid_gross(pflegerentenversicher
         9.7, abs=0.05)
     for t in (0, 120, 300, 600):
         assert brg.brg_pp(t) == pytest.approx(brg.cum_prem_max_pp(t), rel=1e-15)
-        assert brg.claims(t, "DEATH") == pytest.approx(
+        assert brg.claims(t, Kind.DEATH) == pytest.approx(
             brg.cum_prem_max_pp(t) * brg.pols_death(t), rel=1e-12)
     # The Beitragssumme is capped at the premium term, so cum_prem stops at age 65.
     assert brg.cum_prem_max_pp(300) == pytest.approx(brg.cum_prem_max_pp(600), rel=1e-15)
@@ -976,13 +977,13 @@ def test_pitfall_12_nothing_in_care_lapses(pflegerentenversicherung, de_pflege_a
     n = p.proj_len()
     assert all(p.pols_lapse(t) <= p.pols_act(t) for t in range(n))
     in_claim = pflegerentenversicherung.Projection[12]
-    assert in_claim.status_init() == "pg3"
+    assert in_claim.status_init() == Status.pg3
     assert in_claim.duration_mth_init() == 336
     assert in_claim.pols_act(336) == 0.0
     assert in_claim.pols_pg(336, 3) == 1.0
     assert in_claim.pols_lapse(336) == 0.0
-    assert in_claim.claims(336, "LAPSE") == 0.0
-    assert in_claim.claims(336, "ANNUITY") == pytest.approx(500.0, abs=CENT)
+    assert in_claim.claims(336, Kind.LAPSE) == 0.0
+    assert in_claim.claims(336, Kind.ANNUITY) == pytest.approx(500.0, abs=CENT)
     assert in_claim.premiums(336) == 0.0
     assert in_claim.pols_waived(336) == 1.0
     paid_up = pflegerentenversicherung.Projection[4]
@@ -992,7 +993,7 @@ def test_pitfall_12_nothing_in_care_lapses(pflegerentenversicherung, de_pflege_a
     assert paid_up.lapse_rate(first_paid_up - 1) > 0.0
     assert paid_up.lapse_rate(first_paid_up) == 0.0
     assert paid_up.pols_lapse(first_paid_up) == 0.0
-    assert paid_up.claims(first_paid_up, "LAPSE") == 0.0
+    assert paid_up.claims(first_paid_up, Kind.LAPSE) == 0.0
     assert paid_up.premiums(first_paid_up) == 0.0
     assert paid_up.pols_in_term(first_paid_up) == 0.0
     assert paid_up.pols_if(first_paid_up) > 0.0      # the cover runs on
@@ -1080,8 +1081,8 @@ def test_pitfall_14b_the_blend_and_the_margin_are_two_operations(
     inc = pflegerentenversicherung.Data.incidence_table()
     for t, expected_ratio_to_own in ((0, 1.128), (480, 1.089)):
         x = p.age(t)
-        blended = 0.5 * float(inc.at[("M", x), "inc_rate"]) + 0.5 * float(
-            inc.at[("F", x), "inc_rate"])
+        blended = 0.5 * float(inc.at[(Sex.M, x), "inc_rate"]) + 0.5 * float(
+            inc.at[(Sex.F, x), "inc_rate"])
         assert p.tar_inc_rate(t) == pytest.approx(1.25 * blended, rel=1e-12)
         assert p.tar_inc_rate(t) / p.inc_rate(t) == pytest.approx(
             expected_ratio_to_own, abs=0.001)
@@ -1134,7 +1135,7 @@ def test_pitfall_15_sex_does_not_price(pflegerentenversicherung, de_pflege_ancho
     """
     female = de_pflege_anchor
     male = pflegerentenversicherung.Projection[2]
-    assert female.sex() == "F" and male.sex() == "M"
+    assert female.sex() == Sex.F and male.sex() == Sex.M
     assert female.age_at_entry() == male.age_at_entry() == 45
     assert female.rente_mth() == male.rente_mth()
     assert female.staffel_id() == male.staffel_id()
@@ -1174,7 +1175,7 @@ def test_pitfall_16_instalments_fall_on_due_months_only(pflegerentenversicherung
                 assert p.premium_pp(t) == 0.0
                 assert p.premiums(t) == 0.0
     single = pflegerentenversicherung.Projection[6]
-    assert single.prem_mode() == "single"
+    assert single.prem_mode() == PremMode.single
     assert single.prem_mode_months() == 0
     assert [t for t in range(0, 60) if single.premium_due(t)] == [0]
 
@@ -1238,8 +1239,8 @@ def test_check_net_cf_is_delib_ruling_one(de_pflege_anchor):
                - df["claims_death"] - df["expenses"] - df["claim_expenses"])
     assert (rebuilt - df["net_cf"]).abs().max() == pytest.approx(0.0, abs=1e-12)
     for t in (0, 240, 480):
-        assert p.claims(t) == pytest.approx(
-            p.claims(t, "ANNUITY") + p.claims(t, "LAPSE") + p.claims(t, "DEATH"),
+        assert p.claims(t, Kind.ALL) == pytest.approx(
+            p.claims(t, Kind.ANNUITY) + p.claims(t, Kind.LAPSE) + p.claims(t, Kind.DEATH),
             rel=1e-15)
 
 
@@ -1318,8 +1319,8 @@ def test_result_cf_shape_and_both_signs_of_the_net_flow(de_pflege_anchor):
     assert df["pols_if"].iloc[0] == de_pflege_anchor.pols_if_init()
     # pols_if is a start-of-period count; end-of-period state lives in pols_if_at.
     for t in (0, 120, 480):
-        assert de_pflege_anchor.pols_if_at(t, "BEG") == de_pflege_anchor.pols_if(t)
-        assert de_pflege_anchor.pols_if_at(t, "END") == de_pflege_anchor.pols_if(t + 1)
+        assert de_pflege_anchor.pols_if_at(t, Timing.BEG) == de_pflege_anchor.pols_if(t)
+        assert de_pflege_anchor.pols_if_at(t, Timing.END) == de_pflege_anchor.pols_if(t + 1)
 
 
 def test_invalid_enum_values_raise(de_pflege_anchor):
@@ -1419,7 +1420,7 @@ def test_the_shipped_tables_mark_their_own_provenance():
     assert INPUT_CSVS == {p.name for p in MODEL_DIR.parent.iterdir()
                           if p.suffix == ".csv"}
     assert not any(p.suffix == ".csv" for p in MODEL_DIR.rglob("*"))
-    assert model_files(MODEL_DIR) == {"__init__.py", "_system.json"}
+    assert model_files(MODEL_DIR) == {"__init__.py", "_system.json", "data.pickle"}
     mort = pd.read_csv(MODEL_DIR.parent / "mort_table.csv", index_col=["sex", "age"])
     assert all(p.startswith("[std]") for p in mort["provenance"])
     assert all("not redistributed" in mort.at[(s, a), "provenance"]
@@ -1533,7 +1534,7 @@ def test_round_trip_is_stable(tmp_path):
         for t, row in WORKED_EXAMPLE.items():
             assert p.pols_if(t) == pytest.approx(row[1], abs=SIX_DP)
             assert p.premiums(t) == pytest.approx(row[4], abs=CENT)
-            assert p.claims(t, "ANNUITY") == pytest.approx(row[5], abs=CENT)
+            assert p.claims(t, Kind.ANNUITY) == pytest.approx(row[5], abs=CENT)
             assert p.net_cf(t) == pytest.approx(row[9], abs=CENT)
         assert "Notes symbol" in reread.Projection.doc
         assert p.check_net_cf() is True

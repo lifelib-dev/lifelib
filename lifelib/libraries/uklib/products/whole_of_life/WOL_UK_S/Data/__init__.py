@@ -85,9 +85,11 @@ def mort_table():
     and which come from a sex or smoker factor.  Sorted on read, because
     ``Projection.mort_rate`` indexes into it.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file,                               # noqa: F821
-        index_col=["basis", "sex", "smoker", "age"]).sort_index()
+    frame = pd.read_csv(input_dir() / mort_table_file)              # noqa: F821
+    frame["basis"] = [MortBasis[name] for name in frame["basis"]]
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    frame["smoker"] = [Smoker[name] for name in frame["smoker"]]
+    return frame.set_index(["basis", "sex", "smoker", "age"]).sort_index()
 
 
 def lapse_table():
@@ -101,9 +103,9 @@ def lapse_table():
     public UK whole of life lapse study was retrieved - and on a product with no
     surrender value they are the single largest lever on the liability.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / lapse_table_file,                              # noqa: F821
-        index_col=["cell", "policy_year"]).sort_index()
+    frame = pd.read_csv(input_dir() / lapse_table_file)             # noqa: F821
+    frame["cell"] = [Cell[name] for name in frame["cell"]]
+    return frame.set_index(["cell", "policy_year"]).sort_index()
 
 
 # ---------------------------------------------------------------------------
@@ -116,3 +118,11 @@ mort_table_file = "mort_table.csv"
 lapse_table_file = "lapse_table.csv"
 
 pd = ("Module", "pandas")
+
+Cell = ("Pickle", 1)
+
+Sex = ("Pickle", 2)
+
+Smoker = ("Pickle", 3)
+
+MortBasis = ("Pickle", 4)

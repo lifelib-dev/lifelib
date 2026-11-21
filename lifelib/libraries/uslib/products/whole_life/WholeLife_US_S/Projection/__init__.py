@@ -357,17 +357,17 @@ def model_point():
 
 def product():
     """The product code: WL_PAR, WL_FE_LEVEL or WL_FE_GRADED."""
-    return model_point()["product"]
+    return Product[model_point()["product"]]
 
 
 def is_par():
     """True for the participating design, which is the only one that pays dividends."""
-    return product() == "WL_PAR"
+    return product() == Product.WL_PAR
 
 
 def premium_period():
     """The premium period code: TO_100, PAY_10, PAY_20 or TO_65."""
-    return model_point()["premium_period"]
+    return PremiumPeriod[model_point()["premium_period"]]
 
 
 def age_at_entry():
@@ -377,12 +377,12 @@ def age_at_entry():
 
 def sex():
     """The sex of the selected model point; rates are sex-distinct throughout."""
-    return model_point()["sex"]
+    return Sex[model_point()["sex"]]
 
 
 def risk_class():
     """The underwriting class of the selected model point (PREF_NT / STD_NT / TOB)."""
-    return model_point()["risk_class"]
+    return RiskClass[model_point()["risk_class"]]
 
 
 def sum_assured():
@@ -392,7 +392,7 @@ def sum_assured():
 
 def dividend_option():
     """The elected dividend option: PUA, CASH, ACCUM, REDUCE_PREM, or NONE for non-par."""
-    return model_point()["dividend_option"]
+    return DividendOption[model_point()["dividend_option"]]
 
 
 def premium_mode():
@@ -403,7 +403,7 @@ def premium_mode():
     [S1] [S7]. On the monthly grid the mode is a model point attribute, and the shipped
     table exercises both ends of it.
     """
-    return model_point()["premium_mode"]
+    return PremiumMode[model_point()["premium_mode"]]
 
 
 def pols_if_init():
@@ -450,7 +450,7 @@ def is_blended():
     The blend needs the dividend to pay the one-year-term cost, so it is modelled only
     under the PUA dividend option and only on the participating design.
     """
-    return is_par() and dividend_option() == "PUA" and term_blend_target() > sum_assured()
+    return is_par() and dividend_option() == DividendOption.PUA and term_blend_target() > sum_assured()
 
 
 def proj_len():
@@ -488,13 +488,13 @@ def policy_term():
     it against ``duration(t)``.
     """
     p = premium_period()
-    if p == "TO_100":
+    if p == PremiumPeriod.TO_100:
         return maturity_age - age_at_entry()                          # noqa: F821
-    elif p == "PAY_10":
+    elif p == PremiumPeriod.PAY_10:
         return 10
-    elif p == "PAY_20":
+    elif p == PremiumPeriod.PAY_20:
         return 20
-    elif p == "TO_65":
+    elif p == PremiumPeriod.TO_65:
         return max(65 - age_at_entry(), 1)
     else:
         raise ValueError("invalid premium_period")
@@ -571,7 +571,7 @@ def mec_flag():
     silently projecting them **[std]**. Limited-pay designs sit near the 7-pay limit
     and paid-up-additions rider payments consume 7-pay room, so both raise the flag.
     """
-    return premium_period() != "TO_100" or float(model_point()["pua_rider_premium"]) > 0.0
+    return premium_period() != PremiumPeriod.TO_100 or float(model_point()["pua_rider_premium"]) > 0.0
 
 
 def premium_rate():
@@ -591,13 +591,13 @@ def modal_factor():
     own Reference, so a carrier's own scale drops in without a formula change.
     """
     m = premium_mode()
-    if m == "A":
+    if m == PremiumMode.A:
         return 1.0
-    elif m == "SA":
+    elif m == PremiumMode.SA:
         return modal_factor_par_sa if is_par() else modal_factor_fe_sa   # noqa: F821
-    elif m == "Q":
+    elif m == PremiumMode.Q:
         return modal_factor_par_q if is_par() else modal_factor_fe_q     # noqa: F821
-    elif m == "M":
+    elif m == PremiumMode.M:
         return modal_factor_par_m if is_par() else modal_factor_fe_m     # noqa: F821
     else:
         raise ValueError("invalid premium mode")
@@ -609,7 +609,7 @@ def prem_cycle():
     Arithmetic of the mode rather than an assumption, so it is written here rather than
     held in a Reference.
     """
-    return {"A": 12, "SA": 6, "Q": 3, "M": 1}[premium_mode()]
+    return {PremiumMode.A: 12, PremiumMode.SA: 6, PremiumMode.Q: 3, PremiumMode.M: 1}[premium_mode()]
 
 
 def prem_due(t):
@@ -656,7 +656,7 @@ def premium_net_pp_ann(t):
     if g == 0.0:
         return 0.0
     d = div_prev_anniv(t)
-    if dividend_option() == "REDUCE_PREM":
+    if dividend_option() == DividendOption.REDUCE_PREM:
         return max(g - d, 0.0)
     elif prem_offset_on and d >= g:                                  # noqa: F821
         return g - prem_offset_share * min(d, g)                     # noqa: F821
@@ -718,6 +718,11 @@ def prem_cum(t):
     return prem_cum(t - 1) + premium_pp(t)
 
 
+def cv_schedule():
+    """The guaranteed cash values per $1,000 of this policy's premium period, sex and issue age, by policy year."""
+    return data.cv_table().loc[(premium_period(), sex(), age_at_entry())]   # noqa: F821
+
+
 def cv_pp_anniv(y):
     """The guaranteed cash value per policy at the anniversary ending policy year y.
 
@@ -741,9 +746,8 @@ def cv_pp_anniv(y):
     """
     if y <= 0 or y > proj_len() // 12:
         return 0.0
-    key = (premium_period(), sex(), age_at_entry(), y)
     return sum_assured() / 1000.0 * float(
-        data.cv_table().loc[key, "cv_per_1000"])                     # noqa: F821
+        cv_schedule().loc[y, "cv_per_1000"])
 
 
 def cv_pp(t):
@@ -771,6 +775,11 @@ def net_amt_at_risk(t):
     return sum_assured() - cv_pp(t)
 
 
+def nsp_schedule():
+    """The net single premiums of this policy's sex, by attained age."""
+    return data.nsp_table().loc[sex()]                               # noqa: F821
+
+
 def nsp(y):
     """NSP_y: net single premium per 1 of paid-up endowment-at-100 face at attained age y.
 
@@ -783,7 +792,7 @@ def nsp(y):
     docstring, which shows that the worked example's own anchors rule out any single
     mortality basis at 4%.
     """
-    return float(data.nsp_table().loc[(sex(), y), "nsp"])            # noqa: F821
+    return float(nsp_schedule().loc[y, "nsp"])
 
 
 def nsp_mth(t):
@@ -817,13 +826,18 @@ def np_guar():
         data.np_guar_table().loc[key, "np_guar_per_1000"])           # noqa: F821
 
 
+def mort_schedule():
+    """The guaranteed mortality rates of this policy's sex, by attained age."""
+    return data.mort_table().loc[sex()]                              # noqa: F821
+
+
 def mort_rate_guar_at(y):
     """q^g_y: the guaranteed **annual** mortality rate at attained age y, from *mort_table.csv*.
 
     The shipped table is **[std]** illustrative and is *not* the 2017 CSO the notes
     name; that table is licensed and cannot be shipped here.
     """
-    return float(data.mort_table().loc[(sex(), y), "mort_rate"])     # noqa: F821
+    return float(mort_schedule().loc[y, "mort_rate"])
 
 
 def mort_rate_guar(t):
@@ -1063,9 +1077,9 @@ def div_to_pua(t):
     """
     if t < proj_start() or t >= proj_len():
         return 0.0
-    elif dividend_option() == "PUA":
+    elif dividend_option() == DividendOption.PUA:
         return max(div_credited(t) - oyt_cost(t), 0.0)
-    elif dividend_option() == "REDUCE_PREM" and t == proj_len() - 1:
+    elif dividend_option() == DividendOption.REDUCE_PREM and t == proj_len() - 1:
         return div_credited(t)
     else:
         return 0.0
@@ -1073,7 +1087,7 @@ def div_to_pua(t):
 
 def div_cash(t):
     """D^cash_t: the cash dividend paid per surviving policy at the end of month t."""
-    return div_credited(t) if dividend_option() == "CASH" else 0.0
+    return div_credited(t) if dividend_option() == DividendOption.CASH else 0.0
 
 
 def div_accum(t):
@@ -1088,7 +1102,7 @@ def div_accum(t):
     and no separate figure is published. The balance adds to the death, surrender and
     maturity proceeds.
     """
-    if t < proj_start() or t >= proj_len() or dividend_option() != "ACCUM":
+    if t < proj_start() or t >= proj_len() or dividend_option() != DividendOption.ACCUM:
         return 0.0
     prev = div_accum(t - 1) if t > proj_start() else 0.0
     return prev * (1 + int_rate_div) ** (1 / 12) + div_credited(t)   # noqa: F821
@@ -1130,7 +1144,7 @@ def pua_face_offset(t):
     that opened the policy year, so it can never carry the final one; that last
     dividend is routed through div_to_pua() instead — see its docstring.
     """
-    if (dividend_option() != "REDUCE_PREM" or t < proj_start()
+    if (dividend_option() != DividendOption.REDUCE_PREM or t < proj_start()
             or t >= proj_len() or duration_mth(t) % 12):
         return 0.0
     excess = max(div_prev_anniv(t) - premium_pp_ann(t), 0.0)
@@ -1230,8 +1244,8 @@ def claim_pp(t, kind):
                     t = proj_len() - 1, and zero in every other month. On the
                     non-participating design this is F - L.
     """
-    if kind == "DEATH":
-        if product() == "WL_FE_GRADED" and duration(t) < fe_graded_years:  # noqa: F821
+    if kind == Kind.DEATH:
+        if product() == Product.WL_FE_GRADED and duration(t) < fe_graded_years:  # noqa: F821
             return ((1 - fe_accid_share) * fe_graded_factor * prem_cum(t)  # noqa: F821
                     + fe_accid_share * sum_assured())                # noqa: F821
         puaf = pua_face(t - 1) if t > proj_start() else puaf_inforce()
@@ -1239,9 +1253,9 @@ def claim_pp(t, kind):
         loan = loan_bal(t - 1) if t > proj_start() else loan_inforce()
         face = sum_assured() + puaf + oyt_face(t)
         return face + accum - loan
-    elif kind == "LAPSE":
+    elif kind == Kind.LAPSE:
         return cv_pp(t) + pua_cv(t) + div_accum(t) - loan_bal(t)
-    elif kind == "MATURITY":
+    elif kind == Kind.MATURITY:
         if t != proj_len() - 1:
             return 0.0
         return sum_assured() + pua_face(t) + div_accum(t) - loan_bal(t)
@@ -1268,18 +1282,18 @@ def pols_if_at(t, timing):
         because that model has no name for the point past the last decrement,
         which is where these notes keep their in-force probability.
     """
-    if timing == "BEF_DECR":
+    if timing == PolTiming.BEF_DECR:
         return pols_if(t)
-    elif timing == "BEF_SURR":
-        return pols_if_at(t, "BEF_DECR") * (1 - mort_rate_mth(t))
-    elif timing == "BEF_MAT":
-        return pols_if_at(t, "BEF_SURR") * (1 - lapse_rate_mth(t))
-    elif timing == "AFT_DECR":
+    elif timing == PolTiming.BEF_SURR:
+        return pols_if_at(t, PolTiming.BEF_DECR) * (1 - mort_rate_mth(t))
+    elif timing == PolTiming.BEF_MAT:
+        return pols_if_at(t, PolTiming.BEF_SURR) * (1 - lapse_rate_mth(t))
+    elif timing == PolTiming.AFT_DECR:
         if t < proj_start():
             return pols_if_init()
         elif t >= proj_len() - 1:
             return 0.0
-        return pols_if_at(t, "BEF_MAT")
+        return pols_if_at(t, PolTiming.BEF_MAT)
     else:
         raise ValueError("invalid timing")
 
@@ -1298,17 +1312,17 @@ def pols_if(t):
     """
     if t <= proj_start():
         return pols_if_init()
-    return pols_if_at(t - 1, "AFT_DECR")
+    return pols_if_at(t - 1, PolTiming.AFT_DECR)
 
 
 def pols_death(t):
     """Deaths in month t, the monthly rate applied to the policies in force at its start."""
-    return pols_if_at(t, "BEF_DECR") * mort_rate_mth(t)
+    return pols_if_at(t, PolTiming.BEF_DECR) * mort_rate_mth(t)
 
 
 def pols_lapse(t):
     """Surrenders at the end of month t, the monthly rate applied to the month's survivors."""
-    return pols_if_at(t, "BEF_SURR") * lapse_rate_mth(t)
+    return pols_if_at(t, PolTiming.BEF_SURR) * lapse_rate_mth(t)
 
 
 def pols_maturity(t):
@@ -1317,7 +1331,7 @@ def pols_maturity(t):
     Not a decrement — the modelled contract simply ends — but the in-force
     roll-forward does not close without it.
     """
-    return pols_if_at(t, "BEF_MAT") if t == proj_len() - 1 else 0.0
+    return pols_if_at(t, PolTiming.BEF_MAT) if t == proj_len() - 1 else 0.0
 
 
 def inflation_factor(t):
@@ -1333,12 +1347,12 @@ def inflation_factor(t):
 
 def premiums(t):
     """Premium income at the start of month t (an inflow), net of any dividend offset."""
-    return premium_net_pp(t) * pols_if_at(t, "BEF_DECR")
+    return premium_net_pp(t) * pols_if_at(t, PolTiming.BEF_DECR)
 
 
 def rider_premiums(t):
     """Paid-up-additions rider premium income at the start of month t (an inflow)."""
-    return rider_premium_pp(t) * pols_if_at(t, "BEF_DECR")
+    return rider_premium_pp(t) * pols_if_at(t, PolTiming.BEF_DECR)
 
 
 def premium_taxes(t):
@@ -1363,26 +1377,26 @@ def expenses(t):
     acq = (expense_acq_prem_rate * premium_pp_ann(t) + expense_acq   # noqa: F821
            if t == 0 else 0.0)
     return ((acq + expense_maint / 12 * inflation_factor(t))         # noqa: F821
-            * pols_if_at(t, "BEF_DECR"))
+            * pols_if_at(t, PolTiming.BEF_DECR))
 
 
-def claims(t, kind=None):
+def claims(t, kind):
     """Benefit outgo in month t, by kind; the total when kind is omitted."""
-    if kind is None:
-        return sum(claims(t, k) for k in ("DEATH", "LAPSE", "MATURITY"))
-    elif kind == "DEATH":
-        return claim_pp(t, "DEATH") * pols_death(t)
-    elif kind == "LAPSE":
-        return claim_pp(t, "LAPSE") * pols_lapse(t)
-    elif kind == "MATURITY":
-        return claim_pp(t, "MATURITY") * pols_maturity(t)
+    if kind == Kind.ALL:
+        return sum(claims(t, k) for k in (Kind.DEATH, Kind.LAPSE, Kind.MATURITY))
+    elif kind == Kind.DEATH:
+        return claim_pp(t, Kind.DEATH) * pols_death(t)
+    elif kind == Kind.LAPSE:
+        return claim_pp(t, Kind.LAPSE) * pols_lapse(t)
+    elif kind == Kind.MATURITY:
+        return claim_pp(t, Kind.MATURITY) * pols_maturity(t)
     else:
         raise ValueError("invalid kind")
 
 
 def div_cash_paid(t):
     """Cash dividends paid out at the end of month t, to the survivors of the month."""
-    return div_cash(t) * pols_if_at(t, "BEF_SURR")
+    return div_cash(t) * pols_if_at(t, PolTiming.BEF_SURR)
 
 
 def loan_draws(t):
@@ -1393,7 +1407,7 @@ def loan_draws(t):
     policies still in force; the balance is recovered through the death, surrender and
     maturity benefits, which are all net of the loan.
     """
-    return loan_draw(t) * pols_if_at(t, "BEF_MAT")
+    return loan_draw(t) * pols_if_at(t, PolTiming.BEF_MAT)
 
 
 def liability_cf(t):
@@ -1413,7 +1427,7 @@ def liability_cf(t):
     """
     return (-premiums(t) - rider_premiums(t)
             + expenses(t) + premium_taxes(t)
-            + claims(t) + div_cash_paid(t) + loan_draws(t))
+            + claims(t, Kind.ALL) + div_cash_paid(t) + loan_draws(t))
 
 
 def net_cf(t):
@@ -1446,9 +1460,9 @@ def result_cf():
             "rider_premiums": [rider_premiums(t) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "premium_taxes": [premium_taxes(t) for t in ts],
-            "claims_death": [claims(t, "DEATH") for t in ts],
-            "claims_lapse": [claims(t, "LAPSE") for t in ts],
-            "claims_maturity": [claims(t, "MATURITY") for t in ts],
+            "claims_death": [claims(t, Kind.DEATH) for t in ts],
+            "claims_lapse": [claims(t, Kind.LAPSE) for t in ts],
+            "claims_maturity": [claims(t, Kind.MATURITY) for t in ts],
             "div_cash_paid": [div_cash_paid(t) for t in ts],
             "loan_draws": [loan_draws(t) for t in ts],
             "net_cf": [net_cf(t) for t in ts],
@@ -1510,8 +1524,8 @@ def result_cv():
             "pua_cv": [pua_cv(t) for t in ts],
             "div_accum": [div_accum(t) for t in ts],
             "loan_bal": [loan_bal(t) for t in ts],
-            "db_pp": [claim_pp(t, "DEATH") for t in ts],
-            "surr_value_pp": [claim_pp(t, "LAPSE") for t in ts],
+            "db_pp": [claim_pp(t, Kind.DEATH) for t in ts],
+            "surr_value_pp": [claim_pp(t, Kind.LAPSE) for t in ts],
         },
         index=pd.Index(ts, name="t"),                                # noqa: F821
     )
@@ -1633,3 +1647,19 @@ prem_offset_on = False
 prem_offset_share = 0.5
 
 pd = ("Module", "pandas")
+
+Product = ("Pickle", 1)
+
+PremiumPeriod = ("Pickle", 2)
+
+Sex = ("Pickle", 3)
+
+RiskClass = ("Pickle", 4)
+
+DividendOption = ("Pickle", 5)
+
+PremiumMode = ("Pickle", 6)
+
+PolTiming = ("Pickle", 7)
+
+Kind = ("Pickle", 8)

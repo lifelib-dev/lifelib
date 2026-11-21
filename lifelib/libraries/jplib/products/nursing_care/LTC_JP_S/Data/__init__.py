@@ -132,9 +132,9 @@ def mort_table():
     The ``age`` key is an **attained age**, not a time index: ``Projection`` reads it at
     ``age(t) = issue_age() + t // 12``.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / mort_table_file,                               # noqa: F821
-        index_col=["sex", "age"])
+    frame = pd.read_csv(input_dir() / mort_table_file)               # noqa: F821
+    frame["sex"] = [Sex[name] for name in frame["sex"]]
+    return frame.set_index(["sex", "age"]).sort_index()              # noqa: F821
 
 
 def lapse_table():
@@ -161,8 +161,9 @@ def prevalence_table():
     ``prev_ceil``, ``prev_beta`` and ``prev_x_mid``.  The anchors are carried for
     provenance; the model reads the three fitted parameters.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / prevalence_file, index_col="param")            # noqa: F821
+    frame = pd.read_csv(input_dir() / prevalence_file)               # noqa: F821
+    frame["param"] = [PrevParam[name] for name in frame["param"]]
+    return frame.set_index("param")                                  # noqa: F821
 
 
 def grade_share_table():
@@ -173,8 +174,9 @@ def grade_share_table():
     codes for the seven-point certification scale; the model point columns
     ``grade_lump``, ``grade_annuity`` and ``grade_waiver`` hold them.
     """
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / grade_share_file, index_col="grade")           # noqa: F821
+    frame = pd.read_csv(input_dir() / grade_share_file)              # noqa: F821
+    frame["grade"] = [Grade[name] for name in frame["grade"]]
+    return frame.set_index("grade")                                  # noqa: F821
 
 
 # ---------------------------------------------------------------------------
@@ -191,3 +193,9 @@ prevalence_file = "prevalence_table.csv"
 grade_share_file = "grade_share_table.csv"
 
 pd = ("Module", "pandas")
+
+Sex = ("Pickle", 1)
+
+Grade = ("Pickle", 2)
+
+PrevParam = ("Pickle", 3)
