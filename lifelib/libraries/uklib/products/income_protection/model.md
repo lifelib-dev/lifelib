@@ -88,13 +88,15 @@ notes' first-listed pitfall: the duration gradient *is* the defining feature of 
 protection terminations.
 
 `sick_cohorts(t)` holds the whole vector for one month and is the model's only
-list-valued cells. The alternative — a two-argument `pols_sick_dur(t, z)` recursion —
+vector-valued cells. The alternative — a two-argument `pols_sick_dur(t, z)` recursion —
 would be `proj_len() × max_dur()` separate cells, 130,000 of them on the anchor cell
 (360 months × 361 cohorts), each with its own cache entry. Keeping the vector in one
 cells per month makes it `proj_len()` cells with a loop inside; `pols_sick_dur(t, z)`
 reads an element out of it, so the notes' two-dimensional object is still addressable by
 name. `claim_rate_vectors()` is the same trick for the three per-duration rate vectors,
-and takes the anchor cell from about sixteen seconds to five.
+and takes the anchor cell from about sixteen seconds to five. Both return tuples, not
+lists: modelx hands every caller the cached object itself, so a list would let one
+caller's assignment rewrite the values every later month is built from.
 
 **The shipped termination basis suppresses the age dimension** **[std]**. IP11 is
 two-dimensional in age and duration, with claimant mortality duration-dependent to five
