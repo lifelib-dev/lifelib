@@ -33,6 +33,7 @@ classifiers = [
 ]
 dependencies = [
     "modelx>=0.32",
+    "scipy",
 ]
 
 [project.urls]

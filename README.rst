@@ -90,6 +90,7 @@ and the following third-party packages.
 * Numpy
 * Pandas
 * OpenPyXL
+* SciPy
 
 lifelib consists of multiple libraries.
 Each library may have additional requirements in addition to the above.
