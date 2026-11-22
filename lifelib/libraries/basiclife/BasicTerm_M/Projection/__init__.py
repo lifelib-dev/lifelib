@@ -26,7 +26,7 @@ Attributes:
 
         .. code-block::
 
-            >>> Projection.model_poit_table
+            >>> Projection.model_point_table
                        age_at_entry sex  policy_term  policy_count  sum_assured
             point_id
             1                    47   M           10             1       622000

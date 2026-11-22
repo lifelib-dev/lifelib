@@ -60,7 +60,7 @@ Attributes:
 
         .. code-block::
 
-            >>> Projection.model_poit_table
+            >>> Projection.model_point_table
                        age_at_entry sex  ...  sum_assured  duration_mth
             policy_id                    ...
             1                    47   M  ...       622000             1
