@@ -42,7 +42,7 @@ def test_cashvalue_me_ex4_formula_option_put():
         marks=pytest.mark.xfail(
             strict=True,
             reason="index still named poind_id: "
-                   "https://github.com/lifelib-dev/lifelib-products/issues/48",
+                   "https://github.com/lifelib-dev/lifelib-economic/issues/1",
         ),
     ),
     ("economic/CashValue_ME_G2PP", "model_point_moneyness"),
