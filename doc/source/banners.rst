@@ -103,6 +103,18 @@
       <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
     </a>
 
+.. |colab economic g2pp-simulation| raw:: html
+
+    <a target="_blank" href="https://colab.research.google.com/github/lifelib-dev/lifelib/blob/current/lifelib/libraries/economic/g2pp-simulation.ipynb">
+      <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+    </a>
+
+.. |colab economic g2pp-tvog| raw:: html
+
+    <a target="_blank" href="https://colab.research.google.com/github/lifelib-dev/lifelib/blob/current/lifelib/libraries/economic/g2pp-tvog.ipynb">
+      <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+    </a>
+
 .. |colab assets generate_bond_data| raw:: html
 
     <a target="_blank" href="https://colab.research.google.com/github/lifelib-dev/lifelib/blob/current/lifelib/libraries/assets/generate_bond_data.ipynb">

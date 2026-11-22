@@ -14,6 +14,13 @@ Updates
     Follow <a href="https://www.linkedin.com/company/lifelib" target="_blank">lifelib on LinkedIn</a>
     for more frequent updates.</p>
 
+* *22 November 2026:*
+  lifelib :ref:`v0.17.4<relnotes_v0.17.4>` is released.
+  Two G2++ interest rate models are added to :mod:`~economic`,
+  one generating risk-neutral scenarios fitted to an initial yield
+  curve and one calculating the TVOG of savings policies under them.
+  lifelib now requires SciPy.
+
 * *15 November 2026:*
   lifelib :ref:`v0.17.3<relnotes_v0.17.3>` is released.
   Twelve in-force models, one for each product of :mod:`~uslib`,
@@ -49,14 +56,14 @@ Updates
   models move onto the same 0-based monthly grid, and the eight models
   that stepped annually are renamed from ``_A`` to ``_S``.
 
+.. Latest Updates End
+
 * *29 August 2026:*
   lifelib :ref:`v0.16.0<relnotes_v0.16.0>` is released.
   :mod:`~jplib`, a new library of nine reference liability cash flow
   projection models for Japanese individual life products, including
   the three third-sector products of medical, cancer and nursing care,
   is added. The library is in its draft stage.
-
-.. Latest Updates End
 
 * *22 August 2026:*
   lifelib :ref:`v0.15.0<relnotes_v0.15.0>` is released.

@@ -162,7 +162,7 @@ lifelib/
 ├── libraries/
 │   ├── ifrs17a/
 │   │   └── tests/             # Library-specific tests
-│   └── uslib/ uklib/ jplib/ frlib/ delib/ krlib/
+│   └── uslib/ uklib/ jplib/ frlib/ delib/ krlib/ economic/
 │       └── tests/             # In-library suites, which travel with lifelib.create()
 └── projects/
     └── smithwilson/

@@ -13,6 +13,55 @@ If you're using Anaconda, use the ``conda`` command instead::
     >>> conda update lifelib
 
 
+.. _relnotes_v0.17.4:
+
+lifelib v0.17.4 (22 November 2026)
+==================================
+
+Enhancements
+----------------
+
+This release adds two models to :mod:`~economic`,
+:mod:`~economic.BasicG2PP` and :mod:`~economic.CashValue_ME_G2PP`.
+:mod:`~economic.BasicG2PP` generates risk-neutral monthly interest
+rate scenarios from the G2++ two-factor short rate model, fitted
+exactly to an initial yield curve read from ``g2pp_input.xlsx``, and
+its ``Validation`` Space checks the scenarios against closed forms
+and martingale properties. :mod:`~economic.CashValue_ME_G2PP` is
+:mod:`~savings`' ``CashValue_ME_EX4`` driven by a copy of those
+scenarios, and calculates the time value of options and guarantees
+(TVOG) of its maturity guarantees. Two notebooks,
+:doc:`/libraries/economic/g2pp-simulation` and
+:doc:`/libraries/economic/g2pp-tvog`, and two gallery scripts
+accompany the models, and the library gains its own test suite.
+
+Changes
+------------
+
+* lifelib now requires SciPy. The G2++ models and their tests take
+  the normal distribution from ``scipy.stats``, so SciPy is added to
+  the dependencies and installs with lifelib.
+
+* The pages of :mod:`~economic` are now written in MyST Markdown.
+  They render as before.
+
+Bug Fixes
+------------
+
+* In :mod:`~savings`' ``CashValue_ME_EX4``, ``formula_option_put``
+  indexed a 1-D array as if it were 2-D and failed. It now selects
+  the first scenario of each single-premium model point correctly
+  (GH185).
+
+* In :mod:`~savings`' ``CashValue_ME_EX4``, ``check_pv_net_cf`` called
+  ``disc_factors`` without the argument it takes and raised
+  ``TypeError`` (GH183, GH184).
+
+* In :mod:`~uklib`'s ``IP_UK_S``, ``sick_cohorts`` and
+  ``claim_rate_vectors`` now return tuples instead of lists, so that a
+  test can no longer modify the cached values in place and make other
+  tests fail when the suite runs in parallel. Results are unchanged.
+
 .. _relnotes_v0.17.3:
 
 lifelib v0.17.3 (15 November 2026)
