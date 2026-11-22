@@ -352,7 +352,7 @@ operation:
    :caption: In CashValue_ME at t=120
 
    >>> policy_term()
-   poind_id
+   point_id
    1    10
    2    20
    3    95
@@ -361,7 +361,7 @@ operation:
 
 
    >>> (duration_mth(120) == policy_term() * 12)
-   poind_id
+   point_id
    1     True
    2    False
    3    False
@@ -712,7 +712,7 @@ as a `DataFrame`_::
 
       >>> result_pv()
                     Premiums         Death  ...  Change in AV  Net Cashflow
-      poind_id                              ...
+      point_id                              ...
       1         5.000000e+07  1.350327e+05  ...  3.771029e+06  4.957050e+06
       2         5.000000e+07  1.608984e+06  ...  8.740610e+06  4.241619e+06
       3         2.642236e+07  6.107771e+06  ...  1.104837e+07  6.058365e+06
