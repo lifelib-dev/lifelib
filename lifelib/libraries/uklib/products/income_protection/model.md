@@ -94,9 +94,9 @@ would be `proj_len() × max_dur()` separate cells, 130,000 of them on the anchor
 cells per month makes it `proj_len()` cells with a loop inside; `pols_sick_dur(t, z)`
 reads an element out of it, so the notes' two-dimensional object is still addressable by
 name. `claim_rate_vectors()` is the same trick for the three per-duration rate vectors,
-and takes the anchor cell from about sixteen seconds to five. Both return tuples, not
-lists: modelx hands every caller the cached object itself, so a list would let one
-caller's assignment rewrite the values every later month is built from.
+and takes the anchor cell from about sixteen seconds to five. Both return lists. In live
+modelx these are cached objects, so callers must not modify them. Compiled access returns
+copies at the public boundary.
 
 **The shipped termination basis suppresses the age dimension** **[std]**. IP11 is
 two-dimensional in age and duration, with claimant mortality duration-dependent to five
