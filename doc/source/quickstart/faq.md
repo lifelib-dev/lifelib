@@ -36,8 +36,8 @@ by GitHub [here](https://docs.github.com/en/pull-requests/collaborating-with-pul
 
 ### What Python packages do I need to use lifelib?
 
-When you install lifelib, it automatically installs modelx as a dependency if it
-is not already installed in your environment. However, 
+When you install lifelib, it automatically installs modelx and SciPy as dependencies
+if they are not already installed in your environment. However, 
 lifelib often requires additional Python packages for full functionality, 
 notably pandas, numpy, and openpyxl. These packages are widely used and may already
 be present in most Python environments; 

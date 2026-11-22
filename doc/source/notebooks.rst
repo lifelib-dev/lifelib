@@ -63,6 +63,8 @@ Click |colab badge| to open and run them on Google Colab.
 
 ======================================================= ======================================
 :doc:`libraries/economic/hull-white-simulation`         |colab economic hull-white-simulation|
+:doc:`libraries/economic/g2pp-simulation`               |colab economic g2pp-simulation|
+:doc:`libraries/economic/g2pp-tvog`                     |colab economic g2pp-tvog|
 ======================================================= ======================================
 
 .. _notebooks_economic_curves:
