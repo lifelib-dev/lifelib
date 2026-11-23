@@ -84,6 +84,24 @@ def test_structure():
         model.close()
 
 
+def test_model_points_are_indexed_by_point_id():
+    """Both model point tables index their model points by point_id.
+
+    model_point_table is model_point_moneyness unless another table is assigned to it, so
+    model_point_1 is checked on its own, and then as the table in use.
+    """
+    model = read_cv()
+    try:
+        proj = model.Projection
+        assert proj.model_point_table is proj.model_point_moneyness
+        for name in ("model_point_moneyness", "model_point_1"):
+            assert getattr(proj, name).index.name == "point_id", name
+        proj.model_point_table = proj.model_point_1
+        assert proj.model_point().index.names == ["point_id", "scen_id"]
+    finally:
+        model.close()
+
+
 def test_scenarios_come_from_the_esg(run):
     model = run("BOND_MIX")
     proj, esg = model.Projection, model.ESG

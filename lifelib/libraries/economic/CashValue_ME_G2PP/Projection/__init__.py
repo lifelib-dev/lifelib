@@ -42,7 +42,8 @@ Attributes:
         deflators of :func:`disc_factors`.
 
     model_point_table: All model points as a DataFrame.
-        By default, 4 model points are defined.
+        By default, it is :attr:`model_point_moneyness`,
+        which defines 9 model points.
         The DataFrame has an index named ``point_id``.
 
             * ``spec_id``
@@ -61,17 +62,22 @@ Attributes:
 
         .. code-block::
 
-            >>> Projection.model_poit_table
-                     spec_id  age_at_entry sex  ...  premium_pp  av_pp_init
-            poind_id                            ...
-            1              A            20   M  ...      500000           0
-            2              B            50   M  ...      500000           0
-            3              C            20   M  ...        1000           0
-            4              D            50   M  ...        1000           0
+            >>> Projection.model_point_table
+                     spec_id  age_at_entry sex  ...  premium_pp  av_pp_init  accum_prem_init_pp
+            point_id                            ...
+            1              A            20   M  ...      500000           0                   0
+            2              B            20   M  ...      475000           0                   0
+            3              C            20   M  ...      450000           0                   0
+            4              D            20   M  ...      425000           0                   0
+            5              A            20   M  ...      400000           0                   0
+            6              B            20   M  ...      375000           0                   0
+            7              C            20   M  ...      350000           0                   0
+            8              D            20   M  ...      325000           0                   0
+            9              A            20   M  ...      300000           0                   0
 
-            [4 rows x 10 columns]
+            [9 rows x 10 columns]
 
-        The DataFrame is saved in the Excel file *model_point_samples.xlsx*
+        The DataFrame is saved in the Excel file *model_point_moneyness.xlsx*
         placed in the model folder.
         :attr:`model_point_table` is created by
         Projection's `new_pandas`_ method,
@@ -80,7 +86,7 @@ Attributes:
         of ``_mx_dataclident``::
 
             >>> Projection.model_point_table._mx_dataclient
-            <PandasData path='model_point_table_samples.xlsx' filetype='excel'>
+            <PandasData path='model_point_moneyness.xlsx' filetype='excel'>
 
         .. seealso::
 
@@ -94,14 +100,21 @@ Attributes:
            * :func:`premium_pp`
            * :func:`av_pp_init`
 
-    model_point_10000: Alternative model point table
+    model_point_moneyness: The default model point table
 
-        This model point table contains 10000 model points and
-        is saved as the Excel file *model_point_10000.xlsx*
+        This model point table contains 9 model points and
+        is saved as the Excel file *model_point_moneyness.xlsx*
+        placed in the folder. The premiums per policy of its model points
+        go from 500,000 down to 300,000 in steps of 25,000.
+
+    model_point_1: Alternative model point table
+
+        This model point table contains 1 model point and
+        is saved as the Excel file *model_point_1.xlsx*
         placed in the folder. To use this table, assign it to
         :attr:`model_point_table`::
 
-            >>> Projection.model_point_table = Projection.model_point_10000
+            >>> Projection.model_point_table = Projection.model_point_1
 
 
     mort_table: Mortality table by age and duration as a DataFrame.
