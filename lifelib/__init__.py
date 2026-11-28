@@ -1,7 +1,7 @@
 import os.path
 from lifelib.commands.create import create
 
-VERSION = (0, 17, 4)
+VERSION = (0, 17, 5)
 __version__ = '.'.join([str(x) for x in VERSION])
 
 

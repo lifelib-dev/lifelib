@@ -13,6 +13,54 @@ If you're using Anaconda, use the ``conda`` command instead::
     >>> conda update lifelib
 
 
+.. _relnotes_v0.17.5:
+
+lifelib v0.17.5 (28 November 2026)
+==================================
+
+Enhancements
+----------------
+
+This release adds two models to :mod:`~economic`,
+:mod:`~economic.BasicLMM` and ``CashValue_ME_LMM``.
+:mod:`~economic.BasicLMM` generates risk-neutral monthly interest
+rate scenarios from a shifted-lognormal LIBOR market model under the
+spot-LIBOR measure, fitted exactly to an initial curve, with the
+forward rate tenor and the volatility table read from
+``lmm_input.xlsx``. Its outputs have the names and shapes of
+:mod:`~economic.BasicG2PP`'s, so a liability model written for one
+runs on the other. Its ``Validation`` Space checks the scenarios
+against martingale properties, the initial curve and Black's caplet
+prices. ``CashValue_ME_LMM`` is ``CashValue_ME_G2PP`` driven by a copy
+of those scenarios, and calculates the TVOG of its maturity
+guarantees, with a closed form to check it against for policies on an
+all-cash fund. Two notebooks,
+:doc:`/libraries/economic/lmm-simulation` and
+:doc:`/libraries/economic/lmm-tvog`, and two gallery scripts
+accompany the models, and the library's test suite is extended.
+
+Changes
+------------
+
+* ``CashValue_ME_G2PP`` is now described in
+  :doc:`/libraries/economic/g2pp-tvog`, as :mod:`~savings` describes
+  its example models in its notebooks, and its own page,
+  ``libraries/economic/CashValue_ME_G2PP.html``, is removed.
+
+Bug Fixes
+------------
+
+* The index column of the model point tables of :mod:`~savings`'
+  ``CashValue_ME``, ``CashValue_ME_EX1``, ``CashValue_ME_EX4`` and
+  ``CashValue_SE``, and of :mod:`~economic`'s ``CashValue_ME_G2PP``,
+  was named ``poind_id``. It is now ``point_id``, as in the other
+  models, and the docstrings and notebooks that showed the typo are
+  corrected (GH76, GH187).
+
+* The docstrings of the :mod:`~basiclife` models and of
+  :mod:`~cluster`'s ``BasicTerm_ME_for_Cluster`` referred to
+  ``model_poit_table``. They now refer to ``model_point_table``.
+
 .. _relnotes_v0.17.4:
 
 lifelib v0.17.4 (22 November 2026)

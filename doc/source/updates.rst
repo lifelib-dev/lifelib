@@ -14,6 +14,12 @@ Updates
     Follow <a href="https://www.linkedin.com/company/lifelib" target="_blank">lifelib on LinkedIn</a>
     for more frequent updates.</p>
 
+* *28 November 2026:*
+  lifelib :ref:`v0.17.5<relnotes_v0.17.5>` is released.
+  Two LIBOR market models are added to :mod:`~economic`,
+  one generating risk-neutral scenarios fitted to an initial curve
+  and one calculating the TVOG of savings policies under them.
+
 * *22 November 2026:*
   lifelib :ref:`v0.17.4<relnotes_v0.17.4>` is released.
   Two G2++ interest rate models are added to :mod:`~economic`,
@@ -46,6 +52,8 @@ Updates
   contracts and the three other third-sector products written under the
   same statutory licence, is added. The library is in its draft stage.
 
+.. Latest Updates End
+
 * *13 September 2026:*
   lifelib :ref:`v0.17.0<relnotes_v0.17.0>` is released.
   :mod:`~frlib`, a new library of nine reference liability cash flow
@@ -55,8 +63,6 @@ Updates
   its draft stage. The :mod:`~uslib`, :mod:`~uklib` and :mod:`~jplib`
   models move onto the same 0-based monthly grid, and the eight models
   that stepped annually are renamed from ``_A`` to ``_S``.
-
-.. Latest Updates End
 
 * *29 August 2026:*
   lifelib :ref:`v0.16.0<relnotes_v0.16.0>` is released.
