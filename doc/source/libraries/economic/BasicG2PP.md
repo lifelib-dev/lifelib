@@ -9,7 +9,8 @@
 grid from G2++, the two-additive-factor Gaussian model, fitted exactly to an initial yield
 curve. It reads all its inputs at run time from an Excel file. The scenarios are made for
 calculating the time value of options and guarantees (TVOG) of lifelib's liability models,
-as {mod}`~economic.CashValue_ME_G2PP` does for savings policies with a maturity guarantee.
+as the example model `CashValue_ME_G2PP` does for savings policies with a maturity guarantee
+(see {doc}`g2pp-tvog`).
 
 Under the risk-neutral measure, the short rate is the sum of two correlated Gaussian
 factors and a deterministic shift:
@@ -238,10 +239,10 @@ cover the liability model's projection.
 | {func}`~economic.BasicG2PP.G2PP.bank_return_paths`      | (N+1, n)   | risk-free returns                                                           |
 | {func}`~economic.BasicG2PP.G2PP.spot_rate_paths`        | (N+1, n+1) | market yields of any tenor, for dynamic lapses or crediting rates           |
 
-{mod}`~economic.CashValue_ME_G2PP` shows how. It holds a copy of the
-{mod}`~economic.BasicG2PP.G2PP` space as its space `ESG`, so that its model folder is
-self-contained, and its Projection space refers to `ESG` through the Reference `esg`. The
-copy reads `g2pp_input.xlsx` next to its own model folder.
+The example model `CashValue_ME_G2PP`, described in {doc}`g2pp-tvog`, shows how. It holds a
+copy of the {mod}`~economic.BasicG2PP.G2PP` space as its space `ESG`, so that its model
+folder is self-contained, and its Projection space refers to `ESG` through the Reference
+`esg`. The copy reads `g2pp_input.xlsx` next to its own model folder.
 
 ## Model Specifications
 

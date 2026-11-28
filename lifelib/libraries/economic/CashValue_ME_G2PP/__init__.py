@@ -9,7 +9,8 @@ The space ESG is a copy of the :mod:`~economic.BasicG2PP.G2PP` space of BasicG2P
 reads ``g2pp_input.xlsx`` next to the model folder and supplies the deflators and the
 fund returns of every scenario. Scenario 0 is the certainty-equivalent (CE) scenario, so one run gives both
 terms of TVOG = mean of the stochastic present values - the CE present value. See
-:func:`~economic.CashValue_ME_G2PP.Projection.result_tvog`.
+``Projection.result_tvog``, and the notebook ``g2pp-tvog.ipynb``, which describes this
+example model.
 """
 
 from modelx.serialize.jsonvalues import *

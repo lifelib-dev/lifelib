@@ -38,6 +38,8 @@ def test_cashvalue_me_ex4_formula_option_put():
     ("savings/CashValue_SE", "model_point_samples"),
     ("economic/CashValue_ME_G2PP", "model_point_1"),
     ("economic/CashValue_ME_G2PP", "model_point_moneyness"),
+    ("economic/CashValue_ME_LMM", "model_point_1"),
+    ("economic/CashValue_ME_LMM", "model_point_moneyness"),
 ])
 def test_cashvalue_model_point_index_name(model_dir, table):
     model_path = HERE.parents[2] / "libraries" / model_dir

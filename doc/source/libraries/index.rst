@@ -89,7 +89,7 @@ IFRS 17 reporting and model point selection by cluster analysis.
    =============================== =============== ===============================================================
    :doc:`assets/index`             |modelx badge|  Basic models of bond portfolios
    :doc:`ifrs17a/index`                            IFRS17 calculation model and examples
-   :doc:`economic/index`           |modelx badge|  Hull-White and G2++ interest rate models, and a TVOG example
+   :doc:`economic/index`           |modelx badge|  Hull-White, G2++ and LIBOR market models, and TVOG examples
    :doc:`economic_curves/index`                    Algorithms for modeling economic scenarios
    :doc:`cluster/index`                            Notebooks for model point selection by cluster analysis
    =============================== =============== ===============================================================

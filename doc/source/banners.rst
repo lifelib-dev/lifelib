@@ -115,6 +115,18 @@
       <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
     </a>
 
+.. |colab economic lmm-simulation| raw:: html
+
+    <a target="_blank" href="https://colab.research.google.com/github/lifelib-dev/lifelib/blob/current/lifelib/libraries/economic/lmm-simulation.ipynb">
+      <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+    </a>
+
+.. |colab economic lmm-tvog| raw:: html
+
+    <a target="_blank" href="https://colab.research.google.com/github/lifelib-dev/lifelib/blob/current/lifelib/libraries/economic/lmm-tvog.ipynb">
+      <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+    </a>
+
 .. |colab assets generate_bond_data| raw:: html
 
     <a target="_blank" href="https://colab.research.google.com/github/lifelib-dev/lifelib/blob/current/lifelib/libraries/assets/generate_bond_data.ipynb">
