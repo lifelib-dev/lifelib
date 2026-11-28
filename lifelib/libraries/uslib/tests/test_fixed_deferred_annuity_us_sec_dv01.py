@@ -12,6 +12,8 @@ curves, and reports DV01 and CS01 by tenor.  These tests hold:
 * the compiled report: the model compiled with modelx-cython (``compiled.build``) and run by
   the pooled driver (``report.pooled_report``) with 1 and with 4 worker threads, each run in a
   fresh process, equal to the live report under the same rule.
+* the report through collect (``report.collect_report``): at 1 and 4 workers, equal to the
+  pooled driver's and the live report within the financial tolerance.
 
 The live report takes about five minutes, and the build about ten more.  The compile test
 carries the ``cython`` marker and skips where modelx-cython or a C compiler is missing, or
@@ -119,6 +121,25 @@ def test_market_refuses_a_key_outside_the_grid(dv01_model, args):
     assert "ValueError" in str(raised.value)
 
 
+def test_the_collect_route_reads_openings_through_actual_collect(dv01_model):
+    """With ``collect_history`` a Valuation item's ``act`` is its policy's record of
+    ``Actual.collect``: the same opening as the Actual item, with no Actual ItemSpace kept.
+
+    It runs after the Market tests: collecting the book creates Market items, and Market(True, 1)
+    would then find the item Market(1, 1) instead of raising."""
+    expected = dv01_model.Actual[7, 1].av_pp_open(12)
+    del dv01_model.Actual[7, 1]
+    dv01_model.Valuation.collect_history = True
+    try:
+        item = dv01_model.Valuation[11, 7, 1, -1]
+        assert item.act is dv01_model.Actual.collect(1).individual[7]
+        assert item.av_pp_init() == expected
+        assert len(dv01_model.Actual.itemspaces) == 0
+        del dv01_model.Valuation[11, 7, 1, -1]
+    finally:
+        dv01_model.Valuation.collect_history = False
+
+
 def test_live_report_equals_the_stored_values(live):
     dv01, cs01 = live
     assert list(dv01.columns) == TENORS and list(cs01.columns) == TENORS
@@ -163,3 +184,21 @@ def test_compiled_report_equals_live(dv01_build, live, workers):
     dv01, cs01 = live
     assert _close(result["dv01"], dv01.to_numpy()).all()
     assert _close(result["cs01"], cs01.to_numpy()).all()
+
+
+@pytest.mark.cython
+@pytest.mark.parametrize("workers", [1, 4])
+def test_compiled_collect_equals_direct_and_live(dv01_build, live, workers):
+    """The Collect and pooled reports agree with live within the financial tolerance."""
+    results = {}
+    for route in ("direct", "collect"):
+        command = [sys.executable, str(RUNNER), "--run", str(dv01_build), "--workers", str(workers)]
+        done = subprocess.run(command + (["--collect"] if route == "collect" else []),
+                              capture_output=True, text=True)
+        assert done.returncode == 0, done.stderr[-3000:]
+        results[route] = json.loads(done.stdout.strip().splitlines()[-1])
+    assert _close(results["collect"]["dv01"], results["direct"]["dv01"]).all()
+    assert _close(results["collect"]["cs01"], results["direct"]["cs01"]).all()
+    dv01, cs01 = live
+    assert _close(results["collect"]["dv01"], dv01.to_numpy()).all()
+    assert _close(results["collect"]["cs01"], cs01.to_numpy()).all()

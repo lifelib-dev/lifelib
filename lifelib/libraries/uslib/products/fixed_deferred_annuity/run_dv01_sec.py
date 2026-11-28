@@ -5,6 +5,7 @@
     python products/fixed_deferred_annuity/run_dv01_sec.py --compiled --workers 8 --build DIR
     python products/fixed_deferred_annuity/run_dv01_sec.py --input-dir DIR
     python products/fixed_deferred_annuity/run_dv01_sec.py --compiled --policies 1050
+    python products/fixed_deferred_annuity/run_dv01_sec.py --compiled --collect     # through collect
 
 The report is ``dv01_sec/``'s ``Outer.annual_risk_report``: for each ESG path and each year,
 the key-rate DV01 and CS01 of the book at the close before the year starts, one column per
@@ -21,7 +22,8 @@ Live modelx computes the report from the model's ``Outer`` Cells, releasing each
 ItemSpaces as it goes.  ``--compiled`` builds the model with modelx-cython into ``--build
 DIR`` (a temporary directory by default; an existing build there is reused) and runs the
 report there twice, in a fresh process each time: with one worker thread, and with
-``--workers`` threads (default 4), one task per policy.  Each run prints its totals and
+``--workers`` threads (default 4), one task per policy; with ``--collect``, through
+``Valuation.collect`` instead, one collect per close and curve, its items on the workers.  Each run prints its totals and
 seconds, and the runner checks that the two reports are equal.  On free-threaded CPython
 (``python3.14t``) the workers run in parallel; on a build with the GIL they take turns.
 """
@@ -54,6 +56,8 @@ def parse(argv):
     book.add_argument('--input-dir', '--input', dest='input', metavar='DIR',
                       help='directory containing the policy, assumption and shock CSVs')
     book.add_argument('--policies', type=int, help='a book of N copies of the seven twins')
+    parser.add_argument('--collect', action='store_true',
+                        help='compiled runs read the totals through Valuation.collect')
     parser.add_argument('--paths', type=int, default=1, help='ESG paths 1..N')
     parser.add_argument('--years', type=int, default=2, help='years 0..N')
     parser.add_argument('--json', help='also write the reports and totals to this JSON file')
@@ -87,7 +91,8 @@ def child(args):
     sys.setrecursionlimit(20_000)
     model = compiled.load(args.run, args.input)
     start = time.perf_counter()
-    dv01, cs01 = report.pooled_report(model, args.paths, args.years, args.workers)
+    run = report.collect_report if args.collect else report.pooled_report
+    dv01, cs01 = run(model, args.paths, args.years, args.workers)
     seconds = time.perf_counter() - start
     result = summary(dv01, cs01, seconds, workers=args.workers,
                      gil=getattr(sys, '_is_gil_enabled', lambda: True)())
@@ -108,6 +113,8 @@ def compiled_runs(args, input_dir, folder):
                    '--paths', str(args.paths), '--years', str(args.years)]
         if input_dir is not None:
             command += ['--input', str(input_dir)]
+        if args.collect:
+            command.append('--collect')
         done = subprocess.run(command, capture_output=True, text=True)
         if done.returncode:
             sys.exit(f'the compiled run with {workers} worker(s) failed:\n{done.stderr[-3000:]}')

@@ -11,7 +11,9 @@ The model has six Spaces:
 * ``Actual``: one policy on one ESG path, projected from the valuation date with MYGA_US_SEC's
   formulas, its quotes read from the market observed each month (``actual.py``).
 * ``Valuation``: the same policy restarted in force after a close, its opening state read from
-  ``Actual`` through the dynamic Reference ``act``, valued on one ``Market`` (``valuation.py``).
+  ``Actual`` through the dynamic Reference ``act``, valued on one ``Market`` (``valuation.py``):
+  the policy's Actual ItemSpace, or, on the collect route (``collect_history``), the policy's
+  openings from ``Actual.collect``, which releases the ItemSpaces it projects.
 * ``Outer``: the portfolio results and the annual risk report (``outer.py``), summed policy by
   policy through the ItemSpaces.
 
@@ -40,6 +42,31 @@ _DROPPED = ('scenario_rate', 'scenario_number', 'scenario_id')
 
 TABLES = ('model_point_table', 'mort_table', 'surr_charge_table', 'surr_charge_age_cap_table',
           'rate_scenario', 'withdrawal_table', 'mva_factor_table')
+
+
+def _valuation_collect_outputs():
+    """Sum liability PV and the base-curve cash flows across the book."""
+    return {'sum': {'pv': liability_pv(), 'cf': {
+        k: cashflow_at_offset(k) for k in projection_months(valuation_month)
+    } if shock == -1 else {}}}
+
+
+def _actual_collect_outputs():
+    """Keep the policy openings that Valuation reads at the requested closes."""
+    return {'individual': {
+        'pols_if_open': {t: pols_if_open(t) for t in opening_months},
+        'av_pp_open': {t: av_pp_open(t) for t in opening_months},
+        'mgsv_pp_open': {t: mgsv_pp_open(t) for t in opening_months},
+        'prem_accum_gmir_pp_open': {t: prem_accum_gmir_pp_open(t) for t in opening_months},
+        'interest_credited_pp_open': {t: interest_credited_pp_open(t) for t in opening_months},
+        'interest_credited_pp_prev_anniv_open': {
+            t: interest_credited_pp_prev_anniv_open(t) for t in opening_months},
+        'free_wd_allow_open': {t: free_wd_allow_open(t) for t in opening_months},
+        'free_wd_remain_open': {t: free_wd_remain_open(t) for t in opening_months},
+        'tax_basis_pp_open': {t: tax_basis_pp_open(t) for t in opening_months},
+        'credit_rate_open': {t: credit_rate_open(t) for t in opening_months},
+        'mva_ref_yield_locked_open': {t: mva_ref_yield_locked_open(t) for t in opening_months},
+    }}
 
 
 def _shock_key_months():
@@ -87,6 +114,8 @@ def _valuation_point(valuation_month, idx, scen_id, shock=-1):
     if (isinstance(scen_id, bool) or not isinstance(scen_id, (int, np.integer))
             or not 1 <= scen_id <= ESG.scen_size()):
         raise ValueError('scen_id must identify a generated ESG path')
+    if collect_history:      # the collect route: the policy's openings from Actual's collect
+        return {'refs': {'act': Actual.collect(scen_id).individual[idx]}}
     return {'refs': {'act': Actual[idx, scen_id]}}
 
 
@@ -176,14 +205,19 @@ def build_model(*, model_name='MYGASECDV01', input_dir=None, outer_months=OUTER_
     market_space.absref(Market=market_space)
     common = {**sec_refs, 'data': data, 'ESG': esg, 'Market': market_space, 'np': np}
     actual_space = model.new_space_from_module(actual, name='Actual', formula=_actual_point,
-        refs={**common, 'projection_months': tuple(range(outer_months))})
+        refs={**common, 'projection_months': tuple(range(outer_months)), 'opening_months': (0, 12, 24)})
     valuation_space = model.new_space_from_module(valuation, name='Valuation',
-        formula=_valuation_point, refs={**common, 'Actual': actual_space, 'act': None})
+        formula=_valuation_point, refs={**common, 'Actual': actual_space, 'act': None,
+                                        'collect_history': False})
     for space in (actual_space, valuation_space):
         space.new_cells_from_module(contract)
     valuation_space.new_cells('point_indices', actual_space.cells['point_indices'].formula.source)
     _install(actual_space, sec_formulas)
     _install(valuation_space, sec_formulas)
+    valuation_space.set_collect(
+        over={'idx': valuation_space.point_indices}, outputs=_valuation_collect_outputs)
+    actual_space.set_collect(
+        over={'idx': actual_space.point_indices}, outputs=_actual_collect_outputs)
 
     outer_space = model.new_space_from_module(outer, name='Outer', refs={
         'Actual': actual_space, 'Valuation': valuation_space, 'ESG': esg,

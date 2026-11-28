@@ -21,6 +21,7 @@ python products/fixed_deferred_annuity/run_dv01_sec.py                    # live
 python products/fixed_deferred_annuity/run_dv01_sec.py --compiled         # compiled, 1 and 4 workers
 python products/fixed_deferred_annuity/run_dv01_sec.py --compiled --build DIR --workers 8
 python products/fixed_deferred_annuity/run_dv01_sec.py --compiled --policies 1050
+python products/fixed_deferred_annuity/run_dv01_sec.py --compiled --collect     # through collect
 ```
 
 The first builds the model and prints the two reports of the shipped book, MYGA_US_SEC's
@@ -32,7 +33,8 @@ modelx and interpreter (a stamp in `DIR` records them), and rebuilt otherwise. I
 fresh process: on one worker thread, and on `--workers` threads. It prints each run's totals
 and seconds and checks that the two reports are equal. `--policies N` replaces the shipped
 book by N policies, MYGA_US_SEC's seven new-business points repeated; the timings below are
-on that book. `--paths` and `--years` widen the report, and `--json FILE` writes it out.
+on that book. `--collect` computes the compiled report through `Valuation.collect` instead of
+the pooled driver. `--paths` and `--years` widen the report, and `--json FILE` writes it out.
 
 In Python:
 
@@ -93,19 +95,31 @@ CS01 1,532.723324.
 
 Both projections carry every MYGA_US_SEC Projection formula but the three of its
 deterministic rate scenario, which the market replaces (`contract.py`). `Valuation`'s
-formula gives each item the Reference `act`, the `Actual` item of its policy and path; this
-is a dynamic Space Reference, and compiling it needs a modelx that exports such References.
+formula gives each item the Reference `act`, the `Actual` item of its policy and path, or on
+the collect route (`collect_history`) the policy's record of `Actual.collect`: its eleven openings
+at the months after the closes (`opening_months`); this is a dynamic Space Reference, and compiling it needs a modelx that exports such References.
 `Market`, `Outer` and the ESG cell come from lifelib's MYGA DV01 example on `MYGA_US_S`.
 
 ## The compiled model
 
-`dv01_sec/compiled.py` exports the model with `ESG` and `Market` locked, writes a spec of
+`dv01_sec/compiled.py` exports the model with `ESG`, `Market`, `Data` and `Actual` locked, writes a spec of
 cache sizes (MYGA_US_SEC's own, from `spec_sec.py`, for both projections),
 and compiles it with `dv01_sec/sample.py` as the trace, which runs the report of the shipped
 book. Nothing is written into the library tree. The compiled report is computed by
 `report.pooled_report`: one task per policy values the policy at every close on every curve,
 releasing each item once read, and the results are summed in policy order as `Outer` sums
 them, so the totals do not depend on the number of workers.
+
+**Through collect.** `Valuation.collect(month, scen_id, key)` evaluates every policy at one
+close and curve. Its `.sum` result holds the liability PV total and, on the base curve, the
+cash-flow totals. The compiled collector accumulates supported numeric fields in C and
+discards each private policy instance after copying its outputs. Worker subtotal order can
+change floating-point rounding. The reports agree within the financial tolerance.
+
+The report first calls `Actual.collect(scen_id)` once per path. Each Valuation reads its
+policy's saved openings through `.individual[policy_id]`. It uses `Actual[policy_id, scen_id]`
+through the same `act` Reference on the Direct route. The report makes 39 Valuation Collect
+calls for the book below. The compiled export retains the locks on shared dependencies.
 
 **The driver.** With more than one worker the main thread submits every task and then waits
 once for all of them with `concurrent.futures.wait`, instead of waiting on each result in
@@ -115,25 +129,41 @@ free, so with `pool.map` the four workers ran on fresh pages and scaled 1.3x whe
 wait scales 2.5x or more.
 
 Requirements: free-threaded CPython 3.14 (`python3.14t`) for the parallel run, Cython 3.3,
-a C compiler, modelx with the export of dynamic Space References, and modelx-cython. Under a
+a C compiler, modelx with the export of dynamic Space References and with `Space.set_collect`,
+and modelx-cython with the compiled collect. Under a
 GIL build the workers take turns and the reports are the same.
 
-## Speed
+## Compiled report timing
 
-Compiled, book of 1,050 policies (the seven new-business points 150 times), ESG path 1,
-years 0 to 2, so 1,050 × 3 × 13 = 40,950 valuations; median of three rounds, each run in a
-fresh process, on a 4-core cloud VM, Python 3.14.6 free-threaded, gcc 13:
+The book repeats seven new-business policy points and uses ESG path 1 and years 0 to 2.
+This gives 39 Valuations per policy and 40,950 Valuations in total. Times are medians and
+ranges from five alternating fresh-process rounds on an eight-core Ryzen 7 5800H in WSL2
+with free-threaded CPython 3.14.8 and the GIL off. The timer covers the full report after
+loading the model and input tables. The Direct driver saves each base PV, base cash-flow
+series and shocked PV before deleting the corresponding `Valuation` ItemSpace. It deletes
+`Actual` after the last close for each policy and scenario. Deletion is part of the timing.
 
-| Workers | Seconds | Speed-up |
-| ---: | ---: | ---: |
-| 1 | 8.71 | 1.00 |
-| 4 | 3.26 | 2.67 |
+| Route | Policies | Workers | Wall s, median [min–max] | Median ms/policy |
+| --- | ---: | ---: | ---: | ---: |
+| Direct | 1,050 | 1 | 11.103 [10.798–11.961] | 10.574 |
+| Collect | 1,050 | 1 | 9.849 [9.822–9.929] | 9.380 |
+| Collect | 1,050 | 4 | 3.120 [3.096–3.157] | 2.971 |
 
-The three rounds ranged 8.37–8.95 s and 3.02–3.36 s. Totals: DV01 129,960.616141 and
-CS01 157,856.970872 in every run. Live modelx runs the 14-point book in about 300 s.
+Collect scales 3.16× from one to four workers. Each run checked all 36 DV01 and 36 CS01
+entries against live modelx. At four workers the largest relative DV01 difference was
+8.20e-8 and the largest absolute difference was 1.30e-6.
+
+## Memory lifetime
+
+The Collect report retains each path's opening records and the requested valuation sums.
+Each policy's calculation state is released after its outputs have been collected. The
+Direct report achieves its own bounded policy lifetime with the explicit deletions
+described above. Interactive Direct access can keep a policy's ItemSpace available when
+its individual Cell values are needed for inspection.
 
 ## Tests
 
 `tests/test_fixed_deferred_annuity_us_sec_dv01.py` holds the model's shape, the live report
 of the shipped book against stored values (rel 1e-10, abs 1e-7), and, where modelx-cython and
 a C compiler are installed, the compiled report at 1 and 4 workers against the live one.
+The Collect and pooled reports are checked against each other using the same financial tolerances.

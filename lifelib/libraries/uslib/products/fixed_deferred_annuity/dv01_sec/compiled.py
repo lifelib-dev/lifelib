@@ -1,8 +1,8 @@
 """Compile the DV01 model with modelx-cython, and load the compiled model.
 
 :func:`build` exports the model built by :func:`model.build_model` on the shipped book into a
-directory, with ``ESG`` and ``Market`` locked (no Cell of theirs is cleared while a report
-runs), copies the input CSVs beside the export, writes the compilation spec
+directory, with ``ESG``, ``Market``, ``Data`` and ``Actual`` locked (no Cell of theirs is cleared
+while a report runs; collect with several workers requires every Space its items read to be locked), copies the input CSVs beside the export, writes the compilation spec
 (:func:`spec`) and the sample run (``sample.py``), and runs the compiler there.  The compiled
 package is ``model_cy`` in that directory.  :func:`load` imports it and points it at a book.
 
@@ -91,7 +91,7 @@ def build(folder, log=None):
     model = build_model()
     try:
         copy_inputs(folder)
-        model.export(folder / PACKAGE, locked_spaces=['ESG', 'Market'])
+        model.export(folder / PACKAGE, locked_spaces=['ESG', 'Market', 'Data', 'Actual'])
         (folder / 'spec.py').write_text(repr(spec(model)) + '\n', encoding='utf-8')
     finally:
         model.close()

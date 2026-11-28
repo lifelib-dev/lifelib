@@ -4,7 +4,8 @@ The compiler runs this file in the build directory, beside the exported package 
 and the CSVs the build copied there (``compiled.py``).  It computes the annual risk report
 of the shipped book, MYGA_US_SEC's fourteen points, on ESG path 1 at years 0, 1 and 2, through
 the ``Outer`` Cells, releasing each close's Valuation ItemSpaces once summed, as
-``report.live_report`` does, and asks ``Outer`` for the actual cash flows.  A Cell the
+``report.live_report`` does, and asks ``Outer`` for the actual cash flows; then the collect
+route, ``report.collect_report``.  A Cell the
 report never calls, such as MYGA_US_SEC's own reports, compiles as a Python object.
 """
 import sys
@@ -29,3 +30,12 @@ for month in (-1, 11, 23):
 outer.annual_risk_report(1, 2)
 outer.actual_cashflows(1)
 outer.scenario_ids()
+# The collect route (report.collect_report): Actual's collect, then each close's collects, whose
+# items read their openings from it.
+valuation.collect_history = True
+mx_model.Actual.collect(1)
+for month in (-1, 11, 23):
+    valuation.collect(month, 1, -1)
+    for key in keys:
+        valuation.collect(month, 1, key)
+valuation.collect_history = False
