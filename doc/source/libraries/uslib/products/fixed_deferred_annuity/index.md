@@ -5,8 +5,9 @@
 [Implementation Notes](model.md) explain how `MYGA_US_S` implements those notes and what was
 standardized to do so; the cells reference generated from the model's own docstrings
 follows it. How `MYGA_US_SEC` extends `MYGA_US_S` is explained in [In-Force Implementation
-Notes](model-sec.md), and the cells reference of `MYGA_US_SEC` follows it. Every source any
-of them cites is in [Sources](sources.md).
+Notes](model-sec.md), and the cells reference of `MYGA_US_SEC` follows it. [Key-Rate DV01 and
+CS01 on MYGA_US_SEC](dv01-sec.md) values a `MYGA_US_SEC` book on G2++ interest-rate paths.
+Every source any of them cites is in [Sources](sources.md).
 
 ```{toctree}
 :maxdepth: 1
@@ -17,5 +18,6 @@ model
 MYGA_US_S/MYGA_US_S
 model-sec
 MYGA_US_SEC/MYGA_US_SEC
+dv01-sec
 sources
 ```
