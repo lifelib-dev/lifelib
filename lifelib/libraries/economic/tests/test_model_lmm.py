@@ -142,7 +142,9 @@ def test_bank_return_is_known_at_the_start_of_each_month(lmm_model):
 def test_libor_rate_on_a_tenor_date_is_the_rate_just_set(lmm_model):
     g = lmm_model.LMM
     for i in (0, 12, 360):
-        np.testing.assert_allclose(g.libor_rate(i), g.fwd_rates(i)[:, 0], rtol=1e-12)
+        # libor_rate is (1/P - 1)/tau, so its rounding error is absolute: about 1e-16
+        np.testing.assert_allclose(g.libor_rate(i), g.fwd_rates(i)[:, 0],
+                                   rtol=1e-12, atol=1e-15)
 
 
 @pytest.mark.parametrize("i", [0, 11, 12, 599])
