@@ -22,12 +22,12 @@ Enhancements
 ----------------
 
 This release adds two models to :mod:`~economic`,
-:mod:`~economic.BasicG2PP` and :mod:`~economic.CashValue_ME_G2PP`.
+:mod:`~economic.BasicG2PP` and ``CashValue_ME_G2PP``.
 :mod:`~economic.BasicG2PP` generates risk-neutral monthly interest
 rate scenarios from the G2++ two-factor short rate model, fitted
 exactly to an initial yield curve read from ``g2pp_input.xlsx``, and
 its ``Validation`` Space checks the scenarios against closed forms
-and martingale properties. :mod:`~economic.CashValue_ME_G2PP` is
+and martingale properties. ``CashValue_ME_G2PP`` is
 :mod:`~savings`' ``CashValue_ME_EX4`` driven by a copy of those
 scenarios, and calculates the time value of options and guarantees
 (TVOG) of its maturity guarantees. Two notebooks,

@@ -26,7 +26,7 @@ Attributes:
 
     g2pp: The G2PP space.
 
-    mcstats: User module with :func:`check`, which turns samples into the DataFrame
+    mcstats: User module with ``check()``, which turns samples into the DataFrame
         above. Saved in the model folder as ``mcstats.py``.
 
     np: The numpy module.
@@ -128,10 +128,10 @@ def moments_test():
 
     .. math::
 
-        E[x] = E[y] = 0, \quad E[r] = \varphi(t), \quad
-        \mathrm{Var}[x] = \frac{\sigma^2}{2a}(1 - e^{-2at}), \quad
-        \mathrm{Var}[y] = \frac{\eta^2}{2b}(1 - e^{-2bt}), \quad
-        \mathrm{Cov}[x, y] = \frac{\rho\sigma\eta}{a + b}(1 - e^{-(a+b)t})
+        E[x] &= E[y] = 0, \qquad E[r] = \varphi(t), \\
+        \mathrm{Var}[x] &= \frac{\sigma^2}{2a}(1 - e^{-2at}), \\
+        \mathrm{Var}[y] &= \frac{\eta^2}{2b}(1 - e^{-2bt}), \\
+        \mathrm{Cov}[x, y] &= \frac{\rho\sigma\eta}{a + b}(1 - e^{-(a+b)t})
 
     and :math:`\mathrm{Var}[r]` from ``Var_rt``. With antithetic variates the three
     means are exact by construction, so their z is 0.
@@ -167,12 +167,11 @@ def zbp_cf(i, j, K):
 
     .. math::
 
-        \mathrm{ZBP} = K P^M(0, T)\Phi(-h + \Sigma) - P^M(0, S)\Phi(-h), \quad
-        h = \frac{1}{\Sigma}\ln\frac{P^M(0, S)}{K P^M(0, T)} + \frac{\Sigma}{2}
-
-        \Sigma^2 = \frac{\sigma^2}{2a^3}(1 - e^{-a(S-T)})^2(1 - e^{-2aT})
-        + \frac{\eta^2}{2b^3}(1 - e^{-b(S-T)})^2(1 - e^{-2bT})
-        + \frac{2\rho\sigma\eta}{ab(a+b)}(1 - e^{-a(S-T)})(1 - e^{-b(S-T)})(1 - e^{-(a+b)T})
+        \mathrm{ZBP} &= K P^M(0, T)\Phi(-h + \Sigma) - P^M(0, S)\Phi(-h), \\
+        h &= \frac{1}{\Sigma}\ln\frac{P^M(0, S)}{K P^M(0, T)} + \frac{\Sigma}{2}, \\
+        \Sigma^2 &= \frac{\sigma^2}{2a^3}(1 - e^{-a(S-T)})^2(1 - e^{-2aT}) \\
+        &\quad {} + \frac{\eta^2}{2b^3}(1 - e^{-b(S-T)})^2(1 - e^{-2bT}) \\
+        &\quad {} + \frac{2\rho\sigma\eta}{ab(a+b)}(1 - e^{-a(S-T)})(1 - e^{-b(S-T)})(1 - e^{-(a+b)T})
     """
     a, b, s, e, r = g2pp.a(), g2pp.b(), g2pp.sigma(), g2pp.eta(), g2pp.rho()
     T, S = g2pp.t_(i), g2pp.t_(j)
@@ -206,8 +205,8 @@ def deflator_call_test(i, k):
 
     .. math::
 
-        E[(D(T) - K)^+] = P^M(0, T)\Phi(d_1) - K\Phi(d_1 - \sqrt{V}), \quad
-        d_1 = \frac{\ln(P^M(0, T)/K) + V/2}{\sqrt{V}}
+        E[(D(T) - K)^+] &= P^M(0, T)\Phi(d_1) - K\Phi(d_1 - \sqrt{V}), \\
+        d_1 &= \frac{\ln(P^M(0, T)/K) + V/2}{\sqrt{V}}
 
     This is also the GMAB of a single-premium policy whose fund is all cash, per unit of
     sum assured, with :math:`k = AV_0 / (SA\, P^M(0, T))`.

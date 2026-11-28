@@ -10,10 +10,11 @@ The two-additive-factor Gaussian model G2++ (Brigo and Mercurio, 2nd ed. 2006, s
 
 .. math::
 
-    r(t) = x(t) + y(t) + \\varphi(t), \\quad
-    dx(t) = -a x(t) dt + \\sigma dW_1(t), \\quad
-    dy(t) = -b y(t) dt + \\eta dW_2(t), \\quad
-    dW_1 dW_2 = \\rho dt
+    r(t) &= x(t) + y(t) + \\varphi(t),
+
+    dx(t) &= -a x(t) dt + \\sigma dW_1(t),
+
+    dy(t) &= -b y(t) dt + \\eta dW_2(t), \\qquad dW_1 dW_2 = \\rho dt
 
 with :math:`x(0) = y(0) = 0` and :math:`\\varphi` fitted exactly to the initial curve
 :math:`P^M(0, t)`. Each month, :math:`x`, :math:`y` and :math:`\\int (x + y) du` are drawn
@@ -313,7 +314,8 @@ def curve_knots():
     extrapolated.
 
     Returns:
-        tuple of two 1-D numpy arrays of equal length: knot times and log discount factors
+        tuple of two 1-D numpy arrays of equal length, the knot times and the log
+        discount factors
     """
     table = curve_table()
     if curve_id() not in table.columns:
@@ -387,11 +389,11 @@ def V_t_T(i, j):
 
     .. math::
 
-        V(t, T) = \frac{\sigma^2}{a^2}\left[\tau + \frac{2}{a}e^{-a\tau}
-        - \frac{1}{2a}e^{-2a\tau} - \frac{3}{2a}\right]
-        + \frac{\eta^2}{b^2}\left[\tau + \frac{2}{b}e^{-b\tau}
-        - \frac{1}{2b}e^{-2b\tau} - \frac{3}{2b}\right]
-        + \frac{2\rho\sigma\eta}{ab}\left[\tau + \frac{e^{-a\tau} - 1}{a}
+        V(t, T) = {} & \frac{\sigma^2}{a^2}\left[\tau + \frac{2}{a}e^{-a\tau}
+        - \frac{1}{2a}e^{-2a\tau} - \frac{3}{2a}\right] \\
+        & + \frac{\eta^2}{b^2}\left[\tau + \frac{2}{b}e^{-b\tau}
+        - \frac{1}{2b}e^{-2b\tau} - \frac{3}{2b}\right] \\
+        & + \frac{2\rho\sigma\eta}{ab}\left[\tau + \frac{e^{-a\tau} - 1}{a}
         + \frac{e^{-b\tau} - 1}{b} - \frac{e^{-(a+b)\tau} - 1}{a + b}\right]
 
     Computed with ``expm1``, which keeps the digits that :math:`e^{-a\tau} - 1` loses for
@@ -450,8 +452,8 @@ def Var_rt():
 def fund_logvar(j):
     r"""Variance :math:`s^2` of :math:`\ln(AV(t_j)/AV_0)` for the selected fund
 
-    Used by the closed-form GMAB value of CashValue_ME_G2PP,
-    :func:`~economic.CashValue_ME_G2PP.Projection.formula_gmab_g2pp`. For an all-cash fund,
+    Used by the closed-form GMAB value of CashValue_ME_G2PP, ``formula_gmab_g2pp``, which
+    :doc:`g2pp-tvog.ipynb </libraries/economic/g2pp-tvog>` describes. For an all-cash fund,
     :math:`AV(t_j)/AV_0 = 1/D(t_j)` and :math:`s^2 = V(0, t_j)`. For a fund that holds a
     single maturity :math:`\tau`, the monthly log return is linear in :math:`x` and
     :math:`y` (see :func:`zcb_return_mth`), and :math:`s^2` follows from a covariance
@@ -640,8 +642,8 @@ def P_t_T(i, j):
     .. math::
 
         P(t, T) = \frac{P^M(0, T)}{P^M(0, t)}
-        \exp\left(\tfrac{1}{2}[V(t, T) - V(0, T) + V(0, t)]
-        - B_a(t, T)x(t) - B_b(t, T)y(t)\right)
+        \exp\bigl( & \tfrac{1}{2}[V(t, T) - V(0, T) + V(0, t)] \\
+        & - B_a(t, T)x(t) - B_b(t, T)y(t)\bigr)
 
     Needs the curve out to :math:`t_j`.
 
@@ -733,10 +735,10 @@ def zcb_return_mth(i, m):
 
     .. math::
 
-        \ln\frac{P(t_{i+1}, T)}{P(t_i, T)} = \ln P^M(0, t_i) - \ln P^M(0, t_{i+1})
-        + \tfrac{1}{2}[V(t_{i+1}, T) - V(t_i, T) + V(0, t_{i+1}) - V(0, t_i)]
-        - B_a(t_{i+1}, T)x(t_{i+1}) - B_b(t_{i+1}, T)y(t_{i+1})
-        + B_a(t_i, T)x(t_i) + B_b(t_i, T)y(t_i)
+        \ln\frac{P(t_{i+1}, T)}{P(t_i, T)} = {} & \ln P^M(0, t_i) - \ln P^M(0, t_{i+1}) \\
+        & + \tfrac{1}{2}[V(t_{i+1}, T) - V(t_i, T) + V(0, t_{i+1}) - V(0, t_i)] \\
+        & - B_a(t_{i+1}, T)x(t_{i+1}) - B_b(t_{i+1}, T)y(t_{i+1}) \\
+        & + B_a(t_i, T)x(t_i) + B_b(t_i, T)y(t_i)
 
     :math:`P^M(0, T)` cancels, so the return needs the curve only up to
     :math:`t_{i+1}`.
